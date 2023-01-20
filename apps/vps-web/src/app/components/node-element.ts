@@ -1,16 +1,20 @@
+import {
+  DOMElementNode,
+  ElementNodeMap,
+  IElementNode,
+} from '../interfaces/element';
 import { createElement } from '../utils/create-element';
 
 export const createNodeElement = (
-  canvasElement: HTMLElement,
-  elements: Map<string, HTMLElement>
+  tagName: string,
+  canvasElement: DOMElementNode,
+  elements: ElementNodeMap
 ) => {
-  const id = crypto.randomUUID();
-  let element: HTMLElement | undefined = undefined;
+  let element: IElementNode | undefined = undefined;
   element = createElement(
-    'button',
+    tagName,
     {
-      id,
-      class: 'absolute translate-x-10 translate-y-50 bg-slate-300 p-10',
+      class: 'absolute p-10',
       style: {
         'background-color':
           '#' + Math.floor(Math.random() * 16777215).toString(16),
@@ -21,7 +25,7 @@ export const createNodeElement = (
       click: () => {
         console.log(element);
         if (element) {
-          element.style.backgroundColor =
+          element.domElement.style.backgroundColor =
             '#' + Math.floor(Math.random() * 16777215).toString(16);
         }
       },
@@ -30,6 +34,7 @@ export const createNodeElement = (
     'Hello world'
   );
   if (element) {
-    elements.set(id, element);
+    element.domElement.id = element.id;
+    elements.set(element.id, element);
   }
 };

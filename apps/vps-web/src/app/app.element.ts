@@ -2,15 +2,17 @@ import './app.element.css';
 import styles from '../styles.css?inline';
 import { createElement } from './utils/create-element';
 import { createNodeElement } from './components/node-element';
-
-interface IElementNode {
-  id: string;
-  element: HTMLElement;
-}
+import { createSVGElement } from './components/svg-element';
+import { ElementNodeMap } from './interfaces/element';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
+  <svg width="100" height="100">
+  <circle cx="50" cy="50" r="40"
+  stroke="green" stroke-width="4" fill="yellow" />
+Sorry, your browser does not support inline SVG.
+</svg>
   <div class="h-screen w-100 bg-slate-100 flex flex-col" id="root" >
   </div>
 `;
@@ -29,7 +31,7 @@ export class AppElement extends HTMLElement {
     }
   }
 
-  elements: Map<string, HTMLElement> = new Map();
+  elements: ElementNodeMap = new Map();
 
   constructor() {
     super();
@@ -45,11 +47,23 @@ export class AppElement extends HTMLElement {
       {
         class: 'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600',
         click: () => {
-          createNodeElement(canvas, this.elements);
+          createNodeElement('div', canvas.domElement, this.elements);
         },
       },
-      newElement,
+      newElement.domElement,
       'Add element'
+    );
+
+    createElement(
+      'button',
+      {
+        class: 'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600',
+        click: () => {
+          createSVGElement(canvas.domElement, this.elements);
+        },
+      },
+      newElement.domElement,
+      'Add svg element'
     );
     const canvas = createElement(
       'div',
