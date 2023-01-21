@@ -4,6 +4,7 @@ import { createElement } from './utils/create-element';
 import { createNodeElement } from './components/node-element';
 import { createSVGElement } from './components/svg-element';
 import { ElementNodeMap } from './interfaces/element';
+import { createMarkupElement } from './components/markup-element';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -45,7 +46,8 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: 'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600',
+        class:
+          'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none',
         click: () => {
           createNodeElement('div', canvas.domElement, this.elements);
         },
@@ -57,7 +59,8 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: 'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600',
+        class:
+          'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none',
         click: () => {
           createSVGElement(canvas.domElement, this.elements);
         },
@@ -65,10 +68,17 @@ export class AppElement extends HTMLElement {
       newElement.domElement,
       'Add svg element'
     );
+
     const canvas = createElement(
       'div',
       { id: 'canvas', class: 'w-100 bg-slate-800 flex-auto relative' },
       rootElement
+    );
+
+    createMarkupElement(
+      '<div><h2>TITLE</h2><p>subtitle</p></div>',
+      canvas.domElement,
+      this.elements
     );
   }
 }

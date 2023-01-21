@@ -13,7 +13,7 @@ export const createSVGElement = (
   svgElement = createNSElement(
     'svg',
     {
-      class: 'absolute',
+      class: 'absolute cursor-pointer',
       style: {
         transform: `translate(${Math.floor(
           Math.random() * 1024

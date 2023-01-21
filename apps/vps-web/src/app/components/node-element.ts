@@ -14,7 +14,7 @@ export const createNodeElement = (
   element = createElement(
     tagName,
     {
-      class: 'absolute p-10',
+      class: 'absolute p-10 select-none cursor-pointer',
       style: {
         'background-color':
           '#' + Math.floor(Math.random() * 16777215).toString(16),
@@ -27,6 +27,9 @@ export const createNodeElement = (
         if (element) {
           element.domElement.style.backgroundColor =
             '#' + Math.floor(Math.random() * 16777215).toString(16);
+          element.domElement.textContent = `Hello world ${Math.floor(
+            Math.random() * 100
+          )}`;
         }
       },
     },
