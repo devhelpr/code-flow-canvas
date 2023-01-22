@@ -5,15 +5,18 @@ import { createNodeElement } from './components/node-element';
 import { createSVGElement } from './components/svg-element';
 import { ElementNodeMap } from './interfaces/element';
 import { createMarkupElement } from './components/markup-element';
+import { createEffect, createSignal, getCount, setCount } from './reactivity';
+import {
+  getCurrentInteractionState,
+  InteractionEvent,
+  interactionEventState,
+  InteractionState,
+} from './interaction-state-machine';
+import { count } from 'console';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
-  <svg width="100" height="100">
-  <circle cx="50" cy="50" r="40"
-  stroke="green" stroke-width="4" fill="yellow" />
-Sorry, your browser does not support inline SVG.
-</svg>
   <div class="h-screen w-100 bg-slate-100 flex flex-col" id="root" >
   </div>
 `;
@@ -42,7 +45,13 @@ export class AppElement extends HTMLElement {
     if (!rootElement) {
       return;
     }
-    const newElement = createElement('div', undefined, rootElement);
+    const newElement = createElement(
+      'div',
+      {
+        class: 'relative z-20',
+      },
+      rootElement
+    );
     createElement(
       'button',
       {
@@ -69,9 +78,97 @@ export class AppElement extends HTMLElement {
       'Add svg element'
     );
 
+    createElement(
+      'button',
+      {
+        class:
+          'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none',
+        click: () => {
+          createMarkupElement(
+            '<div><h2>TITLE</h2><p>subtitle</p></div>',
+            canvas.domElement,
+            this.elements
+          );
+        },
+      },
+      newElement.domElement,
+      'Add markup element'
+    );
+
     const canvas = createElement(
       'div',
-      { id: 'canvas', class: 'w-100 bg-slate-800 flex-auto relative' },
+      {
+        id: 'canvas',
+        class: 'w-100 bg-slate-800 flex-auto relative z-10 overflow-hidden',
+        pointermove: (event: PointerEvent) => {
+          //const canvasRect = canvas.domElement.getBoundingClientRect();
+          const currentState = getCurrentInteractionState();
+          if (
+            currentState.state === InteractionState.Moving &&
+            currentState.element &&
+            currentState.target
+          ) {
+            if (
+              interactionEventState(
+                InteractionEvent.PointerMove,
+                currentState.target,
+                currentState.element
+              )
+            ) {
+              const canvasRect = canvas.domElement.getBoundingClientRect();
+              currentState.target.pointerMove(
+                event.clientX - canvasRect.x,
+                event.clientY - canvasRect.y
+              );
+            }
+          }
+        },
+        pointerup: (event: PointerEvent) => {
+          const currentState = getCurrentInteractionState();
+          if (
+            currentState.state === InteractionState.Moving &&
+            currentState.element &&
+            currentState.target
+          ) {
+            if (
+              interactionEventState(
+                InteractionEvent.PointerUp,
+                currentState.target,
+                currentState.element
+              )
+            ) {
+              const canvasRect = canvas.domElement.getBoundingClientRect();
+              currentState.target.pointerUp(
+                event.clientX - canvasRect.x,
+                event.clientY - canvasRect.y
+              );
+            }
+          }
+        },
+        pointerleave: (event: PointerEvent) => {
+          console.log('pointerleave canvas', event);
+          const currentState = getCurrentInteractionState();
+          if (
+            currentState.state === InteractionState.Moving &&
+            currentState.element &&
+            currentState.target
+          ) {
+            if (
+              interactionEventState(
+                InteractionEvent.PointerLeave,
+                currentState.target,
+                currentState.element
+              )
+            ) {
+              const canvasRect = canvas.domElement.getBoundingClientRect();
+              currentState.target.pointerUp(
+                event.clientX - canvasRect.x,
+                event.clientY - canvasRect.y
+              );
+            }
+          }
+        },
+      },
       rootElement
     );
 
@@ -83,3 +180,15 @@ export class AppElement extends HTMLElement {
   }
 }
 customElements.define('vps-web-root', AppElement);
+
+/*const [getCount, setCount] = createSignal(0);
+const [getValue, setValue] = createSignal('test');
+createEffect(() => console.log('effect', getCount(), getValue()));
+setCount(1);
+setCount(2);
+setValue('test2');
+setCount(3);
+*/
+setInterval(() => {
+  setCount(getCount() + 1);
+}, 1000);
