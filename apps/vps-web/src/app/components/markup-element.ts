@@ -12,7 +12,9 @@ import {
   ElementNodeMap,
   IElementNode,
 } from '../interfaces/element';
+import { IPointerDownResult } from '../interfaces/pointers';
 import { createElement } from '../utils/create-element';
+import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createMarkupElement = (
   markup: string,
@@ -24,77 +26,12 @@ export const createMarkupElement = (
     throw new Error('Invalid markup');
   }
 
-  let xOffsetWithinElementOnFirstClick = 0;
-  let yOffsetWithinElementOnFirstClick = 0;
+  let interactionInfo: IPointerDownResult = {
+    xOffsetWithinElementOnFirstClick: 0,
+    yOffsetWithinElementOnFirstClick: 0,
+  };
 
   let element: IElementNode | undefined = undefined;
-
-  const pointerDown = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerDown,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      xOffsetWithinElementOnFirstClick = x;
-      yOffsetWithinElementOnFirstClick = y;
-      canvasElement.append(element.domElement);
-    }
-  };
-
-  const pointerMove = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerMove,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      if (element && element.domElement) {
-        element.domElement.style.transform = `translate(${
-          x - xOffsetWithinElementOnFirstClick
-        }px, ${y - yOffsetWithinElementOnFirstClick}px)`;
-      }
-    }
-  };
-
-  const pointerUp = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerUp,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      if (element && element.domElement) {
-        element.domElement.style.transform = `translate(${
-          x - xOffsetWithinElementOnFirstClick
-        }px, ${y - yOffsetWithinElementOnFirstClick}px)`;
-      }
-    }
-  };
 
   element = createElement(
     compiledMarkup.tagName,
@@ -119,41 +56,44 @@ export const createMarkupElement = (
       pointerdown: (e: PointerEvent) => {
         if (element) {
           const elementRect = element.domElement.getBoundingClientRect();
-          pointerDown(e.clientX - elementRect.x, e.clientY - elementRect.y);
-          return;
+          interactionInfo = pointerDown(
+            e.clientX - elementRect.x,
+            e.clientY - elementRect.y,
+            element,
+            canvasElement
+          );
         }
       },
       pointermove: (e: PointerEvent) => {
         const canvasRect = canvasElement.getBoundingClientRect();
         if (element) {
           if (element && element.domElement) {
-            pointerMove(e.clientX - canvasRect.x, e.clientY - canvasRect.y);
+            pointerMove(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              element,
+              canvasElement,
+              interactionInfo
+            );
           }
-          return;
         }
       },
       pointerup: (e: PointerEvent) => {
         if (element) {
           if (element && element.domElement) {
             const canvasRect = canvasElement.getBoundingClientRect();
-            pointerUp(e.clientX - canvasRect.x, e.clientY - canvasRect.y);
+            pointerUp(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              element,
+              canvasElement,
+              interactionInfo
+            );
           }
-          return;
         }
       },
       pointerleave: (e: PointerEvent) => {
         console.log('pointerleave element', event);
-        /*
-        if (
-          element &&
-          interactionEventState(InteractionEvent.PointerLeave, {
-            id: element.id,
-            type: 'MarkupElement',
-          }, element)
-        ) {
-          return;
-        }
-        */
       },
     },
     canvasElement,

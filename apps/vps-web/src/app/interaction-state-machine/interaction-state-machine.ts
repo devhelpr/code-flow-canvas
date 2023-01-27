@@ -1,11 +1,14 @@
-import { IElementNode } from '../interfaces/element';
+import { DOMElementNode, IElementNode } from '../interfaces/element';
+import { IPointerDownResult } from '../interfaces/pointers';
 
 export enum InteractionState {
   Idle = 0,
   Moving = 2,
   Resizing = 3,
   Rotating = 4,
-  Connecting = 5,
+  ConnectingStart = 5,
+  ConnectingEnd = 6,
+  MovingControlPoint = 7,
 }
 
 export enum InteractionEvent {
@@ -20,9 +23,27 @@ export enum InteractionEvent {
 export interface InteractionTarget {
   id: string;
   type: string;
-  pointerDown: (x: number, y: number) => void;
-  pointerMove: (x: number, y: number) => void;
-  pointerUp: (x: number, y: number) => void;
+  pointerDown: (
+    x: number,
+    y: number,
+    element: IElementNode,
+    canvasElement: DOMElementNode
+  ) => IPointerDownResult;
+  pointerMove: (
+    x: number,
+    y: number,
+    element: IElementNode,
+    canvasElement: DOMElementNode,
+    interactionInfo: IPointerDownResult
+  ) => void;
+  pointerUp: (
+    x: number,
+    y: number,
+    element: IElementNode,
+    canvasElement: DOMElementNode,
+    interactionInfo: IPointerDownResult
+  ) => void;
+  interactionInfo: IPointerDownResult;
 }
 
 export interface InterActionInfo {

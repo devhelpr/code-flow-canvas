@@ -118,7 +118,10 @@ export class AppElement extends HTMLElement {
               const canvasRect = canvas.domElement.getBoundingClientRect();
               currentState.target.pointerMove(
                 event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y
+                event.clientY - canvasRect.y,
+                currentState.element,
+                canvas.domElement,
+                currentState.target.interactionInfo
               );
             }
           }
@@ -140,7 +143,10 @@ export class AppElement extends HTMLElement {
               const canvasRect = canvas.domElement.getBoundingClientRect();
               currentState.target.pointerUp(
                 event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y
+                event.clientY - canvasRect.y,
+                currentState.element,
+                canvas.domElement,
+                currentState.target.interactionInfo
               );
             }
           }
@@ -163,7 +169,10 @@ export class AppElement extends HTMLElement {
               const canvasRect = canvas.domElement.getBoundingClientRect();
               currentState.target.pointerUp(
                 event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y
+                event.clientY - canvasRect.y,
+                currentState.element,
+                canvas.domElement,
+                currentState.target.interactionInfo
               );
             }
           }

@@ -1,102 +1,34 @@
 import {
-  InteractionEvent,
-  interactionEventState,
-} from '../interaction-state-machine';
-import {
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
 } from '../interfaces/element';
+import { IPointerDownResult } from '../interfaces/pointers';
 import { createEffect, getCount } from '../reactivity';
 import { createElement } from '../utils/create-element';
+import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createNodeElement = (
   tagName: string,
   canvasElement: DOMElementNode,
   elements: ElementNodeMap
 ) => {
-  let xOffsetWithinElementOnFirstClick = 0;
-  let yOffsetWithinElementOnFirstClick = 0;
+  let interactionInfo: IPointerDownResult = {
+    xOffsetWithinElementOnFirstClick: 0,
+    yOffsetWithinElementOnFirstClick: 0,
+  };
   let element: IElementNode | undefined = undefined;
-
-  const pointerDown = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerDown,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      xOffsetWithinElementOnFirstClick = x;
-      yOffsetWithinElementOnFirstClick = y;
-      canvasElement.append(element.domElement);
-      return;
-    }
-  };
-
-  const pointerMove = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerMove,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      if (element && element.domElement) {
-        element.domElement.style.transform = `translate(${
-          x - xOffsetWithinElementOnFirstClick
-        }px, ${y - yOffsetWithinElementOnFirstClick}px)`;
-      }
-      return;
-    }
-  };
-
-  const pointerUp = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerUp,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      if (element && element.domElement) {
-        element.domElement.style.transform = `translate(${
-          x - xOffsetWithinElementOnFirstClick
-        }px, ${y - yOffsetWithinElementOnFirstClick}px)`;
-      }
-      return;
-    }
-  };
 
   element = createElement(
     tagName,
     {
-      class:
-        'absolute p-10 select-none cursor-pointer transition-transform ease-in-out duration-[75ms]',
+      class: `
+        absolute
+        select-none cursor-pointer
+        transition-transform
+        ease-in-out duration-[75ms]
+        `,
       style: {
-        'background-color':
-          '#' + Math.floor(Math.random() * 16777215).toString(16),
         transform: `translate(${Math.floor(
           Math.random() * 1024
         )}px, ${Math.floor(Math.random() * 500)}px)`,
@@ -114,7 +46,12 @@ export const createNodeElement = (
       pointerdown: (e: PointerEvent) => {
         if (element) {
           const elementRect = element.domElement.getBoundingClientRect();
-          pointerDown(e.clientX - elementRect.x, e.clientY - elementRect.y);
+          interactionInfo = pointerDown(
+            e.clientX - elementRect.x,
+            e.clientY - elementRect.y,
+            element,
+            canvasElement
+          );
           return;
         }
       },
@@ -122,7 +59,13 @@ export const createNodeElement = (
         const canvasRect = canvasElement.getBoundingClientRect();
         if (element) {
           if (element && element.domElement) {
-            pointerMove(e.clientX - canvasRect.x, e.clientY - canvasRect.y);
+            pointerMove(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              element,
+              canvasElement,
+              interactionInfo
+            );
           }
           return;
         }
@@ -131,23 +74,44 @@ export const createNodeElement = (
         if (element) {
           if (element && element.domElement) {
             const canvasRect = canvasElement.getBoundingClientRect();
-            pointerUp(e.clientX - canvasRect.x, e.clientY - canvasRect.y);
+            pointerUp(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              element,
+              canvasElement,
+              interactionInfo
+            );
           }
           return;
         }
       },
     },
-    canvasElement,
-    'Hello world'
+    canvasElement
   );
   if (element) {
     element.domElement.id = element.id;
     elements.set(element.id, element);
 
+    const childElement = createElement(
+      'div',
+      {
+        class: 'translate-x-[-50%]  p-10',
+        style: {
+          'background-color':
+            '#' + Math.floor(Math.random() * 16777215).toString(16),
+        },
+      },
+      element.domElement,
+      'Hello world'
+    );
+
     createEffect(() => {
       const counter = getCount();
-      if (element) {
-        element.domElement.textContent = `Hello world ${counter}`;
+      // if (element) {
+      //   element.domElement.textContent = `Hello world ${counter}`;
+      // }
+      if (childElement) {
+        childElement.domElement.textContent = `Hello world ${counter}`;
       }
     });
   }

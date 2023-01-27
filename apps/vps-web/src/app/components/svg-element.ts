@@ -1,89 +1,21 @@
 import {
-  InteractionEvent,
-  interactionEventState,
-} from '../interaction-state-machine';
-import {
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
 } from '../interfaces/element';
+import { IPointerDownResult } from '../interfaces/pointers';
 import { createNSElement } from '../utils/create-element';
+import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createSVGElement = (
   canvasElement: DOMElementNode,
   elements: ElementNodeMap
 ) => {
-  let xOffsetWithinElementOnFirstClick = 0;
-  let yOffsetWithinElementOnFirstClick = 0;
+  let interactionInfo: IPointerDownResult = {
+    xOffsetWithinElementOnFirstClick: 0,
+    yOffsetWithinElementOnFirstClick: 0,
+  };
   let element: IElementNode | undefined = undefined;
-
-  const pointerDown = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerDown,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      xOffsetWithinElementOnFirstClick = x;
-      yOffsetWithinElementOnFirstClick = y;
-      canvasElement.append(element.domElement);
-    }
-  };
-
-  const pointerMove = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerMove,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      if (element && element.domElement) {
-        element.domElement.style.transform = `translate(${
-          x - xOffsetWithinElementOnFirstClick
-        }px, ${y - yOffsetWithinElementOnFirstClick}px)`;
-      }
-    }
-  };
-
-  const pointerUp = (x: number, y: number) => {
-    if (
-      element &&
-      interactionEventState(
-        InteractionEvent.PointerUp,
-        {
-          id: element.id,
-          type: 'MarkupElement',
-          pointerDown,
-          pointerMove,
-          pointerUp,
-        },
-        element
-      )
-    ) {
-      if (element && element.domElement) {
-        element.domElement.style.transform = `translate(${
-          x - xOffsetWithinElementOnFirstClick
-        }px, ${y - yOffsetWithinElementOnFirstClick}px)`;
-      }
-    }
-  };
-
   element = createNSElement(
     'svg',
     {
@@ -99,7 +31,12 @@ export const createSVGElement = (
       pointerdown: (e: PointerEvent) => {
         if (element) {
           const elementRect = element.domElement.getBoundingClientRect();
-          pointerDown(e.clientX - elementRect.x, e.clientY - elementRect.y);
+          interactionInfo = pointerDown(
+            e.clientX - elementRect.x,
+            e.clientY - elementRect.y,
+            element,
+            canvasElement
+          );
           return;
         }
       },
@@ -107,7 +44,13 @@ export const createSVGElement = (
         const canvasRect = canvasElement.getBoundingClientRect();
         if (element) {
           if (element && element.domElement) {
-            pointerMove(e.clientX - canvasRect.x, e.clientY - canvasRect.y);
+            pointerMove(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              element,
+              canvasElement,
+              interactionInfo
+            );
           }
           return;
         }
@@ -116,7 +59,13 @@ export const createSVGElement = (
         if (element) {
           if (element && element.domElement) {
             const canvasRect = canvasElement.getBoundingClientRect();
-            pointerUp(e.clientX - canvasRect.x, e.clientY - canvasRect.y);
+            pointerUp(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              element,
+              canvasElement,
+              interactionInfo
+            );
           }
           return;
         }
