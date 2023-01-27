@@ -182,7 +182,7 @@ export class AppElement extends HTMLElement {
     );
 
     createMarkupElement(
-      '<div><h2>TITLE</h2><p>subtitle</p></div>',
+      '<div><div><div><div><h2>TITLE</h2><p>subtitle</p><div><i>lorem ipsum</i></div></div></div></div></div>',
       canvas.domElement,
       this.elements
     );

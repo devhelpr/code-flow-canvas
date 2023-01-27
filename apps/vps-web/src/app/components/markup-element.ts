@@ -2,6 +2,7 @@ import {
   compileMarkup,
   IASTNode,
   IASTTextNode,
+  IASTTree,
 } from '@devhelpr/markup-compiler';
 import {
   InteractionEvent,
@@ -100,18 +101,33 @@ export const createMarkupElement = (
     ''
   );
   if (element && element.domElement) {
+    console.log(
+      'compiledMarkup',
+      compiledMarkup,
+      Array.isArray(compiledMarkup.body)
+    );
     if (compiledMarkup.body && element && element.domElement) {
-      compiledMarkup.body.forEach((astNode) => {
-        console.log(astNode);
-        if (element && element.domElement && element.elements) {
-          createASTNodeElement(
-            astNode,
-            element.domElement,
-            element.elements,
-            (astNode as unknown as IASTTextNode).value
-          );
-        }
-      });
+      if (Array.isArray(compiledMarkup.body)) {
+        (compiledMarkup.body as unknown as IASTNode[]).forEach((astNode) => {
+          console.log(astNode);
+          if (element && element.domElement && element.elements) {
+            createASTNodeElement(
+              astNode,
+              element.domElement,
+              element.elements,
+              (astNode as unknown as IASTTextNode).value ?? ''
+            );
+          }
+        });
+      } else {
+        console.log(compiledMarkup.body);
+        createASTNodeElement(
+          compiledMarkup.body,
+          element.domElement,
+          element.elements,
+          (compiledMarkup.body as unknown as IASTTextNode).value ?? ''
+        );
+      }
     }
     element.domElement.id = element.id;
     elements.set(element.id, element);
@@ -124,17 +140,41 @@ export const createASTNodeElement = (
   elements: IElementNode[],
   text = ''
 ) => {
-  let element: IElementNode | undefined = undefined;
-  element = createElement(
-    astNode.tagName,
-    {
-      class: '',
-    },
-    parentElement,
-    text
-  );
-  if (element) {
-    element.domElement.id = element.id;
-    elements.push(element);
+  if (Array.isArray((astNode as unknown as IASTTree).body)) {
+    ((astNode as unknown as IASTTree).body as unknown as IASTNode[]).forEach(
+      (astNode) => {
+        console.log(astNode);
+        createASTNodeElement(
+          astNode,
+          parentElement,
+          elements,
+          (astNode as unknown as IASTTextNode).value ?? ''
+        );
+      }
+    );
+  } else if (
+    (astNode as unknown as IASTTree).body &&
+    ((astNode as unknown as IASTTree).body as any).tagName
+  ) {
+    createASTNodeElement(
+      (astNode as unknown as any).body as unknown as IASTNode,
+      parentElement,
+      elements,
+      (astNode as unknown as IASTTextNode).value ?? ''
+    );
+  } else {
+    let element: IElementNode | undefined = undefined;
+    element = createElement(
+      astNode?.tagName ?? 'div',
+      {
+        class: '',
+      },
+      parentElement,
+      text
+    );
+    if (element) {
+      element.domElement.id = element.id;
+      elements.push(element);
+    }
   }
 };
