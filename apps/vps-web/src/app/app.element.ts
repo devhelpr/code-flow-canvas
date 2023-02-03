@@ -234,7 +234,7 @@ export class AppElement extends HTMLElement {
               <h2>TITLE</h2>
               <p>subtitle</p>
               <div class="bg-red-300">
-                <i style="color:blue;">lorem ipsummm</i>
+                <i style="color:blue;">lorem ipsummm<br></br></i>
                 {20 + 30}
               </div>
             </div>

@@ -4,7 +4,11 @@ Visual programming system build with web components using DOM as a canvas mixing
 
 ## TODO's
 
-- be able to select a node and show the name within the toolbar using signals
+- PoC : render tree with conditions using signals deeper in the tree
+- PoC : have classnames react to signals
+
+- Markup-compiler : properties with expressions
+
 
 - use custom properties from within components
     - like : x, y, width, height, id, taskType , shapeType
