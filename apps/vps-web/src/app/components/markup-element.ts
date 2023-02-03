@@ -1,13 +1,8 @@
 import {
   compileMarkup,
-  IASTNode,
-  IASTTextNode,
+  IASTTreeNode,
   IASTTree,
 } from '@devhelpr/markup-compiler';
-import {
-  InteractionEvent,
-  interactionEventState,
-} from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -35,7 +30,7 @@ export const createMarkupElement = (
   let element: IElementNode | undefined = undefined;
 
   element = createElement(
-    compiledMarkup.tagName,
+    compiledMarkup.body.tagName || 'div',
     {
       class:
         'absolute p-10 select-none cursor-pointer text-center transition-transform ease-in-out duration-[75ms]',
@@ -56,7 +51,10 @@ export const createMarkupElement = (
       */
       pointerdown: (e: PointerEvent) => {
         if (element) {
-          const elementRect = element.domElement.getBoundingClientRect();
+          const domElement = element.domElement as unknown as
+            | HTMLElement
+            | SVGElement;
+          const elementRect = domElement.getBoundingClientRect();
           interactionInfo = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
@@ -66,7 +64,9 @@ export const createMarkupElement = (
         }
       },
       pointermove: (e: PointerEvent) => {
-        const canvasRect = canvasElement.getBoundingClientRect();
+        const canvasRect = (
+          canvasElement as unknown as HTMLElement | SVGElement
+        ).getBoundingClientRect();
         if (element) {
           if (element && element.domElement) {
             pointerMove(
@@ -82,7 +82,9 @@ export const createMarkupElement = (
       pointerup: (e: PointerEvent) => {
         if (element) {
           if (element && element.domElement) {
-            const canvasRect = canvasElement.getBoundingClientRect();
+            const canvasRect = (
+              canvasElement as unknown as HTMLElement | SVGElement
+            ).getBoundingClientRect();
             pointerUp(
               e.clientX - canvasRect.x,
               e.clientY - canvasRect.y,
@@ -104,77 +106,90 @@ export const createMarkupElement = (
     console.log(
       'compiledMarkup',
       compiledMarkup,
-      Array.isArray(compiledMarkup.body)
+      Array.isArray(compiledMarkup)
     );
-    if (compiledMarkup.body && element && element.domElement) {
-      if (Array.isArray(compiledMarkup.body)) {
-        (compiledMarkup.body as unknown as IASTNode[]).forEach((astNode) => {
+    if (compiledMarkup && element && element.domElement) {
+      /*if (Array.isArray(compiledMarkup)) {
+        (compiledMarkup as unknown as IASTNode[]).forEach((astNode) => {
           console.log(astNode);
           if (element && element.domElement && element.elements) {
             createASTNodeElement(
               astNode,
               element.domElement,
               element.elements,
-              (astNode as unknown as IASTTextNode).value ?? ''
+              (astNode as unknown as IASTTextNode).value ?? '',
+              astNode.properties ?? []
             );
           }
         });
-      } else {
+      } else */ {
         console.log(compiledMarkup.body);
         createASTNodeElement(
           compiledMarkup.body,
           element.domElement,
           element.elements,
-          (compiledMarkup.body as unknown as IASTTextNode).value ?? ''
+          compiledMarkup.body.value ?? '',
+          compiledMarkup.body.properties ?? []
         );
       }
     }
-    element.domElement.id = element.id;
+    const domElement = element.domElement as unknown as
+      | HTMLElement
+      | SVGElement;
+    domElement.id = element.id;
     elements.set(element.id, element);
   }
 };
 
 export const createASTNodeElement = (
-  astNode: IASTNode,
+  astNode: IASTTreeNode,
   parentElement: DOMElementNode,
   elements: IElementNode[],
-  text = ''
+  text = '',
+  properties: any[] = []
 ) => {
-  if (Array.isArray((astNode as unknown as IASTTree).body)) {
-    ((astNode as unknown as IASTTree).body as unknown as IASTNode[]).forEach(
-      (astNode) => {
-        console.log(astNode);
-        createASTNodeElement(
-          astNode,
-          parentElement,
-          elements,
-          (astNode as unknown as IASTTextNode).value ?? ''
-        );
-      }
-    );
-  } else if (
-    (astNode as unknown as IASTTree).body &&
-    ((astNode as unknown as IASTTree).body as any).tagName
-  ) {
-    createASTNodeElement(
-      (astNode as unknown as any).body as unknown as IASTNode,
-      parentElement,
-      elements,
-      (astNode as unknown as IASTTextNode).value ?? ''
-    );
-  } else {
-    let element: IElementNode | undefined = undefined;
-    element = createElement(
-      astNode?.tagName ?? 'div',
-      {
-        class: '',
-      },
-      parentElement,
-      text
-    );
-    if (element) {
-      element.domElement.id = element.id;
-      elements.push(element);
-    }
+  let element: IElementNode | undefined = undefined;
+  console.log('astNode', astNode, astNode.tagName, text);
+  const elementProperties: any = {};
+  properties.forEach((propertyKeyValue) => {
+    elementProperties[propertyKeyValue.propertyName] = propertyKeyValue.value;
+  });
+  console.log(elementProperties);
+
+  element = createElement(
+    astNode.tagName ?? 'div',
+    elementProperties,
+    parentElement,
+    text
+  );
+
+  if (element) {
+    (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
+    elements.push(element);
+
+    //if (Array.isArray(astNode.body)) {
+    astNode.body?.forEach((childASTNode) => {
+      console.log('astNode child', childASTNode);
+      createASTNodeElement(
+        childASTNode,
+        element!.domElement,
+        element!.elements,
+        childASTNode.value ?? '',
+        childASTNode.properties ?? []
+      );
+    });
+    /*} else if (
+      (astNode as unknown as IASTTree).body &&
+      ((astNode as unknown as IASTTree).body as any).tagName
+    ) {
+      console.log('astnode body', astNode as unknown as IASTTree);
+      createASTNodeElement(
+        (astNode as unknown as any).body as unknown as IASTNode,
+        element!.domElement,
+        element!.elements,
+        (astNode as unknown as IASTTextNode).value ?? '',
+        (astNode as unknown as IASTTextNode).properties ?? []
+      );
+    }*/
   }
 };

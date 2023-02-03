@@ -30,7 +30,9 @@ export const createSVGElement = (
       height: 100,
       pointerdown: (e: PointerEvent) => {
         if (element) {
-          const elementRect = element.domElement.getBoundingClientRect();
+          const elementRect = (
+            element.domElement as unknown as HTMLElement | SVGElement
+          ).getBoundingClientRect();
           interactionInfo = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
@@ -41,7 +43,9 @@ export const createSVGElement = (
         }
       },
       pointermove: (e: PointerEvent) => {
-        const canvasRect = canvasElement.getBoundingClientRect();
+        const canvasRect = (
+          canvasElement as unknown as HTMLElement | SVGElement
+        ).getBoundingClientRect();
         if (element) {
           if (element && element.domElement) {
             pointerMove(
@@ -58,7 +62,9 @@ export const createSVGElement = (
       pointerup: (e: PointerEvent) => {
         if (element) {
           if (element && element.domElement) {
-            const canvasRect = canvasElement.getBoundingClientRect();
+            const canvasRect = (
+              canvasElement as unknown as HTMLElement | SVGElement
+            ).getBoundingClientRect();
             pointerUp(
               e.clientX - canvasRect.x,
               e.clientY - canvasRect.y,
@@ -73,7 +79,7 @@ export const createSVGElement = (
     },
     canvasElement
   );
-  element.domElement.id = element.id;
+  (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
   if (element) {
     let circleElement: IElementNode | undefined = undefined;
     circleElement = createNSElement(

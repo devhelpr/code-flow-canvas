@@ -34,7 +34,9 @@ export const pointerDown = (
   ) {
     xOffsetWithinElementOnFirstClick = x;
     yOffsetWithinElementOnFirstClick = y;
-    canvasElement.append(element.domElement);
+    (canvasElement as unknown as HTMLElement | SVGElement).append(
+      element.domElement
+    );
   }
   return {
     xOffsetWithinElementOnFirstClick,
@@ -65,7 +67,9 @@ export const pointerMove = (
     )
   ) {
     if (element && element.domElement) {
-      element.domElement.style.transform = `translate(${
+      (
+        element.domElement as unknown as HTMLElement | SVGElement
+      ).style.transform = `translate(${
         x - interactionInfo.xOffsetWithinElementOnFirstClick
       }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
     }
@@ -95,7 +99,9 @@ export const pointerUp = (
     )
   ) {
     if (element && element.domElement) {
-      element.domElement.style.transform = `translate(${
+      (
+        element.domElement as unknown as HTMLElement | SVGElement
+      ).style.transform = `translate(${
         x - interactionInfo.xOffsetWithinElementOnFirstClick
       }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
     }

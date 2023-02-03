@@ -4,5 +4,5 @@ export interface IElementNode {
   elements: IElementNode[];
 }
 
-export type DOMElementNode = HTMLElement | SVGElement;
+export type DOMElementNode = HTMLElement | SVGElement | Text;
 export type ElementNodeMap = Map<string, IElementNode>;

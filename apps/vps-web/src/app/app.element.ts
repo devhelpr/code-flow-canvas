@@ -115,7 +115,9 @@ export class AppElement extends HTMLElement {
                 currentState.element
               )
             ) {
-              const canvasRect = canvas.domElement.getBoundingClientRect();
+              const canvasRect = (
+                canvas.domElement as unknown as HTMLElement | SVGElement
+              ).getBoundingClientRect();
               currentState.target.pointerMove(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,
@@ -140,7 +142,9 @@ export class AppElement extends HTMLElement {
                 currentState.element
               )
             ) {
-              const canvasRect = canvas.domElement.getBoundingClientRect();
+              const canvasRect = (
+                canvas.domElement as unknown as HTMLElement | SVGElement
+              ).getBoundingClientRect();
               currentState.target.pointerUp(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,
@@ -166,7 +170,9 @@ export class AppElement extends HTMLElement {
                 currentState.element
               )
             ) {
-              const canvasRect = canvas.domElement.getBoundingClientRect();
+              const canvasRect = (
+                canvas.domElement as unknown as HTMLElement | SVGElement
+              ).getBoundingClientRect();
               currentState.target.pointerUp(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,
@@ -182,7 +188,21 @@ export class AppElement extends HTMLElement {
     );
 
     createMarkupElement(
-      '<div><div><div><div><h2>TITLE</h2><p>subtitle</p><div><i>lorem ipsum</i></div></div></div></div></div>',
+      `
+      <div class="bg-black" >
+        <div>
+          <div>
+            <div style="background: white;" class="p-2">
+              <h2>TITLE</h2>
+              <p>subtitle</p>
+              <div class="bg-red-300">
+                <i style="color:blue;">lorem ipsummm</i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      `,
       canvas.domElement,
       this.elements
     );
