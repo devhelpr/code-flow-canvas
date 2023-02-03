@@ -4,9 +4,7 @@ Visual programming system build with web components using DOM as a canvas mixing
 
 ## TODO's
 
-- support for properties on markup elements
-
-
+- be able to select a node and show the name within the toolbar using signals
 
 - use custom properties from within components
     - like : x, y, width, height, id, taskType , shapeType
@@ -25,7 +23,7 @@ Visual programming system build with web components using DOM as a canvas mixing
 - "signals"
 - update state of components with children
 
-- how can this be made declarative using the layout-compiler and expression-compiler?
+- (see poc below) how can this be made declarative using the layout-compiler and expression-compiler?
 
 - can this be transformed to a native app?
 
@@ -44,3 +42,16 @@ Visual programming system build with web components using DOM as a canvas mixing
 
 - after installing a new dependency and the typescript definitions are not found, run the following command in vs.code:
     >TypeScript: Restart TS Server
+
+## poc's
+
+- have a button "create node type" which :
+    - opens a modal with a raw textarea editor and title input
+    - you can input markup with expressions in it
+    - after pressing "save" a button is added to the toolbar .. create [title]
+    - when you click the button ... the node with that markup is created on the canvas with a random position
+    - next: each variable that is called within an expression is added as a input connection to the node
+       (in a first attempt these could be edited via a settings modal that you can open after selecting the node)
+    - show the output of the expression in the node
+    - next: control the output of node
+    - next: define signals within expressions and output these from the node?

@@ -5,14 +5,21 @@ import { createNodeElement } from './components/node-element';
 import { createSVGElement } from './components/svg-element';
 import { ElementNodeMap } from './interfaces/element';
 import { createMarkupElement } from './components/markup-element';
-import { createEffect, createSignal, getCount, setCount } from './reactivity';
+import {
+  createEffect,
+  createSignal,
+  getCount,
+  getSelectedNode,
+  setCount,
+  setSelectNode,
+} from './reactivity';
 import {
   getCurrentInteractionState,
   InteractionEvent,
   interactionEventState,
   InteractionState,
 } from './interaction-state-machine';
-import { count } from 'console';
+//import { count } from 'console';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -45,10 +52,10 @@ export class AppElement extends HTMLElement {
     if (!rootElement) {
       return;
     }
-    const newElement = createElement(
+    const menubarElement = createElement(
       'div',
       {
-        class: 'relative z-20',
+        class: 'relative z-20 flex flex-row items-center justify-start',
       },
       rootElement
     );
@@ -61,7 +68,7 @@ export class AppElement extends HTMLElement {
           createNodeElement('div', canvas.domElement, this.elements);
         },
       },
-      newElement.domElement,
+      menubarElement.domElement,
       'Add element'
     );
 
@@ -74,7 +81,7 @@ export class AppElement extends HTMLElement {
           createSVGElement(canvas.domElement, this.elements);
         },
       },
-      newElement.domElement,
+      menubarElement.domElement,
       'Add svg element'
     );
 
@@ -91,17 +98,33 @@ export class AppElement extends HTMLElement {
           );
         },
       },
-      newElement.domElement,
+      menubarElement.domElement,
       'Add markup element'
     );
+
+    const selectedNode = createElement(
+      'div',
+      {
+        id: 'selectedNode',
+      },
+      menubarElement.domElement
+    );
+
+    let isClicking = false;
+    let isMoving = false;
 
     const canvas = createElement(
       'div',
       {
         id: 'canvas',
         class: 'w-100 bg-slate-800 flex-auto relative z-10 overflow-hidden',
+        pointerdown: (event: PointerEvent) => {
+          isClicking = true;
+          isMoving = false;
+        },
         pointermove: (event: PointerEvent) => {
           //const canvasRect = canvas.domElement.getBoundingClientRect();
+          isMoving = true;
           const currentState = getCurrentInteractionState();
           if (
             currentState.state === InteractionState.Moving &&
@@ -153,10 +176,21 @@ export class AppElement extends HTMLElement {
                 currentState.target.interactionInfo
               );
             }
+          } else {
+            if (!isMoving && isClicking) {
+              console.log('click canvas');
+              setSelectNode('');
+            }
           }
+          isMoving = false;
+          isClicking = false;
         },
         pointerleave: (event: PointerEvent) => {
           console.log('pointerleave canvas', event);
+
+          isMoving = false;
+          isClicking = false;
+
           const currentState = getCurrentInteractionState();
           if (
             currentState.state === InteractionState.Moving &&
@@ -187,6 +221,10 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
+    createEffect(() => {
+      selectedNode.domElement.textContent = getSelectedNode();
+    });
+
     createMarkupElement(
       `
       <div class="bg-black" >
@@ -197,6 +235,7 @@ export class AppElement extends HTMLElement {
               <p>subtitle</p>
               <div class="bg-red-300">
                 <i style="color:blue;">lorem ipsummm</i>
+                {20 + 30}
               </div>
             </div>
           </div>
@@ -218,6 +257,7 @@ setCount(2);
 setValue('test2');
 setCount(3);
 */
-setInterval(() => {
+/*setInterval(() => {
   setCount(getCount() + 1);
 }, 1000);
+*/

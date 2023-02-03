@@ -4,7 +4,7 @@ import {
   IElementNode,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
-import { createEffect, getCount } from '../reactivity';
+import { createEffect, getCount, setCount, setSelectNode } from '../reactivity';
 import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
@@ -18,7 +18,8 @@ export const createNodeElement = (
     yOffsetWithinElementOnFirstClick: 0,
   };
   let element: IElementNode | undefined = undefined;
-
+  let isClicking = false;
+  let isMoving = false;
   element = createElement(
     tagName,
     {
@@ -33,17 +34,19 @@ export const createNodeElement = (
           Math.random() * 1024
         )}px, ${Math.floor(Math.random() * 500)}px)`,
       },
-      /*click: () => {
-        console.log(element);
-        if (element) {
+      click: () => {
+        console.log('click', element);
+        /*if (element) {
           element.domElement.style.backgroundColor =
             '#' + Math.floor(Math.random() * 16777215).toString(16);
           element.domElement.textContent = `Hello world ${Math.floor(
             Math.random() * 100
           )}`;
-        }
-      },*/
+        }*/
+      },
       pointerdown: (e: PointerEvent) => {
+        isClicking = true;
+        isMoving = false;
         if (element) {
           const elementRect = (
             element.domElement as unknown as HTMLElement | SVGElement
@@ -54,7 +57,6 @@ export const createNodeElement = (
             element,
             canvasElement
           );
-          return;
         }
       },
       pointermove: (e: PointerEvent) => {
@@ -62,6 +64,7 @@ export const createNodeElement = (
           canvasElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
         if (element) {
+          isMoving = true;
           if (element && element.domElement) {
             pointerMove(
               e.clientX - canvasRect.x,
@@ -71,7 +74,6 @@ export const createNodeElement = (
               interactionInfo
             );
           }
-          return;
         }
       },
       pointerup: (e: PointerEvent) => {
@@ -87,9 +89,24 @@ export const createNodeElement = (
               canvasElement,
               interactionInfo
             );
+
+            if (isClicking && !isMoving) {
+              console.log('CLICK', element);
+              setCount(getCount() + 1);
+              setSelectNode(element.id);
+            }
           }
-          return;
         }
+        e.preventDefault();
+        e.stopPropagation();
+
+        isMoving = false;
+        isClicking = false;
+
+        return false;
+      },
+      pointerleave: (e: PointerEvent) => {
+        isClicking = false;
       },
     },
     canvasElement

@@ -1,8 +1,8 @@
+import { compileMarkup, IASTTreeNode } from '@devhelpr/markup-compiler';
 import {
-  compileMarkup,
-  IASTTreeNode,
-  IASTTree,
-} from '@devhelpr/markup-compiler';
+  compileExpression,
+  runExpression,
+} from '@devhelpr/expression-compiler';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -103,35 +103,13 @@ export const createMarkupElement = (
     ''
   );
   if (element && element.domElement) {
-    console.log(
-      'compiledMarkup',
-      compiledMarkup,
-      Array.isArray(compiledMarkup)
-    );
+    console.log('compiledMarkup', compiledMarkup);
     if (compiledMarkup && element && element.domElement) {
-      /*if (Array.isArray(compiledMarkup)) {
-        (compiledMarkup as unknown as IASTNode[]).forEach((astNode) => {
-          console.log(astNode);
-          if (element && element.domElement && element.elements) {
-            createASTNodeElement(
-              astNode,
-              element.domElement,
-              element.elements,
-              (astNode as unknown as IASTTextNode).value ?? '',
-              astNode.properties ?? []
-            );
-          }
-        });
-      } else */ {
-        console.log(compiledMarkup.body);
-        createASTNodeElement(
-          compiledMarkup.body,
-          element.domElement,
-          element.elements,
-          compiledMarkup.body.value ?? '',
-          compiledMarkup.body.properties ?? []
-        );
-      }
+      createASTNodeElement(
+        compiledMarkup.body,
+        element.domElement,
+        element.elements
+      );
     }
     const domElement = element.domElement as unknown as
       | HTMLElement
@@ -144,18 +122,18 @@ export const createMarkupElement = (
 export const createASTNodeElement = (
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
-  elements: IElementNode[],
-  text = '',
-  properties: any[] = []
+  elements: IElementNode[]
 ) => {
   let element: IElementNode | undefined = undefined;
-  console.log('astNode', astNode, astNode.tagName, text);
   const elementProperties: any = {};
-  properties.forEach((propertyKeyValue) => {
+  astNode.properties?.forEach((propertyKeyValue) => {
     elementProperties[propertyKeyValue.propertyName] = propertyKeyValue.value;
   });
-  console.log(elementProperties);
-
+  let text = astNode.value ?? '';
+  if (astNode.type === 'EXPRESSION') {
+    const compiledExpression = compileExpression(astNode.value || '');
+    text = runExpression(compiledExpression, {});
+  }
   element = createElement(
     astNode.tagName ?? 'div',
     elementProperties,
@@ -167,29 +145,12 @@ export const createASTNodeElement = (
     (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
     elements.push(element);
 
-    //if (Array.isArray(astNode.body)) {
     astNode.body?.forEach((childASTNode) => {
-      console.log('astNode child', childASTNode);
       createASTNodeElement(
         childASTNode,
         element!.domElement,
-        element!.elements,
-        childASTNode.value ?? '',
-        childASTNode.properties ?? []
+        element!.elements
       );
     });
-    /*} else if (
-      (astNode as unknown as IASTTree).body &&
-      ((astNode as unknown as IASTTree).body as any).tagName
-    ) {
-      console.log('astnode body', astNode as unknown as IASTTree);
-      createASTNodeElement(
-        (astNode as unknown as any).body as unknown as IASTNode,
-        element!.domElement,
-        element!.elements,
-        (astNode as unknown as IASTTextNode).value ?? '',
-        (astNode as unknown as IASTTextNode).properties ?? []
-      );
-    }*/
   }
 };
