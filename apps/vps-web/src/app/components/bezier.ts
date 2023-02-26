@@ -3,6 +3,7 @@ import {
   INodeComponent,
   NodeComponentRelationType,
 } from '../interfaces/element';
+import { createEffect, getVisbility } from '../reactivity';
 import { createConnectionSVGElement } from './connection-svg-element';
 import { createSVGElement } from './svg-element';
 
@@ -152,5 +153,21 @@ export const createCubicBezier = (
         component.update(component, x, y, actionComponent);
       }
     },
+  });
+
+  createEffect(() => {
+    const visibility = getVisbility();
+    (svg0.domElement as unknown as SVGElement).style.display = visibility
+      ? 'block'
+      : 'none';
+    (svg1.domElement as unknown as SVGElement).style.display = visibility
+      ? 'block'
+      : 'none';
+    (svg2.domElement as unknown as SVGElement).style.display = visibility
+      ? 'block'
+      : 'none';
+    (svg3.domElement as unknown as SVGElement).style.display = visibility
+      ? 'block'
+      : 'none';
   });
 };

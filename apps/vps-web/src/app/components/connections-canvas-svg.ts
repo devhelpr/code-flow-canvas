@@ -1,15 +1,5 @@
-import {
-  DOMElementNode,
-  ElementNodeMap,
-  IElementNode,
-  INodeComponent,
-} from '../interfaces/element';
-import { IPointerDownResult } from '../interfaces/pointers';
-import { createNSElement } from '../utils/create-element';
-import {
-  createNodeComponent,
-  createSVGNodeComponent,
-} from '../utils/create-node-component';
+import { DOMElementNode, INodeComponent } from '../interfaces/element';
+import { createSVGNodeComponent } from '../utils/create-node-component';
 
 export const createConnectionsSVGCanvasElement = (
   canvasElement: DOMElementNode

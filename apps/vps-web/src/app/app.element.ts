@@ -11,7 +11,13 @@ import {
   NodeComponentRelationType,
 } from './interfaces/element';
 import { createMarkupElement } from './components/markup-element';
-import { createEffect, getSelectedNode, setSelectNode } from './reactivity';
+import {
+  createEffect,
+  getSelectedNode,
+  getVisbility,
+  setSelectNode,
+  setVisibility,
+} from './reactivity';
 import {
   getCurrentInteractionState,
   InteractionEvent,
@@ -128,6 +134,18 @@ export class AppElement extends HTMLElement {
       },
       menubarElement.domElement,
       'Add markup element'
+    );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: () => {
+          setVisibility(!getVisbility());
+        },
+      },
+      menubarElement.domElement,
+      'switch visibility'
     );
 
     const selectedNode = createElement(
