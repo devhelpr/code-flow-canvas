@@ -1,11 +1,12 @@
 import {
   DOMElementNode,
   ElementNodeMap,
-  IElementNode,
+  INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { createEffect, getCount, setCount, setSelectNode } from '../reactivity';
 import { createElement } from '../utils/create-element';
+import { createNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createNodeElement = (
@@ -17,10 +18,11 @@ export const createNodeElement = (
     xOffsetWithinElementOnFirstClick: 0,
     yOffsetWithinElementOnFirstClick: 0,
   };
-  let element: IElementNode | undefined = undefined;
   let isClicking = false;
   let isMoving = false;
-  element = createElement(
+  const x = Math.floor(Math.random() * 1024);
+  const y = Math.floor(Math.random() * 500);
+  const nodeComponent: INodeComponent | undefined = createNodeComponent(
     tagName,
     {
       class: `
@@ -30,12 +32,10 @@ export const createNodeElement = (
         ease-in-out duration-[75ms]
         `,
       style: {
-        transform: `translate(${Math.floor(
-          Math.random() * 1024
-        )}px, ${Math.floor(Math.random() * 500)}px)`,
+        transform: `translate(${x}px, ${y}px)`,
       },
       click: () => {
-        console.log('click', element);
+        console.log('click', nodeComponent);
         /*if (element) {
           element.domElement.style.backgroundColor =
             '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -47,14 +47,14 @@ export const createNodeElement = (
       pointerdown: (e: PointerEvent) => {
         isClicking = true;
         isMoving = false;
-        if (element) {
+        if (nodeComponent) {
           const elementRect = (
-            element.domElement as unknown as HTMLElement | SVGElement
+            nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
           interactionInfo = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
-            element,
+            nodeComponent,
             canvasElement
           );
         }
@@ -63,13 +63,13 @@ export const createNodeElement = (
         const canvasRect = (
           canvasElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
-        if (element) {
+        if (nodeComponent) {
           isMoving = true;
-          if (element && element.domElement) {
+          if (nodeComponent && nodeComponent.domElement) {
             pointerMove(
               e.clientX - canvasRect.x,
               e.clientY - canvasRect.y,
-              element,
+              nodeComponent,
               canvasElement,
               interactionInfo
             );
@@ -77,23 +77,23 @@ export const createNodeElement = (
         }
       },
       pointerup: (e: PointerEvent) => {
-        if (element) {
-          if (element && element.domElement) {
+        if (nodeComponent) {
+          if (nodeComponent && nodeComponent.domElement) {
             const canvasRect = (
               canvasElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
             pointerUp(
               e.clientX - canvasRect.x,
               e.clientY - canvasRect.y,
-              element,
+              nodeComponent,
               canvasElement,
               interactionInfo
             );
 
             if (isClicking && !isMoving) {
-              console.log('CLICK', element);
+              console.log('CLICK', nodeComponent);
               setCount(getCount() + 1);
-              setSelectNode(element.id);
+              setSelectNode(nodeComponent);
             }
           }
         }
@@ -111,31 +111,33 @@ export const createNodeElement = (
     },
     canvasElement
   );
-  if (element) {
-    (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
-    elements.set(element.id, element);
+  (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
+    nodeComponent.id;
+  elements.set(nodeComponent.id, nodeComponent);
 
-    const childElement = createElement(
-      'div',
-      {
-        class: 'translate-x-[-50%]  p-10',
-        style: {
-          'background-color':
-            '#' + Math.floor(Math.random() * 16777215).toString(16),
-        },
+  const childElement = createElement(
+    'div',
+    {
+      class: 'translate-x-[-50%]  p-10',
+      style: {
+        'background-color':
+          '#' + Math.floor(Math.random() * 16777215).toString(16),
       },
-      element.domElement,
-      'Hello world'
-    );
+    },
+    nodeComponent.domElement,
+    'Hello world'
+  );
 
-    createEffect(() => {
-      const counter = getCount();
-      // if (element) {
-      //   element.domElement.textContent = `Hello world ${counter}`;
-      // }
-      if (childElement) {
-        childElement.domElement.textContent = `Hello world ${counter}`;
-      }
-    });
-  }
+  createEffect(() => {
+    const counter = getCount();
+    // if (element) {
+    //   element.domElement.textContent = `Hello world ${counter}`;
+    // }
+    if (childElement) {
+      childElement.domElement.textContent = `Hello world ${counter}`;
+    }
+  });
+  nodeComponent.x = x;
+  nodeComponent.y = y;
+  return nodeComponent;
 };

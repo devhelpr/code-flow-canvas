@@ -1,24 +1,27 @@
 import './app.element.css';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import styles from '../styles.css?inline';
 import { createElement } from './utils/create-element';
 import { createNodeElement } from './components/node-element';
 import { createSVGElement } from './components/svg-element';
-import { ElementNodeMap } from './interfaces/element';
-import { createMarkupElement } from './components/markup-element';
 import {
-  createEffect,
-  createSignal,
-  getCount,
-  getSelectedNode,
-  setCount,
-  setSelectNode,
-} from './reactivity';
+  ElementNodeMap,
+  INodeComponent,
+  NodeComponentRelationType,
+} from './interfaces/element';
+import { createMarkupElement } from './components/markup-element';
+import { createEffect, getSelectedNode, setSelectNode } from './reactivity';
 import {
   getCurrentInteractionState,
   InteractionEvent,
   interactionEventState,
   InteractionState,
 } from './interaction-state-machine';
+import { setupMarkupElement } from './utils/create-markup';
+import { createConnectionSVGElement } from './components/connection-svg-element';
+import { createConnectionsSVGCanvasElement } from './components/connections-canvas-svg';
+import { createCubicBezier } from './components/bezier';
 //import { count } from 'console';
 
 const template = document.createElement('template');
@@ -27,6 +30,10 @@ template.innerHTML = `
   <div class="h-screen w-100 bg-slate-100 flex flex-col" id="root" >
   </div>
 `;
+
+const button =
+  'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none';
+const menubar = 'relative z-20 flex flex-row items-center justify-start';
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -55,15 +62,14 @@ export class AppElement extends HTMLElement {
     const menubarElement = createElement(
       'div',
       {
-        class: 'relative z-20 flex flex-row items-center justify-start',
+        class: menubar,
       },
       rootElement
     );
     createElement(
       'button',
       {
-        class:
-          'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none',
+        class: button,
         click: () => {
           createNodeElement('div', canvas.domElement, this.elements);
         },
@@ -75,21 +81,43 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class:
-          'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none',
+        class: button,
         click: () => {
-          createSVGElement(canvas.domElement, this.elements);
+          createCubicBezier(
+            connectionsSVGCanvas,
+            canvas as unknown as INodeComponent,
+            this.elements,
+            100,
+            100,
+            250,
+            250,
+            150,
+            150,
+            175,
+            175
+          );
         },
       },
       menubarElement.domElement,
-      'Add svg element'
+      'Add bezier curve'
     );
+
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: () => {
+    //       createConnectionSVGElement(canvas.domElement, this.elements);
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add connection element'
+    // );
 
     createElement(
       'button',
       {
-        class:
-          'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none',
+        class: button,
         click: () => {
           createMarkupElement(
             '<div><h2>TITLE</h2><p>subtitle</p></div>',
@@ -179,7 +207,7 @@ export class AppElement extends HTMLElement {
           } else {
             if (!isMoving && isClicking) {
               console.log('click canvas');
-              setSelectNode('');
+              setSelectNode(undefined);
             }
           }
           isMoving = false;
@@ -221,8 +249,16 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
+    const connectionsSVGCanvas = createConnectionsSVGCanvasElement(
+      canvas.domElement
+    );
+
     createEffect(() => {
-      selectedNode.domElement.textContent = getSelectedNode();
+      const nodeElement = getSelectedNode();
+      console.log('nodeElement', nodeElement);
+      if (nodeElement) {
+        selectedNode.domElement.textContent = `${nodeElement.id} => ${nodeElement.x}, ${nodeElement.y}`;
+      }
     });
 
     createMarkupElement(
@@ -244,6 +280,16 @@ export class AppElement extends HTMLElement {
       `,
       canvas.domElement,
       this.elements
+    );
+
+    setupMarkupElement(
+      `
+      function Test() {
+        return <div class="bg-black"><div class="p-4">test{2*3}</div></div>;
+      }  
+      return Test();  
+    `,
+      rootElement
     );
   }
 }

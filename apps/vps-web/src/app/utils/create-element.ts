@@ -1,6 +1,6 @@
 import { DOMElementNode, IElementNode } from '../interfaces/element';
 
-type EventHandler = (event: Event) => void | boolean;
+export type EventHandler = (event: Event) => void | boolean;
 
 export const createElement = (
   elementName: string,

@@ -7,10 +7,12 @@ import {
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
+  INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+import { createNodeComponent } from '../utils/create-node-component';
 
 export const createMarkupElement = (
   markup: string,
@@ -27,9 +29,7 @@ export const createMarkupElement = (
     yOffsetWithinElementOnFirstClick: 0,
   };
 
-  let element: IElementNode | undefined = undefined;
-
-  element = createElement(
+  const nodeComponent: INodeComponent = createNodeComponent(
     compiledMarkup.body.tagName || 'div',
     {
       class:
@@ -41,24 +41,16 @@ export const createMarkupElement = (
           Math.random() * 1024
         )}px, ${Math.floor(Math.random() * 500)}px)`,
       },
-      /*click: () => {
-        console.log(element);
-        if (element) {
-          element.domElement.style.backgroundColor =
-            '#' + Math.floor(Math.random() * 16777215).toString(16);
-        }
-      },
-      */
       pointerdown: (e: PointerEvent) => {
-        if (element) {
-          const domElement = element.domElement as unknown as
+        if (nodeComponent) {
+          const domElement = nodeComponent.domElement as unknown as
             | HTMLElement
             | SVGElement;
           const elementRect = domElement.getBoundingClientRect();
           interactionInfo = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
-            element,
+            nodeComponent,
             canvasElement
           );
         }
@@ -67,28 +59,32 @@ export const createMarkupElement = (
         const canvasRect = (
           canvasElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
-        if (element) {
-          if (element && element.domElement) {
-            pointerMove(
-              e.clientX - canvasRect.x,
-              e.clientY - canvasRect.y,
-              element,
-              canvasElement,
-              interactionInfo
-            );
+        if (nodeComponent) {
+          if (nodeComponent && nodeComponent.domElement) {
+            if (
+              pointerMove(
+                e.clientX - canvasRect.x,
+                e.clientY - canvasRect.y,
+                nodeComponent,
+                canvasElement,
+                interactionInfo
+              )
+            ) {
+              console.log('pointermove element', event);
+            }
           }
         }
       },
       pointerup: (e: PointerEvent) => {
-        if (element) {
-          if (element && element.domElement) {
+        if (nodeComponent) {
+          if (nodeComponent && nodeComponent.domElement) {
             const canvasRect = (
               canvasElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
             pointerUp(
               e.clientX - canvasRect.x,
               e.clientY - canvasRect.y,
-              element,
+              nodeComponent,
               canvasElement,
               interactionInfo
             );
@@ -102,21 +98,22 @@ export const createMarkupElement = (
     canvasElement,
     ''
   );
-  if (element && element.domElement) {
+  if (nodeComponent && nodeComponent.domElement) {
     console.log('compiledMarkup', compiledMarkup);
-    if (compiledMarkup && element && element.domElement) {
+    if (compiledMarkup && nodeComponent && nodeComponent.domElement) {
       createASTNodeElement(
         compiledMarkup.body,
-        element.domElement,
-        element.elements
+        nodeComponent.domElement,
+        nodeComponent.elements
       );
     }
-    const domElement = element.domElement as unknown as
+    const domElement = nodeComponent.domElement as unknown as
       | HTMLElement
       | SVGElement;
-    domElement.id = element.id;
-    elements.set(element.id, element);
+    domElement.id = nodeComponent.id;
+    elements.set(nodeComponent.id, nodeComponent);
   }
+  return nodeComponent;
 };
 
 export const createASTNodeElement = (

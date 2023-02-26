@@ -1,4 +1,4 @@
-import { DOMElementNode, IElementNode } from '../interfaces/element';
+import { DOMElementNode, INodeComponent } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 
 export enum InteractionState {
@@ -26,20 +26,20 @@ export interface InteractionTarget {
   pointerDown: (
     x: number,
     y: number,
-    element: IElementNode,
+    element: INodeComponent,
     canvasElement: DOMElementNode
   ) => IPointerDownResult;
   pointerMove: (
     x: number,
     y: number,
-    element: IElementNode,
+    element: INodeComponent,
     canvasElement: DOMElementNode,
     interactionInfo: IPointerDownResult
   ) => void;
   pointerUp: (
     x: number,
     y: number,
-    element: IElementNode,
+    element: INodeComponent,
     canvasElement: DOMElementNode,
     interactionInfo: IPointerDownResult
   ) => void;
@@ -54,7 +54,7 @@ export interface InterActionInfo {
 
 let interactionState = InteractionState.Idle;
 let interactionTarget: InteractionTarget | undefined = undefined;
-let currentElement: IElementNode | undefined = undefined;
+let currentElement: INodeComponent | undefined = undefined;
 
 export const getCurrentInteractionState = () => {
   return {
@@ -67,7 +67,7 @@ export const getCurrentInteractionState = () => {
 export const interactionEventState = (
   event: InteractionEvent,
   target: InteractionTarget,
-  element: IElementNode
+  element: INodeComponent
 ): false | InterActionInfo => {
   if (interactionState === InteractionState.Idle) {
     if (event === InteractionEvent.PointerDown) {

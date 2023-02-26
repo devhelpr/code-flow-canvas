@@ -10,8 +10,8 @@
     "core-js": "^3.6.5",
     "regenerator-runtime": "0.13.7",
     "tslib": "^2.3.0",
-    "@devhelpr/markup-compiler": "0.0.12",
-    "@devhelpr/expression-compiler": "0.0.20"
+    "@devhelpr/markup-compiler": "^0.0.15",
+    "@devhelpr/expression-compiler": "^0.0.23"
   },
   "devDependencies": {
     "@nrwl/cypress": "15.5.2",
