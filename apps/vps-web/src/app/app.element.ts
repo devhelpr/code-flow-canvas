@@ -2,11 +2,12 @@ import './app.element.css';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import styles from '../styles.css?inline';
-import { createElement } from './utils/create-element';
+import { createElement, createNSElement } from './utils/create-element';
 import { createNodeElement } from './components/node-element';
 import { createSVGElement } from './components/svg-element';
 import {
   ElementNodeMap,
+  IElementNode,
   INodeComponent,
   NodeComponentRelationType,
 } from './interfaces/element';
@@ -28,6 +29,12 @@ import { setupMarkupElement } from './utils/create-markup';
 import { createConnectionSVGElement } from './components/connection-svg-element';
 import { createConnectionsSVGCanvasElement } from './components/connections-canvas-svg';
 import { createCubicBezier } from './components/bezier';
+import {
+  compileExpression,
+  compileExpressionAsInfo,
+  registerCustomBlock,
+  registerCustomFunction,
+} from '@devhelpr/expression-compiler';
 //import { count } from 'console';
 
 const template = document.createElement('template');
@@ -65,6 +72,8 @@ export class AppElement extends HTMLElement {
     if (!rootElement) {
       return;
     }
+    let bezierCurve: any = undefined;
+
     const menubarElement = createElement(
       'div',
       {
@@ -89,9 +98,9 @@ export class AppElement extends HTMLElement {
       {
         class: button,
         click: () => {
-          createCubicBezier(
-            connectionsSVGCanvas,
+          bezierCurve = createCubicBezier(
             canvas as unknown as INodeComponent,
+            pathHiddenElement,
             this.elements,
             100,
             100,
@@ -107,18 +116,6 @@ export class AppElement extends HTMLElement {
       menubarElement.domElement,
       'Add bezier curve'
     );
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: () => {
-    //       createConnectionSVGElement(canvas.domElement, this.elements);
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add connection element'
-    // );
 
     createElement(
       'button',
@@ -199,6 +196,7 @@ export class AppElement extends HTMLElement {
         },
         pointerup: (event: PointerEvent) => {
           const currentState = getCurrentInteractionState();
+          console.log('pointerUp canvas', currentState?.target?.id);
           if (
             currentState.state === InteractionState.Moving &&
             currentState.element &&
@@ -208,9 +206,11 @@ export class AppElement extends HTMLElement {
               interactionEventState(
                 InteractionEvent.PointerUp,
                 currentState.target,
-                currentState.element
+                currentState.element,
+                true
               )
             ) {
+              console.log('pointerUp canvas after', currentState?.target?.id);
               const canvasRect = (
                 canvas.domElement as unknown as HTMLElement | SVGElement
               ).getBoundingClientRect();
@@ -267,8 +267,105 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
-    const connectionsSVGCanvas = createConnectionsSVGCanvasElement(
+    const hiddenSVG = createNSElement(
+      'svg',
+      {
+        width: 0,
+        height: 0,
+        style: {
+          visibility: 'hidden',
+          position: 'absolute',
+        },
+      },
       canvas.domElement
+    );
+
+    const pathHiddenElement = createNSElement(
+      'path',
+      {
+        class: 'cursor-pointer pointer-events-auto',
+      },
+      hiddenSVG.domElement
+    );
+
+    const textAreaContainer = createElement(
+      'div',
+      {
+        id: 'textAreaContainer',
+        class:
+          'fixed w-1/2 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400',
+      },
+      rootElement
+    );
+
+    let raf = -1;
+    let inputTimeout = -1;
+
+    const textArea = createElement(
+      'textarea',
+      {
+        id: 'textAreaCode',
+        class: 'w-full h-full p-2 outline-none',
+        input: (event: InputEvent) => {
+          const text =
+            (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
+
+          if (inputTimeout !== -1) {
+            clearTimeout(inputTimeout);
+            inputTimeout = -1;
+          }
+          inputTimeout = setTimeout(() => {
+            if (raf !== -1) {
+              window.cancelAnimationFrame(raf);
+              raf = -1;
+            }
+
+            console.log('oninput', text);
+            registerCustomBlock('frameUpdate');
+            const compiledExpressionInfo = compileExpressionAsInfo(text);
+            try {
+              const compiledExpression = (
+                new Function(
+                  'payload',
+                  `${compiledExpressionInfo.script}`
+                ) as unknown as (payload?: any) => any
+              ).bind(compiledExpressionInfo.bindings);
+              const result = compiledExpression();
+
+              // TODO : have this done by the compiler:
+              if (result && result.frameUpdate) {
+                result.frameUpdate = result.frameUpdate.bind(
+                  compiledExpressionInfo.bindings
+                );
+
+                /*
+                    test code:
+
+                    let a = 1;
+                    frameUpdate {
+                      setStartPoint(1,a);
+                      a=a+1;
+                    }
+
+                    TODO : implement deltaTime
+                    TODO : implement custom log function
+                */
+
+                const rafCallback = (deltaTime: number) => {
+                  result.frameUpdate(deltaTime);
+                  if (raf !== -1) {
+                    raf = window.requestAnimationFrame(rafCallback);
+                  }
+                };
+                raf = window.requestAnimationFrame(rafCallback);
+              }
+            } catch (error) {
+              console.error('error compiling', error);
+            }
+          }, 100) as unknown as number;
+        },
+      },
+      textAreaContainer.domElement
     );
 
     createEffect(() => {
@@ -309,6 +406,34 @@ export class AppElement extends HTMLElement {
     `,
       rootElement
     );
+
+    registerCustomFunction('setStartPoint', [], (x: number, y: number) => {
+      console.log('setStartPoint', x, y);
+      if (bezierCurve) {
+        bezierCurve.setStartPoint(x, y);
+      }
+    });
+    registerCustomFunction('setControlPoint1', [], (x: number, y: number) => {
+      console.log('setControlPoint1', x, y);
+      if (bezierCurve) {
+        bezierCurve.setControlPoint1(x, y);
+      }
+    });
+    registerCustomFunction('setControlPoint2', [], (x: number, y: number) => {
+      console.log('setControlPoint2', x, y);
+      if (bezierCurve) {
+        bezierCurve.setControlPoint2(x, y);
+      }
+    });
+    registerCustomFunction('setEndPoint', [], (x: number, y: number) => {
+      console.log('setEndPoint', x, y);
+      if (bezierCurve) {
+        bezierCurve.setEndPoint(x, y);
+      }
+    });
+    registerCustomFunction('log', [], (message: any) => {
+      console.log('log', message);
+    });
   }
 }
 customElements.define('vps-web-root', AppElement);

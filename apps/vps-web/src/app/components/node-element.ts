@@ -18,6 +18,13 @@ export const createNodeElement = (
     xOffsetWithinElementOnFirstClick: 0,
     yOffsetWithinElementOnFirstClick: 0,
   };
+
+  function setPosition(element: INodeComponent, x: number, y: number) {
+    (
+      element.domElement as unknown as HTMLElement | SVGElement
+    ).style.transform = `translate(${x}px, ${y}px)`;
+  }
+
   let isClicking = false;
   let isMoving = false;
   const x = Math.floor(Math.random() * 1024);
@@ -139,5 +146,14 @@ export const createNodeElement = (
   });
   nodeComponent.x = x;
   nodeComponent.y = y;
+
+  nodeComponent.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    _actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y);
+  };
   return nodeComponent;
 };

@@ -23,6 +23,11 @@ export const createMarkupElement = (
   if (!compiledMarkup) {
     throw new Error('Invalid markup');
   }
+  function setPosition(element: INodeComponent, x: number, y: number) {
+    (
+      element.domElement as unknown as HTMLElement | SVGElement
+    ).style.transform = `translate(${x}px, ${y}px)`;
+  }
 
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -100,6 +105,16 @@ export const createMarkupElement = (
   );
   if (nodeComponent && nodeComponent.domElement) {
     console.log('compiledMarkup', compiledMarkup);
+
+    nodeComponent.update = (
+      component: INodeComponent,
+      x: number,
+      y: number,
+      _actionComponent: INodeComponent
+    ) => {
+      setPosition(component, x, y);
+    };
+
     if (compiledMarkup && nodeComponent && nodeComponent.domElement) {
       createASTNodeElement(
         compiledMarkup.body,

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   ElementNodeMap,
+  IElementNode,
   INodeComponent,
   NodeComponentRelationType,
 } from '../interfaces/element';
@@ -8,8 +10,8 @@ import { createConnectionSVGElement } from './connection-svg-element';
 import { createSVGElement } from './svg-element';
 
 export const createCubicBezier = (
-  connectionsSVGCanvas: INodeComponent,
   canvas: INodeComponent,
+  pathHiddenElement: IElementNode,
   elements: ElementNodeMap,
   startX: number,
   startY: number,
@@ -21,7 +23,7 @@ export const createCubicBezier = (
   controlPoint2Y: number
 ) => {
   const connection = createConnectionSVGElement(
-    connectionsSVGCanvas.domElement,
+    canvas.domElement,
     elements,
     startX - 50,
     startY - 50,
@@ -30,10 +32,36 @@ export const createCubicBezier = (
     controlPoint1X - 50,
     controlPoint1Y - 50,
     controlPoint2X - 50,
-    controlPoint2Y - 50
+    controlPoint2Y - 50,
+    pathHiddenElement
   );
 
-  const svg0 = createSVGElement(
+  function setPosition(element: INodeComponent, x: number, y: number) {
+    (
+      element.domElement as unknown as HTMLElement | SVGElement
+    ).style.transform = `translate(${x}px, ${y}px)`;
+
+    element.components.forEach((componentRelation) => {
+      if (
+        componentRelation.type === NodeComponentRelationType.self ||
+        componentRelation.type === NodeComponentRelationType.controller ||
+        componentRelation.type === NodeComponentRelationType.controllerTarget
+      ) {
+        if (componentRelation.update) {
+          componentRelation.update(componentRelation.component, x, y, element);
+        }
+      } else if (
+        componentRelation.type === NodeComponentRelationType.childComponent
+      ) {
+        //
+      } else if (
+        componentRelation.type === NodeComponentRelationType.connection
+      ) {
+        //
+      }
+    });
+  }
+  const startPointElement = createSVGElement(
     canvas.domElement,
     elements,
     '#ff000080',
@@ -41,8 +69,16 @@ export const createCubicBezier = (
     startY,
     'begin'
   );
+  startPointElement.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    _actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y);
+  };
 
-  const svg1 = createSVGElement(
+  const endPointElement = createSVGElement(
     canvas.domElement,
     elements,
     '#ff000080',
@@ -50,7 +86,15 @@ export const createCubicBezier = (
     endY,
     'end'
   );
-  const svg2 = createSVGElement(
+  endPointElement.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    _actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y);
+  };
+  const controlPoint1Element = createSVGElement(
     canvas.domElement,
     elements,
     '#00ff00',
@@ -58,7 +102,15 @@ export const createCubicBezier = (
     controlPoint1Y,
     'c1'
   );
-  const svg3 = createSVGElement(
+  controlPoint1Element.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    _actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y);
+  };
+  const controlPoint2Element = createSVGElement(
     canvas.domElement,
     elements,
     '#0000ff',
@@ -66,8 +118,16 @@ export const createCubicBezier = (
     controlPoint2Y,
     'c2'
   );
+  controlPoint2Element.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    _actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y);
+  };
 
-  svg0.components.push({
+  startPointElement.components.push({
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
@@ -76,15 +136,13 @@ export const createCubicBezier = (
       y: number,
       actionComponent: INodeComponent
     ) => {
-      //
-      //console.log('update controllertarget', component, x, y);
       if (component.update) {
         component.update(component, x, y, actionComponent);
       }
     },
   });
 
-  svg1.components.push({
+  endPointElement.components.push({
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
@@ -93,26 +151,24 @@ export const createCubicBezier = (
       y: number,
       actionComponent: INodeComponent
     ) => {
-      //
-      //console.log('update controllertarget', component, x, y);
       if (component.update) {
         component.update(component, x, y, actionComponent);
       }
     },
   });
 
-  svg1.components.push({
+  endPointElement.components.push({
     component: connection,
     type: NodeComponentRelationType.connection,
-    connectionStart: svg1,
-    connectionEnd: svg2,
+    connectionStart: endPointElement,
+    connectionEnd: controlPoint1Element,
   });
-  svg2.components.push(
+  controlPoint1Element.components.push(
     {
       component: connection,
       type: NodeComponentRelationType.connection,
-      connectionStart: svg1,
-      connectionEnd: svg2,
+      connectionStart: endPointElement,
+      connectionEnd: controlPoint1Element,
     },
     {
       component: connection,
@@ -123,8 +179,6 @@ export const createCubicBezier = (
         y: number,
         actionComponent: INodeComponent
       ) => {
-        //
-        //console.log('update controllertarget', component, x, y);
         if (component.update) {
           component.update(component, x, y, actionComponent);
         }
@@ -133,14 +187,38 @@ export const createCubicBezier = (
   );
 
   connection.components.push({
-    component: svg3,
-    type: NodeComponentRelationType.controller,
+    component: connection,
+    type: NodeComponentRelationType.self,
     update: (component: INodeComponent, x: number, y: number) => {
-      //
-      console.log('update', component.id, x, y);
+      console.log('update connection', connection.update, component.id, x, y);
+      //   (
+      //     connection.domElement as unknown as HTMLElement | SVGElement
+      //   ).style.transform = `translate(${x}px, ${y}px)`;
+      // .. bovenstaand werkt niet goed omdat de positie verwerkt is in het path (d parameter)
+      //   const xdiff = endPointElement.x - startPointElement.x;
+      //   const ydiff = endPointElement.y - startPointElement.y;
+      //   (
+      //     startPointElement.domElement as unknown as HTMLElement | SVGElement
+      //   ).style.transform = `translate(${x - 50}px, ${y - 50}px)`;
+
+      //   (
+      //     endPointElement.domElement as unknown as HTMLElement | SVGElement
+      //   ).style.transform = `translate(${x - 50 + xdiff}px, ${y - 50 + ydiff}px)`;
+
+      // call connection.update
+    },
+    commitUpdate: (component: INodeComponent, x: number, y: number) => {
+      console.log('commitupdate connection', x, y);
+      //   const xdiff = endPointElement.x - startPointElement.x;
+      //   const ydiff = endPointElement.y - startPointElement.y;
+
+      //   startPointElement.x = x - 50;
+      //   startPointElement.y = y - 50;
+      //   endPointElement.x = x - 50 + xdiff;
+      //   endPointElement.y = y - 50 + ydiff;
     },
   });
-  svg3.components.push({
+  controlPoint2Element.components.push({
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
@@ -157,17 +235,46 @@ export const createCubicBezier = (
 
   createEffect(() => {
     const visibility = getVisbility();
-    (svg0.domElement as unknown as SVGElement).style.display = visibility
-      ? 'block'
-      : 'none';
-    (svg1.domElement as unknown as SVGElement).style.display = visibility
-      ? 'block'
-      : 'none';
-    (svg2.domElement as unknown as SVGElement).style.display = visibility
-      ? 'block'
-      : 'none';
-    (svg3.domElement as unknown as SVGElement).style.display = visibility
-      ? 'block'
-      : 'none';
+    (startPointElement.domElement as unknown as SVGElement).style.display =
+      visibility ? 'block' : 'none';
+    (endPointElement.domElement as unknown as SVGElement).style.display =
+      visibility ? 'block' : 'none';
+    (controlPoint1Element.domElement as unknown as SVGElement).style.display =
+      visibility ? 'block' : 'none';
+    (controlPoint2Element.domElement as unknown as SVGElement).style.display =
+      visibility ? 'block' : 'none';
   });
+
+  return {
+    setStartPoint: (x: number, y: number) => {
+      if (startPointElement.update) {
+        startPointElement.update(startPointElement, x, y, startPointElement);
+      }
+    },
+    setEndPoint: (x: number, y: number) => {
+      if (endPointElement.update) {
+        endPointElement.update(endPointElement, x, y, endPointElement);
+      }
+    },
+    setControlPoint1: (x: number, y: number) => {
+      if (controlPoint1Element.update) {
+        controlPoint1Element.update(
+          controlPoint1Element,
+          x,
+          y,
+          controlPoint1Element
+        );
+      }
+    },
+    setControlPoint2: (x: number, y: number) => {
+      if (controlPoint2Element.update) {
+        controlPoint2Element.update(
+          controlPoint1Element,
+          x,
+          y,
+          controlPoint2Element
+        );
+      }
+    },
+  };
 };

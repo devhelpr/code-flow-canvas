@@ -11,7 +11,7 @@
     "regenerator-runtime": "0.13.7",
     "tslib": "^2.3.0",
     "@devhelpr/markup-compiler": "^0.0.15",
-    "@devhelpr/expression-compiler": "^0.0.23"
+    "@devhelpr/expression-compiler": "^0.0.24"
   },
   "devDependencies": {
     "@nrwl/cypress": "15.5.2",

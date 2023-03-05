@@ -8,6 +8,7 @@ export type DOMElementNode = HTMLElement | SVGElement | Text;
 export type ElementNodeMap = Map<string, IElementNode>;
 
 export enum NodeComponentRelationType {
+  self = 'self',
   childComponent = 'childComponent',
   controller = 'controller',
   sibling = 'sibling',
@@ -39,6 +40,7 @@ export interface INodeComponent extends IElementNode {
   xEnd?: number;
   yEnd?: number;
   specifier?: string;
+  nodeType?: string;
   components: INodeComponentRelation[];
   update?: (
     component: INodeComponent,

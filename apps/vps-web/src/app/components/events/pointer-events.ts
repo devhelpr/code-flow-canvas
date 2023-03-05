@@ -4,7 +4,6 @@ import {
 } from '../../interaction-state-machine';
 import {
   DOMElementNode,
-  IElementNode,
   INodeComponent,
   NodeComponentRelationType,
 } from '../../interfaces/element';
@@ -72,35 +71,21 @@ export const pointerMove = (
     )
   ) {
     if (element && element.domElement) {
-      (
-        element.domElement as unknown as HTMLElement | SVGElement
-      ).style.transform = `translate(${
-        x - interactionInfo.xOffsetWithinElementOnFirstClick
-      }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
-
-      element.components.forEach((componentRelation) => {
-        if (
-          componentRelation.type === NodeComponentRelationType.controller ||
-          componentRelation.type === NodeComponentRelationType.controllerTarget
-        ) {
-          if (componentRelation.update) {
-            componentRelation.update(
-              componentRelation.component,
-              x - interactionInfo.xOffsetWithinElementOnFirstClick,
-              y - interactionInfo.yOffsetWithinElementOnFirstClick,
-              element
-            );
-          }
-        } else if (
-          componentRelation.type === NodeComponentRelationType.childComponent
-        ) {
-          //
-        } else if (
-          componentRelation.type === NodeComponentRelationType.connection
-        ) {
-          //
-        }
-      });
+      //if (element.nodeType !== 'connection') {
+      // (
+      //   element.domElement as unknown as HTMLElement | SVGElement
+      // ).style.transform = `translate(${
+      //   x - interactionInfo.xOffsetWithinElementOnFirstClick
+      // }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
+      if (element.update) {
+        element.update(
+          element,
+          x - interactionInfo.xOffsetWithinElementOnFirstClick,
+          y - interactionInfo.yOffsetWithinElementOnFirstClick,
+          element
+        );
+      }
+      //}
 
       return true;
     }
@@ -133,32 +118,37 @@ export const pointerUp = (
     if (element && element.domElement) {
       element.x = x - interactionInfo.xOffsetWithinElementOnFirstClick;
       element.y = y - interactionInfo.yOffsetWithinElementOnFirstClick;
-
-      (
-        element.domElement as unknown as HTMLElement | SVGElement
-      ).style.transform = `translate(${
-        x - interactionInfo.xOffsetWithinElementOnFirstClick
-      }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
-
-      element.components.forEach((componentRelation) => {
-        if (componentRelation.type === NodeComponentRelationType.controller) {
-          if (componentRelation.commitUpdate) {
-            componentRelation.commitUpdate(
-              componentRelation.component,
-              x - interactionInfo.xOffsetWithinElementOnFirstClick,
-              y - interactionInfo.yOffsetWithinElementOnFirstClick
-            );
-          }
-        } else if (
-          componentRelation.type === NodeComponentRelationType.childComponent
-        ) {
-          //
-        } else if (
-          componentRelation.type === NodeComponentRelationType.connection
-        ) {
-          //
-        }
-      });
+      console.log('pointerUp', element.x, element.y);
+      // if (element.nodeType !== 'connection') {
+      //   (
+      //     element.domElement as unknown as HTMLElement | SVGElement
+      //   ).style.transform = `translate(${
+      //     x - interactionInfo.xOffsetWithinElementOnFirstClick
+      //   }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
+      // }
+      // element.components.forEach((componentRelation) => {
+      //   if (
+      //     componentRelation.type === NodeComponentRelationType.self ||
+      //     componentRelation.type === NodeComponentRelationType.controller
+      //   ) {
+      //     if (componentRelation.commitUpdate) {
+      //       componentRelation.commitUpdate(
+      //         componentRelation.component,
+      //         x - interactionInfo.xOffsetWithinElementOnFirstClick,
+      //         y - interactionInfo.yOffsetWithinElementOnFirstClick,
+      //         element
+      //       );
+      //     }
+      //   } else if (
+      //     componentRelation.type === NodeComponentRelationType.childComponent
+      //   ) {
+      //     //
+      //   } else if (
+      //     componentRelation.type === NodeComponentRelationType.connection
+      //   ) {
+      //     //
+      //   }
+      // });
     }
   }
 };

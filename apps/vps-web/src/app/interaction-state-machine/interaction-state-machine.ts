@@ -67,8 +67,16 @@ export const getCurrentInteractionState = () => {
 export const interactionEventState = (
   event: InteractionEvent,
   target: InteractionTarget,
-  element: INodeComponent
+  element: INodeComponent,
+  peek = false
 ): false | InterActionInfo => {
+  console.log(
+    'interactionEventState',
+    interactionState === InteractionState.Moving,
+    event === InteractionEvent.PointerUp,
+    interactionTarget?.id,
+    target.id
+  );
   if (interactionState === InteractionState.Idle) {
     if (event === InteractionEvent.PointerDown) {
       interactionState = InteractionState.Moving;
@@ -95,14 +103,22 @@ export const interactionEventState = (
       };
     }
     if (event === InteractionEvent.PointerUp) {
-      interactionState = InteractionState.Idle;
-      interactionTarget = undefined;
-      currentElement = undefined;
-      return {
-        state: interactionState,
-        target: interactionTarget,
-        isNewState: true,
-      };
+      if (peek) {
+        return {
+          state: interactionState,
+          target: interactionTarget,
+          isNewState: false,
+        };
+      } else {
+        interactionState = InteractionState.Idle;
+        interactionTarget = undefined;
+        currentElement = undefined;
+        return {
+          state: interactionState,
+          target: interactionTarget,
+          isNewState: true,
+        };
+      }
     }
     if (event === InteractionEvent.PointerLeave) {
       interactionState = InteractionState.Idle;

@@ -4,16 +4,10 @@ import {
   IElementNode,
   INodeComponent,
 } from '../interfaces/element';
+import { IPointerDownResult } from '../interfaces/pointers';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
-//import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
-
-/*
-    new approach:
-      create svg of 100% of its container absolute positioned
-      set no viewbox
-      use coordinates of elements directly
-*/
+import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createConnectionSVGElement = (
   canvasElement: DOMElementNode,
@@ -25,15 +19,32 @@ export const createConnectionSVGElement = (
   controlPoint1X: number,
   controlPoint1Y: number,
   controlPoint2X: number,
-  controlPoint2Y: number
+  controlPoint2Y: number,
+  pathHiddenElement: IElementNode
 ) => {
+  /*
+    draw svg path based on bbox of the hidden path
+      
+      - add padding to the bbox x and y and width and height
+
+      - subtract bbox x and y from the path points
+      - set transform of svg to the bbox x and y
+      - set the width and height of the svg to the bbox width and height
+       
+  */
+
+  let interactionInfo: IPointerDownResult = {
+    xOffsetWithinElementOnFirstClick: 0,
+    yOffsetWithinElementOnFirstClick: 0,
+  };
+
   const initialX = startX;
   const initialY = startY;
 
   function getPoint(x: number, y: number) {
-    const pt = new DOMPoint(); // svg.createSVGPoint();
-    pt.x = x + initialX + 50; //+ 50;
-    pt.y = y + initialY + 50; //+ 60 + 45;
+    const pt = new DOMPoint();
+    pt.x = x + initialX + 50;
+    pt.y = y + initialY + 50;
 
     return {
       x: pt.x,
@@ -53,32 +64,135 @@ export const createConnectionSVGElement = (
   };
 
   const begin = getPoint(points.beginX, points.beginY); // 0 60 + 60
-  let beginX = begin.x;
-  let beginY = begin.y;
   const cPoint1 = getPoint(points.cx1, points.cy1); // 0 60 + 60
-  let cx1 = cPoint1.x;
-  let cy1 = cPoint1.y;
   const cPoint2 = getPoint(points.cx2, points.cy2); // 0 60 + 60
-  let cx2 = cPoint2.x;
-  let cy2 = cPoint2.y;
   const end = getPoint(points.endX, points.endY); // 100 60
-  let _endX = end.x;
-  let _endY = end.y;
 
-  // (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
-  //   nodeComponent.id;
+  let pathPoints = {
+    beginX: begin.x,
+    beginY: begin.y,
+    cx1: cPoint1.x,
+    cy1: cPoint1.y,
+    cx2: cPoint2.x,
+    cy2: cPoint2.y,
+    endX: end.x,
+    endY: end.y,
+  };
+
+  function getBBoxPath() {
+    (pathHiddenElement?.domElement as any).setAttribute(
+      'd',
+      `M${pathPoints.beginX} ${pathPoints.beginY} C${pathPoints.cx1} ${pathPoints.cy1} ${pathPoints.cx2} ${pathPoints.cy2}  ${pathPoints.endX} ${pathPoints.endY}`
+    );
+    const bbox = (
+      pathHiddenElement?.domElement as unknown as SVGPathElement
+    ).getBBox();
+
+    return {
+      x: bbox.x - 10,
+      y: bbox.y - 10,
+      width: bbox.width + 20,
+      height: bbox.height + 20,
+    };
+  }
+
+  const svgParent = createNSElement(
+    'svg',
+    {
+      width: 0,
+      height: 0,
+      class: 'absolute top-0 left-0',
+    },
+    canvasElement
+  );
+
   let nodeComponent: INodeComponent | undefined = undefined;
-  nodeComponent = createSVGNodeComponent('g', {}, canvasElement);
+  nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
+  nodeComponent.nodeType = 'connection';
+
+  const bbox = getBBoxPath();
+
+  (
+    svgParent.domElement as unknown as HTMLElement
+  ).style.width = `${bbox.width}px`;
+  (
+    svgParent.domElement as unknown as HTMLElement
+  ).style.height = `${bbox.height}px`;
+  (
+    svgParent.domElement as unknown as HTMLElement
+  ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
   let pathElement: IElementNode | undefined = undefined;
   pathElement = createNSElement(
     'path',
     {
-      class: 'cursor-pointer',
-      d: `M${beginX} ${beginY} C${cx1} ${cy1} ${cx2} ${cy2} ${_endX} ${_endY}`,
+      class: 'cursor-pointer pointer-events-auto',
+      d: `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
+        pathPoints.cx1 - bbox.x
+      } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
+        pathPoints.cy2 - bbox.y
+      } ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`,
       stroke: 'white',
       'stroke-width': 3,
       fill: 'transparent',
+      pointerdown: (e: PointerEvent) => {
+        if (nodeComponent) {
+          const elementRect = (
+            nodeComponent.domElement as unknown as HTMLElement | SVGElement
+          ).getBoundingClientRect();
+          console.log(
+            'connection pointerdown',
+            e.clientX - elementRect.x,
+            e.clientY - elementRect.y
+          );
+          interactionInfo = pointerDown(
+            e.clientX - elementRect.x,
+            e.clientY - elementRect.y,
+            nodeComponent,
+            canvasElement
+          );
+        }
+      },
+      pointermove: (e: PointerEvent) => {
+        const canvasRect = (
+          canvasElement as unknown as HTMLElement | SVGElement
+        ).getBoundingClientRect();
+        if (nodeComponent) {
+          if (nodeComponent && nodeComponent.domElement) {
+            if (
+              pointerMove(
+                e.clientX - canvasRect.x,
+                e.clientY - canvasRect.y,
+                nodeComponent,
+                canvasElement,
+                interactionInfo
+              )
+            ) {
+              console.log(
+                'svg pointermove',
+                nodeComponent.id,
+                nodeComponent.domElement
+              );
+            }
+          }
+        }
+      },
+      pointerup: (e: PointerEvent) => {
+        if (nodeComponent) {
+          if (nodeComponent && nodeComponent.domElement) {
+            const canvasRect = (
+              canvasElement as unknown as HTMLElement | SVGElement
+            ).getBoundingClientRect();
+            pointerUp(
+              e.clientX - canvasRect.x,
+              e.clientY - canvasRect.y,
+              nodeComponent,
+              canvasElement,
+              interactionInfo
+            );
+          }
+        }
+      },
     },
     nodeComponent.domElement
   );
@@ -91,6 +205,9 @@ export const createConnectionSVGElement = (
     y: number,
     actionComponent: INodeComponent
   ) => {
+    if (!actionComponent.specifier) {
+      return;
+    }
     if (actionComponent.specifier === 'c1') {
       points.cx1 = x - incomingComponent.x;
       points.cy1 = y - incomingComponent.y;
@@ -103,24 +220,46 @@ export const createConnectionSVGElement = (
     } else if (actionComponent.specifier === 'begin') {
       points.beginX = x - incomingComponent.x;
       points.beginY = y - incomingComponent.y;
+    } else {
+      return;
     }
 
     const begin = getPoint(points.beginX, points.beginY); // 0 60 + 60
-    beginX = begin.x;
-    beginY = begin.y;
     const cPoint1 = getPoint(points.cx1, points.cy1); // 0 60 + 60
-    cx1 = cPoint1.x;
-    cy1 = cPoint1.y;
     const cPoint2 = getPoint(points.cx2, points.cy2); // 0 60 + 60
-    cx2 = cPoint2.x;
-    cy2 = cPoint2.y;
     const end = getPoint(points.endX, points.endY); // 100 60
-    _endX = end.x;
-    _endY = end.y;
+
+    pathPoints = {
+      beginX: begin.x,
+      beginY: begin.y,
+      cx1: cPoint1.x,
+      cy1: cPoint1.y,
+      cx2: cPoint2.x,
+      cy2: cPoint2.y,
+      endX: end.x,
+      endY: end.y,
+    };
+
+    const bbox = getBBoxPath();
+
     (pathElement?.domElement as any).setAttribute(
       'd',
-      `M${beginX} ${beginY} C${cx1} ${cy1} ${cx2} ${cy2}  ${_endX} ${_endY}`
+      `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
+        pathPoints.cx1 - bbox.x
+      } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
+        pathPoints.cy2 - bbox.y
+      }  ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`
     );
+
+    (
+      svgParent.domElement as unknown as HTMLElement
+    ).style.width = `${bbox.width}px`;
+    (
+      svgParent.domElement as unknown as HTMLElement
+    ).style.height = `${bbox.height}px`;
+    (
+      svgParent.domElement as unknown as HTMLElement
+    ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
   };
   nodeComponent.x = initialX;
   nodeComponent.y = initialY;
