@@ -98,18 +98,20 @@ export class AppElement extends HTMLElement {
       {
         class: button,
         click: () => {
+          const x = Math.floor(Math.random() * 1000);
+          const y = Math.floor(Math.random() * 500);
           bezierCurve = createCubicBezier(
             canvas as unknown as INodeComponent,
             pathHiddenElement,
             this.elements,
-            100,
-            100,
-            250,
-            250,
-            150,
-            150,
-            175,
-            175
+            x,
+            y,
+            x + 150,
+            y + 150,
+            x + 50,
+            y + 50,
+            x + 75,
+            y + 75
           );
         },
       },

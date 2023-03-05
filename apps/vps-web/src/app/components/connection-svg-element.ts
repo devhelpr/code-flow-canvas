@@ -29,8 +29,7 @@ export const createConnectionSVGElement = (
 
       - subtract bbox x and y from the path points
       - set transform of svg to the bbox x and y
-      - set the width and height of the svg to the bbox width and height
-       
+      - set the width and height of the svg to the bbox width and height   
   */
 
   let interactionInfo: IPointerDownResult = {
@@ -38,13 +37,10 @@ export const createConnectionSVGElement = (
     yOffsetWithinElementOnFirstClick: 0,
   };
 
-  const initialX = startX;
-  const initialY = startY;
-
   function getPoint(x: number, y: number) {
     const pt = new DOMPoint();
-    pt.x = x + initialX + 50;
-    pt.y = y + initialY + 50;
+    pt.x = x + 50;
+    pt.y = y + 50;
 
     return {
       x: pt.x,
@@ -63,10 +59,10 @@ export const createConnectionSVGElement = (
     endY: endY,
   };
 
-  const begin = getPoint(points.beginX, points.beginY); // 0 60 + 60
-  const cPoint1 = getPoint(points.cx1, points.cy1); // 0 60 + 60
-  const cPoint2 = getPoint(points.cx2, points.cy2); // 0 60 + 60
-  const end = getPoint(points.endX, points.endY); // 100 60
+  const begin = getPoint(points.beginX, points.beginY);
+  const cPoint1 = getPoint(points.cx1, points.cy1);
+  const cPoint2 = getPoint(points.cx2, points.cy2);
+  const end = getPoint(points.endX, points.endY);
 
   let pathPoints = {
     beginX: begin.x,
@@ -224,10 +220,10 @@ export const createConnectionSVGElement = (
       return;
     }
 
-    const begin = getPoint(points.beginX, points.beginY); // 0 60 + 60
-    const cPoint1 = getPoint(points.cx1, points.cy1); // 0 60 + 60
-    const cPoint2 = getPoint(points.cx2, points.cy2); // 0 60 + 60
-    const end = getPoint(points.endX, points.endY); // 100 60
+    const begin = getPoint(points.beginX, points.beginY);
+    const cPoint1 = getPoint(points.cx1, points.cy1);
+    const cPoint2 = getPoint(points.cx2, points.cy2);
+    const end = getPoint(points.endX, points.endY);
 
     pathPoints = {
       beginX: begin.x,
@@ -242,7 +238,7 @@ export const createConnectionSVGElement = (
 
     const bbox = getBBoxPath();
 
-    (pathElement?.domElement as any).setAttribute(
+    (pathElement?.domElement as HTMLElement).setAttribute(
       'd',
       `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
         pathPoints.cx1 - bbox.x
@@ -261,7 +257,7 @@ export const createConnectionSVGElement = (
       svgParent.domElement as unknown as HTMLElement
     ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
   };
-  nodeComponent.x = initialX;
-  nodeComponent.y = initialY;
+  nodeComponent.x = 0;
+  nodeComponent.y = 0;
   return nodeComponent;
 };

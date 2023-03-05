@@ -25,14 +25,14 @@ export const createCubicBezier = (
   const connection = createConnectionSVGElement(
     canvas.domElement,
     elements,
-    startX - 50,
-    startY - 50,
-    endX - 50,
-    endY - 50,
-    controlPoint1X - 50,
-    controlPoint1Y - 50,
-    controlPoint2X - 50,
-    controlPoint2Y - 50,
+    startX, //- 50,
+    startY, //- 50,
+    endX, //- 50,
+    endY, //- 50,
+    controlPoint1X, // - 50,
+    controlPoint1Y, // - 50,
+    controlPoint2X, //- 50,
+    controlPoint2Y, //- 50,
     pathHiddenElement
   );
 
