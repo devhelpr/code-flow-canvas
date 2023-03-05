@@ -28,7 +28,7 @@ import {
 import { setupMarkupElement } from './utils/create-markup';
 import { createConnectionSVGElement } from './components/connection-svg-element';
 import { createConnectionsSVGCanvasElement } from './components/connections-canvas-svg';
-import { createCubicBezier } from './components/bezier';
+import { createCubicBezier, createQuadraticBezier } from './components/bezier';
 import {
   compileExpression,
   compileExpressionAsInfo,
@@ -100,19 +100,34 @@ export class AppElement extends HTMLElement {
         click: () => {
           const x = Math.floor(Math.random() * 1000);
           const y = Math.floor(Math.random() * 500);
-          bezierCurve = createCubicBezier(
-            canvas as unknown as INodeComponent,
-            pathHiddenElement,
-            this.elements,
-            x,
-            y,
-            x + 150,
-            y + 150,
-            x + 50,
-            y + 50,
-            x + 75,
-            y + 75
-          );
+
+          if (Math.random() >= 0.5) {
+            bezierCurve = createCubicBezier(
+              canvas as unknown as INodeComponent,
+              pathHiddenElement,
+              this.elements,
+              x,
+              y,
+              x + 150,
+              y + 150,
+              x + 50,
+              y + 50,
+              x + 75,
+              y + 75
+            );
+          } else {
+            bezierCurve = createQuadraticBezier(
+              canvas as unknown as INodeComponent,
+              pathHiddenElement,
+              this.elements,
+              x,
+              y,
+              x + 150,
+              y + 150,
+              x + 50,
+              y + 50
+            );
+          }
         },
       },
       menubarElement.domElement,

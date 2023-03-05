@@ -20,7 +20,8 @@ export const createConnectionSVGElement = (
   controlPoint1Y: number,
   controlPoint2X: number,
   controlPoint2Y: number,
-  pathHiddenElement: IElementNode
+  pathHiddenElement: IElementNode,
+  isQuadratic = false
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -76,10 +77,17 @@ export const createConnectionSVGElement = (
   };
 
   function getBBoxPath() {
-    (pathHiddenElement?.domElement as any).setAttribute(
-      'd',
-      `M${pathPoints.beginX} ${pathPoints.beginY} C${pathPoints.cx1} ${pathPoints.cy1} ${pathPoints.cx2} ${pathPoints.cy2}  ${pathPoints.endX} ${pathPoints.endY}`
-    );
+    if (isQuadratic) {
+      (pathHiddenElement?.domElement as any).setAttribute(
+        'd',
+        `M${pathPoints.beginX} ${pathPoints.beginY} Q${pathPoints.cx1} ${pathPoints.cy1} ${pathPoints.endX} ${pathPoints.endY}`
+      );
+    } else {
+      (pathHiddenElement?.domElement as any).setAttribute(
+        'd',
+        `M${pathPoints.beginX} ${pathPoints.beginY} C${pathPoints.cx1} ${pathPoints.cy1} ${pathPoints.cx2} ${pathPoints.cy2}  ${pathPoints.endX} ${pathPoints.endY}`
+      );
+    }
     const bbox = (
       pathHiddenElement?.domElement as unknown as SVGPathElement
     ).getBBox();
@@ -123,11 +131,17 @@ export const createConnectionSVGElement = (
     'path',
     {
       class: 'cursor-pointer pointer-events-auto',
-      d: `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
-        pathPoints.cx1 - bbox.x
-      } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
-        pathPoints.cy2 - bbox.y
-      } ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`,
+      d: isQuadratic
+        ? `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} Q${
+            pathPoints.cx1 - bbox.x
+          } ${pathPoints.cy1 - bbox.y} ${pathPoints.endX - bbox.x} ${
+            pathPoints.endY - bbox.y
+          }`
+        : `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
+            pathPoints.cx1 - bbox.x
+          } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
+            pathPoints.cy2 - bbox.y
+          } ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`,
       stroke: 'white',
       'stroke-width': 3,
       fill: 'transparent',
@@ -237,15 +251,25 @@ export const createConnectionSVGElement = (
     };
 
     const bbox = getBBoxPath();
-
-    (pathElement?.domElement as HTMLElement).setAttribute(
-      'd',
-      `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
-        pathPoints.cx1 - bbox.x
-      } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
-        pathPoints.cy2 - bbox.y
-      }  ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`
-    );
+    if (isQuadratic) {
+      (pathElement?.domElement as HTMLElement).setAttribute(
+        'd',
+        `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} Q${
+          pathPoints.cx1 - bbox.x
+        } ${pathPoints.cy1 - bbox.y}  ${pathPoints.endX - bbox.x} ${
+          pathPoints.endY - bbox.y
+        }`
+      );
+    } else {
+      (pathElement?.domElement as HTMLElement).setAttribute(
+        'd',
+        `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
+          pathPoints.cx1 - bbox.x
+        } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
+          pathPoints.cy2 - bbox.y
+        }  ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`
+      );
+    }
 
     (
       svgParent.domElement as unknown as HTMLElement
