@@ -152,13 +152,6 @@ export const createConnectionSVGElement = (
           ).getBoundingClientRect();
 
           const bbox = getBBoxPath();
-          // maybe this is the cause for the weird jumping
-          console.log(
-            'connection pointerdown',
-            elementRect,
-            e.clientX - elementRect.x,
-            e.clientY - elementRect.y
-          );
           interactionInfo = pointerDown(
             e.clientX - elementRect.x - (pathPoints.beginX - bbox.x - 10),
             e.clientY - elementRect.y - (pathPoints.beginY - bbox.y - 10),
@@ -168,25 +161,22 @@ export const createConnectionSVGElement = (
         }
       },
       pointermove: (e: PointerEvent) => {
-        const canvasRect = (
-          canvasElement as unknown as HTMLElement | SVGElement
-        ).getBoundingClientRect();
         if (nodeComponent) {
           if (nodeComponent && nodeComponent.domElement) {
             if (
               pointerMove(
-                e.clientX, //- canvasRect.x,
-                e.clientY, //- canvasRect.y,
+                e.clientX,
+                e.clientY,
                 nodeComponent,
                 canvasElement,
                 interactionInfo
               )
             ) {
-              console.log(
-                'svg pointermove',
-                nodeComponent.id,
-                nodeComponent.domElement
-              );
+              // console.log(
+              //   'svg pointermove',
+              //   nodeComponent.id,
+              //   nodeComponent.domElement
+              // );
             }
           }
         }
@@ -194,12 +184,9 @@ export const createConnectionSVGElement = (
       pointerup: (e: PointerEvent) => {
         if (nodeComponent) {
           if (nodeComponent && nodeComponent.domElement) {
-            const canvasRect = (
-              canvasElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
             pointerUp(
-              e.clientX, //- canvasRect.x,
-              e.clientY, //- canvasRect.y,
+              e.clientX,
+              e.clientY,
               nodeComponent,
               canvasElement,
               interactionInfo
@@ -219,14 +206,10 @@ export const createConnectionSVGElement = (
     y: number,
     actionComponent: INodeComponent
   ) => {
-    console.log('update', incomingComponent, x, y, actionComponent);
     if (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
     ) {
-      // this causes weird behavior if the begin node is moved to the right or lower than one of the points
-      // not sure if this code is the cause
-      // the connection and points stay together though but when starting to drag, everything jumps
       const diffC1x = points.cx1 - points.beginX;
       const diffC1y = points.cy1 - points.beginY;
       const diffC2x = points.cx2 - points.beginX;
@@ -290,16 +273,6 @@ export const createConnectionSVGElement = (
       if (!actionComponent.specifier) {
         return;
       }
-      console.log(
-        'begin',
-        actionComponent.specifier,
-        x,
-        y,
-        incomingComponent.x,
-        incomingComponent.y,
-        x - incomingComponent.x,
-        y - incomingComponent.y
-      );
 
       if (actionComponent.specifier === 'c1') {
         points.cx1 = x; //- incomingComponent.x;

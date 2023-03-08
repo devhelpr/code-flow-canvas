@@ -25,14 +25,14 @@ export const createCubicBezier = (
   const connection = createConnectionSVGElement(
     canvas.domElement,
     elements,
-    startX, //- 50,
-    startY, //- 50,
-    endX, //- 50,
-    endY, //- 50,
-    controlPoint1X, // - 50,
-    controlPoint1Y, // - 50,
-    controlPoint2X, //- 50,
-    controlPoint2Y, //- 50,
+    startX,
+    startY,
+    endX,
+    endY,
+    controlPoint1X,
+    controlPoint1Y,
+    controlPoint2X,
+    controlPoint2Y,
     pathHiddenElement
   );
 
@@ -83,14 +83,6 @@ export const createCubicBezier = (
     y: number,
     actionComponent: INodeComponent
   ) => {
-    console.log(
-      'startPointElement update',
-      actionComponent?.nodeType !== 'connection',
-      component,
-      x,
-      y,
-      actionComponent
-    );
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
   };
 
@@ -206,32 +198,10 @@ export const createCubicBezier = (
     component: connection,
     type: NodeComponentRelationType.self,
     update: (component: INodeComponent, x: number, y: number) => {
-      console.log('update connection', connection.update, component.id, x, y);
-      //   (
-      //     connection.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${x}px, ${y}px)`;
-      // .. bovenstaand werkt niet goed omdat de positie verwerkt is in het path (d parameter)
-      //   const xdiff = endPointElement.x - startPointElement.x;
-      //   const ydiff = endPointElement.y - startPointElement.y;
-      //   (
-      //     startPointElement.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${x - 50}px, ${y - 50}px)`;
-
-      //   (
-      //     endPointElement.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${x - 50 + xdiff}px, ${y - 50 + ydiff}px)`;
-
-      // call connection.update
+      //
     },
     commitUpdate: (component: INodeComponent, x: number, y: number) => {
-      console.log('commitupdate connection', x, y);
-      //   const xdiff = endPointElement.x - startPointElement.x;
-      //   const ydiff = endPointElement.y - startPointElement.y;
-
-      //   startPointElement.x = x - 50;
-      //   startPointElement.y = y - 50;
-      //   endPointElement.x = x - 50 + xdiff;
-      //   endPointElement.y = y - 50 + ydiff;
+      //
     },
     controllers: {
       start: startPointElement,
@@ -315,12 +285,12 @@ export const createQuadraticBezier = (
   const connection = createConnectionSVGElement(
     canvas.domElement,
     elements,
-    startX, //- 50,
-    startY, //- 50,
-    endX, //- 50,
-    endY, //- 50,
-    controlPoint1X, // - 50,
-    controlPoint1Y, // - 50,
+    startX,
+    startY,
+    endX,
+    endY,
+    controlPoint1X,
+    controlPoint1Y,
     0,
     0,
     pathHiddenElement,
@@ -464,34 +434,8 @@ export const createQuadraticBezier = (
   connection.components.push({
     component: connection,
     type: NodeComponentRelationType.self,
-    update: (component: INodeComponent, x: number, y: number) => {
-      console.log('update connection', connection.update, component.id, x, y);
-      //   (
-      //     connection.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${x}px, ${y}px)`;
-      // .. bovenstaand werkt niet goed omdat de positie verwerkt is in het path (d parameter)
-      //   const xdiff = endPointElement.x - startPointElement.x;
-      //   const ydiff = endPointElement.y - startPointElement.y;
-      //   (
-      //     startPointElement.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${x - 50}px, ${y - 50}px)`;
-
-      //   (
-      //     endPointElement.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${x - 50 + xdiff}px, ${y - 50 + ydiff}px)`;
-
-      // call connection.update
-    },
-    commitUpdate: (component: INodeComponent, x: number, y: number) => {
-      console.log('commitupdate connection', x, y);
-      //   const xdiff = endPointElement.x - startPointElement.x;
-      //   const ydiff = endPointElement.y - startPointElement.y;
-
-      //   startPointElement.x = x - 50;
-      //   startPointElement.y = y - 50;
-      //   endPointElement.x = x - 50 + xdiff;
-      //   endPointElement.y = y - 50 + ydiff;
-    },
+    update: (component: INodeComponent, x: number, y: number) => {},
+    commitUpdate: (component: INodeComponent, x: number, y: number) => {},
     controllers: {
       start: startPointElement,
       end: endPointElement,
