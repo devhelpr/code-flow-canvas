@@ -5,9 +5,21 @@ import {
   INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
+import { setSelectNode } from '../reactivity';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+
+function getPoint(x: number, y: number) {
+  const pt = new DOMPoint();
+  pt.x = x + 50;
+  pt.y = y + 50;
+
+  return {
+    x: pt.x,
+    y: pt.y,
+  };
+}
 
 export const createConnectionSVGElement = (
   canvasElement: DOMElementNode,
@@ -38,16 +50,8 @@ export const createConnectionSVGElement = (
     yOffsetWithinElementOnFirstClick: 0,
   };
 
-  function getPoint(x: number, y: number) {
-    const pt = new DOMPoint();
-    pt.x = x + 50;
-    pt.y = y + 50;
-
-    return {
-      x: pt.x,
-      y: pt.y,
-    };
-  }
+  let isClicking = false;
+  let isMoving = false;
 
   const points = {
     beginX: startX,
@@ -158,35 +162,38 @@ export const createConnectionSVGElement = (
             nodeComponent,
             canvasElement
           );
-
-          (canvasElement as unknown as HTMLElement | SVGElement).append(
-            svgParent.domElement
-          );
-
-          const connectionInfo = nodeComponent.components.find(
-            (c) => c.type === 'self'
-          );
-
-          if (connectionInfo) {
+          if (interactionInfo) {
+            isClicking = true;
+            isMoving = false;
             (canvasElement as unknown as HTMLElement | SVGElement).append(
-              connectionInfo.controllers?.start.domElement
-            );
-            (canvasElement as unknown as HTMLElement | SVGElement).append(
-              connectionInfo.controllers?.end.domElement
+              svgParent.domElement
             );
 
-            if (isQuadratic) {
+            const connectionInfo = nodeComponent.components.find(
+              (c) => c.type === 'self'
+            );
+
+            if (connectionInfo) {
               (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.controlPoint.domElement
+                connectionInfo.controllers?.start.domElement
               );
-            } else {
               (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.controlPoint1.domElement
+                connectionInfo.controllers?.end.domElement
               );
 
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.controlPoint2.domElement
-              );
+              if (isQuadratic) {
+                (canvasElement as unknown as HTMLElement | SVGElement).append(
+                  connectionInfo.controllers?.controlPoint.domElement
+                );
+              } else {
+                (canvasElement as unknown as HTMLElement | SVGElement).append(
+                  connectionInfo.controllers?.controlPoint1.domElement
+                );
+
+                (canvasElement as unknown as HTMLElement | SVGElement).append(
+                  connectionInfo.controllers?.controlPoint2.domElement
+                );
+              }
             }
           }
         }
@@ -203,11 +210,7 @@ export const createConnectionSVGElement = (
                 interactionInfo
               )
             ) {
-              // console.log(
-              //   'svg pointermove',
-              //   nodeComponent.id,
-              //   nodeComponent.domElement
-              // );
+              isMoving = true;
             }
           }
         }
@@ -222,6 +225,12 @@ export const createConnectionSVGElement = (
               canvasElement,
               interactionInfo
             );
+            if (isClicking && !isMoving) {
+              console.log('CLICK', nodeComponent);
+              setSelectNode(nodeComponent);
+            }
+            isMoving = false;
+            isClicking = false;
           }
         }
       },
