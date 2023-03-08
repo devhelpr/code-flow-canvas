@@ -105,7 +105,7 @@ export const createConnectionSVGElement = (
     {
       width: 0,
       height: 0,
-      class: 'absolute top-0 left-0',
+      class: 'absolute top-0 left-0 pointer-events-none',
     },
     canvasElement
   );
@@ -158,6 +158,37 @@ export const createConnectionSVGElement = (
             nodeComponent,
             canvasElement
           );
+
+          (canvasElement as unknown as HTMLElement | SVGElement).append(
+            svgParent.domElement
+          );
+
+          const connectionInfo = nodeComponent.components.find(
+            (c) => c.type === 'self'
+          );
+
+          if (connectionInfo) {
+            (canvasElement as unknown as HTMLElement | SVGElement).append(
+              connectionInfo.controllers?.start.domElement
+            );
+            (canvasElement as unknown as HTMLElement | SVGElement).append(
+              connectionInfo.controllers?.end.domElement
+            );
+
+            if (isQuadratic) {
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.controlPoint.domElement
+              );
+            } else {
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.controlPoint1.domElement
+              );
+
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.controlPoint2.domElement
+              );
+            }
+          }
         }
       },
       pointermove: (e: PointerEvent) => {
