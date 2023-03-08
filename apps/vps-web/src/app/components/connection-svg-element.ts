@@ -226,7 +226,6 @@ export const createConnectionSVGElement = (
               interactionInfo
             );
             if (isClicking && !isMoving) {
-              console.log('CLICK', nodeComponent);
               setSelectNode(nodeComponent);
             }
             isMoving = false;
