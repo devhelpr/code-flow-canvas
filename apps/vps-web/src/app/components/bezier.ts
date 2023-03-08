@@ -36,11 +36,19 @@ export const createCubicBezier = (
     pathHiddenElement
   );
 
-  function setPosition(element: INodeComponent, x: number, y: number) {
+  function setPosition(
+    element: INodeComponent,
+    x: number,
+    y: number,
+    followRelations = true
+  ) {
     (
       element.domElement as unknown as HTMLElement | SVGElement
     ).style.transform = `translate(${x}px, ${y}px)`;
 
+    if (!followRelations) {
+      return;
+    }
     element.components.forEach((componentRelation) => {
       if (
         componentRelation.type === NodeComponentRelationType.self ||
@@ -73,9 +81,17 @@ export const createCubicBezier = (
     component: INodeComponent,
     x: number,
     y: number,
-    _actionComponent: INodeComponent
+    actionComponent: INodeComponent
   ) => {
-    setPosition(component, x, y);
+    console.log(
+      'startPointElement update',
+      actionComponent?.nodeType !== 'connection',
+      component,
+      x,
+      y,
+      actionComponent
+    );
+    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
   };
 
   const endPointElement = createSVGElement(
@@ -90,9 +106,9 @@ export const createCubicBezier = (
     component: INodeComponent,
     x: number,
     y: number,
-    _actionComponent: INodeComponent
+    actionComponent: INodeComponent
   ) => {
-    setPosition(component, x, y);
+    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
   };
   const controlPoint1Element = createSVGElement(
     canvas.domElement,
@@ -106,9 +122,9 @@ export const createCubicBezier = (
     component: INodeComponent,
     x: number,
     y: number,
-    _actionComponent: INodeComponent
+    actionComponent: INodeComponent
   ) => {
-    setPosition(component, x, y);
+    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
   };
   const controlPoint2Element = createSVGElement(
     canvas.domElement,
@@ -122,9 +138,9 @@ export const createCubicBezier = (
     component: INodeComponent,
     x: number,
     y: number,
-    _actionComponent: INodeComponent
+    actionComponent: INodeComponent
   ) => {
-    setPosition(component, x, y);
+    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
   };
 
   startPointElement.components.push({
@@ -216,6 +232,12 @@ export const createCubicBezier = (
       //   startPointElement.y = y - 50;
       //   endPointElement.x = x - 50 + xdiff;
       //   endPointElement.y = y - 50 + ydiff;
+    },
+    controllers: {
+      start: startPointElement,
+      end: endPointElement,
+      controlPoint1: controlPoint1Element,
+      controlPoint2: controlPoint2Element,
     },
   });
   controlPoint2Element.components.push({
@@ -469,6 +491,11 @@ export const createQuadraticBezier = (
       //   startPointElement.y = y - 50;
       //   endPointElement.x = x - 50 + xdiff;
       //   endPointElement.y = y - 50 + ydiff;
+    },
+    controllers: {
+      start: startPointElement,
+      end: endPointElement,
+      controlPoint: controlPoint1Element,
     },
   });
 

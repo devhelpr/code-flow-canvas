@@ -98,7 +98,7 @@ export class AppElement extends HTMLElement {
       {
         class: button,
         click: () => {
-          const x = Math.floor(Math.random() * 1000);
+          const x = Math.floor(Math.random() * 250);
           const y = Math.floor(Math.random() * 500);
 
           if (Math.random() >= 0.5) {

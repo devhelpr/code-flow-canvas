@@ -83,7 +83,9 @@ export const createSVGElement = (
               console.log(
                 'svg pointermove',
                 nodeComponent.id,
-                nodeComponent.domElement
+                nodeComponent.domElement,
+                e.clientX - canvasRect.x,
+                e.clientY - canvasRect.y
               );
             }
           }

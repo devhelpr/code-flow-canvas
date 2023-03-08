@@ -32,6 +32,7 @@ export interface INodeComponentRelation {
     y: number,
     actionComponent: INodeComponent
   ) => void;
+  controllers?: any;
 }
 
 export interface INodeComponent extends IElementNode {

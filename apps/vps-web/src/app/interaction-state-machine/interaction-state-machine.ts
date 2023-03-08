@@ -72,6 +72,7 @@ export const interactionEventState = (
 ): false | InterActionInfo => {
   console.log(
     'interactionEventState',
+    interactionState,
     interactionState === InteractionState.Moving,
     event === InteractionEvent.PointerUp,
     interactionTarget?.id,

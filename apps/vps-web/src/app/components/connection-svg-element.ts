@@ -150,14 +150,18 @@ export const createConnectionSVGElement = (
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
+
+          const bbox = getBBoxPath();
+          // maybe this is the cause for the weird jumping
           console.log(
             'connection pointerdown',
+            elementRect,
             e.clientX - elementRect.x,
             e.clientY - elementRect.y
           );
           interactionInfo = pointerDown(
-            e.clientX - elementRect.x,
-            e.clientY - elementRect.y,
+            e.clientX - elementRect.x - (pathPoints.beginX - bbox.x - 10),
+            e.clientY - elementRect.y - (pathPoints.beginY - bbox.y - 10),
             nodeComponent,
             canvasElement
           );
@@ -171,8 +175,8 @@ export const createConnectionSVGElement = (
           if (nodeComponent && nodeComponent.domElement) {
             if (
               pointerMove(
-                e.clientX - canvasRect.x,
-                e.clientY - canvasRect.y,
+                e.clientX, //- canvasRect.x,
+                e.clientY, //- canvasRect.y,
                 nodeComponent,
                 canvasElement,
                 interactionInfo
@@ -194,8 +198,8 @@ export const createConnectionSVGElement = (
               canvasElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
             pointerUp(
-              e.clientX - canvasRect.x,
-              e.clientY - canvasRect.y,
+              e.clientX, //- canvasRect.x,
+              e.clientY, //- canvasRect.y,
               nodeComponent,
               canvasElement,
               interactionInfo
@@ -215,23 +219,103 @@ export const createConnectionSVGElement = (
     y: number,
     actionComponent: INodeComponent
   ) => {
-    if (!actionComponent.specifier) {
-      return;
-    }
-    if (actionComponent.specifier === 'c1') {
-      points.cx1 = x - incomingComponent.x;
-      points.cy1 = y - incomingComponent.y;
-    } else if (actionComponent.specifier === 'c2') {
-      points.cx2 = x - incomingComponent.x;
-      points.cy2 = y - incomingComponent.y;
-    } else if (actionComponent.specifier === 'end') {
-      points.endX = x - incomingComponent.x;
-      points.endY = y - incomingComponent.y;
-    } else if (actionComponent.specifier === 'begin') {
-      points.beginX = x - incomingComponent.x;
-      points.beginY = y - incomingComponent.y;
+    console.log('update', incomingComponent, x, y, actionComponent);
+    if (
+      incomingComponent.nodeType === 'connection' &&
+      actionComponent.nodeType === 'connection'
+    ) {
+      // this causes weird behavior if the begin node is moved to the right or lower than one of the points
+      // not sure if this code is the cause
+      // the connection and points stay together though but when starting to drag, everything jumps
+      const diffC1x = points.cx1 - points.beginX;
+      const diffC1y = points.cy1 - points.beginY;
+      const diffC2x = points.cx2 - points.beginX;
+      const diffC2y = points.cy2 - points.beginY;
+      const diffEndX = points.endX - points.beginX;
+      const diffEndY = points.endY - points.beginY;
+
+      points.beginX = x - 50;
+      points.beginY = y - 50;
+
+      points.cx1 = x - 50 + diffC1x;
+      points.cy1 = y - 50 + diffC1y;
+      points.cx2 = x - 50 + diffC2x;
+      points.cy2 = y - 50 + diffC2y;
+      points.endX = x - 50 + diffEndX;
+      points.endY = y - 50 + diffEndY;
+
+      const connectionInfo = incomingComponent.components.find(
+        (c) => c.type === 'self'
+      );
+
+      if (connectionInfo) {
+        connectionInfo.controllers?.start.update(
+          connectionInfo.controllers?.start,
+          points.beginX,
+          points.beginY,
+          actionComponent
+        );
+
+        connectionInfo.controllers?.end.update(
+          connectionInfo.controllers?.end,
+          points.endX,
+          points.endY,
+          actionComponent
+        );
+
+        if (isQuadratic) {
+          connectionInfo.controllers?.controlPoint.update(
+            connectionInfo.controllers?.controlPoint,
+            points.cx1,
+            points.cy1,
+            actionComponent
+          );
+        } else {
+          connectionInfo.controllers?.controlPoint1.update(
+            connectionInfo.controllers?.controlPoint1,
+            points.cx1,
+            points.cy1,
+            actionComponent
+          );
+
+          connectionInfo.controllers?.controlPoint2.update(
+            connectionInfo.controllers?.controlPoint2,
+            points.cx2,
+            points.cy2,
+            actionComponent
+          );
+        }
+      }
     } else {
-      return;
+      if (!actionComponent.specifier) {
+        return;
+      }
+      console.log(
+        'begin',
+        actionComponent.specifier,
+        x,
+        y,
+        incomingComponent.x,
+        incomingComponent.y,
+        x - incomingComponent.x,
+        y - incomingComponent.y
+      );
+
+      if (actionComponent.specifier === 'c1') {
+        points.cx1 = x; //- incomingComponent.x;
+        points.cy1 = y; //- incomingComponent.y;
+      } else if (actionComponent.specifier === 'c2') {
+        points.cx2 = x; //- incomingComponent.x;
+        points.cy2 = y; //- incomingComponent.y;
+      } else if (actionComponent.specifier === 'end') {
+        points.endX = x; //- incomingComponent.x;
+        points.endY = y; //- incomingComponent.y;
+      } else if (actionComponent.specifier === 'begin') {
+        points.beginX = x; //- incomingComponent.x;
+        points.beginY = y; //- incomingComponent.y;
+      } else {
+        return;
+      }
     }
 
     const begin = getPoint(points.beginX, points.beginY);

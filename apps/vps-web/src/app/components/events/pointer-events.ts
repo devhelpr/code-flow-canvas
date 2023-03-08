@@ -38,9 +38,11 @@ export const pointerDown = (
   ) {
     xOffsetWithinElementOnFirstClick = x;
     yOffsetWithinElementOnFirstClick = y;
-    (canvasElement as unknown as HTMLElement | SVGElement).append(
-      element.domElement
-    );
+    if (element?.nodeType !== 'connection') {
+      (canvasElement as unknown as HTMLElement | SVGElement).append(
+        element.domElement
+      );
+    }
   }
   return {
     xOffsetWithinElementOnFirstClick,
