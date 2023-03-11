@@ -25,7 +25,7 @@ export interface INodeComponentRelation {
     x: number,
     y: number,
     actionComponent: INodeComponent
-  ) => void;
+  ) => boolean;
   commitUpdate?: (
     component: INodeComponent,
     x: number,
@@ -48,5 +48,5 @@ export interface INodeComponent extends IElementNode {
     x: number,
     y: number,
     actionComponent: INodeComponent
-  ) => void;
+  ) => boolean;
 }

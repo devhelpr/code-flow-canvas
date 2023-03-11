@@ -21,19 +21,14 @@ function getPoint(x: number, y: number) {
   };
 }
 
-export const createConnectionSVGElement = (
+export const createRectPathSVGElement = (
   canvasElement: DOMElementNode,
   elements: ElementNodeMap,
   startX: number,
   startY: number,
-  endX: number,
-  endY: number,
-  controlPoint1X: number,
-  controlPoint1Y: number,
-  controlPoint2X: number,
-  controlPoint2Y: number,
-  pathHiddenElement: IElementNode,
-  isQuadratic = false
+  width: number,
+  height: number,
+  pathHiddenElement: IElementNode
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -56,42 +51,29 @@ export const createConnectionSVGElement = (
   const points = {
     beginX: startX,
     beginY: startY,
-    cx1: controlPoint1X,
-    cy1: controlPoint1Y,
-    cx2: controlPoint2X,
-    cy2: controlPoint2Y,
-    endX: endX,
-    endY: endY,
+    width: width,
+    height: height,
   };
 
   const begin = getPoint(points.beginX, points.beginY);
-  const cPoint1 = getPoint(points.cx1, points.cy1);
-  const cPoint2 = getPoint(points.cx2, points.cy2);
-  const end = getPoint(points.endX, points.endY);
+  // const cPoint1 = getPoint(points.cx1, points.cy1);
+  // const cPoint2 = getPoint(points.cx2, points.cy2);
+  // const end = getPoint(points.endX, points.endY);
 
   let pathPoints = {
     beginX: begin.x,
     beginY: begin.y,
-    cx1: cPoint1.x,
-    cy1: cPoint1.y,
-    cx2: cPoint2.x,
-    cy2: cPoint2.y,
-    endX: end.x,
-    endY: end.y,
+    width: points.width,
+    height: points.height,
   };
 
   function getBBoxPath() {
-    if (isQuadratic) {
-      (pathHiddenElement?.domElement as any).setAttribute(
-        'd',
-        `M${pathPoints.beginX} ${pathPoints.beginY} Q${pathPoints.cx1} ${pathPoints.cy1} ${pathPoints.endX} ${pathPoints.endY}`
-      );
-    } else {
-      (pathHiddenElement?.domElement as any).setAttribute(
-        'd',
-        `M${pathPoints.beginX} ${pathPoints.beginY} C${pathPoints.cx1} ${pathPoints.cy1} ${pathPoints.cx2} ${pathPoints.cy2}  ${pathPoints.endX} ${pathPoints.endY}`
-      );
-    }
+    (pathHiddenElement?.domElement as any).setAttribute(
+      'd',
+      `M${pathPoints.beginX} ${pathPoints.beginY} H${
+        pathPoints.beginX + pathPoints.width
+      } V${pathPoints.beginY + pathPoints.height} H${pathPoints.beginX} Z`
+    );
     const bbox = (
       pathHiddenElement?.domElement as unknown as SVGPathElement
     ).getBBox();
@@ -135,17 +117,11 @@ export const createConnectionSVGElement = (
     'path',
     {
       class: 'cursor-pointer pointer-events-auto',
-      d: isQuadratic
-        ? `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} Q${
-            pathPoints.cx1 - bbox.x
-          } ${pathPoints.cy1 - bbox.y} ${pathPoints.endX - bbox.x} ${
-            pathPoints.endY - bbox.y
-          }`
-        : `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
-            pathPoints.cx1 - bbox.x
-          } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
-            pathPoints.cy2 - bbox.y
-          } ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`,
+      d: `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} H${
+        pathPoints.beginX - bbox.x + pathPoints.width
+      } V ${pathPoints.beginY - bbox.y + pathPoints.height} H${
+        pathPoints.beginX - bbox.x
+      } Z`,
       stroke: 'white',
       'stroke-width': 3,
       fill: 'transparent',
@@ -178,22 +154,16 @@ export const createConnectionSVGElement = (
                 connectionInfo.controllers?.start.domElement
               );
               (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.end.domElement
+                connectionInfo.controllers?.rightTop.domElement
               );
 
-              if (isQuadratic) {
-                (canvasElement as unknown as HTMLElement | SVGElement).append(
-                  connectionInfo.controllers?.controlPoint.domElement
-                );
-              } else {
-                (canvasElement as unknown as HTMLElement | SVGElement).append(
-                  connectionInfo.controllers?.controlPoint1.domElement
-                );
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.leftBottom.domElement
+              );
 
-                (canvasElement as unknown as HTMLElement | SVGElement).append(
-                  connectionInfo.controllers?.controlPoint2.domElement
-                );
-              }
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.rightBottom.domElement
+              );
             }
           }
         }
@@ -249,22 +219,8 @@ export const createConnectionSVGElement = (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
     ) {
-      const diffC1x = points.cx1 - points.beginX;
-      const diffC1y = points.cy1 - points.beginY;
-      const diffC2x = points.cx2 - points.beginX;
-      const diffC2y = points.cy2 - points.beginY;
-      const diffEndX = points.endX - points.beginX;
-      const diffEndY = points.endY - points.beginY;
-
       points.beginX = x - 50;
       points.beginY = y - 50;
-
-      points.cx1 = x - 50 + diffC1x;
-      points.cy1 = y - 50 + diffC1y;
-      points.cx2 = x - 50 + diffC2x;
-      points.cy2 = y - 50 + diffC2y;
-      points.endX = x - 50 + diffEndX;
-      points.endY = y - 50 + diffEndY;
 
       const connectionInfo = incomingComponent.components.find(
         (c) => c.type === 'self'
@@ -278,94 +234,169 @@ export const createConnectionSVGElement = (
           actionComponent
         );
 
-        connectionInfo.controllers?.end.update(
-          connectionInfo.controllers?.end,
-          points.endX,
-          points.endY,
+        connectionInfo.controllers?.rightTop.update(
+          connectionInfo.controllers?.rightTop,
+          points.beginX + points.width,
+          points.beginY,
           actionComponent
         );
 
-        if (isQuadratic) {
-          connectionInfo.controllers?.controlPoint.update(
-            connectionInfo.controllers?.controlPoint,
-            points.cx1,
-            points.cy1,
-            actionComponent
-          );
-        } else {
-          connectionInfo.controllers?.controlPoint1.update(
-            connectionInfo.controllers?.controlPoint1,
-            points.cx1,
-            points.cy1,
-            actionComponent
-          );
+        connectionInfo.controllers?.leftBottom.update(
+          connectionInfo.controllers?.leftBottom,
+          points.beginX,
+          points.beginY + points.height,
+          actionComponent
+        );
 
-          connectionInfo.controllers?.controlPoint2.update(
-            connectionInfo.controllers?.controlPoint2,
-            points.cx2,
-            points.cy2,
-            actionComponent
-          );
-        }
+        connectionInfo.controllers?.rightBottom.update(
+          connectionInfo.controllers?.rightBottom,
+          points.beginX + points.width,
+          points.beginY + points.height,
+          actionComponent
+        );
       }
     } else {
       if (!actionComponent.specifier) {
         return false;
       }
+      const connectionInfo = incomingComponent.components.find(
+        (c) => c.type === 'self'
+      );
 
-      if (actionComponent.specifier === 'c1') {
-        points.cx1 = x; //- incomingComponent.x;
-        points.cy1 = y; //- incomingComponent.y;
-      } else if (actionComponent.specifier === 'c2') {
-        points.cx2 = x; //- incomingComponent.x;
-        points.cy2 = y; //- incomingComponent.y;
-      } else if (actionComponent.specifier === 'end') {
-        points.endX = x; //- incomingComponent.x;
-        points.endY = y; //- incomingComponent.y;
-      } else if (actionComponent.specifier === 'begin') {
-        points.beginX = x; //- incomingComponent.x;
-        points.beginY = y; //- incomingComponent.y;
-      } else {
-        return false;
+      if (connectionInfo && connectionInfo.controllers) {
+        if (actionComponent.specifier === 'leftBottom') {
+          if (x <= points.beginX + points.width - 10) {
+            points.width = points.width - (x - points.beginX);
+            points.beginX = x;
+          } else {
+            return false;
+          }
+
+          if (y - points.beginY >= 10) {
+            points.height = y - points.beginY;
+          } else {
+            return false;
+          }
+        } else if (actionComponent.specifier === 'rightBottom') {
+          if (x - points.beginX >= 10 && y - points.beginY >= 10) {
+            points.width = x - points.beginX;
+            points.height = y - points.beginY;
+          } else {
+            return false;
+          }
+        } else if (actionComponent.specifier === 'rightTop') {
+          if (x - points.beginX >= 10) {
+            points.width = x - points.beginX;
+          } else {
+            return false;
+          }
+          if (y <= points.beginY + points.height - 10) {
+            points.height = points.height - (y - points.beginY);
+            points.beginY = y;
+          } else {
+            return false;
+          }
+        } else if (actionComponent.specifier === 'begin') {
+          if (x <= points.beginX + points.width - 10) {
+            points.width = points.width - (x - points.beginX);
+            points.beginX = x;
+          } else {
+            return false;
+          }
+          if (y <= points.beginY + points.height - 10) {
+            points.height = points.height - (y - points.beginY);
+            points.beginY = y;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+
+        // TODO : fix these depending on the specifier !!
+
+        const getRectPoint = (specifier: string) => {
+          if (specifier === 'begin') {
+            return {
+              x: points.beginX,
+              y: points.beginY,
+            };
+          } else if (specifier === 'rightTop') {
+            return {
+              x: points.beginX + points.width,
+              y: points.beginY,
+            };
+          } else if (specifier === 'leftBottom') {
+            return {
+              x: points.beginX,
+              y: points.beginY + points.height,
+            };
+          } else if (specifier === 'rightBottom') {
+            return {
+              x: points.beginX + points.width,
+              y: points.beginY + points.height,
+            };
+          }
+          return false;
+        };
+        let point = getRectPoint(connectionInfo.controllers?.start.specifier);
+        if (point) {
+          connectionInfo.controllers?.start.update(
+            connectionInfo.controllers?.start,
+            point.x,
+            point.y,
+            incomingComponent
+          );
+        }
+        point = getRectPoint(connectionInfo.controllers?.rightTop.specifier);
+        if (point) {
+          connectionInfo.controllers?.rightTop.update(
+            connectionInfo.controllers?.rightTop,
+            point.x,
+            point.y,
+            incomingComponent
+          );
+        }
+        point = getRectPoint(connectionInfo.controllers?.leftBottom.specifier);
+        if (point) {
+          connectionInfo.controllers?.leftBottom.update(
+            connectionInfo.controllers?.leftBottom,
+            point.x,
+            point.y,
+            incomingComponent
+          );
+        }
+
+        point = getRectPoint(connectionInfo.controllers?.rightBottom.specifier);
+        if (point) {
+          connectionInfo.controllers?.rightBottom.update(
+            connectionInfo.controllers?.rightBottom,
+            point.x,
+            point.y,
+            incomingComponent
+          );
+        }
       }
     }
 
     const begin = getPoint(points.beginX, points.beginY);
-    const cPoint1 = getPoint(points.cx1, points.cy1);
-    const cPoint2 = getPoint(points.cx2, points.cy2);
-    const end = getPoint(points.endX, points.endY);
 
     pathPoints = {
       beginX: begin.x,
       beginY: begin.y,
-      cx1: cPoint1.x,
-      cy1: cPoint1.y,
-      cx2: cPoint2.x,
-      cy2: cPoint2.y,
-      endX: end.x,
-      endY: end.y,
+      width: points.width,
+      height: points.height,
     };
 
     const bbox = getBBoxPath();
-    if (isQuadratic) {
-      (pathElement?.domElement as HTMLElement).setAttribute(
-        'd',
-        `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} Q${
-          pathPoints.cx1 - bbox.x
-        } ${pathPoints.cy1 - bbox.y}  ${pathPoints.endX - bbox.x} ${
-          pathPoints.endY - bbox.y
-        }`
-      );
-    } else {
-      (pathElement?.domElement as HTMLElement).setAttribute(
-        'd',
-        `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} C${
-          pathPoints.cx1 - bbox.x
-        } ${pathPoints.cy1 - bbox.y} ${pathPoints.cx2 - bbox.x} ${
-          pathPoints.cy2 - bbox.y
-        }  ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`
-      );
-    }
+    (pathElement?.domElement as HTMLElement).setAttribute(
+      'd',
+      `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} H${
+        pathPoints.beginX - bbox.x + pathPoints.width
+      } V ${pathPoints.beginY - bbox.y + pathPoints.height} H${
+        pathPoints.beginX - bbox.x
+      } Z`
+    );
 
     (
       svgParent.domElement as unknown as HTMLElement

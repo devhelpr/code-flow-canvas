@@ -70,14 +70,14 @@ export const interactionEventState = (
   element: INodeComponent,
   peek = false
 ): false | InterActionInfo => {
-  console.log(
-    'interactionEventState',
-    interactionState,
-    interactionState === InteractionState.Moving,
-    event === InteractionEvent.PointerUp,
-    interactionTarget?.id,
-    target.id
-  );
+  // console.log(
+  //   'interactionEventState',
+  //   interactionState,
+  //   interactionState === InteractionState.Moving,
+  //   event === InteractionEvent.PointerUp,
+  //   interactionTarget?.id,
+  //   target.id
+  // );
   if (interactionState === InteractionState.Idle) {
     if (event === InteractionEvent.PointerDown) {
       interactionState = InteractionState.Moving;

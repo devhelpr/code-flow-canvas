@@ -35,6 +35,7 @@ import {
   registerCustomBlock,
   registerCustomFunction,
 } from '@devhelpr/expression-compiler';
+import { createRect } from './components/rect';
 //import { count } from 'console';
 
 const template = document.createElement('template');
@@ -100,6 +101,17 @@ export class AppElement extends HTMLElement {
         click: () => {
           const x = Math.floor(Math.random() * 250);
           const y = Math.floor(Math.random() * 500);
+
+          // createRect(
+          //   canvas as unknown as INodeComponent,
+          //   pathHiddenElement,
+          //   this.elements,
+          //   x,
+          //   y,
+          //   100,
+          //   100
+          // );
+          // return;
 
           if (Math.random() >= 0.5) {
             bezierCurve = createCubicBezier(
