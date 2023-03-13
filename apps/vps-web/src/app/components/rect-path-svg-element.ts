@@ -129,7 +129,7 @@ export const createRectPathSVGElement = (
       } Z`,
       stroke: 'white',
       'stroke-width': 3,
-      fill: 'transparent',
+      fill: '#0080cc',
       pointerdown: (e: PointerEvent) => {
         if (nodeComponent) {
           const elementRect = (
