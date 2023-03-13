@@ -10,6 +10,8 @@ import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
+const minSize = 50;
+
 function getPoint(x: number, y: number) {
   const pt = new DOMPoint();
   pt.x = x + 50;
@@ -21,6 +23,8 @@ function getPoint(x: number, y: number) {
   };
 }
 
+export type RectNodeSpecifer = 'start' | 'end';
+
 export const createRectPathSVGElement = (
   canvasElement: DOMElementNode,
   elements: ElementNodeMap,
@@ -28,7 +32,8 @@ export const createRectPathSVGElement = (
   startY: number,
   width: number,
   height: number,
-  pathHiddenElement: IElementNode
+  pathHiddenElement: IElementNode,
+  specifier: RectNodeSpecifer
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -221,7 +226,10 @@ export const createRectPathSVGElement = (
     ) {
       points.beginX = x - 50;
       points.beginY = y - 50;
-
+      if (nodeComponent) {
+        nodeComponent.x = points.beginX;
+        nodeComponent.y = points.beginY;
+      }
       const connectionInfo = incomingComponent.components.find(
         (c) => c.type === 'self'
       );
@@ -265,45 +273,45 @@ export const createRectPathSVGElement = (
 
       if (connectionInfo && connectionInfo.controllers) {
         if (actionComponent.specifier === 'leftBottom') {
-          if (x <= points.beginX + points.width - 10) {
+          if (x <= points.beginX + points.width - minSize) {
             points.width = points.width - (x - points.beginX);
             points.beginX = x;
           } else {
             return false;
           }
 
-          if (y - points.beginY >= 10) {
+          if (y - points.beginY >= minSize) {
             points.height = y - points.beginY;
           } else {
             return false;
           }
         } else if (actionComponent.specifier === 'rightBottom') {
-          if (x - points.beginX >= 10 && y - points.beginY >= 10) {
+          if (x - points.beginX >= minSize && y - points.beginY >= minSize) {
             points.width = x - points.beginX;
             points.height = y - points.beginY;
           } else {
             return false;
           }
         } else if (actionComponent.specifier === 'rightTop') {
-          if (x - points.beginX >= 10) {
+          if (x - points.beginX >= minSize) {
             points.width = x - points.beginX;
           } else {
             return false;
           }
-          if (y <= points.beginY + points.height - 10) {
+          if (y <= points.beginY + points.height - minSize) {
             points.height = points.height - (y - points.beginY);
             points.beginY = y;
           } else {
             return false;
           }
         } else if (actionComponent.specifier === 'begin') {
-          if (x <= points.beginX + points.width - 10) {
+          if (x <= points.beginX + points.width - minSize) {
             points.width = points.width - (x - points.beginX);
             points.beginX = x;
           } else {
             return false;
           }
-          if (y <= points.beginY + points.height - 10) {
+          if (y <= points.beginY + points.height - minSize) {
             points.height = points.height - (y - points.beginY);
             points.beginY = y;
           } else {
@@ -408,9 +416,69 @@ export const createRectPathSVGElement = (
       svgParent.domElement as unknown as HTMLElement
     ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
+    if (nodeComponent) {
+      nodeComponent.x = points.beginX;
+      nodeComponent.y = points.beginY;
+      nodeComponent.width = points.width;
+      nodeComponent.height = points.height;
+    }
+
+    // TODO : check if connection with this rect exists (start/end) by
+    // looking al all elements :
+    // - if its a connection then look at the start/end.. if match then update
+    if (nodeComponent) {
+      elements.forEach((e) => {
+        const lookAtNodeComponent = e as unknown as INodeComponent;
+        if (lookAtNodeComponent.nodeType === 'connection') {
+          const start = lookAtNodeComponent.components.find(
+            (c) =>
+              nodeComponent &&
+              c.type === 'start' &&
+              c.component?.id === nodeComponent.id
+          );
+          const end = lookAtNodeComponent.components.find(
+            (c) =>
+              nodeComponent &&
+              c.type === 'end' &&
+              c.component?.id === nodeComponent.id
+          );
+          if (
+            start &&
+            lookAtNodeComponent &&
+            lookAtNodeComponent.update &&
+            nodeComponent
+          ) {
+            console.log('start', lookAtNodeComponent, nodeComponent);
+            lookAtNodeComponent.update(
+              lookAtNodeComponent,
+              points.beginX,
+              points.beginY,
+              nodeComponent
+            );
+          }
+          if (
+            end &&
+            lookAtNodeComponent &&
+            lookAtNodeComponent.update &&
+            nodeComponent
+          ) {
+            console.log('end', lookAtNodeComponent, nodeComponent);
+            lookAtNodeComponent.update(
+              lookAtNodeComponent,
+              points.beginX,
+              points.beginY,
+              nodeComponent
+            );
+          }
+        }
+      });
+    }
     return true;
   };
-  nodeComponent.x = 0;
-  nodeComponent.y = 0;
+  nodeComponent.x = startX;
+  nodeComponent.y = startY;
+  nodeComponent.width = width;
+  nodeComponent.height = height;
+  nodeComponent.specifier = specifier;
   return nodeComponent;
 };

@@ -14,12 +14,14 @@ export enum NodeComponentRelationType {
   sibling = 'sibling',
   controllerTarget = 'controllerTarget',
   connection = 'connection',
+  start = 'start',
+  end = 'end',
 }
 export interface INodeComponentRelation {
   component: INodeComponent;
   type: NodeComponentRelationType;
-  connectionStart?: INodeComponent;
-  connectionEnd?: INodeComponent;
+  // connectionStart?: INodeComponent;
+  // connectionEnd?: INodeComponent;
   update?: (
     component: INodeComponent,
     x: number,
@@ -40,9 +42,12 @@ export interface INodeComponent extends IElementNode {
   y: number;
   xEnd?: number;
   yEnd?: number;
+  width?: number;
+  height?: number;
   specifier?: string;
   nodeType?: string;
   components: INodeComponentRelation[];
+  isControlled?: boolean;
   update?: (
     component: INodeComponent,
     x: number,

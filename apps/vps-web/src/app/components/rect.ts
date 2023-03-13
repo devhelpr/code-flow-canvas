@@ -6,7 +6,10 @@ import {
   NodeComponentRelationType,
 } from '../interfaces/element';
 import { createEffect, getVisbility } from '../reactivity';
-import { createRectPathSVGElement } from './rect-path-svg-element';
+import {
+  createRectPathSVGElement,
+  RectNodeSpecifer,
+} from './rect-path-svg-element';
 import { createSVGElement } from './svg-element';
 
 export const createRect = (
@@ -16,7 +19,8 @@ export const createRect = (
   startX: number,
   startY: number,
   width: number,
-  height: number
+  height: number,
+  specifier: RectNodeSpecifer
 ) => {
   const connection = createRectPathSVGElement(
     canvas.domElement,
@@ -25,7 +29,8 @@ export const createRect = (
     startY,
     width,
     height,
-    pathHiddenElement
+    pathHiddenElement,
+    specifier
   );
 
   function setPosition(
@@ -38,6 +43,8 @@ export const createRect = (
       (
         element.domElement as unknown as HTMLElement | SVGElement
       ).style.transform = `translate(${x}px, ${y}px)`;
+      element.x = x;
+      element.y = y;
 
       return;
     }
@@ -76,6 +83,8 @@ export const createRect = (
       (
         element.domElement as unknown as HTMLElement | SVGElement
       ).style.transform = `translate(${x}px, ${y}px)`;
+      element.x = x;
+      element.y = y;
     }
   }
   const startPointElement = createSVGElement(
@@ -251,6 +260,7 @@ export const createRect = (
   });
 
   return {
+    nodeComponent: connection,
     setStartPoint: (x: number, y: number) => {
       if (startPointElement.update) {
         startPointElement.update(startPointElement, x, y, startPointElement);

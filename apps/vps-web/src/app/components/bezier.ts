@@ -20,7 +20,8 @@ export const createCubicBezier = (
   controlPoint1X: number,
   controlPoint1Y: number,
   controlPoint2X: number,
-  controlPoint2Y: number
+  controlPoint2Y: number,
+  isControlled = false
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
@@ -35,6 +36,7 @@ export const createCubicBezier = (
     controlPoint2Y,
     pathHiddenElement
   );
+  connection.isControlled = isControlled;
 
   function setPosition(
     element: INodeComponent,
@@ -77,6 +79,7 @@ export const createCubicBezier = (
     startY,
     'begin'
   );
+  startPointElement.isControlled = isControlled;
   startPointElement.update = (
     component: INodeComponent,
     x: number,
@@ -95,6 +98,7 @@ export const createCubicBezier = (
     endY,
     'end'
   );
+  endPointElement.isControlled = isControlled;
   endPointElement.update = (
     component: INodeComponent,
     x: number,
@@ -112,6 +116,7 @@ export const createCubicBezier = (
     controlPoint1Y,
     'c1'
   );
+  controlPoint1Element.isControlled = isControlled;
   controlPoint1Element.update = (
     component: INodeComponent,
     x: number,
@@ -129,6 +134,7 @@ export const createCubicBezier = (
     controlPoint2Y,
     'c2'
   );
+  controlPoint2Element.isControlled = isControlled;
   controlPoint2Element.update = (
     component: INodeComponent,
     x: number,
@@ -171,19 +177,19 @@ export const createCubicBezier = (
     },
   });
 
-  endPointElement.components.push({
-    component: connection,
-    type: NodeComponentRelationType.connection,
-    connectionStart: endPointElement,
-    connectionEnd: controlPoint1Element,
-  });
+  // endPointElement.components.push({
+  //   component: connection,
+  //   type: NodeComponentRelationType.connection,
+  //   connectionStart: endPointElement,
+  //   connectionEnd: controlPoint1Element,
+  // });
   controlPoint1Element.components.push(
-    {
-      component: connection,
-      type: NodeComponentRelationType.connection,
-      connectionStart: endPointElement,
-      connectionEnd: controlPoint1Element,
-    },
+    // {
+    //   component: connection,
+    //   type: NodeComponentRelationType.connection,
+    //   connectionStart: endPointElement,
+    //   connectionEnd: controlPoint1Element,
+    // },
     {
       component: connection,
       type: NodeComponentRelationType.controllerTarget,
@@ -244,6 +250,7 @@ export const createCubicBezier = (
   });
 
   return {
+    nodeComponent: connection,
     setStartPoint: (x: number, y: number) => {
       if (startPointElement.update) {
         startPointElement.update(startPointElement, x, y, startPointElement);
@@ -286,7 +293,8 @@ export const createQuadraticBezier = (
   endX: number,
   endY: number,
   controlPoint1X: number,
-  controlPoint1Y: number
+  controlPoint1Y: number,
+  isControlled = false
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
@@ -302,6 +310,7 @@ export const createQuadraticBezier = (
     pathHiddenElement,
     true
   );
+  connection.isControlled = isControlled;
 
   function setPosition(element: INodeComponent, x: number, y: number) {
     (
@@ -336,6 +345,7 @@ export const createQuadraticBezier = (
     startY,
     'begin'
   );
+  startPointElement.isControlled = isControlled;
   startPointElement.update = (
     component: INodeComponent,
     x: number,
@@ -354,6 +364,7 @@ export const createQuadraticBezier = (
     endY,
     'end'
   );
+  endPointElement.isControlled = isControlled;
   endPointElement.update = (
     component: INodeComponent,
     x: number,
@@ -371,6 +382,7 @@ export const createQuadraticBezier = (
     controlPoint1Y,
     'c1'
   );
+  controlPoint1Element.isControlled = isControlled;
   controlPoint1Element.update = (
     component: INodeComponent,
     x: number,
@@ -413,19 +425,19 @@ export const createQuadraticBezier = (
     },
   });
 
-  endPointElement.components.push({
-    component: connection,
-    type: NodeComponentRelationType.connection,
-    connectionStart: endPointElement,
-    connectionEnd: controlPoint1Element,
-  });
+  // endPointElement.components.push({
+  //   component: connection,
+  //   type: NodeComponentRelationType.connection,
+  //   connectionStart: endPointElement,
+  //   connectionEnd: controlPoint1Element,
+  // });
   controlPoint1Element.components.push(
-    {
-      component: connection,
-      type: NodeComponentRelationType.connection,
-      connectionStart: endPointElement,
-      connectionEnd: controlPoint1Element,
-    },
+    // {
+    //   component: connection,
+    //   type: NodeComponentRelationType.connection,
+    //   connectionStart: endPointElement,
+    //   connectionEnd: controlPoint1Element,
+    // },
     {
       component: connection,
       type: NodeComponentRelationType.controllerTarget,
@@ -466,6 +478,7 @@ export const createQuadraticBezier = (
   });
 
   return {
+    nodeComponent: connection,
     setStartPoint: (x: number, y: number) => {
       if (startPointElement.update) {
         startPointElement.update(startPointElement, x, y, startPointElement);

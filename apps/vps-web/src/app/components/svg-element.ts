@@ -54,6 +54,9 @@ export const createSVGElement = (
       fill: color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
       pointerdown: (e: PointerEvent) => {
         if (nodeComponent) {
+          if (nodeComponent.isControlled) {
+            return;
+          }
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();

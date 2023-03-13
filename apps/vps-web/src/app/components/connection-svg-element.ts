@@ -150,6 +150,9 @@ export const createConnectionSVGElement = (
       'stroke-width': 3,
       fill: 'transparent',
       pointerdown: (e: PointerEvent) => {
+        if (nodeComponent?.isControlled) {
+          return;
+        }
         if (nodeComponent) {
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
@@ -249,23 +252,47 @@ export const createConnectionSVGElement = (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
     ) {
-      const diffC1x = points.cx1 - points.beginX;
-      const diffC1y = points.cy1 - points.beginY;
-      const diffC2x = points.cx2 - points.beginX;
-      const diffC2y = points.cy2 - points.beginY;
-      const diffEndX = points.endX - points.beginX;
-      const diffEndY = points.endY - points.beginY;
+      /*
+ startX + 100,
+            startY + 50,
+            endX,
+            endY + 50,
+            startX + 100 + 150,
+            startY + 50,
+            endX - 150,
+            endY + 50,
+      */
+      if (actionComponent.specifier === 'start') {
+        points.beginX = x + (actionComponent?.width || 0);
+        points.beginY = y + (actionComponent?.height || 0) / 2;
 
-      points.beginX = x - 50;
-      points.beginY = y - 50;
+        points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
+        points.cy1 = points.beginY;
+        //
+      } else if (actionComponent.specifier === 'end') {
+        points.endX = x;
+        points.endY = y + (actionComponent?.height || 0) / 2;
 
-      points.cx1 = x - 50 + diffC1x;
-      points.cy1 = y - 50 + diffC1y;
-      points.cx2 = x - 50 + diffC2x;
-      points.cy2 = y - 50 + diffC2y;
-      points.endX = x - 50 + diffEndX;
-      points.endY = y - 50 + diffEndY;
+        points.cx2 = points.endX - (actionComponent?.width || 0) - 50;
+        points.cy2 = points.endY;
+      } else {
+        const diffC1x = points.cx1 - points.beginX;
+        const diffC1y = points.cy1 - points.beginY;
+        const diffC2x = points.cx2 - points.beginX;
+        const diffC2y = points.cy2 - points.beginY;
+        const diffEndX = points.endX - points.beginX;
+        const diffEndY = points.endY - points.beginY;
 
+        points.beginX = x - 50;
+        points.beginY = y - 50;
+
+        points.cx1 = x - 50 + diffC1x;
+        points.cy1 = y - 50 + diffC1y;
+        points.cx2 = x - 50 + diffC2x;
+        points.cy2 = y - 50 + diffC2y;
+        points.endX = x - 50 + diffEndX;
+        points.endY = y - 50 + diffEndY;
+      }
       const connectionInfo = incomingComponent.components.find(
         (c) => c.type === 'self'
       );
