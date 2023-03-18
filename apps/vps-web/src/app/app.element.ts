@@ -111,7 +111,7 @@ export class AppElement extends HTMLElement {
             startY,
             100,
             100,
-            'start'
+            '_start' // todo : fix this so a specifier is not needed on the rect node itself...
           );
 
           const endX = Math.floor(Math.random() * 250);
@@ -125,35 +125,35 @@ export class AppElement extends HTMLElement {
             endY,
             100,
             100,
-            'end'
+            '_end'
           );
 
-          bezierCurve = createCubicBezier(
-            canvas as unknown as INodeComponent,
-            pathHiddenElement,
-            this.elements,
-            startX + 100,
-            startY + 50,
-            endX,
-            endY + 50,
-            startX + 100 + 150,
-            startY + 50,
-            endX - 150,
-            endY + 50,
-            true
-          );
+          // bezierCurve = createCubicBezier(
+          //   canvas as unknown as INodeComponent,
+          //   pathHiddenElement,
+          //   this.elements,
+          //   startX + 100,
+          //   startY + 50,
+          //   endX,
+          //   endY + 50,
+          //   startX + 100 + 150,
+          //   startY + 50,
+          //   endX - 150,
+          //   endY + 50,
+          //   true
+          // );
 
-          if (bezierCurve.nodeComponent) {
-            bezierCurve.nodeComponent.components.push({
-              type: NodeComponentRelationType.start,
-              component: start.nodeComponent,
-            } as unknown as INodeComponentRelation);
+          // if (bezierCurve.nodeComponent) {
+          //   bezierCurve.nodeComponent.components.push({
+          //     type: NodeComponentRelationType.start,
+          //     component: start.nodeComponent,
+          //   } as unknown as INodeComponentRelation);
 
-            bezierCurve.nodeComponent.components.push({
-              type: NodeComponentRelationType.end,
-              component: end.nodeComponent,
-            } as unknown as INodeComponentRelation);
-          }
+          //   bezierCurve.nodeComponent.components.push({
+          //     type: NodeComponentRelationType.end,
+          //     component: end.nodeComponent,
+          //   } as unknown as INodeComponentRelation);
+          // }
         },
       },
       menubarElement.domElement,
@@ -168,33 +168,33 @@ export class AppElement extends HTMLElement {
           const x = Math.floor(Math.random() * 250);
           const y = Math.floor(Math.random() * 500);
 
-          if (Math.random() >= 0.5) {
-            bezierCurve = createCubicBezier(
-              canvas as unknown as INodeComponent,
-              pathHiddenElement,
-              this.elements,
-              x,
-              y,
-              x + 150,
-              y + 150,
-              x + 50,
-              y + 50,
-              x + 75,
-              y + 75
-            );
-          } else {
-            bezierCurve = createQuadraticBezier(
-              canvas as unknown as INodeComponent,
-              pathHiddenElement,
-              this.elements,
-              x,
-              y,
-              x + 150,
-              y + 150,
-              x + 50,
-              y + 50
-            );
-          }
+          // if (Math.random() >= 0.5) {
+          bezierCurve = createCubicBezier(
+            canvas as unknown as INodeComponent,
+            pathHiddenElement,
+            this.elements,
+            x,
+            y,
+            x + 150,
+            y + 150,
+            x + 50,
+            y + 50,
+            x + 75,
+            y + 75
+          );
+          // } else {
+          //   bezierCurve = createQuadraticBezier(
+          //     canvas as unknown as INodeComponent,
+          //     pathHiddenElement,
+          //     this.elements,
+          //     x,
+          //     y,
+          //     x + 150,
+          //     y + 150,
+          //     x + 50,
+          //     y + 50
+          //   );
+          // }
         },
       },
       menubarElement.domElement,

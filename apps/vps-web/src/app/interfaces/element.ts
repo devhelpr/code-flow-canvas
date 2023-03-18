@@ -38,6 +38,7 @@ export interface INodeComponentRelation {
 }
 
 export interface INodeComponent extends IElementNode {
+  parent?: INodeComponent;
   x: number;
   y: number;
   xEnd?: number;
@@ -47,11 +48,19 @@ export interface INodeComponent extends IElementNode {
   specifier?: string;
   nodeType?: string;
   components: INodeComponentRelation[];
+  startNode?: INodeComponent;
+  endNode?: INodeComponent;
   isControlled?: boolean;
+  isConnectPoint?: boolean;
   update?: (
     component: INodeComponent,
     x: number,
     y: number,
     actionComponent: INodeComponent
   ) => boolean;
+  pointerDown?: () => void;
+  pointerMove?: () => void;
+  pointerUp?: () => void;
+  onCanReceiveDroppedComponent?: (component: INodeComponent) => boolean;
+  onReceiveDroppedComponent?: (component: INodeComponent) => void;
 }

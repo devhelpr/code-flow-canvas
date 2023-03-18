@@ -1,4 +1,10 @@
 import {
+  clearDropTarget,
+  getCurrentDropTarget,
+  getCurrentInteractionState,
+  setCurrentDropTarget,
+} from '../interaction-state-machine';
+import {
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
@@ -52,6 +58,44 @@ export const createSVGElement = (
       stroke: 'black',
       'stroke-width': 3,
       fill: color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+      pointerover: (_e: PointerEvent) => {
+        console.log('svg pointerover', nodeComponent.id);
+        (nodeComponent.domElement as unknown as SVGElement).classList.remove(
+          'cursor-pointer'
+        );
+        (nodeComponent.domElement as unknown as SVGElement).classList.add(
+          'cursor-pointer'
+        );
+        if (nodeComponent.isConnectPoint) {
+          if (nodeComponent.onCanReceiveDroppedComponent) {
+            //TODO : get the current interactive element and check if it can be dropped here
+            const state = getCurrentInteractionState();
+            if (state && state.element) {
+              const canReceiveDrop = nodeComponent.onCanReceiveDroppedComponent(
+                state.element
+              );
+              if (!canReceiveDrop) {
+                (
+                  nodeComponent.domElement as unknown as SVGElement
+                ).classList.remove('cursor-pointer');
+                console.log(
+                  'svg cant register drop target for current dragging element',
+                  state.element.id
+                );
+                return;
+              }
+            }
+          }
+          console.log('svg register drop target', nodeComponent.id);
+          setCurrentDropTarget(nodeComponent);
+        }
+      },
+      pointerleave: (_e: PointerEvent) => {
+        if (nodeComponent.isConnectPoint) {
+          console.log('svg unregister drop target', nodeComponent.id);
+          clearDropTarget(nodeComponent);
+        }
+      },
       pointerdown: (e: PointerEvent) => {
         if (nodeComponent) {
           if (nodeComponent.isControlled) {
@@ -60,12 +104,20 @@ export const createSVGElement = (
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
-          interactionInfo = pointerDown(
+          const interactionInfoResult = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
             nodeComponent,
             canvasElement
           );
+          if (interactionInfoResult) {
+            interactionInfo = interactionInfoResult;
+            const circleDomElement = circleElement?.domElement as unknown as
+              | HTMLElement
+              | SVGElement;
+            circleDomElement.classList.remove('pointer-events-auto');
+            circleDomElement.classList.add('pointer-events-none');
+          }
         }
       },
       pointermove: (e: PointerEvent) => {
@@ -83,13 +135,13 @@ export const createSVGElement = (
                 interactionInfo
               )
             ) {
-              console.log(
-                'svg pointermove',
-                nodeComponent.id,
-                nodeComponent.domElement,
-                e.clientX - canvasRect.x,
-                e.clientY - canvasRect.y
-              );
+              // console.log(
+              //   'svg pointermove',
+              //   nodeComponent.id,
+              //   nodeComponent.domElement,
+              //   e.clientX - canvasRect.x,
+              //   e.clientY - canvasRect.y
+              // );
             }
           }
         }
@@ -97,6 +149,8 @@ export const createSVGElement = (
       pointerup: (e: PointerEvent) => {
         if (nodeComponent) {
           if (nodeComponent && nodeComponent.domElement) {
+            //clearDropTarget(nodeComponent);
+
             const canvasRect = (
               canvasElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
@@ -107,6 +161,11 @@ export const createSVGElement = (
               canvasElement,
               interactionInfo
             );
+            const circleDomElement = circleElement?.domElement as unknown as
+              | HTMLElement
+              | SVGElement;
+            circleDomElement.classList.add('pointer-events-auto');
+            circleDomElement.classList.remove('pointer-events-none');
           }
         }
       },
@@ -118,5 +177,31 @@ export const createSVGElement = (
   nodeComponent.specifier = specifier;
   nodeComponent.x = initialX;
   nodeComponent.y = initialY;
+  nodeComponent.pointerUp = () => {
+    const dropTarget = getCurrentDropTarget();
+    if (dropTarget) {
+      console.log(
+        'DROPPED ON TARGET',
+        dropTarget.id,
+        nodeComponent.id,
+        nodeComponent.specifier,
+        nodeComponent.onReceiveDroppedComponent
+      );
+      if (
+        dropTarget.onReceiveDroppedComponent &&
+        dropTarget.id !== nodeComponent.id
+      ) {
+        dropTarget.onReceiveDroppedComponent(nodeComponent);
+      }
+    }
+    console.log('svg pointerup nodecomponent', nodeComponent.id, dropTarget);
+    clearDropTarget(nodeComponent);
+
+    const circleDomElement = circleElement?.domElement as unknown as
+      | HTMLElement
+      | SVGElement;
+    circleDomElement.classList.add('pointer-events-auto');
+    circleDomElement.classList.remove('pointer-events-none');
+  };
   return nodeComponent;
 };

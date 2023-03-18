@@ -14,7 +14,7 @@ export const pointerDown = (
   y: number,
   element: INodeComponent,
   canvasElement: DOMElementNode
-): IPointerDownResult => {
+): IPointerDownResult | false => {
   let xOffsetWithinElementOnFirstClick = 0;
   let yOffsetWithinElementOnFirstClick = 0;
 
@@ -43,11 +43,17 @@ export const pointerDown = (
         element.domElement
       );
     }
+
+    if (element.pointerDown) {
+      element.pointerDown();
+    }
+
+    return {
+      xOffsetWithinElementOnFirstClick,
+      yOffsetWithinElementOnFirstClick,
+    };
   }
-  return {
-    xOffsetWithinElementOnFirstClick,
-    yOffsetWithinElementOnFirstClick,
-  };
+  return false;
 };
 
 export const pointerMove = (
@@ -87,6 +93,10 @@ export const pointerMove = (
           element
         );
       }
+
+      if (element.pointerMove) {
+        element.pointerMove();
+      }
       //}
 
       return true;
@@ -121,36 +131,9 @@ export const pointerUp = (
       element.x = x - interactionInfo.xOffsetWithinElementOnFirstClick;
       element.y = y - interactionInfo.yOffsetWithinElementOnFirstClick;
       console.log('pointerUp', element.x, element.y);
-      // if (element.nodeType !== 'connection') {
-      //   (
-      //     element.domElement as unknown as HTMLElement | SVGElement
-      //   ).style.transform = `translate(${
-      //     x - interactionInfo.xOffsetWithinElementOnFirstClick
-      //   }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
-      // }
-      // element.components.forEach((componentRelation) => {
-      //   if (
-      //     componentRelation.type === NodeComponentRelationType.self ||
-      //     componentRelation.type === NodeComponentRelationType.controller
-      //   ) {
-      //     if (componentRelation.commitUpdate) {
-      //       componentRelation.commitUpdate(
-      //         componentRelation.component,
-      //         x - interactionInfo.xOffsetWithinElementOnFirstClick,
-      //         y - interactionInfo.yOffsetWithinElementOnFirstClick,
-      //         element
-      //       );
-      //     }
-      //   } else if (
-      //     componentRelation.type === NodeComponentRelationType.childComponent
-      //   ) {
-      //     //
-      //   } else if (
-      //     componentRelation.type === NodeComponentRelationType.connection
-      //   ) {
-      //     //
-      //   }
-      // });
+      if (element.pointerUp) {
+        element.pointerUp();
+      }
     }
   }
 };

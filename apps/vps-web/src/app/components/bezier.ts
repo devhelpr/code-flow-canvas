@@ -80,6 +80,7 @@ export const createCubicBezier = (
     'begin'
   );
   startPointElement.isControlled = isControlled;
+  startPointElement.parent = connection;
   startPointElement.update = (
     component: INodeComponent,
     x: number,
@@ -93,12 +94,13 @@ export const createCubicBezier = (
   const endPointElement = createSVGElement(
     canvas.domElement,
     elements,
-    '#ff000080',
+    '#ffff4080',
     endX,
     endY,
     'end'
   );
   endPointElement.isControlled = isControlled;
+  endPointElement.parent = connection;
   endPointElement.update = (
     component: INodeComponent,
     x: number,
@@ -345,6 +347,7 @@ export const createQuadraticBezier = (
     startY,
     'begin'
   );
+  startPointElement.parent = connection;
   startPointElement.isControlled = isControlled;
   startPointElement.update = (
     component: INodeComponent,
@@ -364,6 +367,7 @@ export const createQuadraticBezier = (
     endY,
     'end'
   );
+  endPointElement.parent = connection;
   endPointElement.isControlled = isControlled;
   endPointElement.update = (
     component: INodeComponent,

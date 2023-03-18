@@ -3,6 +3,7 @@ import {
   ElementNodeMap,
   IElementNode,
   INodeComponent,
+  INodeComponentRelation,
   NodeComponentRelationType,
 } from '../interfaces/element';
 import { createEffect, getVisbility } from '../reactivity';
@@ -22,7 +23,7 @@ export const createRect = (
   height: number,
   specifier: RectNodeSpecifer
 ) => {
-  const connection = createRectPathSVGElement(
+  const rectNode = createRectPathSVGElement(
     canvas.domElement,
     elements,
     startX,
@@ -157,8 +158,119 @@ export const createRect = (
     return true;
   };
 
+  const leftThumbConnectorElement = createSVGElement(
+    canvas.domElement,
+    elements,
+    '#008080',
+    startX,
+    startY + height / 2,
+    'leftThumbConnector'
+  );
+
+  leftThumbConnectorElement.isControlled = true;
+  leftThumbConnectorElement.isConnectPoint = true;
+  leftThumbConnectorElement.onCanReceiveDroppedComponent = (
+    component: INodeComponent
+  ) => {
+    return (
+      (component && component.parent && component.specifier === 'end') ?? false
+    );
+  };
+  leftThumbConnectorElement.onReceiveDroppedComponent = (
+    component: INodeComponent
+  ) => {
+    // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
+    console.log(
+      'DROPPED ON LEFT THUMB',
+      component.parent,
+      component.id,
+      component.specifier
+    );
+
+    if (component.parent && component.specifier === 'end') {
+      component.parent.isControlled = true;
+      component.parent.endNode = rectNode;
+      const index = component.parent.components.findIndex(
+        (c) => c.type === NodeComponentRelationType.end
+      );
+      if (index > -1) {
+        component.parent.components.splice(index, 1);
+      }
+      component.parent.components.push({
+        type: NodeComponentRelationType.end,
+        component: rectNode,
+      } as unknown as INodeComponentRelation);
+    }
+  };
+  leftThumbConnectorElement.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    return true;
+  };
+
+  const rightThumbConnectorElement = createSVGElement(
+    canvas.domElement,
+    elements,
+    '#008080',
+    startX + width,
+    startY + height / 2,
+    'rightThumbConnector'
+  );
+
+  rightThumbConnectorElement.isControlled = true;
+  rightThumbConnectorElement.isConnectPoint = true;
+
+  rightThumbConnectorElement.onCanReceiveDroppedComponent = (
+    component: INodeComponent
+  ) => {
+    return (
+      (component && component.parent && component.specifier === 'begin') ??
+      false
+    );
+  };
+
+  rightThumbConnectorElement.onReceiveDroppedComponent = (
+    component: INodeComponent
+  ) => {
+    // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
+    console.log(
+      'DROPPED ON RIGHT THUMB',
+      component.id,
+      component.parent,
+      component.specifier
+    );
+    if (component.parent && component.specifier === 'begin') {
+      component.parent.startNode = rectNode;
+      component.parent.isControlled = true;
+      const index = component.parent.components.findIndex(
+        (c) => c.type === NodeComponentRelationType.start
+      );
+      if (index > -1) {
+        component.parent.components.splice(index, 1);
+      }
+      component.parent.components.push({
+        type: NodeComponentRelationType.start,
+        component: rectNode,
+      } as unknown as INodeComponentRelation);
+    }
+  };
+
+  rightThumbConnectorElement.update = (
+    component: INodeComponent,
+    x: number,
+    y: number,
+    actionComponent: INodeComponent
+  ) => {
+    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    return true;
+  };
+
   startPointElement.components.push({
-    component: connection,
+    component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
       component: INodeComponent,
@@ -174,7 +286,7 @@ export const createRect = (
   });
 
   rightTopPointElement.components.push({
-    component: connection,
+    component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
       component: INodeComponent,
@@ -190,16 +302,16 @@ export const createRect = (
   });
 
   leftBottomElement.components.push({
-    component: connection,
+    component: rectNode,
     type: NodeComponentRelationType.connection,
   });
   leftBottomElement.components.push(
     {
-      component: connection,
+      component: rectNode,
       type: NodeComponentRelationType.connection,
     },
     {
-      component: connection,
+      component: rectNode,
       type: NodeComponentRelationType.controllerTarget,
       update: (
         component: INodeComponent,
@@ -215,8 +327,8 @@ export const createRect = (
     }
   );
 
-  connection.components.push({
-    component: connection,
+  rectNode.components.push({
+    component: rectNode,
     type: NodeComponentRelationType.self,
     update: (component: INodeComponent, x: number, y: number) => {
       return true;
@@ -229,10 +341,12 @@ export const createRect = (
       rightTop: rightTopPointElement,
       leftBottom: leftBottomElement,
       rightBottom: rightBottomElement,
+      leftThumbConnector: leftThumbConnectorElement,
+      rightThumbConnector: rightThumbConnectorElement,
     },
   });
   rightBottomElement.components.push({
-    component: connection,
+    component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
       component: INodeComponent,
@@ -257,10 +371,16 @@ export const createRect = (
       visibility ? 'block' : 'none';
     (leftBottomElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
+    (
+      leftThumbConnectorElement.domElement as unknown as SVGElement
+    ).style.display = visibility ? 'block' : 'none';
+    (
+      rightThumbConnectorElement.domElement as unknown as SVGElement
+    ).style.display = visibility ? 'block' : 'none';
   });
 
   return {
-    nodeComponent: connection,
+    nodeComponent: rectNode,
     setStartPoint: (x: number, y: number) => {
       if (startPointElement.update) {
         startPointElement.update(startPointElement, x, y, startPointElement);

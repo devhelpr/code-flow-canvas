@@ -28,7 +28,7 @@ export interface InteractionTarget {
     y: number,
     element: INodeComponent,
     canvasElement: DOMElementNode
-  ) => IPointerDownResult;
+  ) => IPointerDownResult | false;
   pointerMove: (
     x: number,
     y: number,
@@ -133,4 +133,20 @@ export const interactionEventState = (
     }
   }
   return false;
+};
+
+let currentDropTarget: INodeComponent | undefined = undefined;
+export const setCurrentDropTarget = (dropTarget: INodeComponent) => {
+  currentDropTarget = dropTarget;
+};
+
+export const clearDropTarget = (dropTarget: INodeComponent) => {
+  console.log('clearDropTarget', currentDropTarget?.id, dropTarget.id);
+  if (currentDropTarget && currentDropTarget.id === dropTarget.id) {
+    currentDropTarget = undefined;
+  }
+};
+
+export const getCurrentDropTarget = () => {
+  return currentDropTarget;
 };

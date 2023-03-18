@@ -113,6 +113,28 @@ export const createConnectionSVGElement = (
     },
     canvasElement
   );
+  const defs = createNSElement('defs', {}, svgParent.domElement);
+  const marker = createNSElement(
+    'marker',
+    {
+      id: 'arrow',
+      refX: '0',
+      refY: '2',
+      markerUnits: 'strokeWidth',
+      markerWidth: '4',
+      markerHeight: '4',
+      orient: 'auto',
+    },
+    defs.domElement
+  );
+  const arrowMarkerPath = createNSElement(
+    'path',
+    {
+      d: 'M0,0 V4 L2,2 Z',
+      fill: 'white',
+    },
+    marker.domElement
+  );
 
   let nodeComponent: INodeComponent | undefined = undefined;
   nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
@@ -147,6 +169,7 @@ export const createConnectionSVGElement = (
             pathPoints.cy2 - bbox.y
           } ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`,
       stroke: 'white',
+      'marker-end': 'url(#arrow)',
       'stroke-width': 3,
       fill: 'transparent',
       pointerdown: (e: PointerEvent) => {
@@ -159,13 +182,14 @@ export const createConnectionSVGElement = (
           ).getBoundingClientRect();
 
           const bbox = getBBoxPath();
-          interactionInfo = pointerDown(
+          const interactionInfoResult = pointerDown(
             e.clientX - elementRect.x - (pathPoints.beginX - bbox.x - 10),
             e.clientY - elementRect.y - (pathPoints.beginY - bbox.y - 10),
             nodeComponent,
             canvasElement
           );
-          if (interactionInfo) {
+          if (interactionInfoResult) {
+            interactionInfo = interactionInfoResult;
             isClicking = true;
             isMoving = false;
             (canvasElement as unknown as HTMLElement | SVGElement).append(
@@ -252,25 +276,25 @@ export const createConnectionSVGElement = (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
     ) {
-      /*
- startX + 100,
-            startY + 50,
-            endX,
-            endY + 50,
-            startX + 100 + 150,
-            startY + 50,
-            endX - 150,
-            endY + 50,
-      */
-      if (actionComponent.specifier === 'start') {
-        points.beginX = x + (actionComponent?.width || 0);
+      // this specifier is from the node...
+      // how to check if it is a start or end node without looking at the nodes?
+      //if (actionComponent.specifier === 'start') {
+      if (
+        incomingComponent.startNode &&
+        actionComponent.id === incomingComponent.startNode.id
+      ) {
+        points.beginX = x + (actionComponent?.width || 0) + 20;
         points.beginY = y + (actionComponent?.height || 0) / 2;
 
         points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
         points.cy1 = points.beginY;
         //
-      } else if (actionComponent.specifier === 'end') {
-        points.endX = x;
+      } else if (
+        incomingComponent.endNode &&
+        actionComponent.id === incomingComponent.endNode.id
+      ) {
+        //if (actionComponent.specifier === 'end') {
+        points.endX = x - 20;
         points.endY = y + (actionComponent?.height || 0) / 2;
 
         points.cx2 = points.endX - (actionComponent?.width || 0) - 50;

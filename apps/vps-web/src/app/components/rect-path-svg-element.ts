@@ -137,13 +137,14 @@ export const createRectPathSVGElement = (
           ).getBoundingClientRect();
 
           const bbox = getBBoxPath();
-          interactionInfo = pointerDown(
+          const interactionInfoResult = pointerDown(
             e.clientX - elementRect.x - (pathPoints.beginX - bbox.x - 10),
             e.clientY - elementRect.y - (pathPoints.beginY - bbox.y - 10),
             nodeComponent,
             canvasElement
           );
-          if (interactionInfo) {
+          if (interactionInfoResult) {
+            interactionInfo = interactionInfoResult;
             isClicking = true;
             isMoving = false;
             (canvasElement as unknown as HTMLElement | SVGElement).append(
@@ -168,6 +169,14 @@ export const createRectPathSVGElement = (
 
               (canvasElement as unknown as HTMLElement | SVGElement).append(
                 connectionInfo.controllers?.rightBottom.domElement
+              );
+
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.rightThumbConnector.domElement
+              );
+
+              (canvasElement as unknown as HTMLElement | SVGElement).append(
+                connectionInfo.controllers?.leftThumbConnector.domElement
               );
             }
           }
@@ -262,6 +271,20 @@ export const createRectPathSVGElement = (
           points.beginY + points.height,
           actionComponent
         );
+
+        connectionInfo.controllers?.leftThumbConnector.update(
+          connectionInfo.controllers?.leftThumbConnector,
+          points.beginX,
+          points.beginY + points.height / 2,
+          actionComponent
+        );
+
+        connectionInfo.controllers?.rightThumbConnector.update(
+          connectionInfo.controllers?.rightThumbConnector,
+          points.beginX + points.width,
+          points.beginY + points.height / 2,
+          actionComponent
+        );
       }
     } else {
       if (!actionComponent.specifier) {
@@ -321,8 +344,6 @@ export const createRectPathSVGElement = (
           return false;
         }
 
-        // TODO : fix these depending on the specifier !!
-
         const getRectPoint = (specifier: string) => {
           if (specifier === 'begin') {
             return {
@@ -343,6 +364,16 @@ export const createRectPathSVGElement = (
             return {
               x: points.beginX + points.width,
               y: points.beginY + points.height,
+            };
+          } else if (specifier === 'leftThumbConnector') {
+            return {
+              x: points.beginX,
+              y: points.beginY + points.height / 2,
+            };
+          } else if (specifier === 'rightThumbConnector') {
+            return {
+              x: points.beginX + points.width,
+              y: points.beginY + points.height / 2,
             };
           }
           return false;
@@ -379,6 +410,30 @@ export const createRectPathSVGElement = (
         if (point) {
           connectionInfo.controllers?.rightBottom.update(
             connectionInfo.controllers?.rightBottom,
+            point.x,
+            point.y,
+            incomingComponent
+          );
+        }
+
+        point = getRectPoint(
+          connectionInfo.controllers?.rightThumbConnector.specifier
+        );
+        if (point) {
+          connectionInfo.controllers?.rightThumbConnector.update(
+            connectionInfo.controllers?.rightThumbConnector,
+            point.x,
+            point.y,
+            incomingComponent
+          );
+        }
+
+        point = getRectPoint(
+          connectionInfo.controllers?.leftThumbConnector.specifier
+        );
+        if (point) {
+          connectionInfo.controllers?.leftThumbConnector.update(
+            connectionInfo.controllers?.leftThumbConnector,
             point.x,
             point.y,
             incomingComponent
@@ -448,7 +503,7 @@ export const createRectPathSVGElement = (
             lookAtNodeComponent.update &&
             nodeComponent
           ) {
-            console.log('start', lookAtNodeComponent, nodeComponent);
+            //console.log('start', lookAtNodeComponent, nodeComponent);
             lookAtNodeComponent.update(
               lookAtNodeComponent,
               points.beginX,
@@ -462,7 +517,7 @@ export const createRectPathSVGElement = (
             lookAtNodeComponent.update &&
             nodeComponent
           ) {
-            console.log('end', lookAtNodeComponent, nodeComponent);
+            //console.log('end', lookAtNodeComponent, nodeComponent);
             lookAtNodeComponent.update(
               lookAtNodeComponent,
               points.beginX,
