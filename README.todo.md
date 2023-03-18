@@ -11,3 +11,5 @@
 
     - before/after update strategies
     - reading width/height from actionComponent should be made possible
+
+    - more complex svg for rect (title text/subtitle text)
