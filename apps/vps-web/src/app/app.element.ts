@@ -110,8 +110,7 @@ export class AppElement extends HTMLElement {
             startX,
             startY,
             100,
-            100,
-            '_start' // todo : fix this so a specifier is not needed on the rect node itself...
+            100
           );
 
           const endX = Math.floor(Math.random() * 250);
@@ -124,8 +123,7 @@ export class AppElement extends HTMLElement {
             endX,
             endY,
             100,
-            100,
-            '_end'
+            100
           );
 
           // bezierCurve = createCubicBezier(
@@ -268,6 +266,11 @@ export class AppElement extends HTMLElement {
               const canvasRect = (
                 canvas.domElement as unknown as HTMLElement | SVGElement
               ).getBoundingClientRect();
+              console.log(
+                'pointerMove canvas',
+                event.clientX - canvasRect.x,
+                event.clientY - canvasRect.y
+              );
               currentState.target.pointerMove(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,

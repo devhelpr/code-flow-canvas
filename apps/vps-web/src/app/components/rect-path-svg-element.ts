@@ -23,8 +23,6 @@ function getPoint(x: number, y: number) {
   };
 }
 
-export type RectNodeSpecifer = 'start' | 'end';
-
 export const createRectPathSVGElement = (
   canvasElement: DOMElementNode,
   elements: ElementNodeMap,
@@ -32,8 +30,7 @@ export const createRectPathSVGElement = (
   startY: number,
   width: number,
   height: number,
-  pathHiddenElement: IElementNode,
-  specifier: RectNodeSpecifer
+  pathHiddenElement: IElementNode
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -182,41 +179,44 @@ export const createRectPathSVGElement = (
           }
         }
       },
-      pointermove: (e: PointerEvent) => {
-        if (nodeComponent) {
-          if (nodeComponent && nodeComponent.domElement) {
-            if (
-              pointerMove(
-                e.clientX,
-                e.clientY,
-                nodeComponent,
-                canvasElement,
-                interactionInfo
-              )
-            ) {
-              isMoving = true;
-            }
-          }
-        }
-      },
-      pointerup: (e: PointerEvent) => {
-        if (nodeComponent) {
-          if (nodeComponent && nodeComponent.domElement) {
-            pointerUp(
-              e.clientX,
-              e.clientY,
-              nodeComponent,
-              canvasElement,
-              interactionInfo
-            );
-            if (isClicking && !isMoving) {
-              setSelectNode(nodeComponent);
-            }
-            isMoving = false;
-            isClicking = false;
-          }
-        }
-      },
+      // pointermove: (e: PointerEvent) => {
+      //   if (nodeComponent) {
+      //     if (nodeComponent && nodeComponent.domElement) {
+      //       if (
+      //         pointerMove(
+      //           e.clientX,
+      //           e.clientY,
+      //           nodeComponent,
+      //           canvasElement,
+      //           interactionInfo
+      //         )
+      //       ) {
+      //         isMoving = true;
+      //       }
+      //       //e.stopImmediatePropagation();
+      //       // e.preventDefault();
+      //       // return false;
+      //     }
+      //   }
+      // },
+      // pointerup: (e: PointerEvent) => {
+      //   if (nodeComponent) {
+      //     if (nodeComponent && nodeComponent.domElement) {
+      //       pointerUp(
+      //         e.clientX,
+      //         e.clientY,
+      //         nodeComponent,
+      //         canvasElement,
+      //         interactionInfo
+      //       );
+      //       if (isClicking && !isMoving) {
+      //         setSelectNode(nodeComponent);
+      //       }
+      //       isMoving = false;
+      //       isClicking = false;
+      //     }
+      //   }
+      // },
     },
     nodeComponent.domElement
   );
@@ -476,6 +476,20 @@ export const createRectPathSVGElement = (
       nodeComponent.y = points.beginY;
       nodeComponent.width = points.width;
       nodeComponent.height = points.height;
+
+      // TODO : figure out why the y coordinate differs between two updates !??
+      console.log(
+        'update rect',
+        nodeComponent.id,
+        'x-y',
+        x,
+        y,
+        'node x-y',
+        nodeComponent.x,
+        nodeComponent.y,
+        incomingComponent,
+        actionComponent
+      );
     }
 
     // TODO : check if connection with this rect exists (start/end) by
@@ -534,6 +548,8 @@ export const createRectPathSVGElement = (
   nodeComponent.y = startY;
   nodeComponent.width = width;
   nodeComponent.height = height;
-  nodeComponent.specifier = specifier;
+
+  console.log('init rect', nodeComponent.x, nodeComponent.y);
+
   return nodeComponent;
 };

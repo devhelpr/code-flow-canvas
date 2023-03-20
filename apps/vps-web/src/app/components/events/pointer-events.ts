@@ -86,6 +86,7 @@ export const pointerMove = (
       //   x - interactionInfo.xOffsetWithinElementOnFirstClick
       // }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
       if (element.update) {
+        console.log('before update', element.x, element.y);
         element.update(
           element,
           x - interactionInfo.xOffsetWithinElementOnFirstClick,
@@ -95,6 +96,7 @@ export const pointerMove = (
       }
 
       if (element.pointerMove) {
+        console.log('before pointermove', element.x, element.y);
         element.pointerMove();
       }
       //}

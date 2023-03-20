@@ -7,10 +7,7 @@ import {
   NodeComponentRelationType,
 } from '../interfaces/element';
 import { createEffect, getVisbility } from '../reactivity';
-import {
-  createRectPathSVGElement,
-  RectNodeSpecifer,
-} from './rect-path-svg-element';
+import { createRectPathSVGElement } from './rect-path-svg-element';
 import { createSVGElement } from './svg-element';
 
 export const createRect = (
@@ -20,8 +17,7 @@ export const createRect = (
   startX: number,
   startY: number,
   width: number,
-  height: number,
-  specifier: RectNodeSpecifer
+  height: number
 ) => {
   const rectNode = createRectPathSVGElement(
     canvas.domElement,
@@ -30,8 +26,7 @@ export const createRect = (
     startY,
     width,
     height,
-    pathHiddenElement,
-    specifier
+    pathHiddenElement
   );
 
   function setPosition(
@@ -180,6 +175,7 @@ export const createRect = (
     component: INodeComponent
   ) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
+    // TODO : change so that the component itself is send as parameter and NOT the drag handle
     console.log(
       'DROPPED ON LEFT THUMB',
       component.parent,
@@ -200,6 +196,15 @@ export const createRect = (
         type: NodeComponentRelationType.end,
         component: rectNode,
       } as unknown as INodeComponentRelation);
+
+      if (component.parent.update) {
+        component.parent.update(
+          component.parent,
+          rectNode.x, //- 50,
+          rectNode.y, //- 100 - 5,
+          rectNode
+        );
+      }
     }
   };
   leftThumbConnectorElement.update = (
@@ -256,6 +261,16 @@ export const createRect = (
         type: NodeComponentRelationType.start,
         component: rectNode,
       } as unknown as INodeComponentRelation);
+
+      if (component.parent.update) {
+        // why is this transformation needed ?? .. it is only needed after the rect is moved after is was instantiated!??
+        component.parent.update(
+          component.parent,
+          rectNode.x, //- 50,
+          rectNode.y, //- 100 - 5,
+          rectNode
+        );
+      }
     }
   };
 
