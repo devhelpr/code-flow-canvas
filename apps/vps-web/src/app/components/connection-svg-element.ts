@@ -287,16 +287,41 @@ export const createConnectionSVGElement = <T>(
       // update all in this condition...
     }
 
+    let skipChecks = false;
+
     if (
       !incomingComponent ||
       x === undefined ||
       y === undefined ||
       !actionComponent
     ) {
-      return false;
+      if (nodeComponent?.endNode && nodeComponent?.startNode) {
+        points.beginX =
+          nodeComponent.startNode.x + (nodeComponent.startNode.width || 0) + 20;
+        points.beginY =
+          nodeComponent.startNode.y + (nodeComponent.startNode.height || 0) / 2;
+
+        points.cx1 = points.beginX + (nodeComponent.startNode.width || 0) + 50;
+        points.cy1 = points.beginY;
+
+        points.endX = nodeComponent.endNode.x - 20;
+        points.endY =
+          nodeComponent.endNode.y + (nodeComponent.endNode.height || 0) / 2;
+
+        points.cx2 = points.endX - (nodeComponent.endNode.width || 0) - 50;
+        points.cy2 = points.endY;
+        skipChecks = true;
+      } else {
+        return false;
+      }
     }
 
     if (
+      !skipChecks &&
+      incomingComponent &&
+      actionComponent &&
+      x !== undefined &&
+      y !== undefined &&
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
     ) {
@@ -387,23 +412,27 @@ export const createConnectionSVGElement = <T>(
           );
         }
       }
-    } else {
-      if (!actionComponent.specifier) {
+    } else if (!skipChecks) {
+      if (actionComponent && !actionComponent.specifier) {
         return false;
       }
 
-      if (actionComponent.specifier === 'c1') {
-        points.cx1 = x; //- incomingComponent.x;
-        points.cy1 = y; //- incomingComponent.y;
-      } else if (actionComponent.specifier === 'c2') {
-        points.cx2 = x; //- incomingComponent.x;
-        points.cy2 = y; //- incomingComponent.y;
-      } else if (actionComponent.specifier === 'end') {
-        points.endX = x; //- incomingComponent.x;
-        points.endY = y; //- incomingComponent.y;
-      } else if (actionComponent.specifier === 'begin') {
-        points.beginX = x; //- incomingComponent.x;
-        points.beginY = y; //- incomingComponent.y;
+      if (actionComponent && x !== undefined && y !== undefined) {
+        if (actionComponent.specifier === 'c1') {
+          points.cx1 = x; //- incomingComponent.x;
+          points.cy1 = y; //- incomingComponent.y;
+        } else if (actionComponent.specifier === 'c2') {
+          points.cx2 = x; //- incomingComponent.x;
+          points.cy2 = y; //- incomingComponent.y;
+        } else if (actionComponent.specifier === 'end') {
+          points.endX = x; //- incomingComponent.x;
+          points.endY = y; //- incomingComponent.y;
+        } else if (actionComponent.specifier === 'begin') {
+          points.beginX = x; //- incomingComponent.x;
+          points.beginY = y; //- incomingComponent.y;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
