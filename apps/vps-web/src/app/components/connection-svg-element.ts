@@ -280,25 +280,15 @@ export const createConnectionSVGElement = (
         incomingComponent.startNode &&
         actionComponent.id === incomingComponent.startNode.id
       ) {
-        console.log(
-          'start',
-          actionComponent.id,
-          x,
-          y,
-          actionComponent?.width,
-          actionComponent?.height
-        );
         points.beginX = x + (actionComponent?.width || 0) + 20;
         points.beginY = y + (actionComponent?.height || 0) / 2;
 
         points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
         points.cy1 = points.beginY;
-        //
       } else if (
         incomingComponent.endNode &&
         actionComponent.id === incomingComponent.endNode.id
       ) {
-        console.log('end', actionComponent.id);
         points.endX = x - 20;
         points.endY = y + (actionComponent?.height || 0) / 2;
 
