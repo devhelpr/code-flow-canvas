@@ -1,10 +1,10 @@
 import { DOMElementNode, INodeComponent } from '../interfaces/element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 
-export const createConnectionsSVGCanvasElement = (
+export const createConnectionsSVGCanvasElement = <T>(
   canvasElement: DOMElementNode
 ) => {
-  const nodeComponent: INodeComponent = createSVGNodeComponent(
+  const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
     'svg',
     {
       class:

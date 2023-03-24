@@ -9,17 +9,17 @@ import { createElement } from '../utils/create-element';
 import { createNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
-export const createNodeElement = (
+export const createNodeElement = <T>(
   tagName: string,
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap
+  elements: ElementNodeMap<T>
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
     yOffsetWithinElementOnFirstClick: 0,
   };
 
-  function setPosition(element: INodeComponent, x: number, y: number) {
+  function setPosition(element: INodeComponent<T>, x: number, y: number) {
     (
       element.domElement as unknown as HTMLElement | SVGElement
     ).style.transform = `translate(${x}px, ${y}px)`;
@@ -29,7 +29,7 @@ export const createNodeElement = (
   let isMoving = false;
   const x = Math.floor(Math.random() * 1024);
   const y = Math.floor(Math.random() * 500);
-  const nodeComponent: INodeComponent | undefined = createNodeComponent(
+  const nodeComponent: INodeComponent<T> | undefined = createNodeComponent(
     tagName,
     {
       class: `
@@ -58,12 +58,15 @@ export const createNodeElement = (
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
-          interactionInfo = pointerDown(
+          const helper = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
             nodeComponent,
             canvasElement
           );
+          if (helper) {
+            interactionInfo = helper;
+          }
         }
       },
       pointermove: (e: PointerEvent) => {
@@ -118,6 +121,9 @@ export const createNodeElement = (
     },
     canvasElement
   );
+  
+  if (!nodeComponent) throw new Error('nodeComponent is undefined');
+
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
     nodeComponent.id;
   elements.set(nodeComponent.id, nodeComponent);
@@ -148,12 +154,13 @@ export const createNodeElement = (
   nodeComponent.y = y;
 
   nodeComponent.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    _actionComponent: INodeComponent
-  ) => {
+    _actionComponent: INodeComponent<T>
+  ) : boolean => {
     setPosition(component, x, y);
+    return true;
   };
   return nodeComponent;
 };

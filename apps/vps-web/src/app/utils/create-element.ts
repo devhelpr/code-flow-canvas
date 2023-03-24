@@ -2,12 +2,12 @@ import { DOMElementNode, IElementNode } from '../interfaces/element';
 
 export type EventHandler = (event: Event) => void | boolean;
 
-export const createElement = (
+export const createElement = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
   content?: string
-): IElementNode => {
+): IElementNode<T> => {
   const id = crypto.randomUUID();
   let domElement: HTMLElement | Text | undefined = undefined;
   let isTextNode = false;
@@ -57,16 +57,16 @@ export const createElement = (
   return {
     id: id,
     domElement: domElement,
-    elements: [],
+    elements: []
   };
 };
 
-export const createNSElement = (
+export const createNSElement = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
   content?: string
-): IElementNode => {
+): IElementNode<T> => {
   const id = crypto.randomUUID();
   const domElement = document.createElementNS(
     'http://www.w3.org/2000/svg',

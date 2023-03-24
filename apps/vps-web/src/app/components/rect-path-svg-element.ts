@@ -5,10 +5,9 @@ import {
   INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
-import { setSelectNode } from '../reactivity';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
-import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+import { pointerDown } from './events/pointer-events';
 
 const minSize = 50;
 
@@ -23,14 +22,14 @@ function getPoint(x: number, y: number) {
   };
 }
 
-export const createRectPathSVGElement = (
+export const createRectPathSVGElement = <T>(
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap,
+  elements: ElementNodeMap<T>,
   startX: number,
   startY: number,
   width: number,
   height: number,
-  pathHiddenElement: IElementNode
+  pathHiddenElement: IElementNode<T>
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -98,8 +97,11 @@ export const createRectPathSVGElement = (
     canvasElement
   );
 
-  let nodeComponent: INodeComponent | undefined = undefined;
+  let nodeComponent: INodeComponent<T> | undefined = undefined;
   nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
+
+  if (!nodeComponent) throw new Error('nodeComponent is undefined');
+
   nodeComponent.nodeType = 'connection';
 
   const bbox = getBBoxPath();
@@ -114,7 +116,7 @@ export const createRectPathSVGElement = (
     svgParent.domElement as unknown as HTMLElement
   ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-  let pathElement: IElementNode | undefined = undefined;
+  let pathElement: IElementNode<T> | undefined = undefined;
   pathElement = createNSElement(
     'path',
     {
@@ -220,14 +222,17 @@ export const createRectPathSVGElement = (
     },
     nodeComponent.domElement
   );
+
+  if (!pathElement) throw new Error('pathElement is undefined');
+
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.push(pathElement);
 
   nodeComponent.update = (
-    incomingComponent: INodeComponent,
+    incomingComponent: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     if (
       incomingComponent.nodeType === 'connection' &&
@@ -483,7 +488,7 @@ export const createRectPathSVGElement = (
     // - if its a connection then look at the start/end.. if match then update
     if (nodeComponent) {
       elements.forEach((e) => {
-        const lookAtNodeComponent = e as unknown as INodeComponent;
+        const lookAtNodeComponent = e as unknown as INodeComponent<T>;
         if (lookAtNodeComponent.nodeType === 'connection') {
           const start = lookAtNodeComponent.components.find(
             (c) =>

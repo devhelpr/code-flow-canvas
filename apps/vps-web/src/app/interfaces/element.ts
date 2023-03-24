@@ -1,11 +1,12 @@
-export interface IElementNode {
+export interface IElementNode<T> {
   id: string;
   domElement: DOMElementNode;
-  elements: IElementNode[];
+  elements: IElementNode<T>[];
+  nodeInfo?: T;
 }
 
 export type DOMElementNode = HTMLElement | SVGElement | Text;
-export type ElementNodeMap = Map<string, IElementNode>;
+export type ElementNodeMap<T> = Map<string, IElementNode<T>>;
 
 export enum NodeComponentRelationType {
   self = 'self',
@@ -17,28 +18,28 @@ export enum NodeComponentRelationType {
   start = 'start',
   end = 'end',
 }
-export interface INodeComponentRelation {
-  component: INodeComponent;
+export interface INodeComponentRelation<T> {
+  component: INodeComponent<T>;
   type: NodeComponentRelationType;
   // connectionStart?: INodeComponent;
   // connectionEnd?: INodeComponent;
   update?: (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => boolean;
   commitUpdate?: (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => void;
   controllers?: any;
 }
 
-export interface INodeComponent extends IElementNode {
-  parent?: INodeComponent;
+export interface INodeComponent<T> extends IElementNode<T> {
+  parent?: INodeComponent<T>;
   x: number;
   y: number;
   xEnd?: number;
@@ -47,20 +48,20 @@ export interface INodeComponent extends IElementNode {
   height?: number;
   specifier?: string;
   nodeType?: string;
-  components: INodeComponentRelation[];
-  startNode?: INodeComponent;
-  endNode?: INodeComponent;
+  components: INodeComponentRelation<T>[];
+  startNode?: INodeComponent<T>;
+  endNode?: INodeComponent<T>;
   isControlled?: boolean;
   isConnectPoint?: boolean;
   update?: (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => boolean;
   pointerDown?: () => void;
   pointerMove?: () => void;
   pointerUp?: () => void;
-  onCanReceiveDroppedComponent?: (component: INodeComponent) => boolean;
-  onReceiveDroppedComponent?: (component: INodeComponent) => void;
+  onCanReceiveDroppedComponent?: (component: INodeComponent<T>) => boolean;
+  onReceiveDroppedComponent?: (component: INodeComponent<T>) => void;
 }

@@ -10,10 +10,10 @@ import { createEffect, getVisbility } from '../reactivity';
 import { createRectPathSVGElement } from './rect-path-svg-element';
 import { createSVGElement } from './svg-element';
 
-export const createRect = (
-  canvas: INodeComponent,
-  pathHiddenElement: IElementNode,
-  elements: ElementNodeMap,
+export const createRect = <T>(
+  canvas: INodeComponent<T>,
+  pathHiddenElement: IElementNode<T>,
+  elements: ElementNodeMap<T>,
   startX: number,
   startY: number,
   width: number,
@@ -30,7 +30,7 @@ export const createRect = (
   );
 
   function setPosition(
-    element: INodeComponent,
+    element: INodeComponent<T>,
     x: number,
     y: number,
     followRelations = true
@@ -92,10 +92,10 @@ export const createRect = (
     'begin'
   );
   startPointElement.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
@@ -110,10 +110,10 @@ export const createRect = (
     'rightTop'
   );
   rightTopPointElement.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
@@ -127,10 +127,10 @@ export const createRect = (
     'leftBottom'
   );
   leftBottomElement.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
@@ -144,10 +144,10 @@ export const createRect = (
     'rightBottom'
   );
   rightBottomElement.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
@@ -165,14 +165,14 @@ export const createRect = (
   leftThumbConnectorElement.isControlled = true;
   leftThumbConnectorElement.isConnectPoint = true;
   leftThumbConnectorElement.onCanReceiveDroppedComponent = (
-    component: INodeComponent
+    component: INodeComponent<T>
   ) => {
     return (
       (component && component.parent && component.specifier === 'end') ?? false
     );
   };
   leftThumbConnectorElement.onReceiveDroppedComponent = (
-    component: INodeComponent
+    component: INodeComponent<T>
   ) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
     // TODO : change so that the component itself is send as parameter and NOT the drag handle
@@ -195,7 +195,7 @@ export const createRect = (
       component.parent.components.push({
         type: NodeComponentRelationType.end,
         component: rectNode,
-      } as unknown as INodeComponentRelation);
+      } as unknown as INodeComponentRelation<T>);
 
       if (component.parent.update) {
         component.parent.update(
@@ -208,10 +208,10 @@ export const createRect = (
     }
   };
   leftThumbConnectorElement.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
@@ -230,7 +230,7 @@ export const createRect = (
   rightThumbConnectorElement.isConnectPoint = true;
 
   rightThumbConnectorElement.onCanReceiveDroppedComponent = (
-    component: INodeComponent
+    component: INodeComponent<T>
   ) => {
     return (
       (component && component.parent && component.specifier === 'begin') ??
@@ -239,7 +239,7 @@ export const createRect = (
   };
 
   rightThumbConnectorElement.onReceiveDroppedComponent = (
-    component: INodeComponent
+    component: INodeComponent<T>
   ) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
     console.log(
@@ -263,7 +263,7 @@ export const createRect = (
       component.parent.components.push({
         type: NodeComponentRelationType.start,
         component: rectNode,
-      } as unknown as INodeComponentRelation);
+      } as unknown as INodeComponentRelation<T>);
 
       if (component.parent.update) {
         component.parent.update(
@@ -277,10 +277,10 @@ export const createRect = (
   };
 
   rightThumbConnectorElement.update = (
-    component: INodeComponent,
+    component: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
@@ -290,10 +290,10 @@ export const createRect = (
     component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent,
+      component: INodeComponent<T>,
       x: number,
       y: number,
-      actionComponent: INodeComponent
+      actionComponent: INodeComponent<T>
     ) => {
       if (component.update) {
         return component.update(component, x, y, actionComponent);
@@ -306,10 +306,10 @@ export const createRect = (
     component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent,
+      component: INodeComponent<T>,
       x: number,
       y: number,
-      actionComponent: INodeComponent
+      actionComponent: INodeComponent<T>
     ) => {
       if (component.update) {
         return component.update(component, x, y, actionComponent);
@@ -331,10 +331,10 @@ export const createRect = (
       component: rectNode,
       type: NodeComponentRelationType.controllerTarget,
       update: (
-        component: INodeComponent,
+        component: INodeComponent<T>,
         x: number,
         y: number,
-        actionComponent: INodeComponent
+        actionComponent: INodeComponent<T>
       ) => {
         if (component.update) {
           return component.update(component, x, y, actionComponent);
@@ -347,10 +347,10 @@ export const createRect = (
   rectNode.components.push({
     component: rectNode,
     type: NodeComponentRelationType.self,
-    update: (component: INodeComponent, x: number, y: number) => {
+    update: (component: INodeComponent<T>, x: number, y: number) => {
       return true;
     },
-    commitUpdate: (component: INodeComponent, x: number, y: number) => {
+    commitUpdate: (component: INodeComponent<T>, x: number, y: number) => {
       //
     },
     controllers: {
@@ -366,10 +366,10 @@ export const createRect = (
     component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent,
+      component: INodeComponent<T>,
       x: number,
       y: number,
-      actionComponent: INodeComponent
+      actionComponent: INodeComponent<T>
     ) => {
       if (component.update) {
         return component.update(component, x, y, actionComponent);

@@ -5,10 +5,9 @@ import {
   INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
-import { setSelectNode } from '../reactivity';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
-import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+import { pointerDown } from './events/pointer-events';
 
 function getPoint(x: number, y: number) {
   const pt = new DOMPoint();
@@ -21,9 +20,9 @@ function getPoint(x: number, y: number) {
   };
 }
 
-export const createConnectionSVGElement = (
+export const createConnectionSVGElement = <T>(
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap,
+  elements: ElementNodeMap<T>,
   startX: number,
   startY: number,
   endX: number,
@@ -32,7 +31,7 @@ export const createConnectionSVGElement = (
   controlPoint1Y: number,
   controlPoint2X: number,
   controlPoint2Y: number,
-  pathHiddenElement: IElementNode,
+  pathHiddenElement: IElementNode<T>,
   isQuadratic = false
 ) => {
   /*
@@ -136,8 +135,9 @@ export const createConnectionSVGElement = (
     marker.domElement
   );
 
-  let nodeComponent: INodeComponent | undefined = undefined;
+  let nodeComponent: INodeComponent<T> | undefined = undefined;
   nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
+  if (!nodeComponent) throw new Error('nodeComponent is undefined');
   nodeComponent.nodeType = 'connection';
 
   const bbox = getBBoxPath();
@@ -152,7 +152,7 @@ export const createConnectionSVGElement = (
     svgParent.domElement as unknown as HTMLElement
   ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-  let pathElement: IElementNode | undefined = undefined;
+  let pathElement: IElementNode<T> | undefined = undefined;
   pathElement = createNSElement(
     'path',
     {
@@ -263,14 +263,17 @@ export const createConnectionSVGElement = (
     },
     nodeComponent.domElement
   );
+  
+  if (!pathElement) throw new Error('pathElement is undefined');
+
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.push(pathElement);
 
   nodeComponent.update = (
-    incomingComponent: INodeComponent,
+    incomingComponent: INodeComponent<T>,
     x: number,
     y: number,
-    actionComponent: INodeComponent
+    actionComponent: INodeComponent<T>
   ) => {
     if (
       incomingComponent.nodeType === 'connection' &&

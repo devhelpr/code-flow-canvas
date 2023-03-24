@@ -1,0 +1,1 @@
+export type NodeInfo = any;

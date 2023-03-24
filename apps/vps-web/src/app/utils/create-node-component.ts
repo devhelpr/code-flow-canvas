@@ -1,13 +1,13 @@
 import { DOMElementNode, INodeComponent } from '../interfaces/element';
 import { createElement, createNSElement, EventHandler } from './create-element';
 
-export const createNodeComponent = (
+export const createNodeComponent = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
   content?: string
-): INodeComponent => {
-  const element = createElement(elementName, attributes, parent, content);
+): INodeComponent<T> => {
+  const element = createElement<T>(elementName, attributes, parent, content);
   return {
     ...element,
     x: 0,
@@ -16,14 +16,14 @@ export const createNodeComponent = (
   };
 };
 
-export const createSVGNodeComponent = (
+export const createSVGNodeComponent = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
   content?: string,
-  update?: (nodeComponent: INodeComponent, x: number, y: number) => void
-): INodeComponent => {
-  const element = createNSElement(elementName, attributes, parent, content);
+  update?: (nodeComponent: INodeComponent<T>, x: number, y: number) => boolean
+): INodeComponent<T> => {
+  const element = createNSElement<T>(elementName, attributes, parent, content);
   return {
     ...element,
     x: 0,

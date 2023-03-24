@@ -15,9 +15,9 @@ import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
-export const createSVGElement = (
+export const createSVGElement = <T>(
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap,
+  elements: ElementNodeMap<T>,
   color?: string,
   xInitial?: number,
   yInitial?: number,
@@ -33,7 +33,7 @@ export const createSVGElement = (
   const initialY =
     yInitial !== undefined ? yInitial : Math.floor(Math.random() * 500);
   console.log('createSVGElement', initialX, initialY, specifier);
-  const nodeComponent: INodeComponent = createSVGNodeComponent(
+  const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
     'svg',
     {
       class: `absolute cursor-pointer transition-none ease-in-out duration-[75ms] will-change-transform pointer-events-none`,
@@ -47,7 +47,7 @@ export const createSVGElement = (
   );
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
     nodeComponent.id;
-  let circleElement: IElementNode | undefined = undefined;
+  let circleElement: IElementNode<T> | undefined = undefined;
   circleElement = createNSElement(
     'circle',
     {
@@ -172,6 +172,9 @@ export const createSVGElement = (
     },
     nodeComponent.domElement
   );
+  
+  if (!circleElement) throw new Error('circleElement is undefined');
+
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.push(circleElement);
   nodeComponent.specifier = specifier;

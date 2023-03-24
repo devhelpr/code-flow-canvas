@@ -7,12 +7,13 @@ import {
   INodeComponent,
   NodeComponentRelationType,
 } from '../../interfaces/element';
+import { NodeInfo } from '../../interfaces/nodeInfo';
 import { IPointerDownResult } from '../../interfaces/pointers';
 
 export const pointerDown = (
   x: number,
   y: number,
-  element: INodeComponent,
+  element: INodeComponent<NodeInfo>,
   canvasElement: DOMElementNode
 ): IPointerDownResult | false => {
   let xOffsetWithinElementOnFirstClick = 0;
@@ -59,7 +60,7 @@ export const pointerDown = (
 export const pointerMove = (
   x: number,
   y: number,
-  element: INodeComponent,
+  element: INodeComponent<NodeInfo>,
   _canvasElement: DOMElementNode,
   interactionInfo: IPointerDownResult
 ) => {
@@ -102,7 +103,7 @@ export const pointerMove = (
 export const pointerUp = (
   x: number,
   y: number,
-  element: INodeComponent,
+  element: INodeComponent<NodeInfo>,
   _canvasElement: DOMElementNode,
   interactionInfo: IPointerDownResult
 ) => {

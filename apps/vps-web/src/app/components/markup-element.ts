@@ -14,16 +14,16 @@ import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 import { createNodeComponent } from '../utils/create-node-component';
 
-export const createMarkupElement = (
+export const createMarkupElement = <T>(
   markup: string,
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap
+  elements: ElementNodeMap<T>
 ) => {
   const compiledMarkup = compileMarkup(markup);
   if (!compiledMarkup) {
     throw new Error('Invalid markup');
   }
-  function setPosition(element: INodeComponent, x: number, y: number) {
+  function setPosition(element: INodeComponent<T>, x: number, y: number) {
     (
       element.domElement as unknown as HTMLElement | SVGElement
     ).style.transform = `translate(${x}px, ${y}px)`;
@@ -34,7 +34,7 @@ export const createMarkupElement = (
     yOffsetWithinElementOnFirstClick: 0,
   };
 
-  const nodeComponent: INodeComponent = createNodeComponent(
+  const nodeComponent: INodeComponent<T> = createNodeComponent(
     compiledMarkup.body.tagName || 'div',
     {
       class:
@@ -52,12 +52,16 @@ export const createMarkupElement = (
             | HTMLElement
             | SVGElement;
           const elementRect = domElement.getBoundingClientRect();
-          interactionInfo = pointerDown(
+          const helper = pointerDown(
             e.clientX - elementRect.x,
             e.clientY - elementRect.y,
             nodeComponent,
             canvasElement
           );
+
+          if (helper) {
+            interactionInfo = helper;
+          }
         }
       },
       pointermove: (e: PointerEvent) => {
@@ -105,14 +109,15 @@ export const createMarkupElement = (
   );
   if (nodeComponent && nodeComponent.domElement) {
     console.log('compiledMarkup', compiledMarkup);
-
+    
     nodeComponent.update = (
-      component: INodeComponent,
+      component: INodeComponent<T>,
       x: number,
       y: number,
-      _actionComponent: INodeComponent
-    ) => {
+      _actionComponent: INodeComponent<T>
+    ) : boolean => {
       setPosition(component, x, y);
+      return true;
     };
 
     if (compiledMarkup && nodeComponent && nodeComponent.domElement) {
@@ -131,12 +136,12 @@ export const createMarkupElement = (
   return nodeComponent;
 };
 
-export const createASTNodeElement = (
+export const createASTNodeElement = <T>(
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
-  elements: IElementNode[]
+  elements: IElementNode<T>[]
 ) => {
-  let element: IElementNode | undefined = undefined;
+  let element: IElementNode<T> | undefined = undefined;
   const elementProperties: any = {};
   astNode.properties?.forEach((propertyKeyValue) => {
     elementProperties[propertyKeyValue.propertyName] = propertyKeyValue.value;

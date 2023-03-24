@@ -37,6 +37,8 @@ import {
   registerCustomFunction,
 } from '@devhelpr/expression-compiler';
 import { createRect } from './components/rect';
+import { NodeInfo } from './interfaces/nodeInfo';
+import { createElementMap } from './utils/create-element-map';
 //import { count } from 'console';
 
 const template = document.createElement('template');
@@ -49,6 +51,7 @@ template.innerHTML = `
 const button =
   'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none';
 const menubar = 'relative z-20 flex flex-row items-center justify-start';
+
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -64,12 +67,12 @@ export class AppElement extends HTMLElement {
     }
   }
 
-  elements: ElementNodeMap = new Map();
+  elements: ElementNodeMap<NodeInfo> = createElementMap<NodeInfo>();
 
-  clearElement = (element : IElementNode) => {
+  clearElement = (element : IElementNode<NodeInfo>) => {
     element.domElement.remove();
-    element.elements.forEach((element : IElementNode) => {
-      this.clearElement(element as unknown as IElementNode);
+    element.elements.forEach((element : IElementNode<NodeInfo>) => {
+      this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
     element.elements = [];
   };
@@ -77,7 +80,7 @@ export class AppElement extends HTMLElement {
   clearCanvas = () => {
     this.elements.forEach((element) => {
       element.domElement.remove();
-      this.clearElement(element as unknown as IElementNode);
+      this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
    this.elements.clear();
   };
@@ -134,7 +137,7 @@ export class AppElement extends HTMLElement {
           const startY = Math.floor(Math.random() * 500);
 
           const start = createRect(
-            canvas as unknown as INodeComponent,
+            canvas as unknown as INodeComponent<NodeInfo>,
             pathHiddenElement,
             this.elements,
             startX,
@@ -198,7 +201,7 @@ export class AppElement extends HTMLElement {
 
           // if (Math.random() >= 0.5) {
           bezierCurve = createCubicBezier(
-            canvas as unknown as INodeComponent,
+            canvas as unknown as INodeComponent<NodeInfo>,
             pathHiddenElement,
             this.elements,
             x,
