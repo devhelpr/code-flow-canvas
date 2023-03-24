@@ -214,17 +214,17 @@ export class AppElement extends HTMLElement {
             y + 75
           );
           // } else {
-          //   bezierCurve = createQuadraticBezier(
-          //     canvas as unknown as INodeComponent,
-          //     pathHiddenElement,
-          //     this.elements,
-          //     x,
-          //     y,
-          //     x + 150,
-          //     y + 150,
-          //     x + 50,
-          //     y + 50
-          //   );
+            // bezierCurve = createQuadraticBezier(
+            //   canvas as unknown as INodeComponent<NodeInfo>,
+            //   pathHiddenElement,
+            //   this.elements,
+            //   x,
+            //   y,
+            //   x + 150,
+            //   y + 150,
+            //   x + 50,
+            //   y + 50
+            // );
           // }
         },
       },

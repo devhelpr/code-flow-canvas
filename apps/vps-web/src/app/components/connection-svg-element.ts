@@ -286,17 +286,26 @@ export const createConnectionSVGElement = <T>(
         points.beginX = x + (actionComponent?.width || 0) + 20;
         points.beginY = y + (actionComponent?.height || 0) / 2;
 
-        points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
-        points.cy1 = points.beginY;
+        if (isQuadratic) {          
+          points.cx1 = (points.beginX + points.endX) / 2;
+          points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
+        } else {
+          points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
+          points.cy1 = points.beginY;
+        }
       } else if (
         incomingComponent.endNode &&
         actionComponent.id === incomingComponent.endNode.id
       ) {
         points.endX = x - 20;
         points.endY = y + (actionComponent?.height || 0) / 2;
-
-        points.cx2 = points.endX - (actionComponent?.width || 0) - 50;
-        points.cy2 = points.endY;
+        if (isQuadratic) {          
+          points.cx1 = (points.beginX + points.endX) / 2;
+          points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
+        } else {
+          points.cx2 = points.endX - (actionComponent?.width || 0) - 50;
+          points.cy2 = points.endY;
+        }
       } else {
         const diffC1x = points.cx1 - points.beginX;
         const diffC1y = points.cy1 - points.beginY;
