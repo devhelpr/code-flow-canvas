@@ -79,14 +79,7 @@ export const pointerMove = (
     )
   ) {
     if (element && element.domElement) {
-      //if (element.nodeType !== 'connection') {
-      // (
-      //   element.domElement as unknown as HTMLElement | SVGElement
-      // ).style.transform = `translate(${
-      //   x - interactionInfo.xOffsetWithinElementOnFirstClick
-      // }px, ${y - interactionInfo.yOffsetWithinElementOnFirstClick}px)`;
       if (element.update) {
-        console.log('before update', element.x, element.y);
         element.update(
           element,
           x - interactionInfo.xOffsetWithinElementOnFirstClick,
@@ -96,7 +89,6 @@ export const pointerMove = (
       }
 
       if (element.pointerMove) {
-        console.log('before pointermove', element.x, element.y);
         element.pointerMove();
       }
       //}
@@ -130,9 +122,15 @@ export const pointerUp = (
     )
   ) {
     if (element && element.domElement) {
-      element.x = x - interactionInfo.xOffsetWithinElementOnFirstClick;
-      element.y = y - interactionInfo.yOffsetWithinElementOnFirstClick;
-      console.log('pointerUp', element.x, element.y);
+      if (element.update) {
+        element.update(
+          element,
+          x - interactionInfo.xOffsetWithinElementOnFirstClick,
+          y - interactionInfo.yOffsetWithinElementOnFirstClick,
+          element
+        );
+      }
+
       if (element.pointerUp) {
         element.pointerUp();
       }

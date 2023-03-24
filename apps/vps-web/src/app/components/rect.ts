@@ -246,7 +246,10 @@ export const createRect = (
       'DROPPED ON RIGHT THUMB',
       component.id,
       component.parent,
-      component.specifier
+      component.specifier,
+      rectNode.x,
+      rectNode.y,
+      rectNode.id
     );
     if (component.parent && component.specifier === 'begin') {
       component.parent.startNode = rectNode;
@@ -263,11 +266,10 @@ export const createRect = (
       } as unknown as INodeComponentRelation);
 
       if (component.parent.update) {
-        // why is this transformation needed ?? .. it is only needed after the rect is moved after is was instantiated!??
         component.parent.update(
           component.parent,
-          rectNode.x, //- 50,
-          rectNode.y, //- 100 - 5,
+          rectNode.x,
+          rectNode.y,
           rectNode
         );
       }

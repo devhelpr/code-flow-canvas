@@ -225,7 +225,7 @@ export const createConnectionSVGElement = (
           }
         }
       },
-      pointermove: (e: PointerEvent) => {
+      /*pointermove: (e: PointerEvent) => {
         if (nodeComponent) {
           if (nodeComponent && nodeComponent.domElement) {
             if (
@@ -259,7 +259,7 @@ export const createConnectionSVGElement = (
             isClicking = false;
           }
         }
-      },
+      },*/
     },
     nodeComponent.domElement
   );
@@ -276,13 +276,18 @@ export const createConnectionSVGElement = (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
     ) {
-      // this specifier is from the node...
-      // how to check if it is a start or end node without looking at the nodes?
-      //if (actionComponent.specifier === 'start') {
       if (
         incomingComponent.startNode &&
         actionComponent.id === incomingComponent.startNode.id
       ) {
+        console.log(
+          'start',
+          actionComponent.id,
+          x,
+          y,
+          actionComponent?.width,
+          actionComponent?.height
+        );
         points.beginX = x + (actionComponent?.width || 0) + 20;
         points.beginY = y + (actionComponent?.height || 0) / 2;
 
@@ -293,7 +298,7 @@ export const createConnectionSVGElement = (
         incomingComponent.endNode &&
         actionComponent.id === incomingComponent.endNode.id
       ) {
-        //if (actionComponent.specifier === 'end') {
+        console.log('end', actionComponent.id);
         points.endX = x - 20;
         points.endY = y + (actionComponent?.height || 0) / 2;
 

@@ -476,20 +476,6 @@ export const createRectPathSVGElement = (
       nodeComponent.y = points.beginY;
       nodeComponent.width = points.width;
       nodeComponent.height = points.height;
-
-      // TODO : figure out why the y coordinate differs between two updates !??
-      console.log(
-        'update rect',
-        nodeComponent.id,
-        'x-y',
-        x,
-        y,
-        'node x-y',
-        nodeComponent.x,
-        nodeComponent.y,
-        incomingComponent,
-        actionComponent
-      );
     }
 
     // TODO : check if connection with this rect exists (start/end) by
@@ -517,7 +503,6 @@ export const createRectPathSVGElement = (
             lookAtNodeComponent.update &&
             nodeComponent
           ) {
-            //console.log('start', lookAtNodeComponent, nodeComponent);
             lookAtNodeComponent.update(
               lookAtNodeComponent,
               points.beginX,
@@ -531,7 +516,6 @@ export const createRectPathSVGElement = (
             lookAtNodeComponent.update &&
             nodeComponent
           ) {
-            //console.log('end', lookAtNodeComponent, nodeComponent);
             lookAtNodeComponent.update(
               lookAtNodeComponent,
               points.beginX,
@@ -548,8 +532,5 @@ export const createRectPathSVGElement = (
   nodeComponent.y = startY;
   nodeComponent.width = width;
   nodeComponent.height = height;
-
-  console.log('init rect', nodeComponent.x, nodeComponent.y);
-
   return nodeComponent;
 };

@@ -113,18 +113,18 @@ export class AppElement extends HTMLElement {
             100
           );
 
-          const endX = Math.floor(Math.random() * 250);
-          const endY = Math.floor(Math.random() * 500);
+          // const endX = Math.floor(Math.random() * 250);
+          // const endY = Math.floor(Math.random() * 500);
 
-          const end = createRect(
-            canvas as unknown as INodeComponent,
-            pathHiddenElement,
-            this.elements,
-            endX,
-            endY,
-            100,
-            100
-          );
+          // const end = createRect(
+          //   canvas as unknown as INodeComponent,
+          //   pathHiddenElement,
+          //   this.elements,
+          //   endX,
+          //   endY,
+          //   100,
+          //   100
+          // );
 
           // bezierCurve = createCubicBezier(
           //   canvas as unknown as INodeComponent,
@@ -256,21 +256,15 @@ export class AppElement extends HTMLElement {
             currentState.element &&
             currentState.target
           ) {
-            if (
-              interactionEventState(
-                InteractionEvent.PointerMove,
-                currentState.target,
-                currentState.element
-              )
-            ) {
+            const interactionState = interactionEventState(
+              InteractionEvent.PointerMove,
+              currentState.target,
+              currentState.element
+            );
+            if (interactionState) {
               const canvasRect = (
                 canvas.domElement as unknown as HTMLElement | SVGElement
               ).getBoundingClientRect();
-              console.log(
-                'pointerMove canvas',
-                event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y
-              );
               currentState.target.pointerMove(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,
@@ -283,7 +277,6 @@ export class AppElement extends HTMLElement {
         },
         pointerup: (event: PointerEvent) => {
           const currentState = getCurrentInteractionState();
-          console.log('pointerUp canvas', currentState?.target?.id);
           if (
             currentState.state === InteractionState.Moving &&
             currentState.element &&
@@ -297,10 +290,10 @@ export class AppElement extends HTMLElement {
                 true
               )
             ) {
-              console.log('pointerUp canvas after', currentState?.target?.id);
               const canvasRect = (
                 canvas.domElement as unknown as HTMLElement | SVGElement
               ).getBoundingClientRect();
+
               currentState.target.pointerUp(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,
@@ -340,6 +333,7 @@ export class AppElement extends HTMLElement {
               const canvasRect = (
                 canvas.domElement as unknown as HTMLElement | SVGElement
               ).getBoundingClientRect();
+
               currentState.target.pointerUp(
                 event.clientX - canvasRect.x,
                 event.clientY - canvasRect.y,
