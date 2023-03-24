@@ -229,11 +229,20 @@ export const createRectPathSVGElement = <T>(
   nodeComponent.elements.push(pathElement);
 
   nodeComponent.update = (
-    incomingComponent: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    incomingComponent?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (
+      !incomingComponent ||
+      x === undefined ||
+      y === undefined ||
+      !actionComponent
+    ) {
+      return false;
+    }
+
     if (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'

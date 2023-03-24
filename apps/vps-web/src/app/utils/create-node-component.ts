@@ -21,7 +21,11 @@ export const createSVGNodeComponent = <T>(
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
   content?: string,
-  update?: (nodeComponent: INodeComponent<T>, x: number, y: number) => boolean
+  update?: (
+    nodeComponent?: INodeComponent<T>,
+    x?: number,
+    y?: number
+  ) => boolean
 ): INodeComponent<T> => {
   const element = createNSElement<T>(elementName, attributes, parent, content);
   return {

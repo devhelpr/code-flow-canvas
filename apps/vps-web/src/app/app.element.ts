@@ -39,19 +39,19 @@ import {
 import { createRect } from './components/rect';
 import { NodeInfo } from './interfaces/nodeInfo';
 import { createElementMap } from './utils/create-element-map';
+import flowData from '../example-data/tiltest.json';
 //import { count } from 'console';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
-  <div class="h-screen w-100 bg-slate-100 flex flex-col" id="root" >
+  <div class="h-screen w-100 bg-slate-800 overflow-hidden" id="root" >
   </div>
-`;
+`; // flex flex-col
 
 const button =
   'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none';
-const menubar = 'relative z-20 flex flex-row items-center justify-start';
-
+const menubar = 'fixed z-20 flex flex-row items-center justify-start';
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -68,10 +68,13 @@ export class AppElement extends HTMLElement {
   }
 
   elements: ElementNodeMap<NodeInfo> = createElementMap<NodeInfo>();
+  scale = 1;
+  x = 0;
+  y = 0;
 
-  clearElement = (element : IElementNode<NodeInfo>) => {
+  clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
-    element.elements.forEach((element : IElementNode<NodeInfo>) => {
+    element.elements.forEach((element: IElementNode<NodeInfo>) => {
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
     element.elements = [];
@@ -82,7 +85,7 @@ export class AppElement extends HTMLElement {
       element.domElement.remove();
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
-   this.elements.clear();
+    this.elements.clear();
   };
 
   constructor() {
@@ -114,14 +117,92 @@ export class AppElement extends HTMLElement {
       'Add element'
     );
 
-
     createElement(
       'button',
       {
         class: button,
         click: () => {
           this.clearCanvas();
+          flowData.forEach((flowNode) => {
+            if (flowNode.shapeType !== 'connection') {
+              const rect = createRect(
+                canvas as unknown as INodeComponent<NodeInfo>,
+                pathHiddenElement,
+                this.elements,
+                flowNode.x ?? 0,
+                flowNode.y ?? 0,
+                200,
+                300
+              );
+              rect.nodeComponent.nodeInfo = flowNode;
+            }
+          });
+          const elementList = Array.from(this.elements);
+          flowData.forEach((flowNode) => {
+            if (flowNode.shapeType === 'Line') {
+              let start: INodeComponent<NodeInfo> | undefined = undefined;
+              let end: INodeComponent<NodeInfo> | undefined = undefined;
+              if (flowNode.startshapeid) {
+                const startElement = elementList.find((e) => {
+                  const element = e[1] as IElementNode<NodeInfo>;
+                  return element.nodeInfo?.id === flowNode.startshapeid;
+                });
+                if (startElement) {
+                  start =
+                    startElement[1] as unknown as INodeComponent<NodeInfo>;
+                }
+              }
+              if (flowNode.endshapeid) {
+                const endElement = elementList.find((e) => {
+                  const element = e[1] as IElementNode<NodeInfo>;
+                  return element.nodeInfo?.id === flowNode.endshapeid;
+                });
+                if (endElement) {
+                  end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+                }
+              }
 
+              const curve = createCubicBezier(
+                canvas as unknown as INodeComponent<NodeInfo>,
+                pathHiddenElement,
+                this.elements,
+                start?.x ?? 0,
+                start?.y ?? 0,
+                end?.x ?? 0,
+                end?.y ?? 0,
+                (start?.x ?? 0) + 100,
+                (start?.y ?? 0) + 150,
+                (end?.x ?? 0) + 100,
+                (end?.y ?? 0) + 150,
+                true
+              );
+
+              // (canvas.domElement as HTMLElement).prepend(
+              //   curve.nodeComponent.domElement
+              // );
+
+              if (start && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.start,
+                  component: start,
+                } as unknown as INodeComponentRelation<NodeInfo>);
+
+                curve.nodeComponent.startNode = start;
+              }
+
+              if (end && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.end,
+                  component: end,
+                } as unknown as INodeComponentRelation<NodeInfo>);
+
+                curve.nodeComponent.endNode = end;
+              }
+              if (curve.nodeComponent.update) {
+                curve.nodeComponent.update();
+              }
+            }
+          });
         },
       },
       menubarElement.domElement,
@@ -214,17 +295,17 @@ export class AppElement extends HTMLElement {
             y + 75
           );
           // } else {
-            // bezierCurve = createQuadraticBezier(
-            //   canvas as unknown as INodeComponent<NodeInfo>,
-            //   pathHiddenElement,
-            //   this.elements,
-            //   x,
-            //   y,
-            //   x + 150,
-            //   y + 150,
-            //   x + 50,
-            //   y + 50
-            // );
+          // bezierCurve = createQuadraticBezier(
+          //   canvas as unknown as INodeComponent<NodeInfo>,
+          //   pathHiddenElement,
+          //   this.elements,
+          //   x,
+          //   y,
+          //   x + 150,
+          //   y + 150,
+          //   x + 50,
+          //   y + 50
+          // );
           // }
         },
       },
@@ -271,11 +352,13 @@ export class AppElement extends HTMLElement {
     let isClicking = false;
     let isMoving = false;
 
+    // transform-origin: top left;
     const canvas = createElement(
       'div',
       {
         id: 'canvas',
-        class: 'w-100 bg-slate-800 flex-auto relative z-10 overflow-hidden',
+        class:
+          'w-100 bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
         pointerdown: (event: PointerEvent) => {
           isClicking = true;
           isMoving = false;
@@ -380,6 +463,45 @@ export class AppElement extends HTMLElement {
       },
       rootElement
     );
+
+    rootElement.addEventListener('wheel', (e: WheelEvent) => {
+      e.preventDefault();
+      const scaleBy = 1.025; //1.13;
+      if (canvas.domElement) {
+        const mousePointTo = {
+          x: e.clientX / this.scale - this.x / this.scale,
+          y: e.clientY / this.scale - this.y / this.scale,
+        };
+
+        this.scale = e.deltaY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
+        if (this.scale < 0.15) {
+          this.scale = 0.15;
+        } else if (this.scale > 3) {
+          this.scale = 3;
+        }
+
+        const newPos = {
+          x: -(mousePointTo.x - e.clientX / this.scale) * this.scale,
+          y: -(mousePointTo.y - e.clientY / this.scale) * this.scale,
+        };
+
+        this.x = newPos.x;
+        this.y = newPos.y;
+
+        (canvas.domElement as unknown as HTMLElement).style.transform =
+          'translate(' +
+          newPos.x +
+          'px,' +
+          newPos.y +
+          'px) ' +
+          'scale(' +
+          this.scale +
+          ',' +
+          this.scale +
+          ') ';
+      }
+      return false;
+    });
 
     const hiddenSVG = createNSElement(
       'svg',

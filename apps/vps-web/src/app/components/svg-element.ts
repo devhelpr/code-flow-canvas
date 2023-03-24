@@ -172,7 +172,7 @@ export const createSVGElement = <T>(
     },
     nodeComponent.domElement
   );
-  
+
   if (!circleElement) throw new Error('circleElement is undefined');
 
   elements.set(nodeComponent.id, nodeComponent);

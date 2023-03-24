@@ -121,7 +121,7 @@ export const createNodeElement = <T>(
     },
     canvasElement
   );
-  
+
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
 
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
@@ -154,11 +154,14 @@ export const createNodeElement = <T>(
   nodeComponent.y = y;
 
   nodeComponent.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    _actionComponent: INodeComponent<T>
-  ) : boolean => {
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
+  ): boolean => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
     setPosition(component, x, y);
     return true;
   };

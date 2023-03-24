@@ -92,11 +92,15 @@ export const createRect = <T>(
     'begin'
   );
   startPointElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -110,11 +114,15 @@ export const createRect = <T>(
     'rightTop'
   );
   rightTopPointElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -127,11 +135,15 @@ export const createRect = <T>(
     'leftBottom'
   );
   leftBottomElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -144,11 +156,15 @@ export const createRect = <T>(
     'rightBottom'
   );
   rightBottomElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -208,11 +224,15 @@ export const createRect = <T>(
     }
   };
   leftThumbConnectorElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -277,11 +297,15 @@ export const createRect = <T>(
   };
 
   rightThumbConnectorElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -290,11 +314,19 @@ export const createRect = <T>(
     component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -306,11 +338,19 @@ export const createRect = <T>(
     component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -331,11 +371,20 @@ export const createRect = <T>(
       component: rectNode,
       type: NodeComponentRelationType.controllerTarget,
       update: (
-        component: INodeComponent<T>,
-        x: number,
-        y: number,
-        actionComponent: INodeComponent<T>
+        component?: INodeComponent<T>,
+        x?: number,
+        y?: number,
+        actionComponent?: INodeComponent<T>
       ) => {
+        if (
+          !component ||
+          x === undefined ||
+          y === undefined ||
+          !actionComponent
+        ) {
+          return false;
+        }
+
         if (component.update) {
           return component.update(component, x, y, actionComponent);
         }
@@ -347,7 +396,7 @@ export const createRect = <T>(
   rectNode.components.push({
     component: rectNode,
     type: NodeComponentRelationType.self,
-    update: (component: INodeComponent<T>, x: number, y: number) => {
+    update: (component?: INodeComponent<T>, x?: number, y?: number) => {
       return true;
     },
     commitUpdate: (component: INodeComponent<T>, x: number, y: number) => {
@@ -366,11 +415,19 @@ export const createRect = <T>(
     component: rectNode,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }

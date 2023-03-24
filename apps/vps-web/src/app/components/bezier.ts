@@ -82,11 +82,14 @@ export const createCubicBezier = <T>(
   startPointElement.isControlled = isControlled;
   startPointElement.parent = connection;
   startPointElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -102,11 +105,14 @@ export const createCubicBezier = <T>(
   endPointElement.isControlled = isControlled;
   endPointElement.parent = connection;
   endPointElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -120,11 +126,15 @@ export const createCubicBezier = <T>(
   );
   controlPoint1Element.isControlled = isControlled;
   controlPoint1Element.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -138,11 +148,14 @@ export const createCubicBezier = <T>(
   );
   controlPoint2Element.isControlled = isControlled;
   controlPoint2Element.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
@@ -151,11 +164,20 @@ export const createCubicBezier = <T>(
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
+
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -167,11 +189,20 @@ export const createCubicBezier = <T>(
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
+
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -196,11 +227,20 @@ export const createCubicBezier = <T>(
       component: connection,
       type: NodeComponentRelationType.controllerTarget,
       update: (
-        component: INodeComponent<T>,
-        x: number,
-        y: number,
-        actionComponent: INodeComponent<T>
+        component?: INodeComponent<T>,
+        x?: number,
+        y?: number,
+        actionComponent?: INodeComponent<T>
       ) => {
+        if (
+          !component ||
+          x === undefined ||
+          y === undefined ||
+          !actionComponent
+        ) {
+          return false;
+        }
+
         if (component.update) {
           return component.update(component, x, y, actionComponent);
         }
@@ -212,7 +252,7 @@ export const createCubicBezier = <T>(
   connection.components.push({
     component: connection,
     type: NodeComponentRelationType.self,
-    update: (component: INodeComponent<T>, x: number, y: number) => true,
+    update: (component?: INodeComponent<T>, x?: number, y?: number) => true,
     commitUpdate: (component: INodeComponent<T>, x: number, y: number) => {
       //
     },
@@ -227,11 +267,20 @@ export const createCubicBezier = <T>(
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
+
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -350,11 +399,15 @@ export const createQuadraticBezier = <T>(
   startPointElement.parent = connection;
   startPointElement.isControlled = isControlled;
   startPointElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    _actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y);
     return true;
   };
@@ -370,11 +423,15 @@ export const createQuadraticBezier = <T>(
   endPointElement.parent = connection;
   endPointElement.isControlled = isControlled;
   endPointElement.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    _actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
+
     setPosition(component, x, y);
     return true;
   };
@@ -388,11 +445,14 @@ export const createQuadraticBezier = <T>(
   );
   controlPoint1Element.isControlled = isControlled;
   controlPoint1Element.update = (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    _actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (!component || x === undefined || y === undefined || !actionComponent) {
+      return false;
+    }
     setPosition(component, x, y);
     return true;
   };
@@ -401,11 +461,20 @@ export const createQuadraticBezier = <T>(
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
+
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -417,11 +486,20 @@ export const createQuadraticBezier = <T>(
     component: connection,
     type: NodeComponentRelationType.controllerTarget,
     update: (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      actionComponent: INodeComponent<T>
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
     ) => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
+
       if (component.update) {
         return component.update(component, x, y, actionComponent);
       }
@@ -446,11 +524,20 @@ export const createQuadraticBezier = <T>(
       component: connection,
       type: NodeComponentRelationType.controllerTarget,
       update: (
-        component: INodeComponent<T>,
-        x: number,
-        y: number,
-        actionComponent: INodeComponent<T>
+        component?: INodeComponent<T>,
+        x?: number,
+        y?: number,
+        actionComponent?: INodeComponent<T>
       ) => {
+        if (
+          !component ||
+          x === undefined ||
+          y === undefined ||
+          !actionComponent
+        ) {
+          return false;
+        }
+
         if (component.update) {
           return component.update(component, x, y, actionComponent);
         }
@@ -462,7 +549,7 @@ export const createQuadraticBezier = <T>(
   connection.components.push({
     component: connection,
     type: NodeComponentRelationType.self,
-    update: (component: INodeComponent<T>, x: number, y: number) => true,
+    update: (component?: INodeComponent<T>, x?: number, y?: number) => true,
     commitUpdate: (component: INodeComponent<T>, x: number, y: number) => true,
     controllers: {
       start: startPointElement,

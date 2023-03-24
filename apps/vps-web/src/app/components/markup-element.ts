@@ -109,13 +109,22 @@ export const createMarkupElement = <T>(
   );
   if (nodeComponent && nodeComponent.domElement) {
     console.log('compiledMarkup', compiledMarkup);
-    
+
     nodeComponent.update = (
-      component: INodeComponent<T>,
-      x: number,
-      y: number,
-      _actionComponent: INodeComponent<T>
-    ) : boolean => {
+      component?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      actionComponent?: INodeComponent<T>
+    ): boolean => {
+      if (
+        !component ||
+        x === undefined ||
+        y === undefined ||
+        !actionComponent
+      ) {
+        return false;
+      }
+
       setPosition(component, x, y);
       return true;
     };

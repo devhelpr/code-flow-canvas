@@ -24,10 +24,10 @@ export interface INodeComponentRelation<T> {
   // connectionStart?: INodeComponent;
   // connectionEnd?: INodeComponent;
   update?: (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => boolean;
   commitUpdate?: (
     component: INodeComponent<T>,
@@ -54,10 +54,10 @@ export interface INodeComponent<T> extends IElementNode<T> {
   isControlled?: boolean;
   isConnectPoint?: boolean;
   update?: (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    component?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => boolean;
   pointerDown?: () => void;
   pointerMove?: () => void;

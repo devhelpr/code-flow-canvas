@@ -112,6 +112,8 @@ export const createConnectionSVGElement = <T>(
     },
     canvasElement
   );
+  (canvasElement as unknown as HTMLElement).prepend(svgParent.domElement);
+
   const defs = createNSElement('defs', {}, svgParent.domElement);
   const marker = createNSElement(
     'marker',
@@ -263,18 +265,37 @@ export const createConnectionSVGElement = <T>(
     },
     nodeComponent.domElement
   );
-  
+
   if (!pathElement) throw new Error('pathElement is undefined');
 
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.push(pathElement);
 
   nodeComponent.update = (
-    incomingComponent: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
+    incomingComponent?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    actionComponent?: INodeComponent<T>
   ) => {
+    if (
+      !incomingComponent &&
+      x === undefined &&
+      y === undefined &&
+      !actionComponent
+    ) {
+      // eslint-disable-next-line no-console
+      // update all in this condition...
+    }
+
+    if (
+      !incomingComponent ||
+      x === undefined ||
+      y === undefined ||
+      !actionComponent
+    ) {
+      return false;
+    }
+
     if (
       incomingComponent.nodeType === 'connection' &&
       actionComponent.nodeType === 'connection'
@@ -286,7 +307,7 @@ export const createConnectionSVGElement = <T>(
         points.beginX = x + (actionComponent?.width || 0) + 20;
         points.beginY = y + (actionComponent?.height || 0) / 2;
 
-        if (isQuadratic) {          
+        if (isQuadratic) {
           points.cx1 = (points.beginX + points.endX) / 2;
           points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
         } else {
@@ -299,7 +320,7 @@ export const createConnectionSVGElement = <T>(
       ) {
         points.endX = x - 20;
         points.endY = y + (actionComponent?.height || 0) / 2;
-        if (isQuadratic) {          
+        if (isQuadratic) {
           points.cx1 = (points.beginX + points.endX) / 2;
           points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
         } else {
