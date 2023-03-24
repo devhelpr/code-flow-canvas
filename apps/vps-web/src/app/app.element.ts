@@ -464,9 +464,24 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
+    let wheelTime = -1;
     rootElement.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
-      const scaleBy = 1.025; //1.13;
+      if (wheelTime === -1) {
+        wheelTime = e.timeStamp;
+      }
+      const timeDiff = e.timeStamp - wheelTime;
+      const delta = 1 + e.deltaY / timeDiff;
+
+      //console.log('wheel', e.deltaY / timeDiff, timeDiff);
+
+      let scaleBy = 1.025 * delta; //1.13;
+      if (scaleBy < 0.95) {
+        scaleBy = 0.95;
+      } else if (scaleBy > 1.05) {
+        scaleBy = 1.05;
+      }
+
       if (canvas.domElement) {
         const mousePointTo = {
           x: e.clientX / this.scale - this.x / this.scale,
