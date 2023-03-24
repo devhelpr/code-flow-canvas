@@ -40,6 +40,7 @@ import { createRect } from './components/rect';
 import { NodeInfo } from './interfaces/nodeInfo';
 import { createElementMap } from './utils/create-element-map';
 import flowData from '../example-data/tiltest.json';
+import { setCamera } from './camera';
 //import { count } from 'console';
 
 const template = document.createElement('template');
@@ -358,10 +359,15 @@ export class AppElement extends HTMLElement {
       {
         id: 'canvas',
         class:
-          'w-100 bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
+          'w-100 h-100 bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
         pointerdown: (event: PointerEvent) => {
           isClicking = true;
           isMoving = false;
+
+          const currentState = getCurrentInteractionState();
+          if (currentState.state === InteractionState.Idle) {
+            console.log('START DRAGGING CANVAS');
+          }
         },
         pointermove: (event: PointerEvent) => {
           //const canvasRect = canvas.domElement.getBoundingClientRect();
@@ -503,11 +509,13 @@ export class AppElement extends HTMLElement {
         this.x = newPos.x;
         this.y = newPos.y;
 
+        setCamera(this.x, this.y, this.scale);
+
         (canvas.domElement as unknown as HTMLElement).style.transform =
           'translate(' +
-          newPos.x +
+          this.x +
           'px,' +
-          newPos.y +
+          this.y +
           'px) ' +
           'scale(' +
           this.scale +
