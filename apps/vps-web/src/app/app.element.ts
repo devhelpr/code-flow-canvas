@@ -66,6 +66,22 @@ export class AppElement extends HTMLElement {
 
   elements: ElementNodeMap = new Map();
 
+  clearElement = (element : IElementNode) => {
+    element.domElement.remove();
+    element.elements.forEach((element : IElementNode) => {
+      this.clearElement(element as unknown as IElementNode);
+    });
+    element.elements = [];
+  };
+
+  clearCanvas = () => {
+    this.elements.forEach((element) => {
+      element.domElement.remove();
+      this.clearElement(element as unknown as IElementNode);
+    });
+   this.elements.clear();
+  };
+
   constructor() {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
@@ -93,6 +109,20 @@ export class AppElement extends HTMLElement {
       },
       menubarElement.domElement,
       'Add element'
+    );
+
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: () => {
+          this.clearCanvas();
+
+        },
+      },
+      menubarElement.domElement,
+      'clear canvas'
     );
 
     createElement(
