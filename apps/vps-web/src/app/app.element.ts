@@ -40,13 +40,13 @@ import { createRect } from './components/rect';
 import { NodeInfo } from './interfaces/nodeInfo';
 import { createElementMap } from './utils/create-element-map';
 import flowData from '../example-data/tiltest.json';
-import { setCamera } from './camera';
+import { getCamera, setCamera } from './camera';
 //import { count } from 'console';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
-  <div class="h-screen w-100 bg-slate-800 overflow-hidden" id="root" >
+  <div class="h-screen w-full bg-slate-800 overflow-hidden" id="root" >
   </div>
 `; // flex flex-col
 
@@ -359,116 +359,118 @@ export class AppElement extends HTMLElement {
       {
         id: 'canvas',
         class:
-          'w-100 h-100 bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
-        pointerdown: (event: PointerEvent) => {
-          isClicking = true;
-          isMoving = false;
-
-          const currentState = getCurrentInteractionState();
-          if (currentState.state === InteractionState.Idle) {
-            console.log('START DRAGGING CANVAS');
-          }
-        },
-        pointermove: (event: PointerEvent) => {
-          //const canvasRect = canvas.domElement.getBoundingClientRect();
-          isMoving = true;
-          const currentState = getCurrentInteractionState();
-          if (
-            currentState.state === InteractionState.Moving &&
-            currentState.element &&
-            currentState.target
-          ) {
-            const interactionState = interactionEventState(
-              InteractionEvent.PointerMove,
-              currentState.target,
-              currentState.element
-            );
-            if (interactionState) {
-              const canvasRect = (
-                canvas.domElement as unknown as HTMLElement | SVGElement
-              ).getBoundingClientRect();
-              currentState.target.pointerMove(
-                event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y,
-                currentState.element,
-                canvas.domElement,
-                currentState.target.interactionInfo
-              );
-            }
-          }
-        },
-        pointerup: (event: PointerEvent) => {
-          const currentState = getCurrentInteractionState();
-          if (
-            currentState.state === InteractionState.Moving &&
-            currentState.element &&
-            currentState.target
-          ) {
-            if (
-              interactionEventState(
-                InteractionEvent.PointerUp,
-                currentState.target,
-                currentState.element,
-                true
-              )
-            ) {
-              const canvasRect = (
-                canvas.domElement as unknown as HTMLElement | SVGElement
-              ).getBoundingClientRect();
-
-              currentState.target.pointerUp(
-                event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y,
-                currentState.element,
-                canvas.domElement,
-                currentState.target.interactionInfo
-              );
-            }
-          } else {
-            if (!isMoving && isClicking) {
-              console.log('click canvas');
-              setSelectNode(undefined);
-            }
-          }
-          isMoving = false;
-          isClicking = false;
-        },
-        pointerleave: (event: PointerEvent) => {
-          console.log('pointerleave canvas', event);
-
-          isMoving = false;
-          isClicking = false;
-
-          const currentState = getCurrentInteractionState();
-          if (
-            currentState.state === InteractionState.Moving &&
-            currentState.element &&
-            currentState.target
-          ) {
-            if (
-              interactionEventState(
-                InteractionEvent.PointerLeave,
-                currentState.target,
-                currentState.element
-              )
-            ) {
-              const canvasRect = (
-                canvas.domElement as unknown as HTMLElement | SVGElement
-              ).getBoundingClientRect();
-
-              currentState.target.pointerUp(
-                event.clientX - canvasRect.x,
-                event.clientY - canvasRect.y,
-                currentState.element,
-                canvas.domElement,
-                currentState.target.interactionInfo
-              );
-            }
-          }
-        },
+          'w-full h-full bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
       },
       rootElement
     );
+
+    rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
+      isClicking = true;
+      isMoving = false;
+
+      const currentState = getCurrentInteractionState();
+      if (currentState.state === InteractionState.Idle) {
+        console.log('START DRAGGING CANVAS');
+      }
+    });
+
+    rootElement.addEventListener('pointermove', (event: PointerEvent) => {
+      //const canvasRect = canvas.domElement.getBoundingClientRect();
+      isMoving = true;
+      const currentState = getCurrentInteractionState();
+      if (
+        currentState.state === InteractionState.Moving &&
+        currentState.element &&
+        currentState.target
+      ) {
+        const interactionState = interactionEventState(
+          InteractionEvent.PointerMove,
+          currentState.target,
+          currentState.element
+        );
+        if (interactionState) {
+          const canvasRect = (
+            canvas.domElement as unknown as HTMLElement | SVGElement
+          ).getBoundingClientRect();
+          currentState.target.pointerMove(
+            (event.clientX - canvasRect.x) * getCamera().scale,
+            (event.clientY - canvasRect.y) * getCamera().scale,
+            currentState.element,
+            canvas.domElement,
+            currentState.target.interactionInfo
+          );
+        }
+      }
+    });
+    rootElement.addEventListener('pointerup', (event: PointerEvent) => {
+      const currentState = getCurrentInteractionState();
+      if (
+        currentState.state === InteractionState.Moving &&
+        currentState.element &&
+        currentState.target
+      ) {
+        if (
+          interactionEventState(
+            InteractionEvent.PointerUp,
+            currentState.target,
+            currentState.element,
+            true
+          )
+        ) {
+          const canvasRect = (
+            canvas.domElement as unknown as HTMLElement | SVGElement
+          ).getBoundingClientRect();
+
+          currentState.target.pointerUp(
+            (event.clientX - canvasRect.x) * getCamera().scale,
+            (event.clientY - canvasRect.y) * getCamera().scale,
+            currentState.element,
+            canvas.domElement,
+            currentState.target.interactionInfo
+          );
+        }
+      } else {
+        if (!isMoving && isClicking) {
+          console.log('click canvas');
+          setSelectNode(undefined);
+        }
+      }
+      isMoving = false;
+      isClicking = false;
+    });
+    rootElement.addEventListener('pointerleave', (event: PointerEvent) => {
+      console.log('pointerleave canvas', event);
+
+      isMoving = false;
+      isClicking = false;
+
+      const currentState = getCurrentInteractionState();
+      if (
+        currentState.state === InteractionState.Moving &&
+        currentState.element &&
+        currentState.target
+      ) {
+        if (
+          interactionEventState(
+            InteractionEvent.PointerLeave,
+            currentState.target,
+            currentState.element
+          )
+        ) {
+          const canvasRect = (
+            canvas.domElement as unknown as HTMLElement | SVGElement
+          ).getBoundingClientRect();
+
+          currentState.target.pointerUp(
+            (event.clientX - canvasRect.x) * getCamera().scale,
+            (event.clientY - canvasRect.y) * getCamera().scale,
+            currentState.element,
+            canvas.domElement,
+            currentState.target.interactionInfo
+          );
+        }
+      }
+    });
 
     let wheelTime = -1;
     rootElement.addEventListener('wheel', (e: WheelEvent) => {

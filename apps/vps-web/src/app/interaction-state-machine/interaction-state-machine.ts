@@ -1,4 +1,5 @@
 import { DOMElementNode, INodeComponent } from '../interfaces/element';
+import { NodeInfo } from '../interfaces/nodeInfo';
 import { IPointerDownResult } from '../interfaces/pointers';
 
 export enum InteractionState {
@@ -20,41 +21,41 @@ export enum InteractionEvent {
   PointerClick = 5,
 }
 
-export interface InteractionTarget {
+export interface InteractionTarget<T> {
   id: string;
   type: string;
   pointerDown: (
     x: number,
     y: number,
-    element: INodeComponent,
+    element: INodeComponent<T>,
     canvasElement: DOMElementNode
   ) => IPointerDownResult | false;
   pointerMove: (
     x: number,
     y: number,
-    element: INodeComponent,
+    element: INodeComponent<T>,
     canvasElement: DOMElementNode,
     interactionInfo: IPointerDownResult
   ) => void;
   pointerUp: (
     x: number,
     y: number,
-    element: INodeComponent,
+    element: INodeComponent<T>,
     canvasElement: DOMElementNode,
     interactionInfo: IPointerDownResult
   ) => void;
   interactionInfo: IPointerDownResult;
 }
 
-export interface InterActionInfo {
+export interface InterActionInfo<T> {
   state: InteractionState;
-  target?: InteractionTarget;
+  target?: InteractionTarget<T>;
   isNewState: boolean;
 }
 
 let interactionState = InteractionState.Idle;
-let interactionTarget: InteractionTarget | undefined = undefined;
-let currentElement: INodeComponent | undefined = undefined;
+let interactionTarget: InteractionTarget<NodeInfo> | undefined = undefined;
+let currentElement: INodeComponent<NodeInfo> | undefined = undefined;
 
 export const getCurrentInteractionState = () => {
   return {
@@ -64,12 +65,12 @@ export const getCurrentInteractionState = () => {
   };
 };
 
-export const interactionEventState = (
+export const interactionEventState = <T>(
   event: InteractionEvent,
-  target: InteractionTarget,
-  element: INodeComponent,
+  target: InteractionTarget<T>,
+  element: INodeComponent<T>,
   peek = false
-): false | InterActionInfo => {
+): false | InterActionInfo<T> => {
   // console.log(
   //   'interactionEventState',
   //   interactionState,
@@ -135,12 +136,12 @@ export const interactionEventState = (
   return false;
 };
 
-let currentDropTarget: INodeComponent | undefined = undefined;
-export const setCurrentDropTarget = (dropTarget: INodeComponent) => {
+let currentDropTarget: INodeComponent<NodeInfo> | undefined = undefined;
+export const setCurrentDropTarget = <T>(dropTarget: INodeComponent<T>) => {
   currentDropTarget = dropTarget;
 };
 
-export const clearDropTarget = (dropTarget: INodeComponent) => {
+export const clearDropTarget = <T>(dropTarget: INodeComponent<T>) => {
   console.log('clearDropTarget', currentDropTarget?.id, dropTarget.id);
   if (currentDropTarget && currentDropTarget.id === dropTarget.id) {
     currentDropTarget = undefined;
