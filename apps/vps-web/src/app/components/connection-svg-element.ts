@@ -1,3 +1,4 @@
+import { transformToCamera } from '../camera';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -184,9 +185,13 @@ export const createConnectionSVGElement = <T>(
           ).getBoundingClientRect();
 
           const bbox = getBBoxPath();
+
+          const { x, y } = transformToCamera(e.clientX, e.clientY);
+          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
           const interactionInfoResult = pointerDown(
-            e.clientX - elementRect.x - (pathPoints.beginX - bbox.x - 10),
-            e.clientY - elementRect.y - (pathPoints.beginY - bbox.y - 10),
+            x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
+            y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
             nodeComponent,
             canvasElement
           );

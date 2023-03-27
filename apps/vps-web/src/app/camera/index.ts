@@ -11,3 +11,10 @@ export const setCamera = (newX: number, newY: number, newScale: number) => {
 export const getCamera = () => {
   return { x, y, scale };
 };
+
+export const transformToCamera = (tx: number, ty: number) => {
+  return {
+    x: (tx - x) / scale,
+    y: (ty - y) / scale,
+  };
+};

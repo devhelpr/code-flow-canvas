@@ -13,6 +13,7 @@ import { IPointerDownResult } from '../interfaces/pointers';
 import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 import { createNodeComponent } from '../utils/create-node-component';
+import { transformToCamera } from '../camera';
 
 export const createMarkupElement = <T>(
   markup: string,
@@ -52,9 +53,13 @@ export const createMarkupElement = <T>(
             | HTMLElement
             | SVGElement;
           const elementRect = domElement.getBoundingClientRect();
+
+          const { x, y } = transformToCamera(e.clientX, e.clientY);
+          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
           const helper = pointerDown(
-            e.clientX - elementRect.x,
-            e.clientY - elementRect.y,
+            x - rectCamera.x,
+            y - rectCamera.y,
             nodeComponent,
             canvasElement
           );
@@ -64,7 +69,7 @@ export const createMarkupElement = <T>(
           }
         }
       },
-      pointermove: (e: PointerEvent) => {
+      /*pointermove: (e: PointerEvent) => {
         const canvasRect = (
           canvasElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
@@ -99,7 +104,7 @@ export const createMarkupElement = <T>(
             );
           }
         }
-      },
+      },*/
       pointerleave: (e: PointerEvent) => {
         console.log('pointerleave element', event);
       },

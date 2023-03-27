@@ -1,3 +1,4 @@
+import { transformToCamera } from '../camera';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -58,18 +59,23 @@ export const createNodeElement = <T>(
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
+
+          const { x, y } = transformToCamera(e.clientX, e.clientY);
+          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
           const helper = pointerDown(
-            e.clientX - elementRect.x,
-            e.clientY - elementRect.y,
+            x - rectCamera.x,
+            y - rectCamera.y,
             nodeComponent,
             canvasElement
           );
+
           if (helper) {
             interactionInfo = helper;
           }
         }
       },
-      pointermove: (e: PointerEvent) => {
+      /*pointermove: (e: PointerEvent) => {
         const canvasRect = (
           canvasElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
@@ -115,6 +121,7 @@ export const createNodeElement = <T>(
 
         return false;
       },
+      */
       pointerleave: (e: PointerEvent) => {
         isClicking = false;
       },

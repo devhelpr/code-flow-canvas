@@ -40,7 +40,7 @@ import { createRect } from './components/rect';
 import { NodeInfo } from './interfaces/nodeInfo';
 import { createElementMap } from './utils/create-element-map';
 import flowData from '../example-data/tiltest.json';
-import { getCamera, setCamera } from './camera';
+import { getCamera, setCamera, transformToCamera } from './camera';
 //import { count } from 'console';
 
 const template = document.createElement('template');
@@ -392,9 +392,23 @@ export class AppElement extends HTMLElement {
           const canvasRect = (
             canvas.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
+
+          const { x, y } = transformToCamera(
+            event.clientX, //- canvasRect.x,
+            event.clientY //- canvasRect.y
+          );
+          console.log(
+            x,
+            y,
+            event.clientX,
+            event.clientY,
+            canvasRect.x,
+            canvasRect.y,
+            getCamera()
+          );
           currentState.target.pointerMove(
-            (event.clientX - canvasRect.x) * getCamera().scale,
-            (event.clientY - canvasRect.y) * getCamera().scale,
+            x,
+            y,
             currentState.element,
             canvas.domElement,
             currentState.target.interactionInfo
@@ -420,10 +434,14 @@ export class AppElement extends HTMLElement {
           const canvasRect = (
             canvas.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
+          const { x, y } = transformToCamera(
+            event.clientX, //- canvasRect.x,
+            event.clientY //- canvasRect.y
+          );
 
           currentState.target.pointerUp(
-            (event.clientX - canvasRect.x) * getCamera().scale,
-            (event.clientY - canvasRect.y) * getCamera().scale,
+            x,
+            y,
             currentState.element,
             canvas.domElement,
             currentState.target.interactionInfo
@@ -460,10 +478,14 @@ export class AppElement extends HTMLElement {
           const canvasRect = (
             canvas.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
+          const { x, y } = transformToCamera(
+            event.clientX - canvasRect.x,
+            event.clientY - canvasRect.y
+          );
 
           currentState.target.pointerUp(
-            (event.clientX - canvasRect.x) * getCamera().scale,
-            (event.clientY - canvasRect.y) * getCamera().scale,
+            x,
+            y,
             currentState.element,
             canvas.domElement,
             currentState.target.interactionInfo

@@ -1,3 +1,4 @@
+import { transformToCamera } from '../camera';
 import {
   clearDropTarget,
   getCurrentDropTarget,
@@ -104,9 +105,13 @@ export const createSVGElement = <T>(
           const elementRect = (
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
+
+          const { x, y } = transformToCamera(e.clientX, e.clientY);
+          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
           const interactionInfoResult = pointerDown(
-            e.clientX - elementRect.x,
-            e.clientY - elementRect.y,
+            x - rectCamera.x,
+            y - rectCamera.y,
             nodeComponent,
             canvasElement
           );
@@ -126,14 +131,9 @@ export const createSVGElement = <T>(
         ).getBoundingClientRect();
         if (nodeComponent) {
           if (nodeComponent && nodeComponent.domElement) {
+            const { x, y } = transformToCamera(e.clientX, e.clientY);
             if (
-              pointerMove(
-                e.clientX - canvasRect.x,
-                e.clientY - canvasRect.y,
-                nodeComponent,
-                canvasElement,
-                interactionInfo
-              )
+              pointerMove(x, y, nodeComponent, canvasElement, interactionInfo)
             ) {
               // console.log(
               //   'svg pointermove',
@@ -154,13 +154,9 @@ export const createSVGElement = <T>(
             const canvasRect = (
               canvasElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
-            pointerUp(
-              e.clientX - canvasRect.x,
-              e.clientY - canvasRect.y,
-              nodeComponent,
-              canvasElement,
-              interactionInfo
-            );
+
+            const { x, y } = transformToCamera(e.clientX, e.clientY);
+            pointerUp(x, y, nodeComponent, canvasElement, interactionInfo);
             const circleDomElement = circleElement?.domElement as unknown as
               | HTMLElement
               | SVGElement;
