@@ -125,7 +125,7 @@ export class AppElement extends HTMLElement {
         click: () => {
           this.clearCanvas();
           flowData.forEach((flowNode) => {
-            if (flowNode.shapeType !== 'connection') {
+            if (flowNode.shapeType !== 'Line') {
               const rect = createRect(
                 canvas as unknown as INodeComponent<NodeInfo>,
                 pathHiddenElement,
