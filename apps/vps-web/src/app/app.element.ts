@@ -167,7 +167,8 @@ export class AppElement extends HTMLElement {
                 flowNode.x ?? 0,
                 flowNode.y ?? 0,
                 200,
-                300
+                300,
+                flowNode.taskType
               );
               rect.nodeComponent.nodeInfo = flowNode;
             }

@@ -17,7 +17,8 @@ export const createRect = <T>(
   startX: number,
   startY: number,
   width: number,
-  height: number
+  height: number,
+  text?: string
 ) => {
   const rectNode = createRectPathSVGElement(
     canvas.domElement,
@@ -26,7 +27,8 @@ export const createRect = <T>(
     startY,
     width,
     height,
-    pathHiddenElement
+    pathHiddenElement,
+    text
   );
 
   function setPosition(

@@ -30,7 +30,8 @@ export const createRectPathSVGElement = <T>(
   startY: number,
   width: number,
   height: number,
-  pathHiddenElement: IElementNode<T>
+  pathHiddenElement: IElementNode<T>,
+  text?: string
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -231,6 +232,21 @@ export const createRectPathSVGElement = <T>(
 
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.push(pathElement);
+
+  if (text) {
+    const textElement = createSVGNodeComponent(
+      'text',
+      {
+        x: '50%',
+        y: '50%',
+        'dominant-baseline': 'middle',
+        'text-anchor': 'middle',
+      },
+      nodeComponent.domElement
+    );
+    const textNode = document.createTextNode(text);
+    textElement.domElement.appendChild(textNode);
+  }
 
   nodeComponent.update = (
     incomingComponent?: INodeComponent<T>,
