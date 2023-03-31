@@ -51,11 +51,18 @@ export interface InterActionInfo<T> {
   state: InteractionState;
   target?: InteractionTarget<T>;
   isNewState: boolean;
+  isClicking?: boolean;
+  isMoving?: boolean;
+  timeSinceStart: number;
 }
 
 let interactionState = InteractionState.Idle;
 let interactionTarget: InteractionTarget<NodeInfo> | undefined = undefined;
 let currentElement: INodeComponent<NodeInfo> | undefined = undefined;
+
+let isClicking = false;
+let isMoving = false;
+let startTime = 0;
 
 export const getCurrentInteractionState = () => {
   return {
@@ -84,10 +91,15 @@ export const interactionEventState = <T>(
       interactionState = InteractionState.Moving;
       interactionTarget = target;
       currentElement = element;
+      isClicking = true;
+      startTime = Date.now();
       return {
         state: interactionState,
         target: interactionTarget,
         isNewState: true,
+        isClicking,
+        isMoving,
+        timeSinceStart: 0,
       };
     }
   }
@@ -98,10 +110,14 @@ export const interactionEventState = <T>(
     interactionTarget.id === target.id
   ) {
     if (event === InteractionEvent.PointerMove) {
+      isMoving = true;
       return {
         state: interactionState,
         target: interactionTarget,
         isNewState: false,
+        isClicking,
+        isMoving,
+        timeSinceStart: Date.now() - startTime,
       };
     }
     if (event === InteractionEvent.PointerUp) {
@@ -110,15 +126,25 @@ export const interactionEventState = <T>(
           state: interactionState,
           target: interactionTarget,
           isNewState: false,
+          isClicking,
+          isMoving,
+          timeSinceStart: Date.now() - startTime,
         };
       } else {
         interactionState = InteractionState.Idle;
         interactionTarget = undefined;
         currentElement = undefined;
+        const oldIsClicking = isClicking;
+        const oldIsMoving = isMoving;
+        isClicking = false;
+        isMoving = false;
         return {
           state: interactionState,
           target: interactionTarget,
           isNewState: true,
+          isClicking: oldIsClicking,
+          isMoving: oldIsMoving,
+          timeSinceStart: Date.now() - startTime,
         };
       }
     }
@@ -126,10 +152,15 @@ export const interactionEventState = <T>(
       interactionState = InteractionState.Idle;
       interactionTarget = undefined;
       currentElement = undefined;
+      isClicking = false;
+      isMoving = false;
       return {
         state: interactionState,
         target: interactionTarget,
         isNewState: true,
+        isClicking,
+        isMoving,
+        timeSinceStart: Date.now() - startTime,
       };
     }
   }

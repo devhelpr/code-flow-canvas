@@ -6,7 +6,12 @@ import {
   INodeComponentRelation,
   NodeComponentRelationType,
 } from '../interfaces/element';
-import { createEffect, getVisbility } from '../reactivity';
+import {
+  createEffect,
+  getSelectedNode,
+  getVisbility,
+  setSelectNode,
+} from '../reactivity';
 import { createRectPathSVGElement } from './rect-path-svg-element';
 import { createSVGElement } from './svg-element';
 
@@ -437,8 +442,23 @@ export const createRect = <T>(
     },
   });
 
+  rectNode.onClick = () => {
+    console.log('CLICKED ON RECT', rectNode.id);
+    setSelectNode(rectNode.id);
+  };
+
   createEffect(() => {
-    const visibility = getVisbility();
+    //const selectedNode = getSelectedNode();
+    const visibility = getVisbility(); // && selectedNode && selectedNode === rectNode.id;
+
+    // console.log(
+    //   'VISIBILITY',
+    //   getVisbility(),
+    //   rectNode.id,
+    //   selectedNode,
+    //   visibility
+    // );
+
     (startPointElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
     (rightTopPointElement.domElement as unknown as SVGElement).style.display =

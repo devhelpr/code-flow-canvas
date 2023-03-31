@@ -5,7 +5,12 @@ import {
   INodeComponent,
   NodeComponentRelationType,
 } from '../interfaces/element';
-import { createEffect, getVisbility } from '../reactivity';
+import {
+  createEffect,
+  getVisbility,
+  getSelectedNode,
+  setSelectNode,
+} from '../reactivity';
 import { createConnectionSVGElement } from './connection-svg-element';
 import { createSVGElement } from './svg-element';
 
@@ -37,6 +42,10 @@ export const createCubicBezier = <T>(
     pathHiddenElement
   );
   connection.isControlled = isControlled;
+  connection.onClick = () => {
+    console.log('connection click', connection.id);
+    setSelectNode(connection.id);
+  };
 
   function setPosition(
     element: INodeComponent<T>,
@@ -289,7 +298,15 @@ export const createCubicBezier = <T>(
   });
 
   createEffect(() => {
-    const visibility = getVisbility();
+    //const selectedNode = getSelectedNode();
+    const visibility = getVisbility(); // && selectedNode && selectedNode === connection.id;
+    // console.log(
+    //   'connection visibility',
+    //   visibility,
+    //   getVisbility(),
+    //   selectedNode,
+    //   connection.id
+    // );
     (startPointElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
     (endPointElement.domElement as unknown as SVGElement).style.display =
@@ -362,6 +379,10 @@ export const createQuadraticBezier = <T>(
     true
   );
   connection.isControlled = isControlled;
+  connection.onClick = () => {
+    console.log('connection click', connection.id);
+    setSelectNode(connection.id);
+  };
 
   function setPosition(element: INodeComponent<T>, x: number, y: number) {
     (
@@ -559,7 +580,15 @@ export const createQuadraticBezier = <T>(
   });
 
   createEffect(() => {
-    const visibility = getVisbility();
+    //const selectedNode = getSelectedNode();
+    const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
+    // console.log(
+    //   'connection visibility',
+    //   visibility,
+    //   getVisbility(),
+    //   selectedNode,
+    //   connection.id
+    // );
     (startPointElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
     (endPointElement.domElement as unknown as SVGElement).style.display =

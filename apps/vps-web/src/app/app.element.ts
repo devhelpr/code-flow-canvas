@@ -397,6 +397,7 @@ export class AppElement extends HTMLElement {
 
     let isClicking = false;
     let isMoving = false;
+    let startTime = 0;
 
     // transform-origin: top left;
     const canvas = createElement(
@@ -413,11 +414,15 @@ export class AppElement extends HTMLElement {
     rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
       isClicking = true;
       isMoving = false;
+      startTime = Date.now();
     });
 
     rootElement.addEventListener('pointermove', (event: PointerEvent) => {
       //const canvasRect = canvas.domElement.getBoundingClientRect();
       isMoving = true;
+      if (Date.now() - startTime < 125) {
+        return;
+      }
       let currentState = getCurrentInteractionState();
 
       if (currentState.state === InteractionState.Idle && isClicking) {
@@ -517,8 +522,11 @@ export class AppElement extends HTMLElement {
           }
         }
       } else {
-        if (!isMoving && isClicking) {
-          console.log('click canvas');
+        if (
+          (!isMoving && isClicking) ||
+          (isClicking && isMoving && Date.now() - startTime < 125)
+        ) {
+          console.log('click canvas', isMoving, Date.now() - startTime);
           setSelectNode(undefined);
         }
       }

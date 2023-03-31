@@ -62,6 +62,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   pointerDown?: () => void;
   pointerMove?: () => void;
   pointerUp?: () => void;
+  onClick?: () => void;
   onCanReceiveDroppedComponent?: (component: INodeComponent<T>) => boolean;
   onReceiveDroppedComponent?: (component: INodeComponent<T>) => void;
 }

@@ -64,9 +64,8 @@ export const pointerMove = (
   _canvasElement: DOMElementNode,
   interactionInfo: IPointerDownResult
 ) => {
-  if (
-    element &&
-    interactionEventState(
+  if (element) {
+    const interactionState = interactionEventState(
       InteractionEvent.PointerMove,
       {
         id: element.id,
@@ -77,9 +76,14 @@ export const pointerMove = (
         interactionInfo,
       },
       element
-    )
-  ) {
-    if (element && element.domElement) {
+    );
+
+    if (
+      interactionState &&
+      element &&
+      element.domElement &&
+      interactionState.timeSinceStart > 125
+    ) {
       if (element.update) {
         element.update(
           element,
@@ -107,9 +111,8 @@ export const pointerUp = (
   _canvasElement: DOMElementNode,
   interactionInfo: IPointerDownResult
 ) => {
-  if (
-    element &&
-    interactionEventState(
+  if (element) {
+    const currentInteractionInfo = interactionEventState(
       InteractionEvent.PointerUp,
       {
         id: element.id,
@@ -120,9 +123,31 @@ export const pointerUp = (
         interactionInfo,
       },
       element
-    )
-  ) {
-    if (element && element.domElement) {
+    );
+
+    let handledAsClick = false;
+    if (currentInteractionInfo) {
+      if (
+        (currentInteractionInfo.isClicking &&
+          !currentInteractionInfo.isMoving) ||
+        (currentInteractionInfo.isClicking &&
+          currentInteractionInfo.isMoving &&
+          currentInteractionInfo.timeSinceStart < 125)
+      ) {
+        if (element.onClick) {
+          console.log(
+            'click',
+            currentInteractionInfo.isMoving,
+            element.id,
+            currentInteractionInfo.timeSinceStart
+          );
+          handledAsClick = true;
+          element.onClick();
+        }
+      }
+    }
+
+    if (element && element.domElement && !handledAsClick) {
       if (element.update) {
         element.update(
           element,
