@@ -217,7 +217,7 @@ export const createRectPathSVGElement = <T>(
       //         interactionInfo
       //       );
       //       if (isClicking && !isMoving) {
-      //         setSelectNode(nodeComponent);
+      //         setSelectNode(nodeComponent.id);
       //       }
       //       isMoving = false;
       //       isClicking = false;

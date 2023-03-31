@@ -109,7 +109,7 @@ export const createNodeElement = <T>(
             if (isClicking && !isMoving) {
               console.log('CLICK', nodeComponent);
               setCount(getCount() + 1);
-              setSelectNode(nodeComponent);
+              setSelectNode(nodeComponent.id);
             }
           }
         }

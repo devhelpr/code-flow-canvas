@@ -110,7 +110,9 @@ export const interactionEventState = <T>(
     interactionTarget.id === target.id
   ) {
     if (event === InteractionEvent.PointerMove) {
-      isMoving = true;
+      if (isClicking) {
+        isMoving = true;
+      }
       return {
         state: interactionState,
         target: interactionTarget,

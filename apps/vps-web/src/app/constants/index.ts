@@ -1,0 +1,1 @@
+export const CLICK_MOVEMENT_THRESHOLD = 150;

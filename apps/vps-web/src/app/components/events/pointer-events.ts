@@ -1,3 +1,4 @@
+import { CLICK_MOVEMENT_THRESHOLD } from '../../constants';
 import {
   InteractionEvent,
   interactionEventState,
@@ -81,8 +82,8 @@ export const pointerMove = (
     if (
       interactionState &&
       element &&
-      element.domElement &&
-      interactionState.timeSinceStart > 125
+      element.domElement
+      //interactionState.timeSinceStart > CLICK_MOVEMENT_THRESHOLD
     ) {
       if (element.update) {
         element.update(
@@ -132,7 +133,7 @@ export const pointerUp = (
           !currentInteractionInfo.isMoving) ||
         (currentInteractionInfo.isClicking &&
           currentInteractionInfo.isMoving &&
-          currentInteractionInfo.timeSinceStart < 125)
+          currentInteractionInfo.timeSinceStart < CLICK_MOVEMENT_THRESHOLD)
       ) {
         if (element.onClick) {
           console.log(
@@ -146,7 +147,7 @@ export const pointerUp = (
         }
       }
 
-      if (element && element.domElement && !handledAsClick) {
+      if (element && element.domElement) {
         if (element.update) {
           element.update(
             element,

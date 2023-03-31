@@ -41,7 +41,7 @@ import { NodeInfo } from './interfaces/nodeInfo';
 import { createElementMap } from './utils/create-element-map';
 import flowData from '../example-data/tiltest.json';
 import { getCamera, setCamera, transformToCamera } from './camera';
-//import { count } from 'console';
+import { CLICK_MOVEMENT_THRESHOLD } from './constants';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -391,6 +391,7 @@ export class AppElement extends HTMLElement {
       'div',
       {
         id: 'selectedNode',
+        class: 'text-white',
       },
       menubarElement.domElement
     );
@@ -419,9 +420,11 @@ export class AppElement extends HTMLElement {
 
     rootElement.addEventListener('pointermove', (event: PointerEvent) => {
       //const canvasRect = canvas.domElement.getBoundingClientRect();
-      isMoving = true;
-      if (Date.now() - startTime < 125) {
-        return;
+      if (isClicking) {
+        isMoving = true;
+      }
+      if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
+        //return;
       }
       let currentState = getCurrentInteractionState();
 
@@ -502,6 +505,8 @@ export class AppElement extends HTMLElement {
               currentState.target,
               currentState.element
             );
+
+            setSelectNode(undefined);
           } else {
             const canvasRect = (
               canvas.domElement as unknown as HTMLElement | SVGElement
@@ -523,8 +528,12 @@ export class AppElement extends HTMLElement {
         }
       } else {
         if (
-          (!isMoving && isClicking) ||
-          (isClicking && isMoving && Date.now() - startTime < 125)
+          !isMoving &&
+          isClicking
+          // ||
+          // (isClicking &&
+          //   isMoving &&
+          //   Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD)
         ) {
           console.log('click canvas', isMoving, Date.now() - startTime);
           setSelectNode(undefined);
@@ -577,28 +586,40 @@ export class AppElement extends HTMLElement {
     });
 
     let wheelTime = -1;
-    rootElement.addEventListener('wheel', (e: WheelEvent) => {
-      e.preventDefault();
-      if (wheelTime === -1) {
-        wheelTime = e.timeStamp;
-      }
-      const timeDiff = e.timeStamp - wheelTime;
-      const delta = 1 + e.deltaY / timeDiff;
+    rootElement.addEventListener('wheel', (event: WheelEvent) => {
+      event.preventDefault();
 
-      let scaleBy = 1.025 * delta; //1.13;
-      if (scaleBy < 0.95) {
-        scaleBy = 0.95;
-      } else if (scaleBy > 1.05) {
-        scaleBy = 1.05;
+      if (wheelTime === -1) {
+        wheelTime = event.timeStamp;
       }
+      let timeDiff = event.timeStamp - wheelTime;
+      if (event.shiftKey) {
+        timeDiff = timeDiff * 16;
+      }
+      //const delta = result.pixelY; // / timeDiff;
+      const delta = Math.max(
+        -1,
+        Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
+      );
+
+      // Determine the scale factor for the zoom
+      const scaleFactor = 1 + delta * 0.1;
+
+      const scaleBy = scaleFactor;
+      // if (scaleBy < 0.95) {
+      //   scaleBy = 0.95;
+      // } else if (scaleBy > 1.05) {
+      //   scaleBy = 1.05;
+      // }
 
       if (canvas.domElement) {
         const mousePointTo = {
-          x: e.clientX / this.scale - this.x / this.scale,
-          y: e.clientY / this.scale - this.y / this.scale,
+          x: event.clientX / this.scale - this.x / this.scale,
+          y: event.clientY / this.scale - this.y / this.scale,
         };
 
-        this.scale = e.deltaY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
+        this.scale = this.scale * scaleBy;
+        //result.pixelY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
         if (this.scale < 0.15) {
           this.scale = 0.15;
         } else if (this.scale > 3) {
@@ -606,8 +627,8 @@ export class AppElement extends HTMLElement {
         }
 
         const newPos = {
-          x: -(mousePointTo.x - e.clientX / this.scale) * this.scale,
-          y: -(mousePointTo.y - e.clientY / this.scale) * this.scale,
+          x: -(mousePointTo.x - event.clientX / this.scale) * this.scale,
+          y: -(mousePointTo.y - event.clientY / this.scale) * this.scale,
         };
 
         this.x = newPos.x;
@@ -732,10 +753,12 @@ export class AppElement extends HTMLElement {
     );
 
     createEffect(() => {
-      const nodeElement = getSelectedNode();
-      console.log('nodeElement', nodeElement);
-      if (nodeElement) {
-        selectedNode.domElement.textContent = `${nodeElement.id} => ${nodeElement.x}, ${nodeElement.y}`;
+      const nodeElementId = getSelectedNode();
+      console.log('selected nodeElement', nodeElementId);
+      if (nodeElementId) {
+        selectedNode.domElement.textContent = `${nodeElementId}`;
+      } else {
+        selectedNode.domElement.textContent = '';
       }
     });
 
