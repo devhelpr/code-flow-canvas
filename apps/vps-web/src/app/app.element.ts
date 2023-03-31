@@ -72,6 +72,7 @@ export class AppElement extends HTMLElement {
   scale = 1;
   x = 0;
   y = 0;
+  canvas?: IElementNode<NodeInfo> = undefined;
 
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
@@ -87,6 +88,36 @@ export class AppElement extends HTMLElement {
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
     this.elements.clear();
+  };
+
+  startDragX = 0;
+  startDragY = 0;
+
+  startClientDragX = 0;
+  startClientDragY = 0;
+
+  setCameraPosition = (x: number, y: number) => {
+    if (this.canvas?.domElement) {
+      const diffX = x - this.startClientDragX;
+      const diffY = y - this.startClientDragY;
+
+      this.x = this.startDragX + diffX;
+      this.y = this.startDragY + diffY;
+
+      setCamera(this.x, this.y, this.scale);
+
+      (this.canvas.domElement as unknown as HTMLElement).style.transform =
+        'translate(' +
+        this.x +
+        'px,' +
+        this.y +
+        'px) ' +
+        'scale(' +
+        this.scale +
+        ',' +
+        this.scale +
+        ') ';
+    }
   };
 
   constructor() {
@@ -110,8 +141,10 @@ export class AppElement extends HTMLElement {
       'button',
       {
         class: button,
-        click: () => {
+        click: (event) => {
+          event.preventDefault();
           createNodeElement('div', canvas.domElement, this.elements);
+          return false;
         },
       },
       menubarElement.domElement,
@@ -122,7 +155,8 @@ export class AppElement extends HTMLElement {
       'button',
       {
         class: button,
-        click: () => {
+        click: (event) => {
+          event.preventDefault();
           this.clearCanvas();
           flowData.forEach((flowNode) => {
             if (flowNode.shapeType !== 'Line') {
@@ -204,6 +238,7 @@ export class AppElement extends HTMLElement {
               }
             }
           });
+          return false;
         },
       },
       menubarElement.domElement,
@@ -214,7 +249,8 @@ export class AppElement extends HTMLElement {
       'button',
       {
         class: button,
-        click: () => {
+        click: (event) => {
+          event.preventDefault();
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
@@ -267,6 +303,8 @@ export class AppElement extends HTMLElement {
           //     component: end.nodeComponent,
           //   } as unknown as INodeComponentRelation);
           // }
+
+          return false;
         },
       },
       menubarElement.domElement,
@@ -277,7 +315,8 @@ export class AppElement extends HTMLElement {
       'button',
       {
         class: button,
-        click: () => {
+        click: (event) => {
+          event.preventDefault();
           const x = Math.floor(Math.random() * 250);
           const y = Math.floor(Math.random() * 500);
 
@@ -308,6 +347,7 @@ export class AppElement extends HTMLElement {
           //   y + 50
           // );
           // }
+          return false;
         },
       },
       menubarElement.domElement,
@@ -318,12 +358,14 @@ export class AppElement extends HTMLElement {
       'button',
       {
         class: button,
-        click: () => {
+        click: (event) => {
+          event.preventDefault();
           createMarkupElement(
             '<div><h2>TITLE</h2><p>subtitle</p></div>',
             canvas.domElement,
             this.elements
           );
+          return false;
         },
       },
       menubarElement.domElement,
@@ -334,8 +376,10 @@ export class AppElement extends HTMLElement {
       'button',
       {
         class: button,
-        click: () => {
+        click: (event) => {
+          event.preventDefault();
           setVisibility(!getVisbility());
+          return false;
         },
       },
       menubarElement.domElement,
@@ -363,21 +407,38 @@ export class AppElement extends HTMLElement {
       },
       rootElement
     );
+    this.canvas = canvas;
 
     rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
       isClicking = true;
       isMoving = false;
-
-      const currentState = getCurrentInteractionState();
-      if (currentState.state === InteractionState.Idle) {
-        console.log('START DRAGGING CANVAS');
-      }
     });
 
     rootElement.addEventListener('pointermove', (event: PointerEvent) => {
       //const canvasRect = canvas.domElement.getBoundingClientRect();
       isMoving = true;
-      const currentState = getCurrentInteractionState();
+      let currentState = getCurrentInteractionState();
+
+      if (currentState.state === InteractionState.Idle && isClicking) {
+        this.startClientDragX = event.clientX;
+        this.startClientDragY = event.clientY;
+        this.startDragX = this.x;
+        this.startDragY = this.y;
+
+        interactionEventState(
+          InteractionEvent.PointerDown,
+          {
+            id: canvas.id,
+            type: 'Canvas',
+            interactionInfo: {
+              xOffsetWithinElementOnFirstClick: 0,
+              yOffsetWithinElementOnFirstClick: 0,
+            },
+          },
+          canvas as unknown as INodeComponent<NodeInfo>
+        );
+        currentState = getCurrentInteractionState();
+      }
       if (
         currentState.state === InteractionState.Moving &&
         currentState.element &&
@@ -389,30 +450,27 @@ export class AppElement extends HTMLElement {
           currentState.element
         );
         if (interactionState) {
-          const canvasRect = (
-            canvas.domElement as unknown as HTMLElement | SVGElement
-          ).getBoundingClientRect();
+          if (interactionState.target?.id === canvas.id) {
+            this.setCameraPosition(event.clientX, event.clientY);
+          } else {
+            const canvasRect = (
+              canvas.domElement as unknown as HTMLElement | SVGElement
+            ).getBoundingClientRect();
 
-          const { x, y } = transformToCamera(
-            event.clientX, //- canvasRect.x,
-            event.clientY //- canvasRect.y
-          );
-          console.log(
-            x,
-            y,
-            event.clientX,
-            event.clientY,
-            canvasRect.x,
-            canvasRect.y,
-            getCamera()
-          );
-          currentState.target.pointerMove(
-            x,
-            y,
-            currentState.element,
-            canvas.domElement,
-            currentState.target.interactionInfo
-          );
+            const { x, y } = transformToCamera(
+              event.clientX, //- canvasRect.x,
+              event.clientY //- canvasRect.y
+            );
+
+            currentState.target.pointerMove &&
+              currentState.target.pointerMove(
+                x,
+                y,
+                currentState.element,
+                canvas.domElement,
+                currentState.target.interactionInfo
+              );
+          }
         }
       }
     });
@@ -423,29 +481,39 @@ export class AppElement extends HTMLElement {
         currentState.element &&
         currentState.target
       ) {
-        if (
-          interactionEventState(
-            InteractionEvent.PointerUp,
-            currentState.target,
-            currentState.element,
-            true
-          )
-        ) {
-          const canvasRect = (
-            canvas.domElement as unknown as HTMLElement | SVGElement
-          ).getBoundingClientRect();
-          const { x, y } = transformToCamera(
-            event.clientX, //- canvasRect.x,
-            event.clientY //- canvasRect.y
-          );
+        const interactionState = interactionEventState(
+          InteractionEvent.PointerUp,
+          currentState.target,
+          currentState.element,
+          true
+        );
+        if (interactionState) {
+          if (currentState.target?.id === canvas.id) {
+            this.setCameraPosition(event.clientX, event.clientY);
 
-          currentState.target.pointerUp(
-            x,
-            y,
-            currentState.element,
-            canvas.domElement,
-            currentState.target.interactionInfo
-          );
+            interactionEventState(
+              InteractionEvent.PointerUp,
+              currentState.target,
+              currentState.element
+            );
+          } else {
+            const canvasRect = (
+              canvas.domElement as unknown as HTMLElement | SVGElement
+            ).getBoundingClientRect();
+            const { x, y } = transformToCamera(
+              event.clientX, //- canvasRect.x,
+              event.clientY //- canvasRect.y
+            );
+
+            currentState.target.pointerUp &&
+              currentState.target.pointerUp(
+                x,
+                y,
+                currentState.element,
+                canvas.domElement,
+                currentState.target.interactionInfo
+              );
+          }
         }
       } else {
         if (!isMoving && isClicking) {
@@ -468,28 +536,33 @@ export class AppElement extends HTMLElement {
         currentState.element &&
         currentState.target
       ) {
-        if (
-          interactionEventState(
-            InteractionEvent.PointerLeave,
-            currentState.target,
-            currentState.element
-          )
-        ) {
-          const canvasRect = (
-            canvas.domElement as unknown as HTMLElement | SVGElement
-          ).getBoundingClientRect();
-          const { x, y } = transformToCamera(
-            event.clientX - canvasRect.x,
-            event.clientY - canvasRect.y
-          );
+        const interactionState = interactionEventState(
+          InteractionEvent.PointerLeave,
+          currentState.target,
+          currentState.element
+        );
 
-          currentState.target.pointerUp(
-            x,
-            y,
-            currentState.element,
-            canvas.domElement,
-            currentState.target.interactionInfo
-          );
+        if (interactionState) {
+          if (currentState.target?.id === canvas.id) {
+            //
+          } else {
+            const canvasRect = (
+              canvas.domElement as unknown as HTMLElement | SVGElement
+            ).getBoundingClientRect();
+            const { x, y } = transformToCamera(
+              event.clientX - canvasRect.x,
+              event.clientY - canvasRect.y
+            );
+
+            currentState.target.pointerUp &&
+              currentState.target.pointerUp(
+                x,
+                y,
+                currentState.element,
+                canvas.domElement,
+                currentState.target.interactionInfo
+              );
+          }
         }
       }
     });
@@ -502,8 +575,6 @@ export class AppElement extends HTMLElement {
       }
       const timeDiff = e.timeStamp - wheelTime;
       const delta = 1 + e.deltaY / timeDiff;
-
-      //console.log('wheel', e.deltaY / timeDiff, timeDiff);
 
       let scaleBy = 1.025 * delta; //1.13;
       if (scaleBy < 0.95) {

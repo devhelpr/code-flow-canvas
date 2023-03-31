@@ -24,20 +24,20 @@ export enum InteractionEvent {
 export interface InteractionTarget<T> {
   id: string;
   type: string;
-  pointerDown: (
+  pointerDown?: (
     x: number,
     y: number,
     element: INodeComponent<T>,
     canvasElement: DOMElementNode
   ) => IPointerDownResult | false;
-  pointerMove: (
+  pointerMove?: (
     x: number,
     y: number,
     element: INodeComponent<T>,
     canvasElement: DOMElementNode,
     interactionInfo: IPointerDownResult
   ) => void;
-  pointerUp: (
+  pointerUp?: (
     x: number,
     y: number,
     element: INodeComponent<T>,
