@@ -145,20 +145,20 @@ export const pointerUp = (
           element.onClick();
         }
       }
-    }
 
-    if (element && element.domElement && !handledAsClick) {
-      if (element.update) {
-        element.update(
-          element,
-          x - interactionInfo.xOffsetWithinElementOnFirstClick,
-          y - interactionInfo.yOffsetWithinElementOnFirstClick,
-          element
-        );
-      }
+      if (element && element.domElement && !handledAsClick) {
+        if (element.update) {
+          element.update(
+            element,
+            x - interactionInfo.xOffsetWithinElementOnFirstClick,
+            y - interactionInfo.yOffsetWithinElementOnFirstClick,
+            element
+          );
+        }
 
-      if (element.pointerUp) {
-        element.pointerUp();
+        if (element.pointerUp) {
+          element.pointerUp();
+        }
       }
     }
   }
