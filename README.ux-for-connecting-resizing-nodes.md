@@ -15,4 +15,4 @@
       using a rectangle as a base
 	- nodes can have different connectors on different sides and locations
   
-	
+	- nodes can have combined svg and html tags
