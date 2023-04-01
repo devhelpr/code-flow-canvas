@@ -1,19 +1,14 @@
-import { compileMarkup, IASTTreeNode } from '@devhelpr/markup-compiler';
-import {
-  compileExpression,
-  runExpression,
-} from '@devhelpr/expression-compiler';
+import { compileMarkup } from '@devhelpr/markup-compiler';
 import {
   DOMElementNode,
   ElementNodeMap,
-  IElementNode,
   INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
-import { createElement } from '../utils/create-element';
-import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+import { pointerDown } from './events/pointer-events';
 import { createNodeComponent } from '../utils/create-node-component';
 import { transformToCamera } from '../camera';
+import { createASTNodeElement } from '../utils/create-ast-markup-node';
 
 export const createMarkupElement = <T>(
   markup: string,
@@ -148,40 +143,4 @@ export const createMarkupElement = <T>(
     elements.set(nodeComponent.id, nodeComponent);
   }
   return nodeComponent;
-};
-
-export const createASTNodeElement = <T>(
-  astNode: IASTTreeNode,
-  parentElement: DOMElementNode,
-  elements: IElementNode<T>[]
-) => {
-  let element: IElementNode<T> | undefined = undefined;
-  const elementProperties: any = {};
-  astNode.properties?.forEach((propertyKeyValue) => {
-    elementProperties[propertyKeyValue.propertyName] = propertyKeyValue.value;
-  });
-  let text = astNode.value ?? '';
-  if (astNode.type === 'EXPRESSION') {
-    const compiledExpression = compileExpression(astNode.value || '');
-    text = runExpression(compiledExpression, {});
-  }
-  element = createElement(
-    astNode.tagName ?? 'div',
-    elementProperties,
-    parentElement,
-    text
-  );
-
-  if (element) {
-    (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
-    elements.push(element);
-
-    astNode.body?.forEach((childASTNode) => {
-      createASTNodeElement(
-        childASTNode,
-        element!.domElement,
-        element!.elements
-      );
-    });
-  }
 };

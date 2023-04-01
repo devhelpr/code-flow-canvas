@@ -1,3 +1,5 @@
+import { ShapeType } from '../types/shape-type';
+
 export interface IElementNode<T> {
   id: string;
   domElement: DOMElementNode;
@@ -53,6 +55,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   endNode?: INodeComponent<T>;
   isControlled?: boolean;
   isConnectPoint?: boolean;
+  shapeType?: ShapeType;
   update?: (
     component?: INodeComponent<T>,
     x?: number,

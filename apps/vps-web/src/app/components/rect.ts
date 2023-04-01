@@ -12,6 +12,7 @@ import {
   getVisbility,
   setSelectNode,
 } from '../reactivity';
+import { ShapeType } from '../types/shape-type';
 import { createRectPathSVGElement } from './rect-path-svg-element';
 import { createSVGElement } from './svg-element';
 
@@ -23,7 +24,8 @@ export const createRect = <T>(
   startY: number,
   width: number,
   height: number,
-  text?: string
+  text?: string,
+  shapeType?: ShapeType
 ) => {
   const rectNode = createRectPathSVGElement(
     canvas.domElement,
@@ -33,7 +35,8 @@ export const createRect = <T>(
     width,
     height,
     pathHiddenElement,
-    text
+    text,
+    shapeType
   );
 
   function setPosition(

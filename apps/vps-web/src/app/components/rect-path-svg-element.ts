@@ -1,12 +1,14 @@
-import { getCamera, transformToCamera } from '../camera';
+import { compileMarkup } from '@devhelpr/markup-compiler';
+import { transformToCamera } from '../camera';
 import {
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
   INodeComponent,
 } from '../interfaces/element';
-import { IPointerDownResult } from '../interfaces/pointers';
-import { createNSElement } from '../utils/create-element';
+import { ShapeType } from '../types/shape-type';
+import { createASTNodeElement } from '../utils/create-ast-markup-node';
+import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
 
@@ -31,7 +33,8 @@ export const createRectPathSVGElement = <T>(
   width: number,
   height: number,
   pathHiddenElement: IElementNode<T>,
-  text?: string
+  text?: string,
+  shapeType?: ShapeType
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -43,14 +46,6 @@ export const createRectPathSVGElement = <T>(
       - set the width and height of the svg to the bbox width and height   
   */
 
-  let interactionInfo: IPointerDownResult = {
-    xOffsetWithinElementOnFirstClick: 0,
-    yOffsetWithinElementOnFirstClick: 0,
-  };
-
-  let isClicking = false;
-  let isMoving = false;
-
   const points = {
     beginX: startX,
     beginY: startY,
@@ -59,9 +54,6 @@ export const createRectPathSVGElement = <T>(
   };
 
   const begin = getPoint(points.beginX, points.beginY);
-  // const cPoint1 = getPoint(points.cx1, points.cy1);
-  // const cPoint2 = getPoint(points.cx2, points.cy2);
-  // const end = getPoint(points.endX, points.endY);
 
   let pathPoints = {
     beginX: begin.x,
@@ -89,12 +81,36 @@ export const createRectPathSVGElement = <T>(
     };
   }
 
+  const divElement = createElement(
+    'div',
+    {
+      class:
+        'absolute top-0 left-0 bg-red-500 flex items-center rounded-xl justify-center z-[1000] pointer-events-none',
+    },
+    canvasElement
+  );
+
+  const compiledMarkup = compileMarkup(
+    '<div class="bg-green-500"><p>Hello</p><p>World</p></div>'
+  );
+  if (!compiledMarkup) {
+    throw new Error('Invalid markup');
+  }
+
+  if (compiledMarkup && divElement && divElement.domElement) {
+    createASTNodeElement(
+      compiledMarkup.body,
+      divElement.domElement,
+      divElement.elements
+    );
+  }
+
   const svgParent = createNSElement(
     'svg',
     {
       width: 0,
       height: 0,
-      class: 'absolute top-0 left-0 pointer-events-none',
+      class: 'absolute top-0 left-0 pointer-events-none z-[500]',
     },
     canvasElement
   );
@@ -105,6 +121,7 @@ export const createRectPathSVGElement = <T>(
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
 
   nodeComponent.nodeType = 'connection';
+  nodeComponent.shapeType = shapeType;
 
   const bbox = getBBoxPath();
 
@@ -116,6 +133,16 @@ export const createRectPathSVGElement = <T>(
   ).style.height = `${bbox.height}px`;
   (
     svgParent.domElement as unknown as HTMLElement
+  ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+
+  (
+    divElement.domElement as unknown as HTMLElement
+  ).style.width = `${bbox.width}px`;
+  (
+    divElement.domElement as unknown as HTMLElement
+  ).style.height = `${bbox.height}px`;
+  (
+    divElement.domElement as unknown as HTMLElement
   ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
   let pathElement: IElementNode<T> | undefined = undefined;
@@ -148,9 +175,6 @@ export const createRectPathSVGElement = <T>(
             canvasElement
           );
           if (interactionInfoResult) {
-            interactionInfo = interactionInfoResult;
-            isClicking = true;
-            isMoving = false;
             (canvasElement as unknown as HTMLElement | SVGElement).append(
               svgParent.domElement
             );
@@ -186,44 +210,6 @@ export const createRectPathSVGElement = <T>(
           }
         }
       },
-      // pointermove: (e: PointerEvent) => {
-      //   if (nodeComponent) {
-      //     if (nodeComponent && nodeComponent.domElement) {
-      //       if (
-      //         pointerMove(
-      //           e.clientX,
-      //           e.clientY,
-      //           nodeComponent,
-      //           canvasElement,
-      //           interactionInfo
-      //         )
-      //       ) {
-      //         isMoving = true;
-      //       }
-      //       //e.stopImmediatePropagation();
-      //       // e.preventDefault();
-      //       // return false;
-      //     }
-      //   }
-      // },
-      // pointerup: (e: PointerEvent) => {
-      //   if (nodeComponent) {
-      //     if (nodeComponent && nodeComponent.domElement) {
-      //       pointerUp(
-      //         e.clientX,
-      //         e.clientY,
-      //         nodeComponent,
-      //         canvasElement,
-      //         interactionInfo
-      //       );
-      //       if (isClicking && !isMoving) {
-      //         setSelectNode(nodeComponent.id);
-      //       }
-      //       isMoving = false;
-      //       isClicking = false;
-      //     }
-      //   }
-      // },
     },
     nodeComponent.domElement
   );
@@ -505,6 +491,16 @@ export const createRectPathSVGElement = <T>(
       svgParent.domElement as unknown as HTMLElement
     ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
+    (
+      divElement.domElement as unknown as HTMLElement
+    ).style.width = `${bbox.width}px`;
+    (
+      divElement.domElement as unknown as HTMLElement
+    ).style.height = `${bbox.height}px`;
+    (
+      divElement.domElement as unknown as HTMLElement
+    ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+
     if (nodeComponent) {
       nodeComponent.x = points.beginX;
       nodeComponent.y = points.beginY;
@@ -512,9 +508,6 @@ export const createRectPathSVGElement = <T>(
       nodeComponent.height = points.height;
     }
 
-    // TODO : check if connection with this rect exists (start/end) by
-    // looking al all elements :
-    // - if its a connection then look at the start/end.. if match then update
     if (nodeComponent) {
       elements.forEach((e) => {
         const lookAtNodeComponent = e as unknown as INodeComponent<T>;
