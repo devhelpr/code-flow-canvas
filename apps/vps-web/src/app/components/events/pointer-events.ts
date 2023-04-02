@@ -40,7 +40,7 @@ export const pointerDown = (
   ) {
     xOffsetWithinElementOnFirstClick = x;
     yOffsetWithinElementOnFirstClick = y;
-    if (element?.nodeType !== 'connection') {
+    if (element?.nodeType !== 'connection' && element?.nodeType !== 'shape') {
       (canvasElement as unknown as HTMLElement | SVGElement).append(
         element.domElement
       );

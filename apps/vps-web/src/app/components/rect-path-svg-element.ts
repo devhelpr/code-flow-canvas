@@ -85,7 +85,7 @@ export const createRectPathSVGElement = <T>(
     'div',
     {
       class:
-        'absolute top-0 left-0 bg-red-500 flex items-center rounded-xl justify-center z-[1000] pointer-events-none',
+        'absolute top-0 left-0 bg-red-500 hidden items-center rounded-xl justify-center z-[1000] pointer-events-none',
     },
     canvasElement
   );
@@ -110,7 +110,7 @@ export const createRectPathSVGElement = <T>(
     {
       width: 0,
       height: 0,
-      class: 'absolute top-0 left-0 pointer-events-none z-[500]',
+      class: 'absolute top-0 left-0 pointer-events-none ', //z-[500]
     },
     canvasElement
   );
@@ -120,7 +120,7 @@ export const createRectPathSVGElement = <T>(
 
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
 
-  nodeComponent.nodeType = 'connection';
+  nodeComponent.nodeType = 'shape';
   nodeComponent.shapeType = shapeType;
 
   const bbox = getBBoxPath();
@@ -217,7 +217,7 @@ export const createRectPathSVGElement = <T>(
   if (!pathElement) throw new Error('pathElement is undefined');
 
   elements.set(nodeComponent.id, nodeComponent);
-  nodeComponent.elements.push(pathElement);
+  nodeComponent.elements.set(pathElement.id, pathElement);
 
   if (text) {
     const textElement = createSVGNodeComponent(
@@ -248,10 +248,12 @@ export const createRectPathSVGElement = <T>(
     ) {
       return false;
     }
-
+    console.log('update', incomingComponent.nodeType, actionComponent.nodeType);
     if (
-      incomingComponent.nodeType === 'connection' &&
-      actionComponent.nodeType === 'connection'
+      (incomingComponent.nodeType === 'connection' &&
+        actionComponent.nodeType === 'connection') ||
+      (incomingComponent.nodeType === 'shape' &&
+        actionComponent.nodeType === 'shape')
     ) {
       points.beginX = x - 50;
       points.beginY = y - 50;
@@ -509,9 +511,18 @@ export const createRectPathSVGElement = <T>(
     }
 
     if (nodeComponent) {
+      //console.log('elements', elements);
       elements.forEach((e) => {
         const lookAtNodeComponent = e as unknown as INodeComponent<T>;
-        if (lookAtNodeComponent.nodeType === 'connection') {
+        console.log(
+          'update lookAtNodeComponent',
+          lookAtNodeComponent.nodeType,
+          lookAtNodeComponent
+        );
+        if (
+          lookAtNodeComponent.nodeType === 'shape' ||
+          lookAtNodeComponent.nodeType === 'connection'
+        ) {
           const start = lookAtNodeComponent.components.find(
             (c) =>
               nodeComponent &&
@@ -524,6 +535,7 @@ export const createRectPathSVGElement = <T>(
               c.type === 'end' &&
               c.component?.id === nodeComponent.id
           );
+          console.log('update lookAtNodeComponent start end', start, end);
           if (
             start &&
             lookAtNodeComponent &&

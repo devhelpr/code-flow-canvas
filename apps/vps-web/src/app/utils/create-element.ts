@@ -1,4 +1,5 @@
 import { DOMElementNode, IElementNode } from '../interfaces/element';
+import { createElementMap } from './create-element-map';
 
 export type EventHandler = (event: Event) => void | boolean;
 
@@ -57,7 +58,7 @@ export const createElement = <T>(
   return {
     id: id,
     domElement: domElement,
-    elements: []
+    elements: createElementMap<T>(),
   };
 };
 
@@ -103,6 +104,6 @@ export const createNSElement = <T>(
   return {
     id: id,
     domElement: domElement,
-    elements: [],
+    elements: createElementMap<T>(),
   };
 };

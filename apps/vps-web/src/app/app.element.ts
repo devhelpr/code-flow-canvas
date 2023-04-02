@@ -79,7 +79,7 @@ export class AppElement extends HTMLElement {
     element.elements.forEach((element: IElementNode<NodeInfo>) => {
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
-    element.elements = [];
+    element.elements = createElementMap<NodeInfo>();
   };
 
   clearCanvas = () => {

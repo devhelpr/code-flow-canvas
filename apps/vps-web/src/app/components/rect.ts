@@ -99,7 +99,8 @@ export const createRect = <T>(
     '#ff000080',
     startX,
     startY,
-    'begin'
+    'begin',
+    'resizer'
   );
   startPointElement.update = (
     component?: INodeComponent<T>,
@@ -110,8 +111,8 @@ export const createRect = <T>(
     if (!component || x === undefined || y === undefined || !actionComponent) {
       return false;
     }
-
-    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    console.log('startPointElement', actionComponent.nodeType);
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
 
@@ -121,7 +122,8 @@ export const createRect = <T>(
     '#ffff0080',
     startX + width,
     startY,
-    'rightTop'
+    'rightTop',
+    'resizer'
   );
   rightTopPointElement.update = (
     component?: INodeComponent<T>,
@@ -132,8 +134,8 @@ export const createRect = <T>(
     if (!component || x === undefined || y === undefined || !actionComponent) {
       return false;
     }
-
-    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    console.log('rightTopPointElement', actionComponent.nodeType);
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
   const leftBottomElement = createSVGElement(
@@ -142,7 +144,8 @@ export const createRect = <T>(
     '#00ff00',
     startX,
     startY + height,
-    'leftBottom'
+    'leftBottom',
+    'resizer'
   );
   leftBottomElement.update = (
     component?: INodeComponent<T>,
@@ -154,7 +157,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
   const rightBottomElement = createSVGElement(
@@ -163,7 +166,8 @@ export const createRect = <T>(
     '#0000ff',
     startX + width,
     startY + height,
-    'rightBottom'
+    'rightBottom',
+    'resizer'
   );
   rightBottomElement.update = (
     component?: INodeComponent<T>,
@@ -175,7 +179,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
 
@@ -185,7 +189,8 @@ export const createRect = <T>(
     '#008080',
     startX,
     startY + height / 2,
-    'leftThumbConnector'
+    'leftThumbConnector',
+    'connector'
   );
 
   leftThumbConnectorElement.isControlled = true;
@@ -243,7 +248,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
 
@@ -253,7 +258,8 @@ export const createRect = <T>(
     '#008080',
     startX + width,
     startY + height / 2,
-    'rightThumbConnector'
+    'rightThumbConnector',
+    'connector'
   );
 
   rightThumbConnectorElement.isControlled = true;
@@ -316,7 +322,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
 

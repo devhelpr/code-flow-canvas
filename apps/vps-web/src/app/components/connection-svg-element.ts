@@ -274,7 +274,7 @@ export const createConnectionSVGElement = <T>(
   if (!pathElement) throw new Error('pathElement is undefined');
 
   elements.set(nodeComponent.id, nodeComponent);
-  nodeComponent.elements.push(pathElement);
+  nodeComponent.elements.set(pathElement.id, pathElement);
 
   nodeComponent.update = (
     incomingComponent?: INodeComponent<T>,
@@ -282,6 +282,12 @@ export const createConnectionSVGElement = <T>(
     y?: number,
     actionComponent?: INodeComponent<T>
   ) => {
+    console.log(
+      'update connection',
+      incomingComponent?.nodeType,
+      actionComponent?.nodeType
+    );
+
     if (
       !incomingComponent &&
       x === undefined &&
@@ -328,7 +334,8 @@ export const createConnectionSVGElement = <T>(
       x !== undefined &&
       y !== undefined &&
       incomingComponent.nodeType === 'connection' &&
-      actionComponent.nodeType === 'connection'
+      (actionComponent.nodeType === 'connection' ||
+        actionComponent.nodeType === 'shape')
     ) {
       if (
         incomingComponent.startNode &&

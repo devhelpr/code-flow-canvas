@@ -3,7 +3,7 @@ import { ShapeType } from '../types/shape-type';
 export interface IElementNode<T> {
   id: string;
   domElement: DOMElementNode;
-  elements: IElementNode<T>[];
+  elements: ElementNodeMap<T>;
   nodeInfo?: T;
 }
 

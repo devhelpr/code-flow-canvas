@@ -22,7 +22,8 @@ export const createSVGElement = <T>(
   color?: string,
   xInitial?: number,
   yInitial?: number,
-  specifier?: string
+  specifier?: string,
+  nodeType?: string
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -172,10 +173,12 @@ export const createSVGElement = <T>(
   if (!circleElement) throw new Error('circleElement is undefined');
 
   elements.set(nodeComponent.id, nodeComponent);
-  nodeComponent.elements.push(circleElement);
+  nodeComponent.elements.set(circleElement.id, circleElement);
   nodeComponent.specifier = specifier;
   nodeComponent.x = initialX;
   nodeComponent.y = initialY;
+  nodeComponent.nodeType = nodeType;
+
   nodeComponent.pointerUp = () => {
     const dropTarget = getCurrentDropTarget();
     if (dropTarget) {

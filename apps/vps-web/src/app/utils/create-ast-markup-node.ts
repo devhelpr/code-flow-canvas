@@ -3,13 +3,17 @@ import {
   runExpression,
 } from '@devhelpr/expression-compiler';
 import { IASTTreeNode } from '@devhelpr/markup-compiler';
-import { DOMElementNode, IElementNode } from '../interfaces/element';
+import {
+  DOMElementNode,
+  ElementNodeMap,
+  IElementNode,
+} from '../interfaces/element';
 import { createElement } from './create-element';
 
 export const createASTNodeElement = <T>(
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
-  elements: IElementNode<T>[]
+  elements: ElementNodeMap<T>
 ) => {
   let element: IElementNode<T> | undefined = undefined;
   const elementProperties: any = {};
@@ -30,7 +34,7 @@ export const createASTNodeElement = <T>(
 
   if (element) {
     (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
-    elements.push(element);
+    elements.set(element.id, element);
 
     astNode.body?.forEach((childASTNode) => {
       createASTNodeElement(
