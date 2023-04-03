@@ -4,7 +4,6 @@ import './app.element.css';
 import styles from '../styles.css?inline';
 import { createElement, createNSElement } from './utils/create-element';
 import { createNodeElement } from './components/node-element';
-import { createSVGElement } from './components/svg-element';
 import {
   ElementNodeMap,
   IElementNode,

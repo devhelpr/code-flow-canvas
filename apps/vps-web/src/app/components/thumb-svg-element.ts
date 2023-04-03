@@ -16,14 +16,18 @@ import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
-export const createSVGElement = <T>(
+export const createThumbSVGElement = <T>(
   canvasElement: DOMElementNode,
   elements: ElementNodeMap<T>,
   color?: string,
   xInitial?: number,
   yInitial?: number,
   specifier?: string,
-  nodeType?: string
+  nodeType?: string,
+  additionalClasses?: string,
+  width?: number,
+  height?: number,
+  radius?: number
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -38,12 +42,14 @@ export const createSVGElement = <T>(
   const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
     'svg',
     {
-      class: `absolute cursor-pointer transition-none ease-in-out duration-[75ms] will-change-transform pointer-events-none`,
+      class: `absolute cursor-pointer transition-none ease-in-out duration-[75ms] will-change-transform pointer-events-none ${
+        additionalClasses || ''
+      }`,
       style: {
         transform: `translate(${initialX}px, ${initialY}px)`,
       },
-      width: 100,
-      height: 100,
+      width: width ?? 100,
+      height: height ?? 100,
     },
     canvasElement
   );
@@ -54,9 +60,9 @@ export const createSVGElement = <T>(
     'circle',
     {
       class: 'pointer-events-auto',
-      cx: 50,
-      cy: 50,
-      r: 10,
+      cx: (width ?? 100) / 2,
+      cy: (height ?? 100) / 2,
+      r: radius ?? 10,
       stroke: 'black',
       'stroke-width': 3,
       fill: color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
@@ -178,6 +184,11 @@ export const createSVGElement = <T>(
   nodeComponent.x = initialX;
   nodeComponent.y = initialY;
   nodeComponent.nodeType = nodeType;
+  nodeComponent.width = 100;
+  nodeComponent.height = 100;
+  nodeComponent.offsetX = 50;
+  nodeComponent.offsetY = 50;
+  nodeComponent.radius = 10;
 
   nodeComponent.pointerUp = () => {
     const dropTarget = getCurrentDropTarget();

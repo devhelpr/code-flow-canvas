@@ -12,7 +12,7 @@ import {
   setSelectNode,
 } from '../reactivity';
 import { createConnectionSVGElement } from './connection-svg-element';
-import { createSVGElement } from './svg-element';
+import { createThumbSVGElement } from './thumb-svg-element';
 
 export const createCubicBezier = <T>(
   canvas: INodeComponent<T>,
@@ -80,7 +80,7 @@ export const createCubicBezier = <T>(
       }
     });
   }
-  const startPointElement = createSVGElement(
+  const startPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#ff000080',
@@ -103,7 +103,7 @@ export const createCubicBezier = <T>(
     return true;
   };
 
-  const endPointElement = createSVGElement(
+  const endPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#ffff4080',
@@ -125,7 +125,7 @@ export const createCubicBezier = <T>(
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
-  const controlPoint1Element = createSVGElement(
+  const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#00ff00',
@@ -147,7 +147,7 @@ export const createCubicBezier = <T>(
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
-  const controlPoint2Element = createSVGElement(
+  const controlPoint2Element = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#0000ff',
@@ -409,7 +409,7 @@ export const createQuadraticBezier = <T>(
       }
     });
   }
-  const startPointElement = createSVGElement(
+  const startPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#ff000080',
@@ -433,7 +433,7 @@ export const createQuadraticBezier = <T>(
     return true;
   };
 
-  const endPointElement = createSVGElement(
+  const endPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#ff000080',
@@ -456,7 +456,7 @@ export const createQuadraticBezier = <T>(
     setPosition(component, x, y);
     return true;
   };
-  const controlPoint1Element = createSVGElement(
+  const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
     elements,
     '#00ff00',

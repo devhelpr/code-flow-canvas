@@ -14,7 +14,7 @@ import {
 } from '../reactivity';
 import { ShapeType } from '../types/shape-type';
 import { createRectPathSVGElement } from './rect-path-svg-element';
-import { createSVGElement } from './svg-element';
+import { createThumbSVGElement } from './thumb-svg-element';
 
 export const createRect = <T>(
   canvas: INodeComponent<T>,
@@ -27,6 +27,13 @@ export const createRect = <T>(
   text?: string,
   shapeType?: ShapeType
 ) => {
+  const thumbRadius = 10;
+  const thumbWidth = 100;
+  const thumbHeight = 100;
+
+  const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
+  const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
+
   const rectNode = createRectPathSVGElement(
     canvas.domElement,
     elements,
@@ -36,7 +43,9 @@ export const createRect = <T>(
     height,
     pathHiddenElement,
     text,
-    shapeType
+    shapeType,
+    thumbOffsetX,
+    thumbOffsetY
   );
 
   function setPosition(
@@ -85,23 +94,30 @@ export const createRect = <T>(
       }
     });
 
-    if (doPosition) {
-      (
-        element.domElement as unknown as HTMLElement | SVGElement
-      ).style.transform = `translate(${x}px, ${y}px)`;
-      element.x = x;
-      element.y = y;
-    }
+    // if (doPosition) {
+    //   console.log('setPosition', doPosition, element.nodeType, x, y);
+    //   // (
+    //   //   element.domElement as unknown as HTMLElement | SVGElement
+    //   // ).style.transform = `translate(${x}px, ${y}px)`;
+    //   // element.x = x;
+    //   // element.y = y;
+    // }
   }
-  const startPointElement = createSVGElement(
-    canvas.domElement,
-    elements,
+
+  const startPointElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
     '#ff000080',
-    startX,
-    startY,
+    thumbOffsetX, //startX,
+    thumbOffsetY, //startY,
     'begin',
-    'resizer'
+    'resizer',
+    'top-0 left-0 origin-center',
+    thumbWidth,
+    thumbHeight,
+    thumbRadius
   );
+
   startPointElement.update = (
     component?: INodeComponent<T>,
     x?: number,
@@ -111,19 +127,20 @@ export const createRect = <T>(
     if (!component || x === undefined || y === undefined || !actionComponent) {
       return false;
     }
-    console.log('startPointElement', actionComponent.nodeType);
+
     setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
 
-  const rightTopPointElement = createSVGElement(
-    canvas.domElement,
-    elements,
+  const rightTopPointElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
     '#ffff0080',
-    startX + width,
-    startY,
+    thumbOffsetX + width, //startX + width,
+    thumbOffsetY, //startY,
     'rightTop',
-    'resizer'
+    'resizer',
+    'top-0 left-0 origin-center'
   );
   rightTopPointElement.update = (
     component?: INodeComponent<T>,
@@ -134,18 +151,18 @@ export const createRect = <T>(
     if (!component || x === undefined || y === undefined || !actionComponent) {
       return false;
     }
-    console.log('rightTopPointElement', actionComponent.nodeType);
     setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
-  const leftBottomElement = createSVGElement(
-    canvas.domElement,
-    elements,
+  const leftBottomElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
     '#00ff00',
-    startX,
-    startY + height,
+    thumbOffsetX, //startX,
+    thumbOffsetY + height, //startY + height,
     'leftBottom',
-    'resizer'
+    'resizer',
+    'top-0 left-0 origin-center'
   );
   leftBottomElement.update = (
     component?: INodeComponent<T>,
@@ -160,14 +177,15 @@ export const createRect = <T>(
     setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
-  const rightBottomElement = createSVGElement(
-    canvas.domElement,
-    elements,
+  const rightBottomElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
     '#0000ff',
-    startX + width,
-    startY + height,
+    thumbOffsetX + width, //startX + width,
+    thumbOffsetY + height, //startY + height,
     'rightBottom',
-    'resizer'
+    'resizer',
+    'top-0 left-0 origin-center'
   );
   rightBottomElement.update = (
     component?: INodeComponent<T>,
@@ -183,14 +201,15 @@ export const createRect = <T>(
     return true;
   };
 
-  const leftThumbConnectorElement = createSVGElement(
-    canvas.domElement,
-    elements,
+  const leftThumbConnectorElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
     '#008080',
-    startX,
-    startY + height / 2,
+    thumbOffsetX, // startX,
+    thumbOffsetY + height / 2, //startY + height / 2,
     'leftThumbConnector',
-    'connector'
+    'connector',
+    'top-0 left-0 origin-center'
   );
 
   leftThumbConnectorElement.isControlled = true;
@@ -252,14 +271,15 @@ export const createRect = <T>(
     return true;
   };
 
-  const rightThumbConnectorElement = createSVGElement(
-    canvas.domElement,
-    elements,
+  const rightThumbConnectorElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
     '#008080',
-    startX + width,
-    startY + height / 2,
+    thumbOffsetX + width, //startX + width,
+    thumbOffsetY + height / 2, //startY + height / 2,
     'rightThumbConnector',
-    'connector'
+    'connector',
+    'top-0 left-0 origin-center'
   );
 
   rightThumbConnectorElement.isControlled = true;

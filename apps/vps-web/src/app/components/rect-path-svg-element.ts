@@ -34,7 +34,9 @@ export const createRectPathSVGElement = <T>(
   height: number,
   pathHiddenElement: IElementNode<T>,
   text?: string,
-  shapeType?: ShapeType
+  shapeType?: ShapeType,
+  thumbOffsetX?: number,
+  thumbOffsetY?: number
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -84,26 +86,31 @@ export const createRectPathSVGElement = <T>(
   const divElement = createElement(
     'div',
     {
-      class:
-        'absolute top-0 left-0 bg-red-500 hidden items-center rounded-xl justify-center z-[1000] pointer-events-none',
+      class: 'absolute top-0 left-0',
     },
     canvasElement
-  );
+  ) as unknown as INodeComponent<T> | undefined;
 
-  const compiledMarkup = compileMarkup(
-    '<div class="bg-green-500"><p>Hello</p><p>World</p></div>'
-  );
-  if (!compiledMarkup) {
-    throw new Error('Invalid markup');
-  }
+  if (!divElement) throw new Error('divElement is undefined');
 
-  if (compiledMarkup && divElement && divElement.domElement) {
-    createASTNodeElement(
-      compiledMarkup.body,
-      divElement.domElement,
-      divElement.elements
-    );
-  }
+  divElement.nodeType = 'shape';
+  divElement.shapeType = shapeType;
+  divElement.components = [];
+
+  // const compiledMarkup = compileMarkup(
+  //   '<div class="bg-green-500"><p>Hello</p><p>World</p></div>'
+  // );
+  // if (!compiledMarkup) {
+  //   throw new Error('Invalid markup');
+  // }
+
+  // if (compiledMarkup && divElement && divElement.domElement) {
+  //   createASTNodeElement(
+  //     compiledMarkup.body,
+  //     divElement.domElement,
+  //     divElement.elements
+  //   );
+  // }
 
   const svgParent = createNSElement(
     'svg',
@@ -112,7 +119,7 @@ export const createRectPathSVGElement = <T>(
       height: 0,
       class: 'absolute top-0 left-0 pointer-events-none ', //z-[500]
     },
-    canvasElement
+    divElement.domElement
   );
 
   let nodeComponent: INodeComponent<T> | undefined = undefined;
@@ -131,9 +138,9 @@ export const createRectPathSVGElement = <T>(
   (
     svgParent.domElement as unknown as HTMLElement
   ).style.height = `${bbox.height}px`;
-  (
-    svgParent.domElement as unknown as HTMLElement
-  ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+  // (
+  //   svgParent.domElement as unknown as HTMLElement
+  // ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
   (
     divElement.domElement as unknown as HTMLElement
@@ -171,42 +178,42 @@ export const createRectPathSVGElement = <T>(
           const interactionInfoResult = pointerDown(
             x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
             y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
-            nodeComponent,
+            divElement,
             canvasElement
           );
           if (interactionInfoResult) {
             (canvasElement as unknown as HTMLElement | SVGElement).append(
-              svgParent.domElement
+              divElement.domElement
             );
 
-            const connectionInfo = nodeComponent.components.find(
-              (c) => c.type === 'self'
-            );
+            // const connectionInfo = nodeComponent.components.find(
+            //   (c) => c.type === 'self'
+            // );
 
-            if (connectionInfo) {
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.start.domElement
-              );
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.rightTop.domElement
-              );
+            // if (connectionInfo) {
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.start.domElement
+            //   );
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.rightTop.domElement
+            //   );
 
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.leftBottom.domElement
-              );
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.leftBottom.domElement
+            //   );
 
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.rightBottom.domElement
-              );
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.rightBottom.domElement
+            //   );
 
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.rightThumbConnector.domElement
-              );
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.rightThumbConnector.domElement
+            //   );
 
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.leftThumbConnector.domElement
-              );
-            }
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.leftThumbConnector.domElement
+            //   );
+            // }
           }
         }
       },
@@ -216,8 +223,8 @@ export const createRectPathSVGElement = <T>(
 
   if (!pathElement) throw new Error('pathElement is undefined');
 
-  elements.set(nodeComponent.id, nodeComponent);
-  nodeComponent.elements.set(pathElement.id, pathElement);
+  elements.set(divElement.id, divElement);
+  divElement.elements.set(pathElement.id, pathElement);
 
   if (text) {
     const textElement = createSVGNodeComponent(
@@ -234,7 +241,7 @@ export const createRectPathSVGElement = <T>(
     textElement.domElement.appendChild(textNode);
   }
 
-  nodeComponent.update = (
+  divElement.update = (
     incomingComponent?: INodeComponent<T>,
     x?: number,
     y?: number,
@@ -248,7 +255,7 @@ export const createRectPathSVGElement = <T>(
     ) {
       return false;
     }
-    console.log('update', incomingComponent.nodeType, actionComponent.nodeType);
+    //console.log('update', incomingComponent.nodeType, actionComponent.nodeType);
     if (
       (incomingComponent.nodeType === 'connection' &&
         actionComponent.nodeType === 'connection') ||
@@ -257,9 +264,12 @@ export const createRectPathSVGElement = <T>(
     ) {
       points.beginX = x - 50;
       points.beginY = y - 50;
-      if (nodeComponent) {
+      if (nodeComponent && divElement) {
         nodeComponent.x = points.beginX;
         nodeComponent.y = points.beginY;
+
+        divElement.x = points.beginX;
+        divElement.y = points.beginY;
       }
       const connectionInfo = incomingComponent.components.find(
         (c) => c.type === 'self'
@@ -268,43 +278,43 @@ export const createRectPathSVGElement = <T>(
       if (connectionInfo) {
         connectionInfo.controllers?.start.update(
           connectionInfo.controllers?.start,
-          points.beginX,
-          points.beginY,
+          (thumbOffsetX ?? 0) + 0, //points.beginX,
+          (thumbOffsetY ?? 0) + 0, //points.beginY,
           actionComponent
         );
 
         connectionInfo.controllers?.rightTop.update(
           connectionInfo.controllers?.rightTop,
-          points.beginX + points.width,
-          points.beginY,
+          (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+          (thumbOffsetY ?? 0) + 0, //points.beginY,
           actionComponent
         );
 
         connectionInfo.controllers?.leftBottom.update(
           connectionInfo.controllers?.leftBottom,
-          points.beginX,
-          points.beginY + points.height,
+          (thumbOffsetX ?? 0) + 0, //points.beginX,
+          (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
           actionComponent
         );
 
         connectionInfo.controllers?.rightBottom.update(
           connectionInfo.controllers?.rightBottom,
-          points.beginX + points.width,
-          points.beginY + points.height,
+          (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+          (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
           actionComponent
         );
 
         connectionInfo.controllers?.leftThumbConnector.update(
           connectionInfo.controllers?.leftThumbConnector,
-          points.beginX,
-          points.beginY + points.height / 2,
+          (thumbOffsetX ?? 0) + 0, //points.beginX,
+          (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
           actionComponent
         );
 
         connectionInfo.controllers?.rightThumbConnector.update(
           connectionInfo.controllers?.rightThumbConnector,
-          points.beginX + points.width,
-          points.beginY + points.height / 2,
+          (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+          (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
           actionComponent
         );
       }
@@ -369,33 +379,33 @@ export const createRectPathSVGElement = <T>(
         const getRectPoint = (specifier: string) => {
           if (specifier === 'begin') {
             return {
-              x: points.beginX,
-              y: points.beginY,
+              x: (thumbOffsetX ?? 0) + 0, //points.beginX,
+              y: (thumbOffsetY ?? 0) + 0, //points.beginY,
             };
           } else if (specifier === 'rightTop') {
             return {
-              x: points.beginX + points.width,
-              y: points.beginY,
+              x: (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+              y: (thumbOffsetY ?? 0) + 0, //points.beginY,
             };
           } else if (specifier === 'leftBottom') {
             return {
-              x: points.beginX,
-              y: points.beginY + points.height,
+              x: (thumbOffsetX ?? 0) + 0, //points.beginX,
+              y: (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
             };
           } else if (specifier === 'rightBottom') {
             return {
-              x: points.beginX + points.width,
-              y: points.beginY + points.height,
+              x: (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+              y: (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
             };
           } else if (specifier === 'leftThumbConnector') {
             return {
-              x: points.beginX,
-              y: points.beginY + points.height / 2,
+              x: (thumbOffsetX ?? 0) + 0, //points.beginX,
+              y: (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
             };
           } else if (specifier === 'rightThumbConnector') {
             return {
-              x: points.beginX + points.width,
-              y: points.beginY + points.height / 2,
+              x: (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+              y: (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
             };
           }
           return false;
@@ -489,9 +499,9 @@ export const createRectPathSVGElement = <T>(
     (
       svgParent.domElement as unknown as HTMLElement
     ).style.height = `${bbox.height}px`;
-    (
-      svgParent.domElement as unknown as HTMLElement
-    ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+    // (
+    //   svgParent.domElement as unknown as HTMLElement
+    // ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
     (
       divElement.domElement as unknown as HTMLElement
@@ -503,22 +513,27 @@ export const createRectPathSVGElement = <T>(
       divElement.domElement as unknown as HTMLElement
     ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-    if (nodeComponent) {
+    if (nodeComponent && divElement) {
       nodeComponent.x = points.beginX;
       nodeComponent.y = points.beginY;
       nodeComponent.width = points.width;
       nodeComponent.height = points.height;
+
+      divElement.x = points.beginX;
+      divElement.y = points.beginY;
+      divElement.width = points.width;
+      divElement.height = points.height;
     }
 
     if (nodeComponent) {
       //console.log('elements', elements);
       elements.forEach((e) => {
         const lookAtNodeComponent = e as unknown as INodeComponent<T>;
-        console.log(
-          'update lookAtNodeComponent',
-          lookAtNodeComponent.nodeType,
-          lookAtNodeComponent
-        );
+        // console.log(
+        //   'update lookAtNodeComponent',
+        //   lookAtNodeComponent.nodeType,
+        //   lookAtNodeComponent
+        // );
         if (
           lookAtNodeComponent.nodeType === 'shape' ||
           lookAtNodeComponent.nodeType === 'connection'
@@ -527,39 +542,38 @@ export const createRectPathSVGElement = <T>(
             (c) =>
               nodeComponent &&
               c.type === 'start' &&
-              c.component?.id === nodeComponent.id
+              c.component?.id === divElement.id
           );
           const end = lookAtNodeComponent.components.find(
             (c) =>
               nodeComponent &&
               c.type === 'end' &&
-              c.component?.id === nodeComponent.id
+              c.component?.id === divElement.id
           );
-          console.log('update lookAtNodeComponent start end', start, end);
           if (
             start &&
             lookAtNodeComponent &&
             lookAtNodeComponent.update &&
-            nodeComponent
+            divElement
           ) {
             lookAtNodeComponent.update(
               lookAtNodeComponent,
               points.beginX,
               points.beginY,
-              nodeComponent
+              divElement
             );
           }
           if (
             end &&
             lookAtNodeComponent &&
             lookAtNodeComponent.update &&
-            nodeComponent
+            divElement
           ) {
             lookAtNodeComponent.update(
               lookAtNodeComponent,
               points.beginX,
               points.beginY,
-              nodeComponent
+              divElement
             );
           }
         }
@@ -571,5 +585,11 @@ export const createRectPathSVGElement = <T>(
   nodeComponent.y = startY;
   nodeComponent.width = width;
   nodeComponent.height = height;
-  return nodeComponent;
+
+  divElement.x = startX;
+  divElement.y = startY;
+  divElement.width = width;
+  divElement.height = height;
+
+  return divElement;
 };
