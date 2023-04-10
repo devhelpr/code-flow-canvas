@@ -44,4 +44,5 @@ export const createASTNodeElement = <T>(
       );
     });
   }
+  return element;
 };

@@ -71,4 +71,32 @@ export interface INodeComponent<T> extends IElementNode<T> {
   onClick?: () => void;
   onCanReceiveDroppedComponent?: (component: INodeComponent<T>) => boolean;
   onReceiveDroppedComponent?: (component: INodeComponent<T>) => void;
+  onCalculateControlPoints?: (
+    nodeType: ControlAndEndPointNodeType,
+    curveType: CurveType
+  ) => IControlAndEndPoint;
+}
+
+export const ControlAndEndPointNodeType = {
+  start: 'start',
+  end: 'end',
+} as const;
+
+export type ControlAndEndPointNodeType =
+  (typeof ControlAndEndPointNodeType)[keyof typeof ControlAndEndPointNodeType];
+
+export const CurveType = {
+  bezierCubic: 'bezier-cubic',
+  bezierQuadratic: 'bezier-quadratic',
+  straight: 'straight',
+} as const;
+
+export type CurveType = (typeof CurveType)[keyof typeof CurveType];
+
+export interface IControlAndEndPoint {
+  x: number;
+  y: number;
+  cx: number;
+  cy: number;
+  nodeType: ControlAndEndPointNodeType;
 }

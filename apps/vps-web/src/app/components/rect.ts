@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  ControlAndEndPointNodeType,
+  CurveType,
   ElementNodeMap,
   IElementNode,
   INodeComponent,
@@ -13,8 +15,53 @@ import {
   setSelectNode,
 } from '../reactivity';
 import { ShapeType } from '../types/shape-type';
-import { createRectPathSVGElement } from './rect-path-svg-element';
+import { createRectPathSVGElement, ThumbTypes } from './rect-path-svg-element';
 import { createThumbSVGElement } from './thumb-svg-element';
+
+const thumbRadius = 10;
+const thumbWidth = 100;
+const thumbHeight = 100;
+
+const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
+const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
+
+export const thumbSize = (
+  rectNode: INodeComponent<any>,
+  thumbType: ThumbTypes,
+  index?: number
+) => {
+  if (thumbType === ThumbTypes.TopLeft) {
+    return { x: thumbOffsetX, y: thumbOffsetY };
+  }
+  if (thumbType === ThumbTypes.TopRight) {
+    return { x: thumbOffsetX + (rectNode?.width ?? 0), y: thumbOffsetY };
+  }
+  if (thumbType === ThumbTypes.BottomLeft) {
+    return { x: thumbOffsetX, y: thumbOffsetY + (rectNode?.height ?? 0) };
+  }
+  if (thumbType === ThumbTypes.BottomRight) {
+    return {
+      x: thumbOffsetX + (rectNode?.width ?? 0),
+      y: thumbOffsetY + (rectNode?.height ?? 0),
+    };
+  }
+
+  if (thumbType === ThumbTypes.EndConnectorCenter) {
+    return {
+      x: thumbOffsetX,
+      y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
+    };
+  }
+
+  if (thumbType === ThumbTypes.StartConnectorCenter) {
+    return {
+      x: thumbOffsetX + (rectNode?.width ?? 0),
+      y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
+    };
+  }
+
+  throw new Error('Thumb type not supported');
+};
 
 export const createRect = <T>(
   canvas: INodeComponent<T>,
@@ -27,26 +74,83 @@ export const createRect = <T>(
   text?: string,
   shapeType?: ShapeType
 ) => {
-  const thumbRadius = 10;
-  const thumbWidth = 100;
-  const thumbHeight = 100;
+  let widthHelper = width;
+  let heightHelper = height;
 
-  const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
-  const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
-
-  const rectNode = createRectPathSVGElement(
+  const rectNode: INodeComponent<any> = createRectPathSVGElement(
     canvas.domElement,
     elements,
     startX,
     startY,
-    width,
-    height,
+    widthHelper,
+    heightHelper,
     pathHiddenElement,
     text,
     shapeType,
     thumbOffsetX,
-    thumbOffsetY
+    thumbOffsetY,
+    (thumbType: ThumbTypes, index?: number) => {
+      return thumbSize(rectNode, thumbType, index);
+    }
   );
+  widthHelper = rectNode.width ?? 0;
+  heightHelper = rectNode.height ?? 0;
+
+  rectNode.onCalculateControlPoints = (
+    nodeType: ControlAndEndPointNodeType,
+    _curveType: CurveType
+  ) => {
+    if (nodeType === ControlAndEndPointNodeType.start) {
+      /*
+        points.beginX = x + (actionComponent?.width || 0) + 20;
+        points.beginY = y + (actionComponent?.height || 0) / 2;
+
+        // see above: move this logic to a "strategy-function"
+
+        if (isQuadratic) {
+          points.cx1 = (points.beginX + points.endX) / 2;
+          points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
+        } else {
+          points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
+          points.cy1 = points.beginY;
+        }
+
+      */
+      const x = rectNode.x + (rectNode.width || 0) + 20;
+      const y = rectNode.y + (rectNode.height || 0) / 2;
+      return {
+        x: x,
+        y: y,
+        cx: x + (rectNode.width || 0) + 50,
+        cy: y,
+        nodeType,
+      };
+    }
+    if (nodeType === ControlAndEndPointNodeType.end) {
+      /*
+        points.endX = x - 20;
+        points.endY = y + (actionComponent?.height || 0) / 2;
+        if (isQuadratic) {
+          points.cx1 = (points.beginX + points.endX) / 2;
+          points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
+        } else {
+          points.cx2 = points.endX - (actionComponent?.width || 0) - 50;
+          points.cy2 = points.endY;
+        }
+      */
+      const x = rectNode.x - 20;
+      const y = rectNode.y + (rectNode.height || 0) / 2;
+      return {
+        x: x,
+        y: y,
+        cx: x - (rectNode.width || 0) - 50,
+        cy: y,
+        nodeType,
+      };
+    }
+
+    throw new Error('Not supported');
+  };
 
   function setPosition(
     element: INodeComponent<T>,
@@ -136,7 +240,7 @@ export const createRect = <T>(
     rectNode.domElement,
     rectNode.elements,
     '#ffff0080',
-    thumbOffsetX + width, //startX + width,
+    thumbOffsetX + widthHelper, //startX + width,
     thumbOffsetY, //startY,
     'rightTop',
     'resizer',
@@ -159,7 +263,7 @@ export const createRect = <T>(
     rectNode.elements,
     '#00ff00',
     thumbOffsetX, //startX,
-    thumbOffsetY + height, //startY + height,
+    thumbOffsetY + heightHelper, //startY + height,
     'leftBottom',
     'resizer',
     'top-0 left-0 origin-center'
@@ -181,8 +285,8 @@ export const createRect = <T>(
     rectNode.domElement,
     rectNode.elements,
     '#0000ff',
-    thumbOffsetX + width, //startX + width,
-    thumbOffsetY + height, //startY + height,
+    thumbOffsetX + widthHelper, //startX + width,
+    thumbOffsetY + heightHelper, //startY + height,
     'rightBottom',
     'resizer',
     'top-0 left-0 origin-center'
@@ -206,7 +310,7 @@ export const createRect = <T>(
     rectNode.elements,
     '#008080',
     thumbOffsetX, // startX,
-    thumbOffsetY + height / 2, //startY + height / 2,
+    thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'leftThumbConnector',
     'connector',
     'top-0 left-0 origin-center'
@@ -275,8 +379,8 @@ export const createRect = <T>(
     rectNode.domElement,
     rectNode.elements,
     '#008080',
-    thumbOffsetX + width, //startX + width,
-    thumbOffsetY + height / 2, //startY + height / 2,
+    thumbOffsetX + widthHelper, //startX + width,
+    thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'rightThumbConnector',
     'connector',
     'top-0 left-0 origin-center'

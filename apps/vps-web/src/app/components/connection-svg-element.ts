@@ -1,5 +1,7 @@
 import { transformToCamera } from '../camera';
 import {
+  ControlAndEndPointNodeType,
+  CurveType,
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
@@ -10,10 +12,21 @@ import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
 
+const thumbRadius = 10;
+const thumbWidth = 100;
+const thumbHeight = 100;
+
+const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
+const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
+
+const thumbTransformX = thumbWidth / 2;
+const thumbTransformY = thumbHeight / 2;
+
+// TODO : make the "50" a constant or incoming parameter
 function getPoint(x: number, y: number) {
   const pt = new DOMPoint();
-  pt.x = x + 50;
-  pt.y = y + 50;
+  pt.x = x + thumbTransformX;
+  pt.y = y + thumbTransformY;
 
   return {
     x: pt.x,
@@ -129,7 +142,7 @@ export const createConnectionSVGElement = <T>(
     },
     defs.domElement
   );
-  const arrowMarkerPath = createNSElement(
+  createNSElement(
     'path',
     {
       d: 'M0,0 V4 L2,2 Z',
@@ -232,41 +245,6 @@ export const createConnectionSVGElement = <T>(
           }
         }
       },
-      /*pointermove: (e: PointerEvent) => {
-        if (nodeComponent) {
-          if (nodeComponent && nodeComponent.domElement) {
-            if (
-              pointerMove(
-                e.clientX,
-                e.clientY,
-                nodeComponent,
-                canvasElement,
-                interactionInfo
-              )
-            ) {
-              isMoving = true;
-            }
-          }
-        }
-      },
-      pointerup: (e: PointerEvent) => {
-        if (nodeComponent) {
-          if (nodeComponent && nodeComponent.domElement) {
-            pointerUp(
-              e.clientX,
-              e.clientY,
-              nodeComponent,
-              canvasElement,
-              interactionInfo
-            );
-            if (isClicking && !isMoving) {
-              setSelectNode(nodeComponent);
-            }
-            isMoving = false;
-            isClicking = false;
-          }
-        }
-      },*/
     },
     nodeComponent.domElement
   );
@@ -307,21 +285,33 @@ export const createConnectionSVGElement = <T>(
       !actionComponent
     ) {
       if (nodeComponent?.endNode && nodeComponent?.startNode) {
-        points.beginX =
-          nodeComponent.startNode.x + (nodeComponent.startNode.width || 0) + 20;
-        points.beginY =
-          nodeComponent.startNode.y + (nodeComponent.startNode.height || 0) / 2;
+        // needed for updating without using parameters (...update() )
+        // TODO : what if only endNode or startNode is defined?
 
-        points.cx1 = points.beginX + (nodeComponent.startNode.width || 0) + 50;
-        points.cy1 = points.beginY;
-
-        points.endX = nodeComponent.endNode.x - 20;
-        points.endY =
-          nodeComponent.endNode.y + (nodeComponent.endNode.height || 0) / 2;
-
-        points.cx2 = points.endX - (nodeComponent.endNode.width || 0) - 50;
-        points.cy2 = points.endY;
-        skipChecks = true;
+        if (
+          nodeComponent?.startNode.onCalculateControlPoints &&
+          nodeComponent?.endNode.onCalculateControlPoints
+        ) {
+          const start = nodeComponent.startNode.onCalculateControlPoints(
+            ControlAndEndPointNodeType.start,
+            CurveType.bezierCubic
+          );
+          const end = nodeComponent.endNode.onCalculateControlPoints(
+            ControlAndEndPointNodeType.end,
+            CurveType.bezierCubic
+          );
+          points.beginX = start.x;
+          points.beginY = start.y;
+          points.cx1 = start.cx;
+          points.cy1 = start.cy;
+          points.endX = end.x;
+          points.endY = end.y;
+          points.cx2 = end.cx;
+          points.cy2 = end.cy;
+          skipChecks = true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -341,28 +331,33 @@ export const createConnectionSVGElement = <T>(
         incomingComponent.startNode &&
         actionComponent.id === incomingComponent.startNode.id
       ) {
-        points.beginX = x + (actionComponent?.width || 0) + 20;
-        points.beginY = y + (actionComponent?.height || 0) / 2;
-
-        if (isQuadratic) {
-          points.cx1 = (points.beginX + points.endX) / 2;
-          points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
+        if (actionComponent.onCalculateControlPoints) {
+          const start = actionComponent.onCalculateControlPoints(
+            ControlAndEndPointNodeType.start,
+            CurveType.bezierCubic
+          );
+          points.beginX = start.x;
+          points.beginY = start.y;
+          points.cx1 = start.cx;
+          points.cy1 = start.cy;
         } else {
-          points.cx1 = points.beginX + (actionComponent?.width || 0) + 50;
-          points.cy1 = points.beginY;
+          return false;
         }
       } else if (
         incomingComponent.endNode &&
         actionComponent.id === incomingComponent.endNode.id
       ) {
-        points.endX = x - 20;
-        points.endY = y + (actionComponent?.height || 0) / 2;
-        if (isQuadratic) {
-          points.cx1 = (points.beginX + points.endX) / 2;
-          points.cy1 = ((points.beginY + points.endY) / 2) * 1.25;
+        if (actionComponent.onCalculateControlPoints) {
+          const end = actionComponent.onCalculateControlPoints(
+            ControlAndEndPointNodeType.end,
+            CurveType.bezierCubic
+          );
+          points.endX = end.x;
+          points.endY = end.y;
+          points.cx2 = end.cx;
+          points.cy2 = end.cy;
         } else {
-          points.cx2 = points.endX - (actionComponent?.width || 0) - 50;
-          points.cy2 = points.endY;
+          return false;
         }
       } else {
         const diffC1x = points.cx1 - points.beginX;
@@ -431,17 +426,17 @@ export const createConnectionSVGElement = <T>(
 
       if (actionComponent && x !== undefined && y !== undefined) {
         if (actionComponent.specifier === 'c1') {
-          points.cx1 = x; //- incomingComponent.x;
-          points.cy1 = y; //- incomingComponent.y;
+          points.cx1 = x;
+          points.cy1 = y;
         } else if (actionComponent.specifier === 'c2') {
-          points.cx2 = x; //- incomingComponent.x;
-          points.cy2 = y; //- incomingComponent.y;
+          points.cx2 = x;
+          points.cy2 = y;
         } else if (actionComponent.specifier === 'end') {
-          points.endX = x; //- incomingComponent.x;
-          points.endY = y; //- incomingComponent.y;
+          points.endX = x;
+          points.endY = y;
         } else if (actionComponent.specifier === 'begin') {
-          points.beginX = x; //- incomingComponent.x;
-          points.beginY = y; //- incomingComponent.y;
+          points.beginX = x;
+          points.beginY = y;
         } else {
           return false;
         }

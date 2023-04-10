@@ -25,6 +25,25 @@ function getPoint(x: number, y: number) {
   };
 }
 
+export const ThumbTypes = {
+  TopLeft: 'TopLeft',
+  TopRight: 'TopRight',
+  BottomLeft: 'BottomLeft',
+  BottomRight: 'BottomRight',
+  StartConnectorRight: 'StartConnectorRight',
+  EndConnectorLeft: 'EndConnectorLeft',
+  StartConnectorLeft: 'StartConnectorLeft',
+  EndConnectorRight: 'EndConnectorRight',
+  StartConnectorTop: 'StartConnectorTop',
+  EndConnectorTop: 'EndConnectorTop',
+  StartConnectorBottom: 'StartConnectorBottom',
+  EndConnectorBottom: 'EndConnectorBottom',
+  StartConnectorCenter: 'StartConnectorCenter',
+  EndConnectorCenter: 'EndConnectorCenter',
+} as const;
+
+export type ThumbTypes = (typeof ThumbTypes)[keyof typeof ThumbTypes];
+
 export const createRectPathSVGElement = <T>(
   canvasElement: DOMElementNode,
   elements: ElementNodeMap<T>,
@@ -36,7 +55,11 @@ export const createRectPathSVGElement = <T>(
   text?: string,
   shapeType?: ShapeType,
   thumbOffsetX?: number,
-  thumbOffsetY?: number
+  thumbOffsetY?: number,
+  getThumbPosition?: (
+    thumbType: ThumbTypes,
+    index?: number
+  ) => { x: number; y: number }
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -97,20 +120,20 @@ export const createRectPathSVGElement = <T>(
   divElement.shapeType = shapeType;
   divElement.components = [];
 
-  // const compiledMarkup = compileMarkup(
-  //   '<div class="bg-green-500"><p>Hello</p><p>World</p></div>'
-  // );
-  // if (!compiledMarkup) {
-  //   throw new Error('Invalid markup');
-  // }
-
-  // if (compiledMarkup && divElement && divElement.domElement) {
-  //   createASTNodeElement(
-  //     compiledMarkup.body,
-  //     divElement.domElement,
-  //     divElement.elements
-  //   );
-  // }
+  const compiledMarkup = compileMarkup(
+    '<div class="bg-green-500"><p>Hello</p><p>World</p><p>World</p><p>World</p><p>World</p><p>World</p></div>'
+  );
+  if (!compiledMarkup) {
+    throw new Error('Invalid markup');
+  }
+  let astElement: any;
+  if (compiledMarkup && divElement && divElement.domElement) {
+    astElement = createASTNodeElement(
+      compiledMarkup.body,
+      divElement.domElement,
+      divElement.elements
+    );
+  }
 
   const svgParent = createNSElement(
     'svg',
@@ -275,46 +298,52 @@ export const createRectPathSVGElement = <T>(
         (c) => c.type === 'self'
       );
 
-      if (connectionInfo) {
+      if (connectionInfo && getThumbPosition) {
+        const topLeft = getThumbPosition(ThumbTypes.TopLeft);
         connectionInfo.controllers?.start.update(
           connectionInfo.controllers?.start,
-          (thumbOffsetX ?? 0) + 0, //points.beginX,
-          (thumbOffsetY ?? 0) + 0, //points.beginY,
+          topLeft.x,
+          topLeft.y,
           actionComponent
         );
 
+        const topRight = getThumbPosition(ThumbTypes.TopRight);
         connectionInfo.controllers?.rightTop.update(
           connectionInfo.controllers?.rightTop,
-          (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-          (thumbOffsetY ?? 0) + 0, //points.beginY,
+          topRight.x,
+          topRight.y,
           actionComponent
         );
 
+        const bottomLeft = getThumbPosition(ThumbTypes.BottomLeft);
         connectionInfo.controllers?.leftBottom.update(
           connectionInfo.controllers?.leftBottom,
-          (thumbOffsetX ?? 0) + 0, //points.beginX,
-          (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
+          bottomLeft.x,
+          bottomLeft.y,
           actionComponent
         );
 
+        const bottomRight = getThumbPosition(ThumbTypes.BottomRight);
         connectionInfo.controllers?.rightBottom.update(
           connectionInfo.controllers?.rightBottom,
-          (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-          (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
+          bottomRight.x,
+          bottomRight.y,
           actionComponent
         );
 
+        const endCenter = getThumbPosition(ThumbTypes.EndConnectorCenter);
         connectionInfo.controllers?.leftThumbConnector.update(
           connectionInfo.controllers?.leftThumbConnector,
-          (thumbOffsetX ?? 0) + 0, //points.beginX,
-          (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+          endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
+          endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
           actionComponent
         );
 
+        const startCenter = getThumbPosition(ThumbTypes.StartConnectorCenter);
         connectionInfo.controllers?.rightThumbConnector.update(
           connectionInfo.controllers?.rightThumbConnector,
-          (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-          (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+          startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+          startCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
           actionComponent
         );
       }
@@ -377,35 +406,46 @@ export const createRectPathSVGElement = <T>(
         }
 
         const getRectPoint = (specifier: string) => {
+          if (!getThumbPosition) {
+            return { x: 0, y: 0 };
+          }
           if (specifier === 'begin') {
+            const topLeft = getThumbPosition(ThumbTypes.TopLeft);
             return {
-              x: (thumbOffsetX ?? 0) + 0, //points.beginX,
-              y: (thumbOffsetY ?? 0) + 0, //points.beginY,
+              x: topLeft.x,
+              y: topLeft.y,
             };
           } else if (specifier === 'rightTop') {
+            const topRight = getThumbPosition(ThumbTypes.TopRight);
             return {
-              x: (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-              y: (thumbOffsetY ?? 0) + 0, //points.beginY,
+              x: topRight.x,
+              y: topRight.y,
             };
           } else if (specifier === 'leftBottom') {
+            const bottomLeft = getThumbPosition(ThumbTypes.BottomLeft);
             return {
-              x: (thumbOffsetX ?? 0) + 0, //points.beginX,
-              y: (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
+              x: bottomLeft.x,
+              y: bottomLeft.y,
             };
           } else if (specifier === 'rightBottom') {
+            const bottomRight = getThumbPosition(ThumbTypes.BottomRight);
             return {
-              x: (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-              y: (thumbOffsetY ?? 0) + points.height, //points.beginY + points.height,
+              x: bottomRight.x,
+              y: bottomRight.y,
             };
           } else if (specifier === 'leftThumbConnector') {
+            const endCenter = getThumbPosition(ThumbTypes.EndConnectorCenter);
             return {
-              x: (thumbOffsetX ?? 0) + 0, //points.beginX,
-              y: (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+              x: endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
+              y: endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
             };
           } else if (specifier === 'rightThumbConnector') {
+            const startCenter = getThumbPosition(
+              ThumbTypes.StartConnectorCenter
+            );
             return {
-              x: (thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-              y: (thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+              x: startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+              y: startCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
             };
           }
           return false;
@@ -590,6 +630,21 @@ export const createRectPathSVGElement = <T>(
   divElement.y = startY;
   divElement.width = width;
   divElement.height = height;
+
+  const astElementSize = (
+    astElement.domElement as unknown as HTMLElement
+  ).getBoundingClientRect();
+
+  console.log('size', astElementSize);
+
+  divElement.width = astElementSize.width;
+  divElement.height = astElementSize.height - 20;
+  nodeComponent.width = astElementSize.width;
+  nodeComponent.height = astElementSize.height - 20;
+  points.width = astElementSize.width;
+  points.height = astElementSize.height - 20;
+
+  divElement.update(divElement, startX, startY, divElement);
 
   return divElement;
 };
