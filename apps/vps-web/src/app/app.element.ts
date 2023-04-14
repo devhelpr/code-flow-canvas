@@ -4,9 +4,7 @@ import './app.element.css';
 import styles from '../styles.css?inline';
 import {
   createElement,
-  createNSElement,
   createNodeElement,
-  ElementNodeMap,
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
@@ -15,21 +13,13 @@ import {
   createEffect,
   getSelectedNode,
   getVisbility,
-  setSelectNode,
   setVisibility,
-  getCurrentInteractionState,
-  InteractionEvent,
-  interactionEventState,
-  InteractionState,
   setupMarkupElement,
   createCubicBezier,
-  createRect,
   NodeInfo,
   createElementMap,
-  setCamera,
-  transformToCamera,
-  CLICK_MOVEMENT_THRESHOLD,
   createCanvasApp,
+  CanvasAppInstance,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -64,11 +54,8 @@ export class AppElement extends HTMLElement {
     }
   }
 
-  elements: ElementNodeMap<NodeInfo> = createElementMap<NodeInfo>();
-  scale = 1;
-  x = 0;
-  y = 0;
   canvas?: IElementNode<NodeInfo> = undefined;
+  canvasApp?: CanvasAppInstance = undefined;
 
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
@@ -79,11 +66,11 @@ export class AppElement extends HTMLElement {
   };
 
   clearCanvas = () => {
-    this.elements.forEach((element) => {
+    this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
-    this.elements.clear();
+    this.canvasApp?.elements.clear();
   };
 
   constructor() {
@@ -113,7 +100,11 @@ export class AppElement extends HTMLElement {
         click: (event) => {
           event.preventDefault();
           if (this.canvas) {
-            createNodeElement('div', this.canvas.domElement, this.elements);
+            createNodeElement(
+              'div',
+              this.canvas.domElement,
+              canvasApp.elements
+            );
           }
           return false;
         },
@@ -131,10 +122,7 @@ export class AppElement extends HTMLElement {
           this.clearCanvas();
           flowData.forEach((flowNode) => {
             if (flowNode.shapeType !== 'Line') {
-              const rect = createRect(
-                this.canvas as unknown as INodeComponent<NodeInfo>,
-                canvasApp.pathHiddenElement,
-                this.elements,
+              const rect = canvasApp?.createRect(
                 flowNode.x ?? 0,
                 flowNode.y ?? 0,
                 200,
@@ -144,7 +132,7 @@ export class AppElement extends HTMLElement {
               rect.nodeComponent.nodeInfo = flowNode;
             }
           });
-          const elementList = Array.from(this.elements);
+          const elementList = Array.from(this.canvasApp?.elements ?? []);
           flowData.forEach((flowNode) => {
             if (flowNode.shapeType === 'Line') {
               let start: INodeComponent<NodeInfo> | undefined = undefined;
@@ -172,7 +160,7 @@ export class AppElement extends HTMLElement {
               const curve = createCubicBezier(
                 this.canvas as unknown as INodeComponent<NodeInfo>,
                 canvasApp.pathHiddenElement,
-                this.elements,
+                canvasApp.elements ?? [],
                 start?.x ?? 0,
                 start?.y ?? 0,
                 end?.x ?? 0,
@@ -226,15 +214,7 @@ export class AppElement extends HTMLElement {
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
-          const start = createRect(
-            this.canvas as unknown as INodeComponent<NodeInfo>,
-            canvasApp.pathHiddenElement,
-            this.elements,
-            startX,
-            startY,
-            100,
-            100
-          );
+          const start = canvasApp.createRect(startX, startY, 100, 100);
 
           // const endX = Math.floor(Math.random() * 250);
           // const endY = Math.floor(Math.random() * 500);
@@ -296,7 +276,7 @@ export class AppElement extends HTMLElement {
           bezierCurve = createCubicBezier(
             this.canvas as unknown as INodeComponent<NodeInfo>,
             canvasApp.pathHiddenElement,
-            this.elements,
+            canvasApp.elements,
             x,
             y,
             x + 150,
@@ -335,7 +315,7 @@ export class AppElement extends HTMLElement {
           createMarkupElement(
             '<div><h2>TITLE</h2><p>subtitle</p></div>',
             canvasApp.canvas.domElement,
-            this.elements
+            canvasApp.elements
           );
           return false;
         },
@@ -486,7 +466,7 @@ export class AppElement extends HTMLElement {
       </div>
       `,
       canvasApp.canvas.domElement,
-      this.elements
+      canvasApp.elements
     );
 
     setupMarkupElement(

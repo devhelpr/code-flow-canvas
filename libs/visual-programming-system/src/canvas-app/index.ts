@@ -1,4 +1,5 @@
 import { setCamera, transformToCamera } from '../camera';
+import { createRect } from '../components';
 import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
@@ -8,6 +9,7 @@ import {
 } from '../interaction-state-machine';
 import { INodeComponent } from '../interfaces';
 import { setSelectNode } from '../reactivity';
+import { ShapeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
 
 export const createCanvasApp = <T>(rootElement: HTMLElement) => {
@@ -25,7 +27,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   let startClientDragX = 0;
   let startClientDragY = 0;
 
-  const canvas = createElement(
+  const canvas = createElement<T>(
     'div',
     {
       id: 'canvas',
@@ -311,7 +313,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     canvas.domElement
   );
 
-  const pathHiddenElement = createNSElement(
+  const pathHiddenElement = createNSElement<T>(
     'path',
     {
       class: 'cursor-pointer pointer-events-auto',
@@ -324,5 +326,26 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     canvas,
     hiddenSVG,
     pathHiddenElement,
+    createRect: (
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      text?: string,
+      shapeType?: ShapeType
+    ) =>
+      createRect<T>(
+        canvas as unknown as INodeComponent<T>,
+        pathHiddenElement,
+        elements,
+        x,
+        y,
+        width,
+        height,
+        text,
+        shapeType
+      ),
   };
 };
+
+export type CanvasAppInstance = ReturnType<typeof createCanvasApp>;
