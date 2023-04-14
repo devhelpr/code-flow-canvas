@@ -109,7 +109,7 @@ export const createRectPathSVGElement = <T>(
   const divElement = createElement(
     'div',
     {
-      class: 'absolute top-0 left-0',
+      class: 'absolute top-0 left-0 select-none',
     },
     canvasElement
   ) as unknown as INodeComponent<T> | undefined;
