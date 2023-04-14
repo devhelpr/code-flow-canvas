@@ -18,7 +18,7 @@
     "skipLibCheck": true,
     "types": ["vite/client", "vitest"]
   },
-  "include": ["src"],
+  "include": ["src", "../../libs/visual-programming-system/src/camera"],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -2,45 +2,76 @@ import './app.element.css';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import styles from '../styles.css?inline';
-import { createElement, createNSElement } from './utils/create-element';
-import { createNodeElement } from './components/node-element';
 import {
+  createElement,
+  createNSElement,
+  createNodeElement,
   ElementNodeMap,
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
   NodeComponentRelationType,
-} from './interfaces/element';
-import { createMarkupElement } from './components/markup-element';
-import {
+  createMarkupElement,
   createEffect,
   getSelectedNode,
   getVisbility,
   setSelectNode,
   setVisibility,
-} from './reactivity';
-import {
   getCurrentInteractionState,
   InteractionEvent,
   interactionEventState,
   InteractionState,
-} from './interaction-state-machine';
-import { setupMarkupElement } from './utils/create-markup';
-import { createConnectionSVGElement } from './components/connection-svg-element';
-import { createConnectionsSVGCanvasElement } from './components/connections-canvas-svg';
-import { createCubicBezier, createQuadraticBezier } from './components/bezier';
+  setupMarkupElement,
+  createCubicBezier,
+  createRect,
+  NodeInfo,
+  createElementMap,
+  setCamera,
+  transformToCamera,
+  CLICK_MOVEMENT_THRESHOLD,
+} from '@devhelpr/visual-programming-system';
+//import { createNodeElement } from './components/node-element';
+// import {
+//   ElementNodeMap,
+//   IElementNode,
+//   INodeComponent,
+//   INodeComponentRelation,
+//   NodeComponentRelationType,
+// } from './interfaces/element';
+//import { createMarkupElement } from './components/markup-element';
+// import {
+//   createEffect,
+//   getSelectedNode,
+//   getVisbility,
+//   setSelectNode,
+//   setVisibility,
+// } from './reactivity';
+// import {
+//   getCurrentInteractionState,
+//   InteractionEvent,
+//   interactionEventState,
+//   InteractionState,
+// } from './interaction-state-machine';
+//import { setupMarkupElement } from './utils/create-markup';
+// import { createConnectionSVGElement } from './components/connection-svg-element';
+// import { createConnectionsSVGCanvasElement } from './components/connections-canvas-svg';
+//import { createCubicBezier, createQuadraticBezier } from './components/bezier';
 import {
   compileExpression,
   compileExpressionAsInfo,
   registerCustomBlock,
   registerCustomFunction,
 } from '@devhelpr/expression-compiler';
-import { createRect } from './components/rect';
-import { NodeInfo } from './interfaces/nodeInfo';
-import { createElementMap } from './utils/create-element-map';
+//import { createRect } from './components/rect';
+// import { NodeInfo } from './interfaces/nodeInfo';
+// import { createElementMap } from './utils/create-element-map';
 import flowData from '../example-data/tiltest.json';
-import { getCamera, setCamera, transformToCamera } from './camera';
-import { CLICK_MOVEMENT_THRESHOLD } from './constants';
+// import {
+//   getCamera,
+//   setCamera,
+//   transformToCamera,
+// } from '../../../../libs/visual-programming-system/src/camera';
+//import { CLICK_MOVEMENT_THRESHOLD } from './constants';
 
 const template = document.createElement('template');
 template.innerHTML = `
