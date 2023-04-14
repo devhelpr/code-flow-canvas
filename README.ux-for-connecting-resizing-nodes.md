@@ -1,10 +1,10 @@
 # UX for resizing nodes
 
 - resize handlers should be hidden
-- when dragging a connection to a node, when near a node, show the node's resize handlers
-- reszing should always be possible, resizes handlers should be invisible but a hint should
+??- reszing should always be possible, resizes handlers should be invisible but a hint should
   be shown when hovering over the node with the mouse
   ... how to handle this on a touch device?
+
 
 - a node can be a connector itself or can have visible input/ouput connectors
   - when a node itself is a connector.. the connect-point of a connection is the center of the node
@@ -31,6 +31,10 @@
 
 	- nodes and lines/connections can have programmable behavior
 		depending on the attached "flow-engine"/strategy this behavior is executed
+
+
+- the control points of a connection should be invisible when the connection is connected to a start and/or end-node...
+
 
 
 - flow-engine's:
