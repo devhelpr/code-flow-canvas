@@ -1,4 +1,7 @@
 export const ThumbType = {
+  Start: 'Start',
+  End: 'End',
+  ControlPoint: 'ControlPoint',
   TopLeft: 'TopLeft',
   TopRight: 'TopRight',
   BottomLeft: 'BottomLeft',

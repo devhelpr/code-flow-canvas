@@ -229,6 +229,7 @@ export const createRect = <T>(
   const startPointElement = createThumbSVGElement(
     rectNode.domElement,
     rectNode.elements,
+    ThumbType.TopLeft,
     '#ff000080',
     thumbOffsetX, //startX,
     thumbOffsetY, //startY,
@@ -238,7 +239,9 @@ export const createRect = <T>(
     thumbWidth,
     thumbHeight,
     thumbRadius,
-    true
+    true,
+    undefined,
+    undefined
   );
 
   startPointElement.update = (
@@ -258,6 +261,7 @@ export const createRect = <T>(
   const rightTopPointElement = createThumbSVGElement(
     rectNode.domElement,
     rectNode.elements,
+    ThumbType.TopRight,
     '#ffff0080',
     thumbOffsetX + widthHelper, //startX + width,
     thumbOffsetY, //startY,
@@ -284,6 +288,7 @@ export const createRect = <T>(
   const leftBottomElement = createThumbSVGElement(
     rectNode.domElement,
     rectNode.elements,
+    ThumbType.BottomLeft,
     '#00ff00',
     thumbOffsetX, //startX,
     thumbOffsetY + heightHelper, //startY + height,
@@ -311,6 +316,7 @@ export const createRect = <T>(
   const rightBottomElement = createThumbSVGElement(
     rectNode.domElement,
     rectNode.elements,
+    ThumbType.BottomRight,
     '#0000ff',
     thumbOffsetX + widthHelper, //startX + width,
     thumbOffsetY + heightHelper, //startY + height,
@@ -339,6 +345,7 @@ export const createRect = <T>(
   const leftThumbConnectorElement = createThumbSVGElement(
     rectNode.domElement,
     rectNode.elements,
+    ThumbType.EndConnectorCenter,
     '#008080',
     thumbOffsetX - thumbRadius, // startX,
     thumbOffsetY + heightHelper / 2, //startY + height / 2,
@@ -409,12 +416,19 @@ export const createRect = <T>(
   const rightThumbConnectorElement = createThumbSVGElement(
     rectNode.domElement,
     rectNode.elements,
+    ThumbType.StartConnectorCenter,
     '#008080',
     thumbOffsetX + widthHelper + thumbRadius, //startX + width,
     calculateConnectorY(ThumbType.StartConnectorCenter, heightHelper), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'rightThumbConnector',
     'connector',
-    'top-0 left-0 origin-center'
+    'top-0 left-0 origin-center',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    0
   );
 
   rightThumbConnectorElement.isControlled = true;

@@ -11,6 +11,7 @@ import {
   getSelectedNode,
   setSelectNode,
 } from '../reactivity';
+import { ThumbType } from '../types';
 import { createConnectionSVGElement } from './connection-svg-element';
 import { createThumbSVGElement } from './thumb-svg-element';
 
@@ -83,6 +84,7 @@ export const createCubicBezier = <T>(
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.Start,
     '#ff000080',
     startX,
     startY,
@@ -106,6 +108,7 @@ export const createCubicBezier = <T>(
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.End,
     '#ffff4080',
     endX,
     endY,
@@ -128,6 +131,7 @@ export const createCubicBezier = <T>(
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.ControlPoint,
     '#00ff00',
     controlPoint1X,
     controlPoint1Y,
@@ -150,6 +154,7 @@ export const createCubicBezier = <T>(
   const controlPoint2Element = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.ControlPoint,
     '#0000ff',
     controlPoint2X,
     controlPoint2Y,
@@ -415,6 +420,7 @@ export const createQuadraticBezier = <T>(
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.Start,
     '#ff000080',
     startX,
     startY,
@@ -439,6 +445,7 @@ export const createQuadraticBezier = <T>(
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.End,
     '#ff000080',
     endX,
     endY,
@@ -462,6 +469,7 @@ export const createQuadraticBezier = <T>(
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
     elements,
+    ThumbType.ControlPoint,
     '#00ff00',
     controlPoint1X,
     controlPoint1Y,
