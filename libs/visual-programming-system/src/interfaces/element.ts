@@ -75,6 +75,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     nodeType: ControlAndEndPointNodeType,
     curveType: CurveType
   ) => IControlAndEndPoint;
+  setVisibility?: (isVisible: boolean) => void;
 }
 
 export const ControlAndEndPointNodeType = {

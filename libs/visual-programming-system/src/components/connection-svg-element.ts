@@ -421,6 +421,9 @@ export const createConnectionSVGElement = <T>(
         );
 
         if (isQuadratic) {
+          connectionInfo.controllers?.controlPoint.setVisibility?.(
+            !(nodeComponent?.startNode || nodeComponent?.endNode)
+          );
           connectionInfo.controllers?.controlPoint.update(
             connectionInfo.controllers?.controlPoint,
             points.cx1,
@@ -428,6 +431,9 @@ export const createConnectionSVGElement = <T>(
             actionComponent
           );
         } else {
+          connectionInfo.controllers?.controlPoint1.setVisibility?.(
+            !(nodeComponent?.startNode || nodeComponent?.endNode)
+          );
           connectionInfo.controllers?.controlPoint1.update(
             connectionInfo.controllers?.controlPoint1,
             points.cx1,
@@ -435,6 +441,9 @@ export const createConnectionSVGElement = <T>(
             actionComponent
           );
 
+          connectionInfo.controllers?.controlPoint2.setVisibility?.(
+            !(nodeComponent?.startNode || nodeComponent?.endNode)
+          );
           connectionInfo.controllers?.controlPoint2.update(
             connectionInfo.controllers?.controlPoint2,
             points.cx2,

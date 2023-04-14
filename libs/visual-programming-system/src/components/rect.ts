@@ -219,7 +219,8 @@ export const createRect = <T>(
     'top-0 left-0 origin-center',
     thumbWidth,
     thumbHeight,
-    thumbRadius
+    thumbRadius,
+    true
   );
 
   startPointElement.update = (
@@ -244,7 +245,11 @@ export const createRect = <T>(
     thumbOffsetY, //startY,
     'rightTop',
     'resizer',
-    'top-0 left-0 origin-center'
+    'top-0 left-0 origin-center',
+    thumbWidth,
+    thumbHeight,
+    thumbRadius,
+    true
   );
   rightTopPointElement.update = (
     component?: INodeComponent<T>,
@@ -266,7 +271,11 @@ export const createRect = <T>(
     thumbOffsetY + heightHelper, //startY + height,
     'leftBottom',
     'resizer',
-    'top-0 left-0 origin-center'
+    'top-0 left-0 origin-center',
+    thumbWidth,
+    thumbHeight,
+    thumbRadius,
+    true
   );
   leftBottomElement.update = (
     component?: INodeComponent<T>,
@@ -289,7 +298,11 @@ export const createRect = <T>(
     thumbOffsetY + heightHelper, //startY + height,
     'rightBottom',
     'resizer',
-    'top-0 left-0 origin-center'
+    'top-0 left-0 origin-center',
+    thumbWidth,
+    thumbHeight,
+    thumbRadius,
+    true
   );
   rightBottomElement.update = (
     component?: INodeComponent<T>,

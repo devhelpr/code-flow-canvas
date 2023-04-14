@@ -27,7 +27,8 @@ export const createThumbSVGElement = <T>(
   additionalClasses?: string,
   width?: number,
   height?: number,
-  radius?: number
+  radius?: number,
+  isTransparent?: boolean
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -63,9 +64,11 @@ export const createThumbSVGElement = <T>(
       cx: (width ?? 100) / 2,
       cy: (height ?? 100) / 2,
       r: radius ?? 10,
-      stroke: 'black',
+      stroke: isTransparent ? 'transparent' : 'black',
       'stroke-width': 3,
-      fill: color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+      fill: isTransparent
+        ? 'transparent'
+        : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
       pointerover: (_e: PointerEvent) => {
         console.log('svg pointerover', nodeComponent.id);
         (nodeComponent.domElement as unknown as SVGElement).classList.remove(
@@ -189,6 +192,11 @@ export const createThumbSVGElement = <T>(
   nodeComponent.offsetX = 50;
   nodeComponent.offsetY = 50;
   nodeComponent.radius = 10;
+  nodeComponent.setVisibility = (visible: boolean) => {
+    (nodeComponent.domElement as unknown as SVGElement).style.display = `${
+      visible ? 'block' : 'none'
+    }`;
+  };
 
   nodeComponent.pointerUp = () => {
     const dropTarget = getCurrentDropTarget();

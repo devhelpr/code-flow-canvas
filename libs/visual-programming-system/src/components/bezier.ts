@@ -311,10 +311,13 @@ export const createCubicBezier = <T>(
       visibility ? 'block' : 'none';
     (endPointElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
-    (controlPoint1Element.domElement as unknown as SVGElement).style.display =
-      visibility ? 'block' : 'none';
-    (controlPoint2Element.domElement as unknown as SVGElement).style.display =
-      visibility ? 'block' : 'none';
+
+    if (!(connection.startNode || connection.endNode)) {
+      (controlPoint1Element.domElement as unknown as SVGElement).style.display =
+        visibility ? 'block' : 'none';
+      (controlPoint2Element.domElement as unknown as SVGElement).style.display =
+        visibility ? 'block' : 'none';
+    }
   });
 
   return {
