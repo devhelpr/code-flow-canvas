@@ -151,6 +151,29 @@ export const createConnectionSVGElement = <T>(
     marker.domElement
   );
 
+  const markerBegin = createNSElement(
+    'marker',
+    {
+      id: 'arrowbegin',
+      refX: '2',
+      refY: '2',
+      markerUnits: 'strokeWidth',
+      markerWidth: '4',
+      markerHeight: '4',
+      orient: 'auto',
+    },
+    defs.domElement
+  );
+  createNSElement(
+    'path',
+    {
+      d: 'M2,2 L2,2 L0,2 Z', // 'M2,0 L2,4 L0,2 Z',
+      stroke: 'white',
+      fill: 'white',
+    },
+    markerBegin.domElement
+  );
+
   let nodeComponent: INodeComponent<T> | undefined = undefined;
   nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
@@ -185,6 +208,7 @@ export const createConnectionSVGElement = <T>(
             pathPoints.cy2 - bbox.y
           } ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`,
       stroke: 'white',
+      'marker-start': 'url(#arrowbegin)',
       'marker-end': 'url(#arrow)',
       'stroke-width': 3,
       fill: 'transparent',
