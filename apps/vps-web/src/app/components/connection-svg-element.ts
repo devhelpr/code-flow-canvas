@@ -367,15 +367,15 @@ export const createConnectionSVGElement = <T>(
         const diffEndX = points.endX - points.beginX;
         const diffEndY = points.endY - points.beginY;
 
-        points.beginX = x - 50;
-        points.beginY = y - 50;
+        points.beginX = x - thumbTransformX;
+        points.beginY = y - thumbTransformY;
 
-        points.cx1 = x - 50 + diffC1x;
-        points.cy1 = y - 50 + diffC1y;
-        points.cx2 = x - 50 + diffC2x;
-        points.cy2 = y - 50 + diffC2y;
-        points.endX = x - 50 + diffEndX;
-        points.endY = y - 50 + diffEndY;
+        points.cx1 = x - thumbTransformX + diffC1x;
+        points.cy1 = y - thumbTransformY + diffC1y;
+        points.cx2 = x - thumbTransformX + diffC2x;
+        points.cy2 = y - thumbTransformY + diffC2y;
+        points.endX = x - thumbTransformX + diffEndX;
+        points.endY = y - thumbTransformY + diffEndY;
       }
       const connectionInfo = incomingComponent.components.find(
         (c) => c.type === 'self'
