@@ -11,6 +11,7 @@ import { createASTNodeElement } from '../utils/create-ast-markup-node';
 import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
+import { ThumbType } from '../types';
 
 const minSize = 50;
 
@@ -25,25 +26,6 @@ function getPoint(x: number, y: number) {
   };
 }
 
-export const ThumbTypes = {
-  TopLeft: 'TopLeft',
-  TopRight: 'TopRight',
-  BottomLeft: 'BottomLeft',
-  BottomRight: 'BottomRight',
-  StartConnectorRight: 'StartConnectorRight',
-  EndConnectorLeft: 'EndConnectorLeft',
-  StartConnectorLeft: 'StartConnectorLeft',
-  EndConnectorRight: 'EndConnectorRight',
-  StartConnectorTop: 'StartConnectorTop',
-  EndConnectorTop: 'EndConnectorTop',
-  StartConnectorBottom: 'StartConnectorBottom',
-  EndConnectorBottom: 'EndConnectorBottom',
-  StartConnectorCenter: 'StartConnectorCenter',
-  EndConnectorCenter: 'EndConnectorCenter',
-} as const;
-
-export type ThumbTypes = (typeof ThumbTypes)[keyof typeof ThumbTypes];
-
 export const createRectPathSVGElement = <T>(
   canvasElement: DOMElementNode,
   elements: ElementNodeMap<T>,
@@ -57,7 +39,7 @@ export const createRectPathSVGElement = <T>(
   thumbOffsetX?: number,
   thumbOffsetY?: number,
   getThumbPosition?: (
-    thumbType: ThumbTypes,
+    thumbType: ThumbType,
     index?: number
   ) => { x: number; y: number }
 ) => {
@@ -282,7 +264,7 @@ export const createRectPathSVGElement = <T>(
       );
 
       if (connectionInfo && getThumbPosition) {
-        const topLeft = getThumbPosition(ThumbTypes.TopLeft);
+        const topLeft = getThumbPosition(ThumbType.TopLeft);
         connectionInfo.controllers?.start.update(
           connectionInfo.controllers?.start,
           topLeft.x,
@@ -290,7 +272,7 @@ export const createRectPathSVGElement = <T>(
           actionComponent
         );
 
-        const topRight = getThumbPosition(ThumbTypes.TopRight);
+        const topRight = getThumbPosition(ThumbType.TopRight);
         connectionInfo.controllers?.rightTop.update(
           connectionInfo.controllers?.rightTop,
           topRight.x,
@@ -298,7 +280,7 @@ export const createRectPathSVGElement = <T>(
           actionComponent
         );
 
-        const bottomLeft = getThumbPosition(ThumbTypes.BottomLeft);
+        const bottomLeft = getThumbPosition(ThumbType.BottomLeft);
         connectionInfo.controllers?.leftBottom.update(
           connectionInfo.controllers?.leftBottom,
           bottomLeft.x,
@@ -306,7 +288,7 @@ export const createRectPathSVGElement = <T>(
           actionComponent
         );
 
-        const bottomRight = getThumbPosition(ThumbTypes.BottomRight);
+        const bottomRight = getThumbPosition(ThumbType.BottomRight);
         connectionInfo.controllers?.rightBottom.update(
           connectionInfo.controllers?.rightBottom,
           bottomRight.x,
@@ -314,7 +296,7 @@ export const createRectPathSVGElement = <T>(
           actionComponent
         );
 
-        const endCenter = getThumbPosition(ThumbTypes.EndConnectorCenter);
+        const endCenter = getThumbPosition(ThumbType.EndConnectorCenter);
         connectionInfo.controllers?.leftThumbConnector.update(
           connectionInfo.controllers?.leftThumbConnector,
           endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
@@ -322,7 +304,7 @@ export const createRectPathSVGElement = <T>(
           actionComponent
         );
 
-        const startCenter = getThumbPosition(ThumbTypes.StartConnectorCenter);
+        const startCenter = getThumbPosition(ThumbType.StartConnectorCenter);
         connectionInfo.controllers?.rightThumbConnector.update(
           connectionInfo.controllers?.rightThumbConnector,
           startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
@@ -393,38 +375,38 @@ export const createRectPathSVGElement = <T>(
             return { x: 0, y: 0 };
           }
           if (specifier === 'begin') {
-            const topLeft = getThumbPosition(ThumbTypes.TopLeft);
+            const topLeft = getThumbPosition(ThumbType.TopLeft);
             return {
               x: topLeft.x,
               y: topLeft.y,
             };
           } else if (specifier === 'rightTop') {
-            const topRight = getThumbPosition(ThumbTypes.TopRight);
+            const topRight = getThumbPosition(ThumbType.TopRight);
             return {
               x: topRight.x,
               y: topRight.y,
             };
           } else if (specifier === 'leftBottom') {
-            const bottomLeft = getThumbPosition(ThumbTypes.BottomLeft);
+            const bottomLeft = getThumbPosition(ThumbType.BottomLeft);
             return {
               x: bottomLeft.x,
               y: bottomLeft.y,
             };
           } else if (specifier === 'rightBottom') {
-            const bottomRight = getThumbPosition(ThumbTypes.BottomRight);
+            const bottomRight = getThumbPosition(ThumbType.BottomRight);
             return {
               x: bottomRight.x,
               y: bottomRight.y,
             };
           } else if (specifier === 'leftThumbConnector') {
-            const endCenter = getThumbPosition(ThumbTypes.EndConnectorCenter);
+            const endCenter = getThumbPosition(ThumbType.EndConnectorCenter);
             return {
               x: endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
               y: endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
             };
           } else if (specifier === 'rightThumbConnector') {
             const startCenter = getThumbPosition(
-              ThumbTypes.StartConnectorCenter
+              ThumbType.StartConnectorCenter
             );
             return {
               x: startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,

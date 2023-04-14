@@ -14,8 +14,9 @@ import {
   getVisbility,
   setSelectNode,
 } from '../reactivity';
+import { ThumbType } from '../types';
 import { ShapeType } from '../types/shape-type';
-import { createRectPathSVGElement, ThumbTypes } from './rect-path-svg-element';
+import { createRectPathSVGElement } from './rect-path-svg-element';
 import { createThumbSVGElement } from './thumb-svg-element';
 
 const thumbRadius = 10;
@@ -25,38 +26,49 @@ const thumbHeight = 100;
 const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
 const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
 
-export const thumbPosition = (
-  rectNode: INodeComponent<any>,
-  thumbType: ThumbTypes,
+const calculateConnectorY = (
+  thumbType: ThumbType,
+  height: number,
   index?: number
 ) => {
-  if (thumbType === ThumbTypes.TopLeft) {
+  if (thumbType === ThumbType.StartConnectorCenter) {
+    return thumbOffsetY + height / 2;
+  }
+  return 0;
+};
+
+export const thumbPosition = (
+  rectNode: INodeComponent<any>,
+  thumbType: ThumbType,
+  index?: number
+) => {
+  if (thumbType === ThumbType.TopLeft) {
     return { x: thumbOffsetX, y: thumbOffsetY };
   }
-  if (thumbType === ThumbTypes.TopRight) {
+  if (thumbType === ThumbType.TopRight) {
     return { x: thumbOffsetX + (rectNode?.width ?? 0), y: thumbOffsetY };
   }
-  if (thumbType === ThumbTypes.BottomLeft) {
+  if (thumbType === ThumbType.BottomLeft) {
     return { x: thumbOffsetX, y: thumbOffsetY + (rectNode?.height ?? 0) };
   }
-  if (thumbType === ThumbTypes.BottomRight) {
+  if (thumbType === ThumbType.BottomRight) {
     return {
       x: thumbOffsetX + (rectNode?.width ?? 0),
       y: thumbOffsetY + (rectNode?.height ?? 0),
     };
   }
 
-  if (thumbType === ThumbTypes.EndConnectorCenter) {
+  if (thumbType === ThumbType.EndConnectorCenter) {
     return {
       x: thumbOffsetX - thumbRadius,
       y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
     };
   }
 
-  if (thumbType === ThumbTypes.StartConnectorCenter) {
+  if (thumbType === ThumbType.StartConnectorCenter) {
     return {
       x: thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
-      y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
+      y: calculateConnectorY(thumbType, rectNode?.height ?? 0, index), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
     };
   }
 
@@ -89,7 +101,7 @@ export const createRect = <T>(
     shapeType,
     thumbOffsetX,
     thumbOffsetY,
-    (thumbType: ThumbTypes, index?: number) => {
+    (thumbType: ThumbType, index?: number) => {
       return thumbPosition(rectNode, thumbType, index);
     }
   );
@@ -117,7 +129,13 @@ export const createRect = <T>(
 
       */
       const x = rectNode.x + (rectNode.width || 0) + 20 + thumbRadius;
-      const y = rectNode.y + (rectNode.height || 0) / 2;
+      const y =
+        rectNode.y +
+        calculateConnectorY(
+          ThumbType.StartConnectorCenter,
+          rectNode.height ?? 0
+        ) -
+        thumbOffsetY; // rectNode.y; //+ (rectNode.height || 0) / 2;
       return {
         x: x,
         y: y,
@@ -393,7 +411,7 @@ export const createRect = <T>(
     rectNode.elements,
     '#008080',
     thumbOffsetX + widthHelper + thumbRadius, //startX + width,
-    thumbOffsetY + heightHelper / 2, //startY + height / 2,
+    calculateConnectorY(ThumbType.StartConnectorCenter, heightHelper), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'rightThumbConnector',
     'connector',
     'top-0 left-0 origin-center'

@@ -284,11 +284,11 @@ export const createConnectionSVGElement = <T>(
     y?: number,
     actionComponent?: INodeComponent<T>
   ) => {
-    console.log(
-      'update connection',
-      incomingComponent?.nodeType,
-      actionComponent?.nodeType
-    );
+    // console.log(
+    //   'update connection',
+    //   incomingComponent?.nodeType,
+    //   actionComponent?.nodeType
+    // );
 
     if (
       !incomingComponent &&

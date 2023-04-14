@@ -1,3 +1,4 @@
+import { ThumbType } from '../types';
 import { ShapeType } from '../types/shape-type';
 
 export interface IElementNode<T> {
@@ -59,6 +60,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
   isControlled?: boolean;
   isConnectPoint?: boolean;
   shapeType?: ShapeType;
+  thumbIndex?: number;
+  thumbType?: ThumbType;
   update?: (
     component?: INodeComponent<T>,
     x?: number,

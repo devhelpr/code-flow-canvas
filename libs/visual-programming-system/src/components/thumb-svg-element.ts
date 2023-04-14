@@ -28,7 +28,9 @@ export const createThumbSVGElement = <T>(
   width?: number,
   height?: number,
   radius?: number,
-  isTransparent?: boolean
+  isTransparent?: boolean,
+  borderColor? : string,
+  index?: number
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -64,7 +66,7 @@ export const createThumbSVGElement = <T>(
       cx: (width ?? 100) / 2,
       cy: (height ?? 100) / 2,
       r: radius ?? 10,
-      stroke: isTransparent ? 'transparent' : 'black',
+      stroke: isTransparent ? 'transparent' : (borderColor ? borderColor : 'black'),
       'stroke-width': 3,
       fill: isTransparent
         ? 'transparent'
@@ -192,6 +194,8 @@ export const createThumbSVGElement = <T>(
   nodeComponent.offsetX = 50;
   nodeComponent.offsetY = 50;
   nodeComponent.radius = 10;
+  nodeComponent.thumbIndex = index ?? 0;
+
   nodeComponent.setVisibility = (visible: boolean) => {
     (nodeComponent.domElement as unknown as SVGElement).style.display = `${
       visible ? 'block' : 'none'
