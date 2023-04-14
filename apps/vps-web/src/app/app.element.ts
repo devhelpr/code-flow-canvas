@@ -29,6 +29,7 @@ import {
   setCamera,
   transformToCamera,
   CLICK_MOVEMENT_THRESHOLD,
+  createCanvasApp,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -47,7 +48,7 @@ template.innerHTML = `
 
 const button =
   'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none';
-const menubar = 'fixed z-20 flex flex-row items-center justify-start';
+const menubar = 'fixed top-0 z-20 flex flex-row items-center justify-start';
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -85,36 +86,6 @@ export class AppElement extends HTMLElement {
     this.elements.clear();
   };
 
-  startDragX = 0;
-  startDragY = 0;
-
-  startClientDragX = 0;
-  startClientDragY = 0;
-
-  setCameraPosition = (x: number, y: number) => {
-    if (this.canvas?.domElement) {
-      const diffX = x - this.startClientDragX;
-      const diffY = y - this.startClientDragY;
-
-      this.x = this.startDragX + diffX;
-      this.y = this.startDragY + diffY;
-
-      setCamera(this.x, this.y, this.scale);
-
-      (this.canvas.domElement as unknown as HTMLElement).style.transform =
-        'translate(' +
-        this.x +
-        'px,' +
-        this.y +
-        'px) ' +
-        'scale(' +
-        this.scale +
-        ',' +
-        this.scale +
-        ') ';
-    }
-  };
-
   constructor() {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
@@ -124,6 +95,9 @@ export class AppElement extends HTMLElement {
       return;
     }
     let bezierCurve: any = undefined;
+
+    const canvasApp = createCanvasApp<NodeInfo>(rootElement);
+    this.canvas = canvasApp.canvas;
 
     const menubarElement = createElement(
       'div',
@@ -138,7 +112,9 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
-          createNodeElement('div', canvas.domElement, this.elements);
+          if (this.canvas) {
+            createNodeElement('div', this.canvas.domElement, this.elements);
+          }
           return false;
         },
       },
@@ -156,8 +132,8 @@ export class AppElement extends HTMLElement {
           flowData.forEach((flowNode) => {
             if (flowNode.shapeType !== 'Line') {
               const rect = createRect(
-                canvas as unknown as INodeComponent<NodeInfo>,
-                pathHiddenElement,
+                this.canvas as unknown as INodeComponent<NodeInfo>,
+                canvasApp.pathHiddenElement,
                 this.elements,
                 flowNode.x ?? 0,
                 flowNode.y ?? 0,
@@ -194,8 +170,8 @@ export class AppElement extends HTMLElement {
               }
 
               const curve = createCubicBezier(
-                canvas as unknown as INodeComponent<NodeInfo>,
-                pathHiddenElement,
+                this.canvas as unknown as INodeComponent<NodeInfo>,
+                canvasApp.pathHiddenElement,
                 this.elements,
                 start?.x ?? 0,
                 start?.y ?? 0,
@@ -251,8 +227,8 @@ export class AppElement extends HTMLElement {
           const startY = Math.floor(Math.random() * 500);
 
           const start = createRect(
-            canvas as unknown as INodeComponent<NodeInfo>,
-            pathHiddenElement,
+            this.canvas as unknown as INodeComponent<NodeInfo>,
+            canvasApp.pathHiddenElement,
             this.elements,
             startX,
             startY,
@@ -318,8 +294,8 @@ export class AppElement extends HTMLElement {
 
           // if (Math.random() >= 0.5) {
           bezierCurve = createCubicBezier(
-            canvas as unknown as INodeComponent<NodeInfo>,
-            pathHiddenElement,
+            this.canvas as unknown as INodeComponent<NodeInfo>,
+            canvasApp.pathHiddenElement,
             this.elements,
             x,
             y,
@@ -358,7 +334,7 @@ export class AppElement extends HTMLElement {
           event.preventDefault();
           createMarkupElement(
             '<div><h2>TITLE</h2><p>subtitle</p></div>',
-            canvas.domElement,
+            canvasApp.canvas.domElement,
             this.elements
           );
           return false;
@@ -391,281 +367,16 @@ export class AppElement extends HTMLElement {
       menubarElement.domElement
     );
 
-    let isClicking = false;
-    let isMoving = false;
-    let startTime = 0;
-
     // transform-origin: top left;
-    const canvas = createElement(
-      'div',
-      {
-        id: 'canvas',
-        class:
-          'w-full h-full bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
-      },
-      rootElement
-    );
-    this.canvas = canvas;
-
-    rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
-      isClicking = true;
-      isMoving = false;
-      startTime = Date.now();
-    });
-
-    rootElement.addEventListener('pointermove', (event: PointerEvent) => {
-      //const canvasRect = canvas.domElement.getBoundingClientRect();
-      if (isClicking) {
-        isMoving = true;
-      }
-      if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
-        //return;
-      }
-      let currentState = getCurrentInteractionState();
-
-      if (currentState.state === InteractionState.Idle && isClicking) {
-        this.startClientDragX = event.clientX;
-        this.startClientDragY = event.clientY;
-        this.startDragX = this.x;
-        this.startDragY = this.y;
-
-        interactionEventState(
-          InteractionEvent.PointerDown,
-          {
-            id: canvas.id,
-            type: 'Canvas',
-            interactionInfo: {
-              xOffsetWithinElementOnFirstClick: 0,
-              yOffsetWithinElementOnFirstClick: 0,
-            },
-          },
-          canvas as unknown as INodeComponent<NodeInfo>
-        );
-        currentState = getCurrentInteractionState();
-      }
-      if (
-        currentState.state === InteractionState.Moving &&
-        currentState.element &&
-        currentState.target
-      ) {
-        const interactionState = interactionEventState(
-          InteractionEvent.PointerMove,
-          currentState.target,
-          currentState.element
-        );
-        if (interactionState) {
-          if (interactionState.target?.id === canvas.id) {
-            this.setCameraPosition(event.clientX, event.clientY);
-          } else {
-            const canvasRect = (
-              canvas.domElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
-
-            const { x, y } = transformToCamera(
-              event.clientX, //- canvasRect.x,
-              event.clientY //- canvasRect.y
-            );
-
-            currentState.target.pointerMove &&
-              currentState.target.pointerMove(
-                x,
-                y,
-                currentState.element,
-                canvas.domElement,
-                currentState.target.interactionInfo
-              );
-          }
-        }
-      }
-    });
-    rootElement.addEventListener('pointerup', (event: PointerEvent) => {
-      const currentState = getCurrentInteractionState();
-      if (
-        currentState.state === InteractionState.Moving &&
-        currentState.element &&
-        currentState.target
-      ) {
-        const interactionState = interactionEventState(
-          InteractionEvent.PointerUp,
-          currentState.target,
-          currentState.element,
-          true
-        );
-        if (interactionState) {
-          if (currentState.target?.id === canvas.id) {
-            this.setCameraPosition(event.clientX, event.clientY);
-
-            interactionEventState(
-              InteractionEvent.PointerUp,
-              currentState.target,
-              currentState.element
-            );
-
-            setSelectNode(undefined);
-          } else {
-            const canvasRect = (
-              canvas.domElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
-            const { x, y } = transformToCamera(
-              event.clientX, //- canvasRect.x,
-              event.clientY //- canvasRect.y
-            );
-
-            currentState.target.pointerUp &&
-              currentState.target.pointerUp(
-                x,
-                y,
-                currentState.element,
-                canvas.domElement,
-                currentState.target.interactionInfo
-              );
-          }
-        }
-      } else {
-        if (
-          !isMoving &&
-          isClicking
-          // ||
-          // (isClicking &&
-          //   isMoving &&
-          //   Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD)
-        ) {
-          console.log('click canvas', isMoving, Date.now() - startTime);
-          setSelectNode(undefined);
-        }
-      }
-      isMoving = false;
-      isClicking = false;
-    });
-    rootElement.addEventListener('pointerleave', (event: PointerEvent) => {
-      console.log('pointerleave canvas', event);
-
-      isMoving = false;
-      isClicking = false;
-
-      const currentState = getCurrentInteractionState();
-      if (
-        currentState.state === InteractionState.Moving &&
-        currentState.element &&
-        currentState.target
-      ) {
-        const interactionState = interactionEventState(
-          InteractionEvent.PointerLeave,
-          currentState.target,
-          currentState.element
-        );
-
-        if (interactionState) {
-          if (currentState.target?.id === canvas.id) {
-            //
-          } else {
-            const canvasRect = (
-              canvas.domElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
-            const { x, y } = transformToCamera(
-              event.clientX - canvasRect.x,
-              event.clientY - canvasRect.y
-            );
-
-            currentState.target.pointerUp &&
-              currentState.target.pointerUp(
-                x,
-                y,
-                currentState.element,
-                canvas.domElement,
-                currentState.target.interactionInfo
-              );
-          }
-        }
-      }
-    });
-
-    let wheelTime = -1;
-    rootElement.addEventListener('wheel', (event: WheelEvent) => {
-      event.preventDefault();
-
-      if (wheelTime === -1) {
-        wheelTime = event.timeStamp;
-      }
-      let timeDiff = event.timeStamp - wheelTime;
-      if (event.shiftKey) {
-        timeDiff = timeDiff * 16;
-      }
-      //const delta = result.pixelY; // / timeDiff;
-      const delta = Math.max(
-        -1,
-        Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
-      );
-
-      // Determine the scale factor for the zoom
-      const scaleFactor = 1 + delta * 0.1;
-
-      const scaleBy = scaleFactor;
-      // if (scaleBy < 0.95) {
-      //   scaleBy = 0.95;
-      // } else if (scaleBy > 1.05) {
-      //   scaleBy = 1.05;
-      // }
-
-      if (canvas.domElement) {
-        const mousePointTo = {
-          x: event.clientX / this.scale - this.x / this.scale,
-          y: event.clientY / this.scale - this.y / this.scale,
-        };
-
-        this.scale = this.scale * scaleBy;
-        //result.pixelY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
-        if (this.scale < 0.15) {
-          this.scale = 0.15;
-        } else if (this.scale > 3) {
-          this.scale = 3;
-        }
-
-        const newPos = {
-          x: -(mousePointTo.x - event.clientX / this.scale) * this.scale,
-          y: -(mousePointTo.y - event.clientY / this.scale) * this.scale,
-        };
-
-        this.x = newPos.x;
-        this.y = newPos.y;
-
-        setCamera(this.x, this.y, this.scale);
-
-        (canvas.domElement as unknown as HTMLElement).style.transform =
-          'translate(' +
-          this.x +
-          'px,' +
-          this.y +
-          'px) ' +
-          'scale(' +
-          this.scale +
-          ',' +
-          this.scale +
-          ') ';
-      }
-      return false;
-    });
-
-    const hiddenSVG = createNSElement(
-      'svg',
-      {
-        width: 0,
-        height: 0,
-        style: {
-          visibility: 'hidden',
-          position: 'absolute',
-        },
-      },
-      canvas.domElement
-    );
-
-    const pathHiddenElement = createNSElement(
-      'path',
-      {
-        class: 'cursor-pointer pointer-events-auto',
-      },
-      hiddenSVG.domElement
-    );
+    // const canvas = createElement(
+    //   'div',
+    //   {
+    //     id: 'canvas',
+    //     class:
+    //       'w-full h-full bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
+    //   },
+    //   rootElement
+    // );
 
     const textAreaContainer = createElement(
       'div',
@@ -774,7 +485,7 @@ export class AppElement extends HTMLElement {
         </div>
       </div>
       `,
-      canvas.domElement,
+      canvasApp.canvas.domElement,
       this.elements
     );
 
