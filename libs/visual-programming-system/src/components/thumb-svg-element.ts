@@ -43,7 +43,7 @@ export const createThumbSVGElement = <T>(
   const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
     'svg',
     {
-      class: `absolute cursor-pointer transition-none ease-in-out duration-[75ms] will-change-transform pointer-events-none ${
+      class: `absolute cursor-pointer transition-none  will-change-transform pointer-events-none ${
         additionalClasses || ''
       }`,
       style: {

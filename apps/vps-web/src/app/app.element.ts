@@ -210,47 +210,7 @@ export class AppElement extends HTMLElement {
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
-          const start = canvasApp.createRect(startX, startY, 100, 100);
-
-          // const endX = Math.floor(Math.random() * 250);
-          // const endY = Math.floor(Math.random() * 500);
-
-          // const end = createRect(
-          //   canvas as unknown as INodeComponent,
-          //   pathHiddenElement,
-          //   this.elements,
-          //   endX,
-          //   endY,
-          //   100,
-          //   100
-          // );
-
-          // bezierCurve = createCubicBezier(
-          //   canvas as unknown as INodeComponent,
-          //   pathHiddenElement,
-          //   this.elements,
-          //   startX + 100,
-          //   startY + 50,
-          //   endX,
-          //   endY + 50,
-          //   startX + 100 + 150,
-          //   startY + 50,
-          //   endX - 150,
-          //   endY + 50,
-          //   true
-          // );
-
-          // if (bezierCurve.nodeComponent) {
-          //   bezierCurve.nodeComponent.components.push({
-          //     type: NodeComponentRelationType.start,
-          //     component: start.nodeComponent,
-          //   } as unknown as INodeComponentRelation);
-
-          //   bezierCurve.nodeComponent.components.push({
-          //     type: NodeComponentRelationType.end,
-          //     component: end.nodeComponent,
-          //   } as unknown as INodeComponentRelation);
-          // }
+          canvasApp.createRect(startX, startY, 200, 100);
 
           return false;
         },

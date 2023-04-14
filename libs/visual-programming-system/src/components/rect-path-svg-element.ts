@@ -109,7 +109,7 @@ export const createRectPathSVGElement = <T>(
   const divElement = createElement(
     'div',
     {
-      class: 'absolute top-0 left-0 select-none',
+      class: 'absolute top-0 left-0 select-none ',
     },
     canvasElement
   ) as unknown as INodeComponent<T> | undefined;
@@ -121,7 +121,15 @@ export const createRectPathSVGElement = <T>(
   divElement.components = [];
 
   const compiledMarkup = compileMarkup(
-    '<div class="bg-green-500"><p>Hello</p><p>World</p><p>World</p><p>World</p><p>World</p><p>World</p></div>'
+    `<div class="bg-green-500 rounded overflow-hidden p-4 cursor-pointer">
+      <p>Lorem ipsum</p>
+      <p>Lorem ipsum</p>
+      <p>Lorem ipsum</p>
+      <p>Lorem ipsum</p>
+      <p>Lorem ipsum</p>
+      <p>Lorem ipsum</p>
+      <input class="w-full mt-2 border-2 rounded"></input>
+    </div>`
   );
   if (!compiledMarkup) {
     throw new Error('Invalid markup');
@@ -134,13 +142,37 @@ export const createRectPathSVGElement = <T>(
       divElement.elements
     );
   }
+  astElement.domElement.addEventListener('pointerdown', (e: PointerEvent) => {
+    if (nodeComponent) {
+      const elementRect = (
+        nodeComponent.domElement as unknown as HTMLElement | SVGElement
+      ).getBoundingClientRect();
+
+      const { x, y } = transformToCamera(e.clientX, e.clientY);
+
+      const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
+      const bbox = getBBoxPath();
+      const interactionInfoResult = pointerDown(
+        x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
+        y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
+        divElement,
+        canvasElement
+      );
+      if (interactionInfoResult) {
+        (canvasElement as unknown as HTMLElement | SVGElement).append(
+          divElement.domElement
+        );
+      }
+    }
+  });
 
   const svgParent = createNSElement(
     'svg',
     {
       width: 0,
       height: 0,
-      class: 'absolute top-0 left-0 pointer-events-none ', //z-[500]
+      class: 'absolute top-0 left-0 pointer-events-none invisible', //z-[500]
     },
     divElement.domElement
   );
@@ -189,56 +221,7 @@ export const createRectPathSVGElement = <T>(
       'stroke-width': 3,
       fill: '#0080cc',
       pointerdown: (e: PointerEvent) => {
-        if (nodeComponent) {
-          const elementRect = (
-            nodeComponent.domElement as unknown as HTMLElement | SVGElement
-          ).getBoundingClientRect();
-
-          const { x, y } = transformToCamera(e.clientX, e.clientY);
-          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-
-          const bbox = getBBoxPath();
-          const interactionInfoResult = pointerDown(
-            x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
-            y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
-            divElement,
-            canvasElement
-          );
-          if (interactionInfoResult) {
-            (canvasElement as unknown as HTMLElement | SVGElement).append(
-              divElement.domElement
-            );
-
-            // const connectionInfo = nodeComponent.components.find(
-            //   (c) => c.type === 'self'
-            // );
-
-            // if (connectionInfo) {
-            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
-            //     connectionInfo.controllers?.start.domElement
-            //   );
-            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
-            //     connectionInfo.controllers?.rightTop.domElement
-            //   );
-
-            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
-            //     connectionInfo.controllers?.leftBottom.domElement
-            //   );
-
-            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
-            //     connectionInfo.controllers?.rightBottom.domElement
-            //   );
-
-            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
-            //     connectionInfo.controllers?.rightThumbConnector.domElement
-            //   );
-
-            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
-            //     connectionInfo.controllers?.leftThumbConnector.domElement
-            //   );
-            // }
-          }
-        }
+        console.log('pointerDown', e);
       },
     },
     nodeComponent.domElement
@@ -564,6 +547,9 @@ export const createRectPathSVGElement = <T>(
       divElement.width = points.width;
       divElement.height = points.height;
     }
+
+    astElement.domElement.style.width = `${bbox.width}px`;
+    astElement.domElement.style.height = `${bbox.height}px`;
 
     if (nodeComponent) {
       //console.log('elements', elements);

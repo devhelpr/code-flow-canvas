@@ -25,7 +25,7 @@ const thumbHeight = 100;
 const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
 const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
 
-export const thumbSize = (
+export const thumbPosition = (
   rectNode: INodeComponent<any>,
   thumbType: ThumbTypes,
   index?: number
@@ -48,14 +48,14 @@ export const thumbSize = (
 
   if (thumbType === ThumbTypes.EndConnectorCenter) {
     return {
-      x: thumbOffsetX,
+      x: thumbOffsetX - thumbRadius,
       y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
     };
   }
 
   if (thumbType === ThumbTypes.StartConnectorCenter) {
     return {
-      x: thumbOffsetX + (rectNode?.width ?? 0),
+      x: thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
       y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
     };
   }
@@ -90,7 +90,7 @@ export const createRect = <T>(
     thumbOffsetX,
     thumbOffsetY,
     (thumbType: ThumbTypes, index?: number) => {
-      return thumbSize(rectNode, thumbType, index);
+      return thumbPosition(rectNode, thumbType, index);
     }
   );
   widthHelper = rectNode.width ?? 0;
@@ -116,7 +116,7 @@ export const createRect = <T>(
         }
 
       */
-      const x = rectNode.x + (rectNode.width || 0) + 20;
+      const x = rectNode.x + (rectNode.width || 0) + 20 + thumbRadius;
       const y = rectNode.y + (rectNode.height || 0) / 2;
       return {
         x: x,
@@ -138,7 +138,7 @@ export const createRect = <T>(
           points.cy2 = points.endY;
         }
       */
-      const x = rectNode.x - 20;
+      const x = rectNode.x - 20 - thumbRadius;
       const y = rectNode.y + (rectNode.height || 0) / 2;
       return {
         x: x,
@@ -322,7 +322,7 @@ export const createRect = <T>(
     rectNode.domElement,
     rectNode.elements,
     '#008080',
-    thumbOffsetX, // startX,
+    thumbOffsetX - thumbRadius, // startX,
     thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'leftThumbConnector',
     'connector',
@@ -392,7 +392,7 @@ export const createRect = <T>(
     rectNode.domElement,
     rectNode.elements,
     '#008080',
-    thumbOffsetX + widthHelper, //startX + width,
+    thumbOffsetX + widthHelper + thumbRadius, //startX + width,
     thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'rightThumbConnector',
     'connector',
