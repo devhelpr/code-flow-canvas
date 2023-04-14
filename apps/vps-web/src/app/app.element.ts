@@ -15,7 +15,6 @@ import {
   getVisbility,
   setVisibility,
   setupMarkupElement,
-  createCubicBezier,
   NodeInfo,
   createElementMap,
   createCanvasApp,
@@ -157,10 +156,7 @@ export class AppElement extends HTMLElement {
                 }
               }
 
-              const curve = createCubicBezier(
-                this.canvas as unknown as INodeComponent<NodeInfo>,
-                canvasApp.pathHiddenElement,
-                canvasApp.elements ?? [],
+              const curve = canvasApp.createCubicBezier(
                 start?.x ?? 0,
                 start?.y ?? 0,
                 end?.x ?? 0,
@@ -273,10 +269,7 @@ export class AppElement extends HTMLElement {
           const y = Math.floor(Math.random() * 500);
 
           // if (Math.random() >= 0.5) {
-          bezierCurve = createCubicBezier(
-            this.canvas as unknown as INodeComponent<NodeInfo>,
-            canvasApp.pathHiddenElement,
-            canvasApp.elements,
+          bezierCurve = canvasApp.createCubicBezier(
             x,
             y,
             x + 150,

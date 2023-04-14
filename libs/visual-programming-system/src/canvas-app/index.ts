@@ -1,5 +1,5 @@
 import { setCamera, transformToCamera } from '../camera';
-import { createRect } from '../components';
+import { createCubicBezier, createRect } from '../components';
 import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
@@ -324,8 +324,6 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   return {
     elements,
     canvas,
-    hiddenSVG,
-    pathHiddenElement,
     createRect: (
       x: number,
       y: number,
@@ -344,6 +342,31 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         height,
         text,
         shapeType
+      ),
+    createCubicBezier: (
+      startX: number,
+      startY: number,
+      endX: number,
+      endY: number,
+      controlPointX1: number,
+      controlPointY1: number,
+      controlPointX2: number,
+      controlPointY2: number,
+      isControlled?: boolean
+    ) =>
+      createCubicBezier<T>(
+        canvas as unknown as INodeComponent<T>,
+        pathHiddenElement,
+        elements,
+        startX,
+        startY,
+        endX,
+        endY,
+        controlPointX1,
+        controlPointY1,
+        controlPointX2,
+        controlPointY2,
+        isControlled
       ),
   };
 };
