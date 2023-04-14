@@ -1,5 +1,5 @@
 import { compileMarkup } from '@devhelpr/markup-compiler';
-import { transformToCamera } from '../camera';
+import { getCamera, transformToCamera } from '../camera';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -637,12 +637,13 @@ export const createRectPathSVGElement = <T>(
 
   console.log('size', astElementSize);
 
-  divElement.width = astElementSize.width;
-  divElement.height = astElementSize.height - 20;
-  nodeComponent.width = astElementSize.width;
-  nodeComponent.height = astElementSize.height - 20;
-  points.width = astElementSize.width;
-  points.height = astElementSize.height - 20;
+  const { scale } = getCamera();
+  divElement.width = astElementSize.width / scale;
+  divElement.height = astElementSize.height / scale - 20;
+  nodeComponent.width = astElementSize.width / scale;
+  nodeComponent.height = astElementSize.height / scale - 20;
+  points.width = astElementSize.width / scale;
+  points.height = astElementSize.height / scale - 20;
 
   divElement.update(divElement, startX, startY, divElement);
 
