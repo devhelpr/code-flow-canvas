@@ -91,6 +91,7 @@ export const createThumbSVGElement = <T>(
             const state = getCurrentInteractionState();
             if (state && state.element) {
               const canReceiveDrop = nodeComponent.onCanReceiveDroppedComponent(
+                nodeComponent,
                 state.element
               );
               if (!canReceiveDrop) {

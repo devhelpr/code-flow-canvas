@@ -64,6 +64,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   shapeType?: ShapeType;
   thumbIndex?: number;
   thumbType?: ThumbType;
+  thumbConnectionType?: ThumbConnectionType;
   update?: (
     component?: INodeComponent<T>,
     x?: number,
@@ -74,7 +75,10 @@ export interface INodeComponent<T> extends IElementNode<T> {
   pointerMove?: () => void;
   pointerUp?: () => void;
   onClick?: () => void;
-  onCanReceiveDroppedComponent?: (component: INodeComponent<T>) => boolean;
+  onCanReceiveDroppedComponent?: (
+    thumbNode: INodeComponent<T>,
+    component: INodeComponent<T>
+  ) => boolean;
   onReceiveDroppedComponent?: (
     thumbNode: INodeComponent<T>,
     component: INodeComponent<T>
@@ -112,7 +116,17 @@ export interface IControlAndEndPoint {
   nodeType: ControlAndEndPointNodeType;
 }
 
+export const ThumbConnectionType = {
+  start: 'start',
+  end: 'end',
+  startOrEnd: 'startOrEnd',
+} as const;
+
+export type ThumbConnectionType =
+  (typeof ThumbConnectionType)[keyof typeof ThumbConnectionType];
+
 export type IThumb = {
   thumbType: ThumbType;
   thumbIndex: number;
+  connectionType: ThumbConnectionType;
 };

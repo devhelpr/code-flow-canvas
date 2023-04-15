@@ -19,6 +19,8 @@ import {
   createElementMap,
   createCanvasApp,
   CanvasAppInstance,
+  ThumbType,
+  ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -210,7 +212,28 @@ export class AppElement extends HTMLElement {
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
-          canvasApp.createRect(startX, startY, 200, 100);
+          canvasApp.createRect(startX, startY, 200, 100, undefined, undefined, [
+            {
+              thumbType: ThumbType.StartConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.start,
+            },
+            {
+              thumbType: ThumbType.EndConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.end,
+            },
+            {
+              thumbType: ThumbType.StartConnectorTop,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.start,
+            },
+            {
+              thumbType: ThumbType.StartConnectorTop,
+              thumbIndex: 1,
+              connectionType: ThumbConnectionType.start,
+            },
+          ]);
 
           return false;
         },

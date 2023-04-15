@@ -8,6 +8,7 @@ import {
   INodeComponentRelation,
   IThumb,
   NodeComponentRelationType,
+  ThumbConnectionType,
 } from '../interfaces/element';
 import {
   createEffect,
@@ -44,7 +45,7 @@ const calculateConnectorX = (
     thumbType === ThumbType.EndConnectorCenter ||
     thumbType === ThumbType.EndConnectorTop
   ) {
-    return -thumbRadius * 2;
+    return 0; //thumbRadius * 2;
   }
   // if (thumbType === ThumbType.Start) {
   //   return (width || 0) + thumbRadius * 2
@@ -58,18 +59,24 @@ const calculateConnectorY = (
   height: number,
   index?: number
 ) => {
-  if (thumbType === ThumbType.StartConnectorCenter) {
+  if (
+    thumbType === ThumbType.StartConnectorCenter ||
+    thumbType === ThumbType.EndConnectorCenter
+  ) {
     return thumbOffsetY + height / 2;
   }
 
-  if (thumbType === ThumbType.StartConnectorTop) {
+  if (
+    thumbType === ThumbType.StartConnectorTop ||
+    thumbType === ThumbType.EndConnectorTop
+  ) {
     return thumbOffsetY + 30 * (index ?? 0);
   }
   return 0;
 };
 
-export const thumbPosition = (
-  rectNode: INodeComponent<any>,
+export const thumbPosition = <T>(
+  rectNode: INodeComponent<T>,
   thumbType: ThumbType,
   index?: number
 ) => {
@@ -91,8 +98,35 @@ export const thumbPosition = (
 
   if (thumbType === ThumbType.EndConnectorCenter) {
     return {
-      x: thumbOffsetX - thumbRadius,
-      y: thumbOffsetY + (rectNode?.height ?? 0) / 2,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+    };
+  }
+
+  if (thumbType === ThumbType.EndConnectorTop) {
+    return {
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   }
 
@@ -103,13 +137,13 @@ export const thumbPosition = (
         rectNode?.width ?? 0,
         rectNode?.height ?? 0,
         index
-      ), //thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
+      ),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,
         rectNode?.height ?? 0,
         index
-      ), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
+      ),
     };
   }
 
@@ -161,7 +195,7 @@ export const createRect = <T>(
     thumbOffsetX,
     thumbOffsetY,
     (thumbType: ThumbType, index?: number) => {
-      return thumbPosition(rectNode, thumbType, index);
+      return thumbPosition<T>(rectNode, thumbType, index);
     }
   );
   widthHelper = rectNode.width ?? 0;
@@ -423,83 +457,21 @@ export const createRect = <T>(
     return true;
   };
 
-  const leftThumbConnectorElement = createThumbSVGElement(
-    rectNode.domElement,
-    rectNode.elements,
-    ThumbType.EndConnectorCenter,
-    '#008080',
-    thumbOffsetX - thumbRadius, // startX,
-    thumbOffsetY + heightHelper / 2, //startY + height / 2,
-    'leftThumbConnector',
-    'connector',
-    'top-0 left-0 origin-center'
-  );
-
-  leftThumbConnectorElement.isControlled = true;
-  leftThumbConnectorElement.isConnectPoint = true;
-  leftThumbConnectorElement.onCanReceiveDroppedComponent = (
-    component: INodeComponent<T>
-  ) => {
-    return (
-      (component && component.parent && component.specifier === 'end') ?? false
-    );
-  };
-  leftThumbConnectorElement.onReceiveDroppedComponent = (
+  const onCanReceiveDroppedComponent = (
     thumbNode: INodeComponent<T>,
     component: INodeComponent<T>
   ) => {
-    // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
-    // TODO : change so that the component itself is send as parameter and NOT the drag handle
-    console.log(
-      'DROPPED ON LEFT THUMB',
-      component.parent,
-      component.id,
-      component.specifier
-    );
-
-    if (component.parent && component.specifier === 'end') {
-      component.parent.isControlled = true;
-      component.parent.endNode = rectNode;
-      component.parent.endNodeThumb = thumbNode;
-
-      const index = component.parent.components.findIndex(
-        (c) => c.type === NodeComponentRelationType.end
-      );
-      if (index > -1) {
-        component.parent.components.splice(index, 1);
-      }
-      component.parent.components.push({
-        type: NodeComponentRelationType.end,
-        component: rectNode,
-      } as unknown as INodeComponentRelation<T>);
-
-      if (component.parent.update) {
-        component.parent.update(
-          component.parent,
-          rectNode.x, //- 50,
-          rectNode.y, //- 100 - 5,
-          rectNode
-        );
-      }
-    }
-  };
-  leftThumbConnectorElement.update = (
-    component?: INodeComponent<T>,
-    x?: number,
-    y?: number,
-    actionComponent?: INodeComponent<T>
-  ) => {
-    if (!component || x === undefined || y === undefined || !actionComponent) {
-      return false;
-    }
-
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
-    return true;
-  };
-
-  const onCanReceiveDroppedComponent = (component: INodeComponent<T>) => {
+    // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
+    // (not to be confused with the resize handlers)
     return (
-      (component && component.parent && component.specifier === 'begin') ??
+      ((component &&
+        component.parent &&
+        thumbNode.thumbConnectionType === ThumbConnectionType.end &&
+        component.specifier === 'end') ||
+        (component &&
+          component.parent &&
+          thumbNode.thumbConnectionType === ThumbConnectionType.start &&
+          component.specifier === 'begin')) ??
       false
     );
   };
@@ -519,19 +491,43 @@ export const createRect = <T>(
       rectNode.y,
       rectNode.id
     );
-    if (component.parent && component.specifier === 'begin') {
-      component.parent.startNode = rectNode;
-      component.parent.startNodeThumb = thumbNode;
+
+    // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
+    // (not to be confused with the resize handlers)
+    //if (component.parent && component.specifier === 'begin') {
+
+    if (
+      (component &&
+        component.parent &&
+        thumbNode.thumbConnectionType === ThumbConnectionType.end &&
+        component.specifier === 'end') ||
+      (component &&
+        component.parent &&
+        thumbNode.thumbConnectionType === ThumbConnectionType.start &&
+        component.specifier === 'begin')
+    ) {
+      if (component.specifier === 'begin') {
+        component.parent.startNode = rectNode;
+        component.parent.startNodeThumb = thumbNode;
+      } else {
+        component.parent.endNode = rectNode;
+        component.parent.endNodeThumb = thumbNode;
+      }
       component.parent.isControlled = true;
 
-      const index = component.parent.components.findIndex(
-        (c) => c.type === NodeComponentRelationType.start
+      const index = component.parent.components.findIndex((c) =>
+        component.specifier === 'begin'
+          ? c.type === NodeComponentRelationType.start
+          : c.type === NodeComponentRelationType.end
       );
       if (index > -1) {
         component.parent.components.splice(index, 1);
       }
       component.parent.components.push({
-        type: NodeComponentRelationType.start,
+        type:
+          component.specifier === 'begin'
+            ? NodeComponentRelationType.start
+            : NodeComponentRelationType.end,
         component: rectNode,
       } as unknown as INodeComponentRelation<T>);
 
@@ -564,126 +560,6 @@ export const createRect = <T>(
     );
     return true;
   };
-
-  const rightThumbConnectorElement = createThumbSVGElement(
-    rectNode.domElement,
-    rectNode.elements,
-    ThumbType.StartConnectorCenter,
-    '#008080',
-    calculateConnectorX(
-      ThumbType.StartConnectorCenter,
-      widthHelper,
-      heightHelper
-    ) +
-      thumbOffsetX -
-      thumbRadius,
-    //thumbOffsetX + widthHelper + thumbRadius, //startX + width,
-    calculateConnectorY(
-      ThumbType.StartConnectorCenter,
-      widthHelper,
-      heightHelper
-    ), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
-    'rightThumbConnector',
-    'connector',
-    'top-0 left-0 origin-center',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    0
-  );
-
-  rightThumbConnectorElement.isControlled = true;
-  rightThumbConnectorElement.isConnectPoint = true;
-
-  rightThumbConnectorElement.onCanReceiveDroppedComponent =
-    onCanReceiveDroppedComponent;
-  rightThumbConnectorElement.onReceiveDroppedComponent =
-    onReceiveDroppedComponent;
-  rightThumbConnectorElement.update = onEndThumbConnectorElementupdate;
-
-  // start try
-
-  const rightThumbConnectorElement1 = createThumbSVGElement(
-    rectNode.domElement,
-    rectNode.elements,
-    ThumbType.StartConnectorTop,
-    '#008080',
-    calculateConnectorX(
-      ThumbType.StartConnectorTop,
-      widthHelper,
-      heightHelper,
-      0
-    ) +
-      thumbOffsetX -
-      thumbRadius,
-    //thumbOffsetX + widthHelper + thumbRadius,
-    calculateConnectorY(
-      ThumbType.StartConnectorTop,
-      widthHelper,
-      heightHelper,
-      0
-    ),
-    'rightThumbConnector',
-    'connector',
-    'top-0 left-0 origin-center',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    0
-  );
-
-  rightThumbConnectorElement1.isControlled = true;
-  rightThumbConnectorElement1.isConnectPoint = true;
-
-  rightThumbConnectorElement1.onCanReceiveDroppedComponent =
-    onCanReceiveDroppedComponent;
-  rightThumbConnectorElement1.onReceiveDroppedComponent =
-    onReceiveDroppedComponent;
-  rightThumbConnectorElement1.update = onEndThumbConnectorElementupdate;
-
-  const rightThumbConnectorElement2 = createThumbSVGElement(
-    rectNode.domElement,
-    rectNode.elements,
-    ThumbType.StartConnectorTop,
-    '#008080',
-    calculateConnectorX(
-      ThumbType.StartConnectorTop,
-      widthHelper,
-      heightHelper,
-      1
-    ) +
-      thumbOffsetX -
-      thumbRadius,
-    //thumbOffsetX + widthHelper + thumbRadius,
-    calculateConnectorY(
-      ThumbType.StartConnectorTop,
-      widthHelper,
-      heightHelper,
-      1
-    ),
-    'rightThumbConnector',
-    'connector',
-    'top-0 left-0 origin-center',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    1
-  );
-
-  rightThumbConnectorElement2.isControlled = true;
-  rightThumbConnectorElement2.isConnectPoint = true;
-
-  rightThumbConnectorElement2.onCanReceiveDroppedComponent =
-    onCanReceiveDroppedComponent;
-  rightThumbConnectorElement2.onReceiveDroppedComponent =
-    onReceiveDroppedComponent;
-  rightThumbConnectorElement2.update = onEndThumbConnectorElementupdate;
 
   const thumbConnectors: INodeComponent<T>[] = [];
 
@@ -722,6 +598,7 @@ export const createRect = <T>(
 
       thumbConnectorElement.isControlled = true;
       thumbConnectorElement.isConnectPoint = true;
+      thumbConnectorElement.thumbConnectionType = thumb.connectionType;
 
       thumbConnectorElement.onCanReceiveDroppedComponent =
         onCanReceiveDroppedComponent;
@@ -831,15 +708,7 @@ export const createRect = <T>(
       rightTop: rightTopPointElement,
       leftBottom: leftBottomElement,
       rightBottom: rightBottomElement,
-      // leftThumbConnector: leftThumbConnectorElement,
-      // rightThumbConnector: rightThumbConnectorElement,
-      thumbConnectors: [
-        leftThumbConnectorElement,
-        rightThumbConnectorElement,
-        rightThumbConnectorElement1,
-        rightThumbConnectorElement2,
-        ...thumbConnectors,
-      ],
+      thumbConnectors: [...thumbConnectors],
     },
   });
   rightBottomElement.components.push({
@@ -891,12 +760,6 @@ export const createRect = <T>(
       visibility ? 'block' : 'none';
     (leftBottomElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
-    (
-      leftThumbConnectorElement.domElement as unknown as SVGElement
-    ).style.display = visibility ? 'block' : 'none';
-    (
-      rightThumbConnectorElement.domElement as unknown as SVGElement
-    ).style.display = visibility ? 'block' : 'none';
   });
 
   return {

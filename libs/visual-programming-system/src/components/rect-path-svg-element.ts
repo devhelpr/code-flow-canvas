@@ -312,6 +312,11 @@ export const createRectPathSVGElement = <T>(
         //   actionComponent
         // );
 
+        console.log(
+          'connectionInfo.controllers?.thumbConnectors',
+          connectionInfo.controllers?.thumbConnectors
+        );
+
         connectionInfo.controllers?.thumbConnectors.forEach(
           (connector: INodeComponent<T>) => {
             if (connector && connector.update && connector.thumbType) {
@@ -491,7 +496,10 @@ export const createRectPathSVGElement = <T>(
         //     incomingComponent
         //   );
         // }
-
+        console.log(
+          'connectionInfo.controllers?.thumbConnectors',
+          connectionInfo.controllers?.thumbConnectors
+        );
         connectionInfo.controllers?.thumbConnectors.forEach(
           (connector: INodeComponent<T>) => {
             if (connector && connector.specifier) {
