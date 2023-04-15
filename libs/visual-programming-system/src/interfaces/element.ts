@@ -57,6 +57,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
   components: INodeComponentRelation<T>[];
   startNode?: INodeComponent<T>;
   endNode?: INodeComponent<T>;
+  startNodeThumb?: INodeComponent<T>;
+  endNodeThumb?: INodeComponent<T>;
   isControlled?: boolean;
   isConnectPoint?: boolean;
   shapeType?: ShapeType;
@@ -73,10 +75,15 @@ export interface INodeComponent<T> extends IElementNode<T> {
   pointerUp?: () => void;
   onClick?: () => void;
   onCanReceiveDroppedComponent?: (component: INodeComponent<T>) => boolean;
-  onReceiveDroppedComponent?: (component: INodeComponent<T>) => void;
+  onReceiveDroppedComponent?: (
+    thumbNode: INodeComponent<T>,
+    component: INodeComponent<T>
+  ) => void;
   onCalculateControlPoints?: (
     nodeType: ControlAndEndPointNodeType,
-    curveType: CurveType
+    curveType: CurveType,
+    thumbType: ThumbType,
+    index?: number
   ) => IControlAndEndPoint;
   setVisibility?: (isVisible: boolean) => void;
 }

@@ -223,7 +223,7 @@ export const createThumbSVGElement = <T>(
         dropTarget.onReceiveDroppedComponent &&
         dropTarget.id !== nodeComponent.id
       ) {
-        dropTarget.onReceiveDroppedComponent(nodeComponent);
+        dropTarget.onReceiveDroppedComponent(dropTarget, nodeComponent);
       }
     }
     console.log('svg pointerup nodecomponent', nodeComponent.id, dropTarget);

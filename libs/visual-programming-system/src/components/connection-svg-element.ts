@@ -8,6 +8,7 @@ import {
   INodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
+import { ThumbType } from '../types';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
@@ -318,11 +319,17 @@ export const createConnectionSVGElement = <T>(
         ) {
           const start = nodeComponent.startNode.onCalculateControlPoints(
             ControlAndEndPointNodeType.start,
-            CurveType.bezierCubic
+            CurveType.bezierCubic,
+            nodeComponent.startNodeThumb?.thumbType ??
+              ThumbType.StartConnectorCenter,
+            nodeComponent.startNodeThumb?.thumbIndex
           );
           const end = nodeComponent.endNode.onCalculateControlPoints(
             ControlAndEndPointNodeType.end,
-            CurveType.bezierCubic
+            CurveType.bezierCubic,
+            nodeComponent.endNodeThumb?.thumbType ??
+              ThumbType.EndConnectorCenter,
+            nodeComponent.endNodeThumb?.thumbIndex
           );
           points.beginX = start.x;
           points.beginY = start.y;
@@ -358,7 +365,10 @@ export const createConnectionSVGElement = <T>(
         if (actionComponent.onCalculateControlPoints) {
           const start = actionComponent.onCalculateControlPoints(
             ControlAndEndPointNodeType.start,
-            CurveType.bezierCubic
+            CurveType.bezierCubic,
+            incomingComponent.startNodeThumb?.thumbType ??
+              ThumbType.StartConnectorCenter,
+            incomingComponent.startNodeThumb?.thumbIndex
           );
           points.beginX = start.x;
           points.beginY = start.y;
@@ -374,7 +384,10 @@ export const createConnectionSVGElement = <T>(
         if (actionComponent.onCalculateControlPoints) {
           const end = actionComponent.onCalculateControlPoints(
             ControlAndEndPointNodeType.end,
-            CurveType.bezierCubic
+            CurveType.bezierCubic,
+            incomingComponent.endNodeThumb?.thumbType ??
+              ThumbType.EndConnectorCenter,
+            incomingComponent.endNodeThumb?.thumbIndex
           );
           points.endX = end.x;
           points.endY = end.y;

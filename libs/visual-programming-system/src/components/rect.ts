@@ -36,7 +36,7 @@ const calculateConnectorY = (
   }
 
   if (thumbType === ThumbType.StartConnectorTop) {
-    return thumbOffsetY + 16 * (index ?? 0);
+    return thumbOffsetY + 30 * (index ?? 0);
   }
   return 0;
 };
@@ -100,7 +100,7 @@ export const createRect = <T>(
   let widthHelper = width;
   let heightHelper = height;
 
-  const rectNode: INodeComponent<any> = createRectPathSVGElement(
+  const rectNode: INodeComponent<T> = createRectPathSVGElement<T>(
     canvas.domElement,
     elements,
     startX,
@@ -121,7 +121,9 @@ export const createRect = <T>(
 
   rectNode.onCalculateControlPoints = (
     nodeType: ControlAndEndPointNodeType,
-    _curveType: CurveType
+    _curveType: CurveType,
+    thumbType: ThumbType,
+    index?: number
   ) => {
     if (nodeType === ControlAndEndPointNodeType.start) {
       /*
@@ -142,10 +144,7 @@ export const createRect = <T>(
       const x = rectNode.x + (rectNode.width || 0) + 20 + thumbRadius;
       const y =
         rectNode.y +
-        calculateConnectorY(
-          ThumbType.StartConnectorCenter,
-          rectNode.height ?? 0
-        ) -
+        calculateConnectorY(thumbType, rectNode.height ?? 0, index) -
         thumbOffsetY; // rectNode.y; //+ (rectNode.height || 0) / 2;
       return {
         x: x,
@@ -375,6 +374,7 @@ export const createRect = <T>(
     );
   };
   leftThumbConnectorElement.onReceiveDroppedComponent = (
+    thumbNode: INodeComponent<T>,
     component: INodeComponent<T>
   ) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
@@ -389,6 +389,8 @@ export const createRect = <T>(
     if (component.parent && component.specifier === 'end') {
       component.parent.isControlled = true;
       component.parent.endNode = rectNode;
+      component.parent.endNodeThumb = thumbNode;
+
       const index = component.parent.components.findIndex(
         (c) => c.type === NodeComponentRelationType.end
       );
@@ -431,10 +433,14 @@ export const createRect = <T>(
     );
   };
 
-  const onReceiveDroppedComponent = (component: INodeComponent<T>) => {
+  const onReceiveDroppedComponent = (
+    thumbNode: INodeComponent<T>,
+    component: INodeComponent<T>
+  ) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
     console.log(
       'DROPPED ON RIGHT THUMB',
+      thumbNode,
       component.id,
       component.parent,
       component.specifier,
@@ -444,7 +450,9 @@ export const createRect = <T>(
     );
     if (component.parent && component.specifier === 'begin') {
       component.parent.startNode = rectNode;
+      component.parent.startNodeThumb = thumbNode;
       component.parent.isControlled = true;
+
       const index = component.parent.components.findIndex(
         (c) => c.type === NodeComponentRelationType.start
       );
@@ -543,7 +551,7 @@ export const createRect = <T>(
     ThumbType.StartConnectorTop,
     '#008080',
     thumbOffsetX + widthHelper + thumbRadius,
-    calculateConnectorY(ThumbType.StartConnectorTop, heightHelper, 0),
+    calculateConnectorY(ThumbType.StartConnectorTop, heightHelper, 1),
     'rightThumbConnector',
     'connector',
     'top-0 left-0 origin-center',
