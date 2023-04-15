@@ -34,6 +34,10 @@ const calculateConnectorY = (
   if (thumbType === ThumbType.StartConnectorCenter) {
     return thumbOffsetY + height / 2;
   }
+
+  if (thumbType === ThumbType.StartConnectorTop) {
+    return thumbOffsetY + 16 * (index ?? 0);
+  }
   return 0;
 };
 
@@ -66,6 +70,13 @@ export const thumbPosition = (
   }
 
   if (thumbType === ThumbType.StartConnectorCenter) {
+    return {
+      x: thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
+      y: calculateConnectorY(thumbType, rectNode?.height ?? 0, index), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
+    };
+  }
+
+  if (thumbType === ThumbType.StartConnectorTop) {
     return {
       x: thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
       y: calculateConnectorY(thumbType, rectNode?.height ?? 0, index), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
@@ -413,39 +424,14 @@ export const createRect = <T>(
     return true;
   };
 
-  const rightThumbConnectorElement = createThumbSVGElement(
-    rectNode.domElement,
-    rectNode.elements,
-    ThumbType.StartConnectorCenter,
-    '#008080',
-    thumbOffsetX + widthHelper + thumbRadius, //startX + width,
-    calculateConnectorY(ThumbType.StartConnectorCenter, heightHelper), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
-    'rightThumbConnector',
-    'connector',
-    'top-0 left-0 origin-center',
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    0
-  );
-
-  rightThumbConnectorElement.isControlled = true;
-  rightThumbConnectorElement.isConnectPoint = true;
-
-  rightThumbConnectorElement.onCanReceiveDroppedComponent = (
-    component: INodeComponent<T>
-  ) => {
+  const onCanReceiveDroppedComponent = (component: INodeComponent<T>) => {
     return (
       (component && component.parent && component.specifier === 'begin') ??
       false
     );
   };
 
-  rightThumbConnectorElement.onReceiveDroppedComponent = (
-    component: INodeComponent<T>
-  ) => {
+  const onReceiveDroppedComponent = (component: INodeComponent<T>) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
     console.log(
       'DROPPED ON RIGHT THUMB',
@@ -481,7 +467,7 @@ export const createRect = <T>(
     }
   };
 
-  rightThumbConnectorElement.update = (
+  const onEndThumbConnectorElementupdate = (
     component?: INodeComponent<T>,
     x?: number,
     y?: number,
@@ -494,6 +480,91 @@ export const createRect = <T>(
     setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
     return true;
   };
+
+  const rightThumbConnectorElement = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
+    ThumbType.StartConnectorCenter,
+    '#008080',
+    thumbOffsetX + widthHelper + thumbRadius, //startX + width,
+    calculateConnectorY(ThumbType.StartConnectorCenter, heightHelper), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
+    'rightThumbConnector',
+    'connector',
+    'top-0 left-0 origin-center',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    0
+  );
+
+  rightThumbConnectorElement.isControlled = true;
+  rightThumbConnectorElement.isConnectPoint = true;
+
+  rightThumbConnectorElement.onCanReceiveDroppedComponent =
+    onCanReceiveDroppedComponent;
+  rightThumbConnectorElement.onReceiveDroppedComponent =
+    onReceiveDroppedComponent;
+  rightThumbConnectorElement.update = onEndThumbConnectorElementupdate;
+
+  // start try
+
+  const rightThumbConnectorElement1 = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
+    ThumbType.StartConnectorTop,
+    '#008080',
+    thumbOffsetX + widthHelper + thumbRadius,
+    calculateConnectorY(ThumbType.StartConnectorTop, heightHelper, 0),
+    'rightThumbConnector',
+    'connector',
+    'top-0 left-0 origin-center',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    0
+  );
+
+  rightThumbConnectorElement1.isControlled = true;
+  rightThumbConnectorElement1.isConnectPoint = true;
+
+  rightThumbConnectorElement1.onCanReceiveDroppedComponent =
+    onCanReceiveDroppedComponent;
+  rightThumbConnectorElement1.onReceiveDroppedComponent =
+    onReceiveDroppedComponent;
+  rightThumbConnectorElement1.update = onEndThumbConnectorElementupdate;
+
+  const rightThumbConnectorElement2 = createThumbSVGElement(
+    rectNode.domElement,
+    rectNode.elements,
+    ThumbType.StartConnectorTop,
+    '#008080',
+    thumbOffsetX + widthHelper + thumbRadius,
+    calculateConnectorY(ThumbType.StartConnectorTop, heightHelper, 0),
+    'rightThumbConnector',
+    'connector',
+    'top-0 left-0 origin-center',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    1
+  );
+
+  rightThumbConnectorElement2.isControlled = true;
+  rightThumbConnectorElement2.isConnectPoint = true;
+
+  rightThumbConnectorElement2.onCanReceiveDroppedComponent =
+    onCanReceiveDroppedComponent;
+  rightThumbConnectorElement2.onReceiveDroppedComponent =
+    onReceiveDroppedComponent;
+  rightThumbConnectorElement2.update = onEndThumbConnectorElementupdate;
+
+  // end try
 
   startPointElement.components.push({
     component: rectNode,
