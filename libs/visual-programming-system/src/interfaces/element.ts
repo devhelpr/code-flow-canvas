@@ -111,3 +111,8 @@ export interface IControlAndEndPoint {
   cy: number;
   nodeType: ControlAndEndPointNodeType;
 }
+
+export type IThumb = {
+  thumbType: ThumbType;
+  thumbIndex: number;
+};

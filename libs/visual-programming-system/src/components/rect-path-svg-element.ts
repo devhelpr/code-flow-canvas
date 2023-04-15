@@ -296,20 +296,37 @@ export const createRectPathSVGElement = <T>(
           actionComponent
         );
 
-        const endCenter = getThumbPosition(ThumbType.EndConnectorCenter);
-        connectionInfo.controllers?.leftThumbConnector.update(
-          connectionInfo.controllers?.leftThumbConnector,
-          endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
-          endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
-          actionComponent
-        );
+        // const endCenter = getThumbPosition(ThumbType.EndConnectorCenter);
+        // connectionInfo.controllers?.leftThumbConnector.update(
+        //   connectionInfo.controllers?.leftThumbConnector,
+        //   endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
+        //   endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+        //   actionComponent
+        // );
 
-        const startCenter = getThumbPosition(ThumbType.StartConnectorCenter);
-        connectionInfo.controllers?.rightThumbConnector.update(
-          connectionInfo.controllers?.rightThumbConnector,
-          startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-          startCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
-          actionComponent
+        // const startCenter = getThumbPosition(ThumbType.StartConnectorCenter);
+        // connectionInfo.controllers?.rightThumbConnector.update(
+        //   connectionInfo.controllers?.rightThumbConnector,
+        //   startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
+        //   startCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+        //   actionComponent
+        // );
+
+        connectionInfo.controllers?.thumbConnectors.forEach(
+          (connector: INodeComponent<T>) => {
+            if (connector && connector.update && connector.thumbType) {
+              const position = getThumbPosition(
+                connector.thumbType,
+                connector.thumbIndex ?? 0
+              );
+              connector.update(
+                connector,
+                position.x,
+                position.y,
+                actionComponent
+              );
+            }
+          }
         );
       }
     } else {
@@ -370,7 +387,10 @@ export const createRectPathSVGElement = <T>(
           return false;
         }
 
-        const getRectPoint = (specifier: string) => {
+        const getRectPoint = (
+          specifier?: string,
+          thumbConnector?: INodeComponent<T>
+        ) => {
           if (!getThumbPosition) {
             return { x: 0, y: 0 };
           }
@@ -398,19 +418,14 @@ export const createRectPathSVGElement = <T>(
               x: bottomRight.x,
               y: bottomRight.y,
             };
-          } else if (specifier === 'leftThumbConnector') {
-            const endCenter = getThumbPosition(ThumbType.EndConnectorCenter);
-            return {
-              x: endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
-              y: endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
-            };
-          } else if (specifier === 'rightThumbConnector') {
-            const startCenter = getThumbPosition(
-              ThumbType.StartConnectorCenter
+          } else if (!specifier && thumbConnector && thumbConnector.thumbType) {
+            const position = getThumbPosition(
+              thumbConnector.thumbType,
+              thumbConnector.thumbIndex ?? 0
             );
             return {
-              x: startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-              y: startCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+              x: position.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
+              y: position.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
             };
           }
           return false;
@@ -453,29 +468,45 @@ export const createRectPathSVGElement = <T>(
           );
         }
 
-        point = getRectPoint(
-          connectionInfo.controllers?.rightThumbConnector.specifier
-        );
-        if (point) {
-          connectionInfo.controllers?.rightThumbConnector.update(
-            connectionInfo.controllers?.rightThumbConnector,
-            point.x,
-            point.y,
-            incomingComponent
-          );
-        }
+        // point = getRectPoint(
+        //   connectionInfo.controllers?.rightThumbConnector.specifier
+        // );
+        // if (point) {
+        //   connectionInfo.controllers?.rightThumbConnector.update(
+        //     connectionInfo.controllers?.rightThumbConnector,
+        //     point.x,
+        //     point.y,
+        //     incomingComponent
+        //   );
+        // }
 
-        point = getRectPoint(
-          connectionInfo.controllers?.leftThumbConnector.specifier
+        // point = getRectPoint(
+        //   connectionInfo.controllers?.leftThumbConnector.specifier
+        // );
+        // if (point) {
+        //   connectionInfo.controllers?.leftThumbConnector.update(
+        //     connectionInfo.controllers?.leftThumbConnector,
+        //     point.x,
+        //     point.y,
+        //     incomingComponent
+        //   );
+        // }
+
+        connectionInfo.controllers?.thumbConnectors.forEach(
+          (connector: INodeComponent<T>) => {
+            if (connector && connector.specifier) {
+              point = getRectPoint(undefined, connector);
+              if (point && connector.update) {
+                connector.update(
+                  connector,
+                  point.x,
+                  point.y,
+                  incomingComponent
+                );
+              }
+            }
+          }
         );
-        if (point) {
-          connectionInfo.controllers?.leftThumbConnector.update(
-            connectionInfo.controllers?.leftThumbConnector,
-            point.x,
-            point.y,
-            incomingComponent
-          );
-        }
       }
     }
 

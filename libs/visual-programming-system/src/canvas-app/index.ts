@@ -7,7 +7,7 @@ import {
   getCurrentInteractionState,
   interactionEventState,
 } from '../interaction-state-machine';
-import { INodeComponent } from '../interfaces';
+import { INodeComponent, IThumb } from '../interfaces';
 import { setSelectNode } from '../reactivity';
 import { ShapeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
@@ -330,7 +330,8 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       width: number,
       height: number,
       text?: string,
-      shapeType?: ShapeType
+      shapeType?: ShapeType,
+      thumbs?: IThumb[]
     ) =>
       createRect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -341,7 +342,8 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         width,
         height,
         text,
-        shapeType
+        shapeType,
+        thumbs
       ),
     createCubicBezier: (
       startX: number,

@@ -12,3 +12,4 @@ resulting node shoud have a wrapper div with className properties and a child di
 - it should have visible thumbs (currently centered on the left and right sides)
 - background should be controlled by the className property
 
+## it should be possible to programmatically define node-types with connection points

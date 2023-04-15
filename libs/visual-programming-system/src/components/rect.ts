@@ -6,6 +6,7 @@ import {
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
+  IThumb,
   NodeComponentRelationType,
 } from '../interfaces/element';
 import {
@@ -26,8 +27,34 @@ const thumbHeight = 100;
 const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
 const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
 
+const calculateConnectorX = (
+  thumbType: ThumbType,
+  width: number,
+  height: number,
+  index?: number
+) => {
+  if (
+    thumbType === ThumbType.StartConnectorCenter ||
+    thumbType === ThumbType.StartConnectorTop
+  ) {
+    return width + thumbRadius * 2;
+  }
+
+  if (
+    thumbType === ThumbType.EndConnectorCenter ||
+    thumbType === ThumbType.EndConnectorTop
+  ) {
+    return -thumbRadius * 2;
+  }
+  // if (thumbType === ThumbType.Start) {
+  //   return (width || 0) + thumbRadius * 2
+  // }
+  return 0;
+};
+
 const calculateConnectorY = (
   thumbType: ThumbType,
+  width: number,
   height: number,
   index?: number
 ) => {
@@ -71,15 +98,35 @@ export const thumbPosition = (
 
   if (thumbType === ThumbType.StartConnectorCenter) {
     return {
-      x: thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
-      y: calculateConnectorY(thumbType, rectNode?.height ?? 0, index), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ), //thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
     };
   }
 
   if (thumbType === ThumbType.StartConnectorTop) {
     return {
-      x: thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
-      y: calculateConnectorY(thumbType, rectNode?.height ?? 0, index), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ), //thumbOffsetX + (rectNode?.width ?? 0) + thumbRadius,
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ), //thumbOffsetY, // + (rectNode?.height ?? 0) / 2,
     };
   }
 
@@ -95,7 +142,8 @@ export const createRect = <T>(
   width: number,
   height: number,
   text?: string,
-  shapeType?: ShapeType
+  shapeType?: ShapeType,
+  thumbs?: IThumb[]
 ) => {
   let widthHelper = width;
   let heightHelper = height;
@@ -141,10 +189,24 @@ export const createRect = <T>(
         }
 
       */
-      const x = rectNode.x + (rectNode.width || 0) + 20 + thumbRadius;
+      const x =
+        rectNode.x +
+        calculateConnectorX(
+          thumbType,
+          rectNode.width ?? 0,
+          rectNode.height ?? 0,
+          index
+        ) +
+        thumbRadius;
+      //(rectNode.width || 0) + 20 + thumbRadius;
       const y =
         rectNode.y +
-        calculateConnectorY(thumbType, rectNode.height ?? 0, index) -
+        calculateConnectorY(
+          thumbType,
+          rectNode.width ?? 0,
+          rectNode.height ?? 0,
+          index
+        ) -
         thumbOffsetY; // rectNode.y; //+ (rectNode.height || 0) / 2;
       return {
         x: x,
@@ -166,7 +228,16 @@ export const createRect = <T>(
           points.cy2 = points.endY;
         }
       */
-      const x = rectNode.x - 20 - thumbRadius;
+      const x =
+        rectNode.x +
+        calculateConnectorX(
+          thumbType,
+          rectNode.width ?? 0,
+          rectNode.height ?? 0,
+          index
+        ) -
+        thumbRadius;
+      //- 20 - thumbRadius;
       const y = rectNode.y + (rectNode.height || 0) / 2;
       return {
         x: x,
@@ -485,7 +556,12 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
+    setPosition(
+      component,
+      x + thumbOffsetX - thumbRadius,
+      y,
+      actionComponent?.nodeType !== 'shape'
+    );
     return true;
   };
 
@@ -494,8 +570,19 @@ export const createRect = <T>(
     rectNode.elements,
     ThumbType.StartConnectorCenter,
     '#008080',
-    thumbOffsetX + widthHelper + thumbRadius, //startX + width,
-    calculateConnectorY(ThumbType.StartConnectorCenter, heightHelper), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
+    calculateConnectorX(
+      ThumbType.StartConnectorCenter,
+      widthHelper,
+      heightHelper
+    ) +
+      thumbOffsetX -
+      thumbRadius,
+    //thumbOffsetX + widthHelper + thumbRadius, //startX + width,
+    calculateConnectorY(
+      ThumbType.StartConnectorCenter,
+      widthHelper,
+      heightHelper
+    ), //thumbOffsetY + heightHelper / 2, //startY + height / 2,
     'rightThumbConnector',
     'connector',
     'top-0 left-0 origin-center',
@@ -523,8 +610,21 @@ export const createRect = <T>(
     rectNode.elements,
     ThumbType.StartConnectorTop,
     '#008080',
-    thumbOffsetX + widthHelper + thumbRadius,
-    calculateConnectorY(ThumbType.StartConnectorTop, heightHelper, 0),
+    calculateConnectorX(
+      ThumbType.StartConnectorTop,
+      widthHelper,
+      heightHelper,
+      0
+    ) +
+      thumbOffsetX -
+      thumbRadius,
+    //thumbOffsetX + widthHelper + thumbRadius,
+    calculateConnectorY(
+      ThumbType.StartConnectorTop,
+      widthHelper,
+      heightHelper,
+      0
+    ),
     'rightThumbConnector',
     'connector',
     'top-0 left-0 origin-center',
@@ -550,8 +650,21 @@ export const createRect = <T>(
     rectNode.elements,
     ThumbType.StartConnectorTop,
     '#008080',
-    thumbOffsetX + widthHelper + thumbRadius,
-    calculateConnectorY(ThumbType.StartConnectorTop, heightHelper, 1),
+    calculateConnectorX(
+      ThumbType.StartConnectorTop,
+      widthHelper,
+      heightHelper,
+      1
+    ) +
+      thumbOffsetX -
+      thumbRadius,
+    //thumbOffsetX + widthHelper + thumbRadius,
+    calculateConnectorY(
+      ThumbType.StartConnectorTop,
+      widthHelper,
+      heightHelper,
+      1
+    ),
     'rightThumbConnector',
     'connector',
     'top-0 left-0 origin-center',
@@ -572,6 +685,53 @@ export const createRect = <T>(
     onReceiveDroppedComponent;
   rightThumbConnectorElement2.update = onEndThumbConnectorElementupdate;
 
+  const thumbConnectors: INodeComponent<T>[] = [];
+
+  if (thumbs) {
+    thumbs.forEach((thumb, index) => {
+      const thumbConnectorElement = createThumbSVGElement(
+        rectNode.domElement,
+        rectNode.elements,
+        thumb.thumbType,
+        '#008080',
+        calculateConnectorX(
+          thumb.thumbType,
+          widthHelper,
+          heightHelper,
+          thumb.thumbIndex ?? 0
+        ) +
+          thumbOffsetX -
+          thumbRadius,
+        //thumbOffsetX + widthHelper + thumbRadius,
+        calculateConnectorY(
+          thumb.thumbType,
+          widthHelper,
+          heightHelper,
+          thumb.thumbIndex ?? 0
+        ),
+        `thumb-connector-${index}`,
+        'connector',
+        'top-0 left-0 origin-center',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        thumb.thumbIndex ?? 0
+      );
+
+      thumbConnectorElement.isControlled = true;
+      thumbConnectorElement.isConnectPoint = true;
+
+      thumbConnectorElement.onCanReceiveDroppedComponent =
+        onCanReceiveDroppedComponent;
+      thumbConnectorElement.onReceiveDroppedComponent =
+        onReceiveDroppedComponent;
+      thumbConnectorElement.update = onEndThumbConnectorElementupdate;
+
+      thumbConnectors.push(thumbConnectorElement);
+    });
+  }
   // end try
 
   startPointElement.components.push({
@@ -671,8 +831,15 @@ export const createRect = <T>(
       rightTop: rightTopPointElement,
       leftBottom: leftBottomElement,
       rightBottom: rightBottomElement,
-      leftThumbConnector: leftThumbConnectorElement,
-      rightThumbConnector: rightThumbConnectorElement,
+      // leftThumbConnector: leftThumbConnectorElement,
+      // rightThumbConnector: rightThumbConnectorElement,
+      thumbConnectors: [
+        leftThumbConnectorElement,
+        rightThumbConnectorElement,
+        rightThumbConnectorElement1,
+        rightThumbConnectorElement2,
+        ...thumbConnectors,
+      ],
     },
   });
   rightBottomElement.components.push({
