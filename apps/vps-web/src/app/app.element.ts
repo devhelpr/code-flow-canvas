@@ -224,14 +224,24 @@ export class AppElement extends HTMLElement {
               connectionType: ThumbConnectionType.end,
             },
             {
+              thumbType: ThumbType.StartConnectorRight,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.start,
+            },
+            {
+              thumbType: ThumbType.StartConnectorRight,
+              thumbIndex: 1,
+              connectionType: ThumbConnectionType.start,
+            },
+            {
               thumbType: ThumbType.StartConnectorTop,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
             },
             {
-              thumbType: ThumbType.StartConnectorTop,
-              thumbIndex: 1,
-              connectionType: ThumbConnectionType.start,
+              thumbType: ThumbType.EndConnectorTop,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.end,
             },
           ]);
 

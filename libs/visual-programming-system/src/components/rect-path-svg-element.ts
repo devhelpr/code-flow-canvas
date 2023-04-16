@@ -175,9 +175,6 @@ export const createRectPathSVGElement = <T>(
   (
     svgParent.domElement as unknown as HTMLElement
   ).style.height = `${bbox.height}px`;
-  // (
-  //   svgParent.domElement as unknown as HTMLElement
-  // ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
   (
     divElement.domElement as unknown as HTMLElement
@@ -243,7 +240,7 @@ export const createRectPathSVGElement = <T>(
     ) {
       return false;
     }
-    //console.log('update', incomingComponent.nodeType, actionComponent.nodeType);
+
     if (
       (incomingComponent.nodeType === 'connection' &&
         actionComponent.nodeType === 'connection') ||
@@ -294,27 +291,6 @@ export const createRectPathSVGElement = <T>(
           bottomRight.x,
           bottomRight.y,
           actionComponent
-        );
-
-        // const endCenter = getThumbPosition(ThumbType.EndConnectorCenter);
-        // connectionInfo.controllers?.leftThumbConnector.update(
-        //   connectionInfo.controllers?.leftThumbConnector,
-        //   endCenter.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
-        //   endCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
-        //   actionComponent
-        // );
-
-        // const startCenter = getThumbPosition(ThumbType.StartConnectorCenter);
-        // connectionInfo.controllers?.rightThumbConnector.update(
-        //   connectionInfo.controllers?.rightThumbConnector,
-        //   startCenter.x, //(thumbOffsetX ?? 0) + points.width, //points.beginX + points.width,
-        //   startCenter.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
-        //   actionComponent
-        // );
-
-        console.log(
-          'connectionInfo.controllers?.thumbConnectors',
-          connectionInfo.controllers?.thumbConnectors
         );
 
         connectionInfo.controllers?.thumbConnectors.forEach(
@@ -429,8 +405,8 @@ export const createRectPathSVGElement = <T>(
               thumbConnector.thumbIndex ?? 0
             );
             return {
-              x: position.x, //(thumbOffsetX ?? 0) + 0, //points.beginX,
-              y: position.y, //(thumbOffsetY ?? 0) + points.height / 2, //points.beginY + points.height / 2,
+              x: position.x,
+              y: position.y,
             };
           }
           return false;
@@ -473,33 +449,6 @@ export const createRectPathSVGElement = <T>(
           );
         }
 
-        // point = getRectPoint(
-        //   connectionInfo.controllers?.rightThumbConnector.specifier
-        // );
-        // if (point) {
-        //   connectionInfo.controllers?.rightThumbConnector.update(
-        //     connectionInfo.controllers?.rightThumbConnector,
-        //     point.x,
-        //     point.y,
-        //     incomingComponent
-        //   );
-        // }
-
-        // point = getRectPoint(
-        //   connectionInfo.controllers?.leftThumbConnector.specifier
-        // );
-        // if (point) {
-        //   connectionInfo.controllers?.leftThumbConnector.update(
-        //     connectionInfo.controllers?.leftThumbConnector,
-        //     point.x,
-        //     point.y,
-        //     incomingComponent
-        //   );
-        // }
-        console.log(
-          'connectionInfo.controllers?.thumbConnectors',
-          connectionInfo.controllers?.thumbConnectors
-        );
         connectionInfo.controllers?.thumbConnectors.forEach(
           (connector: INodeComponent<T>) => {
             if (connector && connector.specifier) {
