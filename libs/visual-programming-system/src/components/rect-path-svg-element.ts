@@ -591,7 +591,7 @@ export const createRectPathSVGElement = <T>(
     astElement.domElement as unknown as HTMLElement
   ).getBoundingClientRect();
 
-  console.log('size', astElementSize);
+  //console.log('size', astElementSize);
 
   const { scale } = getCamera();
   divElement.width = astElementSize.width / scale;

@@ -340,6 +340,20 @@ export const createConnectionSVGElement = <T>(
           points.cx2 = end.cx;
           points.cy2 = end.cy;
           skipChecks = true;
+
+          const connectionInfo = nodeComponent.components.find(
+            (c) => c.type === 'self'
+          );
+
+          if (connectionInfo) {
+            console.log(
+              'connectionInfo',
+              connectionInfo.controllers?.controlPoint1,
+              connectionInfo.controllers?.controlPoint2
+            );
+            connectionInfo.controllers?.controlPoint1.setVisibility?.(false);
+            connectionInfo.controllers?.controlPoint2.setVisibility?.(false);
+          }
         } else {
           return false;
         }

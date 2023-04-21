@@ -242,7 +242,7 @@ export const createRect = <T>(
 
   rectNode.onCalculateControlPoints = (
     nodeType: ControlAndEndPointNodeType,
-    _curveType: CurveType,
+    curveType: CurveType,
     thumbType: ThumbType,
     index?: number
   ) => {
@@ -628,6 +628,7 @@ export const createRect = <T>(
       thumbConnectors.push(thumbConnectorElement);
     });
   }
+  rectNode.thumbConnectors = thumbConnectors;
 
   startPointElement.components.push({
     component: rectNode,

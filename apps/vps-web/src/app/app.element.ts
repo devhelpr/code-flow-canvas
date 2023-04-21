@@ -74,6 +74,15 @@ export class AppElement extends HTMLElement {
     this.canvasApp?.elements.clear();
   };
 
+  getThumbNode = (thumbType: ThumbType, node: INodeComponent<NodeInfo>) => {
+    if (node.thumbConnectors) {
+      const thumbNode = node.thumbConnectors.find((thumbNode) => {
+        return thumbNode.thumbType === thumbType;
+      });
+      return thumbNode;
+    }
+  };
+
   constructor() {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
@@ -86,6 +95,7 @@ export class AppElement extends HTMLElement {
 
     const canvasApp = createCanvasApp<NodeInfo>(rootElement);
     this.canvas = canvasApp.canvas;
+    this.canvasApp = canvasApp;
 
     const menubarElement = createElement(
       'div',
@@ -128,12 +138,28 @@ export class AppElement extends HTMLElement {
                 flowNode.y ?? 0,
                 200,
                 300,
-                flowNode.taskType
+                flowNode.taskType,
+                undefined,
+                [
+                  {
+                    thumbType: ThumbType.StartConnectorCenter,
+                    thumbIndex: 0,
+                    connectionType: ThumbConnectionType.start,
+                  },
+                  {
+                    thumbType: ThumbType.EndConnectorCenter,
+                    thumbIndex: 0,
+                    connectionType: ThumbConnectionType.end,
+                  },
+                ]
               );
               rect.nodeComponent.nodeInfo = flowNode;
             }
           });
-          const elementList = Array.from(this.canvasApp?.elements ?? []);
+
+          const elementList = Array.from(canvasApp?.elements ?? []);
+          console.log('elementList', elementList);
+
           flowData.forEach((flowNode) => {
             if (flowNode.shapeType === 'Line') {
               let start: INodeComponent<NodeInfo> | undefined = undefined;
@@ -170,9 +196,7 @@ export class AppElement extends HTMLElement {
                 true
               );
 
-              // (canvas.domElement as HTMLElement).prepend(
-              //   curve.nodeComponent.domElement
-              // );
+              curve.nodeComponent.isControlled = true;
 
               if (start && curve.nodeComponent) {
                 curve.nodeComponent.components.push({
@@ -181,6 +205,10 @@ export class AppElement extends HTMLElement {
                 } as unknown as INodeComponentRelation<NodeInfo>);
 
                 curve.nodeComponent.startNode = start;
+                curve.nodeComponent.startNodeThumb = this.getThumbNode(
+                  ThumbType.StartConnectorCenter,
+                  start
+                );
               }
 
               if (end && curve.nodeComponent) {
@@ -190,6 +218,10 @@ export class AppElement extends HTMLElement {
                 } as unknown as INodeComponentRelation<NodeInfo>);
 
                 curve.nodeComponent.endNode = end;
+                curve.nodeComponent.endNodeThumb = this.getThumbNode(
+                  ThumbType.EndConnectorCenter,
+                  end
+                );
               }
               if (curve.nodeComponent.update) {
                 curve.nodeComponent.update();

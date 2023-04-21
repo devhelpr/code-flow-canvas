@@ -52,7 +52,7 @@ function cleanupEffectsDependencies(runningEffect: ISignalSubscription) {
 export const createEffect = (fn: () => void) => {
   const execute = () => {
     cleanupEffectsDependencies(runningEffect);
-    console.log('execute', runningEffect);
+    //console.log('execute', runningEffect);
     effectStack.push(runningEffect);
     try {
       fn();

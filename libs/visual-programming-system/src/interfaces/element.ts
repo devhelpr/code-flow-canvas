@@ -65,6 +65,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   thumbIndex?: number;
   thumbType?: ThumbType;
   thumbConnectionType?: ThumbConnectionType;
+  thumbConnectors?: INodeComponent<T>[];
   update?: (
     component?: INodeComponent<T>,
     x?: number,

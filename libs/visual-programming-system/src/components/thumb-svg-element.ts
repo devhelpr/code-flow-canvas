@@ -43,7 +43,7 @@ export const createThumbSVGElement = <T>(
     xInitial !== undefined ? xInitial : Math.floor(Math.random() * 1024);
   const initialY =
     yInitial !== undefined ? yInitial : Math.floor(Math.random() * 500);
-  console.log('createSVGElement', initialX, initialY, specifier);
+  //console.log('createSVGElement', initialX, initialY, specifier);
   const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
     'svg',
     {
