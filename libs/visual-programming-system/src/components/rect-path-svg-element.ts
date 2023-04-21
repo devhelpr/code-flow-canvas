@@ -41,7 +41,11 @@ export const createRectPathSVGElement = <T>(
   getThumbPosition?: (
     thumbType: ThumbType,
     index?: number
-  ) => { x: number; y: number }
+  ) => { x: number; y: number },
+  markup?: string,
+  layoutProperties?: {
+    classNames?: string;
+  }
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -102,15 +106,22 @@ export const createRectPathSVGElement = <T>(
   divElement.shapeType = shapeType;
   divElement.components = [];
 
-  const compiledMarkup = compileMarkup(
-    `<div class="bg-green-500 rounded overflow-hidden p-4 cursor-pointer">
-      <p>Lorem ipsum</p>
+  /*
+
+  bg-green-500 rounded p-4
+  <p>Lorem ipsum</p>
       <p>Lorem ipsum</p>
       <p>Lorem ipsum</p>
       <p>Lorem ipsum</p>
       <p>Lorem ipsum</p>
       <p>Lorem ipsum</p>
       <input class="w-full mt-2 border-2 rounded"></input>
+  */
+  const compiledMarkup = compileMarkup(
+    `<div class="${
+      layoutProperties?.classNames ?? ''
+    } overflow-hidden cursor-pointer">
+      ${markup ?? ''}
     </div>`
   );
   if (!compiledMarkup) {

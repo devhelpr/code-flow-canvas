@@ -72,6 +72,7 @@ export class AppElement extends HTMLElement {
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
     this.canvasApp?.elements.clear();
+    this.canvasApp?.setCamera(0, 0, 1);
   };
 
   getThumbNode = (thumbType: ThumbType, node: INodeComponent<NodeInfo>) => {
@@ -131,6 +132,20 @@ export class AppElement extends HTMLElement {
         click: (event) => {
           event.preventDefault();
           this.clearCanvas();
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Clear canvas'
+    );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          this.clearCanvas();
           flowData.forEach((flowNode) => {
             if (flowNode.shapeType !== 'Line') {
               const rect = canvasApp?.createRect(
@@ -151,7 +166,11 @@ export class AppElement extends HTMLElement {
                     thumbIndex: 0,
                     connectionType: ThumbConnectionType.end,
                   },
-                ]
+                ],
+                `<p>${flowNode.taskType}</p>`,
+                {
+                  classNames: `bg-slate-500 p-4 rounded`,
+                }
               );
               rect.nodeComponent.nodeInfo = flowNode;
             }
@@ -232,7 +251,7 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
-      'clear canvas'
+      'import flow'
     );
 
     createElement(
@@ -244,38 +263,50 @@ export class AppElement extends HTMLElement {
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
-          canvasApp.createRect(startX, startY, 200, 100, undefined, undefined, [
+          canvasApp.createRect(
+            startX,
+            startY,
+            200,
+            100,
+            undefined,
+            undefined,
+            [
+              {
+                thumbType: ThumbType.StartConnectorCenter,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.start,
+              },
+              {
+                thumbType: ThumbType.EndConnectorCenter,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.end,
+              },
+              {
+                thumbType: ThumbType.StartConnectorRight,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.start,
+              },
+              {
+                thumbType: ThumbType.StartConnectorRight,
+                thumbIndex: 1,
+                connectionType: ThumbConnectionType.start,
+              },
+              {
+                thumbType: ThumbType.StartConnectorTop,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.start,
+              },
+              {
+                thumbType: ThumbType.EndConnectorTop,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.end,
+              },
+            ],
+            `<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
             {
-              thumbType: ThumbType.StartConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-            },
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-            },
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-            },
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 1,
-              connectionType: ThumbConnectionType.start,
-            },
-            {
-              thumbType: ThumbType.StartConnectorTop,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-            },
-            {
-              thumbType: ThumbType.EndConnectorTop,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-            },
-          ]);
+              classNames: `bg-slate-500 p-4 rounded`,
+            }
+          );
 
           return false;
         },

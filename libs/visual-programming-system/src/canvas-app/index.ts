@@ -324,6 +324,25 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   return {
     elements,
     canvas,
+    setCamera: (x: number, y: number, scale: number) => {
+      xCamera = x;
+      yCamera = y;
+      scaleCamera = scale;
+
+      setCamera(xCamera, yCamera, scaleCamera);
+
+      (canvas.domElement as unknown as HTMLElement).style.transform =
+        'translate(' +
+        xCamera +
+        'px,' +
+        yCamera +
+        'px) ' +
+        'scale(' +
+        scaleCamera +
+        ',' +
+        scaleCamera +
+        ') ';
+    },
     createRect: (
       x: number,
       y: number,
@@ -331,7 +350,11 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       height: number,
       text?: string,
       shapeType?: ShapeType,
-      thumbs?: IThumb[]
+      thumbs?: IThumb[],
+      markup?: string,
+      layoutProperties?: {
+        classNames?: string;
+      }
     ) =>
       createRect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -343,7 +366,9 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         height,
         text,
         shapeType,
-        thumbs
+        thumbs,
+        markup,
+        layoutProperties
       ),
     createCubicBezier: (
       startX: number,

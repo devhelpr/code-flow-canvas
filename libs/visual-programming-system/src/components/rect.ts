@@ -216,7 +216,11 @@ export const createRect = <T>(
   height: number,
   text?: string,
   shapeType?: ShapeType,
-  thumbs?: IThumb[]
+  thumbs?: IThumb[],
+  markup?: string,
+  layoutProperties?: {
+    classNames?: string;
+  }
 ) => {
   let widthHelper = width;
   let heightHelper = height;
@@ -235,7 +239,9 @@ export const createRect = <T>(
     thumbOffsetY,
     (thumbType: ThumbType, index?: number) => {
       return thumbPosition<T>(rectNode, thumbType, index);
-    }
+    },
+    markup,
+    layoutProperties
   );
   widthHelper = rectNode.width ?? 0;
   heightHelper = rectNode.height ?? 0;
