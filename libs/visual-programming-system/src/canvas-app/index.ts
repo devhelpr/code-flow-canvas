@@ -345,26 +345,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         ') ';
     },
     centerCamera: () => {
-      // const { width, height } = (
-      //   canvas.domElement as unknown as HTMLElement
-      // ).getBoundingClientRect();
-      // xCamera = width / 2;
-      // yCamera = height / 2;
-      // scaleCamera = 1;
-      // console.log('centerCamera', width, height, xCamera, yCamera, scaleCamera);
-      // setCamera(xCamera, yCamera, scaleCamera);
-
-      // const elementsHelper = elements.entries();
-
-      let minX: number | undefined = undefined; //Math.min(...elementsHelper.map((e) => e.x));
-      let minY: number | undefined = undefined; //Math.min(...elementsHelper.map((e) => e.y));
-      let maxX: number | undefined = undefined; //Math.max(...elementsHelper.map((e) => e.x + e.width));
-      let maxY: number | undefined = undefined; //Math.max(...elementsHelper.map((e) => e.y + e.height));
-
+      let minX: number | undefined = undefined;
+      let minY: number | undefined = undefined;
+      let maxX: number | undefined = undefined;
+      let maxY: number | undefined = undefined;
       elements.forEach((element) => {
         const elementHelper = element as unknown as INodeComponent<T>;
         if (
-          //elementHelper.nodeType === 'shape' &&
           elementHelper.shapeType === 'rect' &&
           elementHelper.width !== undefined &&
           elementHelper.height !== undefined
