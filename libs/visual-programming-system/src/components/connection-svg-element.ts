@@ -302,6 +302,7 @@ export const createConnectionSVGElement = <T>(
     }
 
     let skipChecks = false;
+    let updateThumbs = false;
 
     if (
       !incomingComponent ||
@@ -341,19 +342,7 @@ export const createConnectionSVGElement = <T>(
           points.cy2 = end.cy;
           skipChecks = true;
 
-          const connectionInfo = nodeComponent.components.find(
-            (c) => c.type === 'self'
-          );
-
-          if (connectionInfo) {
-            console.log(
-              'connectionInfo',
-              connectionInfo.controllers?.controlPoint1,
-              connectionInfo.controllers?.controlPoint2
-            );
-            connectionInfo.controllers?.controlPoint1.setVisibility?.(false);
-            connectionInfo.controllers?.controlPoint2.setVisibility?.(false);
-          }
+          updateThumbs = true;
         } else {
           return false;
         }
@@ -540,6 +529,45 @@ export const createConnectionSVGElement = <T>(
           pathPoints.cy2 - bbox.y
         }  ${pathPoints.endX - bbox.x} ${pathPoints.endY - bbox.y}`
       );
+    }
+
+    if (updateThumbs && nodeComponent) {
+      const connectionInfo = nodeComponent.components.find(
+        (c) => c.type === 'self'
+      );
+
+      if (connectionInfo) {
+        connectionInfo.controllers?.controlPoint1.setVisibility?.(false);
+        connectionInfo.controllers?.controlPoint2.setVisibility?.(false);
+
+        connectionInfo.controllers?.start.update(
+          connectionInfo.controllers?.start,
+          points.beginX,
+          points.beginY,
+          nodeComponent
+        );
+
+        connectionInfo.controllers?.end.update(
+          connectionInfo.controllers?.end,
+          points.endX,
+          points.endY,
+          nodeComponent
+        );
+
+        connectionInfo.controllers?.controlPoint1.update(
+          connectionInfo.controllers?.controlPoint1,
+          points.cx1,
+          points.cy1,
+          nodeComponent
+        );
+
+        connectionInfo.controllers?.controlPoint2.update(
+          connectionInfo.controllers?.controlPoint2,
+          points.cx2,
+          points.cy2,
+          nodeComponent
+        );
+      }
     }
 
     (
