@@ -243,6 +243,9 @@ export const createRect = <T>(
     markup,
     layoutProperties
   );
+  // rectNode.nodeType is "shape" .. if thats changed then the dragging of nodes doesnt work anymore
+  rectNode.shapeType = 'rect';
+
   widthHelper = rectNode.width ?? 0;
   heightHelper = rectNode.height ?? 0;
 

@@ -142,7 +142,7 @@ export const createRectPathSVGElement = <T>(
       ).getBoundingClientRect();
 
       const { x, y } = transformToCamera(e.clientX, e.clientY);
-
+      console.log(x, y);
       const rectCamera = transformToCamera(elementRect.x, elementRect.y);
 
       const bbox = getBBoxPath();
@@ -243,6 +243,7 @@ export const createRectPathSVGElement = <T>(
     y?: number,
     actionComponent?: INodeComponent<T>
   ) => {
+    console.log('update', incomingComponent, x, y, actionComponent);
     if (
       !incomingComponent ||
       x === undefined ||
@@ -520,7 +521,7 @@ export const createRectPathSVGElement = <T>(
     if (nodeComponent && divElement) {
       nodeComponent.x = points.beginX;
       nodeComponent.y = points.beginY;
-      nodeComponent.width = points.width;
+      nodeComponent.width = points.width + 20; // 20 is padding !?
       nodeComponent.height = points.height;
 
       divElement.x = points.beginX;
@@ -602,7 +603,7 @@ export const createRectPathSVGElement = <T>(
     astElement.domElement as unknown as HTMLElement
   ).getBoundingClientRect();
 
-  //console.log('size', astElementSize);
+  console.log('size', astElementSize);
 
   const { scale } = getCamera();
   divElement.width = astElementSize.width / scale;
@@ -611,6 +612,9 @@ export const createRectPathSVGElement = <T>(
   nodeComponent.height = astElementSize.height / scale - 20;
   points.width = astElementSize.width / scale;
   points.height = astElementSize.height / scale - 20;
+
+  nodeComponent.width = points.width + 20; // 20 is padding !?
+  nodeComponent.height = points.height;
 
   divElement.update(divElement, startX, startY, divElement);
 

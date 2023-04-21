@@ -91,6 +91,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     index?: number
   ) => IControlAndEndPoint;
   setVisibility?: (isVisible: boolean) => void;
+  delete?: () => void;
 }
 
 export const ControlAndEndPointNodeType = {

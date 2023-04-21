@@ -27,12 +27,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   let startClientDragX = 0;
   let startClientDragY = 0;
 
+  //w-full h-full origin-top-left
   const canvas = createElement<T>(
     'div',
     {
       id: 'canvas',
       class:
-        'w-full h-full bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
+        'w-full h-full origin-top-left bg-slate-800 flex-auto relative z-10 transition-none',
     },
     rootElement
   );
@@ -82,7 +83,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       startClientDragY = event.clientY;
       startDragX = xCamera;
       startDragY = yCamera;
-
+      console.log('dragging canvas', canvas.id);
       interactionEventState(
         InteractionEvent.PointerDown,
         {
@@ -328,6 +329,94 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       xCamera = x;
       yCamera = y;
       scaleCamera = scale;
+
+      setCamera(xCamera, yCamera, scaleCamera);
+
+      (canvas.domElement as unknown as HTMLElement).style.transform =
+        'translate(' +
+        xCamera +
+        'px,' +
+        yCamera +
+        'px) ' +
+        'scale(' +
+        scaleCamera +
+        ',' +
+        scaleCamera +
+        ') ';
+    },
+    centerCamera: () => {
+      // const { width, height } = (
+      //   canvas.domElement as unknown as HTMLElement
+      // ).getBoundingClientRect();
+      // xCamera = width / 2;
+      // yCamera = height / 2;
+      // scaleCamera = 1;
+      // console.log('centerCamera', width, height, xCamera, yCamera, scaleCamera);
+      // setCamera(xCamera, yCamera, scaleCamera);
+
+      // const elementsHelper = elements.entries();
+
+      let minX: number | undefined = undefined; //Math.min(...elementsHelper.map((e) => e.x));
+      let minY: number | undefined = undefined; //Math.min(...elementsHelper.map((e) => e.y));
+      let maxX: number | undefined = undefined; //Math.max(...elementsHelper.map((e) => e.x + e.width));
+      let maxY: number | undefined = undefined; //Math.max(...elementsHelper.map((e) => e.y + e.height));
+
+      elements.forEach((element) => {
+        const elementHelper = element as unknown as INodeComponent<T>;
+        if (
+          //elementHelper.nodeType === 'shape' &&
+          elementHelper.shapeType === 'rect' &&
+          elementHelper.width !== undefined &&
+          elementHelper.height !== undefined
+        ) {
+          console.log('element', element);
+          if (minX === undefined || elementHelper.x < minX) {
+            minX = elementHelper.x;
+          }
+          if (minY === undefined || elementHelper.y < minY) {
+            minY = elementHelper.y;
+          }
+          if (
+            maxX === undefined ||
+            elementHelper.x + elementHelper.width > maxX
+          ) {
+            maxX = elementHelper.x + elementHelper.width;
+          }
+          if (
+            maxY === undefined ||
+            elementHelper.y + elementHelper.height > maxY
+          ) {
+            maxY = elementHelper.y + elementHelper.height;
+          }
+        }
+      });
+
+      if (
+        minX !== undefined &&
+        minY !== undefined &&
+        maxX !== undefined &&
+        maxY !== undefined
+      ) {
+        const rootWidth = rootElement.clientWidth;
+        const rootHeight = rootElement.clientHeight;
+
+        const width = maxX - minX + 20;
+        const height = maxY - minY;
+        const scale = rootWidth / width;
+
+        console.log(
+          'centerCamera',
+          minX,
+          maxX,
+          'width',
+          width,
+          'rootWidth',
+          rootWidth
+        );
+        xCamera = rootWidth / 2 - (scale * width) / 2 - scale * minX;
+        yCamera = rootHeight / 2 - (scale * height) / 2 - scale * minY;
+        scaleCamera = scale;
+      }
 
       setCamera(xCamera, yCamera, scaleCamera);
 

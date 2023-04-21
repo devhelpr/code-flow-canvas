@@ -85,6 +85,7 @@ export const pointerMove = (
       element.domElement
       //interactionState.timeSinceStart > CLICK_MOVEMENT_THRESHOLD
     ) {
+      console.log('move', element.id, interactionState);
       if (element.update) {
         element.update(
           element,

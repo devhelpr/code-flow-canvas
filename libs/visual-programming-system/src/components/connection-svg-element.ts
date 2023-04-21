@@ -180,6 +180,10 @@ export const createConnectionSVGElement = <T>(
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
   nodeComponent.nodeType = 'connection';
 
+  nodeComponent.delete = () => {
+    svgParent.domElement.remove();
+  };
+
   const bbox = getBBoxPath();
 
   (

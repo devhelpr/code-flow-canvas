@@ -73,6 +73,7 @@ export const createNSElement = <T>(
     'http://www.w3.org/2000/svg',
     elementName
   );
+  domElement.id = `${id}`;
   if (attributes) {
     Object.keys(attributes).forEach((key) => {
       if (typeof attributes[key] === 'object') {

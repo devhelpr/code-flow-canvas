@@ -60,6 +60,10 @@ export class AppElement extends HTMLElement {
 
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
+    const node = element as unknown as INodeComponent<NodeInfo>;
+    if (node && node.delete) {
+      node.delete();
+    }
     element.elements.forEach((element: IElementNode<NodeInfo>) => {
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
@@ -247,6 +251,7 @@ export class AppElement extends HTMLElement {
               }
             }
           });
+          this.canvasApp?.centerCamera();
           return false;
         },
       },
@@ -379,6 +384,19 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+          this.canvasApp?.centerCamera();
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'center'
+    );
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
           setVisibility(!getVisbility());
           return false;
         },
@@ -412,7 +430,7 @@ export class AppElement extends HTMLElement {
       {
         id: 'textAreaContainer',
         class:
-          'fixed w-1/2 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400',
+          'fixed w-1/2 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
       rootElement
     );
