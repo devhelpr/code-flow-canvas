@@ -193,7 +193,7 @@ export class AppElement extends HTMLElement {
                 (start?.y ?? 0) + 150,
                 (end?.x ?? 0) + 100,
                 (end?.y ?? 0) + 150,
-                true
+                false
               );
 
               curve.nodeComponent.isControlled = true;
