@@ -59,3 +59,6 @@ Visual programming system build with web components using DOM as a canvas mixing
     - show the output of the expression in the node
     - next: control the output of node
     - next: define signals within expressions and output these from the node?
+
+- "2d node and wire UI with gravity" .. instead of having a "top-down" view.. make a side-view with gravity 
+    - nodes float in the air.. but it's output falls down to the next node
