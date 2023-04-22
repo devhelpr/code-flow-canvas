@@ -13,7 +13,7 @@ import {
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { ThumbType } from '../types';
-import { createNSElement } from '../utils/create-element';
+import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
@@ -32,7 +32,8 @@ export const createThumbSVGElement = <T>(
   radius?: number,
   isTransparent?: boolean,
   borderColor?: string,
-  index?: number
+  index?: number,
+  relativePositioned?: boolean
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -44,27 +45,60 @@ export const createThumbSVGElement = <T>(
   const initialY =
     yInitial !== undefined ? yInitial : Math.floor(Math.random() * 500);
   //console.log('createSVGElement', initialX, initialY, specifier);
-  const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
-    'svg',
+  // const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
+  //   'svg',
+  const nodeComponent: INodeComponent<T> = createElement(
+    'div',
     {
       class: `absolute cursor-pointer transition-none  will-change-transform pointer-events-none ${
         additionalClasses || ''
       }`,
       style: {
-        transform: `translate(${initialX}px, ${initialY}px)`,
+        transform: relativePositioned
+          ? ''
+          : `translate(${initialX}px, ${initialY}px)`,
+        width: `${width ?? 100}px`,
+        height: `${height ?? 100}px`,
+        top: relativePositioned
+          ? `calc(${initialY}% - ${(width ?? 100) / 2}px)`
+          : '0px',
+        left: relativePositioned
+          ? `calc(${initialX}% - ${(height ?? 100) / 2}px)`
+          : '0px',
       },
       width: width ?? 100,
       height: height ?? 100,
     },
     canvasElement
-  );
+  ) as INodeComponent<T>;
+
+  nodeComponent.x = 0;
+  nodeComponent.y = 0;
+  nodeComponent.components = [];
+
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
     nodeComponent.id;
   let circleElement: IElementNode<T> | undefined = undefined;
-  circleElement = createNSElement(
-    'circle',
+  //circleElement = createNSElement(
+  circleElement = createElement(
+    'div', //'circle',
     {
-      class: 'pointer-events-auto',
+      class: `pointer-events-auto rounded-full origin-center border-[3px]`,
+      style: {
+        width: `${(radius ?? 10) * 2}px`,
+        height: `${(radius ?? 10) * 2}px`,
+        transform: `translate(${-(radius ?? 10) + (width ?? 100) / 2}px, ${
+          -(radius ?? 10) + (height ?? 100) / 2
+        }px)`,
+        'border-color': isTransparent
+          ? 'transparent'
+          : borderColor
+          ? borderColor
+          : 'black',
+        'background-color': isTransparent
+          ? 'transparent'
+          : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+      },
       cx: (width ?? 100) / 2,
       cy: (height ?? 100) / 2,
       r: radius ?? 10,

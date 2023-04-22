@@ -92,6 +92,64 @@ const calculateConnectorY = (
   return 0;
 };
 
+const thumbInitialPosition = <T>(
+  rectNode: INodeComponent<T>,
+  thumbType: ThumbType,
+  index?: number
+) => {
+  if (thumbType === ThumbType.TopLeft) {
+    return { x: 0, y: 0 };
+  }
+  if (thumbType === ThumbType.TopRight) {
+    return { x: 100, y: 0 };
+  }
+  if (thumbType === ThumbType.BottomLeft) {
+    return { x: 0, y: 100 };
+  }
+  if (thumbType === ThumbType.BottomRight) {
+    return {
+      x: 100,
+      y: 100,
+    };
+  }
+
+  if (thumbType === ThumbType.EndConnectorTop) {
+    return {
+      x: 50,
+      y: 0,
+    };
+  }
+
+  if (
+    thumbType === ThumbType.EndConnectorLeft ||
+    thumbType === ThumbType.EndConnectorCenter
+  ) {
+    return {
+      x: 0,
+      y: 50,
+    };
+  }
+
+  if (thumbType === ThumbType.StartConnectorTop) {
+    return {
+      x: 50,
+      y: 0,
+    };
+  }
+
+  if (
+    thumbType === ThumbType.StartConnectorRight ||
+    thumbType === ThumbType.StartConnectorCenter
+  ) {
+    return {
+      x: 100,
+      y: 50,
+    };
+  }
+
+  throw new Error('Thumb type not supported');
+};
+
 export const thumbPosition = <T>(
   rectNode: INodeComponent<T>,
   thumbType: ThumbType,
@@ -340,15 +398,17 @@ export const createRect = <T>(
     element: INodeComponent<T>,
     x: number,
     y: number,
-    followRelations = true
+    followRelations = true,
+    updatePosition = true
   ) {
     if (!followRelations) {
-      (
-        element.domElement as unknown as HTMLElement | SVGElement
-      ).style.transform = `translate(${x}px, ${y}px)`;
-      element.x = x;
-      element.y = y;
-
+      if (updatePosition) {
+        (
+          element.domElement as unknown as HTMLElement | SVGElement
+        ).style.transform = `translate(${x}px, ${y}px)`;
+        element.x = x;
+        element.y = y;
+      }
       return;
     }
 
@@ -439,7 +499,7 @@ export const createRect = <T>(
     if (!component || x === undefined || y === undefined || !actionComponent) {
       return false;
     }
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape', false);
     return true;
   };
   const leftBottomElement = createThumbSVGElement(
@@ -467,7 +527,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape', false);
     return true;
   };
   const rightBottomElement = createThumbSVGElement(
@@ -475,14 +535,17 @@ export const createRect = <T>(
     rectNode.elements,
     ThumbType.BottomRight,
     '#0000ff',
-    thumbOffsetX + widthHelper,
-    thumbOffsetY + heightHelper,
+    100, //thumbOffsetX + widthHelper,
+    100, //thumbOffsetY + heightHelper,
     'rightBottom',
     'resizer',
     'top-0 left-0 origin-center',
     thumbWidth,
     thumbHeight,
     thumbRadius,
+    true,
+    undefined,
+    undefined,
     true
   );
   rightBottomElement.update = (
@@ -495,7 +558,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape', false);
     return true;
   };
 
@@ -592,7 +655,7 @@ export const createRect = <T>(
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape');
+    setPosition(component, x, y, actionComponent?.nodeType !== 'shape', false);
     return true;
   };
 
@@ -600,7 +663,7 @@ export const createRect = <T>(
 
   if (thumbs) {
     thumbs.forEach((thumb, index) => {
-      const { x, y } = thumbPosition(
+      const { x, y } = thumbInitialPosition(
         rectNode,
         thumb.thumbType,
         thumb.thumbIndex ?? 0
@@ -621,7 +684,8 @@ export const createRect = <T>(
         undefined,
         undefined,
         undefined,
-        thumb.thumbIndex ?? 0
+        thumb.thumbIndex ?? 0,
+        true
       );
 
       thumbConnectorElement.isControlled = true;
