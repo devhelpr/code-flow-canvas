@@ -42,7 +42,7 @@ export const createRectPathSVGElement = <T>(
     thumbType: ThumbType,
     index?: number
   ) => { x: number; y: number },
-  markup?: string,
+  markup?: string | INodeComponent<T>,
   layoutProperties?: {
     classNames?: string;
   }
@@ -117,48 +117,64 @@ export const createRectPathSVGElement = <T>(
       <p>Lorem ipsum</p>
       <input class="w-full mt-2 border-2 rounded"></input>
   */
-  const compiledMarkup = compileMarkup(
-    `<div class="${
-      layoutProperties?.classNames ?? ''
-    } overflow-hidden cursor-pointer">
-      ${markup ?? ''}
-    </div>`
-  );
-  if (!compiledMarkup) {
-    throw new Error('Invalid markup');
-  }
+
   let astElement: any;
-  if (compiledMarkup && divElement && divElement.domElement) {
-    astElement = createASTNodeElement(
-      compiledMarkup.body,
-      divElement.domElement,
-      divElement.elements
+
+  let hasPointerEvents = true;
+  if (markup !== undefined && typeof markup === 'string') {
+    const compiledMarkup = compileMarkup(
+      `<div class="${
+        layoutProperties?.classNames ?? ''
+      } overflow-hidden cursor-pointer">
+        ${markup ?? ''}
+      </div>`
     );
-  }
-  astElement.domElement.addEventListener('pointerdown', (e: PointerEvent) => {
-    if (nodeComponent) {
-      const elementRect = (
-        nodeComponent.domElement as unknown as HTMLElement | SVGElement
-      ).getBoundingClientRect();
-
-      const { x, y } = transformToCamera(e.clientX, e.clientY);
-      console.log(x, y);
-      const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-
-      const bbox = getBBoxPath();
-      const interactionInfoResult = pointerDown(
-        x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
-        y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
-        divElement,
-        canvasElement
-      );
-      if (interactionInfoResult) {
-        (canvasElement as unknown as HTMLElement | SVGElement).append(
-          divElement.domElement
-        );
-      }
+    if (!compiledMarkup) {
+      throw new Error('Invalid markup');
     }
-  });
+
+    if (compiledMarkup && divElement && divElement.domElement) {
+      astElement = createASTNodeElement(
+        compiledMarkup.body,
+        divElement.domElement,
+        divElement.elements
+      );
+    }
+  } else if (markup !== undefined) {
+    astElement = markup as unknown as INodeComponent<T>;
+    divElement.domElement.appendChild(astElement.domElement);
+    divElement.elements.set(astElement.id, astElement);
+    hasPointerEvents = false;
+  } else {
+    throw new Error('No markup or INodeComponent');
+  }
+
+  if (astElement && hasPointerEvents) {
+    astElement.domElement.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (nodeComponent) {
+        const elementRect = (
+          nodeComponent.domElement as unknown as HTMLElement | SVGElement
+        ).getBoundingClientRect();
+
+        const { x, y } = transformToCamera(e.clientX, e.clientY);
+        console.log(x, y);
+        const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
+        const bbox = getBBoxPath();
+        const interactionInfoResult = pointerDown(
+          x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
+          y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
+          divElement,
+          canvasElement
+        );
+        if (interactionInfoResult) {
+          (canvasElement as unknown as HTMLElement | SVGElement).append(
+            divElement.domElement
+          );
+        }
+      }
+    });
+  }
 
   const svgParent = createNSElement(
     'svg',
@@ -326,6 +342,7 @@ export const createRectPathSVGElement = <T>(
       if (!actionComponent.specifier) {
         return false;
       }
+
       const connectionInfo = incomingComponent.components.find(
         (c) => c.type === 'self'
       );
@@ -466,6 +483,12 @@ export const createRectPathSVGElement = <T>(
             if (connector && connector.specifier) {
               point = getRectPoint(undefined, connector);
               if (point && connector.update) {
+                console.log(
+                  'update thumb connector',
+                  connector.thumbType,
+                  point.x,
+                  point.y
+                );
                 connector.update(
                   connector,
                   point.x,
@@ -600,7 +623,7 @@ export const createRectPathSVGElement = <T>(
   divElement.height = height;
 
   const astElementSize = (
-    astElement.domElement as unknown as HTMLElement
+    astElement?.domElement as unknown as HTMLElement
   ).getBoundingClientRect();
 
   console.log('size', astElementSize);

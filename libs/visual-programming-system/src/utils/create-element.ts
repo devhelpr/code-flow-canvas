@@ -22,10 +22,6 @@ export const createElement = <T>(
     Object.keys(attributes).forEach((key) => {
       if (typeof attributes[key] === 'object') {
         Object.keys(attributes[key]).forEach((styleProperty: string) => {
-          // console.log(
-          //   styleProperty,
-          //   (attributes[key] as unknown as any)[styleProperty]
-          // );
           (domElement as unknown as HTMLElement).style.setProperty(
             styleProperty,
             (attributes[key] as unknown as any)[styleProperty]

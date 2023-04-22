@@ -427,7 +427,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       text?: string,
       shapeType?: ShapeType,
       thumbs?: IThumb[],
-      markup?: string,
+      markup?: string | INodeComponent<T>,
       layoutProperties?: {
         classNames?: string;
       }

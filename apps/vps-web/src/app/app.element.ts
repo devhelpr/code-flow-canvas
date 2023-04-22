@@ -268,6 +268,19 @@ export class AppElement extends HTMLElement {
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
+          const testButton = createElement(
+            'button',
+            {
+              class: `${button} w-[300px] h-[300px] overflow-hidden m-0`,
+              click: (event) => {
+                event.preventDefault();
+                alert('test');
+                return false;
+              },
+            },
+            undefined,
+            'Click here'
+          );
           canvasApp.createRect(
             startX,
             startY,
@@ -307,6 +320,7 @@ export class AppElement extends HTMLElement {
                 connectionType: ThumbConnectionType.end,
               },
             ],
+            //testButton as unknown as INodeComponent<NodeInfo>,
             `<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
             {
               classNames: `bg-slate-500 p-4 rounded`,
