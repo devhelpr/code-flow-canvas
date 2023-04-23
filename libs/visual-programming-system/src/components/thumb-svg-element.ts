@@ -22,8 +22,8 @@ export const createThumbSVGElement = <T>(
   elements: ElementNodeMap<T>,
   thumbType: ThumbType,
   color?: string,
-  xInitial?: number,
-  yInitial?: number,
+  xInitial?: string | number,
+  yInitial?: string | number,
   specifier?: string,
   nodeType?: string,
   additionalClasses?: string,
@@ -60,10 +60,10 @@ export const createThumbSVGElement = <T>(
         width: `${width ?? 100}px`,
         height: `${height ?? 100}px`,
         top: relativePositioned
-          ? `calc(${initialY}% - ${(width ?? 100) / 2}px)`
+          ? `calc(${initialY} - ${(height ?? 100) / 2}px)`
           : '0px',
         left: relativePositioned
-          ? `calc(${initialX}% - ${(height ?? 100) / 2}px)`
+          ? `calc(${initialX} - ${(width ?? 100) / 2}px)`
           : '0px',
       },
       width: width ?? 100,
@@ -227,8 +227,8 @@ export const createThumbSVGElement = <T>(
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.set(circleElement.id, circleElement);
   nodeComponent.specifier = specifier;
-  nodeComponent.x = initialX;
-  nodeComponent.y = initialY;
+  nodeComponent.x = parseInt(initialX.toString()) | 0;
+  nodeComponent.y = parseInt(initialY.toString()) | 0;
   nodeComponent.nodeType = nodeType;
   nodeComponent.width = 100;
   nodeComponent.height = 100;

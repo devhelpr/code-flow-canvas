@@ -101,6 +101,32 @@ export class AppElement extends HTMLElement {
     const canvasApp = createCanvasApp<NodeInfo>(rootElement);
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
+    canvasApp.setOnCanvasClick((x, y) => {
+      canvasApp.createRect(
+        x,
+        y,
+        200,
+        100,
+        undefined,
+        undefined,
+        [
+          {
+            thumbType: ThumbType.StartConnectorCenter,
+            thumbIndex: 0,
+            connectionType: ThumbConnectionType.start,
+          },
+          {
+            thumbType: ThumbType.EndConnectorCenter,
+            thumbIndex: 0,
+            connectionType: ThumbConnectionType.end,
+          },
+        ],
+        `<p>Node</p><p>Created on click</p><p>dummy node</p><div class="h-24"></div>`,
+        {
+          classNames: `bg-slate-500 p-4 rounded`,
+        }
+      );
+    });
 
     const menubarElement = createElement(
       'div',

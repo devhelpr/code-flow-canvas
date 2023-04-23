@@ -13,9 +13,9 @@ export type ElementNodeMap<T> = Map<string, IElementNode<T>>;
 
 export enum NodeComponentRelationType {
   self = 'self',
-  childComponent = 'childComponent',
+  //childComponent = 'childComponent',
   controller = 'controller',
-  sibling = 'sibling',
+  //sibling = 'sibling',
   controllerTarget = 'controllerTarget',
   connection = 'connection',
   start = 'start',

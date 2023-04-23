@@ -70,14 +70,6 @@ export const createCubicBezier = <T>(
         if (componentRelation.update) {
           componentRelation.update(componentRelation.component, x, y, element);
         }
-      } else if (
-        componentRelation.type === NodeComponentRelationType.childComponent
-      ) {
-        //
-      } else if (
-        componentRelation.type === NodeComponentRelationType.connection
-      ) {
-        //
       }
     });
   }
@@ -88,7 +80,13 @@ export const createCubicBezier = <T>(
     '#ff000080',
     startX,
     startY,
-    'begin'
+    'begin',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true
   );
   startPointElement.isControlled = isControlled;
   startPointElement.parent = connection;
@@ -112,7 +110,13 @@ export const createCubicBezier = <T>(
     '#ffff4080',
     endX,
     endY,
-    'end'
+    'end',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true
   );
   endPointElement.isControlled = isControlled;
   endPointElement.parent = connection;
@@ -406,14 +410,6 @@ export const createQuadraticBezier = <T>(
         if (componentRelation.update) {
           componentRelation.update(componentRelation.component, x, y, element);
         }
-      } else if (
-        componentRelation.type === NodeComponentRelationType.childComponent
-      ) {
-        //
-      } else if (
-        componentRelation.type === NodeComponentRelationType.connection
-      ) {
-        //
       }
     });
   }

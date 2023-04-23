@@ -98,25 +98,25 @@ const thumbInitialPosition = <T>(
   index?: number
 ) => {
   if (thumbType === ThumbType.TopLeft) {
-    return { x: 0, y: 0 };
+    return { x: '0%', y: '0%' };
   }
   if (thumbType === ThumbType.TopRight) {
-    return { x: 100, y: 0 };
+    return { x: '100%', y: '0%' };
   }
   if (thumbType === ThumbType.BottomLeft) {
-    return { x: 0, y: 100 };
+    return { x: '0%', y: '100%' };
   }
   if (thumbType === ThumbType.BottomRight) {
     return {
-      x: 100,
-      y: 100,
+      x: '100%',
+      y: '100%',
     };
   }
 
   if (thumbType === ThumbType.EndConnectorTop) {
     return {
-      x: 50,
-      y: 0,
+      x: '50%',
+      y: '0%',
     };
   }
 
@@ -125,25 +125,37 @@ const thumbInitialPosition = <T>(
     thumbType === ThumbType.EndConnectorCenter
   ) {
     return {
-      x: 0,
-      y: 50,
+      x: '0%',
+      y: '50%',
     };
   }
 
   if (thumbType === ThumbType.StartConnectorTop) {
     return {
-      x: 50,
-      y: 0,
+      x: '50%',
+      y: '100%',
     };
   }
 
-  if (
-    thumbType === ThumbType.StartConnectorRight ||
-    thumbType === ThumbType.StartConnectorCenter
-  ) {
+  if (thumbType === ThumbType.StartConnectorRight) {
     return {
-      x: 100,
-      y: 50,
+      x: '100%',
+      y: `${
+        thumbRadius +
+        calculateConnectorY(
+          thumbType,
+          rectNode.width ?? 0,
+          rectNode?.height ?? 0,
+          index
+        )
+      }px`,
+    };
+  }
+
+  if (thumbType === ThumbType.StartConnectorCenter) {
+    return {
+      x: '100%',
+      y: '50%',
     };
   }
 
@@ -431,14 +443,6 @@ export const createRect = <T>(
             doPosition = false;
           }
         }
-      } else if (
-        componentRelation.type === NodeComponentRelationType.childComponent
-      ) {
-        //
-      } else if (
-        componentRelation.type === NodeComponentRelationType.connection
-      ) {
-        //
       }
     });
   }
@@ -535,8 +539,8 @@ export const createRect = <T>(
     rectNode.elements,
     ThumbType.BottomRight,
     '#0000ff',
-    100, //thumbOffsetX + widthHelper,
-    100, //thumbOffsetY + heightHelper,
+    '100%', //thumbOffsetX + widthHelper,
+    '100%', //thumbOffsetY + heightHelper,
     'rightBottom',
     'resizer',
     'top-0 left-0 origin-center',

@@ -26,6 +26,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
 
   let startClientDragX = 0;
   let startClientDragY = 0;
+  let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
 
   //w-full h-full origin-top-left
   const canvas = createElement<T>(
@@ -187,6 +188,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       ) {
         console.log('click canvas', isMoving, Date.now() - startTime);
         setSelectNode(undefined);
+        if (onClickCanvas) {
+          const mousePointTo = {
+            x: event.clientX / scaleCamera - xCamera / scaleCamera,
+            y: event.clientY / scaleCamera - yCamera / scaleCamera,
+          };
+          onClickCanvas(mousePointTo.x, mousePointTo.y);
+        }
       }
     }
     isMoving = false;
@@ -325,6 +333,11 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   return {
     elements,
     canvas,
+    setOnCanvasClick: (
+      onClickCanvasHandler: (x: number, y: number) => void
+    ) => {
+      onClickCanvas = onClickCanvasHandler;
+    },
     setCamera: (x: number, y: number, scale: number) => {
       xCamera = x;
       yCamera = y;
