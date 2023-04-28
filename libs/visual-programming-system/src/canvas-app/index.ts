@@ -188,13 +188,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       ) {
         console.log('click canvas', isMoving, Date.now() - startTime);
         setSelectNode(undefined);
-        if (onClickCanvas) {
-          const mousePointTo = {
-            x: event.clientX / scaleCamera - xCamera / scaleCamera,
-            y: event.clientY / scaleCamera - yCamera / scaleCamera,
-          };
-          onClickCanvas(mousePointTo.x, mousePointTo.y);
-        }
+        // if (onClickCanvas) {
+        //   const mousePointTo = {
+        //     x: event.clientX / scaleCamera - xCamera / scaleCamera,
+        //     y: event.clientY / scaleCamera - yCamera / scaleCamera,
+        //   };
+        //   onClickCanvas(mousePointTo.x, mousePointTo.y);
+        // }
       }
     }
     isMoving = false;
@@ -307,6 +307,18 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         ') ';
     }
     return false;
+  });
+
+  rootElement.addEventListener('click', (event: MouseEvent) => {
+    if (onClickCanvas && (event.target as HTMLElement)?.tagName !== 'BUTTON') {
+      event.preventDefault();
+      const mousePointTo = {
+        x: event.clientX / scaleCamera - xCamera / scaleCamera,
+        y: event.clientY / scaleCamera - yCamera / scaleCamera,
+      };
+      onClickCanvas(mousePointTo.x, mousePointTo.y);
+      return false;
+    }
   });
 
   const hiddenSVG = createNSElement(

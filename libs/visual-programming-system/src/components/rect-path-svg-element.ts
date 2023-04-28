@@ -144,13 +144,16 @@ export const createRectPathSVGElement = <T>(
     astElement = markup as unknown as INodeComponent<T>;
     divElement.domElement.appendChild(astElement.domElement);
     divElement.elements.set(astElement.id, astElement);
-    hasPointerEvents = false;
+    //hasPointerEvents = false;
   } else {
     throw new Error('No markup or INodeComponent');
   }
 
   if (astElement && hasPointerEvents) {
     astElement.domElement.addEventListener('pointerdown', (e: PointerEvent) => {
+      console.log('pointerdown', (e.target as HTMLElement)?.tagName);
+      if ((e.target as HTMLElement)?.tagName === 'BUTTON') return;
+
       if (nodeComponent) {
         const elementRect = (
           nodeComponent.domElement as unknown as HTMLElement | SVGElement

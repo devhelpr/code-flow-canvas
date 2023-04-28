@@ -7,14 +7,18 @@ export const createElement = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
-  content?: string
+  content?: string | HTMLElement
 ): IElementNode<T> => {
   const id = crypto.randomUUID();
   let domElement: HTMLElement | Text | undefined = undefined;
   let isTextNode = false;
   if (!elementName && content) {
-    isTextNode = true;
-    domElement = document.createTextNode(content);
+    if (typeof content === 'string') {
+      isTextNode = true;
+      domElement = document.createTextNode(content);
+    } else {
+      domElement = document.createElement('div');
+    }
   } else {
     domElement = document.createElement(elementName);
   }
@@ -49,7 +53,11 @@ export const createElement = <T>(
     parent.appendChild(domElement);
   }
   if (content && elementName) {
-    domElement.textContent = content;
+    if (typeof content === 'string') {
+      domElement.textContent = content;
+    } else {
+      domElement.appendChild(content as unknown as HTMLElement);
+    }
   }
   return {
     id: id,

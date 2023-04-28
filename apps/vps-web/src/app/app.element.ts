@@ -30,6 +30,9 @@ import {
 } from '@devhelpr/expression-compiler';
 import flowData from '../example-data/tiltest.json';
 
+import { TestApp } from './test-app';
+console.log('Test', TestApp);
+
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
@@ -161,6 +164,7 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+          event.stopPropagation();
           this.clearCanvas();
           return false;
         },
@@ -291,6 +295,7 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+          console.log('click RECT', (event.target as HTMLElement)?.tagName);
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
 
@@ -307,6 +312,16 @@ export class AppElement extends HTMLElement {
             undefined,
             'Click here'
           );
+
+          const testJSXElement = createElement(
+            'div',
+            {
+              class: `bg-slate-500 p-4 rounded cursor-pointer`,
+            },
+            undefined,
+            TestApp() as unknown as HTMLElement
+          ) as unknown as INodeComponent<NodeInfo>;
+
           canvasApp.createRect(
             startX,
             startY,
@@ -346,8 +361,9 @@ export class AppElement extends HTMLElement {
                 connectionType: ThumbConnectionType.end,
               },
             ],
+            testJSXElement,
             //testButton as unknown as INodeComponent<NodeInfo>,
-            `<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
+            //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
             {
               classNames: `bg-slate-500 p-4 rounded`,
             }
@@ -366,6 +382,7 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+
           const x = Math.floor(Math.random() * 250);
           const y = Math.floor(Math.random() * 500);
 
@@ -406,6 +423,7 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+
           createMarkupElement(
             '<div><h2>TITLE</h2><p>subtitle</p></div>',
             canvasApp.canvas.domElement,
@@ -585,6 +603,10 @@ export class AppElement extends HTMLElement {
     `,
       rootElement
     );
+
+    const element = TestApp();
+    console.log('element', element);
+    rootElement.append(element);
 
     registerCustomFunction('setStartPoint', [], (x: number, y: number) => {
       console.log('setStartPoint', x, y);
