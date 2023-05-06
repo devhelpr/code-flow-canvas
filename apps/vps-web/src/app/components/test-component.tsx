@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { createJSXElement } from '@devhelpr/visual-programming-system';
+//import { createJSXElement } from '@devhelpr/visual-programming-system';
 
 export const TestComponent = () => {
+  console.log('TestComponent constructor');
   return (
     <div>
       Hello Test Component
@@ -16,6 +17,7 @@ export const TestComponent = () => {
       >
         Click Me
       </button>
+      {2 + 3}
     </div>
   );
 };

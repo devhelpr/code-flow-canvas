@@ -606,7 +606,7 @@ export class AppElement extends HTMLElement {
 
     const element = TestApp();
     console.log('element', element);
-    rootElement.append(element);
+    rootElement.append(element as unknown as Node);
 
     registerCustomFunction('setStartPoint', [], (x: number, y: number) => {
       console.log('setStartPoint', x, y);

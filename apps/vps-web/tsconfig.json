@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "compilerOptions": {   
-    "jsx": "react",
+    "jsx": "preserve",
     "jsxFactory": "createJSXElement",
     "jsxFragmentFactory": "Fragment",
     "target": "ESNext",

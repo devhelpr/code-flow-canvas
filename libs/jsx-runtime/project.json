@@ -1,0 +1,41 @@
+{
+  "name": "jsx-runtime",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/jsx-runtime/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/jsx-runtime",
+        "main": "libs/jsx-runtime/src/index.ts",
+        "tsConfig": "libs/jsx-runtime/tsconfig.lib.json",
+        "assets": ["libs/jsx-runtime/*.md"]
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs jsx-runtime {args.ver} {args.tag}"
+      },
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/jsx-runtime/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/vite:test",
+      "outputs": ["coverage/libs/jsx-runtime"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/libs/jsx-runtime"
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,19 +1,13 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
-import jsxCompiler from './/vite/vite-plugin-jsx-compiler';
+
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  server: {
-    port: 4200,
-    host: 'localhost',
-  },
-
   plugins: [
     viteTsConfigPaths({
       root: '../../',
     }),
-    jsxCompiler(),
   ],
 
   // Uncomment this if you are using workers.
@@ -33,9 +27,4 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
-
-  // esbuild: {
-  //   jsxFactory: 'h',
-  //   jsxFragment: 'Fragment',
-  // },
 });

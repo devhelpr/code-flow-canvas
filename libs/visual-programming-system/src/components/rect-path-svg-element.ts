@@ -151,8 +151,12 @@ export const createRectPathSVGElement = <T>(
 
   if (astElement && hasPointerEvents) {
     astElement.domElement.addEventListener('pointerdown', (e: PointerEvent) => {
-      console.log('pointerdown', (e.target as HTMLElement)?.tagName);
-      if ((e.target as HTMLElement)?.tagName === 'BUTTON') return;
+      if (
+        ['A', 'BUTTON', 'INPUT', 'SELECT'].indexOf(
+          (e.target as HTMLElement)?.tagName
+        ) >= 0
+      )
+        return;
 
       if (nodeComponent) {
         const elementRect = (
