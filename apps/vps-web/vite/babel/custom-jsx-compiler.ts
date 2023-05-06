@@ -3,6 +3,7 @@ import { NodePath } from '@babel/traverse';
 
 export type Content = {
   parentId: string;
+  index: number;
   tagName: string;
   content: string | babelTypes.JSXElement;
 };
@@ -18,12 +19,140 @@ export default function (babel: { types: typeof babelTypes }) {
   // use https://astexplorer.net/ for AST exploration and generation
   // https://babeljs.io/docs/en/babel-types
 
+  const appendChildrenToTemplate = (
+    index: number,
+    templateVariableName: string,
+    tagName: string,
+    content: Content[]
+  ): ElementsResult => {
+    let elementId = `element${index}`;
+
+    const statements: babelTypes.Statement[] = [];
+
+    const addToParent = (addToParentElement: boolean) => {
+      const expressionStatement = t.expressionStatement(
+        t.callExpression(
+          addToParentElement
+            ? t.memberExpression(
+                t.identifier(templateVariableName),
+                t.identifier('append')
+              )
+            : t.memberExpression(
+                t.memberExpression(
+                  t.identifier(templateVariableName),
+                  t.identifier('content')
+                ),
+                t.identifier('append')
+              ),
+          [t.identifier(elementId)]
+        )
+      );
+      statements.push(expressionStatement);
+    };
+
+    let lastParentId: string | undefined = undefined;
+
+    content.forEach((item, childIndex) => {
+      if (!lastParentId || item.parentId !== lastParentId) {
+        // TODO: add support for nested elements
+        let addToTemplate = false;
+        if (lastParentId === '') {
+          elementId = `element${index}`;
+        } else {
+          elementId = `${elementId}_${item.index}`;
+          addToTemplate = false;
+        }
+        const variableDefinition = t.variableDeclaration('const', [
+          t.variableDeclarator(
+            t.identifier(elementId),
+            t.callExpression(
+              t.memberExpression(
+                t.identifier('document'),
+                t.identifier('createElement')
+              ),
+              [t.stringLiteral(tagName)]
+            )
+          ),
+        ]);
+
+        statements.push(variableDefinition);
+        addToParent(addToTemplate);
+
+        lastParentId = item.parentId;
+      }
+      if (typeof item.content === 'string') {
+        statements.push(
+          t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier(`elementChild${childIndex}`),
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier('document'),
+                  t.identifier('createElement')
+                ),
+                [t.stringLiteral(item.tagName)]
+              )
+            ),
+          ])
+        );
+
+        statements.push(
+          t.expressionStatement(
+            t.callExpression(
+              t.memberExpression(
+                t.identifier(elementId),
+                t.identifier('append')
+              ),
+              [t.identifier(`elementChild${childIndex}`)]
+            )
+          )
+        );
+
+        statements.push(
+          t.expressionStatement(
+            t.callExpression(
+              t.memberExpression(
+                t.identifier(`elementChild${childIndex}`),
+                t.identifier('append')
+              ),
+              [
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier('document'),
+                    t.identifier('createTextNode')
+                  ),
+                  [t.stringLiteral(item.content)]
+                ),
+              ]
+            )
+          )
+        );
+      } else {
+        statements.push(
+          t.expressionStatement(
+            t.callExpression(
+              t.memberExpression(
+                t.identifier(elementId),
+                t.identifier('append')
+              ),
+              [t.callExpression(t.identifier(item.tagName), [])]
+            )
+          )
+        );
+      }
+    });
+
+    return {
+      elementId,
+      statements: [...statements],
+    };
+  };
+
   const appendHtmlToTemplate = (
     index: number,
     templateVariableName: string,
     tagName: string,
-    content: string | Content[],
-    addToParentElement = false
+    content: string | Content[]
   ): ElementsResult => {
     const elementId = `element${index}`;
 
@@ -126,18 +255,13 @@ export default function (babel: { types: typeof babelTypes }) {
 
     const expressionStatement = t.expressionStatement(
       t.callExpression(
-        addToParentElement
-          ? t.memberExpression(
-              t.identifier(templateVariableName),
-              t.identifier('append')
-            )
-          : t.memberExpression(
-              t.memberExpression(
-                t.identifier(templateVariableName),
-                t.identifier('content')
-              ),
-              t.identifier('append')
-            ),
+        t.memberExpression(
+          t.memberExpression(
+            t.identifier(templateVariableName),
+            t.identifier('content')
+          ),
+          t.identifier('append')
+        ),
         [t.identifier(elementId)]
       )
     );
@@ -206,6 +330,7 @@ export default function (babel: { types: typeof babelTypes }) {
   };
 
   const handleChildren = (
+    index: number,
     parentId: string,
     children: (
       | babelTypes.JSXElement
@@ -216,24 +341,31 @@ export default function (babel: { types: typeof babelTypes }) {
     )[]
   ) => {
     const content: Content[] = [];
-    children.forEach((item) => {
+    children.forEach((item, childIndex) => {
       if (
         item.type === 'JSXExpressionContainer' &&
         item.expression.type === 'StringLiteral'
       ) {
         content.push({
+          index: childIndex,
           parentId,
           tagName: 'span',
           content: item.expression.value,
         });
       } else if (item.type === 'JSXText' && item.value.trim() !== '') {
-        content.push({ parentId, tagName: 'span', content: item.value });
+        content.push({
+          index: childIndex,
+          parentId,
+          tagName: 'span',
+          content: item.value,
+        });
       } else if (item.type === 'JSXElement') {
         const tagName = (
           item.openingElement.name as unknown as babelTypes.JSXIdentifier
         ).name;
         if (tagName[0] === tagName[0].toUpperCase()) {
           content.push({
+            index: childIndex,
             parentId,
             tagName: (
               item.openingElement.name as unknown as babelTypes.JSXIdentifier
@@ -246,6 +378,7 @@ export default function (babel: { types: typeof babelTypes }) {
           item.children[0].type === 'JSXText'
         ) {
           content.push({
+            index: childIndex,
             parentId,
             tagName: (
               item.openingElement.name as unknown as babelTypes.JSXIdentifier
@@ -253,7 +386,9 @@ export default function (babel: { types: typeof babelTypes }) {
             content: item.children[0].value,
           });
         } else if (item.children.length > 0) {
-          content.push(...handleChildren(parentId + '_', item.children));
+          content.push(
+            ...handleChildren(childIndex, parentId + '_', item.children)
+          );
         }
       }
     });
@@ -279,48 +414,21 @@ export default function (babel: { types: typeof babelTypes }) {
     ) {
       content = path.node.children[0].value;
 
-      [{ tagName, content }].forEach((item, index) => {
-        const result = appendHtmlToTemplate(
-          index,
-          'template',
-          item.tagName,
-          item.content
-        );
-        blockElements.push(...result.statements);
-      });
+      const result = appendHtmlToTemplate(0, 'template', tagName, content);
+      blockElements.push(...result.statements);
 
       return createTemplateForHtml(blockElements);
     } else if (path.node.children && path.node.children.length > 0) {
-      const content: Content[] = handleChildren('', path.node.children);
-
+      const content: Content[] = handleChildren(0, '', path.node.children);
       const blockElements: babelTypes.Statement[] = [];
-      [
-        {
-          tagName,
-          content,
-        },
-      ].forEach((item, index) => {
-        const result = appendHtmlToTemplate(
-          index,
-          'template',
-          item.tagName,
-          item.content
-        );
-        blockElements.push(...result.statements);
-      });
+      const result = appendChildrenToTemplate(0, 'template', tagName, content);
+      blockElements.push(...result.statements);
 
       return createTemplateForHtml(blockElements);
     }
 
-    [{ tagName, content }].forEach((item, index) => {
-      const result = appendHtmlToTemplate(
-        index,
-        'template',
-        item.tagName,
-        item.content
-      );
-      blockElements.push(...result.statements);
-    });
+    const result = appendHtmlToTemplate(0, 'template', tagName, content);
+    blockElements.push(...result.statements);
     return createTemplateForHtml(blockElements);
   };
 
