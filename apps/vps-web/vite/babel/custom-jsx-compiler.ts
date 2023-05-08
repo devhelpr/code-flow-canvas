@@ -6,6 +6,9 @@ export type Content = {
   index: number;
   tagName: string;
   content: string | babelTypes.JSXElement;
+  isExpression?: boolean;
+  expression?: babelTypes.Expression;
+  attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[];
 };
 
 export type ElementsResult = {
@@ -19,17 +22,81 @@ export default function (babel: { types: typeof babelTypes }) {
   // use https://astexplorer.net/ for AST exploration and generation
   // https://babeljs.io/docs/en/babel-types
 
+  const getAttributes = (
+    attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
+  ) => {
+    let attributeObject: babelTypes.ObjectExpression | undefined;
+    if (attributes) {
+      const properties: babelTypes.ObjectProperty[] = [];
+      attributes.forEach((attribute) => {
+        if (
+          attribute.type === 'JSXAttribute' &&
+          attribute.value &&
+          attribute.value.type === 'StringLiteral' &&
+          attribute.value.value
+        ) {
+          properties.push(
+            t.objectProperty(
+              t.identifier(attribute.name.name.toString()),
+              t.stringLiteral(attribute.value.value.toString())
+            )
+          );
+        }
+      });
+      attributeObject = t.objectExpression(properties);
+    }
+    return attributeObject;
+  };
+
+  const setAttributes = (
+    elementName: string,
+    attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
+  ) => {
+    const statements: babelTypes.Statement[] = [];
+    if (attributes) {
+      attributes.forEach((attribute) => {
+        if (
+          attribute.type === 'JSXAttribute' &&
+          attribute.value &&
+          attribute.value.type === 'StringLiteral' &&
+          attribute.value.value
+        ) {
+          statements.push(
+            t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier(elementName),
+                  t.identifier('setAttribute')
+                ),
+                [
+                  t.stringLiteral(attribute.name.name.toString()),
+                  t.stringLiteral(attribute.value.value),
+                ]
+              )
+            )
+          );
+        }
+      });
+    }
+    return statements;
+  };
+
   const appendChildrenToTemplate = (
     index: number,
     templateVariableName: string,
     tagName: string,
     content: Content[]
   ): ElementsResult => {
-    let elementId = `element${index}`;
+    //console.log(`appendChildrenToTemplate`, content);
+    let elementId = `element_${index}_0`;
+    let parentId = `element${index}`;
 
     const statements: babelTypes.Statement[] = [];
 
-    const addToParent = (addToParentElement: boolean) => {
+    const addToParent = (
+      addToParentElement: boolean,
+      templateVariableName: string
+    ) => {
       const expressionStatement = t.expressionStatement(
         t.callExpression(
           addToParentElement
@@ -51,36 +118,50 @@ export default function (babel: { types: typeof babelTypes }) {
     };
 
     let lastParentId: string | undefined = undefined;
-
+    const elements: string[] = [];
     content.forEach((item, childIndex) => {
       if (!lastParentId || item.parentId !== lastParentId) {
-        // TODO: add support for nested elements
         let addToTemplate = false;
-        if (lastParentId === '') {
-          elementId = `element${index}`;
+        if (lastParentId === undefined) {
+          addToTemplate = true;
+        } else if (lastParentId === '') {
+          parentId = elementId;
         } else {
-          elementId = `${elementId}_${item.index}`;
-          addToTemplate = false;
-        }
-        const variableDefinition = t.variableDeclaration('const', [
-          t.variableDeclarator(
-            t.identifier(elementId),
-            t.callExpression(
-              t.memberExpression(
-                t.identifier('document'),
-                t.identifier('createElement')
-              ),
-              [t.stringLiteral(tagName)]
-            )
-          ),
-        ]);
+          // this is not a new parent but a new child for the previous rendered element (childIndex - 1)
+          // .. so what should we do here?
 
-        statements.push(variableDefinition);
-        addToParent(addToTemplate);
+          parentId = elementId;
+        }
+
+        elementId = `element_${index}_${childIndex}`;
+
+        if (elements.indexOf(elementId) === -1) {
+          const variableDefinition = t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier(elementId),
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier('document'),
+                  t.identifier('createElement')
+                ),
+                [t.stringLiteral(tagName)]
+              )
+            ),
+          ]);
+
+          statements.push(variableDefinition);
+          elements.push(elementId);
+        }
+
+        addToParent(
+          !addToTemplate,
+          addToTemplate ? templateVariableName : parentId
+        );
 
         lastParentId = item.parentId;
       }
-      if (typeof item.content === 'string') {
+
+      if (item.isExpression === true && item.expression) {
         statements.push(
           t.variableDeclaration('const', [
             t.variableDeclarator(
@@ -94,6 +175,61 @@ export default function (babel: { types: typeof babelTypes }) {
               )
             ),
           ])
+        );
+
+        statements.push(
+          ...setAttributes(`elementChild${childIndex}`, item.attributes)
+        );
+
+        statements.push(
+          t.expressionStatement(
+            t.callExpression(
+              t.memberExpression(
+                t.identifier(elementId),
+                t.identifier('append')
+              ),
+              [t.identifier(`elementChild${childIndex}`)]
+            )
+          )
+        );
+
+        statements.push(
+          t.expressionStatement(
+            t.callExpression(
+              t.memberExpression(
+                t.identifier(`elementChild${childIndex}`),
+                t.identifier('append')
+              ),
+              [
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier('document'),
+                    t.identifier('createTextNode')
+                  ),
+                  [item.expression]
+                ),
+              ]
+            )
+          )
+        );
+      } else if (typeof item.content === 'string') {
+        statements.push(
+          t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier(`elementChild${childIndex}`),
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier('document'),
+                  t.identifier('createElement')
+                ),
+                [t.stringLiteral(item.tagName)]
+              )
+            ),
+          ])
+        );
+
+        statements.push(
+          ...setAttributes(`elementChild${childIndex}`, item.attributes)
         );
 
         statements.push(
@@ -128,6 +264,7 @@ export default function (babel: { types: typeof babelTypes }) {
           )
         );
       } else {
+        const attributeObject = getAttributes(item.attributes);
         statements.push(
           t.expressionStatement(
             t.callExpression(
@@ -135,10 +272,27 @@ export default function (babel: { types: typeof babelTypes }) {
                 t.identifier(elementId),
                 t.identifier('append')
               ),
-              [t.callExpression(t.identifier(item.tagName), [])]
+              [
+                t.callExpression(
+                  t.identifier(item.tagName),
+                  attributeObject ? [attributeObject] : []
+                ),
+              ]
             )
           )
         );
+
+        // statements.push(
+        //   t.expressionStatement(
+        //     t.callExpression(
+        //       t.memberExpression(
+        //         t.identifier(elementId),
+        //         t.identifier('append')
+        //       ),
+        //       [t.callExpression(t.identifier(item.tagName), [])]
+        //     )
+        //   )
+        // );
       }
     });
 
@@ -189,6 +343,7 @@ export default function (babel: { types: typeof babelTypes }) {
         )
       );
     } else {
+      console.log('content', content);
       content.forEach((item, childIndex) => {
         if (typeof item.content === 'string') {
           statements.push(
@@ -338,7 +493,8 @@ export default function (babel: { types: typeof babelTypes }) {
       | babelTypes.JSXExpressionContainer
       | babelTypes.JSXSpreadChild
       | babelTypes.JSXFragment
-    )[]
+    )[],
+    attributes: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
   ) => {
     const content: Content[] = [];
     children.forEach((item, childIndex) => {
@@ -351,6 +507,7 @@ export default function (babel: { types: typeof babelTypes }) {
           parentId,
           tagName: 'span',
           content: item.expression.value,
+          attributes,
         });
       } else if (item.type === 'JSXText' && item.value.trim() !== '') {
         content.push({
@@ -358,6 +515,20 @@ export default function (babel: { types: typeof babelTypes }) {
           parentId,
           tagName: 'span',
           content: item.value,
+          attributes,
+        });
+      } else if (
+        item.type === 'JSXExpressionContainer' &&
+        item.expression.type !== 'JSXEmptyExpression'
+      ) {
+        content.push({
+          index: childIndex,
+          parentId,
+          tagName: 'span',
+          content: '',
+          isExpression: true,
+          expression: item.expression,
+          attributes,
         });
       } else if (item.type === 'JSXElement') {
         const tagName = (
@@ -371,6 +542,7 @@ export default function (babel: { types: typeof babelTypes }) {
               item.openingElement.name as unknown as babelTypes.JSXIdentifier
             ).name,
             content: item,
+            attributes: item.openingElement.attributes,
           });
         } else if (
           item.children &&
@@ -384,10 +556,25 @@ export default function (babel: { types: typeof babelTypes }) {
               item.openingElement.name as unknown as babelTypes.JSXIdentifier
             ).name,
             content: item.children[0].value,
+            attributes: item.openingElement.attributes,
           });
         } else if (item.children.length > 0) {
           content.push(
-            ...handleChildren(childIndex, parentId + '_', item.children)
+            {
+              index: childIndex,
+              parentId,
+              tagName: (
+                item.openingElement.name as unknown as babelTypes.JSXIdentifier
+              ).name,
+              content: '',
+              attributes: item.openingElement.attributes,
+            },
+            ...handleChildren(
+              childIndex,
+              parentId + '_',
+              item.children,
+              item.openingElement.attributes
+            )
           );
         }
       }
@@ -419,7 +606,14 @@ export default function (babel: { types: typeof babelTypes }) {
 
       return createTemplateForHtml(blockElements);
     } else if (path.node.children && path.node.children.length > 0) {
-      const content: Content[] = handleChildren(0, '', path.node.children);
+      const attributes = path.node.openingElement.attributes;
+
+      const content: Content[] = handleChildren(
+        0,
+        '',
+        path.node.children,
+        attributes
+      );
       const blockElements: babelTypes.Statement[] = [];
       const result = appendChildrenToTemplate(0, 'template', tagName, content);
       blockElements.push(...result.statements);
@@ -454,26 +648,26 @@ export default function (babel: { types: typeof babelTypes }) {
         let hasText = false;
         let hasOtherElements = false;
         if (path.node.children) {
-          console.log('children', path.node.children);
+          //console.log('children', path.node.children);
           path.node.children.forEach((child) => {
             if (
               child.type === 'JSXExpressionContainer' &&
               child.expression.type === 'StringLiteral'
             ) {
-              console.log(
-                'child is JSXExpressionContainer',
-                child.expression.value
-              );
+              // console.log(
+              //   'child is JSXExpressionContainer',
+              //   child.expression.value
+              // );
               hasText = true;
             } else if (child.type === 'JSXElement') {
-              console.log(
-                'child is jsx element',
-                (
-                  child.openingElement
-                    .name as unknown as babelTypes.JSXIdentifier
-                ).name,
-                child.children
-              );
+              // console.log(
+              //   'child is jsx element',
+              //   (
+              //     child.openingElement
+              //       .name as unknown as babelTypes.JSXIdentifier
+              //   ).name,
+              //   child.children
+              // );
             } else {
               //console.log('child is not text', child);
               hasOtherElements = true;
@@ -519,7 +713,7 @@ export default function (babel: { types: typeof babelTypes }) {
         path.replaceWith(returnStatement);
       },
       JSXText(path: NodePath<babelTypes.JSXText>) {
-        console.log('JSXTEXT parsing');
+        //console.log('JSXTEXT parsing');
         const text = path.node.value;
         const trimmed = text.trim();
         if (trimmed.length === 0) {

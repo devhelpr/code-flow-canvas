@@ -1,7 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 //import { createJSXElement } from '@devhelpr/visual-programming-system';
 
-export const TestComponent = () => {
+function Add(a: number, b: number) {
+  return a + b;
+}
+
+export const TestComponent = (props: any) => {
   console.log('TestComponent constructor');
   return (
     <div>
@@ -17,7 +21,8 @@ export const TestComponent = () => {
       >
         Click Me
       </button>
-      {2 + 3}
+      {2 + 3 * Add(1, 6)}
+      {props.test}
     </div>
   );
 };
