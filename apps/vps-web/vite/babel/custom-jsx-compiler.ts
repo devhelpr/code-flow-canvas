@@ -281,148 +281,12 @@ export default function (babel: { types: typeof babelTypes }) {
             )
           )
         );
-
-        // statements.push(
-        //   t.expressionStatement(
-        //     t.callExpression(
-        //       t.memberExpression(
-        //         t.identifier(elementId),
-        //         t.identifier('append')
-        //       ),
-        //       [t.callExpression(t.identifier(item.tagName), [])]
-        //     )
-        //   )
-        // );
       }
     });
 
     return {
       elementId,
       statements: [...statements],
-    };
-  };
-
-  const appendHtmlToTemplate = (
-    index: number,
-    templateVariableName: string,
-    tagName: string,
-    content: string | Content[]
-  ): ElementsResult => {
-    const elementId = `element${index}`;
-
-    const variableDefinition = t.variableDeclaration('const', [
-      t.variableDeclarator(
-        t.identifier(elementId),
-        t.callExpression(
-          t.memberExpression(
-            t.identifier('document'),
-            t.identifier('createElement')
-          ),
-          [t.stringLiteral(tagName)]
-        )
-      ),
-    ]);
-
-    const statements: babelTypes.Statement[] = [];
-
-    if (typeof content === 'string') {
-      statements.push(
-        t.expressionStatement(
-          t.callExpression(
-            t.memberExpression(t.identifier(elementId), t.identifier('append')),
-            [
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier('document'),
-                  t.identifier('createTextNode')
-                ),
-                [t.stringLiteral(content)]
-              ),
-            ]
-          )
-        )
-      );
-    } else {
-      console.log('content', content);
-      content.forEach((item, childIndex) => {
-        if (typeof item.content === 'string') {
-          statements.push(
-            t.variableDeclaration('const', [
-              t.variableDeclarator(
-                t.identifier(`elementChild${childIndex}`),
-                t.callExpression(
-                  t.memberExpression(
-                    t.identifier('document'),
-                    t.identifier('createElement')
-                  ),
-                  [t.stringLiteral(item.tagName)]
-                )
-              ),
-            ])
-          );
-
-          statements.push(
-            t.expressionStatement(
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier(elementId),
-                  t.identifier('append')
-                ),
-                [t.identifier(`elementChild${childIndex}`)]
-              )
-            )
-          );
-
-          statements.push(
-            t.expressionStatement(
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier(`elementChild${childIndex}`),
-                  t.identifier('append')
-                ),
-                [
-                  t.callExpression(
-                    t.memberExpression(
-                      t.identifier('document'),
-                      t.identifier('createTextNode')
-                    ),
-                    [t.stringLiteral(item.content)]
-                  ),
-                ]
-              )
-            )
-          );
-        } else {
-          statements.push(
-            t.expressionStatement(
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier(elementId),
-                  t.identifier('append')
-                ),
-                [t.callExpression(t.identifier(item.tagName), [])]
-              )
-            )
-          );
-        }
-      });
-    }
-
-    const expressionStatement = t.expressionStatement(
-      t.callExpression(
-        t.memberExpression(
-          t.memberExpression(
-            t.identifier(templateVariableName),
-            t.identifier('content')
-          ),
-          t.identifier('append')
-        ),
-        [t.identifier(elementId)]
-      )
-    );
-    return {
-      elementId,
-      statements: [variableDefinition, ...statements, expressionStatement],
     };
   };
 
@@ -446,13 +310,6 @@ export default function (babel: { types: typeof babelTypes }) {
         callCreateTemplateExpression
       ),
     ]);
-    // const expressionStatement = t.expressionStatement(
-    //   t.assignmentExpression(
-    //     '=',
-    //     t.memberExpression(t.identifier('template'), t.identifier('innerHTML')),
-    //     t.stringLiteral(html)
-    //   )
-    // );
 
     const callCloneNodeExpression = t.callExpression(
       t.memberExpression(
@@ -464,16 +321,6 @@ export default function (babel: { types: typeof babelTypes }) {
     const variableCloneNodeDefinition = t.variableDeclaration('const', [
       t.variableDeclarator(t.identifier('cloneNode'), callCloneNodeExpression),
     ]);
-
-    /*
-	const blockElements: babelTypes.Statement[] = [];
-    content.forEach((item, index) => {
-      blockElements.push(
-        ...appendHtmlToTemplate(index, 'template', item.tagName, item.content)
-      );
-    });
-
-	*/
 
     const blockStatement = t.blockStatement([
       variableDefinition,
@@ -617,86 +464,7 @@ export default function (babel: { types: typeof babelTypes }) {
     name: 'custom-jsx-plugin',
     visitor: {
       JSXElement(path: NodePath<babelTypes.JSXElement>) {
-        // const openingElement = path.node.openingElement;
-        // const tagName = (
-        //   openingElement.name as unknown as babelTypes.JSXIdentifier
-        // ).name;
-
-        // const args: any[] = [];
-        // args.push(t.stringLiteral(tagName));
-        // // as we are considering props as null for now
-        // const attribs = t.nullLiteral();
-        // //push props or other attributes which is null for now
-        // args.push(attribs);
-
-        // //const expression = t.expressionStatement(t.);
         const returnStatement = handleJSXElement(path);
-
-        let hasText = false;
-        let hasOtherElements = false;
-        if (path.node.children) {
-          //console.log('children', path.node.children);
-          path.node.children.forEach((child) => {
-            if (
-              child.type === 'JSXExpressionContainer' &&
-              child.expression.type === 'StringLiteral'
-            ) {
-              // console.log(
-              //   'child is JSXExpressionContainer',
-              //   child.expression.value
-              // );
-              hasText = true;
-            } else if (child.type === 'JSXElement') {
-              // console.log(
-              //   'child is jsx element',
-              //   (
-              //     child.openingElement
-              //       .name as unknown as babelTypes.JSXIdentifier
-              //   ).name,
-              //   child.children
-              // );
-            } else {
-              //console.log('child is not text', child);
-              hasOtherElements = true;
-            }
-          });
-        }
-
-        // let children = path.node.children;
-
-        // if (hasText && hasOtherElements) {
-        //   console.log('hasText && hasOtherElements');
-        //   children = children.map((child) => {
-        //     if (
-        //       child.type === 'JSXExpressionContainer' &&
-        //       child.expression.type === 'StringLiteral'
-        //     ) {
-        //       const reactIdentifier = t.identifier('JSX'); //object
-        //       const createElementIdentifier = t.identifier('createTextElement'); //property of object
-        //       const callee = t.memberExpression(
-        //         reactIdentifier,
-        //         createElementIdentifier
-        //       );
-        //       const callExpression = t.callExpression(callee, [
-        //         child.expression,
-        //       ]);
-        //       //callExpression.arguments = );
-        //       return callExpression;
-        //     } else {
-        //       return child;
-        //     }
-        //   });
-        //   console.log('children', children);
-        // }
-        // } else if (hasText) {
-        //   console.log('hasText');
-        //   children = children.map((child) => {
-        //     return t.stringLiteral(child.value);
-        //   });
-        // }
-        //callExpression.arguments = callExpression.arguments.concat(children);
-        // replace jsxElement node with the call expression node made above
-        //path.replaceWith(callExpression);
         if (returnStatement) {
           path.replaceWith(returnStatement);
         }
