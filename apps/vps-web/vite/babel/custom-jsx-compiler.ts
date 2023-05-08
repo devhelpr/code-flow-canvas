@@ -25,6 +25,7 @@ export default function (babel: { types: typeof babelTypes }) {
   const getAttributes = (
     attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
   ) => {
+    // needed for Custom Components
     let attributeObject: babelTypes.ObjectExpression | undefined;
     if (attributes) {
       const properties: babelTypes.ObjectProperty[] = [];
@@ -52,6 +53,7 @@ export default function (babel: { types: typeof babelTypes }) {
     elementName: string,
     attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
   ) => {
+    // needed for html elements
     const statements: babelTypes.Statement[] = [];
     if (attributes) {
       attributes.forEach((attribute) => {
@@ -75,6 +77,31 @@ export default function (babel: { types: typeof babelTypes }) {
               )
             )
           );
+        } else {
+          // TODO : event handlers should be set on the cloned node ... not on the template!!
+
+          if (
+            attribute.type === 'JSXAttribute' &&
+            attribute.value &&
+            attribute.value.type === 'JSXExpressionContainer' &&
+            attribute.value.expression &&
+            attribute.value.expression.type === 'ArrowFunctionExpression'
+          ) {
+            statements.push(
+              t.expressionStatement(
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier(elementName),
+                    t.identifier('addEventListener')
+                  ),
+                  [
+                    t.stringLiteral(attribute.name.name.toString()),
+                    attribute.value.expression,
+                  ]
+                )
+              )
+            );
+          }
         }
       });
     }
