@@ -4,12 +4,25 @@ import { TestComponent } from './components/test-component';
 const AnotherComponent = () => {
   return <div>Another Component</div>;
 };
-export const TestApp = () => <div />;
+export const TestApp = () => (
+  <div className="hello">
+    <p>paragraaf</p>
+    <div>
+      Test
+      <h1 class="strong text-lg font-bold">Hello JSX!</h1>
+      <p>lorem ipsum</p>
+      <TestComponent test="hello test property" />
+      <AnotherComponent />
+    </div>
+    <AnotherComponent></AnotherComponent>
+  </div>
+);
 /*
 
  <h1>Hello JSX!</h1>
     <TestComponent />
 
+  <div>  
     <div className="hello">
     <p>paragraaf</p>
     <div>
