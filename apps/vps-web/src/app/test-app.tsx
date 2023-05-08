@@ -4,8 +4,13 @@ import { TestComponent } from './components/test-component';
 const AnotherComponent = () => {
   return <div>Another Component</div>;
 };
-export const TestApp = () => (
-  <div className="hello">
+export const TestApp = () => <div />;
+/*
+
+ <h1>Hello JSX!</h1>
+    <TestComponent />
+
+    <div className="hello">
     <p>paragraaf</p>
     <div>
       Test
@@ -15,9 +20,4 @@ export const TestApp = () => (
       <AnotherComponent />
     </div>
   </div>
-);
-/*
-
- <h1>Hello JSX!</h1>
-    <TestComponent />
     */

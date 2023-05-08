@@ -587,25 +587,7 @@ export default function (babel: { types: typeof babelTypes }) {
     const tagName = (openingElement.name as unknown as babelTypes.JSXIdentifier)
       .name;
 
-    // const args: any[] = [];
-    // args.push(t.stringLiteral(tagName));
-    // const attribs = t.nullLiteral();
-    // args.push(attribs);
-
-    const blockElements: babelTypes.Statement[] = [];
-    let content = '';
-    if (
-      path.node.children &&
-      path.node.children.length === 1 &&
-      path.node.children[0].type === 'JSXText'
-    ) {
-      content = path.node.children[0].value;
-
-      const result = appendHtmlToTemplate(0, 'template', tagName, content);
-      blockElements.push(...result.statements);
-
-      return createTemplateForHtml(blockElements);
-    } else if (path.node.children && path.node.children.length > 0) {
+    if (path.node.children && path.node.children.length > 0) {
       const attributes = path.node.openingElement.attributes;
 
       const content: Content[] = handleChildren(
@@ -619,11 +601,16 @@ export default function (babel: { types: typeof babelTypes }) {
       blockElements.push(...result.statements);
 
       return createTemplateForHtml(blockElements);
-    }
+    } else {
+      const attributes = path.node.openingElement.attributes;
 
-    const result = appendHtmlToTemplate(0, 'template', tagName, content);
-    blockElements.push(...result.statements);
-    return createTemplateForHtml(blockElements);
+      const content: Content[] = handleChildren(0, '', [path.node], attributes);
+      const blockElements: babelTypes.Statement[] = [];
+      const result = appendChildrenToTemplate(0, 'template', tagName, content);
+      blockElements.push(...result.statements);
+
+      return createTemplateForHtml(blockElements);
+    }
   };
 
   return {
@@ -710,7 +697,9 @@ export default function (babel: { types: typeof babelTypes }) {
         //callExpression.arguments = callExpression.arguments.concat(children);
         // replace jsxElement node with the call expression node made above
         //path.replaceWith(callExpression);
-        path.replaceWith(returnStatement);
+        if (returnStatement) {
+          path.replaceWith(returnStatement);
+        }
       },
       JSXText(path: NodePath<babelTypes.JSXText>) {
         //console.log('JSXTEXT parsing');
