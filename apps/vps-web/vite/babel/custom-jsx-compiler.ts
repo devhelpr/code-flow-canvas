@@ -87,31 +87,43 @@ export default function (babel: { types: typeof babelTypes }) {
               )
             )
           );
-        } else {
-          // TODO : event handlers should be set on the cloned node ... not on the template!!
+        }
+      });
+    }
+    return statements;
+  };
 
-          if (
-            attribute.type === 'JSXAttribute' &&
-            attribute.value &&
-            attribute.value.type === 'JSXExpressionContainer' &&
-            attribute.value.expression &&
-            attribute.value.expression.type === 'ArrowFunctionExpression'
-          ) {
-            statements.push(
-              t.expressionStatement(
-                t.callExpression(
-                  t.memberExpression(
-                    t.identifier(elementName),
-                    t.identifier('addEventListener')
-                  ),
-                  [
-                    t.stringLiteral(attribute.name.name.toString()),
-                    attribute.value.expression,
-                  ]
-                )
+  const setEventAttributes = (
+    elementName: string,
+    attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
+  ) => {
+    // needed for html elements
+    const statements: babelTypes.Statement[] = [];
+    if (attributes) {
+      attributes.forEach((attribute) => {
+        // TODO : event handlers should be set on the cloned node ... not on the template!!
+
+        if (
+          attribute.type === 'JSXAttribute' &&
+          attribute.value &&
+          attribute.value.type === 'JSXExpressionContainer' &&
+          attribute.value.expression &&
+          attribute.value.expression.type === 'ArrowFunctionExpression'
+        ) {
+          statements.push(
+            t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier(elementName),
+                  t.identifier('addEventListener')
+                ),
+                [
+                  t.stringLiteral(attribute.name.name.toString()),
+                  attribute.value.expression,
+                ]
               )
-            );
-          }
+            )
+          );
         }
       });
     }
@@ -197,6 +209,22 @@ export default function (babel: { types: typeof babelTypes }) {
             )
           )
         );
+
+        addToParent(
+          templateVariableName !== 'template',
+          templateVariableName,
+          elementId
+        );
+
+        if (item && item.children && item.children.length > 0) {
+          const childStatements = appendChildrenToTemplate(
+            0,
+            elementId,
+            '',
+            item.children
+          );
+          statements.push(...childStatements);
+        }
       } else if (typeof item.content === 'string') {
         statements.push(
           t.variableDeclaration('const', [
@@ -283,7 +311,8 @@ export default function (babel: { types: typeof babelTypes }) {
   };
 
   const createTemplateForHtml = (
-    blockElements: babelTypes.Statement[] = []
+    blockElements: babelTypes.Statement[] = [],
+    elementReferenceBlocks: babelTypes.Statement[] = []
   ) => {
     const documentIdentifier = t.identifier('document');
     const createTemplateIdentifier = t.identifier('createElement');
@@ -318,6 +347,7 @@ export default function (babel: { types: typeof babelTypes }) {
       variableDefinition,
       ...blockElements,
       variableCloneNodeDefinition,
+      ...elementReferenceBlocks,
       t.returnStatement(t.identifier('cloneNode')),
     ]);
     return blockStatement;
@@ -467,6 +497,47 @@ export default function (babel: { types: typeof babelTypes }) {
     return content;
   };
 
+  const createElementReferences = (parentId: string, content: Content[]) => {
+    const elementReferenceBlocks: babelTypes.Statement[] = [];
+    let previousElement: babelTypes.Identifier | undefined = undefined;
+
+    if (parentId !== 'template') {
+      previousElement = t.identifier(parentId);
+    }
+    content.forEach((item, index) => {
+      const elementReferenceName =
+        (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
+      const elementReferenceIdentifier = t.identifier(elementReferenceName);
+      const elementReference = t.variableDeclaration('const', [
+        t.variableDeclarator(
+          elementReferenceIdentifier,
+          //t.callExpression(
+          t.memberExpression(
+            previousElement ?? t.identifier('cloneNode'),
+            index === 0
+              ? t.identifier('firstChild')
+              : t.identifier('nextSibling')
+          ) //,
+          //[]
+          //)
+        ),
+      ]);
+      elementReferenceBlocks.push(elementReference);
+
+      elementReferenceBlocks.push(
+        ...setEventAttributes(elementReferenceName, item.attributes)
+      );
+
+      if (item.children && item.children.length > 0) {
+        elementReferenceBlocks.push(
+          ...createElementReferences(elementReferenceName, item.children)
+        );
+      }
+      previousElement = elementReferenceIdentifier;
+    });
+    return elementReferenceBlocks;
+  };
+
   const handleJSXElement = (path: NodePath<babelTypes.JSXElement>) => {
     const openingElement = path.node.openingElement;
     const tagName = (openingElement.name as unknown as babelTypes.JSXIdentifier)
@@ -485,7 +556,10 @@ export default function (babel: { types: typeof babelTypes }) {
       const result = appendChildrenToTemplate(0, 'template', tagName, content);
       blockElements.push(...result);
 
-      return createTemplateForHtml(blockElements);
+      const elementReferenceBlocks: babelTypes.Statement[] =
+        createElementReferences('template', content);
+
+      return createTemplateForHtml(blockElements, elementReferenceBlocks);
     } else {
       const attributes = path.node.openingElement.attributes;
 
@@ -499,7 +573,10 @@ export default function (babel: { types: typeof babelTypes }) {
       const result = appendChildrenToTemplate(0, 'template', tagName, content);
       blockElements.push(...result);
 
-      return createTemplateForHtml(blockElements);
+      const elementReferenceBlocks: babelTypes.Statement[] =
+        createElementReferences('template', content);
+
+      return createTemplateForHtml(blockElements, elementReferenceBlocks);
     }
   };
 
