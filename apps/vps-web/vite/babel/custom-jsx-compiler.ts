@@ -155,48 +155,7 @@ export default function (babel: { types: typeof babelTypes }) {
       statements.push(expressionStatement);
     };
 
-    //let lastParentId: string | undefined = undefined;
-    //const elements: string[] = [];
     content.forEach((item, childIndex) => {
-      // if (!lastParentId || item.parentId !== lastParentId) {
-      //   let addToTemplate = false;
-      //   if (lastParentId === undefined) {
-      //     addToTemplate = true;
-      //   } else if (lastParentId === '') {
-      //     parentId = elementId;
-      //   } else {
-      //     parentId = elementId;
-      //   }
-
-      //   elementId = `element_${index}_${childIndex}`;
-
-      //   if (elements.indexOf(elementId) === -1) {
-      //     const variableDefinition = t.variableDeclaration('const', [
-      //       t.variableDeclarator(
-      //         t.identifier(elementId),
-      //         t.callExpression(
-      //           t.memberExpression(
-      //             t.identifier('document'),
-      //             t.identifier('createElement')
-      //           ),
-      //           [t.stringLiteral(tagName)]
-      //         )
-      //       ),
-      //     ]);
-
-      //     statements.push(variableDefinition);
-      //     elements.push(elementId);
-      //   }
-
-      //   // addToParent(
-      //   //   !addToTemplate,
-      //   //   addToTemplate ? templateVariableName : parentId
-      //   // );
-      //   addToParent(templateVariableName !== 'template', templateVariableName);
-
-      //   lastParentId = item.parentId;
-      // }
-
       const elementId = `${
         templateVariableName !== 'template' ? templateVariableName : ''
       }elementChild_${childIndex}`;
@@ -218,18 +177,6 @@ export default function (babel: { types: typeof babelTypes }) {
         );
 
         statements.push(...setAttributes(elementId, item.attributes));
-
-        // statements.push(
-        //   t.expressionStatement(
-        //     t.callExpression(
-        //       t.memberExpression(
-        //         t.identifier(elementId),
-        //         t.identifier('append')
-        //       ),
-        //       [t.identifier(`elementChild${childIndex}`)]
-        //     )
-        //   )
-        // );
 
         statements.push(
           t.expressionStatement(
@@ -267,18 +214,6 @@ export default function (babel: { types: typeof babelTypes }) {
         );
 
         statements.push(...setAttributes(elementId, item.attributes));
-
-        // statements.push(
-        //   t.expressionStatement(
-        //     t.callExpression(
-        //       t.memberExpression(
-        //         t.identifier(elementId),
-        //         t.identifier('append')
-        //       ),
-        //       [t.identifier(`elementChild${childIndex}`)]
-        //     )
-        //   )
-        // );
 
         statements.push(
           t.expressionStatement(
@@ -590,9 +525,3 @@ export default function (babel: { types: typeof babelTypes }) {
     },
   };
 }
-
-/*
-    JSXElement where opening tag starts with capital letter	
-	divChild.append(externalComponent())
-    // callExpression
-*/
