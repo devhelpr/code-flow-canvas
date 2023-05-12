@@ -75,7 +75,7 @@ export const createCubicBezier = <T>(
   }
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.Start,
     '#ff000080',
     startX,
@@ -105,7 +105,7 @@ export const createCubicBezier = <T>(
 
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.End,
     '#ffff4080',
     endX,
@@ -134,7 +134,7 @@ export const createCubicBezier = <T>(
   };
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.ControlPoint,
     '#00ff00',
     controlPoint1X,
@@ -157,7 +157,7 @@ export const createCubicBezier = <T>(
   };
   const controlPoint2Element = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.ControlPoint,
     '#0000ff',
     controlPoint2X,
@@ -415,7 +415,7 @@ export const createQuadraticBezier = <T>(
   }
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.Start,
     '#ff000080',
     startX,
@@ -440,7 +440,7 @@ export const createQuadraticBezier = <T>(
 
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.End,
     '#ff000080',
     endX,
@@ -464,7 +464,7 @@ export const createQuadraticBezier = <T>(
   };
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
-    elements,
+    connection.elements,
     ThumbType.ControlPoint,
     '#00ff00',
     controlPoint1X,

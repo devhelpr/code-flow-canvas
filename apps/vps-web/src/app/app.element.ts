@@ -31,6 +31,7 @@ import {
 import flowData from '../example-data/tiltest.json';
 
 import { TestApp } from './test-app';
+import { run } from './simple-flow-engine/simple-flow-engine';
 console.log('Test', TestApp);
 
 const template = document.createElement('template');
@@ -250,6 +251,7 @@ export class AppElement extends HTMLElement {
               );
 
               curve.nodeComponent.isControlled = true;
+              curve.nodeComponent.nodeInfo = flowNode;
 
               if (start && curve.nodeComponent) {
                 curve.nodeComponent.components.push({
@@ -462,6 +464,22 @@ export class AppElement extends HTMLElement {
       },
       menubarElement.domElement,
       'switch visibility'
+    );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          if (this.canvasApp?.elements) {
+            run<NodeInfo>(this.canvasApp?.elements);
+          }
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'run'
     );
 
     const selectedNode = createElement(
