@@ -97,12 +97,9 @@ export default function (babel: { types: typeof babelTypes }) {
     elementName: string,
     attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
   ) => {
-    // needed for html elements
     const statements: babelTypes.Statement[] = [];
     if (attributes) {
       attributes.forEach((attribute) => {
-        // TODO : event handlers should be set on the cloned node ... not on the template!!
-
         if (
           attribute.type === 'JSXAttribute' &&
           attribute.value &&
@@ -131,15 +128,9 @@ export default function (babel: { types: typeof babelTypes }) {
   };
 
   const appendChildrenToTemplate = (
-    index: number,
     templateVariableName: string,
-    tagName: string,
     content: Content[]
   ): babelTypes.Statement[] => {
-    //console.log(`appendChildrenToTemplate`, content);
-    //let elementId = `element_${index}_0`;
-    //let parentId = `element${index}`;
-
     const statements: babelTypes.Statement[] = [];
 
     const addToParent = (
@@ -218,9 +209,7 @@ export default function (babel: { types: typeof babelTypes }) {
 
         if (item && item.children && item.children.length > 0) {
           const childStatements = appendChildrenToTemplate(
-            0,
             elementId,
-            '',
             item.children
           );
           statements.push(...childStatements);
@@ -270,9 +259,7 @@ export default function (babel: { types: typeof babelTypes }) {
 
         if (item && item.children && item.children.length > 0) {
           const childStatements = appendChildrenToTemplate(
-            0,
             elementId,
-            '',
             item.children
           );
           statements.push(...childStatements);
@@ -551,7 +538,7 @@ export default function (babel: { types: typeof babelTypes }) {
         path.node
       );
       const blockElements: babelTypes.Statement[] = [];
-      const result = appendChildrenToTemplate(0, 'template', tagName, content);
+      const result = appendChildrenToTemplate('template', content);
       blockElements.push(...result);
 
       const elementReferenceBlocks: babelTypes.Statement[] =
@@ -568,7 +555,7 @@ export default function (babel: { types: typeof babelTypes }) {
         path.node
       );
       const blockElements: babelTypes.Statement[] = [];
-      const result = appendChildrenToTemplate(0, 'template', tagName, content);
+      const result = appendChildrenToTemplate('template', content);
       blockElements.push(...result);
 
       const elementReferenceBlocks: babelTypes.Statement[] =
