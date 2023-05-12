@@ -305,6 +305,7 @@ export class AppElement extends HTMLElement {
               class: `${button} w-[300px] h-[300px] overflow-hidden m-0`,
               click: (event) => {
                 event.preventDefault();
+                event.stopPropagation();
                 alert('test');
                 return false;
               },

@@ -186,7 +186,12 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         //   isMoving &&
         //   Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD)
       ) {
-        console.log('click canvas', isMoving, Date.now() - startTime);
+        console.log(
+          'click canvas',
+          event.target,
+          isMoving,
+          Date.now() - startTime
+        );
         setSelectNode(undefined);
         // if (onClickCanvas) {
         //   const mousePointTo = {

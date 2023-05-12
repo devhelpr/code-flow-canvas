@@ -7,7 +7,7 @@ const AnotherComponent = () => {
 export const TestApp = () => (
   <div className="hello">
     <p>paragraaf</p>
-    <div>
+    <div class="parent">
       Test
       <h1 class="strong text-xl font-bold">Hello JSX!</h1>
       <p>lorem ipsum</p>

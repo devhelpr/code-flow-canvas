@@ -278,31 +278,21 @@ export default function (babel: { types: typeof babelTypes }) {
           statements.push(...childStatements);
         }
       } else {
-        console.log('item', item.tagName, templateVariableName);
-        const attributeObject = getAttributes(item.attributes);
+        // create a document fragment to append external components to
+        // this will happen during cloning and adding the component to the DOM
         statements.push(
-          t.expressionStatement(
-            t.callExpression(
-              templateVariableName === 'template'
-                ? t.memberExpression(
-                    t.memberExpression(
-                      t.identifier(templateVariableName),
-                      t.identifier('content')
-                    ),
-                    t.identifier('append')
-                  )
-                : t.memberExpression(
-                    t.identifier(templateVariableName),
-                    t.identifier('append')
-                  ),
-              [
-                t.callExpression(
-                  t.identifier(item.tagName),
-                  attributeObject ? [attributeObject] : []
+          t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier(elementId),
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier('document'),
+                  t.identifier('createDocumentFragment')
                 ),
-              ]
-            )
-          )
+                []
+              )
+            ),
+          ])
         );
       }
     });
@@ -455,25 +445,6 @@ export default function (babel: { types: typeof babelTypes }) {
           });
           childIndex++;
         } else if (item.children.length > 0) {
-          /*content.push(
-            {
-              index: childIndex,
-              parentId,
-              tagName: (
-                item.openingElement.name as unknown as babelTypes.JSXIdentifier
-              ).name,
-              content: '',
-              attributes: item.openingElement.attributes,
-            },
-            ...handleChildren(
-              childIndex,
-              parentId + '_',
-              item.children,
-              item.openingElement.attributes
-            )
-          );
-
-          */
           content.push({
             index: childIndex,
             parentId,
@@ -493,7 +464,6 @@ export default function (babel: { types: typeof babelTypes }) {
         }
       }
     });
-    //console.log('content', content);
     return content;
   };
 
@@ -511,19 +481,47 @@ export default function (babel: { types: typeof babelTypes }) {
       const elementReference = t.variableDeclaration('const', [
         t.variableDeclarator(
           elementReferenceIdentifier,
-          //t.callExpression(
           t.memberExpression(
             previousElement ?? t.identifier('cloneNode'),
             index === 0
               ? t.identifier('firstChild')
               : t.identifier('nextSibling')
-          ) //,
-          //[]
-          //)
+          )
         ),
       ]);
       elementReferenceBlocks.push(elementReference);
 
+      if (!item.isExpression && typeof item.content !== 'string') {
+        // if component contains another component ..
+        //   .. then appendChild it to the cloned node instead of to the template...
+        //   (the template contains a documet fragment)
+
+        const attributeObject = getAttributes(item.attributes);
+        elementReferenceBlocks.push(
+          t.expressionStatement(
+            t.callExpression(
+              parentId === 'template'
+                ? t.memberExpression(
+                    t.memberExpression(
+                      t.identifier(parentId),
+                      t.identifier('content')
+                    ),
+                    t.identifier('appendChild')
+                  )
+                : t.memberExpression(
+                    t.identifier(parentId),
+                    t.identifier('appendChild')
+                  ),
+              [
+                t.callExpression(
+                  t.identifier(item.tagName),
+                  attributeObject ? [attributeObject] : []
+                ),
+              ]
+            )
+          )
+        );
+      }
       elementReferenceBlocks.push(
         ...setEventAttributes(elementReferenceName, item.attributes)
       );
