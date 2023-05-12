@@ -569,21 +569,21 @@ export default function (babel: { types: typeof babelTypes }) {
     name: 'custom-jsx-plugin',
     visitor: {
       JSXElement(path: NodePath<babelTypes.JSXElement>) {
-        const returnStatement = handleJSXElement(path);
-        if (returnStatement) {
-          path.replaceWith(returnStatement);
+        const statements = handleJSXElement(path);
+        if (statements) {
+          path.replaceWith(statements);
         }
       },
-      JSXText(path: NodePath<babelTypes.JSXText>) {
-        //console.log('JSXTEXT parsing');
-        const text = path.node.value;
-        const trimmed = text.trim();
-        if (trimmed.length === 0) {
-          path.remove();
-        } else {
-          path.replaceWith(t.stringLiteral(trimmed));
-        }
-      },
+      // JSXText(path: NodePath<babelTypes.JSXText>) {
+      //   console.log('JSXTEXT parsing');
+      //   const text = path.node.value;
+      //   const trimmed = text.trim();
+      //   if (trimmed.length === 0) {
+      //     path.remove();
+      //   } else {
+      //     path.replaceWith(t.stringLiteral(trimmed));
+      //   }
+      // },
     },
   };
 }

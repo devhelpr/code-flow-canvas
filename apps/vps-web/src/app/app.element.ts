@@ -314,7 +314,7 @@ export class AppElement extends HTMLElement {
             'Click here'
           );
 
-          const testJSXElement = createElement(
+          const jsxComponentWrapper = createElement(
             'div',
             {
               class: `bg-slate-500 p-4 rounded cursor-pointer`,
@@ -362,7 +362,7 @@ export class AppElement extends HTMLElement {
                 connectionType: ThumbConnectionType.end,
               },
             ],
-            testJSXElement,
+            jsxComponentWrapper,
             //testButton as unknown as INodeComponent<NodeInfo>,
             //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
             {
