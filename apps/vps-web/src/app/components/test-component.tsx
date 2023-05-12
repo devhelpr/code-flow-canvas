@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 //import { createJSXElement } from '@devhelpr/visual-programming-system';
+import { getCount, setCount } from '@devhelpr/visual-programming-system';
 
 function Add(a: number, b: number) {
   return a + b;
@@ -16,14 +17,17 @@ export const TestComponent = (props: any) => {
           console.log('click TestComponent');
           ///event.preventDefault();
           //event.stopPropagation();
-          alert('Hello World!');
+          //alert('Hello World!');
+
+          setCount(getCount() + 1);
+
           return false;
         }}
       >
         Click Me
       </button>
-      {2 + 3 * Add(1, 6)}
-      {props.test}
+      <div>{2 + 3 * Add(1, 6)}</div>
+      <div>{getCount()}</div>
     </div>
   );
 };

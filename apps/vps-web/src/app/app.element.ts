@@ -21,6 +21,8 @@ import {
   CanvasAppInstance,
   ThumbType,
   ThumbConnectionType,
+  setCount,
+  getCount,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -32,8 +34,136 @@ import flowData from '../example-data/tiltest.json';
 
 import { TestApp } from './test-app';
 import { run } from './simple-flow-engine/simple-flow-engine';
-console.log('Test', TestApp);
 
+function Add(a, b) {
+  return a + b;
+}
+const TestSubComponent = (props) => {
+  console.log('TestComponent constructor');
+  return (function () {
+    {
+      const template = document.createElement('template');
+      const elementChild_0 = document.createElement('div');
+      elementChild_0.append(document.createTextNode('Hello Test Component'));
+      template.content.append(elementChild_0);
+      const elementChild_1 = document.createElement('button');
+      elementChild_1.setAttribute(
+        'class',
+        'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+      );
+      elementChild_1.append(document.createTextNode('Click Me'));
+      template.content.append(elementChild_1);
+      const elementChild_2 = document.createElement('div');
+      elementChild_2.append(document.createTextNode(2 + 3 * Add(1, 6)));
+      template.content.append(elementChild_2);
+      const elementChild_3 = document.createElement('div');
+      elementChild_3.append(document.createTextNode(props.test));
+      template.content.append(elementChild_3);
+      const cloneNode = template.content.cloneNode(true);
+      const e_0 = cloneNode.firstChild;
+      const e_1 = e_0.nextSibling;
+      e_1.addEventListener('click', (event) => {
+        console.log('click TestComponent');
+        //alert('Hello World!');
+        setCount(getCount() + 1);
+        return false;
+      });
+      const e_2 = e_1.nextSibling;
+      const e_3 = e_2.nextSibling;
+
+      createEffect(() => {
+        console.log('effect TestComponent');
+        e_3.textContent = getCount().toString();
+      });
+      return cloneNode;
+    }
+  })();
+};
+const TestAnotherComponent = () => {
+  return (function () {
+    {
+      const template = document.createElement('template');
+      const elementChild_0 = document.createElement('div');
+      elementChild_0.append(document.createTextNode('Another Component text'));
+      template.content.append(elementChild_0);
+      const cloneNode = template.content.cloneNode(true);
+      const e_0 = cloneNode.firstChild;
+      return cloneNode;
+    }
+  })();
+};
+
+// 'parent absolute top-0 left-0 bg-white z-[10000]'
+
+const TestDummyComponent = () => {
+  const template = document.createElement('template');
+  const elementChild_0 = document.createElement('p');
+  elementChild_0.append(document.createTextNode('paragraaf'));
+  template.content.append(elementChild_0);
+  const elementChild_1 = document.createElement('div');
+  elementChild_1.setAttribute(
+    'class',
+    'parent absolute top-0 left-0 bg-white z-[10000]'
+  );
+  elementChild_1.append(document.createTextNode(''));
+  template.content.append(elementChild_1);
+
+  // const elementChild_1elementChild_0 = document.createElement('div');
+  // elementChild_1elementChild_0.setAttribute('class', 'parent');
+  // elementChild_1elementChild_0.append(document.createTextNode('Test'));
+
+  const elementChild_1elementChild_0 = document.createTextNode('Testttt');
+  elementChild_1.appendChild(elementChild_1elementChild_0);
+
+  elementChild_1.appendChild(elementChild_1elementChild_0);
+  const elementChild_1elementChild_1 = document.createElement('h1');
+  elementChild_1elementChild_1.setAttribute(
+    'class',
+    'strong text-xl font-bold'
+  );
+  elementChild_1elementChild_1.append(document.createTextNode('Hello JSX!'));
+  elementChild_1.appendChild(elementChild_1elementChild_1);
+  const elementChild_1elementChild_2 = document.createElement('p');
+  elementChild_1elementChild_2.append(document.createTextNode('lorem ipsum'));
+  elementChild_1.appendChild(elementChild_1elementChild_2);
+  const elementChild_1elementChild_3 = document.createElement('div');
+  elementChild_1.appendChild(elementChild_1elementChild_3);
+  const elementChild_1elementChild_4 = document.createElement('div');
+  elementChild_1.appendChild(elementChild_1elementChild_4);
+  const elementChild_2 = document.createElement('div');
+  template.content.append(elementChild_2);
+  const elementChild_3 = document.createElement('h2');
+  elementChild_3.setAttribute('class', 'strong text-lg font-bold');
+  elementChild_3.append(document.createTextNode('TEST H2'));
+  template.content.append(elementChild_3);
+  const cloneNode = template.content.cloneNode(true);
+  const e_0 = cloneNode.firstChild;
+  const e_1 = e_0.nextSibling;
+  const e_1_0 = e_1.firstChild;
+  const e_1_1 = e_1_0.nextSibling;
+  const e_1_2 = e_1_1.nextSibling;
+  const e_1_3 = e_1_2.nextSibling;
+  const e_1_4 = e_1_3.nextSibling;
+
+  e_1_3.replaceWith(
+    TestSubComponent({
+      test: 'hello test property',
+    })
+  );
+  console.log(e_1_2.nextSibling);
+
+  e_1_4.replaceWith(TestAnotherComponent({}));
+
+  //e_1_3 = e_1_2.nextSibling;
+  // console.log('e_1_3', e_1_3, 'nextSibling', e_1_3.nextSibling);
+
+  // e_1_4 = e_1_3.nextSibling;
+  // let e_2 = e_1.nextSibling;
+  // e_2.parentNode.replaceChild(TestAnotherComponent({}), e_2);
+  // e_2 = e_1.nextSibling;
+  // const e_3 = e_2.nextSibling;
+  return cloneNode;
+};
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
@@ -623,7 +753,7 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
-    const element = TestApp();
+    const element = TestApp(); //TestDummyComponent();
     console.log('element', element);
     rootElement.append(element as unknown as Node);
 

@@ -143,7 +143,7 @@ export default function (babel: { types: typeof babelTypes }) {
           addToParentElement
             ? t.memberExpression(
                 t.identifier(templateVariableName),
-                t.identifier('append')
+                t.identifier('appendChild')
               )
             : t.memberExpression(
                 t.memberExpression(
@@ -164,6 +164,7 @@ export default function (babel: { types: typeof babelTypes }) {
       }elementChild_${childIndex}`;
 
       if (item.isExpression === true && item.expression) {
+        //console.log('item.expression', item.tagName, item.expression);
         statements.push(
           t.variableDeclaration('const', [
             t.variableDeclarator(
@@ -171,35 +172,35 @@ export default function (babel: { types: typeof babelTypes }) {
               t.callExpression(
                 t.memberExpression(
                   t.identifier('document'),
-                  t.identifier('createElement')
+                  t.identifier('createTextNode')
                 ),
-                [t.stringLiteral(item.tagName)]
+                [item.expression] // t.stringLiteral(item.tagName)
               )
             ),
           ])
         );
 
-        statements.push(...setAttributes(elementId, item.attributes));
+        // statements.push(...setAttributes(elementId, item.attributes));
 
-        statements.push(
-          t.expressionStatement(
-            t.callExpression(
-              t.memberExpression(
-                t.identifier(elementId),
-                t.identifier('append')
-              ),
-              [
-                t.callExpression(
-                  t.memberExpression(
-                    t.identifier('document'),
-                    t.identifier('createTextNode')
-                  ),
-                  [item.expression]
-                ),
-              ]
-            )
-          )
-        );
+        // statements.push(
+        //   t.expressionStatement(
+        //     t.callExpression(
+        //       t.memberExpression(
+        //         t.identifier(elementId),
+        //         t.identifier('append')
+        //       ),
+        //       [
+        //         t.callExpression(
+        //           t.memberExpression(
+        //             t.identifier('document'),
+        //             t.identifier('createTextNode')
+        //           ),
+        //           [item.expression]
+        //         ),
+        //       ]
+        //     )
+        //   )
+        // );
 
         addToParent(
           templateVariableName !== 'template',
@@ -215,42 +216,58 @@ export default function (babel: { types: typeof babelTypes }) {
           statements.push(...childStatements);
         }
       } else if (typeof item.content === 'string') {
-        statements.push(
-          t.variableDeclaration('const', [
-            t.variableDeclarator(
-              t.identifier(elementId),
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier('document'),
-                  t.identifier('createElement')
-                ),
-                [t.stringLiteral(item.tagName)]
-              )
-            ),
-          ])
-        );
-
-        statements.push(...setAttributes(elementId, item.attributes));
-
-        statements.push(
-          t.expressionStatement(
-            t.callExpression(
-              t.memberExpression(
+        if (item.tagName === '') {
+          statements.push(
+            t.variableDeclaration('const', [
+              t.variableDeclarator(
                 t.identifier(elementId),
-                t.identifier('append')
-              ),
-              [
                 t.callExpression(
                   t.memberExpression(
                     t.identifier('document'),
                     t.identifier('createTextNode')
                   ),
                   [t.stringLiteral(item.content)]
+                )
+              ),
+            ])
+          );
+        } else {
+          statements.push(
+            t.variableDeclaration('const', [
+              t.variableDeclarator(
+                t.identifier(elementId),
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier('document'),
+                    t.identifier('createElement')
+                  ),
+                  [t.stringLiteral(item.tagName)]
+                )
+              ),
+            ])
+          );
+          statements.push(...setAttributes(elementId, item.attributes));
+
+          statements.push(
+            t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier(elementId),
+                  t.identifier('append')
                 ),
-              ]
+                [
+                  t.callExpression(
+                    t.memberExpression(
+                      t.identifier('document'),
+                      t.identifier('createTextNode')
+                    ),
+                    [t.stringLiteral(item.content)]
+                  ),
+                ]
+              )
             )
-          )
-        );
+          );
+        }
         addToParent(
           templateVariableName !== 'template',
           templateVariableName,
@@ -274,12 +291,18 @@ export default function (babel: { types: typeof babelTypes }) {
               t.callExpression(
                 t.memberExpression(
                   t.identifier('document'),
-                  t.identifier('createDocumentFragment')
+                  t.identifier('createElement')
                 ),
-                []
+                [t.stringLiteral('div')]
               )
             ),
           ])
+        );
+
+        addToParent(
+          templateVariableName !== 'template',
+          templateVariableName,
+          elementId
         );
       }
     });
@@ -354,12 +377,13 @@ export default function (babel: { types: typeof babelTypes }) {
         content.push({
           index: childIndex,
           parentId,
-          tagName: parent
-            ? (
-                parent.openingElement
-                  .name as unknown as babelTypes.JSXIdentifier
-              ).name
-            : 'span',
+          tagName: '',
+          // parent
+          //   ? (
+          //       parent.openingElement
+          //         .name as unknown as babelTypes.JSXIdentifier
+          //     ).name
+          //   : 'span',
           content: item.expression.value,
           attributes,
         });
@@ -461,6 +485,9 @@ export default function (babel: { types: typeof babelTypes }) {
     if (parentId !== 'template') {
       previousElement = t.identifier(parentId);
     }
+
+    const effectList: any[] = [];
+    const replaceList: any[] = [];
     content.forEach((item, index) => {
       const elementReferenceName =
         (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
@@ -478,36 +505,40 @@ export default function (babel: { types: typeof babelTypes }) {
       ]);
       elementReferenceBlocks.push(elementReference);
 
-      if (!item.isExpression && typeof item.content !== 'string') {
+      if (item.isExpression) {
+        console.log('expression found', item.expression);
+        effectList.push({
+          id: elementReferenceName,
+          expression: item.expression,
+        });
+      } else if (!item.isExpression && typeof item.content !== 'string') {
         // if component contains another component ..
         //   .. then appendChild it to the cloned node instead of to the template...
         //   (the template contains a documet fragment)
 
         const attributeObject = getAttributes(item.attributes);
-        elementReferenceBlocks.push(
-          t.expressionStatement(
+
+        replaceList.push({
+          id: elementReferenceName,
+          statement: t.expressionStatement(
             t.callExpression(
-              parentId === 'template'
-                ? t.memberExpression(
-                    t.memberExpression(
-                      t.identifier(parentId),
-                      t.identifier('content')
-                    ),
-                    t.identifier('appendChild')
-                  )
-                : t.memberExpression(
-                    t.identifier(parentId),
-                    t.identifier('appendChild')
-                  ),
+              t.memberExpression(
+                t.memberExpression(
+                  t.identifier(elementReferenceName),
+                  t.identifier('parentNode')
+                ),
+                t.identifier('replaceChild')
+              ),
               [
                 t.callExpression(
                   t.identifier(item.tagName),
                   attributeObject ? [attributeObject] : []
                 ),
+                t.identifier(elementReferenceName),
               ]
             )
-          )
-        );
+          ),
+        });
       }
       elementReferenceBlocks.push(
         ...setEventAttributes(elementReferenceName, item.attributes)
@@ -519,6 +550,28 @@ export default function (babel: { types: typeof babelTypes }) {
         );
       }
       previousElement = elementReferenceIdentifier;
+    });
+    replaceList.forEach((item) => {
+      elementReferenceBlocks.push(item.statement);
+    });
+    effectList.forEach((item) => {
+      elementReferenceBlocks.push(
+        t.expressionStatement(
+          t.callExpression(t.identifier('createEffect'), [
+            t.arrowFunctionExpression(
+              [],
+              t.assignmentExpression(
+                '=',
+                t.memberExpression(
+                  t.identifier(item.id),
+                  t.identifier('textContent')
+                ),
+                item.expression
+              )
+            ),
+          ])
+        )
+      );
     });
     return elementReferenceBlocks;
   };
@@ -565,6 +618,17 @@ export default function (babel: { types: typeof babelTypes }) {
     }
   };
 
+  /*
+t.importDeclaration(
+        [
+          t.importSpecifier(
+            t.identifier('createEffect'),
+            t.identifier('createEffect')
+          ),
+        ],
+        t.stringLiteral('@devhelpr/visual-programming-system')
+      ),
+  */
   return {
     name: 'custom-jsx-plugin',
     visitor: {
@@ -573,6 +637,18 @@ export default function (babel: { types: typeof babelTypes }) {
         if (statements) {
           path.replaceWith(statements);
         }
+      },
+      Program(path: NodePath<babelTypes.Program>) {
+        const importDeclaration = t.importDeclaration(
+          [
+            t.importSpecifier(
+              t.identifier('createEffect'),
+              t.identifier('createEffect')
+            ),
+          ],
+          t.stringLiteral('@devhelpr/visual-programming-system')
+        );
+        path.unshiftContainer('body', importDeclaration);
       },
       // JSXText(path: NodePath<babelTypes.JSXText>) {
       //   console.log('JSXTEXT parsing');
