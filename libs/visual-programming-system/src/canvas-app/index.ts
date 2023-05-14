@@ -19,6 +19,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   let yCamera = 0;
   let isClicking = false;
   let isMoving = false;
+  let wasMoved = false;
   let startTime = 0;
 
   let startDragX = 0;
@@ -34,7 +35,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     {
       id: 'canvas',
       class:
-        'w-full h-full origin-top-left bg-slate-800 flex-auto relative z-10 transition-none',
+        'w-full h-full origin-top-left bg-slate-800 flex-auto relative z-10 transition-none transform-gpu',
     },
     rootElement
   );
@@ -66,6 +67,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
     isClicking = true;
     isMoving = false;
+    wasMoved = false;
     startTime = Date.now();
   });
 
@@ -73,6 +75,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     //const canvasRect = canvas.domElement.getBoundingClientRect();
     if (isClicking) {
       isMoving = true;
+      wasMoved = true;
     }
     if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
       //return;
@@ -210,6 +213,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
 
     isMoving = false;
     isClicking = false;
+    wasMoved = false;
 
     const currentState = getCurrentInteractionState();
     if (
@@ -283,10 +287,10 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
 
       scaleCamera = scaleCamera * scaleBy;
       //result.pixelY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
-      if (scaleCamera < 0.15) {
-        scaleCamera = 0.15;
-      } else if (scaleCamera > 3) {
-        scaleCamera = 3;
+      if (scaleCamera < 0.05) {
+        scaleCamera = 0.05;
+      } else if (scaleCamera > 5) {
+        scaleCamera = 5;
       }
 
       const newPos = {
@@ -315,7 +319,11 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   });
 
   rootElement.addEventListener('click', (event: MouseEvent) => {
-    if (onClickCanvas && (event.target as HTMLElement)?.tagName !== 'BUTTON') {
+    if (
+      !wasMoved &&
+      onClickCanvas &&
+      (event.target as HTMLElement)?.tagName !== 'BUTTON'
+    ) {
       event.preventDefault();
       const mousePointTo = {
         x: event.clientX / scaleCamera - xCamera / scaleCamera,
@@ -375,6 +383,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         ') ';
     },
     centerCamera: () => {
+      console.log('centerCamera');
       let minX: number | undefined = undefined;
       let minY: number | undefined = undefined;
       let maxX: number | undefined = undefined;
@@ -386,7 +395,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
           elementHelper.width !== undefined &&
           elementHelper.height !== undefined
         ) {
-          console.log('element', element);
+          //console.log('element', element);
           if (minX === undefined || elementHelper.x < minX) {
             minX = elementHelper.x;
           }

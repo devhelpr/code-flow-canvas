@@ -35,146 +35,6 @@ import flowData from '../example-data/tiltest.json';
 import { TestApp } from './test-app';
 import { run } from './simple-flow-engine/simple-flow-engine';
 
-function Add(a, b) {
-  return a + b;
-}
-const TestSubComponent = (props) => {
-  console.log('TestComponent constructor');
-  return (function () {
-    {
-      const template = document.createElement('template');
-      const elementChild_0 = document.createTextNode('Hello Test Component');
-      template.content.append(elementChild_0);
-      const elementChild_1 = document.createElement('button');
-      elementChild_1.setAttribute(
-        'class',
-        'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-      );
-      elementChild_1.append(document.createTextNode('Click Me'));
-      template.content.append(elementChild_1);
-      const elementChild_2 = document.createElement('div');
-      elementChild_2.append(document.createTextNode(''));
-      template.content.append(elementChild_2);
-      const elementChild_2elementChild_0 = document.createTextNode(
-        2 + 3 * Add(1, 6)
-      );
-      elementChild_2.appendChild(elementChild_2elementChild_0);
-      const elementChild_3 = document.createElement('div');
-      elementChild_3.append(document.createTextNode(''));
-      template.content.append(elementChild_3);
-      const elementChild_3elementChild_0 = document.createTextNode(getCount());
-      elementChild_3.appendChild(elementChild_3elementChild_0);
-      const cloneNode = template.content.cloneNode(true);
-
-      const e_0 = cloneNode.firstChild;
-
-      const e_1 = e_0.nextSibling;
-      e_1.addEventListener('click', (event) => {
-        console.log('click TestComponent');
-        setCount(getCount() + 1);
-        return false;
-      });
-      const e_2 = e_1.nextSibling;
-      const e_2_0 = e_2.firstChild;
-      createEffect(() => (e_2_0.textContent = 2 + 3 * Add(1, 6)));
-      const e_3 = e_2.nextSibling;
-
-      console.log('TestComponent cloneNode', e_3);
-
-      //const e_3_0 = e_3.firstChild;
-      createEffect(() => {
-        console.log('effect TestComponent', e_3);
-        e_3.textContent = getCount();
-      });
-      return cloneNode;
-    }
-  })();
-};
-const TestAnotherComponent = () => {
-  return (function () {
-    {
-      const template = document.createElement('template');
-      const elementChild_0 = document.createElement('div');
-      elementChild_0.append(document.createTextNode('Another Component text'));
-      template.content.append(elementChild_0);
-      const cloneNode = template.content.cloneNode(true);
-      const e_0 = cloneNode.firstChild;
-      return cloneNode;
-    }
-  })();
-};
-
-// 'parent absolute top-0 left-0 bg-white z-[10000]'
-
-const TestDummyComponent = () => {
-  const template = document.createElement('template');
-  const elementChild_0 = document.createElement('p');
-  elementChild_0.append(document.createTextNode('paragraaf'));
-  template.content.append(elementChild_0);
-  const elementChild_1 = document.createElement('div');
-  elementChild_1.setAttribute(
-    'class',
-    'parent absolute top-0 left-0 bg-white z-[10000]'
-  );
-  elementChild_1.append(document.createTextNode(''));
-  template.content.append(elementChild_1);
-
-  // const elementChild_1elementChild_0 = document.createElement('div');
-  // elementChild_1elementChild_0.setAttribute('class', 'parent');
-  // elementChild_1elementChild_0.append(document.createTextNode('Test'));
-
-  const elementChild_1elementChild_0 = document.createTextNode('Testttt');
-  elementChild_1.appendChild(elementChild_1elementChild_0);
-
-  elementChild_1.appendChild(elementChild_1elementChild_0);
-  const elementChild_1elementChild_1 = document.createElement('h1');
-  elementChild_1elementChild_1.setAttribute(
-    'class',
-    'strong text-xl font-bold'
-  );
-  elementChild_1elementChild_1.append(document.createTextNode('Hello JSX!'));
-  elementChild_1.appendChild(elementChild_1elementChild_1);
-  const elementChild_1elementChild_2 = document.createElement('p');
-  elementChild_1elementChild_2.append(document.createTextNode('lorem ipsum'));
-  elementChild_1.appendChild(elementChild_1elementChild_2);
-  const elementChild_1elementChild_3 = document.createElement('div');
-  elementChild_1.appendChild(elementChild_1elementChild_3);
-  const elementChild_1elementChild_4 = document.createElement('div');
-  elementChild_1.appendChild(elementChild_1elementChild_4);
-  const elementChild_2 = document.createElement('div');
-  template.content.append(elementChild_2);
-  const elementChild_3 = document.createElement('h2');
-  elementChild_3.setAttribute('class', 'strong text-lg font-bold');
-  elementChild_3.append(document.createTextNode('TEST H2'));
-  template.content.append(elementChild_3);
-  const cloneNode = template.content.cloneNode(true);
-  const e_0 = cloneNode.firstChild;
-  const e_1 = e_0.nextSibling;
-  const e_1_0 = e_1.firstChild;
-  const e_1_1 = e_1_0.nextSibling;
-  const e_1_2 = e_1_1.nextSibling;
-  const e_1_3 = e_1_2.nextSibling;
-  const e_1_4 = e_1_3.nextSibling;
-
-  e_1_3.replaceWith(
-    TestSubComponent({
-      test: 'hello test property',
-    })
-  );
-  console.log(e_1_2.nextSibling);
-
-  e_1_4.replaceWith(TestAnotherComponent({}));
-
-  //e_1_3 = e_1_2.nextSibling;
-  // console.log('e_1_3', e_1_3, 'nextSibling', e_1_3.nextSibling);
-
-  // e_1_4 = e_1_3.nextSibling;
-  // let e_2 = e_1.nextSibling;
-  // e_2.parentNode.replaceChild(TestAnotherComponent({}), e_2);
-  // e_2 = e_1.nextSibling;
-  // const e_3 = e_2.nextSibling;
-  return cloneNode;
-};
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
@@ -627,6 +487,175 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+          this.clearCanvas();
+
+          const maxRows = 20;
+          const maxColumns = 20;
+
+          const dateTimestampAll = performance.now();
+
+          const spacing = 500;
+          let loopRows = 0;
+          while (loopRows < maxRows) {
+            let loopColumns = 0;
+            while (loopColumns < maxColumns) {
+              const dateTimestamp = performance.now();
+
+              const clipPaths = [
+                'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
+                'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+                'circle(50%)',
+                'polygon(50% 0, 100% 100%, 0 100%)',
+                'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+                'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+                'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+              ];
+              const testNode = createElement(
+                'div',
+                {
+                  class:
+                    'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
+                  style: {
+                    'background-color': `rgb(${Math.floor(
+                      Math.random() * 255
+                    )},${Math.floor(Math.random() * 16)},${Math.floor(
+                      Math.random() * 16
+                    )})`,
+                    'clip-path':
+                      clipPaths[
+                        Math.round(Math.random() * (clipPaths.length - 1))
+                      ],
+                  },
+                },
+                undefined,
+                `${loopRows * maxColumns + loopColumns}`
+              );
+
+              const rect = canvasApp?.createRect(
+                loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
+                loopRows * spacing + Math.floor(-75 + Math.random() * 150),
+                100,
+                100,
+                'node',
+                undefined,
+                [
+                  {
+                    thumbType: ThumbType.StartConnectorCenter,
+                    thumbIndex: 0,
+                    connectionType: ThumbConnectionType.start,
+                  },
+                  {
+                    thumbType: ThumbType.EndConnectorCenter,
+                    thumbIndex: 0,
+                    connectionType: ThumbConnectionType.end,
+                  },
+                ],
+                testNode as unknown as INodeComponent<NodeInfo>,
+                // `<div class="text-center">${
+                //   loopRows * maxColumns + loopColumns
+                // }</div>`
+                {
+                  classNames: `bg-slate-500 p-4 rounded`,
+                  //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
+                }
+              );
+              rect.nodeComponent.nodeInfo = {
+                column: loopColumns,
+                row: loopRows,
+              };
+
+              //console.log('createRect', performance.now() - dateTimestamp);
+              loopColumns++;
+            }
+            loopRows++;
+          }
+
+          const elementList = Array.from(canvasApp?.elements ?? []);
+          loopRows = 0;
+          while (loopRows < maxRows - 1) {
+            let loopColumns = 0;
+            while (loopColumns < maxColumns - 1) {
+              const start = elementList[
+                loopRows * maxColumns + loopColumns
+              ][1] as unknown as INodeComponent<NodeInfo>;
+              const end = elementList[
+                (loopRows + 1) * maxColumns + loopColumns + 1
+              ][1] as unknown as INodeComponent<NodeInfo>;
+              console.log(loopRows, loopColumns, 'start', start, 'end', end);
+
+              const curve = canvasApp.createCubicBezier(
+                loopColumns * spacing,
+                loopRows * spacing,
+                (loopColumns + 1) * spacing,
+                loopRows * spacing,
+                loopColumns * spacing + 100,
+                loopRows * spacing + spacing / 2,
+                (loopColumns + 1) * spacing + 100,
+                loopRows * spacing + spacing / 2,
+                false
+              );
+
+              curve.nodeComponent.isControlled = true;
+              curve.nodeComponent.nodeInfo = {
+                column: loopColumns,
+                row: loopRows,
+              };
+
+              if (start && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.start,
+                  component: start,
+                } as unknown as INodeComponentRelation<NodeInfo>);
+
+                curve.nodeComponent.startNode = start;
+                curve.nodeComponent.startNodeThumb = this.getThumbNode(
+                  ThumbType.StartConnectorCenter,
+                  start
+                );
+              }
+
+              if (end && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.end,
+                  component: end,
+                } as unknown as INodeComponentRelation<NodeInfo>);
+
+                curve.nodeComponent.endNode = end;
+                curve.nodeComponent.endNodeThumb = this.getThumbNode(
+                  ThumbType.EndConnectorCenter,
+                  end
+                );
+              }
+              if (curve.nodeComponent.update) {
+                curve.nodeComponent.update();
+              }
+
+              loopColumns++;
+            }
+            loopRows++;
+          }
+
+          console.log('createRect All', performance.now() - dateTimestampAll);
+
+          const dateTimestamp = performance.now();
+
+          this.canvasApp?.centerCamera();
+
+          console.log('centerCamera', performance.now() - dateTimestamp);
+
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'stress test'
+    );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
           if (this.canvasApp?.elements) {
             run<NodeInfo>(this.canvasApp?.elements);
           }
@@ -779,7 +808,7 @@ export class AppElement extends HTMLElement {
     );
 
     const element = TestApp({
-      parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
+      //parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
     }); //TestDummyComponent();
     console.log('element', element);
     rootElement.append(element as unknown as Node);
