@@ -43,8 +43,7 @@ const TestSubComponent = (props) => {
   return (function () {
     {
       const template = document.createElement('template');
-      const elementChild_0 = document.createElement('div');
-      elementChild_0.append(document.createTextNode('Hello Test Component'));
+      const elementChild_0 = document.createTextNode('Hello Test Component');
       template.content.append(elementChild_0);
       const elementChild_1 = document.createElement('button');
       elementChild_1.setAttribute(
@@ -54,26 +53,38 @@ const TestSubComponent = (props) => {
       elementChild_1.append(document.createTextNode('Click Me'));
       template.content.append(elementChild_1);
       const elementChild_2 = document.createElement('div');
-      elementChild_2.append(document.createTextNode(2 + 3 * Add(1, 6)));
+      elementChild_2.append(document.createTextNode(''));
       template.content.append(elementChild_2);
+      const elementChild_2elementChild_0 = document.createTextNode(
+        2 + 3 * Add(1, 6)
+      );
+      elementChild_2.appendChild(elementChild_2elementChild_0);
       const elementChild_3 = document.createElement('div');
-      elementChild_3.append(document.createTextNode(props.test));
+      elementChild_3.append(document.createTextNode(''));
       template.content.append(elementChild_3);
+      const elementChild_3elementChild_0 = document.createTextNode(getCount());
+      elementChild_3.appendChild(elementChild_3elementChild_0);
       const cloneNode = template.content.cloneNode(true);
+
       const e_0 = cloneNode.firstChild;
+
       const e_1 = e_0.nextSibling;
       e_1.addEventListener('click', (event) => {
         console.log('click TestComponent');
-        //alert('Hello World!');
         setCount(getCount() + 1);
         return false;
       });
       const e_2 = e_1.nextSibling;
+      const e_2_0 = e_2.firstChild;
+      createEffect(() => (e_2_0.textContent = 2 + 3 * Add(1, 6)));
       const e_3 = e_2.nextSibling;
 
+      console.log('TestComponent cloneNode', e_3);
+
+      //const e_3_0 = e_3.firstChild;
       createEffect(() => {
-        console.log('effect TestComponent');
-        e_3.textContent = getCount().toString();
+        console.log('effect TestComponent', e_3);
+        e_3.textContent = getCount();
       });
       return cloneNode;
     }
@@ -452,7 +463,7 @@ export class AppElement extends HTMLElement {
               class: `bg-slate-500 p-4 rounded cursor-pointer`,
             },
             undefined,
-            TestApp() as unknown as HTMLElement
+            TestApp({ parentClass: '' }) as unknown as HTMLElement
           ) as unknown as INodeComponent<NodeInfo>;
 
           canvasApp.createRect(
@@ -753,7 +764,9 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
-    const element = TestApp(); //TestDummyComponent();
+    const element = TestApp({
+      parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
+    }); //TestDummyComponent();
     console.log('element', element);
     rootElement.append(element as unknown as Node);
 

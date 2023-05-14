@@ -4,10 +4,15 @@ import { TestComponent } from './components/test-component';
 const AnotherComponent = () => {
   return <div>Another Component text</div>;
 };
-export const TestApp = () => (
+
+export interface TestAppProps {
+  parentClass?: string;
+}
+
+export const TestApp = (props: TestAppProps) => (
   <div className="hello">
     <p>paragraaf</p>
-    <div class="parent">
+    <div class={`parent ${props.parentClass ?? ''}`}>
       Test
       <h1 class="strong text-xl font-bold">Hello JSX!</h1>
       <p>lorem ipsum</p>

@@ -38,6 +38,8 @@ export default function (babel: { types: typeof babelTypes }) {
     // needed for Custom Components
     let attributeObject: babelTypes.ObjectExpression | undefined;
     if (attributes) {
+      // TODO handle value type 'JSXExpressionContainer' (expression)
+      console.log('attributes', attributes);
       const properties: babelTypes.ObjectProperty[] = [];
       attributes.forEach((attribute) => {
         if (
@@ -66,7 +68,9 @@ export default function (babel: { types: typeof babelTypes }) {
     // needed for html elements
     const statements: babelTypes.Statement[] = [];
     if (attributes) {
+      //console.log('attributes SET', attributes);
       attributes.forEach((attribute) => {
+        // TODO handle value type 'JSXExpressionContainer' (expression)
         if (
           attribute.type === 'JSXAttribute' &&
           attribute.value &&
@@ -83,6 +87,34 @@ export default function (babel: { types: typeof babelTypes }) {
                 [
                   t.stringLiteral(attribute.name.name.toString()),
                   t.stringLiteral(attribute.value.value),
+                ]
+              )
+            )
+          );
+        } else if (
+          attribute.type === 'JSXAttribute' &&
+          attribute.value &&
+          attribute.value.type === 'JSXExpressionContainer' &&
+          attribute.value.expression &&
+          (attribute.value.expression.type === 'ArrowFunctionExpression' ||
+            attribute.value.expression.type === 'TemplateLiteral')
+        ) {
+          // TODO .. set these on the clone nodes..?
+          console.log(
+            'attribute.value.expression',
+            attribute.value.expression.type,
+            attribute.value.expression
+          );
+          statements.push(
+            t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier(elementName),
+                  t.identifier('setAttribute')
+                ),
+                [
+                  t.stringLiteral(attribute.name.name.toString()),
+                  attribute.value.expression,
                 ]
               )
             )
@@ -506,9 +538,8 @@ export default function (babel: { types: typeof babelTypes }) {
       elementReferenceBlocks.push(elementReference);
 
       if (item.isExpression) {
-        console.log('expression found', item.expression);
         effectList.push({
-          id: elementReferenceName,
+          id: parentId,
           expression: item.expression,
         });
       } else if (!item.isExpression && typeof item.content !== 'string') {
