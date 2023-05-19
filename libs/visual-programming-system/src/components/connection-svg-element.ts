@@ -134,7 +134,7 @@ export const createConnectionSVGElement = <T>(
     'marker',
     {
       id: 'arrow',
-      refX: '0',
+      refX: '2',
       refY: '2',
       markerUnits: 'strokeWidth',
       markerWidth: '4',
@@ -184,6 +184,14 @@ export const createConnectionSVGElement = <T>(
     svgParent.domElement.remove();
   };
 
+  if (isQuadratic) {
+    nodeComponent.controlPoints = [{ x: pathPoints.cx1, y: pathPoints.cy1 }];
+  } else {
+    nodeComponent.controlPoints = [
+      { x: pathPoints.cx1, y: pathPoints.cy1 },
+      { x: pathPoints.cx2, y: pathPoints.cy2 },
+    ];
+  }
   const bbox = getBBoxPath();
 
   (
@@ -513,6 +521,20 @@ export const createConnectionSVGElement = <T>(
       endX: end.x,
       endY: end.y,
     };
+
+    if (nodeComponent && nodeComponent.controlPoints) {
+      if (isQuadratic) {
+        if (nodeComponent.controlPoints.length === 1) {
+          nodeComponent.controlPoints[0].x = points.cx1;
+          nodeComponent.controlPoints[0].y = points.cy1;
+        }
+      } else if (nodeComponent.controlPoints.length === 2) {
+        nodeComponent.controlPoints[0].x = points.cx1;
+        nodeComponent.controlPoints[0].y = points.cy1;
+        nodeComponent.controlPoints[1].x = points.cx2;
+        nodeComponent.controlPoints[1].y = points.cy2;
+      }
+    }
 
     const bbox = getBBoxPath();
     if (isQuadratic) {

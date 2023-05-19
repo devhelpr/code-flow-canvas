@@ -195,7 +195,10 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
           isMoving,
           Date.now() - startTime
         );
-        setSelectNode(undefined);
+
+        // comment this to keep the selected id after clicking in the menu .. side effects?
+        //setSelectNode(undefined);
+
         // if (onClickCanvas) {
         //   const mousePointTo = {
         //     x: event.clientX / scaleCamera - xCamera / scaleCamera,

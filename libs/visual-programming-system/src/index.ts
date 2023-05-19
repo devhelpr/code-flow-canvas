@@ -7,5 +7,6 @@ export * from './reactivity';
 export * from './types';
 export * from './utils';
 export * from './canvas-app';
+export * from './utils/bezier';
 //export * from './jsx/jsx-pragma';
 //export * from './jsx-runtime';

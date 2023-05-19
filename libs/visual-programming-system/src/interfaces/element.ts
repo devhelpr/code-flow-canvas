@@ -52,6 +52,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
   offsetY?: number;
   radius?: number;
 
+  controlPoints?: { x: number; y: number }[];
+
   specifier?: string;
   nodeType?: string;
   components: INodeComponentRelation<T>[];
