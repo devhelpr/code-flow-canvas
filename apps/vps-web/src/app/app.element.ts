@@ -514,22 +514,30 @@ export class AppElement extends HTMLElement {
                 'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
                 'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
               ];
+              const color = `rgb(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 16)},${Math.floor(
+                Math.random() * 16
+              )})`;
+
               const testNode = createElement(
-                'div',
+                'button',
                 {
                   class:
                     'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
                   style: {
-                    'background-color': `rgb(${Math.floor(
-                      Math.random() * 255
-                    )},${Math.floor(Math.random() * 16)},${Math.floor(
-                      Math.random() * 16
-                    )})`,
+                    'background-color': color,
                     'clip-path':
                       clipPaths[
                         Math.round(Math.random() * (clipPaths.length - 1))
                       ],
                   },
+                  click: (event) => {
+                    event.preventDefault();
+                    //alert(`click ${testNode.id}`);
+                    animatePath(rect.nodeComponent.id, color);
+                    return false;
+                  }
                 },
                 undefined,
                 `${loopRows * maxColumns + loopColumns}`
@@ -728,7 +736,7 @@ export class AppElement extends HTMLElement {
         const message = createElement(
           'div',
           {
-            class: `flex text-center z-[1000] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
+            class: `flex text-center z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
             style: {
               'clip-path': 'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
             },
