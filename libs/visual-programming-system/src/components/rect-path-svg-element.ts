@@ -177,8 +177,8 @@ export const createRectPathSVGElement = <T>(
 
         const bbox = getBBoxPath();
         const interactionInfoResult = pointerDown(
-          x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
-          y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
+          x - rectCamera.x - (pathPoints.beginX - bbox.x),
+          y - rectCamera.y - (pathPoints.beginY - bbox.y),
           divElement,
           canvasElement
         );
