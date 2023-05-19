@@ -731,6 +731,7 @@ export class AppElement extends HTMLElement {
         domCircle.style.zIndex = '1000';
         domCircle.style.pointerEvents = 'none';
         domCircle.style.transformOrigin = 'center center';
+        domCircle.style.display = 'none';
 
         let loop = 0;
         const cancel = setInterval(() => {
@@ -773,6 +774,7 @@ export class AppElement extends HTMLElement {
               { x: endHelper.x + tx, y: endHelper.y + ty }
             );
 
+            domCircle.style.display = 'flex';
             domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
 
             loop += 0.015;
