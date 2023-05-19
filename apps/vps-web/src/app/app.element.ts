@@ -702,7 +702,7 @@ export class AppElement extends HTMLElement {
       return false;
     };
 
-    const animatePath = (nodeId: string) => {
+    const animatePath = (nodeId: string, color: string) => {
       const nodeConnectionPair = getNodeConnectionPairById(nodeId);
 
       if (nodeConnectionPair) {
@@ -713,10 +713,10 @@ export class AppElement extends HTMLElement {
         const testCircle = createElement(
           'div',
           {
-            class: `flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
+            class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
             style: {
               'background-color':
-                '#' + Math.floor(Math.random() * 16777215).toString(16),
+                color,
               'clip-path': 'circle(50%)',
             },
           },
@@ -724,14 +724,23 @@ export class AppElement extends HTMLElement {
           ''
         );
 
+        const message = createElement(
+          'div',
+          {
+            class: `flex text-center z-[1000] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
+            style: {
+              'clip-path': 'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+            },
+          },
+          this.canvasApp?.canvas.domElement,
+          ''
+        );
+
         const domCircle = testCircle.domElement as HTMLElement;
-        domCircle.style.position = 'absolute';
-        domCircle.style.left = '0px';
-        domCircle.style.top = '0px';
-        domCircle.style.zIndex = '1000';
-        domCircle.style.pointerEvents = 'none';
-        domCircle.style.transformOrigin = 'center center';
         domCircle.style.display = 'none';
+        const domMessage = message.domElement as HTMLElement;
+        domMessage.style.display = 'none';
+        domMessage.style.pointerEvents = 'none';
 
         let loop = 0;
         const cancel = setInterval(() => {
@@ -776,6 +785,8 @@ export class AppElement extends HTMLElement {
 
             domCircle.style.display = 'flex';
             domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+            domMessage.style.display = 'flex';
+            domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
 
             loop += 0.015;
             if (loop > 1) {
@@ -783,12 +794,19 @@ export class AppElement extends HTMLElement {
 
               canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
+
+              canvasApp?.elements.delete(message.id);
+              message?.domElement?.remove();
               clearInterval(cancel);
-              animatePath(end.id);
+              animatePath(end.id, color);
             }
           } else {
             canvasApp?.elements.delete(testCircle.id);
             testCircle?.domElement?.remove();
+
+            canvasApp?.elements.delete(message.id);
+            message?.domElement?.remove();
+
             clearInterval(cancel);
           }
         }, 10);
@@ -817,7 +835,8 @@ export class AppElement extends HTMLElement {
           // - follow a complete path of nodes and start over at the beginning after reaching the end
           const nodeId = getSelectedNode();
           if (nodeId) {
-            animatePath(nodeId);
+            const color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            animatePath(nodeId, color);
           }
           return false;
         },
