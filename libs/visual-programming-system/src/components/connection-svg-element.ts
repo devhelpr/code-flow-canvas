@@ -1,4 +1,5 @@
 import { transformToCamera } from '../camera';
+import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
   CurveType,
@@ -37,6 +38,7 @@ function getPoint(x: number, y: number) {
 
 export const createConnectionSVGElement = <T>(
   canvasElement: DOMElementNode,
+  interactionStateMachine: InteractionStateMachine<T>,
   elements: ElementNodeMap<T>,
   startX: number,
   startY: number,
@@ -239,11 +241,12 @@ export const createConnectionSVGElement = <T>(
           const { x, y } = transformToCamera(e.clientX, e.clientY);
           const rectCamera = transformToCamera(elementRect.x, elementRect.y);
 
-          const interactionInfoResult = pointerDown(
+          const interactionInfoResult = pointerDown<T>(
             x - rectCamera.x - (pathPoints.beginX - bbox.x - 10),
             y - rectCamera.y - (pathPoints.beginY - bbox.y - 10),
             nodeComponent,
-            canvasElement
+            canvasElement,
+            interactionStateMachine
           );
           if (interactionInfoResult) {
             interactionInfo = interactionInfoResult;

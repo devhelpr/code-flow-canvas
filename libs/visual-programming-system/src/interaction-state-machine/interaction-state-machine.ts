@@ -1,5 +1,4 @@
 import { DOMElementNode, INodeComponent } from '../interfaces/element';
-import { NodeInfo } from '../interfaces/nodeInfo';
 import { IPointerDownResult } from '../interfaces/pointers';
 
 export enum InteractionState {
@@ -24,30 +23,37 @@ export enum InteractionEvent {
 export interface InteractionTarget<T> {
   id: string;
   type: string;
-  pointerDown?: (
+  pointerDown?: <T>(
     x: number,
     y: number,
     element: INodeComponent<T>,
-    canvasElement: DOMElementNode
+    canvasElement: DOMElementNode,
+    interactionStateMachine: InteractionStateMachine<T>
   ) => IPointerDownResult | false;
-  pointerMove?: (
+  pointerMove?: <T>(
     x: number,
     y: number,
     element: INodeComponent<T>,
     canvasElement: DOMElementNode,
-    interactionInfo: IPointerDownResult
+    interactionInfo: IPointerDownResult,
+    interactionStateMachine: InteractionStateMachine<T>
   ) => void;
-  pointerUp?: (
+  pointerUp?: <T>(
     x: number,
     y: number,
     element: INodeComponent<T>,
     canvasElement: DOMElementNode,
-    interactionInfo: IPointerDownResult
+    interactionInfo: IPointerDownResult,
+    interactionStateMachine: InteractionStateMachine<T>
   ) => void;
   interactionInfo: IPointerDownResult;
 }
 
-export interface InterActionInfo<T> {
+
+//type GenericInteractionTarget = InteractionTarget<T>;
+//type GenericNodeComponent = INodeComponent<T>;
+
+interface InterActionInfo<T> {
   state: InteractionState;
   target?: InteractionTarget<T>;
   isNewState: boolean;
@@ -56,74 +62,82 @@ export interface InterActionInfo<T> {
   timeSinceStart: number;
 }
 
-let interactionState = InteractionState.Idle;
-let interactionTarget: InteractionTarget<NodeInfo> | undefined = undefined;
-let currentElement: INodeComponent<NodeInfo> | undefined = undefined;
-
-let isClicking = false;
-let isMoving = false;
-let startTime = 0;
-
-export const getCurrentInteractionState = () => {
-  return {
-    state: interactionState,
-    target: interactionTarget,
-    element: currentElement,
+export interface InteractionStateMachine<T> {
+  interactionEventState : (
+    event: InteractionEvent,
+    target: InteractionTarget<T>,
+    element: INodeComponent<T>,
+    peek? : boolean
+  ) => false | InterActionInfo<T>;
+  getCurrentInteractionState : () => {
+      state: InteractionState,
+      target: InteractionTarget<T> | undefined,
+      element: INodeComponent<T> | undefined,
   };
-};
+  setCurrentDropTarget : (dropTarget: INodeComponent<T>) => void;
+  clearDropTarget : (dropTarget: INodeComponent<T>) => void;
+  getCurrentDropTarget: () => INodeComponent<T> | undefined;
+}
 
-export const interactionEventState = <T>(
-  event: InteractionEvent,
-  target: InteractionTarget<T>,
-  element: INodeComponent<T>,
-  peek = false
-): false | InterActionInfo<T> => {
-  // console.log(
-  //   'interactionEventState',
-  //   interactionState,
-  //   interactionState === InteractionState.Moving,
-  //   event === InteractionEvent.PointerUp,
-  //   interactionTarget?.id,
-  //   target.id
-  // );
-  if (interactionState === InteractionState.Idle) {
-    if (event === InteractionEvent.PointerDown) {
-      interactionState = InteractionState.Moving;
-      interactionTarget = target;
-      currentElement = element;
-      isClicking = true;
-      startTime = Date.now();
-      return {
-        state: interactionState,
-        target: interactionTarget,
-        isNewState: true,
-        isClicking,
-        isMoving,
-        timeSinceStart: 0,
-      };
-    }
-  }
+export const createInteractionStateMachine = <T>() : InteractionStateMachine<T> => { 
 
-  if (
-    interactionState === InteractionState.Moving &&
-    interactionTarget &&
-    interactionTarget.id === target.id
-  ) {
-    if (event === InteractionEvent.PointerMove) {
-      if (isClicking) {
-        isMoving = true;
+  let interactionState = InteractionState.Idle;
+  let interactionTarget: InteractionTarget<T> | undefined = undefined;
+  let currentElement: INodeComponent<T> | undefined = undefined;
+
+  let isClicking = false;
+  let isMoving = false;
+  let startTime = 0;
+
+  const getCurrentInteractionState = () => {
+    return {
+      state: interactionState,
+      target: interactionTarget,
+      element: currentElement,
+    };
+  };
+
+  const interactionEventState = (
+    event: InteractionEvent,
+    target: InteractionTarget<T>,
+    element: INodeComponent<T>,
+    peek = false
+  ): false | InterActionInfo<T> => {
+    // console.log(
+    //   'interactionEventState',
+    //   interactionState,
+    //   interactionState === InteractionState.Moving,
+    //   event === InteractionEvent.PointerUp,
+    //   interactionTarget?.id,
+    //   target.id
+    // );
+    if (interactionState === InteractionState.Idle) {
+      if (event === InteractionEvent.PointerDown) {
+        interactionState = InteractionState.Moving;
+        interactionTarget = target;
+        currentElement = element;
+        isClicking = true;
+        startTime = Date.now();
+        return {
+          state: interactionState,
+          target: interactionTarget,
+          isNewState: true,
+          isClicking,
+          isMoving,
+          timeSinceStart: 0,
+        };
       }
-      return {
-        state: interactionState,
-        target: interactionTarget,
-        isNewState: false,
-        isClicking,
-        isMoving,
-        timeSinceStart: Date.now() - startTime,
-      };
     }
-    if (event === InteractionEvent.PointerUp) {
-      if (peek) {
+
+    if (
+      interactionState === InteractionState.Moving &&
+      interactionTarget &&
+      interactionTarget.id === target.id
+    ) {
+      if (event === InteractionEvent.PointerMove) {
+        if (isClicking) {
+          isMoving = true;
+        }
         return {
           state: interactionState,
           target: interactionTarget,
@@ -132,55 +146,75 @@ export const interactionEventState = <T>(
           isMoving,
           timeSinceStart: Date.now() - startTime,
         };
-      } else {
+      }
+      if (event === InteractionEvent.PointerUp) {
+        if (peek) {
+          return {
+            state: interactionState,
+            target: interactionTarget,
+            isNewState: false,
+            isClicking,
+            isMoving,
+            timeSinceStart: Date.now() - startTime,
+          };
+        } else {
+          interactionState = InteractionState.Idle;
+          interactionTarget = undefined;
+          currentElement = undefined;
+          const oldIsClicking = isClicking;
+          const oldIsMoving = isMoving;
+          isClicking = false;
+          isMoving = false;
+          return {
+            state: interactionState,
+            target: interactionTarget,
+            isNewState: true,
+            isClicking: oldIsClicking,
+            isMoving: oldIsMoving,
+            timeSinceStart: Date.now() - startTime,
+          };
+        }
+      }
+      if (event === InteractionEvent.PointerLeave) {
         interactionState = InteractionState.Idle;
         interactionTarget = undefined;
         currentElement = undefined;
-        const oldIsClicking = isClicking;
-        const oldIsMoving = isMoving;
         isClicking = false;
         isMoving = false;
         return {
           state: interactionState,
           target: interactionTarget,
           isNewState: true,
-          isClicking: oldIsClicking,
-          isMoving: oldIsMoving,
+          isClicking,
+          isMoving,
           timeSinceStart: Date.now() - startTime,
         };
       }
     }
-    if (event === InteractionEvent.PointerLeave) {
-      interactionState = InteractionState.Idle;
-      interactionTarget = undefined;
-      currentElement = undefined;
-      isClicking = false;
-      isMoving = false;
-      return {
-        state: interactionState,
-        target: interactionTarget,
-        isNewState: true,
-        isClicking,
-        isMoving,
-        timeSinceStart: Date.now() - startTime,
-      };
+    return false;
+  };
+
+  let currentDropTarget: INodeComponent<T> | undefined = undefined;
+  const setCurrentDropTarget = (dropTarget: INodeComponent<T>) => {
+    currentDropTarget = dropTarget;
+  };
+
+  const clearDropTarget = (dropTarget: INodeComponent<T>) => {
+    console.log('clearDropTarget', currentDropTarget?.id, dropTarget.id);
+    if (currentDropTarget && currentDropTarget.id === dropTarget.id) {
+      currentDropTarget = undefined;
     }
-  }
-  return false;
-};
+  };
 
-let currentDropTarget: INodeComponent<NodeInfo> | undefined = undefined;
-export const setCurrentDropTarget = <T>(dropTarget: INodeComponent<T>) => {
-  currentDropTarget = dropTarget;
-};
+  const getCurrentDropTarget = () => {
+    return currentDropTarget;
+  };
 
-export const clearDropTarget = <T>(dropTarget: INodeComponent<T>) => {
-  console.log('clearDropTarget', currentDropTarget?.id, dropTarget.id);
-  if (currentDropTarget && currentDropTarget.id === dropTarget.id) {
-    currentDropTarget = undefined;
-  }
-};
-
-export const getCurrentDropTarget = () => {
-  return currentDropTarget;
-};
+  return {
+    interactionEventState,
+    getCurrentInteractionState,
+    setCurrentDropTarget,
+    clearDropTarget,
+    getCurrentDropTarget,
+  };
+}

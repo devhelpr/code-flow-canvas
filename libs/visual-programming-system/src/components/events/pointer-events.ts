@@ -1,28 +1,27 @@
 import { CLICK_MOVEMENT_THRESHOLD } from '../../constants';
 import {
-  InteractionEvent,
-  interactionEventState,
+  InteractionEvent, InteractionStateMachine,
 } from '../../interaction-state-machine';
 import {
   DOMElementNode,
   INodeComponent,
   NodeComponentRelationType,
 } from '../../interfaces/element';
-import { NodeInfo } from '../../interfaces/nodeInfo';
 import { IPointerDownResult } from '../../interfaces/pointers';
 
-export const pointerDown = (
+export const pointerDown = <T>(
   x: number,
   y: number,
-  element: INodeComponent<NodeInfo>,
-  canvasElement: DOMElementNode
+  element: INodeComponent<T>,
+  canvasElement: DOMElementNode,
+  interactionStateMachine: InteractionStateMachine<T>
 ): IPointerDownResult | false => {
   let xOffsetWithinElementOnFirstClick = 0;
   let yOffsetWithinElementOnFirstClick = 0;
 
   if (
     element &&
-    interactionEventState(
+    interactionStateMachine.interactionEventState(
       InteractionEvent.PointerDown,
       {
         id: element.id,
@@ -58,15 +57,16 @@ export const pointerDown = (
   return false;
 };
 
-export const pointerMove = (
+export const pointerMove = <T>(
   x: number,
   y: number,
-  element: INodeComponent<NodeInfo>,
+  element: INodeComponent<T>,
   _canvasElement: DOMElementNode,
-  interactionInfo: IPointerDownResult
+  interactionInfo: IPointerDownResult,
+  interactionStateMachine: InteractionStateMachine<T>
 ) => {
   if (element) {
-    const interactionState = interactionEventState(
+    const interactionState = interactionStateMachine.interactionEventState(
       InteractionEvent.PointerMove,
       {
         id: element.id,
@@ -106,15 +106,16 @@ export const pointerMove = (
   return false;
 };
 
-export const pointerUp = (
+export const pointerUp = <T>(
   x: number,
   y: number,
-  element: INodeComponent<NodeInfo>,
+  element: INodeComponent<T>,
   _canvasElement: DOMElementNode,
-  interactionInfo: IPointerDownResult
+  interactionInfo: IPointerDownResult,
+  interactionStateMachine: InteractionStateMachine<T>
 ) => {
   if (element) {
-    const currentInteractionInfo = interactionEventState(
+    const currentInteractionInfo = interactionStateMachine.interactionEventState(
       InteractionEvent.PointerUp,
       {
         id: element.id,

@@ -15,7 +15,6 @@ import {
   getVisbility,
   setVisibility,
   setupMarkupElement,
-  NodeInfo,
   createElementMap,
   createCanvasApp,
   CanvasAppInstance,
@@ -48,6 +47,8 @@ template.innerHTML = `
 const button =
   'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none';
 const menubar = 'fixed top-0 z-20 flex flex-row items-center justify-start';
+
+type NodeInfo = any;
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -143,25 +144,25 @@ export class AppElement extends HTMLElement {
       },
       rootElement
     );
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          if (this.canvas) {
-            createNodeElement(
-              'div',
-              this.canvas.domElement,
-              canvasApp.elements
-            );
-          }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add element'
-    );
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       if (this.canvas) {
+    //         createNodeElement(
+    //           'div',
+    //           this.canvas.domElement,
+    //           canvasApp.elements
+    //         );
+    //       }
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add element'
+    // );
 
     createElement(
       'button',
@@ -971,26 +972,26 @@ export class AppElement extends HTMLElement {
       }
     });
 
-    createMarkupElement(
-      `
-      <div class="bg-black" >
-        <div>
-          <div>
-            <div style="background: white;" class="p-2">
-              <h2>TITLE</h2>
-              <p>subtitle</p>
-              <div class="bg-red-300">
-                <i style="color:blue;">lorem ipsummm<br></br></i>
-                {20 + 30}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      `,
-      canvasApp.canvas.domElement,
-      canvasApp.elements
-    );
+    // createMarkupElement(
+    //   `
+    //   <div class="bg-black" >
+    //     <div>
+    //       <div>
+    //         <div style="background: white;" class="p-2">
+    //           <h2>TITLE</h2>
+    //           <p>subtitle</p>
+    //           <div class="bg-red-300">
+    //             <i style="color:blue;">lorem ipsummm<br></br></i>
+    //             {20 + 30}
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    //   `,
+    //   canvasApp.canvas.domElement,
+    //   canvasApp.elements
+    // );
 
     setupMarkupElement(
       `

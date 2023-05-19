@@ -9,11 +9,13 @@ import { pointerDown } from './events/pointer-events';
 import { createNodeComponent } from '../utils/create-node-component';
 import { transformToCamera } from '../camera';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
+import { InteractionStateMachine } from '../interaction-state-machine';
 
 export const createMarkupElement = <T>(
   markup: string,
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap<T>
+  elements: ElementNodeMap<T>,
+  interactionStateMachine: InteractionStateMachine<T>
 ) => {
   const compiledMarkup = compileMarkup(markup);
   if (!compiledMarkup) {
@@ -56,7 +58,8 @@ export const createMarkupElement = <T>(
             x - rectCamera.x,
             y - rectCamera.y,
             nodeComponent,
-            canvasElement
+            canvasElement,
+            interactionStateMachine
           );
 
           if (helper) {

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
   IElementNode,
@@ -17,6 +18,7 @@ import { createThumbSVGElement } from './thumb-svg-element';
 
 export const createCubicBezier = <T>(
   canvas: INodeComponent<T>,
+  interactionStateMachine: InteractionStateMachine<T>,
   pathHiddenElement: IElementNode<T>,
   elements: ElementNodeMap<T>,
   startX: number,
@@ -31,6 +33,7 @@ export const createCubicBezier = <T>(
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     elements,
     startX,
     startY,
@@ -75,6 +78,7 @@ export const createCubicBezier = <T>(
   }
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.Start,
     '#ff000080',
@@ -105,6 +109,7 @@ export const createCubicBezier = <T>(
 
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.End,
     '#ffff4080',
@@ -134,6 +139,7 @@ export const createCubicBezier = <T>(
   };
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.ControlPoint,
     '#00ff00',
@@ -157,6 +163,7 @@ export const createCubicBezier = <T>(
   };
   const controlPoint2Element = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.ControlPoint,
     '#0000ff',
@@ -366,6 +373,7 @@ export const createCubicBezier = <T>(
 
 export const createQuadraticBezier = <T>(
   canvas: INodeComponent<T>,
+  interactionStateMachine: InteractionStateMachine<T>,
   pathHiddenElement: IElementNode<T>,
   elements: ElementNodeMap<T>,
   startX: number,
@@ -378,6 +386,7 @@ export const createQuadraticBezier = <T>(
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     elements,
     startX,
     startY,
@@ -415,6 +424,7 @@ export const createQuadraticBezier = <T>(
   }
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.Start,
     '#ff000080',
@@ -440,6 +450,7 @@ export const createQuadraticBezier = <T>(
 
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.End,
     '#ff000080',
@@ -464,6 +475,7 @@ export const createQuadraticBezier = <T>(
   };
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
+    interactionStateMachine,
     connection.elements,
     ThumbType.ControlPoint,
     '#00ff00',

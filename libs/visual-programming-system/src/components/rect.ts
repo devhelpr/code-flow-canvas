@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
   CurveType,
@@ -278,6 +279,7 @@ export const thumbPosition = <T>(
 
 export const createRect = <T>(
   canvas: INodeComponent<T>,
+  interactionStateMachine: InteractionStateMachine<T>,
   pathHiddenElement: IElementNode<T>,
   elements: ElementNodeMap<T>,
   startX: number,
@@ -297,6 +299,7 @@ export const createRect = <T>(
 
   const rectNode: INodeComponent<T> = createRectPathSVGElement<T>(
     canvas.domElement,
+    interactionStateMachine,
     elements,
     startX,
     startY,
@@ -449,6 +452,7 @@ export const createRect = <T>(
 
   const startPointElement = createThumbSVGElement(
     rectNode.domElement,
+    interactionStateMachine,
     rectNode.elements,
     ThumbType.TopLeft,
     '#ff000080',
@@ -481,6 +485,7 @@ export const createRect = <T>(
 
   const rightTopPointElement = createThumbSVGElement(
     rectNode.domElement,
+    interactionStateMachine,
     rectNode.elements,
     ThumbType.TopRight,
     '#ffff0080',
@@ -508,6 +513,7 @@ export const createRect = <T>(
   };
   const leftBottomElement = createThumbSVGElement(
     rectNode.domElement,
+    interactionStateMachine,
     rectNode.elements,
     ThumbType.BottomLeft,
     '#00ff00',
@@ -536,6 +542,7 @@ export const createRect = <T>(
   };
   const rightBottomElement = createThumbSVGElement(
     rectNode.domElement,
+    interactionStateMachine,
     rectNode.elements,
     ThumbType.BottomRight,
     '#0000ff',
@@ -675,6 +682,7 @@ export const createRect = <T>(
 
       const thumbConnectorElement = createThumbSVGElement(
         rectNode.domElement,
+        interactionStateMachine,
         rectNode.elements,
         thumb.thumbType,
         '#008080',

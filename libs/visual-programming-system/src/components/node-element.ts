@@ -1,4 +1,5 @@
 import { transformToCamera } from '../camera';
+import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -13,7 +14,8 @@ import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 export const createNodeElement = <T>(
   tagName: string,
   canvasElement: DOMElementNode,
-  elements: ElementNodeMap<T>
+  elements: ElementNodeMap<T>,
+  interactionStateMachine: InteractionStateMachine<T>
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -67,7 +69,8 @@ export const createNodeElement = <T>(
             x - rectCamera.x,
             y - rectCamera.y,
             nodeComponent,
-            canvasElement
+            canvasElement,
+            interactionStateMachine
           );
 
           if (helper) {

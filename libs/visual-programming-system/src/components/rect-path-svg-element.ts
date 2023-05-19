@@ -12,6 +12,7 @@ import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
 import { ThumbType } from '../types';
+import { InteractionStateMachine } from '../interaction-state-machine';
 
 const minSize = 50;
 
@@ -28,6 +29,7 @@ function getPoint(x: number, y: number) {
 
 export const createRectPathSVGElement = <T>(
   canvasElement: DOMElementNode,
+  interactionStateMachine: InteractionStateMachine<T>,
   elements: ElementNodeMap<T>,
   startX: number,
   startY: number,
@@ -180,7 +182,8 @@ export const createRectPathSVGElement = <T>(
           x - rectCamera.x - (pathPoints.beginX - bbox.x),
           y - rectCamera.y - (pathPoints.beginY - bbox.y),
           divElement,
-          canvasElement
+          canvasElement,
+          interactionStateMachine,
         );
         if (interactionInfoResult) {
           (canvasElement as unknown as HTMLElement | SVGElement).append(

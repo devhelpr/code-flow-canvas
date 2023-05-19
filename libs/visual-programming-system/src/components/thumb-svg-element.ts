@@ -1,9 +1,6 @@
 import { transformToCamera } from '../camera';
 import {
-  clearDropTarget,
-  getCurrentDropTarget,
-  getCurrentInteractionState,
-  setCurrentDropTarget,
+  InteractionStateMachine  
 } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -19,6 +16,7 @@ import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createThumbSVGElement = <T>(
   canvasElement: DOMElementNode,
+  interactionStateMachine: InteractionStateMachine<T>,
   elements: ElementNodeMap<T>,
   thumbType: ThumbType,
   color?: string,
@@ -123,7 +121,7 @@ export const createThumbSVGElement = <T>(
         if (nodeComponent.isConnectPoint) {
           if (nodeComponent.onCanReceiveDroppedComponent) {
             //TODO : get the current interactive element and check if it can be dropped here
-            const state = getCurrentInteractionState();
+            const state = interactionStateMachine.getCurrentInteractionState();
             if (state && state.element) {
               const canReceiveDrop = nodeComponent.onCanReceiveDroppedComponent(
                 nodeComponent,
@@ -142,13 +140,13 @@ export const createThumbSVGElement = <T>(
             }
           }
           console.log('svg register drop target', nodeComponent.id);
-          setCurrentDropTarget(nodeComponent);
+          interactionStateMachine.setCurrentDropTarget(nodeComponent);
         }
       },
       pointerleave: (_e: PointerEvent) => {
         if (nodeComponent.isConnectPoint) {
           console.log('svg unregister drop target', nodeComponent.id);
-          clearDropTarget(nodeComponent);
+          interactionStateMachine.clearDropTarget(nodeComponent);
         }
       },
       pointerdown: (e: PointerEvent) => {
@@ -167,7 +165,8 @@ export const createThumbSVGElement = <T>(
             x - rectCamera.x,
             y - rectCamera.y,
             nodeComponent,
-            canvasElement
+            canvasElement,
+            interactionStateMachine
           );
           if (interactionInfoResult) {
             interactionInfo = interactionInfoResult;
@@ -187,7 +186,7 @@ export const createThumbSVGElement = <T>(
           if (nodeComponent && nodeComponent.domElement) {
             const { x, y } = transformToCamera(e.clientX, e.clientY);
             if (
-              pointerMove(x, y, nodeComponent, canvasElement, interactionInfo)
+              pointerMove(x, y, nodeComponent, canvasElement, interactionInfo, interactionStateMachine)
             ) {
               // console.log(
               //   'svg pointermove',
@@ -210,7 +209,7 @@ export const createThumbSVGElement = <T>(
             ).getBoundingClientRect();
 
             const { x, y } = transformToCamera(e.clientX, e.clientY);
-            pointerUp(x, y, nodeComponent, canvasElement, interactionInfo);
+            pointerUp(x, y, nodeComponent, canvasElement, interactionInfo, interactionStateMachine);
             const circleDomElement = circleElement?.domElement as unknown as
               | HTMLElement
               | SVGElement;
@@ -246,7 +245,7 @@ export const createThumbSVGElement = <T>(
   };
 
   nodeComponent.pointerUp = () => {
-    const dropTarget = getCurrentDropTarget();
+    const dropTarget = interactionStateMachine.getCurrentDropTarget();
     if (dropTarget) {
       console.log(
         'DROPPED ON TARGET',
@@ -263,7 +262,7 @@ export const createThumbSVGElement = <T>(
       }
     }
     console.log('svg pointerup nodecomponent', nodeComponent.id, dropTarget);
-    clearDropTarget(nodeComponent);
+    interactionStateMachine.clearDropTarget(nodeComponent);
 
     const circleDomElement = circleElement?.domElement as unknown as
       | HTMLElement

@@ -4,8 +4,7 @@ import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
   InteractionState,
-  getCurrentInteractionState,
-  interactionEventState,
+  createInteractionStateMachine, 
 } from '../interaction-state-machine';
 import { INodeComponent, IThumb } from '../interfaces';
 import { setSelectNode } from '../reactivity';
@@ -13,6 +12,7 @@ import { ShapeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
 
 export const createCanvasApp = <T>(rootElement: HTMLElement) => {
+  const interactionStateMachine = createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
   let scaleCamera = 1;
   let xCamera = 0;
@@ -80,7 +80,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
       //return;
     }
-    let currentState = getCurrentInteractionState();
+    let currentState = interactionStateMachine.getCurrentInteractionState();
 
     if (currentState.state === InteractionState.Idle && isClicking) {
       startClientDragX = event.clientX;
@@ -88,7 +88,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       startDragX = xCamera;
       startDragY = yCamera;
       console.log('dragging canvas', canvas.id);
-      interactionEventState(
+      interactionStateMachine.interactionEventState(
         InteractionEvent.PointerDown,
         {
           id: canvas.id,
@@ -100,14 +100,14 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         },
         canvas as unknown as INodeComponent<T>
       );
-      currentState = getCurrentInteractionState();
+      currentState = interactionStateMachine.getCurrentInteractionState();
     }
     if (
       currentState.state === InteractionState.Moving &&
       currentState.element &&
       currentState.target
     ) {
-      const interactionState = interactionEventState(
+      const interactionState = interactionStateMachine.interactionEventState(
         InteractionEvent.PointerMove,
         currentState.target,
         currentState.element
@@ -126,25 +126,26 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
           );
 
           currentState.target.pointerMove &&
-            currentState.target.pointerMove(
+            currentState.target.pointerMove<T>(
               x,
               y,
               currentState.element,
               canvas.domElement,
-              currentState.target.interactionInfo
+              currentState.target.interactionInfo,
+              interactionStateMachine
             );
         }
       }
     }
   });
   rootElement.addEventListener('pointerup', (event: PointerEvent) => {
-    const currentState = getCurrentInteractionState();
+    const currentState = interactionStateMachine.getCurrentInteractionState();
     if (
       currentState.state === InteractionState.Moving &&
       currentState.element &&
       currentState.target
     ) {
-      const interactionState = interactionEventState(
+      const interactionState = interactionStateMachine.interactionEventState(
         InteractionEvent.PointerUp,
         currentState.target,
         currentState.element,
@@ -154,7 +155,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         if (currentState.target?.id === canvas.id) {
           setCameraPosition(event.clientX, event.clientY);
 
-          interactionEventState(
+          interactionStateMachine.interactionEventState(
             InteractionEvent.PointerUp,
             currentState.target,
             currentState.element
@@ -171,12 +172,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
           );
 
           currentState.target.pointerUp &&
-            currentState.target.pointerUp(
+            currentState.target.pointerUp<T>(
               x,
               y,
               currentState.element,
               canvas.domElement,
-              currentState.target.interactionInfo
+              currentState.target.interactionInfo,
+              interactionStateMachine
             );
         }
       }
@@ -218,13 +220,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     isClicking = false;
     wasMoved = false;
 
-    const currentState = getCurrentInteractionState();
+    const currentState = interactionStateMachine.getCurrentInteractionState();
     if (
       currentState.state === InteractionState.Moving &&
       currentState.element &&
       currentState.target
     ) {
-      const interactionState = interactionEventState(
+      const interactionState = interactionStateMachine.interactionEventState(
         InteractionEvent.PointerLeave,
         currentState.target,
         currentState.element
@@ -243,12 +245,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
           );
 
           currentState.target.pointerUp &&
-            currentState.target.pointerUp(
+            currentState.target.pointerUp<T>(
               x,
               y,
               currentState.element,
               canvas.domElement,
-              currentState.target.interactionInfo
+              currentState.target.interactionInfo,
+              interactionStateMachine
             );
         }
       }
@@ -476,6 +479,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     ) =>
       createRect<T>(
         canvas as unknown as INodeComponent<T>,
+        interactionStateMachine,
         pathHiddenElement,
         elements,
         x,
@@ -501,6 +505,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     ) =>
       createCubicBezier<T>(
         canvas as unknown as INodeComponent<T>,
+        interactionStateMachine,
         pathHiddenElement,
         elements,
         startX,
