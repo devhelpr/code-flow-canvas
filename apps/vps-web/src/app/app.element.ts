@@ -654,6 +654,145 @@ export class AppElement extends HTMLElement {
       'stress test'
     );
 
+    const getNodeConnectionPairById = (nodeId: string) => {
+      const elementList = Array.from(canvasApp?.elements ?? []);
+      const node = this.canvasApp?.elements?.get(nodeId);
+      if (node) {
+        const start = node as unknown as INodeComponent<NodeInfo>;
+        if (start) {
+          let connection: INodeComponent<NodeInfo> | undefined = undefined;
+          let end: INodeComponent<NodeInfo> | undefined = undefined;
+
+          const startElement = elementList.find((e) => {
+            const element = e[1] as INodeComponent<NodeInfo>;
+            return element.startNode?.id === node.id;
+          });
+          if (startElement) {
+            connection = startElement[1] as unknown as INodeComponent<NodeInfo>;
+          }
+          if (connection && connection.endNode) {
+            const endElement = elementList.find((e) => {
+              const element = e[1] as INodeComponent<NodeInfo>;
+              return (
+                connection &&
+                connection.endNode &&
+                element.id === connection.endNode.id
+              );
+            });
+            if (endElement) {
+              end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+            }
+          }
+
+          if (
+            connection &&
+            end &&
+            this.canvasApp?.canvas &&
+            connection.controlPoints &&
+            connection.controlPoints.length === 2
+          ) {
+            return {
+              start,
+              connection,
+              end,
+            };
+          }
+        }
+      }
+      return false;
+    };
+
+    const animatePath = (nodeId: string) => {
+      const nodeConnectionPair = getNodeConnectionPairById(nodeId);
+
+      if (nodeConnectionPair) {
+        const start = nodeConnectionPair.start;
+        const connection = nodeConnectionPair.connection;
+        const end = nodeConnectionPair.end;
+
+        const testCircle = createElement(
+          'div',
+          {
+            class: `flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
+            style: {
+              'background-color':
+                '#' + Math.floor(Math.random() * 16777215).toString(16),
+              'clip-path': 'circle(50%)',
+            },
+          },
+          this.canvasApp?.canvas.domElement,
+          ''
+        );
+
+        const domCircle = testCircle.domElement as HTMLElement;
+        domCircle.style.position = 'absolute';
+        domCircle.style.left = '0px';
+        domCircle.style.top = '0px';
+        domCircle.style.zIndex = '1000';
+        domCircle.style.pointerEvents = 'none';
+        domCircle.style.transformOrigin = 'center center';
+
+        let loop = 0;
+        const cancel = setInterval(() => {
+          if (
+            start &&
+            end &&
+            start.onCalculateControlPoints &&
+            end.onCalculateControlPoints &&
+            connection &&
+            connection.controlPoints &&
+            connection.controlPoints.length === 2
+          ) {
+            const startHelper = start.onCalculateControlPoints(
+              ControlAndEndPointNodeType.start,
+              CurveType.bezierCubic,
+              start.startNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
+              start.startNodeThumb?.thumbIndex
+            );
+
+            const endHelper = end.onCalculateControlPoints(
+              ControlAndEndPointNodeType.end,
+              CurveType.bezierCubic,
+              end.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
+              end.endNodeThumb?.thumbIndex
+            );
+
+            const tx = 40;
+            const ty = 40;
+            const bezierCurvePoints = getPointOnCubicBezierCurve(
+              loop,
+              { x: startHelper.x + tx, y: startHelper.y + ty },
+              {
+                x: startHelper.cx + tx,
+                y: startHelper.cy + ty,
+              },
+              {
+                x: endHelper.cx + tx,
+                y: endHelper.cy + ty,
+              },
+              { x: endHelper.x + tx, y: endHelper.y + ty }
+            );
+
+            domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+
+            loop += 0.015;
+            if (loop > 1) {
+              loop = 0;
+
+              canvasApp?.elements.delete(testCircle.id);
+              testCircle?.domElement?.remove();
+              clearInterval(cancel);
+              animatePath(end.id);
+            }
+          } else {
+            canvasApp?.elements.delete(testCircle.id);
+            testCircle?.domElement?.remove();
+            clearInterval(cancel);
+          }
+        }, 10);
+      }
+    };
+
     createElement(
       'button',
       {
@@ -675,124 +814,8 @@ export class AppElement extends HTMLElement {
           // - use range/meter control to determine speed
           // - follow a complete path of nodes and start over at the beginning after reaching the end
           const nodeId = getSelectedNode();
-          const elementList = Array.from(canvasApp?.elements ?? []);
           if (nodeId) {
-            const node = this.canvasApp?.elements?.get(nodeId);
-            if (node) {
-              const start = node as unknown as INodeComponent<NodeInfo>;
-              if (start) {
-                let connection: INodeComponent<NodeInfo> | undefined =
-                  undefined;
-                let end: INodeComponent<NodeInfo> | undefined = undefined;
-
-                const startElement = elementList.find((e) => {
-                  const element = e[1] as INodeComponent<NodeInfo>;
-                  return element.startNode?.id === node.id;
-                });
-                if (startElement) {
-                  connection =
-                    startElement[1] as unknown as INodeComponent<NodeInfo>;
-                }
-                if (connection && connection.endNode) {
-                  const endElement = elementList.find((e) => {
-                    const element = e[1] as INodeComponent<NodeInfo>;
-                    return (
-                      connection &&
-                      connection.endNode &&
-                      element.id === connection.endNode.id
-                    );
-                  });
-                  if (endElement) {
-                    end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-                  }
-                }
-
-                if (
-                  connection &&
-                  end &&
-                  this.canvasApp?.canvas &&
-                  connection.controlPoints &&
-                  connection.controlPoints.length === 2
-                ) {
-                  // create svg point/circle element
-                  const testCircle = createElement(
-                    'div',
-                    {
-                      class:
-                        'flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden bg-slate-500 rounded cursor-pointer',
-                      style: {
-                        'clip-path': 'circle(50%)',
-                      },
-                    },
-                    this.canvasApp?.canvas.domElement,
-                    ''
-                  );
-
-                  const domCircle = testCircle.domElement as HTMLElement;
-                  domCircle.style.position = 'absolute';
-                  domCircle.style.left = '0px';
-                  domCircle.style.top = '0px';
-                  domCircle.style.zIndex = '1000';
-                  domCircle.style.pointerEvents = 'none';
-                  domCircle.style.transformOrigin = 'center center';
-
-                  let loop = 0;
-                  const cancel = setInterval(() => {
-                    if (
-                      start &&
-                      end &&
-                      start.onCalculateControlPoints &&
-                      end.onCalculateControlPoints &&
-                      connection &&
-                      connection.controlPoints &&
-                      connection.controlPoints.length === 2
-                    ) {
-                      const startHelper = start.onCalculateControlPoints(
-                        ControlAndEndPointNodeType.start,
-                        CurveType.bezierCubic,
-                        start.startNodeThumb?.thumbType ??
-                          ThumbType.StartConnectorCenter,
-                        start.startNodeThumb?.thumbIndex
-                      );
-
-                      const endHelper = end.onCalculateControlPoints(
-                        ControlAndEndPointNodeType.end,
-                        CurveType.bezierCubic,
-                        end.endNodeThumb?.thumbType ??
-                          ThumbType.EndConnectorCenter,
-                        end.endNodeThumb?.thumbIndex
-                      );
-
-                      const tx = 40;
-                      const ty = 40;
-                      const bezierCurvePoints = getPointOnCubicBezierCurve(
-                        loop,
-                        { x: startHelper.x + tx, y: startHelper.y + ty },
-                        {
-                          x: startHelper.cx + tx,
-                          y: startHelper.cy + ty,
-                        },
-                        {
-                          x: endHelper.cx + tx,
-                          y: endHelper.cy + ty,
-                        },
-                        { x: endHelper.x + tx, y: endHelper.y + ty }
-                      );
-
-                      domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-
-                      loop += 0.01;
-                      if (loop > 1) {
-                        loop = 0;
-                        clearInterval(cancel);
-                      }
-                    } else {
-                      clearInterval(cancel);
-                    }
-                  }, 50);
-                }
-              }
-            }
+            animatePath(nodeId);
           }
           return false;
         },
