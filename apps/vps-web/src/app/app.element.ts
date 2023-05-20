@@ -664,162 +664,177 @@ export class AppElement extends HTMLElement {
     );
 
     const getNodeConnectionPairById = (nodeId: string) => {
+      const connectionPairs: {
+        start: INodeComponent<NodeInfo>;
+        end: INodeComponent<NodeInfo>;
+        connection: INodeComponent<NodeInfo>;
+      }[] = [];
+
       const elementList = Array.from(canvasApp?.elements ?? []);
       const node = this.canvasApp?.elements?.get(nodeId);
       if (node) {
         const start = node as unknown as INodeComponent<NodeInfo>;
         if (start) {
-          let connection: INodeComponent<NodeInfo> | undefined = undefined;
-          let end: INodeComponent<NodeInfo> | undefined = undefined;
-
-          const startElement = elementList.find((e) => {
+          const connectionsFromStartNode = elementList.filter((e) => {
             const element = e[1] as INodeComponent<NodeInfo>;
             return element.startNode?.id === node.id;
           });
-          if (startElement) {
-            connection = startElement[1] as unknown as INodeComponent<NodeInfo>;
-          }
-          if (connection && connection.endNode) {
-            const endElement = elementList.find((e) => {
-              const element = e[1] as INodeComponent<NodeInfo>;
-              return (
+
+          let connection: INodeComponent<NodeInfo> | undefined = undefined;
+          let end: INodeComponent<NodeInfo> | undefined = undefined;
+          if (connectionsFromStartNode && connectionsFromStartNode.length > 0) {
+            connectionsFromStartNode.forEach((connectionNode) => {
+              connection =
+                connectionNode[1] as unknown as INodeComponent<NodeInfo>;
+
+              if (connection && connection.endNode) {
+                const endElement = elementList.find((e) => {
+                  const element = e[1] as INodeComponent<NodeInfo>;
+                  return (
+                    connection &&
+                    connection.endNode &&
+                    element.id === connection.endNode.id
+                  );
+                });
+                if (endElement) {
+                  end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+                }
+              }
+
+              if (
                 connection &&
-                connection.endNode &&
-                element.id === connection.endNode.id
-              );
+                end &&
+                this.canvasApp?.canvas &&
+                connection.controlPoints &&
+                connection.controlPoints.length === 2
+              ) {
+                connectionPairs.push({
+                  start,
+                  connection,
+                  end,
+                });
+              }
             });
-            if (endElement) {
-              end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-            }
           }
 
-          if (
-            connection &&
-            end &&
-            this.canvasApp?.canvas &&
-            connection.controlPoints &&
-            connection.controlPoints.length === 2
-          ) {
-            return {
-              start,
-              connection,
-              end,
-            };
-          }
+          return connectionPairs;
         }
       }
       return false;
     };
 
     const animatePath = (nodeId: string, color: string) => {
-      const nodeConnectionPair = getNodeConnectionPairById(nodeId);
+      const nodeConnectionPairs = getNodeConnectionPairById(nodeId);
 
-      if (nodeConnectionPair) {
-        const start = nodeConnectionPair.start;
-        const connection = nodeConnectionPair.connection;
-        const end = nodeConnectionPair.end;
-        const testCircle = createElement(
-          'div',
-          {
-            class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
-            style: {
-              'background-color': color,
-              'clip-path': 'circle(50%)',
-            },
-          },
-          this.canvasApp?.canvas.domElement,
-          ''
-        );
+      if (nodeConnectionPairs && nodeConnectionPairs.length > 0) {
+        nodeConnectionPairs.forEach((nodeConnectionPair) => {
+          const start = nodeConnectionPair.start;
+          const connection = nodeConnectionPair.connection;
+          const end = nodeConnectionPair.end;
 
-        const message = createElement(
-          'div',
-          {
-            class: `flex text-center z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
-            style: {
-              'clip-path':
-                'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
-            },
-          },
-          this.canvasApp?.canvas.domElement,
-          ''
-        );
-
-        const domCircle = testCircle.domElement as HTMLElement;
-        domCircle.style.display = 'none';
-        const domMessage = message.domElement as HTMLElement;
-        domMessage.style.display = 'none';
-        domMessage.style.pointerEvents = 'none';
-
-        let loop = 0;
-        const cancel = setInterval(() => {
-          if (
-            start &&
-            end &&
-            start.onCalculateControlPoints &&
-            end.onCalculateControlPoints &&
-            connection &&
-            connection.controlPoints &&
-            connection.controlPoints.length === 2
-          ) {
-            const startHelper = start.onCalculateControlPoints(
-              ControlAndEndPointNodeType.start,
-              CurveType.bezierCubic,
-              connection.startNodeThumb?.thumbType ??
-                ThumbType.StartConnectorCenter,
-              connection.startNodeThumb?.thumbIndex
-            );
-
-            const endHelper = end.onCalculateControlPoints(
-              ControlAndEndPointNodeType.end,
-              CurveType.bezierCubic,
-              connection.endNodeThumb?.thumbType ??
-                ThumbType.EndConnectorCenter,
-              connection.endNodeThumb?.thumbIndex
-            );
-
-            const tx = 40;
-            const ty = 40;
-            const bezierCurvePoints = getPointOnCubicBezierCurve(
-              loop,
-              { x: startHelper.x + tx, y: startHelper.y + ty },
-              {
-                x: startHelper.cx + tx,
-                y: startHelper.cy + ty,
+          const testCircle = createElement(
+            'div',
+            {
+              class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
+              style: {
+                'background-color': color,
+                'clip-path': 'circle(50%)',
               },
-              {
-                x: endHelper.cx + tx,
-                y: endHelper.cy + ty,
+            },
+            this.canvasApp?.canvas.domElement,
+            ''
+          );
+
+          const message = createElement(
+            'div',
+            {
+              class: `flex text-center z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
+              style: {
+                'clip-path':
+                  'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
               },
-              { x: endHelper.x + tx, y: endHelper.y + ty }
-            );
+            },
+            this.canvasApp?.canvas.domElement,
+            ''
+          );
 
-            domCircle.style.display = 'flex';
-            domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-            domMessage.style.display = 'flex';
-            domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+          const domCircle = testCircle.domElement as HTMLElement;
+          domCircle.style.display = 'none';
+          const domMessage = message.domElement as HTMLElement;
+          domMessage.style.display = 'none';
+          domMessage.style.pointerEvents = 'none';
 
-            loop += 0.015;
-            if (loop > 1) {
-              loop = 0;
+          let loop = 0;
+          const cancel = setInterval(() => {
+            if (
+              start &&
+              end &&
+              start.onCalculateControlPoints &&
+              end.onCalculateControlPoints &&
+              connection &&
+              connection.controlPoints &&
+              connection.controlPoints.length === 2
+            ) {
+              const startHelper = start.onCalculateControlPoints(
+                ControlAndEndPointNodeType.start,
+                CurveType.bezierCubic,
+                connection.startNodeThumb?.thumbType ??
+                  ThumbType.StartConnectorCenter,
+                connection.startNodeThumb?.thumbIndex
+              );
 
+              const endHelper = end.onCalculateControlPoints(
+                ControlAndEndPointNodeType.end,
+                CurveType.bezierCubic,
+                connection.endNodeThumb?.thumbType ??
+                  ThumbType.EndConnectorCenter,
+                connection.endNodeThumb?.thumbIndex
+              );
+
+              const tx = 40;
+              const ty = 40;
+              const bezierCurvePoints = getPointOnCubicBezierCurve(
+                loop,
+                { x: startHelper.x + tx, y: startHelper.y + ty },
+                {
+                  x: startHelper.cx + tx,
+                  y: startHelper.cy + ty,
+                },
+                {
+                  x: endHelper.cx + tx,
+                  y: endHelper.cy + ty,
+                },
+                { x: endHelper.x + tx, y: endHelper.y + ty }
+              );
+
+              domCircle.style.display = 'flex';
+              domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+              domMessage.style.display = 'flex';
+              domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+
+              loop += 0.015;
+              if (loop > 1) {
+                loop = 0;
+
+                canvasApp?.elements.delete(testCircle.id);
+                testCircle?.domElement?.remove();
+
+                canvasApp?.elements.delete(message.id);
+                message?.domElement?.remove();
+                clearInterval(cancel);
+                animatePath(end.id, color);
+              }
+            } else {
               canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
 
               canvasApp?.elements.delete(message.id);
               message?.domElement?.remove();
+
               clearInterval(cancel);
-              animatePath(end.id, color);
             }
-          } else {
-            canvasApp?.elements.delete(testCircle.id);
-            testCircle?.domElement?.remove();
-
-            canvasApp?.elements.delete(message.id);
-            message?.domElement?.remove();
-
-            clearInterval(cancel);
-          }
-        }, 10);
+          }, 10);
+        });
       }
     };
 
