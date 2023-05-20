@@ -537,7 +537,7 @@ export class AppElement extends HTMLElement {
                     //alert(`click ${testNode.id}`);
                     animatePath(rect.nodeComponent.id, color);
                     return false;
-                  }
+                  },
                 },
                 undefined,
                 `${loopRows * maxColumns + loopColumns}`
@@ -718,14 +718,12 @@ export class AppElement extends HTMLElement {
         const start = nodeConnectionPair.start;
         const connection = nodeConnectionPair.connection;
         const end = nodeConnectionPair.end;
-
         const testCircle = createElement(
           'div',
           {
             class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
             style: {
-              'background-color':
-                color,
+              'background-color': color,
               'clip-path': 'circle(50%)',
             },
           },
@@ -738,7 +736,8 @@ export class AppElement extends HTMLElement {
           {
             class: `flex text-center z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
             style: {
-              'clip-path': 'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+              'clip-path':
+                'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
             },
           },
           this.canvasApp?.canvas.domElement,
@@ -765,15 +764,17 @@ export class AppElement extends HTMLElement {
             const startHelper = start.onCalculateControlPoints(
               ControlAndEndPointNodeType.start,
               CurveType.bezierCubic,
-              start.startNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
-              start.startNodeThumb?.thumbIndex
+              connection.startNodeThumb?.thumbType ??
+                ThumbType.StartConnectorCenter,
+              connection.startNodeThumb?.thumbIndex
             );
 
             const endHelper = end.onCalculateControlPoints(
               ControlAndEndPointNodeType.end,
               CurveType.bezierCubic,
-              end.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
-              end.endNodeThumb?.thumbIndex
+              connection.endNodeThumb?.thumbType ??
+                ThumbType.EndConnectorCenter,
+              connection.endNodeThumb?.thumbIndex
             );
 
             const tx = 40;
@@ -844,7 +845,8 @@ export class AppElement extends HTMLElement {
           // - follow a complete path of nodes and start over at the beginning after reaching the end
           const nodeId = getSelectedNode();
           if (nodeId) {
-            const color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            const color =
+              '#' + Math.floor(Math.random() * 16777215).toString(16);
             animatePath(nodeId, color);
           }
           return false;
