@@ -39,7 +39,7 @@ export default function (babel: { types: typeof babelTypes }) {
     let attributeObject: babelTypes.ObjectExpression | undefined;
     if (attributes) {
       // TODO handle value type 'JSXExpressionContainer' (expression)
-      console.log('attributes', attributes);
+      //console.log('attributes', attributes);
       const properties: babelTypes.ObjectProperty[] = [];
       attributes.forEach((attribute) => {
         if (
@@ -100,11 +100,11 @@ export default function (babel: { types: typeof babelTypes }) {
             attribute.value.expression.type === 'TemplateLiteral')
         ) {
           // TODO .. set these on the clone nodes..?
-          console.log(
-            'attribute.value.expression',
-            attribute.value.expression.type,
-            attribute.value.expression
-          );
+          // console.log(
+          //   'attribute.value.expression',
+          //   attribute.value.expression.type,
+          //   attribute.value.expression
+          // );
           statements.push(
             t.expressionStatement(
               t.callExpression(
@@ -137,7 +137,8 @@ export default function (babel: { types: typeof babelTypes }) {
           attribute.value &&
           attribute.value.type === 'JSXExpressionContainer' &&
           attribute.value.expression &&
-          attribute.value.expression.type === 'ArrowFunctionExpression'
+          (attribute.value.expression.type === 'ArrowFunctionExpression' ||
+            attribute.value.expression.type === 'MemberExpression')
         ) {
           statements.push(
             t.expressionStatement(
@@ -487,7 +488,7 @@ export default function (babel: { types: typeof babelTypes }) {
             attributes: item.openingElement.attributes,
           });
           childIndex++;
-        } else if (item.children.length > 0) {
+        } else {
           content.push({
             index: childIndex,
             parentId,
@@ -498,7 +499,7 @@ export default function (babel: { types: typeof babelTypes }) {
             attributes: item.openingElement.attributes,
             children: handleChildren(
               parentId + '_',
-              item.children,
+              item.children || [],
               item.openingElement.attributes,
               item
             ),
@@ -638,6 +639,16 @@ export default function (babel: { types: typeof babelTypes }) {
         attributes,
         path.node
       );
+
+      console.log(
+        'tagName',
+        tagName,
+        path.node,
+        path.node.type,
+        path.node.children,
+        content
+      );
+
       const blockElements: babelTypes.Statement[] = [];
       const result = appendChildrenToTemplate('template', content);
       blockElements.push(...result);

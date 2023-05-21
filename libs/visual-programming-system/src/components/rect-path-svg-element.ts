@@ -161,7 +161,7 @@ export const createRectPathSVGElement = <T>(
   if (astElement && hasPointerEvents) {
     astElement.domElement.addEventListener('pointerdown', (e: PointerEvent) => {
       if (
-        ['A', 'BUTTON', 'INPUT', 'SELECT'].indexOf(
+        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
           (e.target as HTMLElement)?.tagName
         ) >= 0
       )
@@ -183,7 +183,7 @@ export const createRectPathSVGElement = <T>(
           y - rectCamera.y - (pathPoints.beginY - bbox.y),
           divElement,
           canvasElement,
-          interactionStateMachine,
+          interactionStateMachine
         );
         if (interactionInfoResult) {
           (canvasElement as unknown as HTMLElement | SVGElement).append(

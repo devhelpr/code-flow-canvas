@@ -4,7 +4,7 @@ import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
   InteractionState,
-  createInteractionStateMachine, 
+  createInteractionStateMachine,
 } from '../interaction-state-machine';
 import { INodeComponent, IThumb } from '../interfaces';
 import { setSelectNode } from '../reactivity';
@@ -73,6 +73,14 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
 
   rootElement.addEventListener('pointermove', (event: PointerEvent) => {
     //const canvasRect = canvas.domElement.getBoundingClientRect();
+
+    if (
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0
+    )
+      return;
+
     if (isClicking) {
       isMoving = true;
       wasMoved = true;
@@ -325,10 +333,11 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   });
 
   rootElement.addEventListener('click', (event: MouseEvent) => {
+    const tagName = (event.target as HTMLElement)?.tagName;
     if (
       !wasMoved &&
       onClickCanvas &&
-      (event.target as HTMLElement)?.tagName !== 'BUTTON'
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(tagName) < 0
     ) {
       event.preventDefault();
       const mousePointTo = {

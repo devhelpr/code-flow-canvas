@@ -326,9 +326,17 @@ export const createRect = <T>(
     nodeType: ControlAndEndPointNodeType,
     curveType: CurveType,
     thumbType: ThumbType,
-    index?: number
+    index?: number,
+    connectedNode?: INodeComponent<T>
   ) => {
     if (nodeType === ControlAndEndPointNodeType.start) {
+      const xDistance = Math.abs(
+        rectNode.x + (rectNode.width ?? 0) - (connectedNode?.x ?? 0)
+      );
+      const yDistance = Math.abs(
+        rectNode.y + (rectNode.height ?? 0) - (connectedNode?.y ?? 0)
+      );
+
       let x =
         rectNode.x +
         calculateConnectorX(
@@ -352,20 +360,29 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y + (rectNode.height || 0) + 50,
+          cy: y + Math.max((rectNode.height || 0) + 50, yDistance),
           nodeType,
         };
       }
       x = x + thumbRadius * 3;
+      const cx = x + (rectNode.width || 0) + 50;
+
       return {
         x: x,
         y: y,
-        cx: x + (rectNode.width || 0) + 50,
+        cx: cx,
         cy: y,
         nodeType,
       };
     }
     if (nodeType === ControlAndEndPointNodeType.end) {
+      const xDistance = Math.abs(
+        rectNode.x - (connectedNode?.x ?? 0) + (connectedNode?.width ?? 0)
+      );
+      const yDistance = Math.abs(
+        rectNode.y - (connectedNode?.y ?? 0) + (connectedNode?.height ?? 0)
+      );
+
       let x =
         rectNode.x +
         calculateConnectorX(
@@ -390,17 +407,17 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y - (rectNode.height || 0) - 50,
+          cy: y - Math.max((rectNode.height || 0) - 50, yDistance),
           nodeType,
         };
       }
 
       x = x - thumbRadius * 3;
-
+      const cx = x - (rectNode.width || 0) - 50;
       return {
         x: x,
         y: y,
-        cx: x - (rectNode.width || 0) - 50,
+        cx: cx,
         cy: y,
         nodeType,
       };

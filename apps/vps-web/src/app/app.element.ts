@@ -12,6 +12,7 @@ import {
   createMarkupElement,
   createEffect,
   getSelectedNode,
+  setSelectNode,
   getVisbility,
   setVisibility,
   setupMarkupElement,
@@ -35,6 +36,8 @@ import {
 import flowData from '../example-data/tiltest.json';
 
 import { TestApp } from './test-app';
+import { TextAreaComponent } from './components/textarea-component';
+
 import { run } from './simple-flow-engine/simple-flow-engine';
 
 const template = document.createElement('template');
@@ -45,7 +48,7 @@ template.innerHTML = `
 `; // flex flex-col
 
 const button =
-  'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none';
+  'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap';
 const menubar = 'fixed top-0 z-20 flex flex-row items-center justify-start';
 
 type NodeInfo = any;
@@ -111,30 +114,32 @@ export class AppElement extends HTMLElement {
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
     canvasApp.setOnCanvasClick((x, y) => {
-      canvasApp.createRect(
-        x,
-        y,
-        200,
-        100,
-        undefined,
-        undefined,
-        [
-          {
-            thumbType: ThumbType.StartConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-          },
-          {
-            thumbType: ThumbType.EndConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-          },
-        ],
-        `<p>Node</p><p>Created on click</p><p>dummy node</p><div class="h-24"></div>`,
-        {
-          classNames: `bg-slate-500 p-4 rounded`,
-        }
-      );
+      setSelectNode(undefined);
+
+      // canvasApp.createRect(
+      //   x,
+      //   y,
+      //   200,
+      //   100,
+      //   undefined,
+      //   undefined,
+      //   [
+      //     {
+      //       thumbType: ThumbType.StartConnectorCenter,
+      //       thumbIndex: 0,
+      //       connectionType: ThumbConnectionType.start,
+      //     },
+      //     {
+      //       thumbType: ThumbType.EndConnectorCenter,
+      //       thumbIndex: 0,
+      //       connectionType: ThumbConnectionType.end,
+      //     },
+      //   ],
+      //   `<p>Node</p><p>Created on click</p><p>dummy node</p><div class="h-24"></div>`,
+      //   {
+      //     classNames: `bg-slate-500 p-4 rounded`,
+      //   }
+      // );
     });
 
     const menubarElement = createElement(
@@ -439,24 +444,24 @@ export class AppElement extends HTMLElement {
       'Add bezier curve'
     );
 
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
 
-          createMarkupElement(
-            '<div><h2>TITLE</h2><p>subtitle</p></div>',
-            canvasApp.canvas.domElement,
-            canvasApp.elements
-          );
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add markup element'
-    );
+    //       createMarkupElement(
+    //         '<div><h2>TITLE</h2><p>subtitle</p></div>',
+    //         canvasApp.canvas.domElement,
+    //         canvasApp.elements
+    //       );
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add markup element'
+    // );
 
     createElement(
       'button',
@@ -780,7 +785,8 @@ export class AppElement extends HTMLElement {
                 CurveType.bezierCubic,
                 connection.startNodeThumb?.thumbType ??
                   ThumbType.StartConnectorCenter,
-                connection.startNodeThumb?.thumbIndex
+                connection.startNodeThumb?.thumbIndex,
+                end
               );
 
               const endHelper = end.onCalculateControlPoints(
@@ -788,7 +794,8 @@ export class AppElement extends HTMLElement {
                 CurveType.bezierCubic,
                 connection.endNodeThumb?.thumbType ??
                   ThumbType.EndConnectorCenter,
-                connection.endNodeThumb?.thumbIndex
+                connection.endNodeThumb?.thumbIndex,
+                start
               );
 
               const tx = 40;
@@ -907,25 +914,16 @@ export class AppElement extends HTMLElement {
     //   rootElement
     // );
 
-    const textAreaContainer = createElement(
+    const sidebarContainer = createElement(
       'div',
       {
         id: 'textAreaContainer',
         class:
-          'fixed w-1/2 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
+          'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
-      rootElement
-    );
-
-    let raf = -1;
-    let inputTimeout = -1;
-
-    const textArea = createElement(
-      'textarea',
-      {
-        id: 'textAreaCode',
-        class: 'w-full h-full p-2 outline-none',
-        input: (event: InputEvent) => {
+      rootElement,
+      TextAreaComponent({
+        onInput: (event: InputEvent) => {
           const text =
             (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
 
@@ -983,17 +981,35 @@ export class AppElement extends HTMLElement {
             }
           }, 100) as unknown as number;
         },
-      },
-      textAreaContainer.domElement
+      }) as unknown as HTMLElement
     );
+
+    let raf = -1;
+    let inputTimeout = -1;
+
+    // const textArea = createElement(
+    //   'textarea',
+    //   {
+    //     id: 'textAreaCode',
+    //     class: 'w-full h-full p-2 outline-none',
+    //     input:
+    //   },
+    //   sidebarContainer.domElement
+    // );
 
     createEffect(() => {
       const nodeElementId = getSelectedNode();
       console.log('selected nodeElement', nodeElementId);
       if (nodeElementId) {
         selectedNode.domElement.textContent = `${nodeElementId}`;
+        (
+          sidebarContainer.domElement as unknown as HTMLElement
+        ).classList.remove('hidden');
       } else {
         selectedNode.domElement.textContent = '';
+        (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
+          'hidden'
+        );
       }
     });
 

@@ -136,7 +136,7 @@ export const createConnectionSVGElement = <T>(
     'marker',
     {
       id: 'arrow',
-      refX: '2',
+      refX: '1.5',
       refY: '2',
       markerUnits: 'strokeWidth',
       markerWidth: '4',
@@ -338,14 +338,16 @@ export const createConnectionSVGElement = <T>(
             CurveType.bezierCubic,
             nodeComponent.startNodeThumb?.thumbType ??
               ThumbType.StartConnectorCenter,
-            nodeComponent.startNodeThumb?.thumbIndex
+            nodeComponent.startNodeThumb?.thumbIndex,
+            nodeComponent.endNode
           );
           const end = nodeComponent.endNode.onCalculateControlPoints(
             ControlAndEndPointNodeType.end,
             CurveType.bezierCubic,
             nodeComponent.endNodeThumb?.thumbType ??
               ThumbType.EndConnectorCenter,
-            nodeComponent.endNodeThumb?.thumbIndex
+            nodeComponent.endNodeThumb?.thumbIndex,
+            nodeComponent.startNode
           );
           points.beginX = start.x;
           points.beginY = start.y;
@@ -386,7 +388,8 @@ export const createConnectionSVGElement = <T>(
             CurveType.bezierCubic,
             incomingComponent.startNodeThumb?.thumbType ??
               ThumbType.StartConnectorCenter,
-            incomingComponent.startNodeThumb?.thumbIndex
+            incomingComponent.startNodeThumb?.thumbIndex,
+            incomingComponent.endNode
           );
           points.beginX = start.x;
           points.beginY = start.y;
@@ -405,7 +408,8 @@ export const createConnectionSVGElement = <T>(
             CurveType.bezierCubic,
             incomingComponent.endNodeThumb?.thumbType ??
               ThumbType.EndConnectorCenter,
-            incomingComponent.endNodeThumb?.thumbIndex
+            incomingComponent.endNodeThumb?.thumbIndex,
+            incomingComponent.startNode
           );
           points.endX = end.x;
           points.endY = end.y;
