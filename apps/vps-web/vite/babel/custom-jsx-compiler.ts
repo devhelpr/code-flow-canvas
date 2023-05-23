@@ -16,6 +16,7 @@ export type Content = {
   tagName: string;
   content: string | babelTypes.JSXElement;
   isExpression?: boolean;
+  runExpression?: boolean;
   expression?: babelTypes.Expression;
   attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[];
   children?: Content[];
@@ -54,7 +55,21 @@ export default function (babel: { types: typeof babelTypes }) {
               t.stringLiteral(attribute.value.value.toString())
             )
           );
+        } else if (
+          attribute.type === 'JSXAttribute' &&
+          attribute.value &&
+          attribute.value.type === 'JSXExpressionContainer' &&
+          attribute.value.expression &&
+          attribute.value.expression.type === 'ArrayExpression'
+        ) {
+          properties.push(
+            t.objectProperty(
+              t.identifier(attribute.name.name.toString()),
+              attribute.value.expression
+            )
+          );
         }
+        // handle
       });
       attributeObject = t.objectExpression(properties);
     }
@@ -97,6 +112,7 @@ export default function (babel: { types: typeof babelTypes }) {
           attribute.value.type === 'JSXExpressionContainer' &&
           attribute.value.expression &&
           (attribute.value.expression.type === 'ArrowFunctionExpression' ||
+            attribute.value.expression.type === 'ArrayExpression' ||
             attribute.value.expression.type === 'TemplateLiteral')
         ) {
           // TODO .. set these on the clone nodes..?
@@ -140,6 +156,11 @@ export default function (babel: { types: typeof babelTypes }) {
           (attribute.value.expression.type === 'ArrowFunctionExpression' ||
             attribute.value.expression.type === 'MemberExpression')
         ) {
+          // console.log(
+          //   'attribute.value.expression',
+          //   attribute.value.expression.type,
+          //   attribute.value.expression
+          // );
           statements.push(
             t.expressionStatement(
               t.callExpression(
@@ -198,55 +219,91 @@ export default function (babel: { types: typeof babelTypes }) {
 
       if (item.isExpression === true && item.expression) {
         //console.log('item.expression', item.tagName, item.expression);
-        statements.push(
-          t.variableDeclaration('const', [
-            t.variableDeclarator(
-              t.identifier(elementId),
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier('document'),
-                  t.identifier('createTextNode')
-                ),
-                [item.expression] // t.stringLiteral(item.tagName)
-              )
-            ),
-          ])
-        );
+        if (item.runExpression) {
+          //console.log('item.expression', item.tagName, item.expression);
 
-        // statements.push(...setAttributes(elementId, item.attributes));
+          // const childStatements = appendChildrenToTemplate(
+          //   templateVariableName,
+          //   item.expression
+          // );
 
-        // statements.push(
-        //   t.expressionStatement(
-        //     t.callExpression(
-        //       t.memberExpression(
-        //         t.identifier(elementId),
-        //         t.identifier('append')
-        //       ),
-        //       [
-        //         t.callExpression(
-        //           t.memberExpression(
-        //             t.identifier('document'),
-        //             t.identifier('createTextNode')
-        //           ),
-        //           [item.expression]
-        //         ),
-        //       ]
-        //     )
-        //   )
-        // );
-
-        addToParent(
-          templateVariableName !== 'template',
-          templateVariableName,
-          elementId
-        );
-
-        if (item && item.children && item.children.length > 0) {
-          const childStatements = appendChildrenToTemplate(
-            elementId,
-            item.children
+          const contentChildren: Content[] = handleChildren(
+            item.tagName,
+            (item.expression as unknown as babelTypes.JSXElement).children,
+            []
           );
-          statements.push(...childStatements);
+          console.log('item.expression', item.tagName, item, contentChildren);
+          if (contentChildren.length > 0) {
+            const clonedFunction = structuredClone(
+              contentChildren[0].expression
+            ) as babelTypes.ArrowFunctionExpression;
+
+            clonedFunction.params = [
+              t.identifier('item'),
+              t.identifier('index'),
+            ];
+
+            const statement = t.callExpression(
+              t.memberExpression(
+                t.memberExpression(t.identifier('props'), t.identifier('list')),
+                t.identifier('forEach')
+              ),
+              [
+                t.arrowFunctionExpression(
+                  [t.identifier('item'), t.identifier('index')],
+                  t.callExpression(
+                    t.memberExpression(
+                      t.identifier(templateVariableName),
+                      t.identifier('appendChild')
+                    ),
+                    [
+                      t.callExpression(clonedFunction, [
+                        t.identifier('item'),
+                        t.identifier('index'),
+                      ]),
+                    ]
+                    // (
+                    //   item.expression as unknown as babelTypes.JSXElement
+                    // ).children.map((child) => {
+
+                    //return clonedFunction;
+                    //})
+                  )
+                ),
+              ]
+            );
+            // TODO : create foreach here ... and add inner elements to the parent
+            statements.push(t.expressionStatement(statement));
+          }
+        } else {
+          statements.push(
+            t.variableDeclaration('const', [
+              t.variableDeclarator(
+                t.identifier(elementId),
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier('document'),
+                    t.identifier('createTextNode')
+                  ),
+                  [item.expression] // t.stringLiteral(item.tagName)
+                )
+              ),
+            ])
+          );
+
+          addToParent(
+            templateVariableName !== 'template',
+            templateVariableName,
+            elementId
+          );
+
+          if (item && item.children && item.children.length > 0) {
+            const childStatements = appendChildrenToTemplate(
+              elementId,
+              item.children
+            );
+            statements.push(...childStatements);
+          }
         }
       } else if (typeof item.content === 'string') {
         if (item.tagName === '') {
@@ -386,6 +443,25 @@ export default function (babel: { types: typeof babelTypes }) {
     return blockStatement;
   };
 
+  const createRenderListStatements = (
+    childIndex: number,
+    parentId: string,
+    item: babelTypes.JSXElement
+  ): Content => {
+    console.log('createRenderListStatements', childIndex, parentId);
+    return {
+      index: childIndex,
+      parentId,
+      tagName: 'div',
+      //content: 'RenderMap',
+      content: '',
+      isExpression: true,
+      runExpression: true,
+      expression: item,
+      attributes: item.openingElement.attributes,
+    };
+  };
+
   const handleChildren = (
     parentId: string,
     children: (
@@ -459,9 +535,22 @@ export default function (babel: { types: typeof babelTypes }) {
         });
         childIndex++;
       } else if (item.type === 'JSXElement') {
-        const tagName = (
-          item.openingElement.name as unknown as babelTypes.JSXIdentifier
-        ).name;
+        const tagName =
+          item.openingElement.name.type === 'JSXNamespacedName'
+            ? `${
+                (
+                  item.openingElement
+                    .name as unknown as babelTypes.JSXNamespacedName
+                ).namespace.name
+              }:${
+                (
+                  item.openingElement
+                    .name as unknown as babelTypes.JSXNamespacedName
+                ).name.name
+              }`
+            : (item.openingElement.name as unknown as babelTypes.JSXIdentifier)
+                .name;
+
         if (tagName[0] === tagName[0].toUpperCase()) {
           content.push({
             index: childIndex,
@@ -470,6 +559,12 @@ export default function (babel: { types: typeof babelTypes }) {
             content: item,
             attributes: item.openingElement.attributes,
           });
+          childIndex++;
+        } else if (tagName === 'list:Render') {
+          //console.log('list:Render', item.children);
+          content.push(createRenderListStatements(childIndex, parentId, item));
+
+          // TODO : increase then when elements are added..
           childIndex++;
         } else if (
           item.children &&
@@ -522,66 +617,77 @@ export default function (babel: { types: typeof babelTypes }) {
     const effectList: any[] = [];
     const replaceList: any[] = [];
     content.forEach((item, index) => {
-      const elementReferenceName =
-        (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
-      const elementReferenceIdentifier = t.identifier(elementReferenceName);
-      const elementReference = t.variableDeclaration('const', [
-        t.variableDeclarator(
-          elementReferenceIdentifier,
-          t.memberExpression(
-            previousElement ?? t.identifier('cloneNode'),
-            index === 0
-              ? t.identifier('firstChild')
-              : t.identifier('nextSibling')
-          )
-        ),
-      ]);
-      elementReferenceBlocks.push(elementReference);
-
+      let continueToNext = false;
       if (item.isExpression) {
-        effectList.push({
-          id: parentId,
-          expression: item.expression,
-        });
-      } else if (!item.isExpression && typeof item.content !== 'string') {
-        // if component contains another component ..
-        //   .. then appendChild it to the cloned node instead of to the template...
-        //   (the template contains a documet fragment)
+        if (item.runExpression) {
+          continueToNext = true;
+        }
+      }
 
-        const attributeObject = getAttributes(item.attributes);
-
-        replaceList.push({
-          id: elementReferenceName,
-          statement: t.expressionStatement(
-            t.callExpression(
-              t.memberExpression(
-                t.memberExpression(
-                  t.identifier(elementReferenceName),
-                  t.identifier('parentNode')
-                ),
-                t.identifier('replaceChild')
-              ),
-              [
-                t.callExpression(
-                  t.identifier(item.tagName),
-                  attributeObject ? [attributeObject] : []
-                ),
-                t.identifier(elementReferenceName),
-              ]
+      if (!continueToNext) {
+        const elementReferenceName =
+          (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
+        const elementReferenceIdentifier = t.identifier(elementReferenceName);
+        const elementReference = t.variableDeclaration('const', [
+          t.variableDeclarator(
+            elementReferenceIdentifier,
+            t.memberExpression(
+              previousElement ?? t.identifier('cloneNode'),
+              index === 0
+                ? t.identifier('firstChild')
+                : t.identifier('nextSibling')
             )
           ),
-        });
-      }
-      elementReferenceBlocks.push(
-        ...setEventAttributes(elementReferenceName, item.attributes)
-      );
+        ]);
+        elementReferenceBlocks.push(elementReference);
 
-      if (item.children && item.children.length > 0) {
+        if (item.isExpression) {
+          if (!item.runExpression) {
+            effectList.push({
+              id: parentId,
+              expression: item.expression,
+            });
+          }
+        } else if (!item.isExpression && typeof item.content !== 'string') {
+          // if component contains another component ..
+          //   .. then appendChild it to the cloned node instead of to the template...
+          //   (the template contains a documet fragment)
+
+          const attributeObject = getAttributes(item.attributes);
+
+          replaceList.push({
+            id: elementReferenceName,
+            statement: t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.memberExpression(
+                    t.identifier(elementReferenceName),
+                    t.identifier('parentNode')
+                  ),
+                  t.identifier('replaceChild')
+                ),
+                [
+                  t.callExpression(
+                    t.identifier(item.tagName),
+                    attributeObject ? [attributeObject] : []
+                  ),
+                  t.identifier(elementReferenceName),
+                ]
+              )
+            ),
+          });
+        }
         elementReferenceBlocks.push(
-          ...createElementReferences(elementReferenceName, item.children)
+          ...setEventAttributes(elementReferenceName, item.attributes)
         );
+
+        if (item.children && item.children.length > 0) {
+          elementReferenceBlocks.push(
+            ...createElementReferences(elementReferenceName, item.children)
+          );
+        }
+        previousElement = elementReferenceIdentifier;
       }
-      previousElement = elementReferenceIdentifier;
     });
     replaceList.forEach((item) => {
       elementReferenceBlocks.push(item.statement);
@@ -638,15 +744,6 @@ export default function (babel: { types: typeof babelTypes }) {
         [path.node],
         attributes,
         path.node
-      );
-
-      console.log(
-        'tagName',
-        tagName,
-        path.node,
-        path.node.type,
-        path.node.children,
-        content
       );
 
       const blockElements: babelTypes.Statement[] = [];

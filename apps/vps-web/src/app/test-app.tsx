@@ -16,7 +16,7 @@ export const TestApp = (props: TestAppProps) => (
       Test
       <h1 class="strong text-xl font-bold">Hello JSX!</h1>
       <p>lorem ipsum</p>
-      <TestComponent test="hello test property" />
+      <TestComponent list={[{ test: 'abc' }, { test: 'def' }]} />
       <AnotherComponent />
     </div>
     <AnotherComponent />

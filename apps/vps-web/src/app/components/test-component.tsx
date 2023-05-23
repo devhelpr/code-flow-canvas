@@ -6,7 +6,11 @@ function Add(a: number, b: number) {
   return a + b;
 }
 
-export const TestComponent = (props: any) => {
+export interface TestComponentProps {
+  list: { test: string }[];
+}
+
+export const TestComponent = (props: TestComponentProps) => {
   console.log('TestComponent constructor');
   return (
     <div>
@@ -28,6 +32,17 @@ export const TestComponent = (props: any) => {
       </button>
       <div>{2 + 3 * Add(1, 6)}</div>
       <div>{getCount()}</div>
+      <ul>
+        <list:Render list={props.list}>
+          {(item: { test: string }) => (
+            <div>
+              <div>
+                <li>{item.test}</li>
+              </div>
+            </div>
+          )}
+        </list:Render>
+      </ul>
     </div>
   );
 };
