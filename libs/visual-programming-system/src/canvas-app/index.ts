@@ -69,13 +69,15 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
-      ) >= 0 ||
+      ) >= 0 ||      
       (event.target !== rootElement && event.target !== canvas.domElement)
     ) {
-      isClicking = false;
-      isMoving = false;
-      wasMoved = false;
-      return;
+      if (!(event.target as unknown as any).closest || (!(event.target as unknown as any).closest("#canvas"))) {
+        isClicking = false;
+        isMoving = false;
+        wasMoved = false;
+        return;
+      }
     }
     isClicking = true;
     isMoving = false;
@@ -89,9 +91,11 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0 ||
-      (event.target !== rootElement && event.target !== canvas.domElement)
-    )
-      return;
+      (event.target !== rootElement && event.target !== canvas.domElement)) {
+        if (!(event.target as unknown as any).closest || (!(event.target as unknown as any).closest("#canvas"))) {
+          return;
+        }
+      }
 
     if (isClicking) {
       isMoving = true;
