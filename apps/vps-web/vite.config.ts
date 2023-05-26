@@ -15,6 +15,9 @@ export default defineConfig({
     }),
     jsxCompiler(),
   ],
+  esbuild: {
+    sourcemap: false
+  },
 
   // Uncomment this if you are using workers.
   // worker: {
