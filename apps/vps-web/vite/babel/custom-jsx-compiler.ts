@@ -85,6 +85,7 @@ export default function (babel: { types: typeof babelTypes }) {
     if (attributes) {
       //console.log('attributes SET', attributes);
       attributes.forEach((attribute) => {
+        
         // TODO handle value type 'JSXExpressionContainer' (expression)
         if (
           attribute.type === 'JSXAttribute' &&
@@ -113,6 +114,7 @@ export default function (babel: { types: typeof babelTypes }) {
           attribute.value.expression &&
           (attribute.value.expression.type === 'ArrowFunctionExpression' ||
             attribute.value.expression.type === 'ArrayExpression' ||
+            attribute.value.expression.type === 'Identifier' ||
             attribute.value.expression.type === 'TemplateLiteral')
         ) {
           // TODO .. set these on the clone nodes..?
@@ -135,6 +137,9 @@ export default function (babel: { types: typeof babelTypes }) {
               )
             )
           );
+        } else
+         {
+          console.log('Unhandled attribute', attribute);
         }
       });
     }
@@ -655,14 +660,101 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
     const effectList: any[] = [];
     const replaceList: any[] = [];
     content.forEach((item, index) => {
-      let continueToNext = false;
-      if (item.isExpression) {
-        if (item.runExpression) {
-          continueToNext = true;
-        }
-      }
+      if (item.isExpression && item.runExpression) {
 
-      if (!continueToNext) {
+          const elementReferenceName =
+            (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
+          const elementReferenceIdentifier = t.identifier(elementReferenceName);
+
+
+          const elementReference = t.variableDeclaration('let', [ // let e_0_1 = undefined;
+            t.variableDeclarator(
+              elementReferenceIdentifier,
+              t.identifier('undefined')
+            ),
+          ]);          
+          elementReferenceBlocks.push(elementReference);
+  
+          const listAttribute = item.attributes?.find((attribute) => attribute.type === "JSXAttribute" && attribute.name?.name === "list");
+
+          if (!listAttribute) {
+            throw new Error("list attribute not found for list:Render");
+          }
+          if (listAttribute.type !== "JSXAttribute") {
+            throw new Error("Unsupported list attribute type found for list:Render");
+          }
+          if (!listAttribute.value) {
+            throw new Error("list attribute value not found for list:Render");
+          }
+          if (listAttribute.value.type !== "JSXExpressionContainer") {
+            throw new Error("Unsupported list attribute value type found for list:Render");
+          }
+          if (!listAttribute.value.expression) {
+            throw new Error("list attribute expression not found for list:Render");
+          }
+          if (listAttribute.value.expression.type !== "MemberExpression") {
+            throw new Error("Unsupported list attribute expression type found for list:Render");
+          }
+          if (!listAttribute.value.expression.property) {
+            throw new Error("list attribute expression property not found for list:Render");
+          }
+          if (listAttribute.value.expression.property.type !== "Identifier") {
+            throw new Error("Unsupported list attribute expression property type found for list:Render");
+          }
+          console.log("listAttribute.value.expression.property.name", listAttribute.value.expression.property.name);
+          const forEachStatement = t.callExpression(
+            t.memberExpression(
+              t.memberExpression(t.identifier('props'), t.identifier(listAttribute.value.expression.property.name)),
+              t.identifier('forEach')
+            ),
+            [
+              t.arrowFunctionExpression(
+                [t.identifier('item'), t.identifier('index')],
+                t.blockStatement(
+                  [
+                    t.ifStatement(
+                      t.binaryExpression(
+                        '===',
+                        elementReferenceIdentifier,
+                        t.identifier('undefined')
+                      ),
+                      t.blockStatement( // if
+                        [
+                          t.expressionStatement(t.assignmentExpression(
+                            '=',
+                            elementReferenceIdentifier,
+                            t.memberExpression(
+                              previousElement ?? t.identifier('cloneNode'), // TODO : replace this cloneNode...
+                              index === 0 ? t.identifier('firstChild') : t.identifier('nextSibling')
+                            )
+                          ))
+                        ]
+                      ),
+                      t.blockStatement( // else
+                        [
+                          t.expressionStatement(t.assignmentExpression(
+                            '=',
+                            elementReferenceIdentifier,
+                            t.memberExpression(
+                              elementReferenceIdentifier,
+                              t.identifier('nextSibling')
+                            )
+                          ))
+                        ]
+                      )
+                    ),
+                  ]
+                )
+              ),
+            ]
+          );
+          elementReferenceBlocks.push(t.expressionStatement(forEachStatement));
+
+          
+          previousElement = elementReferenceIdentifier;
+
+
+      } else {
         const elementReferenceName =
           (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
         const elementReferenceIdentifier = t.identifier(elementReferenceName);

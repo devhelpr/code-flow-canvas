@@ -65,6 +65,17 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   };
 
   rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
+
+    if (
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0
+    ) {
+      isClicking = false;
+      isMoving = false;
+      wasMoved = false;
+      return;
+    }
     isClicking = true;
     isMoving = false;
     wasMoved = false;
@@ -72,8 +83,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   });
 
   rootElement.addEventListener('pointermove', (event: PointerEvent) => {
-    //const canvasRect = canvas.domElement.getBoundingClientRect();
-
+    //const canvasRect = canvas.domElement.getBoundingClientRect();    
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
@@ -334,11 +344,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
 
   rootElement.addEventListener('click', (event: MouseEvent) => {
     const tagName = (event.target as HTMLElement)?.tagName;
+    
     if (
       !wasMoved &&
       onClickCanvas &&
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(tagName) < 0
     ) {
+      console.log('rootElement click', event.target, tagName);
       event.preventDefault();
       const mousePointTo = {
         x: event.clientX / scaleCamera - xCamera / scaleCamera,

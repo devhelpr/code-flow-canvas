@@ -41,6 +41,7 @@ import { TextAreaComponent } from './components/textarea-component';
 
 import { run } from './simple-flow-engine/simple-flow-engine';
 
+
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
@@ -924,6 +925,9 @@ export class AppElement extends HTMLElement {
       },
       rootElement,
       TextAreaComponent({
+        onSave: (values : any) => {
+          console.log('onSave', values);
+        },
         formElements: [
           "test1",
           "test2",
@@ -1049,7 +1053,7 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
-    //HelperTestComponent({ list: [{ test: 'abcdef' }] });
+
 
     const element = TestApp({
       //parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
