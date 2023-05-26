@@ -923,74 +923,7 @@ export class AppElement extends HTMLElement {
         class:
           'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
-      rootElement,
-      TextAreaComponent({
-        onSave: (values : any) => {
-          console.log('onSave', values);
-        },
-        formElements: [
-          "test1",
-          "test2",
-        ],
-        onInput: (event: InputEvent) => {
-          const text =
-            (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
-
-          if (inputTimeout !== -1) {
-            clearTimeout(inputTimeout);
-            inputTimeout = -1;
-          }
-          inputTimeout = setTimeout(() => {
-            if (raf !== -1) {
-              window.cancelAnimationFrame(raf);
-              raf = -1;
-            }
-
-            console.log('oninput', text);
-            registerCustomBlock('frameUpdate');
-            const compiledExpressionInfo = compileExpressionAsInfo(text);
-            try {
-              const compiledExpression = (
-                new Function(
-                  'payload',
-                  `${compiledExpressionInfo.script}`
-                ) as unknown as (payload?: any) => any
-              ).bind(compiledExpressionInfo.bindings);
-              const result = compiledExpression();
-
-              // TODO : have this done by the compiler:
-              if (result && result.frameUpdate) {
-                result.frameUpdate = result.frameUpdate.bind(
-                  compiledExpressionInfo.bindings
-                );
-
-                /*
-                    test code:
-
-                    let a = 1;
-                    frameUpdate {
-                      setStartPoint(1,a);
-                      a=a+1;
-                    }
-
-                    TODO : implement deltaTime
-                    TODO : implement custom log function
-                */
-
-                const rafCallback = (deltaTime: number) => {
-                  result.frameUpdate(deltaTime);
-                  if (raf !== -1) {
-                    raf = window.requestAnimationFrame(rafCallback);
-                  }
-                };
-                raf = window.requestAnimationFrame(rafCallback);
-              }
-            } catch (error) {
-              console.error('error compiling', error);
-            }
-          }, 100) as unknown as number;
-        },
-      }) as unknown as HTMLElement
+      rootElement, 
     );
 
     let raf = -1;
@@ -1006,10 +939,97 @@ export class AppElement extends HTMLElement {
     //   sidebarContainer.domElement
     // );
 
+    let formElement : INodeComponent<NodeInfo> | undefined = undefined;
+
+    const removeFormElement = () => {
+      if (formElement) {
+        canvasApp?.deleteElementFromNode(sidebarContainer as INodeComponent<NodeInfo>, formElement);
+        formElement = undefined;
+      }
+
+    };
+
     createEffect(() => {
+      removeFormElement();
       const nodeElementId = getSelectedNode();
       console.log('selected nodeElement', nodeElementId);
       if (nodeElementId) {
+        const form = TextAreaComponent({
+          onSave: (values : any) => {
+            console.log('onSave', values);
+          },
+          formElements: [
+            "test1",
+            "test2",
+          ],
+          onInput: (event: InputEvent) => {
+            const text =
+              (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
+  
+            if (inputTimeout !== -1) {
+              clearTimeout(inputTimeout);
+              inputTimeout = -1;
+            }
+            inputTimeout = setTimeout(() => {
+              if (raf !== -1) {
+                window.cancelAnimationFrame(raf);
+                raf = -1;
+              }
+  
+              console.log('oninput', text);
+              registerCustomBlock('frameUpdate');
+              const compiledExpressionInfo = compileExpressionAsInfo(text);
+              try {
+                const compiledExpression = (
+                  new Function(
+                    'payload',
+                    `${compiledExpressionInfo.script}`
+                  ) as unknown as (payload?: any) => any
+                ).bind(compiledExpressionInfo.bindings);
+                const result = compiledExpression();
+  
+                // TODO : have this done by the compiler:
+                if (result && result.frameUpdate) {
+                  result.frameUpdate = result.frameUpdate.bind(
+                    compiledExpressionInfo.bindings
+                  );
+  
+                  /*
+                      test code:
+  
+                      let a = 1;
+                      frameUpdate {
+                        setStartPoint(1,a);
+                        a=a+1;
+                      }
+  
+                      TODO : implement deltaTime
+                      TODO : implement custom log function
+                  */
+  
+                  const rafCallback = (deltaTime: number) => {
+                    result.frameUpdate(deltaTime);
+                    if (raf !== -1) {
+                      raf = window.requestAnimationFrame(rafCallback);
+                    }
+                  };
+                  raf = window.requestAnimationFrame(rafCallback);
+                }
+              } catch (error) {
+                console.error('error compiling', error);
+              }
+            }, 100) as unknown as number;
+          },
+        }) as unknown as HTMLElement;
+
+        const formElementInstance = createElement(
+          'div',
+          {},
+          sidebarContainer.domElement,
+          form,
+        );
+        formElement = formElementInstance as INodeComponent<NodeInfo>;
+
         selectedNode.domElement.textContent = `${nodeElementId}`;
         (
           sidebarContainer.domElement as unknown as HTMLElement
@@ -1019,6 +1039,7 @@ export class AppElement extends HTMLElement {
         (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
           'hidden'
         );
+        sidebarContainer
       }
     });
 

@@ -539,7 +539,13 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         controlPointY2,
         isControlled
       ),
-  };
+      deleteElementFromNode: (element: INodeComponent<T>, child: INodeComponent<T>) => {
+        if (element && child) {
+          element.elements.delete(child.id);
+          element.domElement.removeChild(child.domElement);
+        }
+      }
+  }
 };
 
 export type CanvasAppInstance = ReturnType<typeof createCanvasApp>;
