@@ -69,7 +69,8 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
-      ) >= 0
+      ) >= 0 ||
+      (event.target !== rootElement && event.target !== canvas.domElement)
     ) {
       isClicking = false;
       isMoving = false;
@@ -87,7 +88,8 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
-      ) >= 0
+      ) >= 0 ||
+      (event.target !== rootElement && event.target !== canvas.domElement)
     )
       return;
 
@@ -105,7 +107,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       startClientDragY = event.clientY;
       startDragX = xCamera;
       startDragY = yCamera;
-      console.log('dragging canvas', canvas.id);
+      console.log('dragging canvas', canvas.id, event.target);
       interactionStateMachine.interactionEventState(
         InteractionEvent.PointerDown,
         {
@@ -350,14 +352,17 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
       onClickCanvas &&
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(tagName) < 0
     ) {
-      console.log('rootElement click', event.target, tagName);
-      event.preventDefault();
-      const mousePointTo = {
-        x: event.clientX / scaleCamera - xCamera / scaleCamera,
-        y: event.clientY / scaleCamera - yCamera / scaleCamera,
-      };
-      onClickCanvas(mousePointTo.x, mousePointTo.y);
-      return false;
+      if (event.target === rootElement || event.target === canvas.domElement) {
+        console.log('rootElement click', event.target, tagName);
+        event.preventDefault();
+        const mousePointTo = {
+          x: event.clientX / scaleCamera - xCamera / scaleCamera,
+          y: event.clientY / scaleCamera - yCamera / scaleCamera,
+        };
+        onClickCanvas(mousePointTo.x, mousePointTo.y);
+        
+        return false;
+      }
     }
   });
 
