@@ -10,13 +10,28 @@ import { NodePath } from '@babel/traverse';
   .. create events on html nodes
 
 */
+
+// TODO : upgrade to NodesJS v17+ on windows...
+const structuredCloneHelper = (input : any) => {
+  if (typeof structuredClone !== "undefined") {
+    return structuredClone(input);
+  }
+  return {...input};
+}
+
+const RunExpressionType = {
+  renderList: 'Text',
+  ifCondition: 'TextArea',
+} as const;
+type RunExpressionType = (typeof RunExpressionType)[keyof typeof RunExpressionType];
+
 export type Content = {
   parentId: string;
   index: number;
   tagName: string;
   content: string | babelTypes.JSXElement;
   isExpression?: boolean;
-  runExpression?: boolean;
+  runExpression?: RunExpressionType;
   expression?: babelTypes.Expression;
   attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[];
   children?: Content[];
@@ -26,6 +41,7 @@ export type ElementsResult = {
   elementId: string;
   statements: babelTypes.Statement[];
 };
+
 
 export default function (babel: { types: typeof babelTypes }) {
   const t = babel.types as unknown as typeof babelTypes;
@@ -55,12 +71,14 @@ export default function (babel: { types: typeof babelTypes }) {
               t.stringLiteral(attribute.value.value.toString())
             )
           );
-        } else if (
+        } else
+        if (
           attribute.type === 'JSXAttribute' &&
           attribute.value &&
           attribute.value.type === 'JSXExpressionContainer' &&
           attribute.value.expression &&
-          attribute.value.expression.type === 'ArrayExpression'
+          (attribute.value.expression.type === 'ArrayExpression' ||
+           attribute.value.expression.type === 'MemberExpression')
         ) {
           properties.push(
             t.objectProperty(
@@ -137,9 +155,8 @@ export default function (babel: { types: typeof babelTypes }) {
               )
             )
           );
-        } else
-         {
-          console.log('Unhandled attribute', attribute);
+        } else {
+          console.log('Unhandled attribute found');
         }
       });
     }
@@ -166,20 +183,20 @@ export default function (babel: { types: typeof babelTypes }) {
           //   attribute.value.expression.type,
           //   attribute.value.expression
           // );
-          statements.push(
-            t.expressionStatement(
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier(elementName),
-                  t.identifier('addEventListener')
-                ),
-                [
-                  t.stringLiteral(attribute.name.name.toString()),
-                  attribute.value.expression,
-                ]
+            statements.push(
+              t.expressionStatement(
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier(elementName),
+                    attribute.name.name.toString().startsWith('on') ? t.identifier('addEventListener') : t.identifier('setAttribute')
+                  ),
+                  [
+                    t.stringLiteral(attribute.name.name.toString().startsWith('on') ? attribute.name.name.toString().slice(2) : attribute.name.name.toString()),
+                    attribute.value.expression,
+                  ]
+                )
               )
-            )
-          );
+            );
         }
       });
     }
@@ -224,32 +241,82 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
 
       if (item.isExpression === true && item.expression) {
         //console.log('item.expression', item.tagName, item.expression);
-        if (item.runExpression) {
-          console.log("appendChildrenToTemplate runExpression", templateVariableName);
-          //console.log('item.expression', item.tagName, item.expression);
-
-          // const childStatements = appendChildrenToTemplate(
-          //   templateVariableName,
-          //   item.expression
-          // );
+        if (item.runExpression === RunExpressionType.ifCondition) {
+          console.log("appendChildrenToTemplate runExpression ifCondition");//, (item.expression as unknown as babelTypes.JSXElement).children);
+          const children = (item.expression as unknown as babelTypes.JSXElement).children;
 
           const contentChildren: Content[] = handleChildren(
             item.tagName,
             (item.expression as unknown as babelTypes.JSXElement).children,
             []
           );
-          //console.log('item.expression', item.tagName, (item.expression as unknown as any).children[0].expression["body"], contentChildren);          
+          if (children && children.length > 0 && contentChildren.length > 0) {
+                      
+            const clonedFunction = t.arrowFunctionExpression(
+              [],
+              (children[0]  as unknown as babelTypes.JSXElement)
+            );
 
-          //console.log(JSON.stringify(contentChildren, null ,2));
-          if (contentChildren.length > 0) {
-            
-            // TODO : upgrade to NodesJS v17+...
-            const structuredCloneHelper = (input : any) => {
-              if (typeof structuredClone !== "undefined") {
-                return structuredClone(input);
-              }
-              return {...input};
+            //console.log(JSON.stringify(item, null ,2));
+            const testAttribute = item.attributes?.find((attribute) => attribute.type === "JSXAttribute" && attribute.name?.name === "test");
+
+            if (!testAttribute) {
+              throw new Error("test attribute not found for if:Condition");
             }
+
+            //console.log("ifCondition 'test' attribute", contentChildren);
+            if (testAttribute.type !== "JSXAttribute") {
+              throw new Error("Unsupported test attribute type found for if:Condition");
+            }
+            if (!testAttribute.value) {
+              throw new Error("test attribute value not found for if:Condition");
+            }
+            if (testAttribute.value.type !== "JSXExpressionContainer") {
+              throw new Error("Unsupported test attribute value type found for if:Condition");
+            }
+            if (!testAttribute.value.expression) {
+              throw new Error("test attribute expression not found for if:Condition");
+            }
+            if (testAttribute.value.expression.type !== "BinaryExpression") {
+              throw new Error("Unsupported test attribute value type found for if:Condition");
+            }
+           
+            //console.log("testAttribute.name.name", testAttribute.name.name);            
+            
+            const statement = t.ifStatement(
+              testAttribute.value.expression,
+              t.blockStatement([
+                t.expressionStatement(
+                  t.callExpression(
+                    t.arrowFunctionExpression(
+                      [],
+                      t.callExpression(
+                        t.memberExpression(
+                          t.identifier(templateVariableName),
+                          t.identifier('appendChild')
+                        ),
+                        [
+                          t.callExpression(clonedFunction, [
+                          ]),
+                        ]
+                      )
+                    ), [])
+                )
+              ])
+            );
+            statements.push(statement);
+          }
+
+        } else
+        if (item.runExpression === RunExpressionType.renderList) {
+          console.log("appendChildrenToTemplate runExpression renderList", templateVariableName);
+
+          const contentChildren: Content[] = handleChildren(
+            item.tagName,
+            (item.expression as unknown as babelTypes.JSXElement).children,
+            []
+          );
+          if (contentChildren.length > 0) {                        
 
             const clonedFunction = structuredCloneHelper(
               contentChildren[0].expression
@@ -495,10 +562,27 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
       index: childIndex,
       parentId,
       tagName: 'div',
-      //content: 'RenderMap',
       content: '',
       isExpression: true,
-      runExpression: true,
+      runExpression: RunExpressionType.renderList,
+      expression: item,
+      attributes: item.openingElement.attributes,
+    };
+  };
+
+  const createIfConditionStatement = (
+    childIndex: number,
+    parentId: string,
+    item: babelTypes.JSXElement
+  ): Content => {
+    console.log('createIfConditionStatement', childIndex, parentId);
+    return {
+      index: childIndex,
+      parentId,
+      tagName: 'div',
+      content: '',
+      isExpression: true,
+      runExpression: RunExpressionType.ifCondition,
       expression: item,
       attributes: item.openingElement.attributes,
     };
@@ -604,10 +688,10 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
           });
           childIndex++;
         } else if (tagName === 'list:Render') {
-          //console.log('list:Render', item.children);
           content.push(createRenderListStatements(childIndex, parentId, item));
-
-          // TODO : increase then when elements are added..
+          childIndex++;
+        } else if (tagName === 'if:Condition') {
+          content.push(createIfConditionStatement(childIndex, parentId, item));
           childIndex++;
         } else if (
           item.children &&
@@ -638,7 +722,7 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
             children: handleChildren(
               parentId + '_',
               item.children || [],
-              item.openingElement.attributes,
+              [],//item.openingElement.attributes,
               item
             ),
           });
@@ -660,7 +744,10 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
     const effectList: any[] = [];
     const replaceList: any[] = [];
     content.forEach((item, index) => {
-      if (item.isExpression && item.runExpression) {
+      if (item.isExpression && item.runExpression === RunExpressionType.ifCondition) {
+        //
+      } else 
+      if (item.isExpression && item.runExpression === RunExpressionType.renderList) {
 
           const elementReferenceName =
             (parentId === 'template' ? 'e' : parentId) + '_' + item.index;
@@ -782,7 +869,6 @@ console.log("appendChildrenToTemplate", templateVariableName, content.length);
           // if component contains another component ..
           //   .. then appendChild it to the cloned node instead of to the template...
           //   (the template contains a documet fragment)
-
           const attributeObject = getAttributes(item.attributes);
 
           replaceList.push({

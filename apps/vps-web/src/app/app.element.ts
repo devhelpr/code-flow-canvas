@@ -37,9 +37,12 @@ import {
 import flowData from '../example-data/tiltest.json';
 
 import { TestApp } from './test-app';
-import { TextAreaComponent } from './components/textarea-component';
+import { FormComponent, FormFieldType } from './components/form-component';
 
 import { run } from './simple-flow-engine/simple-flow-engine';
+
+
+
 
 
 const template = document.createElement('template');
@@ -940,6 +943,7 @@ export class AppElement extends HTMLElement {
     // );
 
     let formElement : INodeComponent<NodeInfo> | undefined = undefined;
+    let currentNodeElementId : string | undefined = undefined;
 
     const removeFormElement = () => {
       if (formElement) {
@@ -949,18 +953,39 @@ export class AppElement extends HTMLElement {
 
     };
 
-    createEffect(() => {
-      removeFormElement();
+    createEffect(() => {      
       const nodeElementId = getSelectedNode();
       console.log('selected nodeElement', nodeElementId);
+      if (nodeElementId === currentNodeElementId) {
+        return;
+      }
+
+      removeFormElement();
       if (nodeElementId) {
-        const form = TextAreaComponent({
+
+        const node = this.canvasApp?.elements?.get(nodeElementId);            
+        const nodeInfo : any = node?.nodeInfo ?? {};
+
+        const form = FormComponent({
           onSave: (values : any) => {
             console.log('onSave', values);
+
+            const node = this.canvasApp?.elements?.get(nodeElementId);
+            if (node) {
+              node.nodeInfo = values;
+            }
           },
           formElements: [
-            "test1",
-            "test2",
+            {
+              fieldType: 'Text',
+              fieldName: 'test1',
+              value: nodeInfo.test1 ?? '',
+            },
+            {
+              fieldType: FormFieldType.TextArea,
+              fieldName: 'test2',
+              value: nodeInfo.test2 ?? '',
+            }
           ],
           onInput: (event: InputEvent) => {
             const text =
@@ -1041,6 +1066,8 @@ export class AppElement extends HTMLElement {
         );
         sidebarContainer
       }
+
+      currentNodeElementId = nodeElementId;
     });
 
     // createMarkupElement(

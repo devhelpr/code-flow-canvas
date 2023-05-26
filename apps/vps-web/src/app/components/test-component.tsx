@@ -17,7 +17,7 @@ export const TestComponent = (props: TestComponentProps) => {
       Hello Test Component
       <button
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        click={(event: MouseEvent) => {
+        onclick={(event: MouseEvent) => {
           console.log('click TestComponent');
           ///event.preventDefault();
           //event.stopPropagation();
