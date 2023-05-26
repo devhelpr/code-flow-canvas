@@ -28,56 +28,7 @@ import {
   CurveType,
 } from '@devhelpr/visual-programming-system';
 
-const HelperTestComponent = (props) => {
-  console.log('TestComponent constructor');
-  return (function () {
-    {
-      const template = document.createElement('template');
-      const elementChild_0 = document.createTextNode('Hello Test Component');
-      template.content.append(elementChild_0);
-      const elementChild_1 = document.createElement('button');
-      elementChild_1.setAttribute(
-        'class',
-        'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-      );
-      elementChild_1.setAttribute('click', (event) => {
-        console.log('click TestComponent');
-        setCount(getCount() + 1);
-        return false;
-      });
-      elementChild_1.append(document.createTextNode('Click Me'));
-      template.content.append(elementChild_1);
-      const elementChild_2 = document.createElement('div');
-      elementChild_2.append(document.createTextNode(''));
-      template.content.append(elementChild_2);
-      const elementChild_2elementChild_0 = document.createTextNode(2 + 3 * 5);
-      elementChild_2.appendChild(elementChild_2elementChild_0);
-      const elementChild_3 = document.createElement('div');
-      elementChild_3.append(document.createTextNode(''));
-      template.content.append(elementChild_3);
-      const elementChild_3elementChild_0 = document.createTextNode(5);
-      elementChild_3.appendChild(elementChild_3elementChild_0);
-      props.list.forEach(() => console.log('RenderMap'));
-      const cloneNode = template.content.cloneNode(true);
-      const e_0 = cloneNode.firstChild;
-      const e_1 = e_0.nextSibling;
-      e_1.addEventListener('click', (event) => {
-        console.log('click TestComponent');
-        setCount(getCount() + 1);
-        return false;
-      });
-      const e_2 = e_1.nextSibling;
-      const e_2_0 = e_2.firstChild;
-      createEffect(() => (e_2.textContent = 2 + 3 * 3));
-      const e_3 = e_2.nextSibling;
-      const e_3_0 = e_3.firstChild;
-      createEffect(() => (e_3.textContent = getCount()));
-      const e_4 = e_3.nextSibling;
-      e_4.addEventListener('list', props.list);
-      return cloneNode;
-    }
-  })();
-};
+
 import {
   compileExpressionAsInfo,
   registerCustomBlock,
@@ -973,6 +924,10 @@ export class AppElement extends HTMLElement {
       },
       rootElement,
       TextAreaComponent({
+        formElements: [
+          "test1",
+          "test2",
+        ],
         onInput: (event: InputEvent) => {
           const text =
             (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
