@@ -4,6 +4,7 @@ import { RunExpressionType } from '../types/run-expression';
 import { setAttributes } from './set-attributes';
 import { structuredCloneHelper } from './structured-clone';
 import { handleChildren } from './handle-children';
+import { addToParent } from './add-to-parent';
 
 export const appendChildrenToTemplate = (
   t: typeof babelTypes,
@@ -12,30 +13,6 @@ export const appendChildrenToTemplate = (
 ): babelTypes.Statement[] => {
   const statements: babelTypes.Statement[] = [];
   console.log('appendChildrenToTemplate', templateVariableName, content.length);
-  const addToParent = (
-    addToParentElement: boolean,
-    templateVariableName: string,
-    elementId: string
-  ) => {
-    const expressionStatement = t.expressionStatement(
-      t.callExpression(
-        addToParentElement
-          ? t.memberExpression(
-              t.identifier(templateVariableName),
-              t.identifier('appendChild')
-            )
-          : t.memberExpression(
-              t.memberExpression(
-                t.identifier(templateVariableName),
-                t.identifier('content')
-              ),
-              t.identifier('append')
-            ),
-        [t.identifier(elementId)]
-      )
-    );
-    statements.push(expressionStatement);
-  };
 
   content.forEach((item, childIndex) => {
     const elementId = `${
@@ -235,6 +212,8 @@ export const appendChildrenToTemplate = (
         );
 
         addToParent(
+          t,
+          statements,
           templateVariableName !== 'template',
           templateVariableName,
           elementId
@@ -305,6 +284,8 @@ export const appendChildrenToTemplate = (
         }
       }
       addToParent(
+        t,
+        statements,
         templateVariableName !== 'template',
         templateVariableName,
         elementId
@@ -338,6 +319,8 @@ export const appendChildrenToTemplate = (
       );
 
       addToParent(
+        t,
+        statements,
         templateVariableName !== 'template',
         templateVariableName,
         elementId
