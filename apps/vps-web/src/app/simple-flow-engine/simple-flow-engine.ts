@@ -1,15 +1,38 @@
-import { ElementNodeMap, NodeInfo } from '@devhelpr/visual-programming-system';
+import {
+  ElementNodeMap,
+  INodeComponent,
+} from '@devhelpr/visual-programming-system';
 
-export const run = <T>(nodes: ElementNodeMap<T>) => {
+export const run = <T>(
+  nodes: ElementNodeMap<T>,
+  animatePath: (
+    nodeId: string,
+    color: string,
+    onNextNode?: (nodeId: string) => boolean
+  ) => void
+) => {
   /*
 	TODO : simple flow engine to run the nodes
-		.. each node can have an expression to evaluate
-		.. each nodes can have one output payload
-		.. the payload is passthrough and modified by each node
-		.. when running the flow, a new payload is created
+
+    .. get all nodes that have no input
+    .. run these nodes using animatePath
+
+    .. animatePath needs an event function which is called when a node is reached
+    .. in that event run the expression for that node:
+      .. it errors .. stop the flow
+
   */
+  const nodeList = Array.from(nodes);
   nodes.forEach((node) => {
-    console.log(node.id, node, node.nodeInfo);
+    const connectionsFromEndNode = nodeList.filter((e) => {
+      const element = e[1] as INodeComponent<T>;
+      return element.endNode?.id === node.id;
+    });
+    if (!connectionsFromEndNode || connectionsFromEndNode.length === 0) {
+      animatePath(node.id, 'red', (nodeId: string) => {
+        return true;
+      });
+    }
   });
   return true;
 };

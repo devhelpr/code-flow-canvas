@@ -28,7 +28,6 @@ import {
   CurveType,
 } from '@devhelpr/visual-programming-system';
 
-
 import {
   compileExpressionAsInfo,
   registerCustomBlock,
@@ -41,9 +40,193 @@ import { FormComponent, FormFieldType } from './components/form-component';
 
 import { run } from './simple-flow-engine/simple-flow-engine';
 
+const TestInputField = (props) => {
+  const template = document.createElement('template');
+  const elementChild_0 = document.createElement('input');
+  elementChild_0.setAttribute('type', 'text');
+  elementChild_0.setAttribute('class', 'block w-full p-1');
+  elementChild_0.append(document.createTextNode(''));
+  template.content.append(elementChild_0);
+  const cloneNode = template.content.cloneNode(true);
+  const e_0 = cloneNode.firstChild;
+  e_0.setAttribute('id', props.fieldName);
+  e_0.setAttribute('name', props.fieldName);
+  e_0.setAttribute('value', props.value);
+  e_0.addEventListener('input', (event) => {
+    const input = event.target;
+    console.log(input.value);
+    if (props.onChange) {
+      props.onChange(input.value);
+    }
+  });
+  return {
+    cloneNode: cloneNode,
+    registerEvents: (node) => {
+      node.setAttribute('id', props.fieldName);
+      node.setAttribute('name', props.fieldName);
+      node.setAttribute('value', props.value);
+      node.addEventListener('input', (event) => {
+        const input = event.target;
+        console.log(input.value);
+        if (props.onChange) {
+          props.onChange(input.value);
+        }
+      });
+    },
+  };
+};
+const FormFieldType = {
+  Text: 'Text',
+  TextArea: 'TextArea',
+};
+export const TestFormComponent = (props) => {
+  const registerEvents = [];
+  const template = document.createElement('template');
+  const elementChild_0 = document.createElement('div');
+  elementChild_0.setAttribute('class', 'w-full p-2');
+  template.content.append(elementChild_0);
+  const elementChild_0elementChild_0 = document.createElement('form');
+  elementChild_0.appendChild(elementChild_0elementChild_0);
+  props.formElements.forEach((item, index) =>
+    elementChild_0elementChild_0.appendChild(
+      ((item, index) => {
+        const template = document.createElement('template');
+        const elementChild_0 = document.createElement('div');
+        elementChild_0.setAttribute('class', 'w-full mb-2');
+        template.content.append(elementChild_0);
+        const elementChild_0elementChild_0 = document.createElement('label');
+        elementChild_0elementChild_0.setAttribute('class', 'block mb-2');
+        elementChild_0.appendChild(elementChild_0elementChild_0);
+        const elementChild_0elementChild_0elementChild_0 =
+          document.createTextNode(item.fieldName);
+        elementChild_0elementChild_0.appendChild(
+          elementChild_0elementChild_0elementChild_0
+        );
+        if (item.fieldType === FormFieldType.Text) {
+          (() =>
+            elementChild_0.appendChild(
+              (() => {
+                const template = document.createElement('template');
+                const elementChild_0 = document.createElement('div');
+                template.content.append(elementChild_0);
+                const elementChild_0elementChild_0 =
+                  document.createElement('div');
+                elementChild_0.appendChild(elementChild_0elementChild_0);
+                const cloneNode = template.content.cloneNode(true);
+                const e_0 = cloneNode.firstChild;
+                const e_0_0 = e_0.firstChild;
+                e_0_0.setAttribute('fieldName', item.fieldName);
+                e_0_0.setAttribute('value', item.value);
 
+                // TODO : dont add events where the first letter of event name is capital
 
+                // e_0_0.addEventListener('Change', (value) => {
+                //   if (item.onChange) {
+                //     item.onChange(value);
+                //   }
+                // });
+                const node = TestInputField({
+                  fieldName: item.fieldName,
+                  value: item.value,
 
+                  // TODO : add event handlers here
+                  onChange: (value) => {
+                    if (item.onChange) {
+                      item.onChange(value);
+                    }
+                  },
+                });
+
+                e_0_0.parentNode.replaceChild(node.cloneNode, e_0_0);
+
+                // TODO register registerEvents handlers here
+                registerEvents.push(node.registerEvents);
+
+                return cloneNode;
+              })()
+            ))();
+        }
+
+        const elementChild_0elementChild_3 = document.createElement('button');
+        elementChild_0elementChild_3.setAttribute('type', 'button');
+        elementChild_0elementChild_3.append(document.createTextNode('CLICK'));
+        elementChild_0.appendChild(elementChild_0elementChild_3);
+        const cloneNode = template.content.cloneNode(true);
+        const e_0 = cloneNode.firstChild;
+        const e_0_0 = e_0.firstChild;
+        e_0_0.setAttribute('for', item.fieldName);
+        const e_0_0_0 = e_0_0.firstChild;
+        createEffect(() => (e_0_0.textContent = item.fieldName));
+        const e_0_3 = e_0_0.nextSibling;
+
+        // TODO : .. this also needs to be called after cloning a parentNode
+        registerEvents.push((node) => {
+          node.addEventListener('click', () => {
+            alert('clicked');
+          });
+        });
+
+        return cloneNode;
+      })(item, index)
+    )
+  );
+  if (props.hasSubmitButton === void 0 || props.hasSubmitButton === true) {
+    (() =>
+      elementChild_0elementChild_0.appendChild(
+        (() => {
+          const template = document.createElement('template');
+          const elementChild_0 = document.createElement('button');
+          elementChild_0.setAttribute('type', 'submit');
+          elementChild_0.setAttribute(
+            'class',
+            'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+          );
+          elementChild_0.append(document.createTextNode('Save'));
+          template.content.append(elementChild_0);
+          const cloneNode = template.content.cloneNode(true);
+          const e_0 = cloneNode.firstChild;
+          return cloneNode;
+        })()
+      ))();
+  }
+  const cloneNode = template.content.cloneNode(true);
+  const e_0 = cloneNode.firstChild;
+  const e_0_0 = e_0.firstChild;
+
+  // TODO : .. this also needs to be called after cloning a parentNode
+  registerEvents.push((node) => {
+    node.addEventListener('submit', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const form = event.target;
+      const values = Object.fromEntries(new FormData(form));
+      console.log(values);
+      props.onSave({
+        ...values,
+      });
+      return false;
+    });
+  });
+
+  let e_0_0_0 = undefined;
+  props.formElements.forEach((item, index) => {
+    if (e_0_0_0 === undefined) {
+      e_0_0_0 = e_0_0.firstChild;
+    } else {
+      e_0_0_0 = e_0_0_0.nextSibling;
+    }
+
+    // TODO : add event handlers here for child elements
+  });
+  return {
+    cloneNode: cloneNode,
+    registerEvents: (node) => {
+      registerEvents.forEach((registerEvent) => {
+        registerEvent(node);
+      });
+    },
+  };
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -344,16 +527,37 @@ export class AppElement extends HTMLElement {
             'If condition'
           );
 
+          const formElements = [
+            {
+              fieldType: FormFieldType.Text,
+              fieldName: 'Expression',
+              value: '',
+              onChange: (value: string) => {
+                node.nodeComponent.nodeInfo.formValues = {
+                  ...node.nodeComponent.nodeInfo.formValues,
+                  Expression: value,
+                };
+                console.log('onChange', node.nodeComponent.nodeInfo);
+              },
+            },
+          ];
+
           const jsxComponentWrapper = createElement(
             'div',
             {
               class: `bg-slate-500 p-4 rounded cursor-pointer`,
             },
             undefined,
-            TestApp({ parentClass: '' }) as unknown as HTMLElement
+            FormComponent({
+              formElements,
+              hasSubmitButton: false,
+              onSave: (formValues) => {
+                //
+              },
+            }) as unknown as HTMLElement
           ) as unknown as INodeComponent<NodeInfo>;
 
-          canvasApp.createRect(
+          const node = canvasApp.createRect(
             startX,
             startY,
             200,
@@ -371,36 +575,37 @@ export class AppElement extends HTMLElement {
                 thumbIndex: 0,
                 connectionType: ThumbConnectionType.end,
               },
-              {
-                thumbType: ThumbType.StartConnectorRight,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.start,
-              },
-              {
-                thumbType: ThumbType.StartConnectorRight,
-                thumbIndex: 1,
-                connectionType: ThumbConnectionType.start,
-              },
-              {
-                thumbType: ThumbType.StartConnectorTop,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.start,
-              },
-              {
-                thumbType: ThumbType.EndConnectorTop,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.end,
-              },
+              // {
+              //   thumbType: ThumbType.StartConnectorRight,
+              //   thumbIndex: 0,
+              //   connectionType: ThumbConnectionType.start,
+              // },
+              // {
+              //   thumbType: ThumbType.StartConnectorRight,
+              //   thumbIndex: 1,
+              //   connectionType: ThumbConnectionType.start,
+              // },
+              // {
+              //   thumbType: ThumbType.StartConnectorTop,
+              //   thumbIndex: 0,
+              //   connectionType: ThumbConnectionType.start,
+              // },
+              // {
+              //   thumbType: ThumbType.EndConnectorTop,
+              //   thumbIndex: 0,
+              //   connectionType: ThumbConnectionType.end,
+              // },
             ],
-            testIfCondition as unknown as INodeComponent<NodeInfo>,
-            //jsxComponentWrapper,
+            //testIfCondition as unknown as INodeComponent<NodeInfo>,
+            jsxComponentWrapper,
             //testButton as unknown as INodeComponent<NodeInfo>,
             //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
             {
               classNames: `bg-slate-500 p-4 rounded`,
             }
           );
-
+          node.nodeComponent.nodeInfo = {};
+          node.nodeComponent.nodeInfo.formElements = formElements;
           return false;
         },
       },
@@ -733,7 +938,11 @@ export class AppElement extends HTMLElement {
       return false;
     };
 
-    const animatePath = (nodeId: string, color: string) => {
+    const animatePath = (
+      nodeId: string,
+      color: string,
+      onNextNode?: (nodeId: string) => boolean
+    ) => {
       const nodeConnectionPairs = getNodeConnectionPairById(nodeId);
 
       if (nodeConnectionPairs && nodeConnectionPairs.length > 0) {
@@ -765,7 +974,7 @@ export class AppElement extends HTMLElement {
               },
             },
             this.canvasApp?.canvas.domElement,
-            ''
+            start.nodeInfo?.formValues?.Expression ?? ''
           );
 
           const domCircle = testCircle.domElement as HTMLElement;
@@ -834,7 +1043,10 @@ export class AppElement extends HTMLElement {
                 canvasApp?.elements.delete(message.id);
                 message?.domElement?.remove();
                 clearInterval(cancel);
-                animatePath(end.id, color);
+
+                if (!onNextNode || (onNextNode && onNextNode(end.id))) {
+                  animatePath(end.id, color);
+                }
               }
             } else {
               canvasApp?.elements.delete(testCircle.id);
@@ -890,7 +1102,7 @@ export class AppElement extends HTMLElement {
         click: (event) => {
           event.preventDefault();
           if (this.canvasApp?.elements) {
-            run<NodeInfo>(this.canvasApp?.elements);
+            run<NodeInfo>(this.canvasApp?.elements, animatePath);
           }
           return false;
         },
@@ -926,7 +1138,7 @@ export class AppElement extends HTMLElement {
         class:
           'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
-      rootElement, 
+      rootElement
     );
 
     let raf = -1;
@@ -942,18 +1154,20 @@ export class AppElement extends HTMLElement {
     //   sidebarContainer.domElement
     // );
 
-    let formElement : INodeComponent<NodeInfo> | undefined = undefined;
-    let currentNodeElementId : string | undefined = undefined;
+    let formElement: INodeComponent<NodeInfo> | undefined = undefined;
+    let currentNodeElementId: string | undefined = undefined;
 
     const removeFormElement = () => {
       if (formElement) {
-        canvasApp?.deleteElementFromNode(sidebarContainer as INodeComponent<NodeInfo>, formElement);
+        canvasApp?.deleteElementFromNode(
+          sidebarContainer as INodeComponent<NodeInfo>,
+          formElement
+        );
         formElement = undefined;
       }
-
     };
 
-    createEffect(() => {      
+    createEffect(() => {
       const nodeElementId = getSelectedNode();
       console.log('selected nodeElement', nodeElementId);
       if (nodeElementId === currentNodeElementId) {
@@ -962,20 +1176,30 @@ export class AppElement extends HTMLElement {
 
       removeFormElement();
       if (nodeElementId) {
-
-        const node = this.canvasApp?.elements?.get(nodeElementId);            
-        const nodeInfo : any = node?.nodeInfo ?? {};
-
+        const node = this.canvasApp?.elements?.get(nodeElementId);
+        const nodeInfo: any = node?.nodeInfo ?? {};
+        console.log('nodeInfo', nodeInfo);
         const form = FormComponent({
-          onSave: (values : any) => {
+          onSave: (values: any) => {
             console.log('onSave', values);
 
             const node = this.canvasApp?.elements?.get(nodeElementId);
             if (node) {
-              node.nodeInfo = values;
+              if ((node.nodeInfo as any).formElements) {
+                (node.nodeInfo as any).formValues = values;
+              } else {
+                node.nodeInfo = values;
+              }
             }
+            removeFormElement();
+            currentNodeElementId = undefined;
+
+            selectedNode.domElement.textContent = '';
+            (
+              sidebarContainer.domElement as unknown as HTMLElement
+            ).classList.add('hidden');
           },
-          formElements: [
+          formElements: (node?.nodeInfo as any)?.formElements ?? [
             {
               fieldType: 'Text',
               fieldName: 'test1',
@@ -985,73 +1209,73 @@ export class AppElement extends HTMLElement {
               fieldType: FormFieldType.TextArea,
               fieldName: 'test2',
               value: nodeInfo.test2 ?? '',
-            }
+            },
           ],
-          onInput: (event: InputEvent) => {
-            const text =
-              (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
-  
-            if (inputTimeout !== -1) {
-              clearTimeout(inputTimeout);
-              inputTimeout = -1;
-            }
-            inputTimeout = setTimeout(() => {
-              if (raf !== -1) {
-                window.cancelAnimationFrame(raf);
-                raf = -1;
-              }
-  
-              console.log('oninput', text);
-              registerCustomBlock('frameUpdate');
-              const compiledExpressionInfo = compileExpressionAsInfo(text);
-              try {
-                const compiledExpression = (
-                  new Function(
-                    'payload',
-                    `${compiledExpressionInfo.script}`
-                  ) as unknown as (payload?: any) => any
-                ).bind(compiledExpressionInfo.bindings);
-                const result = compiledExpression();
-  
-                // TODO : have this done by the compiler:
-                if (result && result.frameUpdate) {
-                  result.frameUpdate = result.frameUpdate.bind(
-                    compiledExpressionInfo.bindings
-                  );
-  
-                  /*
-                      test code:
-  
-                      let a = 1;
-                      frameUpdate {
-                        setStartPoint(1,a);
-                        a=a+1;
-                      }
-  
-                      TODO : implement deltaTime
-                      TODO : implement custom log function
-                  */
-  
-                  const rafCallback = (deltaTime: number) => {
-                    result.frameUpdate(deltaTime);
-                    if (raf !== -1) {
-                      raf = window.requestAnimationFrame(rafCallback);
-                    }
-                  };
-                  raf = window.requestAnimationFrame(rafCallback);
-                }
-              } catch (error) {
-                console.error('error compiling', error);
-              }
-            }, 100) as unknown as number;
-          },
+          // onInput: (event: InputEvent) => {
+          //   const text =
+          //     (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
+
+          //   if (inputTimeout !== -1) {
+          //     clearTimeout(inputTimeout);
+          //     inputTimeout = -1;
+          //   }
+          //   inputTimeout = setTimeout(() => {
+          //     if (raf !== -1) {
+          //       window.cancelAnimationFrame(raf);
+          //       raf = -1;
+          //     }
+
+          //     console.log('oninput', text);
+          //     registerCustomBlock('frameUpdate');
+          //     const compiledExpressionInfo = compileExpressionAsInfo(text);
+          //     try {
+          //       const compiledExpression = (
+          //         new Function(
+          //           'payload',
+          //           `${compiledExpressionInfo.script}`
+          //         ) as unknown as (payload?: any) => any
+          //       ).bind(compiledExpressionInfo.bindings);
+          //       const result = compiledExpression();
+
+          //       // TODO : have this done by the compiler:
+          //       if (result && result.frameUpdate) {
+          //         result.frameUpdate = result.frameUpdate.bind(
+          //           compiledExpressionInfo.bindings
+          //         );
+
+          //         /*
+          //             test code:
+
+          //             let a = 1;
+          //             frameUpdate {
+          //               setStartPoint(1,a);
+          //               a=a+1;
+          //             }
+
+          //             TODO : implement deltaTime
+          //             TODO : implement custom log function
+          //         */
+
+          //         const rafCallback = (deltaTime: number) => {
+          //           result.frameUpdate(deltaTime);
+          //           if (raf !== -1) {
+          //             raf = window.requestAnimationFrame(rafCallback);
+          //           }
+          //         };
+          //         raf = window.requestAnimationFrame(rafCallback);
+          //       }
+          //     } catch (error) {
+          //       console.error('error compiling', error);
+          //     }
+          //   }, 100) as unknown as number;
+          // },
         }) as unknown as HTMLElement;
 
         const formElementInstance = createElement(
           'div',
           {},
           sidebarContainer.domElement,
-          form,
+          form
         );
         formElement = formElementInstance as INodeComponent<NodeInfo>;
 
@@ -1064,7 +1288,6 @@ export class AppElement extends HTMLElement {
         (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
           'hidden'
         );
-        sidebarContainer
       }
 
       currentNodeElementId = nodeElementId;
@@ -1100,8 +1323,6 @@ export class AppElement extends HTMLElement {
     `,
       rootElement
     );
-
-
 
     const element = TestApp({
       //parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
