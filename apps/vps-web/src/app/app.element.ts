@@ -151,20 +151,26 @@ export const TestFormComponent = (props) => {
         elementChild_0elementChild_3.setAttribute('type', 'button');
         elementChild_0elementChild_3.append(document.createTextNode('CLICK'));
         elementChild_0.appendChild(elementChild_0elementChild_3);
+
+        // THOUGHT : can this whole part be called after cloning the root-parentNode?
         const cloneNode = template.content.cloneNode(true);
         const e_0 = cloneNode.firstChild;
         const e_0_0 = e_0.firstChild;
         e_0_0.setAttribute('for', item.fieldName);
         const e_0_0_0 = e_0_0.firstChild;
+
+        // TODO : .. this also needs to be called after cloning the root-parentNode
         createEffect(() => (e_0_0.textContent = item.fieldName));
         const e_0_3 = e_0_0.nextSibling;
 
-        // TODO : .. this also needs to be called after cloning a parentNode
+        // TODO : .. this also needs to be called after cloning the root-parentNode
         registerEvents.push((node) => {
           node.addEventListener('click', () => {
             alert('clicked');
           });
         });
+
+        // figure out how to now which nodes to call registerEvents with...
 
         return cloneNode;
       })(item, index)
