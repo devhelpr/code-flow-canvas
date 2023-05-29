@@ -10,14 +10,20 @@ export const appendChildrenToTemplate = (
   t: typeof babelTypes,
   templateVariableName: string,
   content: Content[]
-): babelTypes.Statement[] => {
+): { parentId: string; elements: babelTypes.Statement[] } => {
   const statements: babelTypes.Statement[] = [];
   console.log('appendChildrenToTemplate', templateVariableName, content.length);
+
+  let parentId = '';
 
   content.forEach((item, childIndex) => {
     const elementId = `${
       templateVariableName !== 'template' ? templateVariableName : ''
     }elementChild_${childIndex}`;
+
+    if (parentId === '' && elementId !== 'template') {
+      parentId = elementId;
+    }
 
     if (item.isExpression === true && item.expression) {
       //console.log('item.expression', item.tagName, item.expression);
@@ -226,7 +232,7 @@ export const appendChildrenToTemplate = (
             elementId,
             item.children
           );
-          statements.push(...childStatements);
+          statements.push(...childStatements.elements);
         }
       }
     } else if (typeof item.content === 'string') {
@@ -298,7 +304,7 @@ export const appendChildrenToTemplate = (
           elementId,
           item.children
         );
-        statements.push(...childStatements);
+        statements.push(...childStatements.elements);
       }
     } else {
       // create a document fragment to append external components to
@@ -328,5 +334,5 @@ export const appendChildrenToTemplate = (
     }
   });
   console.log('appendChildrenToTemplate return', templateVariableName);
-  return [...statements];
+  return { elements: [...statements], parentId: parentId };
 };

@@ -59,14 +59,14 @@ export const FormComponent = (props: FormComponentProps) => (
                 value={item.value}
               ></TextAreaField>
             </if:Condition>
-            <button
+            {/*<button
               type="button"
               onclick={() => {
                 alert('clicked');
               }}
             >
               CLICK
-            </button>
+            </button>*/}
           </div>
         )}
       </list:Render>

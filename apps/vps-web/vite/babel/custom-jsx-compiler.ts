@@ -35,12 +35,17 @@ export default function (babel: { types: typeof babelTypes }) {
       const content: Content[] = handleChildren(t, '', [path.node], attributes);
       const blockElements: babelTypes.Statement[] = [];
       const result = appendChildrenToTemplate(t, 'template', content);
-      blockElements.push(...result);
+      blockElements.push(...result.elements);
 
       const elementReferenceBlocks: babelTypes.Statement[] =
         createElementReferences(t, 'template', content);
       console.log('createTemplateForHtml call1');
-      return createTemplateForHtml(t, blockElements, elementReferenceBlocks);
+      return createTemplateForHtml(
+        t,
+        blockElements,
+        elementReferenceBlocks,
+        result.parentId
+      );
     } else {
       const attributes = path.node.openingElement.attributes;
 
@@ -54,12 +59,17 @@ export default function (babel: { types: typeof babelTypes }) {
 
       const blockElements: babelTypes.Statement[] = [];
       const result = appendChildrenToTemplate(t, 'template', content);
-      blockElements.push(...result);
+      blockElements.push(...result.elements);
 
       const elementReferenceBlocks: babelTypes.Statement[] =
         createElementReferences(t, 'template', content);
       console.log('createTemplateForHtml call2');
-      return createTemplateForHtml(t, blockElements, elementReferenceBlocks);
+      return createTemplateForHtml(
+        t,
+        blockElements,
+        elementReferenceBlocks,
+        result.parentId
+      );
     }
   };
 

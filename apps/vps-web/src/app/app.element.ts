@@ -40,200 +40,6 @@ import { FormComponent, FormFieldType } from './components/form-component';
 
 import { run } from './simple-flow-engine/simple-flow-engine';
 
-const TestInputField = (props) => {
-  const template = document.createElement('template');
-  const elementChild_0 = document.createElement('input');
-  elementChild_0.setAttribute('type', 'text');
-  elementChild_0.setAttribute('class', 'block w-full p-1');
-  elementChild_0.append(document.createTextNode(''));
-  template.content.append(elementChild_0);
-  const cloneNode = template.content.cloneNode(true);
-  const e_0 = cloneNode.firstChild;
-  e_0.setAttribute('id', props.fieldName);
-  e_0.setAttribute('name', props.fieldName);
-  e_0.setAttribute('value', props.value);
-  e_0.addEventListener('input', (event) => {
-    const input = event.target;
-    console.log(input.value);
-    if (props.onChange) {
-      props.onChange(input.value);
-    }
-  });
-  return {
-    cloneNode: cloneNode,
-    registerEvents: (node) => {
-      node.setAttribute('id', props.fieldName);
-      node.setAttribute('name', props.fieldName);
-      node.setAttribute('value', props.value);
-      node.addEventListener('input', (event) => {
-        const input = event.target;
-        console.log(input.value);
-        if (props.onChange) {
-          props.onChange(input.value);
-        }
-      });
-    },
-  };
-};
-const FormFieldType = {
-  Text: 'Text',
-  TextArea: 'TextArea',
-};
-export const TestFormComponent = (props) => {
-  const registerEvents = [];
-  const template = document.createElement('template');
-  const elementChild_0 = document.createElement('div');
-  elementChild_0.setAttribute('class', 'w-full p-2');
-  template.content.append(elementChild_0);
-  const elementChild_0elementChild_0 = document.createElement('form');
-  elementChild_0.appendChild(elementChild_0elementChild_0);
-  props.formElements.forEach((item, index) =>
-    elementChild_0elementChild_0.appendChild(
-      ((item, index) => {
-        const template = document.createElement('template');
-        const elementChild_0 = document.createElement('div');
-        elementChild_0.setAttribute('class', 'w-full mb-2');
-        template.content.append(elementChild_0);
-        const elementChild_0elementChild_0 = document.createElement('label');
-        elementChild_0elementChild_0.setAttribute('class', 'block mb-2');
-        elementChild_0.appendChild(elementChild_0elementChild_0);
-        const elementChild_0elementChild_0elementChild_0 =
-          document.createTextNode(item.fieldName);
-        elementChild_0elementChild_0.appendChild(
-          elementChild_0elementChild_0elementChild_0
-        );
-        if (item.fieldType === FormFieldType.Text) {
-          (() =>
-            elementChild_0.appendChild(
-              (() => {
-                const template = document.createElement('template');
-                const elementChild_0 = document.createElement('div');
-                template.content.append(elementChild_0);
-                const elementChild_0elementChild_0 =
-                  document.createElement('div');
-                elementChild_0.appendChild(elementChild_0elementChild_0);
-                const cloneNode = template.content.cloneNode(true);
-                const e_0 = cloneNode.firstChild;
-                const e_0_0 = e_0.firstChild;
-                e_0_0.setAttribute('fieldName', item.fieldName);
-                e_0_0.setAttribute('value', item.value);
-
-                // TODO : dont add events where the first letter of event name is capital
-
-                // e_0_0.addEventListener('Change', (value) => {
-                //   if (item.onChange) {
-                //     item.onChange(value);
-                //   }
-                // });
-                const node = TestInputField({
-                  fieldName: item.fieldName,
-                  value: item.value,
-
-                  // TODO : add event handlers here
-                  onChange: (value) => {
-                    if (item.onChange) {
-                      item.onChange(value);
-                    }
-                  },
-                });
-
-                e_0_0.parentNode.replaceChild(node.cloneNode, e_0_0);
-
-                // TODO register registerEvents handlers here
-                registerEvents.push(node.registerEvents);
-
-                return cloneNode;
-              })()
-            ))();
-        }
-
-        const elementChild_0elementChild_3 = document.createElement('button');
-        elementChild_0elementChild_3.setAttribute('type', 'button');
-        elementChild_0elementChild_3.append(document.createTextNode('CLICK'));
-        elementChild_0.appendChild(elementChild_0elementChild_3);
-
-        // THOUGHT : can this whole part be called after cloning the root-parentNode?
-        const cloneNode = template.content.cloneNode(true);
-        const e_0 = cloneNode.firstChild;
-        const e_0_0 = e_0.firstChild;
-        e_0_0.setAttribute('for', item.fieldName);
-        const e_0_0_0 = e_0_0.firstChild;
-
-        // TODO : .. this also needs to be called after cloning the root-parentNode
-        createEffect(() => (e_0_0.textContent = item.fieldName));
-        const e_0_3 = e_0_0.nextSibling;
-
-        // TODO : .. this also needs to be called after cloning the root-parentNode
-        registerEvents.push((node) => {
-          node.addEventListener('click', () => {
-            alert('clicked');
-          });
-        });
-
-        // figure out how to now which nodes to call registerEvents with...
-
-        return cloneNode;
-      })(item, index)
-    )
-  );
-  if (props.hasSubmitButton === void 0 || props.hasSubmitButton === true) {
-    (() =>
-      elementChild_0elementChild_0.appendChild(
-        (() => {
-          const template = document.createElement('template');
-          const elementChild_0 = document.createElement('button');
-          elementChild_0.setAttribute('type', 'submit');
-          elementChild_0.setAttribute(
-            'class',
-            'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-          );
-          elementChild_0.append(document.createTextNode('Save'));
-          template.content.append(elementChild_0);
-          const cloneNode = template.content.cloneNode(true);
-          const e_0 = cloneNode.firstChild;
-          return cloneNode;
-        })()
-      ))();
-  }
-  const cloneNode = template.content.cloneNode(true);
-  const e_0 = cloneNode.firstChild;
-  const e_0_0 = e_0.firstChild;
-
-  // TODO : .. this also needs to be called after cloning a parentNode
-  registerEvents.push((node) => {
-    node.addEventListener('submit', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const form = event.target;
-      const values = Object.fromEntries(new FormData(form));
-      console.log(values);
-      props.onSave({
-        ...values,
-      });
-      return false;
-    });
-  });
-
-  let e_0_0_0 = undefined;
-  props.formElements.forEach((item, index) => {
-    if (e_0_0_0 === undefined) {
-      e_0_0_0 = e_0_0.firstChild;
-    } else {
-      e_0_0_0 = e_0_0_0.nextSibling;
-    }
-
-    // TODO : add event handlers here for child elements
-  });
-  return {
-    cloneNode: cloneNode,
-    registerEvents: (node) => {
-      registerEvents.forEach((registerEvent) => {
-        registerEvent(node);
-      });
-    },
-  };
-};
-
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
@@ -1021,7 +827,7 @@ export class AppElement extends HTMLElement {
               const tx = 40;
               const ty = 40;
               const bezierCurvePoints = getPointOnCubicBezierCurve(
-                loop,
+                Math.min(loop, 1),
                 { x: startHelper.x + tx, y: startHelper.y + ty },
                 {
                   x: startHelper.cx + tx,
@@ -1040,7 +846,7 @@ export class AppElement extends HTMLElement {
               domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
 
               loop += 0.015;
-              if (loop > 1) {
+              if (loop > 1.015) {
                 loop = 0;
 
                 canvasApp?.elements.delete(testCircle.id);
@@ -1205,18 +1011,16 @@ export class AppElement extends HTMLElement {
               sidebarContainer.domElement as unknown as HTMLElement
             ).classList.add('hidden');
           },
-          formElements: (node?.nodeInfo as any)?.formElements ?? [
-            {
-              fieldType: 'Text',
-              fieldName: 'test1',
-              value: nodeInfo.test1 ?? '',
-            },
-            {
-              fieldType: FormFieldType.TextArea,
-              fieldName: 'test2',
-              value: nodeInfo.test2 ?? '',
-            },
-          ],
+          formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
+            (item: any) => {
+              return {
+                ...item,
+                value: ((node?.nodeInfo as any)?.formValues ?? {})[
+                  item.fieldName
+                ],
+              };
+            }
+          ),
           // onInput: (event: InputEvent) => {
           //   const text =
           //     (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
@@ -1330,11 +1134,11 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
-    const element = TestApp({
-      //parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
-    }); //TestDummyComponent();
-    console.log('element', element);
-    rootElement.append(element as unknown as Node);
+    // const element = TestApp({
+    //   //parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
+    // }); //TestDummyComponent();
+    // console.log('element', element);
+    // rootElement.append(element as unknown as Node);
 
     registerCustomFunction('setStartPoint', [], (x: number, y: number) => {
       console.log('setStartPoint', x, y);

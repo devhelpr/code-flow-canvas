@@ -2,8 +2,14 @@ import * as babelTypes from '@babel/types';
 
 export const getAttributes = (
   t: typeof babelTypes,
-  attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[]
+  attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[],
+  passThroughAttributes?: boolean
 ) => {
+  const supportedExpressionTypes = ['ArrayExpression', 'MemberExpression'];
+
+  if (passThroughAttributes) {
+    supportedExpressionTypes.push('ArrowFunctionExpression');
+  }
   // needed for Custom Components
   let attributeObject: babelTypes.ObjectExpression | undefined;
   if (attributes) {
@@ -28,17 +34,15 @@ export const getAttributes = (
         attribute.value &&
         attribute.value.type === 'JSXExpressionContainer' &&
         attribute.value.expression &&
-        (attribute.value.expression.type === 'ArrayExpression' ||
-          attribute.value.expression.type === 'MemberExpression')
+        supportedExpressionTypes.indexOf(attribute.value.expression.type) >= 0
       ) {
         properties.push(
           t.objectProperty(
             t.identifier(attribute.name.name.toString()),
-            attribute.value.expression
+            attribute.value.expression as unknown as babelTypes.Expression
           )
         );
       }
-      // handle
     });
     attributeObject = t.objectExpression(properties);
   }

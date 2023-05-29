@@ -109,12 +109,14 @@ export const createElementReferences = (
                       t.assignmentExpression(
                         '=',
                         elementReferenceIdentifier,
-                        t.memberExpression(
-                          previousElement ?? t.identifier('cloneNode'), // TODO : replace this cloneNode...
-                          index === 0
-                            ? t.identifier('firstChild')
-                            : t.identifier('nextSibling')
-                        )
+                        previousElement
+                          ? t.memberExpression(
+                              previousElement,
+                              index === 0
+                                ? t.identifier('firstChild')
+                                : t.identifier('nextSibling')
+                            )
+                          : t.identifier('cloneNode')
                       )
                     ),
                   ]
@@ -149,16 +151,19 @@ export const createElementReferences = (
       const elementReference = t.variableDeclaration('const', [
         t.variableDeclarator(
           elementReferenceIdentifier,
-          t.memberExpression(
-            previousElement ?? t.identifier('cloneNode'),
-            index === 0
-              ? t.identifier('firstChild')
-              : t.identifier('nextSibling')
-          )
+          previousElement
+            ? t.memberExpression(
+                previousElement,
+                index === 0
+                  ? t.identifier('firstChild')
+                  : t.identifier('nextSibling')
+              )
+            : t.identifier('cloneNode')
         ),
       ]);
       elementReferenceBlocks.push(elementReference);
 
+      let addEventAttributes = true;
       if (item.isExpression) {
         if (!item.runExpression) {
           effectList.push({
@@ -170,7 +175,9 @@ export const createElementReferences = (
         // if component contains another component ..
         //   .. then appendChild it to the cloned node instead of to the template...
         //   (the template contains a documet fragment)
-        const attributeObject = getAttributes(t, item.attributes);
+
+        addEventAttributes = false;
+        const attributeObject = getAttributes(t, item.attributes, true);
 
         replaceList.push({
           id: elementReferenceName,
@@ -194,9 +201,11 @@ export const createElementReferences = (
           ),
         });
       }
-      elementReferenceBlocks.push(
-        ...setEventAttributes(t, elementReferenceName, item.attributes)
-      );
+      if (addEventAttributes) {
+        elementReferenceBlocks.push(
+          ...setEventAttributes(t, elementReferenceName, item.attributes)
+        );
+      }
 
       if (item.children && item.children.length > 0) {
         elementReferenceBlocks.push(
