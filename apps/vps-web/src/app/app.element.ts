@@ -493,7 +493,7 @@ export class AppElement extends HTMLElement {
             }
           );
           node.nodeComponent.nodeInfo = {};
-          node.nodeComponent.nodeInfo.formElements = formElements;
+          node.nodeComponent.nodeInfo.formElements = [];
 
           createNamedSignal('if', '');
           return false;
@@ -831,7 +831,12 @@ export class AppElement extends HTMLElement {
     const animatePath = (
       nodeId: string,
       color: string,
-      onNextNode?: (nodeId: string) => boolean
+      onNextNode?: (
+        nodeId: string,
+        node: INodeComponent<NodeInfo>,
+        input: string
+      ) => { result: boolean; output: string },
+      input?: string
     ) => {
       const nodeConnectionPairs = getNodeConnectionPairById(nodeId);
 
@@ -864,7 +869,7 @@ export class AppElement extends HTMLElement {
               },
             },
             this.canvasApp?.canvas.domElement,
-            start.nodeInfo?.formValues?.Expression ?? ''
+            input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? ''
           );
 
           const domCircle = testCircle.domElement as HTMLElement;
@@ -934,13 +939,20 @@ export class AppElement extends HTMLElement {
                 message?.domElement?.remove();
                 clearInterval(cancel);
 
-                if (!onNextNode || (onNextNode && onNextNode(end.id))) {
-                  animatePath(end.id, color);
+                if (!onNextNode || onNextNode) {
+                  const result = onNextNode?.(end.id, end, input ?? '') ?? {
+                    result: false,
+                    output: '',
+                  };
+                  console.log('animatePath onNextNode result', input, result);
+                  if (result.result) {
+                    animatePath(end.id, color, onNextNode, result.output);
+                  }
                 }
               }
             } else {
               if (start) {
-                onNextNode && onNextNode(start.id);
+                onNextNode && onNextNode(start.id, start, input ?? '');
               }
               canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();

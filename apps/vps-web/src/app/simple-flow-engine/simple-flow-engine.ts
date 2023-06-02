@@ -2,13 +2,22 @@ import {
   ElementNodeMap,
   INodeComponent,
 } from '@devhelpr/visual-programming-system';
+import {
+  compileExpression,
+  registerCustomFunction,
+} from '@devhelpr/expression-compiler';
 
 export const run = <T>(
   nodes: ElementNodeMap<T>,
   animatePath: (
     nodeId: string,
     color: string,
-    onNextNode?: (nodeId: string) => boolean
+    onNextNode?: (
+      nodeId: string,
+      node: INodeComponent<T>,
+      input: string
+    ) => { result: boolean; output: string },
+    input?: string
   ) => void
 ) => {
   /*
@@ -22,17 +31,70 @@ export const run = <T>(
       .. it errors .. stop the flow
 
   */
+
+  registerCustomFunction('random', [], () => {
+    return Math.round(Math.random() * 100);
+  });
+
   const nodeList = Array.from(nodes);
   nodes.forEach((node) => {
     const connectionsFromEndNode = nodeList.filter((e) => {
       const element = e[1] as INodeComponent<T>;
       return element.endNode?.id === node.id;
     });
-    if (!connectionsFromEndNode || connectionsFromEndNode.length === 0) {
-      animatePath(node.id, 'red', (nodeId: string) => {
-        console.log('Next nodeId', nodeId);
-        return true;
-      });
+    const nodeComponent = node as unknown as INodeComponent<T>;
+    if (
+      nodeComponent.nodeType !== 'connection' &&
+      (!connectionsFromEndNode || connectionsFromEndNode.length === 0)
+    ) {
+      const formInfo = node.nodeInfo as unknown as any;
+      console.log(
+        'run start',
+        node.id,
+        node,
+        formInfo.formValues['Expression']
+      );
+      const runExpression = compileExpression(
+        formInfo?.formValues['Expression'] ?? ''
+      );
+      let result: any = false;
+      try {
+        result = runExpression({ input: '' });
+      } catch {
+        result = false;
+      }
+      if (result) {
+        animatePath(
+          node.id,
+          'red',
+          (nodeId: string, node: INodeComponent<T>, input: string) => {
+            console.log('Next nodeId', nodeId, node, input);
+            let result: any = false;
+            const formInfo = node.nodeInfo as unknown as any;
+            const runExpression = compileExpression(
+              formInfo?.formValues['Expression'] ?? ''
+            );
+            try {
+              result = runExpression({ input: input });
+            } catch {
+              result = false;
+            }
+            console.log('expression result', result);
+            if (!result) {
+              return {
+                result: false,
+                output: result,
+              };
+            }
+
+            return {
+              result: true,
+              output: result,
+            };
+          },
+          result
+        );
+      }
     }
   });
   return true;
