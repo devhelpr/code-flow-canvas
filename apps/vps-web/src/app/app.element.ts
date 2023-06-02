@@ -472,11 +472,15 @@ export class AppElement extends HTMLElement {
                 thumbType: ThumbType.StartConnectorTop,
                 thumbIndex: 0,
                 connectionType: ThumbConnectionType.start,
+                pathName: 'success',
+                color: 'rgba(95,204,37,1)',
               },
               {
                 thumbType: ThumbType.StartConnectorBottom,
                 thumbIndex: 0,
                 connectionType: ThumbConnectionType.start,
+                pathName: 'failure',
+                color: 'rgba(204,37,37,1)',
               },
               {
                 thumbType: ThumbType.EndConnectorCenter,
@@ -494,6 +498,7 @@ export class AppElement extends HTMLElement {
           );
           node.nodeComponent.nodeInfo = {};
           node.nodeComponent.nodeInfo.formElements = [];
+          node.nodeComponent.nodeInfo.taskType = 'if';
 
           createNamedSignal('if', '');
           return false;
@@ -619,9 +624,9 @@ export class AppElement extends HTMLElement {
                 'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
                 'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
               ];
-              const color = `rgb(${Math.floor(
-                Math.random() * 255
-              )},${Math.floor(Math.random() * 16)},${Math.floor(
+              const color = `rgb(${
+                128 + Math.floor(Math.random() * 128)
+              },${Math.floor(Math.random() * 16)},${Math.floor(
                 Math.random() * 16
               )})`;
 
@@ -768,7 +773,10 @@ export class AppElement extends HTMLElement {
       'stress test'
     );
 
-    const getNodeConnectionPairById = (nodeId: string) => {
+    const getNodeConnectionPairById = (
+      nodeId: string,
+      followPathByName?: string
+    ) => {
       const connectionPairs: {
         start: INodeComponent<NodeInfo>;
         end: INodeComponent<NodeInfo>;
@@ -816,6 +824,13 @@ export class AppElement extends HTMLElement {
                 connection.controlPoints &&
                 connection.controlPoints.length === 2
               ) {
+                if (
+                  followPathByName &&
+                  connection.startNodeThumb?.pathName !== followPathByName
+                ) {
+                  return;
+                }
+
                 connectionPairs.push({
                   start,
                   connection,
@@ -840,15 +855,21 @@ export class AppElement extends HTMLElement {
         nodeId: string,
         node: INodeComponent<NodeInfo>,
         input: string
-      ) => { result: boolean; output: string },
-      input?: string
+      ) => { result: boolean; output: string; followPathByName?: string },
+      input?: string,
+      followPathByName?: string // normal, success, failure, "subflow"
     ) => {
       const maxSpeed = 50;
       const currentSpeed = speedMeter;
-      const nodeConnectionPairs = getNodeConnectionPairById(nodeId);
+      const nodeConnectionPairs = getNodeConnectionPairById(
+        nodeId,
+        followPathByName
+      );
 
       if (nodeConnectionPairs && nodeConnectionPairs.length > 0) {
         nodeConnectionPairs.forEach((nodeConnectionPair) => {
+          // TODO: check if nodeConnectionPair conforms to pathCondition
+
           const start = nodeConnectionPair.start;
           const connection = nodeConnectionPair.connection;
           const end = nodeConnectionPair.end;
@@ -952,10 +973,17 @@ export class AppElement extends HTMLElement {
                   const result = onNextNode?.(end.id, end, input ?? '') ?? {
                     result: true,
                     output: '',
+                    followPathByName: undefined,
                   };
                   console.log('animatePath onNextNode result', input, result);
                   if (result.result) {
-                    animatePath(end.id, color, onNextNode, result.output);
+                    animatePath(
+                      end.id,
+                      color,
+                      onNextNode,
+                      result.output,
+                      result.followPathByName
+                    );
                   }
                 }
               } else {

@@ -16,8 +16,9 @@ export const run = <T>(
       nodeId: string,
       node: INodeComponent<T>,
       input: string
-    ) => { result: boolean; output: string },
-    input?: string
+    ) => { result: boolean; output: string; followPathByName?: string },
+    input?: string,
+    followPathByName?: string
   ) => void
 ) => {
   /*
@@ -52,7 +53,7 @@ export const run = <T>(
         'run start',
         node.id,
         node,
-        formInfo?.formValues?.['Expression'] ?? ""
+        formInfo?.formValues?.['Expression'] ?? ''
       );
       const runExpression = compileExpression(
         formInfo?.formValues?.['Expression'] ?? ''
@@ -60,14 +61,14 @@ export const run = <T>(
       let result: any = false;
       try {
         result = runExpression({ input: '' });
-      } catch(error) {
+      } catch (error) {
         result = false;
         console.log('expression error', error);
       }
       if (result !== false) {
         animatePath(
           node.id,
-          'red',
+          'white',
           (nodeId: string, node: INodeComponent<T>, input: string) => {
             console.log('Next nodeId', nodeId, node, input);
             let result: any = false;
@@ -91,9 +92,20 @@ export const run = <T>(
             return {
               result: true,
               output: result,
+              followPathByName:
+                (formInfo?.taskType ?? '') === 'if'
+                  ? Math.random() < 0.5
+                    ? 'success'
+                    : 'failure'
+                  : undefined,
             };
           },
-          result
+          result,
+          (formInfo?.taskType ?? '') === 'if'
+            ? Math.random() < 0.5
+              ? 'success'
+              : 'failure'
+            : undefined
         );
       } else {
         console.log('expression result', result);

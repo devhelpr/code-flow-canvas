@@ -733,7 +733,7 @@ export const createRect = <T>(
         interactionStateMachine,
         rectNode.elements,
         thumb.thumbType,
-        '#008080',
+        thumb.color ?? '#008080',
         x,
         y,
         `thumb-connector-${index}`,
@@ -752,6 +752,7 @@ export const createRect = <T>(
         pathHiddenElement
       );
 
+      thumbConnectorElement.pathName = thumb.pathName;
       thumbConnectorElement.isControlled = true;
       thumbConnectorElement.isConnectPoint = true;
       thumbConnectorElement.thumbConnectionType = thumb.connectionType;

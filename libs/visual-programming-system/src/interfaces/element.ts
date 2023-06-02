@@ -56,6 +56,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
 
   specifier?: string;
   nodeType?: string;
+  pathName?: string;
   components: INodeComponentRelation<T>[];
   startNode?: INodeComponent<T>;
   endNode?: INodeComponent<T>;
@@ -136,4 +137,6 @@ export type IThumb = {
   thumbType: ThumbType;
   thumbIndex: number;
   connectionType: ThumbConnectionType;
+  pathName?: string;
+  color?: string;
 };
