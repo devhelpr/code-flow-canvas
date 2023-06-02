@@ -775,11 +775,13 @@ export class AppElement extends HTMLElement {
         connection: INodeComponent<NodeInfo>;
       }[] = [];
 
+      // EXPENSIVE copy
       const elementList = Array.from(canvasApp?.elements ?? []);
       const node = this.canvasApp?.elements?.get(nodeId);
       if (node) {
         const start = node as unknown as INodeComponent<NodeInfo>;
         if (start) {
+          // EXPENSIVE filter
           const connectionsFromStartNode = elementList.filter((e) => {
             const element = e[1] as INodeComponent<NodeInfo>;
             return element.startNode?.id === node.id;
@@ -793,6 +795,7 @@ export class AppElement extends HTMLElement {
                 connectionNode[1] as unknown as INodeComponent<NodeInfo>;
 
               if (connection && connection.endNode) {
+                // EXPENSIVE find
                 const endElement = elementList.find((e) => {
                   const element = e[1] as INodeComponent<NodeInfo>;
                   return (
@@ -959,7 +962,10 @@ export class AppElement extends HTMLElement {
                 if (speedMeter !== currentSpeed) {
                   clearInterval(cancel);
                   timers.delete(cancel);
-                  cancel = setInterval(onInterval, maxSpeed * (100-speedMeter)/100);
+                  cancel = setInterval(
+                    onInterval,
+                    (maxSpeed * (100 - speedMeter)) / 100
+                  );
                   setCanceler();
                 }
               }
@@ -978,13 +984,19 @@ export class AppElement extends HTMLElement {
             }
           };
 
-          let cancel = setInterval(onInterval, maxSpeed * (100-speedMeter)/100);
+          let cancel = setInterval(
+            onInterval,
+            (maxSpeed * (100 - speedMeter)) / 100
+          );
 
           const setCanceler = () => {
             timers.set(cancel, () => {
               clearInterval(cancel);
               timers.delete(cancel);
-              cancel = setInterval(onInterval, maxSpeed * (100-speedMeter)/100);
+              cancel = setInterval(
+                onInterval,
+                (maxSpeed * (100 - speedMeter)) / 100
+              );
               setCanceler();
             });
           };
@@ -1046,14 +1058,19 @@ export class AppElement extends HTMLElement {
     createElement(
       'input',
       {
-        type:"range",
-        class: "p-2 m-2",
-        name:"speed",
-        min:"1",
-        max:"100",
+        type: 'range',
+        class: 'p-2 m-2',
+        name: 'speed',
+        min: '0.1',
+        max: '100',
         change: (event) => {
           speedMeter = parseInt((event.target as HTMLInputElement).value);
-        }
+
+          const timerList = Array.from(timers ?? []);
+          timerList.forEach((timer) => {
+            timer[1]();
+          });
+        },
       },
       menubarElement.domElement,
       ''
