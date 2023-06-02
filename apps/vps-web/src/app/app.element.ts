@@ -26,6 +26,7 @@ import {
   getPointOnCubicBezierCurve,
   ControlAndEndPointNodeType,
   CurveType,
+  createNamedSignal,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -361,6 +362,7 @@ export class AppElement extends HTMLElement {
             },
             undefined,
             FormComponent({
+              id: 'test',
               formElements,
               hasSubmitButton: false,
               onSave: (formValues) => {
@@ -418,11 +420,87 @@ export class AppElement extends HTMLElement {
           );
           node.nodeComponent.nodeInfo = {};
           node.nodeComponent.nodeInfo.formElements = formElements;
+
+          createNamedSignal('test', '');
           return false;
         },
       },
       menubarElement.domElement,
       'Add rect'
+    );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          console.log('click RECT', (event.target as HTMLElement)?.tagName);
+          const startX = Math.floor(Math.random() * 250);
+          const startY = Math.floor(Math.random() * 500);
+
+          const jsxComponentWrapper = createElement(
+            'div',
+            {
+              //class: `bg-slate-500 p-4 rounded cursor-pointer`,
+              class:
+                'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded cursor-pointer',
+              style: {
+                'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+              },
+            },
+            undefined,
+            FormComponent({
+              id: 'test',
+              formElements: [],
+              hasSubmitButton: false,
+              onSave: (formValues) => {
+                //
+              },
+            }) as unknown as HTMLElement
+          ) as unknown as INodeComponent<NodeInfo>;
+
+          const node = canvasApp.createRect(
+            startX,
+            startY,
+            200,
+            100,
+            undefined,
+            undefined,
+            [
+              {
+                thumbType: ThumbType.StartConnectorTop,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.start,
+              },
+              {
+                thumbType: ThumbType.StartConnectorBottom,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.start,
+              },
+              {
+                thumbType: ThumbType.EndConnectorCenter,
+                thumbIndex: 0,
+                connectionType: ThumbConnectionType.end,
+              },
+            ],
+            //testIfCondition as unknown as INodeComponent<NodeInfo>,
+            jsxComponentWrapper,
+            //testButton as unknown as INodeComponent<NodeInfo>,
+            //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
+            {
+              classNames: `bg-slate-500 p-4 rounded`,
+            }
+          );
+          node.nodeComponent.nodeInfo = {};
+          node.nodeComponent.nodeInfo.formElements = formElements;
+
+          createNamedSignal('if', '');
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add if-condition'
     );
 
     createElement(
@@ -861,6 +939,9 @@ export class AppElement extends HTMLElement {
                 }
               }
             } else {
+              if (start) {
+                onNextNode && onNextNode(start.id);
+              }
               canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
 
@@ -991,7 +1072,14 @@ export class AppElement extends HTMLElement {
         const node = this.canvasApp?.elements?.get(nodeElementId);
         const nodeInfo: any = node?.nodeInfo ?? {};
         console.log('nodeInfo', nodeInfo);
+
+        const [currentValue, setCurrentValue] = createNamedSignal(
+          'test',
+          (nodeInfo.formValues ?? {})['Expression'] ?? ''
+        );
+
         const form = FormComponent({
+          id: 'test',
           onSave: (values: any) => {
             console.log('onSave', values);
 
@@ -1003,6 +1091,7 @@ export class AppElement extends HTMLElement {
                 node.nodeInfo = values;
               }
             }
+            setCurrentValue(values['Expression']);
             removeFormElement();
             currentNodeElementId = undefined;
 

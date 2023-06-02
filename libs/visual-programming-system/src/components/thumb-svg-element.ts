@@ -1,17 +1,19 @@
 import { transformToCamera } from '../camera';
-import {
-  InteractionStateMachine  
-} from '../interaction-state-machine';
+import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
   IElementNode,
   INodeComponent,
+  INodeComponentRelation,
+  NodeComponentRelationType,
+  ThumbConnectionType,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { ThumbType } from '../types';
 import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
+import { createCubicBezier } from './bezier';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createThumbSVGElement = <T>(
@@ -31,7 +33,11 @@ export const createThumbSVGElement = <T>(
   isTransparent?: boolean,
   borderColor?: string,
   index?: number,
-  relativePositioned?: boolean
+  relativePositioned?: boolean,
+  canvas?: INodeComponent<T>,
+  canvasElements?: ElementNodeMap<T>,
+  parentNode?: INodeComponent<T>,
+  pathHiddenElement?: IElementNode<T>
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -151,6 +157,112 @@ export const createThumbSVGElement = <T>(
       },
       pointerdown: (e: PointerEvent) => {
         if (nodeComponent) {
+          /* 
+          TODO:
+          if:
+          - no interaction is in progress
+          - thumb is node thumb connector
+          - thumbConnectionType is start
+          - node is not connected
+          then:
+          - create a connection starting from this node and thumb
+          - initialize the interaction state machine with the new connection
+          */
+
+          if (
+            nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
+            nodeComponent.isConnectPoint &&
+            parentNode &&
+            canvasElements
+          ) {
+            console.log('thumb pointerdown', nodeComponent.id, nodeComponent);
+            //e.preventDefault();
+
+            // const elementRect = (
+            //   nodeComponent.domElement as unknown as HTMLElement | SVGElement
+            // ).getBoundingClientRect();
+            const { x, y } = transformToCamera(e.clientX, e.clientY);
+            //const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+            const curve = createCubicBezier<T>(
+              canvas as unknown as INodeComponent<T>,
+              interactionStateMachine,
+              pathHiddenElement as unknown as IElementNode<T>,
+              canvasElements,
+              x - 50,
+              y - 50,
+              x - 50,
+              y - 50,
+              x + 50,
+              y + 50,
+              x + 75,
+              y + 75,
+              false
+            );
+
+            if (curve && canvas) {
+              console.log(
+                'new curve created',
+                curve.nodeComponent.id,
+                curve.endPointElement.id
+              );
+              curve.nodeComponent.isControlled = true;
+              curve.nodeComponent.components.push({
+                type: NodeComponentRelationType.start,
+                component: parentNode,
+              } as unknown as INodeComponentRelation<T>);
+
+              curve.nodeComponent.startNode = parentNode;
+              curve.nodeComponent.startNodeThumb = nodeComponent;
+
+              if (curve.nodeComponent.update) {
+                curve.nodeComponent.update();
+              }
+
+              const elementRect = (
+                curve.endPointElement.domElement as unknown as
+                  | HTMLElement
+                  | SVGElement
+              ).getBoundingClientRect();
+
+              const rectCamera = transformToCamera(
+                elementRect.x,
+                elementRect.y
+              );
+
+              const interactionInfoResult = pointerDown(
+                x - rectCamera.x,
+                y - rectCamera.y,
+                curve.endPointElement,
+                canvas.domElement,
+                interactionStateMachine
+              );
+              if (
+                interactionInfoResult &&
+                curve.endPointElement.initPointerDown
+              ) {
+                curve.endPointElement.initPointerDown(
+                  interactionInfoResult.xOffsetWithinElementOnFirstClick,
+                  interactionInfoResult.yOffsetWithinElementOnFirstClick
+                );
+              }
+
+              if (curve.endPointElement.getThumbCircleElement) {
+                const circleDomElement =
+                  curve.endPointElement.getThumbCircleElement();
+                console.log('circleDomElement', circleDomElement);
+                circleDomElement.classList.remove('pointer-events-auto');
+                circleDomElement.classList.add('pointer-events-none');
+              }
+
+              console.log(
+                'new curve interactionInfoResult',
+                interactionInfoResult
+              );
+            }
+
+            return;
+          }
+
           if (nodeComponent.isControlled) {
             return;
           }
@@ -168,6 +280,7 @@ export const createThumbSVGElement = <T>(
             canvasElement,
             interactionStateMachine
           );
+
           if (interactionInfoResult) {
             interactionInfo = interactionInfoResult;
             const circleDomElement = circleElement?.domElement as unknown as
@@ -186,7 +299,14 @@ export const createThumbSVGElement = <T>(
           if (nodeComponent && nodeComponent.domElement) {
             const { x, y } = transformToCamera(e.clientX, e.clientY);
             if (
-              pointerMove(x, y, nodeComponent, canvasElement, interactionInfo, interactionStateMachine)
+              pointerMove(
+                x,
+                y,
+                nodeComponent,
+                canvasElement,
+                interactionInfo,
+                interactionStateMachine
+              )
             ) {
               // console.log(
               //   'svg pointermove',
@@ -209,7 +329,14 @@ export const createThumbSVGElement = <T>(
             ).getBoundingClientRect();
 
             const { x, y } = transformToCamera(e.clientX, e.clientY);
-            pointerUp(x, y, nodeComponent, canvasElement, interactionInfo, interactionStateMachine);
+            pointerUp(
+              x,
+              y,
+              nodeComponent,
+              canvasElement,
+              interactionInfo,
+              interactionStateMachine
+            );
             const circleDomElement = circleElement?.domElement as unknown as
               | HTMLElement
               | SVGElement;
@@ -244,6 +371,14 @@ export const createThumbSVGElement = <T>(
     }`;
   };
 
+  nodeComponent.initPointerDown = (
+    initialXOffset: number,
+    initialYOffset: number
+  ) => {
+    interactionInfo.xOffsetWithinElementOnFirstClick = initialXOffset;
+    interactionInfo.yOffsetWithinElementOnFirstClick = initialYOffset;
+  };
+
   nodeComponent.pointerUp = () => {
     const dropTarget = interactionStateMachine.getCurrentDropTarget();
     if (dropTarget) {
@@ -261,7 +396,13 @@ export const createThumbSVGElement = <T>(
         dropTarget.onReceiveDroppedComponent(dropTarget, nodeComponent);
       }
     }
-    console.log('svg pointerup nodecomponent', nodeComponent.id, dropTarget);
+
+    console.log(
+      'svg pointerup nodecomponent',
+      nodeComponent.id,
+      nodeComponent,
+      dropTarget
+    );
     interactionStateMachine.clearDropTarget(nodeComponent);
 
     const circleDomElement = circleElement?.domElement as unknown as
@@ -270,5 +411,11 @@ export const createThumbSVGElement = <T>(
     circleDomElement.classList.add('pointer-events-auto');
     circleDomElement.classList.remove('pointer-events-none');
   };
+
+  const circleDomElement = circleElement?.domElement as unknown as
+    | HTMLElement
+    | SVGElement;
+  nodeComponent.getThumbCircleElement = () => circleDomElement;
+
   return nodeComponent;
 };

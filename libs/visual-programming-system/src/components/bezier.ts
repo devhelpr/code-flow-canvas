@@ -338,6 +338,8 @@ export const createCubicBezier = <T>(
 
   return {
     nodeComponent: connection,
+    startPointElement,
+    endPointElement,
     setStartPoint: (x: number, y: number) => {
       if (startPointElement.update) {
         startPointElement.update(startPointElement, x, y, startPointElement);
@@ -618,6 +620,8 @@ export const createQuadraticBezier = <T>(
 
   return {
     nodeComponent: connection,
+    startPointElement,
+    endPointElement,
     setStartPoint: (x: number, y: number) => {
       if (startPointElement.update) {
         startPointElement.update(startPointElement, x, y, startPointElement);

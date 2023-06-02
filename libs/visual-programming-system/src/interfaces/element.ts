@@ -74,6 +74,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     y?: number,
     actionComponent?: INodeComponent<T>
   ) => boolean;
+  initPointerDown?: (initialXOffset: number, initialYOffset: number) => void;
   pointerDown?: () => void;
   pointerMove?: () => void;
   pointerUp?: () => void;
@@ -95,6 +96,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   ) => IControlAndEndPoint;
   setVisibility?: (isVisible: boolean) => void;
   delete?: () => void;
+  getThumbCircleElement?: () => HTMLElement | SVGElement;
 }
 
 export const ControlAndEndPointNodeType = {

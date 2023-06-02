@@ -30,6 +30,7 @@ export const run = <T>(
     });
     if (!connectionsFromEndNode || connectionsFromEndNode.length === 0) {
       animatePath(node.id, 'red', (nodeId: string) => {
+        console.log('Next nodeId', nodeId);
         return true;
       });
     }

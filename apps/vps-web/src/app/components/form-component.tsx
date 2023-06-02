@@ -19,6 +19,7 @@ export interface FormComponentProps {
   onSave: (values: any) => void;
   formElements: FormField[];
   hasSubmitButton?: boolean;
+  id: string;
 }
 
 export const FormComponent = (props: FormComponentProps) => (
@@ -43,6 +44,7 @@ export const FormComponent = (props: FormComponentProps) => (
             <if:Condition test={item.fieldType === FormFieldType.Text}>
               <div>
                 <InputField
+                  formId={props.id}
                   fieldName={item.fieldName}
                   value={item.value}
                   onChange={(value: string) => {

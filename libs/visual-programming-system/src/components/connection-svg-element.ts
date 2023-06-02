@@ -325,14 +325,9 @@ export const createConnectionSVGElement = <T>(
       y === undefined ||
       !actionComponent
     ) {
-      if (nodeComponent?.endNode && nodeComponent?.startNode) {
-        // needed for updating without using parameters (...update() )
-        // TODO : what if only endNode or startNode is defined?
-
-        if (
-          nodeComponent?.startNode.onCalculateControlPoints &&
-          nodeComponent?.endNode.onCalculateControlPoints
-        ) {
+      // needed for updating without using parameters (...update() )
+      if (nodeComponent?.startNode) {
+        if (nodeComponent?.startNode.onCalculateControlPoints) {
           const start = nodeComponent.startNode.onCalculateControlPoints(
             ControlAndEndPointNodeType.start,
             CurveType.bezierCubic,
@@ -341,6 +336,18 @@ export const createConnectionSVGElement = <T>(
             nodeComponent.startNodeThumb?.thumbIndex,
             nodeComponent.endNode
           );
+
+          points.beginX = start.x;
+          points.beginY = start.y;
+          points.cx1 = start.cx;
+          points.cy1 = start.cy;
+          skipChecks = true;
+          updateThumbs = true;
+        }
+      }
+
+      if (nodeComponent?.endNode) {
+        if (nodeComponent?.endNode.onCalculateControlPoints) {
           const end = nodeComponent.endNode.onCalculateControlPoints(
             ControlAndEndPointNodeType.end,
             CurveType.bezierCubic,
@@ -349,10 +356,6 @@ export const createConnectionSVGElement = <T>(
             nodeComponent.endNodeThumb?.thumbIndex,
             nodeComponent.startNode
           );
-          points.beginX = start.x;
-          points.beginY = start.y;
-          points.cx1 = start.cx;
-          points.cy1 = start.cy;
           points.endX = end.x;
           points.endY = end.y;
           points.cx2 = end.cx;
@@ -360,10 +363,10 @@ export const createConnectionSVGElement = <T>(
           skipChecks = true;
 
           updateThumbs = true;
-        } else {
-          return false;
         }
-      } else {
+      }
+
+      if (!updateThumbs) {
         return false;
       }
     }

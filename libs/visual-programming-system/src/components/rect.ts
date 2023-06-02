@@ -60,6 +60,9 @@ const calculateConnectorX = (
   if (thumbType === ThumbType.StartConnectorTop) {
     return width / 2;
   }
+  if (thumbType === ThumbType.StartConnectorBottom) {
+    return width / 2;
+  }
   return 0;
 };
 
@@ -88,6 +91,10 @@ const calculateConnectorY = (
   }
 
   if (thumbType === ThumbType.StartConnectorTop) {
+    return 0;
+  }
+
+  if (thumbType === ThumbType.StartConnectorBottom) {
     return height;
   }
   return 0;
@@ -132,6 +139,12 @@ const thumbInitialPosition = <T>(
   }
 
   if (thumbType === ThumbType.StartConnectorTop) {
+    return {
+      x: '50%',
+      y: '0%',
+    };
+  }
+  if (thumbType === ThumbType.StartConnectorBottom) {
     return {
       x: '50%',
       y: '100%',
@@ -229,7 +242,10 @@ export const thumbPosition = <T>(
     };
   }
 
-  if (thumbType === ThumbType.StartConnectorTop) {
+  if (
+    thumbType === ThumbType.StartConnectorTop ||
+    thumbType === ThumbType.StartConnectorBottom
+  ) {
     return {
       x:
         calculateConnectorX(
@@ -354,8 +370,9 @@ export const createRect = <T>(
           index
         );
 
-      if (thumbType === ThumbType.StartConnectorTop) {
+      if (thumbType === ThumbType.StartConnectorBottom) {
         y = y + thumbRadius * 3;
+
         return {
           x: x,
           y: y,
@@ -363,7 +380,21 @@ export const createRect = <T>(
           cy: y + Math.max((rectNode.height || 0) + 50, yDistance),
           nodeType,
         };
+      } else if (thumbType === ThumbType.StartConnectorTop) {
+        const yDistance = Math.abs(
+          rectNode.y - (rectNode.height ?? 0) - (connectedNode?.y ?? 0)
+        );
+
+        y = y - thumbRadius * 3;
+        return {
+          x: x,
+          y: y,
+          cx: x,
+          cy: y - Math.max((rectNode.height || 0) + 50, yDistance),
+          nodeType,
+        };
       }
+
       x = x + thumbRadius * 3;
       const cx = x + (rectNode.width || 0) + 50;
 
@@ -714,7 +745,11 @@ export const createRect = <T>(
         undefined,
         undefined,
         thumb.thumbIndex ?? 0,
-        true
+        true,
+        canvas,
+        elements,
+        rectNode,
+        pathHiddenElement
       );
 
       thumbConnectorElement.isControlled = true;

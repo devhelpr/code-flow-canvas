@@ -1,6 +1,7 @@
 import { CLICK_MOVEMENT_THRESHOLD } from '../../constants';
 import {
-  InteractionEvent, InteractionStateMachine,
+  InteractionEvent,
+  InteractionStateMachine,
 } from '../../interaction-state-machine';
 import {
   DOMElementNode,
@@ -45,6 +46,15 @@ export const pointerDown = <T>(
       );
     }
 
+    console.log(
+      'update pointerDown',
+      element.id,
+      x,
+      y,
+      xOffsetWithinElementOnFirstClick,
+      yOffsetWithinElementOnFirstClick
+    );
+
     if (element.pointerDown) {
       element.pointerDown();
     }
@@ -85,7 +95,7 @@ export const pointerMove = <T>(
       element.domElement
       //interactionState.timeSinceStart > CLICK_MOVEMENT_THRESHOLD
     ) {
-      console.log('move', element.id, interactionState);
+      //console.log('move', element.id, interactionState);
       if (element.update) {
         element.update(
           element,
@@ -115,18 +125,19 @@ export const pointerUp = <T>(
   interactionStateMachine: InteractionStateMachine<T>
 ) => {
   if (element) {
-    const currentInteractionInfo = interactionStateMachine.interactionEventState(
-      InteractionEvent.PointerUp,
-      {
-        id: element.id,
-        type: 'MarkupElement',
-        pointerDown,
-        pointerMove,
-        pointerUp,
-        interactionInfo,
-      },
-      element
-    );
+    const currentInteractionInfo =
+      interactionStateMachine.interactionEventState(
+        InteractionEvent.PointerUp,
+        {
+          id: element.id,
+          type: 'MarkupElement',
+          pointerDown,
+          pointerMove,
+          pointerUp,
+          interactionInfo,
+        },
+        element
+      );
 
     let handledAsClick = false;
     if (currentInteractionInfo) {
@@ -151,6 +162,14 @@ export const pointerUp = <T>(
 
       if (element && element.domElement) {
         if (element.update) {
+          console.log(
+            'update pointerUp',
+            element.id,
+            x,
+            y,
+            interactionInfo.xOffsetWithinElementOnFirstClick,
+            interactionInfo.yOffsetWithinElementOnFirstClick
+          );
           element.update(
             element,
             x - interactionInfo.xOffsetWithinElementOnFirstClick,
