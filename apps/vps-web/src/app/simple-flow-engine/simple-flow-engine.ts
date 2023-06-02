@@ -52,18 +52,19 @@ export const run = <T>(
         'run start',
         node.id,
         node,
-        formInfo.formValues['Expression']
+        formInfo?.formValues?.['Expression'] ?? ""
       );
       const runExpression = compileExpression(
-        formInfo?.formValues['Expression'] ?? ''
+        formInfo?.formValues?.['Expression'] ?? ''
       );
       let result: any = false;
       try {
         result = runExpression({ input: '' });
-      } catch {
+      } catch(error) {
         result = false;
+        console.log('expression error', error);
       }
-      if (result) {
+      if (result !== false) {
         animatePath(
           node.id,
           'red',
@@ -72,7 +73,7 @@ export const run = <T>(
             let result: any = false;
             const formInfo = node.nodeInfo as unknown as any;
             const runExpression = compileExpression(
-              formInfo?.formValues['Expression'] ?? ''
+              formInfo?.formValues?.['Expression'] ?? ''
             );
             try {
               result = runExpression({ input: input });
@@ -80,7 +81,7 @@ export const run = <T>(
               result = false;
             }
             console.log('expression result', result);
-            if (!result) {
+            if (result === false) {
               return {
                 result: false,
                 output: result,
@@ -94,6 +95,8 @@ export const run = <T>(
           },
           result
         );
+      } else {
+        console.log('expression result', result);
       }
     }
   });

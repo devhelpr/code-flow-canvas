@@ -828,6 +828,8 @@ export class AppElement extends HTMLElement {
       return false;
     };
 
+    const timers: Map<NodeJS.Timer, () => void> = new Map();
+
     const animatePath = (
       nodeId: string,
       color: string,
@@ -838,6 +840,8 @@ export class AppElement extends HTMLElement {
       ) => { result: boolean; output: string },
       input?: string
     ) => {
+      const maxSpeed = 50;
+      const currentSpeed = speedMeter;
       const nodeConnectionPairs = getNodeConnectionPairById(nodeId);
 
       if (nodeConnectionPairs && nodeConnectionPairs.length > 0) {
@@ -879,7 +883,7 @@ export class AppElement extends HTMLElement {
           domMessage.style.pointerEvents = 'none';
 
           let loop = 0;
-          const cancel = setInterval(() => {
+          const onInterval = () => {
             if (
               start &&
               end &&
@@ -937,17 +941,26 @@ export class AppElement extends HTMLElement {
 
                 canvasApp?.elements.delete(message.id);
                 message?.domElement?.remove();
+
                 clearInterval(cancel);
+                timers.delete(cancel);
 
                 if (!onNextNode || onNextNode) {
                   const result = onNextNode?.(end.id, end, input ?? '') ?? {
-                    result: false,
+                    result: true,
                     output: '',
                   };
                   console.log('animatePath onNextNode result', input, result);
                   if (result.result) {
                     animatePath(end.id, color, onNextNode, result.output);
                   }
+                }
+              } else {
+                if (speedMeter !== currentSpeed) {
+                  clearInterval(cancel);
+                  timers.delete(cancel);
+                  cancel = setInterval(onInterval, maxSpeed * (100-speedMeter)/100);
+                  setCanceler();
                 }
               }
             } else {
@@ -961,8 +974,21 @@ export class AppElement extends HTMLElement {
               message?.domElement?.remove();
 
               clearInterval(cancel);
+              timers.delete(cancel);
             }
-          }, 10);
+          };
+
+          let cancel = setInterval(onInterval, maxSpeed * (100-speedMeter)/100);
+
+          const setCanceler = () => {
+            timers.set(cancel, () => {
+              clearInterval(cancel);
+              timers.delete(cancel);
+              cancel = setInterval(onInterval, maxSpeed * (100-speedMeter)/100);
+              setCanceler();
+            });
+          };
+          setCanceler();
         });
       }
     };
@@ -1014,6 +1040,23 @@ export class AppElement extends HTMLElement {
       },
       menubarElement.domElement,
       'run'
+    );
+
+    let speedMeter = 1;
+    createElement(
+      'input',
+      {
+        type:"range",
+        class: "p-2 m-2",
+        name:"speed",
+        min:"1",
+        max:"100",
+        change: (event) => {
+          speedMeter = parseInt((event.target as HTMLInputElement).value);
+        }
+      },
+      menubarElement.domElement,
+      ''
     );
 
     const selectedNode = createElement(
