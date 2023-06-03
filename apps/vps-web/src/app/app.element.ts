@@ -796,9 +796,10 @@ export class AppElement extends HTMLElement {
           });
 
           let connection: INodeComponent<NodeInfo> | undefined = undefined;
-          let end: INodeComponent<NodeInfo> | undefined = undefined;
+
           if (connectionsFromStartNode && connectionsFromStartNode.length > 0) {
             connectionsFromStartNode.forEach((connectionNode) => {
+              let end: INodeComponent<NodeInfo> | undefined = undefined;
               connection =
                 connectionNode[1] as unknown as INodeComponent<NodeInfo>;
 
