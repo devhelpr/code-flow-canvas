@@ -65,14 +65,16 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   };
 
   rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
-
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
-      ) >= 0 ||      
+      ) >= 0 ||
       (event.target !== rootElement && event.target !== canvas.domElement)
     ) {
-      if (!(event.target as unknown as any).closest || (!(event.target as unknown as any).closest("#canvas"))) {
+      if (
+        !(event.target as unknown as any).closest ||
+        !(event.target as unknown as any).closest('#canvas')
+      ) {
         isClicking = false;
         isMoving = false;
         wasMoved = false;
@@ -86,16 +88,20 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
   });
 
   rootElement.addEventListener('pointermove', (event: PointerEvent) => {
-    //const canvasRect = canvas.domElement.getBoundingClientRect();    
+    //const canvasRect = canvas.domElement.getBoundingClientRect();
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0 ||
-      (event.target !== rootElement && event.target !== canvas.domElement)) {
-        if (!(event.target as unknown as any).closest || (!(event.target as unknown as any).closest("#canvas"))) {
-          return;
-        }
+      (event.target !== rootElement && event.target !== canvas.domElement)
+    ) {
+      if (
+        !(event.target as unknown as any).closest ||
+        !(event.target as unknown as any).closest('#canvas')
+      ) {
+        return;
       }
+    }
 
     if (isClicking) {
       isMoving = true;
@@ -350,7 +356,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
 
   rootElement.addEventListener('click', (event: MouseEvent) => {
     const tagName = (event.target as HTMLElement)?.tagName;
-    
+
     if (
       !wasMoved &&
       onClickCanvas &&
@@ -364,7 +370,7 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
           y: event.clientY / scaleCamera - yCamera / scaleCamera,
         };
         onClickCanvas(mousePointTo.x, mousePointTo.y);
-        
+
         return false;
       }
     }
@@ -548,13 +554,16 @@ export const createCanvasApp = <T>(rootElement: HTMLElement) => {
         controlPointY2,
         isControlled
       ),
-      deleteElementFromNode: (element: INodeComponent<T>, child: INodeComponent<T>) => {
-        if (element && child) {
-          element.elements.delete(child.id);
-          element.domElement.removeChild(child.domElement);
-        }
+    deleteElementFromNode: (
+      element: INodeComponent<T>,
+      child: INodeComponent<T>
+    ) => {
+      if (element && child) {
+        element.elements.delete(child.id);
+        element.domElement.removeChild(child.domElement);
       }
-  }
+    },
+  };
 };
 
 export type CanvasAppInstance = ReturnType<typeof createCanvasApp>;

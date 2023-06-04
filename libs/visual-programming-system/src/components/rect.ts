@@ -313,7 +313,7 @@ export const createRect = <T>(
   let widthHelper = width;
   let heightHelper = height;
 
-  const rectNode: INodeComponent<T> = createRectPathSVGElement<T>(
+  const rectPathInstance = createRectPathSVGElement<T>(
     canvas.domElement,
     interactionStateMachine,
     elements,
@@ -332,6 +332,8 @@ export const createRect = <T>(
     markup,
     layoutProperties
   );
+  const rectNode: INodeComponent<T> = rectPathInstance.nodeComponent;
+
   // rectNode.nodeType is "shape" .. if thats changed then the dragging of nodes doesnt work anymore
   rectNode.shapeType = 'rect';
 
@@ -945,6 +947,9 @@ export const createRect = <T>(
       if (rightBottomElement.update) {
         rightBottomElement.update(rightBottomElement, x, y, rightBottomElement);
       }
+    },
+    resize: (width?: number) => {
+      rectPathInstance.resize(width);
     },
   };
 };

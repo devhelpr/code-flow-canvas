@@ -2,10 +2,7 @@ import {
   ElementNodeMap,
   INodeComponent,
 } from '@devhelpr/visual-programming-system';
-import {
-  compileExpression,
-  registerCustomFunction,
-} from '@devhelpr/expression-compiler';
+import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
 export const run = <T>(
   nodes: ElementNodeMap<T>,
@@ -55,15 +52,15 @@ export const run = <T>(
         node,
         formInfo?.formValues?.['Expression'] ?? ''
       );
-      const runExpression = compileExpression(
-        formInfo?.formValues?.['Expression'] ?? ''
-      );
       let result: any = false;
-      try {
-        result = runExpression({ input: '' });
-      } catch (error) {
+      let followPath: string | undefined = undefined;
+      if (formInfo?.compute) {
+        const computeResult = formInfo.compute('');
+        result = computeResult.result;
+        followPath = computeResult.followPath;
+      } else {
         result = false;
-        console.log('expression error', error);
+        followPath = undefined;
       }
       if (result !== false) {
         animatePath(
@@ -73,13 +70,13 @@ export const run = <T>(
             console.log('Next nodeId', nodeId, node, input);
             let result: any = false;
             const formInfo = node.nodeInfo as unknown as any;
-            const runExpression = compileExpression(
-              formInfo?.formValues?.['Expression'] ?? ''
-            );
-            try {
-              result = runExpression({ input: input });
-            } catch {
+            if (formInfo.compute) {
+              const computeResult = formInfo.compute(input);
+              result = computeResult.result;
+              followPath = computeResult.followPath;
+            } else {
               result = false;
+              followPath = undefined;
             }
             console.log('expression result', result);
             if (result === false) {
@@ -92,20 +89,11 @@ export const run = <T>(
             return {
               result: true,
               output: result,
-              followPathByName:
-                (formInfo?.taskType ?? '') === 'if'
-                  ? Math.random() < 0.5
-                    ? 'success'
-                    : 'failure'
-                  : undefined,
+              followPathByName: followPath,
             };
           },
           result,
-          (formInfo?.taskType ?? '') === 'if'
-            ? Math.random() < 0.5
-              ? 'success'
-              : 'failure'
-            : undefined
+          followPath
         );
       } else {
         console.log('expression result', result);

@@ -4,12 +4,10 @@ import './app.element.css';
 import styles from '../styles.css?inline';
 import {
   createElement,
-  createNodeElement,
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
   NodeComponentRelationType,
-  createMarkupElement,
   createEffect,
   getSelectedNode,
   setSelectNode,
@@ -21,38 +19,33 @@ import {
   CanvasAppInstance,
   ThumbType,
   ThumbConnectionType,
-  setCount,
-  getCount,
   getPointOnCubicBezierCurve,
   ControlAndEndPointNodeType,
   CurveType,
   createNamedSignal,
 } from '@devhelpr/visual-programming-system';
 
-import {
-  compileExpressionAsInfo,
-  registerCustomBlock,
-  registerCustomFunction,
-} from '@devhelpr/expression-compiler';
+import { registerCustomFunction } from '@devhelpr/expression-compiler';
 import flowData from '../example-data/tiltest.json';
 
-import { TestApp } from './test-app';
-import { FormComponent, FormFieldType } from './components/form-component';
+import { FormComponent } from './components/form-component';
 
 import { run } from './simple-flow-engine/simple-flow-engine';
+import { NodeInfo } from './types/node-info';
+import { getExpression } from './nodes/expression';
+import { getIfCondition } from './nodes/if-condition';
+import { getShowInput } from './nodes/show-input';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
   <div class="h-screen w-full bg-slate-800 overflow-hidden" id="root" >
   </div>
-`; // flex flex-col
+`;
 
 const button =
   'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap';
 const menubar = 'fixed top-0 z-20 flex flex-row items-center justify-start';
-
-type NodeInfo = any;
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -109,7 +102,7 @@ export class AppElement extends HTMLElement {
     if (!rootElement) {
       return;
     }
-    let bezierCurve: any = undefined;
+    const bezierCurve: any = undefined;
 
     const canvasApp = createCanvasApp<NodeInfo>(rootElement);
     this.canvas = canvasApp.canvas;
@@ -191,115 +184,281 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
-          this.clearCanvas();
-          flowData.forEach((flowNode) => {
-            if (flowNode.shapeType !== 'Line') {
-              const rect = canvasApp?.createRect(
-                flowNode.x ?? 0,
-                flowNode.y ?? 0,
-                200,
-                300,
-                flowNode.taskType,
-                undefined,
-                [
-                  {
-                    thumbType: ThumbType.StartConnectorCenter,
-                    thumbIndex: 0,
-                    connectionType: ThumbConnectionType.start,
-                  },
-                  {
-                    thumbType: ThumbType.EndConnectorCenter,
-                    thumbIndex: 0,
-                    connectionType: ThumbConnectionType.end,
-                  },
-                ],
-                `<p>${flowNode.taskType}</p>`,
-                {
-                  classNames: `bg-slate-500 p-4 rounded`,
-                }
-              );
-              rect.nodeComponent.nodeInfo = flowNode;
-            }
-          });
-
-          const elementList = Array.from(canvasApp?.elements ?? []);
-          console.log('elementList', elementList);
-
-          flowData.forEach((flowNode) => {
-            if (flowNode.shapeType === 'Line') {
-              let start: INodeComponent<NodeInfo> | undefined = undefined;
-              let end: INodeComponent<NodeInfo> | undefined = undefined;
-              if (flowNode.startshapeid) {
-                const startElement = elementList.find((e) => {
-                  const element = e[1] as IElementNode<NodeInfo>;
-                  return element.nodeInfo?.id === flowNode.startshapeid;
-                });
-                if (startElement) {
-                  start =
-                    startElement[1] as unknown as INodeComponent<NodeInfo>;
-                }
-              }
-              if (flowNode.endshapeid) {
-                const endElement = elementList.find((e) => {
-                  const element = e[1] as IElementNode<NodeInfo>;
-                  return element.nodeInfo?.id === flowNode.endshapeid;
-                });
-                if (endElement) {
-                  end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-                }
-              }
-
-              const curve = canvasApp.createCubicBezier(
-                start?.x ?? 0,
-                start?.y ?? 0,
-                end?.x ?? 0,
-                end?.y ?? 0,
-                (start?.x ?? 0) + 100,
-                (start?.y ?? 0) + 150,
-                (end?.x ?? 0) + 100,
-                (end?.y ?? 0) + 150,
-                false
-              );
-
-              curve.nodeComponent.isControlled = true;
-              curve.nodeComponent.nodeInfo = flowNode;
-
-              if (start && curve.nodeComponent) {
-                curve.nodeComponent.components.push({
-                  type: NodeComponentRelationType.start,
-                  component: start,
-                } as unknown as INodeComponentRelation<NodeInfo>);
-
-                curve.nodeComponent.startNode = start;
-                curve.nodeComponent.startNodeThumb = this.getThumbNode(
-                  ThumbType.StartConnectorCenter,
-                  start
-                );
-              }
-
-              if (end && curve.nodeComponent) {
-                curve.nodeComponent.components.push({
-                  type: NodeComponentRelationType.end,
-                  component: end,
-                } as unknown as INodeComponentRelation<NodeInfo>);
-
-                curve.nodeComponent.endNode = end;
-                curve.nodeComponent.endNodeThumb = this.getThumbNode(
-                  ThumbType.EndConnectorCenter,
-                  end
-                );
-              }
-              if (curve.nodeComponent.update) {
-                curve.nodeComponent.update();
+          event.stopPropagation();
+          this.canvasApp?.elements.forEach((node) => {
+            const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
+            if (nodeComponent.nodeType !== 'connection') {
+              if (nodeComponent.nodeInfo.initializeCompute) {
+                nodeComponent.nodeInfo.initializeCompute();
               }
             }
           });
-          this.canvasApp?.centerCamera();
           return false;
         },
       },
       menubarElement.domElement,
-      'import flow'
+      'Reinitialze nodes'
+    );
+
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       this.clearCanvas();
+    //       flowData.forEach((flowNode) => {
+    //         if (flowNode.shapeType !== 'Line') {
+    //           const rect = canvasApp?.createRect(
+    //             flowNode.x ?? 0,
+    //             flowNode.y ?? 0,
+    //             200,
+    //             300,
+    //             flowNode.taskType,
+    //             undefined,
+    //             [
+    //               {
+    //                 thumbType: ThumbType.StartConnectorCenter,
+    //                 thumbIndex: 0,
+    //                 connectionType: ThumbConnectionType.start,
+    //               },
+    //               {
+    //                 thumbType: ThumbType.EndConnectorCenter,
+    //                 thumbIndex: 0,
+    //                 connectionType: ThumbConnectionType.end,
+    //               },
+    //             ],
+    //             `<p>${flowNode.taskType}</p>`,
+    //             {
+    //               classNames: `bg-slate-500 p-4 rounded`,
+    //             }
+    //           );
+    //           rect.nodeComponent.nodeInfo = flowNode;
+    //         }
+    //       });
+
+    //       const elementList = Array.from(canvasApp?.elements ?? []);
+    //       console.log('elementList', elementList);
+
+    //       flowData.forEach((flowNode) => {
+    //         if (flowNode.shapeType === 'Line') {
+    //           let start: INodeComponent<NodeInfo> | undefined = undefined;
+    //           let end: INodeComponent<NodeInfo> | undefined = undefined;
+    //           if (flowNode.startshapeid) {
+    //             const startElement = elementList.find((e) => {
+    //               const element = e[1] as IElementNode<NodeInfo>;
+    //               return element.nodeInfo?.id === flowNode.startshapeid;
+    //             });
+    //             if (startElement) {
+    //               start =
+    //                 startElement[1] as unknown as INodeComponent<NodeInfo>;
+    //             }
+    //           }
+    //           if (flowNode.endshapeid) {
+    //             const endElement = elementList.find((e) => {
+    //               const element = e[1] as IElementNode<NodeInfo>;
+    //               return element.nodeInfo?.id === flowNode.endshapeid;
+    //             });
+    //             if (endElement) {
+    //               end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+    //             }
+    //           }
+
+    //           const curve = canvasApp.createCubicBezier(
+    //             start?.x ?? 0,
+    //             start?.y ?? 0,
+    //             end?.x ?? 0,
+    //             end?.y ?? 0,
+    //             (start?.x ?? 0) + 100,
+    //             (start?.y ?? 0) + 150,
+    //             (end?.x ?? 0) + 100,
+    //             (end?.y ?? 0) + 150,
+    //             false
+    //           );
+
+    //           curve.nodeComponent.isControlled = true;
+    //           curve.nodeComponent.nodeInfo = flowNode;
+
+    //           if (start && curve.nodeComponent) {
+    //             curve.nodeComponent.components.push({
+    //               type: NodeComponentRelationType.start,
+    //               component: start,
+    //             } as unknown as INodeComponentRelation<NodeInfo>);
+
+    //             curve.nodeComponent.startNode = start;
+    //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
+    //               ThumbType.StartConnectorCenter,
+    //               start
+    //             );
+    //           }
+
+    //           if (end && curve.nodeComponent) {
+    //             curve.nodeComponent.components.push({
+    //               type: NodeComponentRelationType.end,
+    //               component: end,
+    //             } as unknown as INodeComponentRelation<NodeInfo>);
+
+    //             curve.nodeComponent.endNode = end;
+    //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
+    //               ThumbType.EndConnectorCenter,
+    //               end
+    //             );
+    //           }
+    //           if (curve.nodeComponent.update) {
+    //             curve.nodeComponent.update();
+    //           }
+    //         }
+    //       });
+    //       this.canvasApp?.centerCamera();
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'import flow'
+    // );
+
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       console.log('click RECT', (event.target as HTMLElement)?.tagName);
+    //       const startX = Math.floor(Math.random() * 250);
+    //       const startY = Math.floor(Math.random() * 500);
+
+    //       const testButton = createElement(
+    //         'button',
+    //         {
+    //           class: `${button} w-[300px] h-[300px] overflow-hidden m-0`,
+    //           click: (event) => {
+    //             event.preventDefault();
+    //             event.stopPropagation();
+    //             alert('test');
+    //             return false;
+    //           },
+    //         },
+    //         undefined,
+    //         'Click here'
+    //       );
+
+    //       const testIfCondition = createElement(
+    //         'div',
+    //         {
+    //           class:
+    //             'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded cursor-pointer',
+    //           style: {
+    //             'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+    //           },
+    //         },
+    //         undefined,
+    //         'If condition'
+    //       );
+
+    //       const formElements = [
+    //         {
+    //           fieldType: FormFieldType.Text,
+    //           fieldName: 'Expression',
+    //           value: '',
+    //           onChange: (value: string) => {
+    //             node.nodeComponent.nodeInfo.formValues = {
+    //               ...node.nodeComponent.nodeInfo.formValues,
+    //               Expression: value,
+    //             };
+    //             console.log('onChange', node.nodeComponent.nodeInfo);
+    //           },
+    //         },
+    //       ];
+
+    //       const jsxComponentWrapper = createElement(
+    //         'div',
+    //         {
+    //           class: `bg-slate-500 p-4 rounded cursor-pointer`,
+    //         },
+    //         undefined,
+    //         FormComponent({
+    //           id: 'test',
+    //           formElements,
+    //           hasSubmitButton: false,
+    //           onSave: (formValues) => {
+    //             //
+    //           },
+    //         }) as unknown as HTMLElement
+    //       ) as unknown as INodeComponent<NodeInfo>;
+
+    //       const node = canvasApp.createRect(
+    //         startX,
+    //         startY,
+    //         200,
+    //         100,
+    //         undefined,
+    //         undefined,
+    //         [
+    //           {
+    //             thumbType: ThumbType.StartConnectorCenter,
+    //             thumbIndex: 0,
+    //             connectionType: ThumbConnectionType.start,
+    //           },
+    //           {
+    //             thumbType: ThumbType.EndConnectorCenter,
+    //             thumbIndex: 0,
+    //             connectionType: ThumbConnectionType.end,
+    //           },
+    //           // {
+    //           //   thumbType: ThumbType.StartConnectorRight,
+    //           //   thumbIndex: 0,
+    //           //   connectionType: ThumbConnectionType.start,
+    //           // },
+    //           // {
+    //           //   thumbType: ThumbType.StartConnectorRight,
+    //           //   thumbIndex: 1,
+    //           //   connectionType: ThumbConnectionType.start,
+    //           // },
+    //           // {
+    //           //   thumbType: ThumbType.StartConnectorTop,
+    //           //   thumbIndex: 0,
+    //           //   connectionType: ThumbConnectionType.start,
+    //           // },
+    //           // {
+    //           //   thumbType: ThumbType.EndConnectorTop,
+    //           //   thumbIndex: 0,
+    //           //   connectionType: ThumbConnectionType.end,
+    //           // },
+    //         ],
+    //         //testIfCondition as unknown as INodeComponent<NodeInfo>,
+    //         jsxComponentWrapper,
+    //         //testButton as unknown as INodeComponent<NodeInfo>,
+    //         //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
+    //         {
+    //           classNames: `bg-slate-500 p-4 rounded`,
+    //         }
+    //       );
+    //       node.nodeComponent.nodeInfo = {};
+    //       node.nodeComponent.nodeInfo.formElements = formElements;
+
+    //       createNamedSignal('test', '');
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add rect'
+    // );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          const startX = Math.floor(Math.random() * 250);
+          const startY = Math.floor(Math.random() * 500);
+          const expression = getExpression();
+          expression.createVisualNode(canvasApp, startX, startY);
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add expression'
     );
 
     createElement(
@@ -308,199 +467,11 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
-          console.log('click RECT', (event.target as HTMLElement)?.tagName);
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
+          const ifCondition = getIfCondition();
+          ifCondition.createVisualNode(canvasApp, startX, startY);
 
-          const testButton = createElement(
-            'button',
-            {
-              class: `${button} w-[300px] h-[300px] overflow-hidden m-0`,
-              click: (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                alert('test');
-                return false;
-              },
-            },
-            undefined,
-            'Click here'
-          );
-
-          const testIfCondition = createElement(
-            'div',
-            {
-              class:
-                'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded cursor-pointer',
-              style: {
-                'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
-              },
-            },
-            undefined,
-            'If condition'
-          );
-
-          const formElements = [
-            {
-              fieldType: FormFieldType.Text,
-              fieldName: 'Expression',
-              value: '',
-              onChange: (value: string) => {
-                node.nodeComponent.nodeInfo.formValues = {
-                  ...node.nodeComponent.nodeInfo.formValues,
-                  Expression: value,
-                };
-                console.log('onChange', node.nodeComponent.nodeInfo);
-              },
-            },
-          ];
-
-          const jsxComponentWrapper = createElement(
-            'div',
-            {
-              class: `bg-slate-500 p-4 rounded cursor-pointer`,
-            },
-            undefined,
-            FormComponent({
-              id: 'test',
-              formElements,
-              hasSubmitButton: false,
-              onSave: (formValues) => {
-                //
-              },
-            }) as unknown as HTMLElement
-          ) as unknown as INodeComponent<NodeInfo>;
-
-          const node = canvasApp.createRect(
-            startX,
-            startY,
-            200,
-            100,
-            undefined,
-            undefined,
-            [
-              {
-                thumbType: ThumbType.StartConnectorCenter,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.start,
-              },
-              {
-                thumbType: ThumbType.EndConnectorCenter,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.end,
-              },
-              // {
-              //   thumbType: ThumbType.StartConnectorRight,
-              //   thumbIndex: 0,
-              //   connectionType: ThumbConnectionType.start,
-              // },
-              // {
-              //   thumbType: ThumbType.StartConnectorRight,
-              //   thumbIndex: 1,
-              //   connectionType: ThumbConnectionType.start,
-              // },
-              // {
-              //   thumbType: ThumbType.StartConnectorTop,
-              //   thumbIndex: 0,
-              //   connectionType: ThumbConnectionType.start,
-              // },
-              // {
-              //   thumbType: ThumbType.EndConnectorTop,
-              //   thumbIndex: 0,
-              //   connectionType: ThumbConnectionType.end,
-              // },
-            ],
-            //testIfCondition as unknown as INodeComponent<NodeInfo>,
-            jsxComponentWrapper,
-            //testButton as unknown as INodeComponent<NodeInfo>,
-            //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
-            {
-              classNames: `bg-slate-500 p-4 rounded`,
-            }
-          );
-          node.nodeComponent.nodeInfo = {};
-          node.nodeComponent.nodeInfo.formElements = formElements;
-
-          createNamedSignal('test', '');
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add rect'
-    );
-
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          console.log('click RECT', (event.target as HTMLElement)?.tagName);
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-
-          const jsxComponentWrapper = createElement(
-            'div',
-            {
-              //class: `bg-slate-500 p-4 rounded cursor-pointer`,
-              class:
-                'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded cursor-pointer',
-              style: {
-                'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
-              },
-            },
-            undefined,
-            FormComponent({
-              id: 'test',
-              formElements: [],
-              hasSubmitButton: false,
-              onSave: (formValues) => {
-                //
-              },
-            }) as unknown as HTMLElement
-          ) as unknown as INodeComponent<NodeInfo>;
-
-          const node = canvasApp.createRect(
-            startX,
-            startY,
-            200,
-            100,
-            undefined,
-            undefined,
-            [
-              {
-                thumbType: ThumbType.StartConnectorTop,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.start,
-                pathName: 'success',
-                color: 'rgba(95,204,37,1)',
-              },
-              {
-                thumbType: ThumbType.StartConnectorBottom,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.start,
-                pathName: 'failure',
-                color: 'rgba(204,37,37,1)',
-              },
-              {
-                thumbType: ThumbType.EndConnectorCenter,
-                thumbIndex: 0,
-                connectionType: ThumbConnectionType.end,
-              },
-            ],
-            //testIfCondition as unknown as INodeComponent<NodeInfo>,
-            jsxComponentWrapper,
-            //testButton as unknown as INodeComponent<NodeInfo>,
-            //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
-            {
-              classNames: `bg-slate-500 p-4 rounded`,
-            }
-          );
-          node.nodeComponent.nodeInfo = {};
-          node.nodeComponent.nodeInfo.formElements = [];
-          node.nodeComponent.nodeInfo.taskType = 'if';
-
-          createNamedSignal('if', '');
           return false;
         },
       },
@@ -514,40 +485,58 @@ export class AppElement extends HTMLElement {
         class: button,
         click: (event) => {
           event.preventDefault();
+          const startX = Math.floor(Math.random() * 250);
+          const startY = Math.floor(Math.random() * 500);
+          const showInput = getShowInput();
+          showInput.createVisualNode(canvasApp, startX, startY);
 
-          const x = Math.floor(Math.random() * 250);
-          const y = Math.floor(Math.random() * 500);
-
-          // if (Math.random() >= 0.5) {
-          bezierCurve = canvasApp.createCubicBezier(
-            x,
-            y,
-            x + 150,
-            y + 150,
-            x + 50,
-            y + 50,
-            x + 75,
-            y + 75
-          );
-          // } else {
-          // bezierCurve = createQuadraticBezier(
-          //   canvas as unknown as INodeComponent<NodeInfo>,
-          //   pathHiddenElement,
-          //   this.elements,
-          //   x,
-          //   y,
-          //   x + 150,
-          //   y + 150,
-          //   x + 50,
-          //   y + 50
-          // );
-          // }
           return false;
         },
       },
       menubarElement.domElement,
-      'Add bezier curve'
+      'Add input'
     );
+
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
+
+    //       const x = Math.floor(Math.random() * 250);
+    //       const y = Math.floor(Math.random() * 500);
+
+    //       // if (Math.random() >= 0.5) {
+    //       bezierCurve = canvasApp.createCubicBezier(
+    //         x,
+    //         y,
+    //         x + 150,
+    //         y + 150,
+    //         x + 50,
+    //         y + 50,
+    //         x + 75,
+    //         y + 75
+    //       );
+    //       // } else {
+    //       // bezierCurve = createQuadraticBezier(
+    //       //   canvas as unknown as INodeComponent<NodeInfo>,
+    //       //   pathHiddenElement,
+    //       //   this.elements,
+    //       //   x,
+    //       //   y,
+    //       //   x + 150,
+    //       //   y + 150,
+    //       //   x + 50,
+    //       //   y + 50
+    //       // );
+    //       // }
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add bezier curve'
+    // );
 
     // createElement(
     //   'button',
@@ -581,197 +570,198 @@ export class AppElement extends HTMLElement {
       menubarElement.domElement,
       'center'
     );
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          setVisibility(!getVisbility());
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'switch visibility'
-    );
 
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          this.clearCanvas();
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       setVisibility(!getVisbility());
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'switch visibility'
+    // );
 
-          const maxRows = 20;
-          const maxColumns = 20;
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       this.clearCanvas();
 
-          const dateTimestampAll = performance.now();
+    //       const maxRows = 20;
+    //       const maxColumns = 20;
 
-          const spacing = 500;
-          let loopRows = 0;
-          while (loopRows < maxRows) {
-            let loopColumns = 0;
-            while (loopColumns < maxColumns) {
-              const dateTimestamp = performance.now();
+    //       const dateTimestampAll = performance.now();
 
-              const clipPaths = [
-                'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
-                'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
-                'circle(50%)',
-                'polygon(50% 0, 100% 100%, 0 100%)',
-                'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-                'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
-                'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
-              ];
-              const color = `rgb(${
-                128 + Math.floor(Math.random() * 128)
-              },${Math.floor(Math.random() * 16)},${Math.floor(
-                Math.random() * 16
-              )})`;
+    //       const spacing = 500;
+    //       let loopRows = 0;
+    //       while (loopRows < maxRows) {
+    //         let loopColumns = 0;
+    //         while (loopColumns < maxColumns) {
+    //           const dateTimestamp = performance.now();
 
-              const testNode = createElement(
-                'button',
-                {
-                  class:
-                    'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
-                  style: {
-                    'background-color': color,
-                    'clip-path':
-                      clipPaths[
-                        Math.round(Math.random() * (clipPaths.length - 1))
-                      ],
-                  },
-                  click: (event) => {
-                    event.preventDefault();
-                    //alert(`click ${testNode.id}`);
-                    animatePath(rect.nodeComponent.id, color);
-                    return false;
-                  },
-                },
-                undefined,
-                `${loopRows * maxColumns + loopColumns}`
-              );
+    //           const clipPaths = [
+    //             'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
+    //             'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+    //             'circle(50%)',
+    //             'polygon(50% 0, 100% 100%, 0 100%)',
+    //             'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+    //             'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+    //             'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+    //           ];
+    //           const color = `rgb(${
+    //             128 + Math.floor(Math.random() * 128)
+    //           },${Math.floor(Math.random() * 16)},${Math.floor(
+    //             Math.random() * 16
+    //           )})`;
 
-              const rect = canvasApp?.createRect(
-                loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
-                loopRows * spacing + Math.floor(-75 + Math.random() * 150),
-                100,
-                100,
-                'node',
-                undefined,
-                [
-                  {
-                    thumbType: ThumbType.StartConnectorCenter,
-                    thumbIndex: 0,
-                    connectionType: ThumbConnectionType.start,
-                  },
-                  {
-                    thumbType: ThumbType.EndConnectorCenter,
-                    thumbIndex: 0,
-                    connectionType: ThumbConnectionType.end,
-                  },
-                ],
-                testNode as unknown as INodeComponent<NodeInfo>,
-                // `<div class="text-center">${
-                //   loopRows * maxColumns + loopColumns
-                // }</div>`
-                {
-                  classNames: `bg-slate-500 p-4 rounded`,
-                  //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
-                }
-              );
-              rect.nodeComponent.nodeInfo = {
-                column: loopColumns,
-                row: loopRows,
-              };
+    //           const testNode = createElement(
+    //             'button',
+    //             {
+    //               class:
+    //                 'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
+    //               style: {
+    //                 'background-color': color,
+    //                 'clip-path':
+    //                   clipPaths[
+    //                     Math.round(Math.random() * (clipPaths.length - 1))
+    //                   ],
+    //               },
+    //               click: (event) => {
+    //                 event.preventDefault();
+    //                 //alert(`click ${testNode.id}`);
+    //                 animatePath(rect.nodeComponent.id, color);
+    //                 return false;
+    //               },
+    //             },
+    //             undefined,
+    //             `${loopRows * maxColumns + loopColumns}`
+    //           );
 
-              //console.log('createRect', performance.now() - dateTimestamp);
-              loopColumns++;
-            }
-            loopRows++;
-          }
+    //           const rect = canvasApp?.createRect(
+    //             loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
+    //             loopRows * spacing + Math.floor(-75 + Math.random() * 150),
+    //             100,
+    //             100,
+    //             'node',
+    //             undefined,
+    //             [
+    //               {
+    //                 thumbType: ThumbType.StartConnectorCenter,
+    //                 thumbIndex: 0,
+    //                 connectionType: ThumbConnectionType.start,
+    //               },
+    //               {
+    //                 thumbType: ThumbType.EndConnectorCenter,
+    //                 thumbIndex: 0,
+    //                 connectionType: ThumbConnectionType.end,
+    //               },
+    //             ],
+    //             testNode as unknown as INodeComponent<NodeInfo>,
+    //             // `<div class="text-center">${
+    //             //   loopRows * maxColumns + loopColumns
+    //             // }</div>`
+    //             {
+    //               classNames: `bg-slate-500 p-4 rounded`,
+    //               //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
+    //             }
+    //           );
+    //           rect.nodeComponent.nodeInfo = {
+    //             column: loopColumns,
+    //             row: loopRows,
+    //           };
 
-          const elementList = Array.from(canvasApp?.elements ?? []);
-          loopRows = 0;
-          while (loopRows < maxRows - 1) {
-            let loopColumns = 0;
-            while (loopColumns < maxColumns - 1) {
-              const start = elementList[
-                loopRows * maxColumns + loopColumns
-              ][1] as unknown as INodeComponent<NodeInfo>;
-              const end = elementList[
-                (loopRows + 1) * maxColumns + loopColumns + 1
-              ][1] as unknown as INodeComponent<NodeInfo>;
-              console.log(loopRows, loopColumns, 'start', start, 'end', end);
+    //           //console.log('createRect', performance.now() - dateTimestamp);
+    //           loopColumns++;
+    //         }
+    //         loopRows++;
+    //       }
 
-              const curve = canvasApp.createCubicBezier(
-                loopColumns * spacing,
-                loopRows * spacing,
-                (loopColumns + 1) * spacing,
-                loopRows * spacing,
-                loopColumns * spacing + 100,
-                loopRows * spacing + spacing / 2,
-                (loopColumns + 1) * spacing + 100,
-                loopRows * spacing + spacing / 2,
-                false
-              );
+    //       const elementList = Array.from(canvasApp?.elements ?? []);
+    //       loopRows = 0;
+    //       while (loopRows < maxRows - 1) {
+    //         let loopColumns = 0;
+    //         while (loopColumns < maxColumns - 1) {
+    //           const start = elementList[
+    //             loopRows * maxColumns + loopColumns
+    //           ][1] as unknown as INodeComponent<NodeInfo>;
+    //           const end = elementList[
+    //             (loopRows + 1) * maxColumns + loopColumns + 1
+    //           ][1] as unknown as INodeComponent<NodeInfo>;
+    //           console.log(loopRows, loopColumns, 'start', start, 'end', end);
 
-              curve.nodeComponent.isControlled = true;
-              curve.nodeComponent.nodeInfo = {
-                column: loopColumns,
-                row: loopRows,
-              };
+    //           const curve = canvasApp.createCubicBezier(
+    //             loopColumns * spacing,
+    //             loopRows * spacing,
+    //             (loopColumns + 1) * spacing,
+    //             loopRows * spacing,
+    //             loopColumns * spacing + 100,
+    //             loopRows * spacing + spacing / 2,
+    //             (loopColumns + 1) * spacing + 100,
+    //             loopRows * spacing + spacing / 2,
+    //             false
+    //           );
 
-              if (start && curve.nodeComponent) {
-                curve.nodeComponent.components.push({
-                  type: NodeComponentRelationType.start,
-                  component: start,
-                } as unknown as INodeComponentRelation<NodeInfo>);
+    //           curve.nodeComponent.isControlled = true;
+    //           curve.nodeComponent.nodeInfo = {
+    //             column: loopColumns,
+    //             row: loopRows,
+    //           };
 
-                curve.nodeComponent.startNode = start;
-                curve.nodeComponent.startNodeThumb = this.getThumbNode(
-                  ThumbType.StartConnectorCenter,
-                  start
-                );
-              }
+    //           if (start && curve.nodeComponent) {
+    //             curve.nodeComponent.components.push({
+    //               type: NodeComponentRelationType.start,
+    //               component: start,
+    //             } as unknown as INodeComponentRelation<NodeInfo>);
 
-              if (end && curve.nodeComponent) {
-                curve.nodeComponent.components.push({
-                  type: NodeComponentRelationType.end,
-                  component: end,
-                } as unknown as INodeComponentRelation<NodeInfo>);
+    //             curve.nodeComponent.startNode = start;
+    //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
+    //               ThumbType.StartConnectorCenter,
+    //               start
+    //             );
+    //           }
 
-                curve.nodeComponent.endNode = end;
-                curve.nodeComponent.endNodeThumb = this.getThumbNode(
-                  ThumbType.EndConnectorCenter,
-                  end
-                );
-              }
-              if (curve.nodeComponent.update) {
-                curve.nodeComponent.update();
-              }
-              console.log('createCubicBezier', curve);
+    //           if (end && curve.nodeComponent) {
+    //             curve.nodeComponent.components.push({
+    //               type: NodeComponentRelationType.end,
+    //               component: end,
+    //             } as unknown as INodeComponentRelation<NodeInfo>);
 
-              loopColumns++;
-            }
-            loopRows++;
-          }
+    //             curve.nodeComponent.endNode = end;
+    //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
+    //               ThumbType.EndConnectorCenter,
+    //               end
+    //             );
+    //           }
+    //           if (curve.nodeComponent.update) {
+    //             curve.nodeComponent.update();
+    //           }
+    //           console.log('createCubicBezier', curve);
 
-          console.log('createRect All', performance.now() - dateTimestampAll);
+    //           loopColumns++;
+    //         }
+    //         loopRows++;
+    //       }
 
-          const dateTimestamp = performance.now();
+    //       console.log('createRect All', performance.now() - dateTimestampAll);
 
-          this.canvasApp?.centerCamera();
+    //       const dateTimestamp = performance.now();
 
-          console.log('centerCamera', performance.now() - dateTimestamp);
+    //       this.canvasApp?.centerCamera();
 
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'stress test'
-    );
+    //       console.log('centerCamera', performance.now() - dateTimestamp);
+
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'stress test'
+    // );
 
     const getNodeConnectionPairById = (
       nodeId: string,
@@ -1034,38 +1024,25 @@ export class AppElement extends HTMLElement {
       }
     };
 
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
 
-          // manually:
-          // - create 2 nodes and connection
-          // - select node
-
-          // if node has connection with other node:
-          // - determine start, connection and end node
-          // - create svg point/circle element
-          // - move point over curve using P = (1−t)3P1 + 3(1−t)2tP2 +3(1−t)t2P3 + t3P4
-          //    (curve has controlpoints and start and end node)
-
-          // next:
-          // - use range/meter control to determine speed
-          // - follow a complete path of nodes and start over at the beginning after reaching the end
-          const nodeId = getSelectedNode();
-          if (nodeId) {
-            const color =
-              '#' + Math.floor(Math.random() * 16777215).toString(16);
-            animatePath(nodeId, color);
-          }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'move point over lines'
-    );
+    //       const nodeId = getSelectedNode();
+    //       if (nodeId) {
+    //         const color =
+    //           '#' + Math.floor(Math.random() * 16777215).toString(16);
+    //         animatePath(nodeId, color);
+    //       }
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'move point over lines'
+    // );
 
     createElement(
       'button',
@@ -1088,7 +1065,7 @@ export class AppElement extends HTMLElement {
       'input',
       {
         type: 'range',
-        class: 'p-2 m-2',
+        class: 'p-2 m-2 relative top-[60px]',
         name: 'speed',
         min: '0.1',
         max: '100',
@@ -1135,8 +1112,8 @@ export class AppElement extends HTMLElement {
       rootElement
     );
 
-    let raf = -1;
-    let inputTimeout = -1;
+    // let raf = -1;
+    // let inputTimeout = -1;
 
     // const textArea = createElement(
     //   'textarea',

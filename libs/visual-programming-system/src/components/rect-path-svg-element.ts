@@ -8,8 +8,7 @@ import {
 } from '../interfaces/element';
 import { ShapeType } from '../types/shape-type';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
-import { createElement, createNSElement } from '../utils/create-element';
-import { createSVGNodeComponent } from '../utils/create-node-component';
+import { createElement } from '../utils/create-element';
 import { pointerDown } from './events/pointer-events';
 import { ThumbType } from '../types';
 import { InteractionStateMachine } from '../interaction-state-machine';
@@ -76,23 +75,6 @@ export const createRectPathSVGElement = <T>(
   };
 
   function getBBoxPath() {
-    // (pathHiddenElement?.domElement as any).setAttribute(
-    //   'd',
-    //   `M${pathPoints.beginX} ${pathPoints.beginY} H${
-    //     pathPoints.beginX + pathPoints.width
-    //   } V${pathPoints.beginY + pathPoints.height} H${pathPoints.beginX} Z`
-    // );
-    // const bbox = (
-    //   pathHiddenElement?.domElement as unknown as SVGPathElement
-    // ).getBBox();
-
-    // return {
-    //   x: bbox.x - 10,
-    //   y: bbox.y - 10,
-    //   width: bbox.width + 20,
-    //   height: bbox.height + 20,
-    // };
-
     return {
       x: pathPoints.beginX - 10,
       y: pathPoints.beginY - 10,
@@ -114,18 +96,6 @@ export const createRectPathSVGElement = <T>(
   divElement.nodeType = 'shape';
   divElement.shapeType = shapeType;
   divElement.components = [];
-
-  /*
-
-  bg-green-500 rounded p-4
-  <p>Lorem ipsum</p>
-      <p>Lorem ipsum</p>
-      <p>Lorem ipsum</p>
-      <p>Lorem ipsum</p>
-      <p>Lorem ipsum</p>
-      <p>Lorem ipsum</p>
-      <input class="w-full mt-2 border-2 rounded"></input>
-  */
 
   let astElement: any;
 
@@ -153,7 +123,6 @@ export const createRectPathSVGElement = <T>(
     astElement = markup as unknown as INodeComponent<T>;
     divElement.domElement.appendChild(astElement.domElement);
     divElement.elements.set(astElement.id, astElement);
-    //hasPointerEvents = false;
   } else {
     throw new Error('No markup or INodeComponent');
   }
@@ -167,9 +136,7 @@ export const createRectPathSVGElement = <T>(
       )
         return;
 
-      //if (nodeComponent) {
       if (divElement) {
-        //        nodeComponent.domElement as unknown as HTMLElement | SVGElement
         const elementRect = (
           divElement.domElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
@@ -194,34 +161,9 @@ export const createRectPathSVGElement = <T>(
     });
   }
 
-  // const svgParent = createNSElement(
-  //   'svg',
-  //   {
-  //     width: 0,
-  //     height: 0,
-  //     class: 'absolute top-0 left-0 pointer-events-none invisible', //z-[500]
-  //   },
-  //   divElement.domElement
-  // );
-
-  // let nodeComponent: INodeComponent<T> | undefined = undefined;
-  // nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
-
-  // if (!nodeComponent) throw new Error('nodeComponent is undefined');
-
-  // nodeComponent.nodeType = 'shape';
-  // nodeComponent.shapeType = shapeType;
-
   if (!divElement) throw new Error('nodeComponent is undefined');
 
   const bbox = getBBoxPath();
-
-  // (
-  //   svgParent.domElement as unknown as HTMLElement
-  // ).style.width = `${bbox.width}px`;
-  // (
-  //   svgParent.domElement as unknown as HTMLElement
-  // ).style.height = `${bbox.height}px`;
 
   (
     divElement.domElement as unknown as HTMLElement
@@ -233,46 +175,7 @@ export const createRectPathSVGElement = <T>(
     divElement.domElement as unknown as HTMLElement
   ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-  // let pathElement: IElementNode<T> | undefined = undefined;
-  // pathElement = createNSElement(
-  //   'path',
-  //   {
-  //     class: 'cursor-pointer pointer-events-auto',
-  //     d: `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} H${
-  //       pathPoints.beginX - bbox.x + pathPoints.width
-  //     } V ${pathPoints.beginY - bbox.y + pathPoints.height} H${
-  //       pathPoints.beginX - bbox.x
-  //     } Z`,
-  //     stroke: 'white',
-  //     'stroke-width': 3,
-  //     fill: '#0080cc',
-  //     pointerdown: (e: PointerEvent) => {
-  //       console.log('pointerDown', e);
-  //     },
-  //   },
-  //   nodeComponent.domElement
-  // );
-
-  //if (!pathElement) throw new Error('pathElement is undefined');
-
   elements.set(divElement.id, divElement);
-
-  //divElement.elements.set(pathElement.id, pathElement);
-
-  // if (text) {
-  //   const textElement = createSVGNodeComponent(
-  //     'text',
-  //     {
-  //       x: '50%',
-  //       y: '50%',
-  //       'dominant-baseline': 'middle',
-  //       'text-anchor': 'middle',
-  //     },
-  //     nodeComponent.domElement
-  //   );
-  //   const textNode = document.createTextNode(text);
-  //   textElement.domElement.appendChild(textNode);
-  // }
 
   divElement.update = (
     incomingComponent?: INodeComponent<T>,
@@ -533,25 +436,6 @@ export const createRectPathSVGElement = <T>(
     };
 
     const bbox = getBBoxPath();
-    // (pathElement?.domElement as HTMLElement).setAttribute(
-    //   'd',
-    //   `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} H${
-    //     pathPoints.beginX - bbox.x + pathPoints.width
-    //   } V ${pathPoints.beginY - bbox.y + pathPoints.height} H${
-    //     pathPoints.beginX - bbox.x
-    //   } Z`
-    // );
-
-    // (
-    //   svgParent.domElement as unknown as HTMLElement
-    // ).style.width = `${bbox.width}px`;
-    // (
-    //   svgParent.domElement as unknown as HTMLElement
-    // ).style.height = `${bbox.height}px`;
-
-    // (
-    //   svgParent.domElement as unknown as HTMLElement
-    // ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
     (
       divElement.domElement as unknown as HTMLElement
@@ -564,11 +448,6 @@ export const createRectPathSVGElement = <T>(
     ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
     if (divElement) {
-      // nodeComponent.x = points.beginX;
-      // nodeComponent.y = points.beginY;
-      // nodeComponent.width = points.width + 20; // 20 is padding !?
-      // nodeComponent.height = points.height;
-
       divElement.x = points.beginX;
       divElement.y = points.beginY;
       divElement.width = points.width;
@@ -628,35 +507,11 @@ export const createRectPathSVGElement = <T>(
     }
     return true;
   };
-  // nodeComponent.x = startX;
-  // nodeComponent.y = startY;
-  // nodeComponent.width = width;
-  // nodeComponent.height = height;
 
   divElement.x = startX;
   divElement.y = startY;
   divElement.width = width;
   divElement.height = height;
-
-  //const bcPerf = performance.now();
-
-  // const observer = new IntersectionObserver((entries) => {
-  //   for (const entry of entries) {
-  //     const bounds = entry.boundingClientRect;
-
-  //     const { scale } = getCamera();
-  //     divElement.width = bounds.width / scale;
-  //     divElement.height = bounds.height / scale - 20;
-  //     points.width = bounds.width / scale;
-  //     points.height = bounds.height / scale - 20;
-  //     if (divElement && divElement.update) {
-  //       divElement.update(divElement, startX, startY, divElement);
-  //     }
-  //   }
-
-  //   observer.disconnect();
-  // });
-  // observer.observe(astElement?.domElement as unknown as HTMLElement);
 
   const astElementSize = (
     astElement?.domElement as unknown as HTMLElement
@@ -665,15 +520,34 @@ export const createRectPathSVGElement = <T>(
   const { scale } = getCamera();
   divElement.width = astElementSize.width / scale;
   divElement.height = astElementSize.height / scale - 20;
-  // nodeComponent.width = astElementSize.width / scale;
-  // nodeComponent.height = astElementSize.height / scale - 20;
   points.width = astElementSize.width / scale;
   points.height = astElementSize.height / scale - 20;
 
-  // nodeComponent.width = points.width + 20; // 20 is padding !?
-  // nodeComponent.height = points.height;
-
   divElement.update(divElement, startX, startY, divElement);
 
-  return divElement;
+  return {
+    nodeComponent: divElement,
+    resize: (width?: number) => {
+      const astElementHtmlElement =
+        astElement?.domElement as unknown as HTMLElement;
+      astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
+      astElementHtmlElement.style.height = 'auto';
+      const astElementSize = astElementHtmlElement.getBoundingClientRect();
+
+      const { scale } = getCamera();
+      divElement.width = (astElementSize.width - 20) / scale;
+      divElement.height = astElementSize.height / scale - 20;
+      points.width = (astElementSize.width - 20) / scale;
+      points.height = astElementSize.height / scale - 20;
+
+      if (divElement.update) {
+        divElement.update(
+          divElement,
+          divElement.x + 50,
+          divElement.y + 50,
+          divElement
+        );
+      }
+    },
+  };
 };
