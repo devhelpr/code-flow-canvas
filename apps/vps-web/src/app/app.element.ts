@@ -35,6 +35,7 @@ import { NodeInfo } from './types/node-info';
 import { getExpression } from './nodes/expression';
 import { getIfCondition } from './nodes/if-condition';
 import { getShowInput } from './nodes/show-input';
+import { getSum } from './nodes/sum';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -497,6 +498,24 @@ export class AppElement extends HTMLElement {
       'Add "show input"'
     );
 
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          const startX = Math.floor(Math.random() * 250);
+          const startY = Math.floor(Math.random() * 500);
+          const sum = getSum();
+          sum.createVisualNode(canvasApp, startX, startY);
+
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add "sum"'
+    );
+
     // createElement(
     //   'button',
     //   {
@@ -881,7 +900,7 @@ export class AppElement extends HTMLElement {
           const message = createElement(
             'div',
             {
-              class: `flex text-center z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
+              class: `flex text-center truncate overflow-hidden z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
               style: {
                 'clip-path':
                   'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',

@@ -7,8 +7,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
-export const getShowInput = () => {
-  let inputValues: any[] = [];
+export const getSum = () => {
   let node: INodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -17,9 +16,8 @@ export const getShowInput = () => {
 
   const initializeCompute = () => {
     hasInitialValue = true;
-    inputValues = [];
     if (htmlNode) {
-      htmlNode.domElement.textContent = 'Input';
+      htmlNode.domElement.textContent = 'Sum';
       if (rect) {
         rect.resize(240);
       }
@@ -27,7 +25,15 @@ export const getShowInput = () => {
     return;
   };
   const compute = (input: string) => {
-    inputValues.push(input);
+    let values: any[] = [];
+    values = input as unknown as any[];
+    if (!Array.isArray(input)) {
+      return {
+        result: false,
+        followPath: undefined,
+      };
+    }
+    const sum = values.reduce((a, b) => a + b, 0);
     if (htmlNode) {
       const inputElement = createElement(
         'div',
@@ -40,27 +46,16 @@ export const getShowInput = () => {
       ) as unknown as INodeComponent<NodeInfo>;
 
       if (hasInitialValue) {
-        htmlNode.domElement.textContent = '';
         hasInitialValue = false;
       }
-
-      // if (htmlNode.domElement.firstChild) {
-      //   htmlNode.domElement.insertBefore(
-      //     inputElement.domElement as unknown as HTMLElement,
-      //     htmlNode.domElement.firstChild
-      //   );
-      // } else {
-      htmlNode.domElement.appendChild(
-        inputElement.domElement as unknown as HTMLElement
-      );
-      //}
+      htmlNode.domElement.textContent = sum.toString();
 
       if (rect) {
         rect.resize(240);
       }
     }
     return {
-      result: [...inputValues],
+      result: sum.toString(),
       followPath: undefined,
     };
   };
@@ -76,7 +71,7 @@ export const getShowInput = () => {
           class: '',
         },
         undefined,
-        'Input'
+        'Sum'
       ) as unknown as INodeComponent<NodeInfo>;
 
       const wrapper = createElement(
@@ -116,9 +111,9 @@ export const getShowInput = () => {
       );
       rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = 'showInput';
+      rect.nodeComponent.nodeInfo.taskType = 'sum';
 
-      createNamedSignal(`showInput-${rect.nodeComponent.id}`, '');
+      createNamedSignal(`sum-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;

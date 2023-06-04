@@ -535,13 +535,27 @@ export const createRectPathSVGElement = <T>(
         astElement?.domElement as unknown as HTMLElement;
       astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
       astElementHtmlElement.style.height = 'auto';
+
+      (divElement.domElement as unknown as HTMLElement).style.width = width
+        ? `${width}px`
+        : 'auto';
+      (divElement.domElement as unknown as HTMLElement).style.height = `auto`;
+
       const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
       const { scale } = getCamera();
-      divElement.width = (astElementSize.width - 20) / scale;
+      divElement.width = astElementSize.width / scale - 20;
       divElement.height = astElementSize.height / scale - 20;
-      points.width = (astElementSize.width - 20) / scale;
+      points.width = astElementSize.width / scale - 20;
       points.height = astElementSize.height / scale - 20;
+
+      (
+        divElement.domElement as unknown as HTMLElement
+      ).style.width = `${divElement.width}px`;
+
+      (
+        divElement.domElement as unknown as HTMLElement
+      ).style.height = `${divElement.height}px`;
 
       if (divElement.update) {
         divElement.update(
