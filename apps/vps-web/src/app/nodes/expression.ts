@@ -11,8 +11,9 @@ import { compileExpression } from '@devhelpr/expression-compiler';
 
 export const getExpression = () => {
   let node: INodeComponent<NodeInfo>;
-
+  let currentValue = 0;
   const initializeCompute = () => {
+    currentValue = 0;
     return;
   };
   const compute = (input: string) => {
@@ -22,10 +23,13 @@ export const getExpression = () => {
 
     let result: any = false;
     try {
-      result = runExpression({ input: input });
+      result = runExpression({ input: input, currentValue: currentValue });
     } catch (error) {
       result = false;
       console.log('expression error', error);
+    }
+    if (result) {
+      currentValue = result;
     }
     return {
       result,
