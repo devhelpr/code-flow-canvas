@@ -41,9 +41,16 @@ export const getShowInput = () => {
         hasInitialValue = false;
       }
 
+      // if (htmlNode.domElement.firstChild) {
+      //   htmlNode.domElement.insertBefore(
+      //     inputElement.domElement as unknown as HTMLElement,
+      //     htmlNode.domElement.firstChild
+      //   );
+      // } else {
       htmlNode.domElement.appendChild(
         inputElement.domElement as unknown as HTMLElement
       );
+      //}
 
       if (rect) {
         rect.resize(240);
@@ -87,14 +94,16 @@ export const getShowInput = () => {
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorCenter,
+            thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
+            offsetY: 20,
           },
           {
-            thumbType: ThumbType.EndConnectorCenter,
+            thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
+            offsetY: 20,
           },
         ],
         wrapper,

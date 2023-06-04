@@ -334,7 +334,8 @@ export const createConnectionSVGElement = <T>(
             nodeComponent.startNodeThumb?.thumbType ??
               ThumbType.StartConnectorCenter,
             nodeComponent.startNodeThumb?.thumbIndex,
-            nodeComponent.endNode
+            nodeComponent.endNode,
+            nodeComponent.startNodeThumb?.thumbOffsetY ?? 0
           );
 
           points.beginX = start.x;
@@ -354,7 +355,8 @@ export const createConnectionSVGElement = <T>(
             nodeComponent.endNodeThumb?.thumbType ??
               ThumbType.EndConnectorCenter,
             nodeComponent.endNodeThumb?.thumbIndex,
-            nodeComponent.startNode
+            nodeComponent.startNode,
+            nodeComponent.endNodeThumb?.thumbOffsetY ?? 0
           );
           points.endX = end.x;
           points.endY = end.y;
@@ -392,7 +394,8 @@ export const createConnectionSVGElement = <T>(
             incomingComponent.startNodeThumb?.thumbType ??
               ThumbType.StartConnectorCenter,
             incomingComponent.startNodeThumb?.thumbIndex,
-            incomingComponent.endNode
+            incomingComponent.endNode,
+            incomingComponent.startNodeThumb?.thumbOffsetY ?? 0
           );
           points.beginX = start.x;
           points.beginY = start.y;
@@ -412,7 +415,8 @@ export const createConnectionSVGElement = <T>(
             incomingComponent.endNodeThumb?.thumbType ??
               ThumbType.EndConnectorCenter,
             incomingComponent.endNodeThumb?.thumbIndex,
-            incomingComponent.startNode
+            incomingComponent.startNode,
+            incomingComponent.endNodeThumb?.thumbOffsetY ?? 0
           );
           points.endX = end.x;
           points.endY = end.y;

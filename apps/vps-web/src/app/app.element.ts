@@ -458,7 +458,7 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
-      'Add expression'
+      'Add "expression"'
     );
 
     createElement(
@@ -476,7 +476,7 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
-      'Add if-condition'
+      'Add "if-condition"'
     );
 
     createElement(
@@ -494,7 +494,7 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
-      'Add input'
+      'Add "show input"'
     );
 
     // createElement(
@@ -914,7 +914,8 @@ export class AppElement extends HTMLElement {
                 connection.startNodeThumb?.thumbType ??
                   ThumbType.StartConnectorCenter,
                 connection.startNodeThumb?.thumbIndex,
-                end
+                end,
+                connection.startNodeThumb?.thumbOffsetY ?? 0
               );
 
               const endHelper = end.onCalculateControlPoints(
@@ -923,7 +924,8 @@ export class AppElement extends HTMLElement {
                 connection.endNodeThumb?.thumbType ??
                   ThumbType.EndConnectorCenter,
                 connection.endNodeThumb?.thumbIndex,
-                start
+                start,
+                connection.endNodeThumb?.thumbOffsetY ?? 0
               );
 
               const tx = 40;
@@ -1047,7 +1049,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: button,
+        class: `${button} relative top-[60px]`,
         click: (event) => {
           event.preventDefault();
           if (this.canvasApp?.elements) {

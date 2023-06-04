@@ -41,7 +41,8 @@ export const createRectPathSVGElement = <T>(
   thumbOffsetY?: number,
   getThumbPosition?: (
     thumbType: ThumbType,
-    index?: number
+    index?: number,
+    offsetY?: number
   ) => { x: number; y: number },
   markup?: string | INodeComponent<T>,
   layoutProperties?: {
@@ -250,7 +251,8 @@ export const createRectPathSVGElement = <T>(
             if (connector && connector.update && connector.thumbType) {
               const position = getThumbPosition(
                 connector.thumbType,
-                connector.thumbIndex ?? 0
+                connector.thumbIndex ?? 0,
+                connector.thumbOffsetY ?? 0
               );
               connector.update(
                 connector,
@@ -355,7 +357,8 @@ export const createRectPathSVGElement = <T>(
           } else if (!specifier && thumbConnector && thumbConnector.thumbType) {
             const position = getThumbPosition(
               thumbConnector.thumbType,
-              thumbConnector.thumbIndex ?? 0
+              thumbConnector.thumbIndex ?? 0,
+              thumbConnector.thumbOffsetY ?? 0
             );
             return {
               x: position.x,
