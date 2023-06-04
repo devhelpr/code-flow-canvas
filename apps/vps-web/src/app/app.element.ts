@@ -1077,7 +1077,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: `${button} relative top-[60px]`,
+        class: `${button} relative ',//top-[60px]`,
         click: (event) => {
           event.preventDefault();
           if (this.canvasApp?.elements) {
@@ -1095,7 +1095,7 @@ export class AppElement extends HTMLElement {
       'input',
       {
         type: 'range',
-        class: 'p-2 m-2 relative top-[60px]',
+        class: 'p-2 m-2 relative ', //top-[60px]',
         name: 'speed',
         min: '0.1',
         max: '100',
