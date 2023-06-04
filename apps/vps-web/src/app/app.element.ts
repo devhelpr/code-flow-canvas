@@ -900,13 +900,22 @@ export class AppElement extends HTMLElement {
           const message = createElement(
             'div',
             {
-              class: `flex text-center truncate overflow-hidden z-[1010] pointer-events-none origin-center bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
+              class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
               style: {
                 'clip-path':
                   'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
               },
             },
             this.canvasApp?.canvas.domElement,
+            ''
+          );
+
+          const messageText = createElement(
+            'div',
+            {
+              class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+            },
+            message.domElement,
             input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? ''
           );
 
