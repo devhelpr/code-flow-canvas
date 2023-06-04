@@ -33,7 +33,9 @@ export const getSum = () => {
         followPath: undefined,
       };
     }
-    const sum = values.reduce((a, b) => a + b, 0);
+    const sum = values
+      .map((value) => parseInt(value) ?? 0)
+      .reduce((a, b) => a + b, 0);
     if (htmlNode) {
       const inputElement = createElement(
         'div',
