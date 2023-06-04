@@ -88,7 +88,7 @@ export const run = <T>(
 
             return {
               result: true,
-              output: result,
+              output: result ?? input,
               followPathByName: followPath,
             };
           },
