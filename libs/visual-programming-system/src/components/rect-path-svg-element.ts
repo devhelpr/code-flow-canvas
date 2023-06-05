@@ -461,7 +461,8 @@ export const createRectPathSVGElement = <T>(
     astElement.domElement.style.height = `${bbox.height}px`;
 
     if (divElement) {
-      elements.forEach((e) => {
+      // get all connections that have this node as start or end
+      elements.forEach((e) => {        
         const lookAtNodeComponent = e as unknown as INodeComponent<T>;
         if (
           lookAtNodeComponent.nodeType === 'shape' ||

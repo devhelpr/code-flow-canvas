@@ -692,12 +692,17 @@ export const createRect = <T>(
         thumbNode.thumbConnectionType === ThumbConnectionType.start &&
         component.specifier === 'begin')
     ) {
+      let nodeReference = rectNode;
       if (component.specifier === 'begin') {
         component.parent.startNode = rectNode;
         component.parent.startNodeThumb = thumbNode;
       } else {
         component.parent.endNode = rectNode;
         component.parent.endNodeThumb = thumbNode;
+        if (component.parent.startNode) {
+          // use start node as reference for the curve's begin point
+          nodeReference = component.parent.startNode;
+        }
       }
       component.parent.isControlled = true;
 
@@ -717,14 +722,34 @@ export const createRect = <T>(
         component: rectNode,
       } as unknown as INodeComponentRelation<T>);
 
+      // Update both sides of the connection to get a correct curve
       if (component.parent.update) {
         component.parent.update(
           component.parent,
-          rectNode.x,
-          rectNode.y,
+          nodeReference.x,
+          nodeReference.y,
           rectNode
         );
-      }
+        if (component.specifier === 'begin') {
+          if (component.parent.endNode) {
+            component.parent.update(
+              component.parent,
+              nodeReference.x,
+              nodeReference.y,
+              component.parent.endNode
+            );
+          }
+        } else {
+          if (component.parent.startNode) {
+            component.parent.update(
+              component.parent,
+              nodeReference.x,
+              nodeReference.y,
+              component.parent.startNode
+            );
+          }
+        }
+      }      
     }
   };
 

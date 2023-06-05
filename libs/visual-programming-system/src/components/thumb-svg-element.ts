@@ -192,10 +192,10 @@ export const createThumbSVGElement = <T>(
               y - 50,
               x - 50,
               y - 50,
-              x + 50,
-              y + 50,
-              x + 75,
-              y + 75,
+              x - 50 ,
+              y - 50,
+              x - 50,
+              y - 50,
               false
             );
 
