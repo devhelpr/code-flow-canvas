@@ -527,7 +527,8 @@ export class AppElement extends HTMLElement {
     //       const y = Math.floor(Math.random() * 500);
 
     //       // if (Math.random() >= 0.5) {
-    //       bezierCurve = canvasApp.createCubicBezier(
+    //       //const bezierCurve = 
+    //       canvasApp.createCubicBezier(
     //         x,
     //         y,
     //         x + 150,
@@ -604,183 +605,186 @@ export class AppElement extends HTMLElement {
     //   'switch visibility'
     // );
 
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       this.clearCanvas();
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          this.clearCanvas();
 
-    //       const maxRows = 20;
-    //       const maxColumns = 20;
+          const maxRows = 20;
+          const maxColumns = 20;
 
-    //       const dateTimestampAll = performance.now();
+          const dateTimestampAll = performance.now();
 
-    //       const spacing = 500;
-    //       let loopRows = 0;
-    //       while (loopRows < maxRows) {
-    //         let loopColumns = 0;
-    //         while (loopColumns < maxColumns) {
-    //           const dateTimestamp = performance.now();
+          const spacing = 500;
+          let loopRows = 0;
+          while (loopRows < maxRows) {
+            let loopColumns = 0;
+            while (loopColumns < maxColumns) {
+              const dateTimestamp = performance.now();
 
-    //           const clipPaths = [
-    //             'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
-    //             'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
-    //             'circle(50%)',
-    //             'polygon(50% 0, 100% 100%, 0 100%)',
-    //             'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-    //             'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
-    //             'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
-    //           ];
-    //           const color = `rgb(${
-    //             128 + Math.floor(Math.random() * 128)
-    //           },${Math.floor(Math.random() * 16)},${Math.floor(
-    //             Math.random() * 16
-    //           )})`;
+              const clipPaths = [
+                'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
+                'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+                'circle(50%)',
+                'polygon(50% 0, 100% 100%, 0 100%)',
+                'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+                'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+                'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+              ];
+              const color = `rgb(${
+                128 + Math.floor(Math.random() * 128)
+              },${Math.floor(Math.random() * 16)},${Math.floor(
+                Math.random() * 16
+              )})`;
 
-    //           const testNode = createElement(
-    //             'button',
-    //             {
-    //               class:
-    //                 'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
-    //               style: {
-    //                 'background-color': color,
-    //                 'clip-path':
-    //                   clipPaths[
-    //                     Math.round(Math.random() * (clipPaths.length - 1))
-    //                   ],
-    //               },
-    //               click: (event) => {
-    //                 event.preventDefault();
-    //                 //alert(`click ${testNode.id}`);
-    //                 animatePath(rect.nodeComponent.id, color);
-    //                 return false;
-    //               },
-    //             },
-    //             undefined,
-    //             `${loopRows * maxColumns + loopColumns}`
-    //           );
+              const testNode = createElement(
+                'button',
+                {
+                  class:
+                    'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
+                  style: {
+                    'background-color': color,
+                    'clip-path':
+                      clipPaths[
+                        Math.round(Math.random() * (clipPaths.length - 1))
+                      ],
+                  },
+                  click: (event) => {
+                    event.preventDefault();
+                    //alert(`click ${testNode.id}`);
+                    animatePath(rect.nodeComponent.id, color);
+                    return false;
+                  },
+                },
+                undefined,
+                `${loopRows * maxColumns + loopColumns}`
+              );
 
-    //           const rect = canvasApp?.createRect(
-    //             loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
-    //             loopRows * spacing + Math.floor(-75 + Math.random() * 150),
-    //             100,
-    //             100,
-    //             'node',
-    //             undefined,
-    //             [
-    //               {
-    //                 thumbType: ThumbType.StartConnectorCenter,
-    //                 thumbIndex: 0,
-    //                 connectionType: ThumbConnectionType.start,
-    //               },
-    //               {
-    //                 thumbType: ThumbType.EndConnectorCenter,
-    //                 thumbIndex: 0,
-    //                 connectionType: ThumbConnectionType.end,
-    //               },
-    //             ],
-    //             testNode as unknown as INodeComponent<NodeInfo>,
-    //             // `<div class="text-center">${
-    //             //   loopRows * maxColumns + loopColumns
-    //             // }</div>`
-    //             {
-    //               classNames: `bg-slate-500 p-4 rounded`,
-    //               //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
-    //             }
-    //           );
-    //           rect.nodeComponent.nodeInfo = {
-    //             column: loopColumns,
-    //             row: loopRows,
-    //           };
+              const rect = canvasApp?.createRect(
+                loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
+                loopRows * spacing + Math.floor(-75 + Math.random() * 150),
+                100,
+                100,
+                'node',
+                undefined,
+                [
+                  {
+                    thumbType: ThumbType.StartConnectorCenter,
+                    thumbIndex: 0,
+                    connectionType: ThumbConnectionType.start,
+                  },
+                  {
+                    thumbType: ThumbType.EndConnectorCenter,
+                    thumbIndex: 0,
+                    connectionType: ThumbConnectionType.end,
+                  },
+                ],
+                testNode as unknown as INodeComponent<NodeInfo>,
+                // `<div class="text-center">${
+                //   loopRows * maxColumns + loopColumns
+                // }</div>`
+                {
+                  classNames: `bg-slate-500 p-4 rounded`,
+                  //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
+                }
+              );
+              rect.nodeComponent.nodeInfo = {
+                column: loopColumns,
+                row: loopRows,
+                compute: () => {
+                  return true;
+                }
+              };
 
-    //           //console.log('createRect', performance.now() - dateTimestamp);
-    //           loopColumns++;
-    //         }
-    //         loopRows++;
-    //       }
+              //console.log('createRect', performance.now() - dateTimestamp);
+              loopColumns++;
+            }
+            loopRows++;
+          }
 
-    //       const elementList = Array.from(canvasApp?.elements ?? []);
-    //       loopRows = 0;
-    //       while (loopRows < maxRows - 1) {
-    //         let loopColumns = 0;
-    //         while (loopColumns < maxColumns - 1) {
-    //           const start = elementList[
-    //             loopRows * maxColumns + loopColumns
-    //           ][1] as unknown as INodeComponent<NodeInfo>;
-    //           const end = elementList[
-    //             (loopRows + 1) * maxColumns + loopColumns + 1
-    //           ][1] as unknown as INodeComponent<NodeInfo>;
-    //           console.log(loopRows, loopColumns, 'start', start, 'end', end);
+          const elementList = Array.from(canvasApp?.elements ?? []);
+          loopRows = 0;
+          while (loopRows < maxRows - 1) {
+            let loopColumns = 0;
+            while (loopColumns < maxColumns - 1) {
+              const start = elementList[
+                loopRows * maxColumns + loopColumns
+              ][1] as unknown as INodeComponent<NodeInfo>;
+              const end = elementList[
+                (loopRows + 1) * maxColumns + loopColumns + 1
+              ][1] as unknown as INodeComponent<NodeInfo>;
+              console.log(loopRows, loopColumns, 'start', start, 'end', end);
 
-    //           const curve = canvasApp.createCubicBezier(
-    //             loopColumns * spacing,
-    //             loopRows * spacing,
-    //             (loopColumns + 1) * spacing,
-    //             loopRows * spacing,
-    //             loopColumns * spacing + 100,
-    //             loopRows * spacing + spacing / 2,
-    //             (loopColumns + 1) * spacing + 100,
-    //             loopRows * spacing + spacing / 2,
-    //             false
-    //           );
+              const curve = canvasApp.createCubicBezier(
+                loopColumns * spacing,
+                loopRows * spacing,
+                (loopColumns + 1) * spacing,
+                loopRows * spacing,
+                loopColumns * spacing + 100,
+                loopRows * spacing + spacing / 2,
+                (loopColumns + 1) * spacing + 100,
+                loopRows * spacing + spacing / 2,
+                false
+              );
 
-    //           curve.nodeComponent.isControlled = true;
-    //           curve.nodeComponent.nodeInfo = {
-    //             column: loopColumns,
-    //             row: loopRows,
-    //           };
+              curve.nodeComponent.isControlled = true;
+              curve.nodeComponent.nodeInfo = {
+                column: loopColumns,
+                row: loopRows,
+              };
 
-    //           if (start && curve.nodeComponent) {
-    //             curve.nodeComponent.components.push({
-    //               type: NodeComponentRelationType.start,
-    //               component: start,
-    //             } as unknown as INodeComponentRelation<NodeInfo>);
+              if (start && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.start,
+                  component: start,
+                } as unknown as INodeComponentRelation<NodeInfo>);
 
-    //             curve.nodeComponent.startNode = start;
-    //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
-    //               ThumbType.StartConnectorCenter,
-    //               start
-    //             );
-    //           }
+                curve.nodeComponent.startNode = start;
+                curve.nodeComponent.startNodeThumb = this.getThumbNode(
+                  ThumbType.StartConnectorCenter,
+                  start
+                );
+              }
 
-    //           if (end && curve.nodeComponent) {
-    //             curve.nodeComponent.components.push({
-    //               type: NodeComponentRelationType.end,
-    //               component: end,
-    //             } as unknown as INodeComponentRelation<NodeInfo>);
+              if (end && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.end,
+                  component: end,
+                } as unknown as INodeComponentRelation<NodeInfo>);
 
-    //             curve.nodeComponent.endNode = end;
-    //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
-    //               ThumbType.EndConnectorCenter,
-    //               end
-    //             );
-    //           }
-    //           if (curve.nodeComponent.update) {
-    //             curve.nodeComponent.update();
-    //           }
-    //           console.log('createCubicBezier', curve);
+                curve.nodeComponent.endNode = end;
+                curve.nodeComponent.endNodeThumb = this.getThumbNode(
+                  ThumbType.EndConnectorCenter,
+                  end
+                );
+              }
+              if (curve.nodeComponent.update) {
+                curve.nodeComponent.update();
+              }
+              console.log('createCubicBezier', curve);
 
-    //           loopColumns++;
-    //         }
-    //         loopRows++;
-    //       }
+              loopColumns++;
+            }
+            loopRows++;
+          }
 
-    //       console.log('createRect All', performance.now() - dateTimestampAll);
+          console.log('createRect All', performance.now() - dateTimestampAll);
 
-    //       const dateTimestamp = performance.now();
+          const dateTimestamp = performance.now();
 
-    //       this.canvasApp?.centerCamera();
+          this.canvasApp?.centerCamera();
 
-    //       console.log('centerCamera', performance.now() - dateTimestamp);
+          console.log('centerCamera', performance.now() - dateTimestamp);
 
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'stress test'
-    // );
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'stress test'
+    );
 
     const getNodeConnectionPairById = (
       nodeId: string,
