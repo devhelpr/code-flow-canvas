@@ -21,296 +21,17 @@ import { ThumbType } from '../types';
 import { ShapeType } from '../types/shape-type';
 import { createRectPathSVGElement } from './rect-path-svg-element';
 import { createThumbSVGElement } from './thumb-svg-element';
-
-const thumbRadius = 10;
-const thumbWidth = 100;
-const thumbHeight = 100;
-
-const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
-const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
-
-/*
-  in thumbPosition and onCalculateControlPoints the transform of the svg-thumb is taken into account
-  ... in calculateConnectorX and calculateConnectorY only the position is calculated
-*/
-const calculateConnectorX = (
-  thumbType: ThumbType,
-  width: number,
-  height: number,
-  index?: number
-) => {
-  if (
-    thumbType === ThumbType.StartConnectorCenter ||
-    thumbType === ThumbType.StartConnectorRight
-  ) {
-    return width;
-  }
-
-  if (
-    thumbType === ThumbType.EndConnectorCenter ||
-    thumbType === ThumbType.EndConnectorLeft
-  ) {
-    return 0;
-  }
-
-  if (thumbType === ThumbType.EndConnectorTop) {
-    return width / 2;
-  }
-
-  if (thumbType === ThumbType.StartConnectorTop) {
-    return width / 2;
-  }
-  if (thumbType === ThumbType.StartConnectorBottom) {
-    return width / 2;
-  }
-  return 0;
-};
-
-const calculateConnectorY = (
-  thumbType: ThumbType,
-  width: number,
-  height: number,
-  index?: number
-) => {
-  if (
-    thumbType === ThumbType.StartConnectorCenter ||
-    thumbType === ThumbType.EndConnectorCenter
-  ) {
-    return height / 2;
-  }
-
-  if (
-    thumbType === ThumbType.StartConnectorRight ||
-    thumbType === ThumbType.EndConnectorLeft
-  ) {
-    return 30 * (index ?? 0);
-  }
-
-  if (thumbType === ThumbType.EndConnectorTop) {
-    return 0;
-  }
-
-  if (thumbType === ThumbType.StartConnectorTop) {
-    return 0;
-  }
-
-  if (thumbType === ThumbType.StartConnectorBottom) {
-    return height;
-  }
-  return 0;
-};
-
-const thumbInitialPosition = <T>(
-  rectNode: INodeComponent<T>,
-  thumbType: ThumbType,
-  index?: number,
-  offsetY?: number
-) => {
-  if (thumbType === ThumbType.TopLeft) {
-    return { x: '0%', y: '0%' };
-  }
-  if (thumbType === ThumbType.TopRight) {
-    return { x: '100%', y: '0%' };
-  }
-  if (thumbType === ThumbType.BottomLeft) {
-    return { x: '0%', y: '100%' };
-  }
-  if (thumbType === ThumbType.BottomRight) {
-    return {
-      x: '100%',
-      y: '100%',
-    };
-  }
-
-  if (thumbType === ThumbType.EndConnectorTop) {
-    return {
-      x: '50%',
-      y: '0%',
-    };
-  }
-
-  if (thumbType === ThumbType.EndConnectorCenter) {
-    return {
-      x: '0%',
-      y: '50%',
-    };
-  }
-
-  if (thumbType === ThumbType.EndConnectorLeft) {
-    return {
-      x: '0%',
-      y: `${
-        thumbRadius +
-        calculateConnectorY(
-          thumbType,
-          rectNode.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        (offsetY ?? 0)
-      }px`,
-    };
-  }
-
-  if (thumbType === ThumbType.StartConnectorTop) {
-    return {
-      x: '50%',
-      y: '0%',
-    };
-  }
-  if (thumbType === ThumbType.StartConnectorBottom) {
-    return {
-      x: '50%',
-      y: '100%',
-    };
-  }
-
-  if (thumbType === ThumbType.StartConnectorRight) {
-    return {
-      x: '100%',
-      y: `${
-        thumbRadius +
-        calculateConnectorY(
-          thumbType,
-          rectNode.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        (offsetY ?? 0)
-      }px`,
-    };
-  }
-
-  if (thumbType === ThumbType.StartConnectorCenter) {
-    return {
-      x: '100%',
-      y: '50%',
-    };
-  }
-
-  throw new Error('Thumb type not supported');
-};
-
-export const thumbPosition = <T>(
-  rectNode: INodeComponent<T>,
-  thumbType: ThumbType,
-  index?: number,
-  offsetY?: number
-) => {
-  if (thumbType === ThumbType.TopLeft) {
-    return { x: thumbOffsetX, y: thumbOffsetY };
-  }
-  if (thumbType === ThumbType.TopRight) {
-    return { x: thumbOffsetX + (rectNode?.width ?? 0), y: thumbOffsetY };
-  }
-  if (thumbType === ThumbType.BottomLeft) {
-    return { x: thumbOffsetX, y: thumbOffsetY + (rectNode?.height ?? 0) };
-  }
-  if (thumbType === ThumbType.BottomRight) {
-    return {
-      x: thumbOffsetX + (rectNode?.width ?? 0),
-      y: thumbOffsetY + (rectNode?.height ?? 0),
-    };
-  }
-
-  if (thumbType === ThumbType.EndConnectorTop) {
-    return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        thumbOffsetY -
-        thumbRadius +
-        (offsetY ?? 0),
-    };
-  }
-
-  if (
-    thumbType === ThumbType.EndConnectorLeft ||
-    thumbType === ThumbType.EndConnectorCenter
-  ) {
-    return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        thumbOffsetX -
-        thumbRadius,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        thumbOffsetY +
-        (offsetY ?? 0),
-    };
-  }
-
-  if (
-    thumbType === ThumbType.StartConnectorTop ||
-    thumbType === ThumbType.StartConnectorBottom
-  ) {
-    return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        thumbOffsetY +
-        thumbRadius,
-    };
-  }
-
-  if (
-    thumbType === ThumbType.StartConnectorRight ||
-    thumbType === ThumbType.StartConnectorCenter
-  ) {
-    return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        thumbOffsetX +
-        thumbRadius,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetY,
-    };
-  }
-
-  throw new Error('Thumb type not supported');
-};
+import {
+  calculateConnectorX,
+  calculateConnectorY,
+  thumbHeight,
+  thumbInitialPosition,
+  thumbOffsetX,
+  thumbOffsetY,
+  thumbPosition,
+  thumbRadius,
+  thumbWidth,
+} from './utils/calculate-connector-thumbs';
 
 export const createRect = <T>(
   canvas: INodeComponent<T>,
@@ -680,7 +401,7 @@ export const createRect = <T>(
       rectNode.id
     );
 
-    let previousConnectedNodeId = "";
+    let previousConnectedNodeId = '';
 
     // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
@@ -696,11 +417,11 @@ export const createRect = <T>(
     ) {
       let nodeReference = rectNode;
       if (component.specifier === 'begin') {
-        previousConnectedNodeId = component.parent.startNode?.id ?? "";
+        previousConnectedNodeId = component.parent.startNode?.id ?? '';
         component.parent.startNode = rectNode;
         component.parent.startNodeThumb = thumbNode;
       } else {
-        previousConnectedNodeId = component.parent.endNode?.id ?? "";
+        previousConnectedNodeId = component.parent.endNode?.id ?? '';
         component.parent.endNode = rectNode;
         component.parent.endNodeThumb = thumbNode;
         if (component.parent.startNode) {
@@ -709,11 +430,16 @@ export const createRect = <T>(
         }
       }
       component.parent.isControlled = true;
-      
+
       // remove the previous connected node from the connections of the rectNode
-      rectNode.connections = (rectNode.connections ?? []).filter( connection => {
-        return connection.startNode?.id !== previousConnectedNodeId && connection.endNode?.id !== previousConnectedNodeId;
-      });
+      rectNode.connections = (rectNode.connections ?? []).filter(
+        (connection) => {
+          return (
+            connection.startNode?.id !== previousConnectedNodeId &&
+            connection.endNode?.id !== previousConnectedNodeId
+          );
+        }
+      );
       rectNode.connections?.push(component.parent);
 
       const index = component.parent.components.findIndex((c) =>
@@ -759,7 +485,7 @@ export const createRect = <T>(
             );
           }
         }
-      }      
+      }
     }
   };
 

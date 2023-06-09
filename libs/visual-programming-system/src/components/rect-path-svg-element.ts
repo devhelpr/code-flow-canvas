@@ -12,19 +12,9 @@ import { createElement } from '../utils/create-element';
 import { pointerDown } from './events/pointer-events';
 import { ThumbType } from '../types';
 import { InteractionStateMachine } from '../interaction-state-machine';
+import { getPoint } from './utils/get-point';
 
 const minSize = 50;
-
-function getPoint(x: number, y: number) {
-  const pt = new DOMPoint();
-  pt.x = x + 50;
-  pt.y = y + 50;
-
-  return {
-    x: pt.x,
-    y: pt.y,
-  };
-}
 
 export const createRectPathSVGElement = <T>(
   canvasElement: DOMElementNode,
@@ -462,7 +452,7 @@ export const createRectPathSVGElement = <T>(
 
     if (divElement) {
       // get all connections that have this node as start or end
-      elements.forEach((e) => {        
+      elements.forEach((e) => {
         const lookAtNodeComponent = e as unknown as INodeComponent<T>;
         if (
           lookAtNodeComponent.nodeType === 'shape' ||
