@@ -28,10 +28,7 @@ export const getSum = () => {
     let values: any[] = [];
     values = input as unknown as any[];
     if (!Array.isArray(input)) {
-      return {
-        result: false,
-        followPath: undefined,
-      };
+      values = [input];
     }
     const sum = values
       .map((value) => parseInt(value) ?? 0)

@@ -126,11 +126,7 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy:
-            y +
-            (controlPointDistance ??
-              Math.max(rectNode.height || 0, yDistance)) +
-            50,
+          cy: y + (controlPointDistance ?? rectNode.height ?? 0) + 50,
           nodeType,
         };
       } else if (thumbType === ThumbType.StartConnectorTop) {
@@ -143,11 +139,7 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy:
-            y -
-            (controlPointDistance ??
-              Math.max(rectNode.height || 0, yDistance)) +
-            50,
+          cy: y - (controlPointDistance ?? rectNode.height ?? 0) - 50,
           nodeType,
         };
       }
@@ -196,10 +188,7 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy:
-            y -
-            (controlPointDistance ??
-              Math.max(rectNode.height || 0, yDistance) - 50),
+          cy: y - (controlPointDistance ?? rectNode.height ?? 0) - 50,
           nodeType,
         };
       }

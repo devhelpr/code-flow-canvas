@@ -10,7 +10,6 @@ import {
   INodeComponentRelation,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import { runNode } from '../simple-flow-engine/simple-flow-engine';
 
 const getThumbNode = (
   thumbType: ThumbType,
@@ -29,7 +28,7 @@ const getThumbNode = (
   }
 };
 
-export const getMap = <T>(
+export const getTestNode = <T>(
   animatePath: (
     node: INodeComponent<T>,
     color: string,
@@ -82,13 +81,13 @@ export const getMap = <T>(
         animatePath(
           inputNode,
           'white',
-          (nodeId: string, node: INodeComponent<T>, input: string) => {
+          () => {
             return {
               result: true,
-              output: input ?? '',
+              output: '',
             };
           },
-          (input: string) => {
+          () => {
             // stopped internal flow
             // - follow "test" path (call animatePath with current node and "test" as followPathByName)
             // - wait for it to finish ("onStopped")
@@ -99,68 +98,52 @@ export const getMap = <T>(
             animatePath(
               rect?.nodeComponent as INodeComponent<NodeInfo>,
               'green',
-              (nodeId: string, node: INodeComponent<T>, input: string) => {
-                // return {
-                //   result: true,
-                //   output: input ?? '',
-                // };
-                const connection = rect?.nodeComponent.connections?.find(
-                  (connection) => {
-                    return (
-                      connection.startNode?.id === rect?.nodeComponent.id &&
-                      connection.startNodeThumb?.pathName === 'test'
-                    );
-                  }
-                );
-                //runNode()
-                //
-                if (connection && connection?.endNode) {
-                  return new Promise((resolve, reject) => {
-                    if (!connection.endNode) {
-                      reject();
-                    } else {
-                      runNode(
-                        connection?.endNode,
-                        animatePath,
-                        (input: string) => {
-                          resolve({
-                            result: true,
-                            output: input ?? '',
-                          });
-                        },
-                        input
-                      );
-                    }
-                  });
-                }
-                return Promise.reject();
+              () => {
+                return {
+                  result: true,
+                  output: '',
+                };
               },
-              (input: string) => {
+              () => {
                 animatePath(
                   testNode as INodeComponent<NodeInfo>,
                   'purple',
                   () => {
                     return {
                       result: true,
-                      output: input ?? '',
+                      output: '',
                     };
                   },
-                  (input: string) => {
-                    if (hasInitialValue) {
-                      hasInitialValue = false;
+                  () => {
+                    const sum = values
+                      .map((value) => parseInt(value) ?? 0)
+                      .reduce((a, b) => a + b, 0);
+                    if (htmlNode) {
+                      // const inputElement = createElement(
+                      //   'div',
+                      //   {
+                      //     class:
+                      //       'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
+                      //   },
+                      //   undefined,
+                      //   input.toString()
+                      // ) as unknown as INodeComponent<NodeInfo>;
+
+                      if (hasInitialValue) {
+                        hasInitialValue = false;
+                      }
+                      // htmlNode.domElement.textContent = sum.toString();
+
+                      // if (rect) {
+                      //   rect.resize(240);
+                      // }
                     }
-                    // htmlNode.domElement.textContent = sum.toString();
-
-                    // if (rect) {
-                    //   rect.resize(240);
-                    // }
-
                     resolve({
-                      result: input,
+                      result: sum.toString(),
                       followPath: undefined,
                     });
                   },
-                  input,
+                  '',
                   undefined,
                   undefined,
                   undefined,
@@ -170,7 +153,7 @@ export const getMap = <T>(
                   true
                 );
               },
-              input ?? '',
+              '',
               'test',
               undefined,
               undefined,
@@ -180,7 +163,7 @@ export const getMap = <T>(
               false
             );
           },
-          input ?? '',
+          '',
           undefined,
           undefined,
           undefined,
@@ -234,7 +217,7 @@ export const getMap = <T>(
             thumbIndex: 1,
             connectionType: ThumbConnectionType.start,
             offsetY: 40,
-            color: 'white',
+            color: 'red',
             pathName: 'test',
           },
           {
@@ -355,82 +338,47 @@ export const getMap = <T>(
           true
         );
 
-        const jsxComponentWrapper = createElement(
-          'div',
-          {
-            //class: `bg-slate-500 p-4 rounded cursor-pointer`,
-            class:
-              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded cursor-pointer',
-            style: {
-              'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
-            },
-          },
-          undefined,
-          'map'
-        ) as unknown as INodeComponent<NodeInfo>;
-
-        // const start = mapCanvasApp.createRect(
-        //   75,
-        //   25,
-        //   50,
-        //   50,
-        //   undefined,
-        //   undefined,
-        //   [
-        //     {
-        //       thumbType: ThumbType.StartConnectorTop,
-        //       thumbIndex: 0,
-        //       connectionType: ThumbConnectionType.start,
-        //     },
-        //     {
-        //       thumbType: ThumbType.EndConnectorCenter,
-        //       thumbIndex: 0,
-        //       connectionType: ThumbConnectionType.end,
-        //       controlPointDistance: 0,
-        //     },
-        //   ],
-        //   jsxComponentWrapper,
-        //   {
-        //     classNames: `bg-slate-800 text-white p-4 rounded flex flex-row items-center justify-center`,
-        //   },
-        //   true,
-        //   true
-        // );
-
-        const jsxCircleComponentWrapper = createElement(
-          'div',
-          {
-            //class: `bg-slate-500 p-4 rounded cursor-pointer`,
-            class:
-              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded cursor-pointer',
-            style: {
-              'clip-path': 'circle(50%)',
-            },
-          },
-          undefined,
-          'map'
-        ) as unknown as INodeComponent<NodeInfo>;
-
-        const end = mapCanvasApp.createRect(
-          130,
-          80,
-          40,
-          40,
+        const start = mapCanvasApp.createRect(
+          75,
+          25,
+          50,
+          50,
           undefined,
           undefined,
           [
             {
-              thumbType: ThumbType.StartConnectorTop,
+              thumbType: ThumbType.StartConnectorCenter,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
-              //controlPointDistance: 0,
             },
             {
-              thumbType: ThumbType.StartConnectorBottom,
+              thumbType: ThumbType.EndConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.end,
+              controlPointDistance: 0,
+            },
+          ],
+          `<p>Test</p>`,
+          {
+            classNames: `bg-slate-800 text-white p-4 rounded flex flex-row items-center justify-center`,
+          },
+          true,
+          true
+        );
+
+        const end = mapCanvasApp.createRect(
+          175,
+          125,
+          50,
+          50,
+          undefined,
+          undefined,
+          [
+            {
+              thumbType: ThumbType.StartConnectorCenter,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
-              color: 'white',
-              //controlPointDistance: 0,
+              controlPointDistance: 0,
             },
             {
               thumbType: ThumbType.EndConnectorCenter,
@@ -438,7 +386,7 @@ export const getMap = <T>(
               connectionType: ThumbConnectionType.end,
             },
           ],
-          jsxCircleComponentWrapper,
+          `<p>Test</p>`,
           {
             classNames: `bg-slate-800 text-white p-4 rounded flex flex-row items-center justify-center`,
           },
@@ -448,61 +396,61 @@ export const getMap = <T>(
         testNode = end.nodeComponent;
 
         // connect start to end
-        // const connnection = mapCanvasApp.createCubicBezier(
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0
-        // );
+        const connnection = mapCanvasApp.createCubicBezier(
+          75,
+          75,
+          125,
+          125,
+          100,
+          100,
+          100,
+          100
+        );
 
-        // connnection.nodeComponent.isControlled = true;
-        // connnection.nodeComponent.nodeInfo = {};
+        connnection.nodeComponent.isControlled = true;
+        connnection.nodeComponent.nodeInfo = {};
 
-        // if (start && connnection.nodeComponent) {
-        //   connnection.nodeComponent.components.push({
-        //     type: NodeComponentRelationType.start,
-        //     component: start,
-        //   } as unknown as INodeComponentRelation<NodeInfo>);
+        if (start && connnection.nodeComponent) {
+          connnection.nodeComponent.components.push({
+            type: NodeComponentRelationType.start,
+            component: start,
+          } as unknown as INodeComponentRelation<NodeInfo>);
 
-        //   connnection.nodeComponent.startNode = start.nodeComponent;
-        //   connnection.nodeComponent.startNodeThumb = getThumbNode(
-        //     ThumbType.StartConnectorTop,
-        //     start.nodeComponent
-        //   );
-        // }
+          connnection.nodeComponent.startNode = start.nodeComponent;
+          connnection.nodeComponent.startNodeThumb = getThumbNode(
+            ThumbType.StartConnectorCenter,
+            start.nodeComponent
+          );
+        }
 
-        // if (end && connnection.nodeComponent) {
-        //   connnection.nodeComponent.components.push({
-        //     type: NodeComponentRelationType.end,
-        //     component: end,
-        //   } as unknown as INodeComponentRelation<NodeInfo>);
+        if (end && connnection.nodeComponent) {
+          connnection.nodeComponent.components.push({
+            type: NodeComponentRelationType.end,
+            component: end,
+          } as unknown as INodeComponentRelation<NodeInfo>);
 
-        //   connnection.nodeComponent.endNode = end.nodeComponent;
-        //   connnection.nodeComponent.endNodeThumb = getThumbNode(
-        //     ThumbType.EndConnectorCenter,
-        //     end.nodeComponent
-        //   );
-        // }
-        // if (connnection.nodeComponent.update) {
-        //   connnection.nodeComponent.update();
-        // }
-        // start.nodeComponent.connections?.push(connnection.nodeComponent);
-        // end.nodeComponent.connections?.push(connnection.nodeComponent);
+          connnection.nodeComponent.endNode = end.nodeComponent;
+          connnection.nodeComponent.endNodeThumb = getThumbNode(
+            ThumbType.EndConnectorCenter,
+            end.nodeComponent
+          );
+        }
+        if (connnection.nodeComponent.update) {
+          connnection.nodeComponent.update();
+        }
+        start.nodeComponent.connections?.push(connnection.nodeComponent);
+        end.nodeComponent.connections?.push(connnection.nodeComponent);
 
         // connnect node connector to start
         const connnection2 = mapCanvasApp.createCubicBezier(
+          -10 - 50 + 10,
+          20 - 50 - 5,
+          125,
+          125,
+          0 - 50 + 10 + 20,
+          20 - 50 - 5,
           0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
+          20
         );
 
         if (input && connnection2.nodeComponent) {
@@ -521,20 +469,20 @@ export const getMap = <T>(
           input.nodeComponent.connections?.push(connnection2.nodeComponent);
         }
 
-        if (end && connnection2.nodeComponent) {
+        if (start && connnection2.nodeComponent) {
           connnection2.nodeComponent.isControlled = true;
 
           connnection2.nodeComponent.components.push({
             type: NodeComponentRelationType.end,
-            component: end,
+            component: start,
           } as unknown as INodeComponentRelation<NodeInfo>);
 
-          connnection2.nodeComponent.endNode = end.nodeComponent;
+          connnection2.nodeComponent.endNode = start.nodeComponent;
           connnection2.nodeComponent.endNodeThumb = getThumbNode(
             ThumbType.EndConnectorCenter,
-            end.nodeComponent
+            start.nodeComponent
           );
-          end.nodeComponent.connections?.push(connnection2.nodeComponent);
+          start.nodeComponent.connections?.push(connnection2.nodeComponent);
         }
         if (connnection2.nodeComponent.update) {
           connnection2.nodeComponent.update();
@@ -544,12 +492,12 @@ export const getMap = <T>(
         const connnection3 = mapCanvasApp.createCubicBezier(
           0,
           0,
+          300 - 50 - 10,
+          20 - 50 - 5,
           0,
           0,
-          0,
-          0,
-          0,
-          0
+          300 - 50 - 50,
+          20 - 50 - 5
         );
         if (end && connnection3.nodeComponent) {
           connnection3.nodeComponent.isControlled = true;
@@ -561,10 +509,10 @@ export const getMap = <T>(
 
           connnection3.nodeComponent.startNode = end.nodeComponent;
           connnection3.nodeComponent.startNodeThumb = getThumbNode(
-            ThumbType.StartConnectorTop,
+            ThumbType.StartConnectorCenter,
             end.nodeComponent
           );
-          //end.nodeComponent.connections?.push(connnection3.nodeComponent);
+          end.nodeComponent.connections?.push(connnection3.nodeComponent);
         }
 
         if (output && connnection3.nodeComponent) {
@@ -580,7 +528,6 @@ export const getMap = <T>(
             ThumbType.StartConnectorCenter,
             output.nodeComponent
           );
-          end.nodeComponent.connections?.push(connnection3.nodeComponent);
           output.nodeComponent.connections?.push(connnection3.nodeComponent);
         }
 
@@ -592,12 +539,12 @@ export const getMap = <T>(
         const connnection4 = mapCanvasApp.createCubicBezier(
           0,
           0,
+          300 - 50 - 10,
+          20 - 50 - 5,
           0,
           0,
-          0,
-          0,
-          0,
-          0,
+          300 - 50 - 50,
+          20 - 50 - 5,
           true,
           true
         );
@@ -611,9 +558,9 @@ export const getMap = <T>(
 
           connnection4.nodeComponent.startNode = end.nodeComponent;
           connnection4.nodeComponent.startNodeThumb = getThumbNode(
-            ThumbType.StartConnectorBottom,
-            end.nodeComponent
-            //'test'
+            ThumbType.StartConnectorCenter,
+            end.nodeComponent,
+            'test'
           );
           end.nodeComponent.connections?.push(connnection4.nodeComponent);
         }
@@ -640,7 +587,7 @@ export const getMap = <T>(
         }
       }
 
-      createNamedSignal(`map-${rect.nodeComponent.id}`, '');
+      createNamedSignal(`testnode-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.computeAsync = compute;

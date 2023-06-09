@@ -514,7 +514,7 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
-      'Add "sum"'
+      'Add "map"'
     );
 
     // createElement(
@@ -909,7 +909,7 @@ export class AppElement extends HTMLElement {
             output: string;
             followPathByName?: string;
           }>,
-      onStopped?: () => void,
+      onStopped?: (input: string) => void,
       input?: string,
       followPathByName?: string, // normal, success, failure, "subflow",
       node1?: IElementNode<unknown>,
@@ -1106,7 +1106,7 @@ export class AppElement extends HTMLElement {
                       canvasApp?.elements.delete(message.id);
                       message?.domElement?.remove();
                       if (onStopped) {
-                        onStopped();
+                        onStopped(input ?? '');
                       }
                     }
                   });
@@ -1117,7 +1117,7 @@ export class AppElement extends HTMLElement {
                   canvasApp?.elements.delete(message.id);
                   message?.domElement?.remove();
                   if (onStopped) {
-                    onStopped();
+                    onStopped('');
                   }
                 }
               } else {
@@ -1145,7 +1145,7 @@ export class AppElement extends HTMLElement {
               timers.delete(cancel);
 
               if (onStopped) {
-                onStopped();
+                onStopped(input ?? '');
               }
             }
           };
@@ -1175,10 +1175,9 @@ export class AppElement extends HTMLElement {
 
           canvasApp?.elements.delete(node2.id);
           node2?.domElement?.remove();
-
-          if (onStopped) {
-            onStopped();
-          }
+        }
+        if (onStopped) {
+          onStopped(input ?? '');
         }
       }
     };
