@@ -29,7 +29,8 @@ export const createCubicBezier = <T>(
   controlPoint1Y: number,
   controlPoint2X: number,
   controlPoint2Y: number,
-  isControlled = false
+  isControlled = false,
+  isDashed = false
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
@@ -43,7 +44,9 @@ export const createCubicBezier = <T>(
     controlPoint1Y,
     controlPoint2X,
     controlPoint2Y,
-    pathHiddenElement
+    pathHiddenElement,
+    false,
+    isDashed
   );
   connection.isControlled = isControlled;
   connection.onClick = () => {

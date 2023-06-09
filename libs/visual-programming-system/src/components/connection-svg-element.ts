@@ -49,7 +49,8 @@ export const createConnectionSVGElement = <T>(
   controlPoint2X: number,
   controlPoint2Y: number,
   pathHiddenElement: IElementNode<T>,
-  isQuadratic = false
+  isQuadratic = false,
+  isDashed = false
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -207,6 +208,12 @@ export const createConnectionSVGElement = <T>(
   ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
   let pathElement: IElementNode<T> | undefined = undefined;
+  const dashedStroke = isDashed
+    ? {
+        'stroke-dasharray': '10,10',
+      }
+    : undefined;
+
   pathElement = createNSElement(
     'path',
     {
@@ -226,6 +233,7 @@ export const createConnectionSVGElement = <T>(
       'marker-start': 'url(#arrowbegin)',
       'marker-end': 'url(#arrow)',
       'stroke-width': 3,
+      ...dashedStroke,
       fill: 'transparent',
       pointerdown: (e: PointerEvent) => {
         if (nodeComponent?.isControlled) {

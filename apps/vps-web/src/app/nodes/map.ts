@@ -11,10 +11,18 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
-const getThumbNode = (thumbType: ThumbType, node: INodeComponent<NodeInfo>) => {
+const getThumbNode = (
+  thumbType: ThumbType,
+  node: INodeComponent<NodeInfo>,
+  path?: string
+) => {
   if (node.thumbConnectors) {
     const thumbNode = node.thumbConnectors.find((thumbNode) => {
-      return thumbNode.thumbType === thumbType;
+      return (
+        thumbNode.thumbType === thumbType &&
+        ((!path && !thumbNode.pathName) ||
+          (path && thumbNode.pathName === path))
+      );
     });
     return thumbNode;
   }
@@ -38,7 +46,8 @@ export const getMap = <T>(
     dummy2?: undefined,
     dummy3?: undefined,
     offsetX?: number,
-    offsetY?: number
+    offsetY?: number,
+    followPathToEndThumb?: boolean
   ) => void
 ) => {
   let node: INodeComponent<NodeInfo>;
@@ -49,6 +58,7 @@ export const getMap = <T>(
   let mapCanvasApp: CanvasAppInstance | undefined = undefined;
   let inputNode: INodeComponent<NodeInfo> | undefined = undefined;
   let outputNode: INodeComponent<NodeInfo> | undefined = undefined;
+  let testNode: INodeComponent<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     hasInitialValue = true;
@@ -83,7 +93,10 @@ export const getMap = <T>(
           () => {
             // stopped internal flow
             // - follow "test" path (call animatePath with current node and "test" as followPathByName)
-            // - wait for it to finish ("onStopped") and then call resolve
+            // - wait for it to finish ("onStopped")
+
+            // - follow default path ...call animatePath with end node and undefined as followPathByName
+            // - wait for it to finish ("onStopped") and resolve
 
             animatePath(
               rect?.nodeComponent as INodeComponent<NodeInfo>,
@@ -95,36 +108,62 @@ export const getMap = <T>(
                 };
               },
               () => {
-                const sum = values
-                  .map((value) => parseInt(value) ?? 0)
-                  .reduce((a, b) => a + b, 0);
-                if (htmlNode) {
-                  const inputElement = createElement(
-                    'div',
-                    {
-                      class:
-                        'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
-                    },
-                    undefined,
-                    input.toString()
-                  ) as unknown as INodeComponent<NodeInfo>;
+                animatePath(
+                  testNode as INodeComponent<NodeInfo>,
+                  'purple',
+                  () => {
+                    return {
+                      result: true,
+                      output: '',
+                    };
+                  },
+                  () => {
+                    const sum = values
+                      .map((value) => parseInt(value) ?? 0)
+                      .reduce((a, b) => a + b, 0);
+                    if (htmlNode) {
+                      // const inputElement = createElement(
+                      //   'div',
+                      //   {
+                      //     class:
+                      //       'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
+                      //   },
+                      //   undefined,
+                      //   input.toString()
+                      // ) as unknown as INodeComponent<NodeInfo>;
 
-                  if (hasInitialValue) {
-                    hasInitialValue = false;
-                  }
-                  // htmlNode.domElement.textContent = sum.toString();
+                      if (hasInitialValue) {
+                        hasInitialValue = false;
+                      }
+                      // htmlNode.domElement.textContent = sum.toString();
 
-                  // if (rect) {
-                  //   rect.resize(240);
-                  // }
-                }
-                resolve({
-                  result: sum.toString(),
-                  followPath: undefined,
-                });
+                      // if (rect) {
+                      //   rect.resize(240);
+                      // }
+                    }
+                    resolve({
+                      result: sum.toString(),
+                      followPath: undefined,
+                    });
+                  },
+                  '',
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  node.x + 50 + 5,
+                  node.y + 50 + 5,
+                  true
+                );
               },
               '',
-              'test'
+              'test',
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              false
             );
           },
           '',
@@ -271,6 +310,37 @@ export const getMap = <T>(
         );
         outputNode = output.nodeComponent;
 
+        const subOutput = mapCanvasApp.createRect(
+          300 + 25 - 5,
+          70 - 25 + 18,
+          1,
+          1,
+          undefined,
+          undefined,
+          [
+            {
+              thumbType: ThumbType.StartConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.start,
+              hidden: true,
+              pathName: 'test',
+            },
+            {
+              thumbType: ThumbType.EndConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.end,
+              hidden: true,
+              pathName: 'test',
+            },
+          ],
+          '',
+          {
+            classNames: `invisible pointer-events-none`,
+          },
+          true,
+          true
+        );
+
         const start = mapCanvasApp.createRect(
           75,
           25,
@@ -326,6 +396,7 @@ export const getMap = <T>(
           true,
           true
         );
+        testNode = end.nodeComponent;
 
         // connect start to end
         const connnection = mapCanvasApp.createCubicBezier(
@@ -465,6 +536,57 @@ export const getMap = <T>(
 
         if (connnection3.nodeComponent.update) {
           connnection3.nodeComponent.update();
+        }
+
+        // connnect node connector to end
+        const connnection4 = mapCanvasApp.createCubicBezier(
+          0,
+          0,
+          300 - 50 - 10,
+          20 - 50 - 5,
+          0,
+          0,
+          300 - 50 - 50,
+          20 - 50 - 5,
+          true,
+          true
+        );
+        if (end && connnection4.nodeComponent) {
+          connnection4.nodeComponent.isControlled = true;
+
+          connnection4.nodeComponent.components.push({
+            type: NodeComponentRelationType.start,
+            component: end,
+          } as unknown as INodeComponentRelation<NodeInfo>);
+
+          connnection4.nodeComponent.startNode = end.nodeComponent;
+          connnection4.nodeComponent.startNodeThumb = getThumbNode(
+            ThumbType.StartConnectorCenter,
+            end.nodeComponent,
+            'test'
+          );
+          end.nodeComponent.connections?.push(connnection4.nodeComponent);
+        }
+
+        if (subOutput && connnection4.nodeComponent) {
+          connnection4.nodeComponent.isControlled = true;
+
+          connnection4.nodeComponent.components.push({
+            type: NodeComponentRelationType.end,
+            component: subOutput,
+          } as unknown as INodeComponentRelation<NodeInfo>);
+
+          connnection4.nodeComponent.endNode = subOutput.nodeComponent;
+          connnection4.nodeComponent.endNodeThumb = getThumbNode(
+            ThumbType.StartConnectorCenter,
+            subOutput.nodeComponent,
+            'test'
+          );
+          subOutput.nodeComponent.connections?.push(connnection4.nodeComponent);
+        }
+
+        if (connnection4.nodeComponent.update) {
+          connnection4.nodeComponent.update();
         }
       }
 

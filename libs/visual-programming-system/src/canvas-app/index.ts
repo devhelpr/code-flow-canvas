@@ -567,7 +567,8 @@ export const createCanvasApp = <T>(
       controlPointY1: number,
       controlPointX2: number,
       controlPointY2: number,
-      isControlled?: boolean
+      isControlled?: boolean,
+      isDashed = false
     ) =>
       createCubicBezier<T>(
         canvas as unknown as INodeComponent<T>,
@@ -582,7 +583,8 @@ export const createCanvasApp = <T>(
         controlPointY1,
         controlPointX2,
         controlPointY2,
-        isControlled
+        isControlled,
+        isDashed
       ),
     deleteElementFromNode: (
       element: INodeComponent<T>,

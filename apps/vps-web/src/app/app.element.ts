@@ -791,7 +791,8 @@ export class AppElement extends HTMLElement {
 
     const getNodeConnectionPairById = (
       node: INodeComponent<NodeInfo>,
-      followPathByName?: string
+      followPathByName?: string,
+      followPathToEndThumb?: boolean
     ) => {
       const connectionPairs: {
         start: INodeComponent<NodeInfo>;
@@ -850,15 +851,31 @@ export class AppElement extends HTMLElement {
                 connection.controlPoints &&
                 connection.controlPoints.length === 2
               ) {
-                if (
-                  followPathByName &&
-                  connection.startNodeThumb?.pathName !== followPathByName
-                ) {
-                  return;
-                }
+                if (followPathToEndThumb) {
+                  if (
+                    followPathByName &&
+                    connection.endNodeThumb?.pathName !== followPathByName
+                  ) {
+                    return;
+                  }
 
-                if (!followPathByName && connection.startNodeThumb?.pathName) {
-                  return;
+                  if (!followPathByName && connection.endNodeThumb?.pathName) {
+                    return;
+                  }
+                } else {
+                  if (
+                    followPathByName &&
+                    connection.startNodeThumb?.pathName !== followPathByName
+                  ) {
+                    return;
+                  }
+
+                  if (
+                    !followPathByName &&
+                    connection.startNodeThumb?.pathName
+                  ) {
+                    return;
+                  }
                 }
 
                 connectionPairs.push({
@@ -899,13 +916,15 @@ export class AppElement extends HTMLElement {
       node2?: IElementNode<unknown>,
       node3?: IElementNode<unknown>,
       offsetX?: number,
-      offsetY?: number
+      offsetY?: number,
+      followPathToEndThumb?: boolean
     ) => {
       const maxSpeed = 50;
       const currentSpeed = speedMeter;
       const nodeConnectionPairs = getNodeConnectionPairById(
         node,
-        followPathByName
+        followPathByName,
+        followPathToEndThumb
       );
 
       if (nodeConnectionPairs && nodeConnectionPairs.length > 0) {
