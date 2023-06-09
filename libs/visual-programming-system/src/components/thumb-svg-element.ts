@@ -213,6 +213,7 @@ export const createThumbSVGElement = <T>(
 
               curve.nodeComponent.startNode = parentNode;
               curve.nodeComponent.startNodeThumb = nodeComponent;
+              parentNode.connections?.push(curve.nodeComponent);
 
               if (curve.nodeComponent.update) {
                 curve.nodeComponent.update();

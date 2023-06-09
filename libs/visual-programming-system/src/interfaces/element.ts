@@ -60,6 +60,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   components: INodeComponentRelation<T>[];
   startNode?: INodeComponent<T>;
   endNode?: INodeComponent<T>;
+  connections? : INodeComponent<T>[];
   startNodeThumb?: INodeComponent<T>;
   endNodeThumb?: INodeComponent<T>;
   isControlled?: boolean;

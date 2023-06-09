@@ -680,6 +680,8 @@ export const createRect = <T>(
       rectNode.id
     );
 
+    let previousConnectedNodeId = "";
+
     // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
     if (
@@ -694,9 +696,11 @@ export const createRect = <T>(
     ) {
       let nodeReference = rectNode;
       if (component.specifier === 'begin') {
+        previousConnectedNodeId = component.parent.startNode?.id ?? "";
         component.parent.startNode = rectNode;
         component.parent.startNodeThumb = thumbNode;
       } else {
+        previousConnectedNodeId = component.parent.endNode?.id ?? "";
         component.parent.endNode = rectNode;
         component.parent.endNodeThumb = thumbNode;
         if (component.parent.startNode) {
@@ -705,6 +709,12 @@ export const createRect = <T>(
         }
       }
       component.parent.isControlled = true;
+      
+      // remove the previous connected node from the connections of the rectNode
+      rectNode.connections = (rectNode.connections ?? []).filter( connection => {
+        return connection.startNode?.id !== previousConnectedNodeId && connection.endNode?.id !== previousConnectedNodeId;
+      });
+      rectNode.connections?.push(component.parent);
 
       const index = component.parent.components.findIndex((c) =>
         component.specifier === 'begin'
@@ -947,6 +957,7 @@ export const createRect = <T>(
     console.log('CLICKED ON RECT', rectNode.id);
     setSelectNode(rectNode.id);
   };
+  rectNode.connections = [];
 
   createEffect(() => {
     //const selectedNode = getSelectedNode();

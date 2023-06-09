@@ -764,6 +764,8 @@ export class AppElement extends HTMLElement {
               if (curve.nodeComponent.update) {
                 curve.nodeComponent.update();
               }
+              start.connections?.push(curve.nodeComponent);
+              end.connections?.push(curve.nodeComponent);
               console.log('createCubicBezier', curve);
 
               loopColumns++;
@@ -797,38 +799,47 @@ export class AppElement extends HTMLElement {
       }[] = [];
 
       // EXPENSIVE copy
-      const elementList = Array.from(canvasApp?.elements ?? []);
+      //const elementList = Array.from(canvasApp?.elements ?? []);
       const node = this.canvasApp?.elements?.get(nodeId);
       if (node) {
         const start = node as unknown as INodeComponent<NodeInfo>;
         if (start) {
           // EXPENSIVE filter
-          const connectionsFromStartNode = elementList.filter((e) => {
-            const element = e[1] as INodeComponent<NodeInfo>;
-            return element.startNode?.id === node.id;
-          });
+          // const connectionsFromStartNode = elementList.filter((e) => {
+          //   const element = e[1] as INodeComponent<NodeInfo>;
+          //   return element.startNode?.id === node.id;
+          // });
+          const connectionsFromStartNode = start.connections;
+          // TODO : store connections in the nodes they connect to as well
+          // (remove the need for this expensive find)
+          // remove the connection reference when the node is removed from the connection
 
           let connection: INodeComponent<NodeInfo> | undefined = undefined;
 
           if (connectionsFromStartNode && connectionsFromStartNode.length > 0) {
             connectionsFromStartNode.forEach((connectionNode) => {
+              if (connectionNode.startNode?.id !== start.id) {
+                return;
+              }
               let end: INodeComponent<NodeInfo> | undefined = undefined;
               connection =
-                connectionNode[1] as unknown as INodeComponent<NodeInfo>;
+                connectionNode as unknown as INodeComponent<NodeInfo>;
+                //connectionNode[1] as unknown as INodeComponent<NodeInfo>;
 
               if (connection && connection.endNode) {
                 // EXPENSIVE find
-                const endElement = elementList.find((e) => {
-                  const element = e[1] as INodeComponent<NodeInfo>;
-                  return (
-                    connection &&
-                    connection.endNode &&
-                    element.id === connection.endNode.id
-                  );
-                });
-                if (endElement) {
-                  end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-                }
+                // const endElement = elementList.find((e) => {
+                //   const element = e[1] as INodeComponent<NodeInfo>;
+                //   return (
+                //     connection &&
+                //     connection.endNode &&
+                //     element.id === connection.endNode.id
+                //   );
+                // });
+                // if (endElement) {
+                //   end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+                // }
+                end = connection.endNode;
               }
 
               if (
@@ -871,7 +882,10 @@ export class AppElement extends HTMLElement {
         input: string
       ) => { result: boolean; output: string; followPathByName?: string },
       input?: string,
-      followPathByName?: string // normal, success, failure, "subflow"
+      followPathByName?: string, // normal, success, failure, "subflow",
+      node1? : IElementNode<unknown>,
+      node2? : IElementNode<unknown>,
+      node3? : IElementNode<unknown>,
     ) => {
       const maxSpeed = 50;
       const currentSpeed = speedMeter;
@@ -882,13 +896,11 @@ export class AppElement extends HTMLElement {
 
       if (nodeConnectionPairs && nodeConnectionPairs.length > 0) {
         nodeConnectionPairs.forEach((nodeConnectionPair) => {
-          // TODO: check if nodeConnectionPair conforms to pathCondition
-
           const start = nodeConnectionPair.start;
           const connection = nodeConnectionPair.connection;
           const end = nodeConnectionPair.end;
 
-          const testCircle = createElement(
+          const testCircle = node1 ?? createElement(
             'div',
             {
               class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
@@ -901,7 +913,7 @@ export class AppElement extends HTMLElement {
             ''
           );
 
-          const message = createElement(
+          const message = node2 ?? createElement(
             'div',
             {
               class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
@@ -914,7 +926,7 @@ export class AppElement extends HTMLElement {
             ''
           );
 
-          const messageText = createElement(
+          const messageText = node3 ?? createElement(
             'div',
             {
               class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
@@ -922,13 +934,14 @@ export class AppElement extends HTMLElement {
             message.domElement,
             input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? ''
           );
-
+          messageText.domElement.textContent = input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? '';
           const domCircle = testCircle.domElement as HTMLElement;
-          domCircle.style.display = 'none';
           const domMessage = message.domElement as HTMLElement;
-          domMessage.style.display = 'none';
-          domMessage.style.pointerEvents = 'none';
-
+          if (!node1) {            
+            domCircle.style.display = 'none';            
+            domMessage.style.display = 'none';
+            domMessage.style.pointerEvents = 'none';
+          }
           let loop = 0;
           const onInterval = () => {
             if (
@@ -976,20 +989,24 @@ export class AppElement extends HTMLElement {
                 { x: endHelper.x + tx, y: endHelper.y + ty }
               );
 
-              domCircle.style.display = 'flex';
+              if (!node1) {
+                domCircle.style.display = 'flex';
+              }
               domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-              domMessage.style.display = 'flex';
+              if (!node1) {
+                domMessage.style.display = 'flex';
+              }
               domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
 
               loop += 0.015;
               if (loop > 1.015) {
                 loop = 0;
 
-                canvasApp?.elements.delete(testCircle.id);
-                testCircle?.domElement?.remove();
+                // canvasApp?.elements.delete(testCircle.id);
+                // testCircle?.domElement?.remove();
 
-                canvasApp?.elements.delete(message.id);
-                message?.domElement?.remove();
+                // canvasApp?.elements.delete(message.id);
+                // message?.domElement?.remove();
 
                 clearInterval(cancel);
                 timers.delete(cancel);
@@ -1007,9 +1024,25 @@ export class AppElement extends HTMLElement {
                       color,
                       onNextNode,
                       result.output,
-                      result.followPathByName
+                      result.followPathByName,
+                      testCircle,
+                      message,
+                      messageText                      
                     );
-                  }
+                  } else {
+                    canvasApp?.elements.delete(testCircle.id);
+                    testCircle?.domElement?.remove();
+
+                    canvasApp?.elements.delete(message.id);
+                    message?.domElement?.remove();
+                  } 
+
+                } else {
+                  canvasApp?.elements.delete(testCircle.id);
+                    testCircle?.domElement?.remove();
+
+                    canvasApp?.elements.delete(message.id);
+                    message?.domElement?.remove();
                 }
               } else {
                 if (speedMeter !== currentSpeed) {
@@ -1055,6 +1088,14 @@ export class AppElement extends HTMLElement {
           };
           setCanceler();
         });
+      } else {
+        if (node1 && node2 && node3) {
+          canvasApp?.elements.delete(node1.id);
+          node1?.domElement?.remove();
+
+          canvasApp?.elements.delete(node2.id);
+          node2?.domElement?.remove();
+        }
       }
     };
 
