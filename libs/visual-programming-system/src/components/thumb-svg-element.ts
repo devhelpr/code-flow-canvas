@@ -37,7 +37,8 @@ export const createThumbSVGElement = <T>(
   canvas?: INodeComponent<T>,
   canvasElements?: ElementNodeMap<T>,
   parentNode?: INodeComponent<T>,
-  pathHiddenElement?: IElementNode<T>
+  pathHiddenElement?: IElementNode<T>,
+  disableInteraction?: boolean
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -88,7 +89,9 @@ export const createThumbSVGElement = <T>(
   circleElement = createElement(
     'div', //'circle',
     {
-      class: `pointer-events-auto rounded-full origin-center border-[3px]`,
+      class: `${
+        disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
+      } rounded-full origin-center border-[3px]`,
       style: {
         width: `${(radius ?? 10) * 2}px`,
         height: `${(radius ?? 10) * 2}px`,
@@ -117,6 +120,9 @@ export const createThumbSVGElement = <T>(
         ? 'transparent'
         : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
       pointerover: (_e: PointerEvent) => {
+        if (disableInteraction) {
+          return;
+        }
         console.log('svg pointerover', nodeComponent.id);
         (nodeComponent.domElement as unknown as SVGElement).classList.remove(
           'cursor-pointer'
@@ -150,12 +156,18 @@ export const createThumbSVGElement = <T>(
         }
       },
       pointerleave: (_e: PointerEvent) => {
+        if (disableInteraction) {
+          return;
+        }
         if (nodeComponent.isConnectPoint) {
           console.log('svg unregister drop target', nodeComponent.id);
           interactionStateMachine.clearDropTarget(nodeComponent);
         }
       },
       pointerdown: (e: PointerEvent) => {
+        if (disableInteraction) {
+          return;
+        }
         if (nodeComponent) {
           /* 
           TODO:
@@ -192,7 +204,7 @@ export const createThumbSVGElement = <T>(
               y - 50,
               x - 50,
               y - 50,
-              x - 50 ,
+              x - 50,
               y - 50,
               x - 50,
               y - 50,
@@ -293,6 +305,10 @@ export const createThumbSVGElement = <T>(
         }
       },
       pointermove: (e: PointerEvent) => {
+        if (disableInteraction) {
+          return;
+        }
+
         const canvasRect = (
           canvasElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
@@ -321,6 +337,9 @@ export const createThumbSVGElement = <T>(
         }
       },
       pointerup: (e: PointerEvent) => {
+        if (disableInteraction) {
+          return;
+        }
         if (nodeComponent) {
           if (nodeComponent && nodeComponent.domElement) {
             //clearDropTarget(nodeComponent);
@@ -381,6 +400,10 @@ export const createThumbSVGElement = <T>(
   };
 
   nodeComponent.pointerUp = () => {
+    if (disableInteraction) {
+      return;
+    }
+
     const dropTarget = interactionStateMachine.getCurrentDropTarget();
     if (dropTarget) {
       console.log(

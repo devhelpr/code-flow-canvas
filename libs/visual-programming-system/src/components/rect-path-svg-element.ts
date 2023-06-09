@@ -37,7 +37,9 @@ export const createRectPathSVGElement = <T>(
   markup?: string | INodeComponent<T>,
   layoutProperties?: {
     classNames?: string;
-  }
+  },
+  hasStaticWidthHeight?: boolean,
+  disableInteraction?: boolean
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -90,7 +92,8 @@ export const createRectPathSVGElement = <T>(
 
   let astElement: any;
 
-  const hasPointerEvents = true;
+  const hasPointerEvents = !disableInteraction;
+
   if (markup !== undefined && typeof markup === 'string') {
     const compiledMarkup = compileMarkup(
       `<div class="${
@@ -507,21 +510,25 @@ export const createRectPathSVGElement = <T>(
   divElement.width = width;
   divElement.height = height;
 
-  const astElementSize = (
-    astElement?.domElement as unknown as HTMLElement
-  ).getBoundingClientRect();
+  if (!hasStaticWidthHeight) {
+    const astElementSize = (
+      astElement?.domElement as unknown as HTMLElement
+    ).getBoundingClientRect();
 
-  const { scale } = getCamera();
-  divElement.width = astElementSize.width / scale;
-  divElement.height = astElementSize.height / scale - 20;
-  points.width = astElementSize.width / scale;
-  points.height = astElementSize.height / scale - 20;
-
+    const { scale } = getCamera();
+    divElement.width = astElementSize.width / scale;
+    divElement.height = astElementSize.height / scale - 20;
+    points.width = astElementSize.width / scale;
+    points.height = astElementSize.height / scale - 20;
+  }
   divElement.update(divElement, startX, startY, divElement);
 
   return {
     nodeComponent: divElement,
     resize: (width?: number) => {
+      if (hasStaticWidthHeight) {
+        return;
+      }
       const astElementHtmlElement =
         astElement?.domElement as unknown as HTMLElement;
       astElementHtmlElement.style.width = width ? `${width}px` : 'auto';

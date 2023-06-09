@@ -36,6 +36,7 @@ import { getExpression } from './nodes/expression';
 import { getIfCondition } from './nodes/if-condition';
 import { getShowInput } from './nodes/show-input';
 import { getSum } from './nodes/sum';
+import { getMap } from './nodes/map';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -506,8 +507,8 @@ export class AppElement extends HTMLElement {
           event.preventDefault();
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
-          const sum = getSum();
-          sum.createVisualNode(canvasApp, startX, startY);
+          const map = getMap<NodeInfo>(animatePath);
+          map.createVisualNode(canvasApp, startX, startY);
 
           return false;
         },
@@ -527,7 +528,7 @@ export class AppElement extends HTMLElement {
     //       const y = Math.floor(Math.random() * 500);
 
     //       // if (Math.random() >= 0.5) {
-    //       //const bezierCurve = 
+    //       //const bezierCurve =
     //       canvasApp.createCubicBezier(
     //         x,
     //         y,
@@ -655,7 +656,7 @@ export class AppElement extends HTMLElement {
                   click: (event) => {
                     event.preventDefault();
                     //alert(`click ${testNode.id}`);
-                    animatePath(rect.nodeComponent.id, color);
+                    animatePath(rect.nodeComponent, color);
                     return false;
                   },
                 },
@@ -696,7 +697,7 @@ export class AppElement extends HTMLElement {
                 row: loopRows,
                 compute: () => {
                   return true;
-                }
+                },
               };
 
               //console.log('createRect', performance.now() - dateTimestamp);
@@ -789,7 +790,7 @@ export class AppElement extends HTMLElement {
     );
 
     const getNodeConnectionPairById = (
-      nodeId: string,
+      node: INodeComponent<NodeInfo>,
       followPathByName?: string
     ) => {
       const connectionPairs: {
@@ -800,7 +801,7 @@ export class AppElement extends HTMLElement {
 
       // EXPENSIVE copy
       //const elementList = Array.from(canvasApp?.elements ?? []);
-      const node = this.canvasApp?.elements?.get(nodeId);
+      //const node = this.canvasApp?.elements?.get(nodeId);
       if (node) {
         const start = node as unknown as INodeComponent<NodeInfo>;
         if (start) {
@@ -824,7 +825,7 @@ export class AppElement extends HTMLElement {
               let end: INodeComponent<NodeInfo> | undefined = undefined;
               connection =
                 connectionNode as unknown as INodeComponent<NodeInfo>;
-                //connectionNode[1] as unknown as INodeComponent<NodeInfo>;
+              //connectionNode[1] as unknown as INodeComponent<NodeInfo>;
 
               if (connection && connection.endNode) {
                 // EXPENSIVE find
@@ -856,6 +857,10 @@ export class AppElement extends HTMLElement {
                   return;
                 }
 
+                if (!followPathByName && connection.startNodeThumb?.pathName) {
+                  return;
+                }
+
                 connectionPairs.push({
                   start,
                   connection,
@@ -874,23 +879,32 @@ export class AppElement extends HTMLElement {
     const timers: Map<NodeJS.Timer, () => void> = new Map();
 
     const animatePath = (
-      nodeId: string,
+      node: INodeComponent<NodeInfo>,
       color: string,
       onNextNode?: (
         nodeId: string,
         node: INodeComponent<NodeInfo>,
         input: string
-      ) => { result: boolean; output: string; followPathByName?: string },
+      ) =>
+        | { result: boolean; output: string; followPathByName?: string }
+        | Promise<{
+            result: boolean;
+            output: string;
+            followPathByName?: string;
+          }>,
+      onStopped?: () => void,
       input?: string,
       followPathByName?: string, // normal, success, failure, "subflow",
-      node1? : IElementNode<unknown>,
-      node2? : IElementNode<unknown>,
-      node3? : IElementNode<unknown>,
+      node1?: IElementNode<unknown>,
+      node2?: IElementNode<unknown>,
+      node3?: IElementNode<unknown>,
+      offsetX?: number,
+      offsetY?: number
     ) => {
       const maxSpeed = 50;
       const currentSpeed = speedMeter;
       const nodeConnectionPairs = getNodeConnectionPairById(
-        nodeId,
+        node,
         followPathByName
       );
 
@@ -900,45 +914,55 @@ export class AppElement extends HTMLElement {
           const connection = nodeConnectionPair.connection;
           const end = nodeConnectionPair.end;
 
-          const testCircle = node1 ?? createElement(
-            'div',
-            {
-              class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
-              style: {
-                'background-color': color,
-                'clip-path': 'circle(50%)',
+          // eslint-disable-next-line prefer-const
+          let testCircle =
+            node1 ??
+            createElement(
+              'div',
+              {
+                class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded cursor-pointer`,
+                style: {
+                  'background-color': color,
+                  'clip-path': 'circle(50%)',
+                },
               },
-            },
-            this.canvasApp?.canvas.domElement,
-            ''
-          );
+              this.canvasApp?.canvas.domElement,
+              ''
+            );
 
-          const message = node2 ?? createElement(
-            'div',
-            {
-              class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
-              style: {
-                'clip-path':
-                  'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+          // eslint-disable-next-line prefer-const
+          let message =
+            node2 ??
+            createElement(
+              'div',
+              {
+                class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden cursor-pointer`,
+                style: {
+                  'clip-path':
+                    'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+                },
               },
-            },
-            this.canvasApp?.canvas.domElement,
-            ''
-          );
+              this.canvasApp?.canvas.domElement,
+              ''
+            );
 
-          const messageText = node3 ?? createElement(
-            'div',
-            {
-              class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
-            },
-            message.domElement,
-            input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? ''
-          );
-          messageText.domElement.textContent = input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? '';
+          // eslint-disable-next-line prefer-const
+          let messageText =
+            node3 ??
+            createElement(
+              'div',
+              {
+                class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+              },
+              message.domElement,
+              input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? ''
+            );
+          messageText.domElement.textContent =
+            input?.toString() ?? start.nodeInfo?.formValues?.Expression ?? '';
           const domCircle = testCircle.domElement as HTMLElement;
           const domMessage = message.domElement as HTMLElement;
-          if (!node1) {            
-            domCircle.style.display = 'none';            
+          if (!node1) {
+            domCircle.style.display = 'none';
             domMessage.style.display = 'none';
             domMessage.style.pointerEvents = 'none';
           }
@@ -960,7 +984,8 @@ export class AppElement extends HTMLElement {
                   ThumbType.StartConnectorCenter,
                 connection.startNodeThumb?.thumbIndex,
                 end,
-                connection.startNodeThumb?.thumbOffsetY ?? 0
+                connection.startNodeThumb?.thumbOffsetY ?? 0,
+                connection.startNodeThumb?.thumbControlPointDistance
               );
 
               const endHelper = end.onCalculateControlPoints(
@@ -970,7 +995,8 @@ export class AppElement extends HTMLElement {
                   ThumbType.EndConnectorCenter,
                 connection.endNodeThumb?.thumbIndex,
                 start,
-                connection.endNodeThumb?.thumbOffsetY ?? 0
+                connection.endNodeThumb?.thumbOffsetY ?? 0,
+                connection.endNodeThumb?.thumbControlPointDistance
               );
 
               const tx = 40;
@@ -992,11 +1018,15 @@ export class AppElement extends HTMLElement {
               if (!node1) {
                 domCircle.style.display = 'flex';
               }
-              domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+              domCircle.style.transform = `translate(${
+                bezierCurvePoints.x + (offsetX ?? 0)
+              }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
               if (!node1) {
                 domMessage.style.display = 'flex';
               }
-              domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+              domMessage.style.transform = `translate(${
+                bezierCurvePoints.x + (offsetX ?? 0)
+              }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
               loop += 0.015;
               if (loop > 1.015) {
@@ -1012,37 +1042,64 @@ export class AppElement extends HTMLElement {
                 timers.delete(cancel);
 
                 if (!onNextNode || onNextNode) {
-                  const result = onNextNode?.(end.id, end, input ?? '') ?? {
+                  const onNextOrPromise = onNextNode?.(
+                    end.id,
+                    end,
+                    input ?? ''
+                  ) ?? {
                     result: true,
                     output: '',
                     followPathByName: undefined,
                   };
-                  console.log('animatePath onNextNode result', input, result);
-                  if (result.result) {
-                    animatePath(
-                      end.id,
-                      color,
-                      onNextNode,
-                      result.output,
-                      result.followPathByName,
-                      testCircle,
-                      message,
-                      messageText                      
-                    );
-                  } else {
+
+                  if ((onNextOrPromise as unknown as Promise<unknown>).then) {
                     canvasApp?.elements.delete(testCircle.id);
                     testCircle?.domElement?.remove();
 
                     canvasApp?.elements.delete(message.id);
                     message?.domElement?.remove();
-                  } 
+                    (testCircle as unknown as undefined) = undefined;
+                    (message as unknown as undefined) = undefined;
+                    (messageText as unknown as undefined) = undefined;
+                  }
 
+                  Promise.resolve(onNextOrPromise).then((result: any) => {
+                    //const result =
+                    console.log('animatePath onNextNode result', input, result);
+                    if (result.result) {
+                      animatePath(
+                        end,
+                        color,
+                        onNextNode,
+                        onStopped,
+                        result.output,
+                        result.followPathByName,
+                        testCircle,
+                        message,
+                        messageText,
+                        offsetX,
+                        offsetY
+                      );
+                    } else {
+                      canvasApp?.elements.delete(testCircle.id);
+                      testCircle?.domElement?.remove();
+
+                      canvasApp?.elements.delete(message.id);
+                      message?.domElement?.remove();
+                      if (onStopped) {
+                        onStopped();
+                      }
+                    }
+                  });
                 } else {
                   canvasApp?.elements.delete(testCircle.id);
-                    testCircle?.domElement?.remove();
+                  testCircle?.domElement?.remove();
 
-                    canvasApp?.elements.delete(message.id);
-                    message?.domElement?.remove();
+                  canvasApp?.elements.delete(message.id);
+                  message?.domElement?.remove();
+                  if (onStopped) {
+                    onStopped();
+                  }
                 }
               } else {
                 if (speedMeter !== currentSpeed) {
@@ -1067,6 +1124,10 @@ export class AppElement extends HTMLElement {
 
               clearInterval(cancel);
               timers.delete(cancel);
+
+              if (onStopped) {
+                onStopped();
+              }
             }
           };
 
@@ -1095,6 +1156,10 @@ export class AppElement extends HTMLElement {
 
           canvasApp?.elements.delete(node2.id);
           node2?.domElement?.remove();
+
+          if (onStopped) {
+            onStopped();
+          }
         }
       }
     };

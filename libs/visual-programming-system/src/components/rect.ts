@@ -48,7 +48,9 @@ export const createRect = <T>(
   markup?: string | INodeComponent<T>,
   layoutProperties?: {
     classNames?: string;
-  }
+  },
+  hasStaticWidthHeight?: boolean,
+  disableInteraction?: boolean
 ) => {
   let widthHelper = width;
   let heightHelper = height;
@@ -70,7 +72,9 @@ export const createRect = <T>(
       return thumbPosition<T>(rectNode, thumbType, index, offsetY);
     },
     markup,
-    layoutProperties
+    layoutProperties,
+    hasStaticWidthHeight,
+    disableInteraction
   );
   const rectNode: INodeComponent<T> = rectPathInstance.nodeComponent;
 
@@ -86,7 +90,8 @@ export const createRect = <T>(
     thumbType: ThumbType,
     index?: number,
     connectedNode?: INodeComponent<T>,
-    thumbOffsetY?: number
+    thumbOffsetY?: number,
+    controlPointDistance?: number
   ) => {
     if (nodeType === ControlAndEndPointNodeType.start) {
       const xDistance = Math.abs(
@@ -121,7 +126,11 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y + Math.max((rectNode.height || 0) + 50, yDistance),
+          cy:
+            y +
+            (controlPointDistance ??
+              Math.max(rectNode.height || 0, yDistance)) +
+            50,
           nodeType,
         };
       } else if (thumbType === ThumbType.StartConnectorTop) {
@@ -134,13 +143,17 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y - Math.max((rectNode.height || 0) + 50, yDistance),
+          cy:
+            y -
+            (controlPointDistance ??
+              Math.max(rectNode.height || 0, yDistance)) +
+            50,
           nodeType,
         };
       }
 
       x = x + thumbRadius * 3;
-      const cx = x + (rectNode.width || 0) + 50;
+      const cx = x + (controlPointDistance ?? (rectNode.width || 0)) + 50;
 
       return {
         x: x,
@@ -183,13 +196,17 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y - Math.max((rectNode.height || 0) - 50, yDistance),
+          cy:
+            y -
+            (controlPointDistance ??
+              Math.max(rectNode.height || 0, yDistance) - 50),
           nodeType,
         };
       }
 
       x = x - thumbRadius * 3;
-      const cx = x - (rectNode.width || 0) - 50;
+
+      const cx = x - (controlPointDistance ?? (rectNode.width || 0)) - 50;
       return {
         x: x,
         y: y,
@@ -259,7 +276,13 @@ export const createRect = <T>(
     thumbRadius,
     true,
     undefined,
-    undefined
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    disableInteraction
   );
 
   startPointElement.update = (
@@ -290,7 +313,15 @@ export const createRect = <T>(
     thumbWidth,
     thumbHeight,
     thumbRadius,
-    true
+    true,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    disableInteraction
   );
   rightTopPointElement.update = (
     component?: INodeComponent<T>,
@@ -318,7 +349,15 @@ export const createRect = <T>(
     thumbWidth,
     thumbHeight,
     thumbRadius,
-    true
+    true,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    disableInteraction
   );
   leftBottomElement.update = (
     component?: INodeComponent<T>,
@@ -350,7 +389,12 @@ export const createRect = <T>(
     true,
     undefined,
     undefined,
-    true
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    disableInteraction
   );
   rightBottomElement.update = (
     component?: INodeComponent<T>,
@@ -524,7 +568,9 @@ export const createRect = <T>(
         y,
         `thumb-connector-${index}`,
         'connector',
-        'top-0 left-0 origin-center',
+        `top-0 left-0 origin-center ${
+          thumb.hidden ? 'invisible pointer-events-none' : ''
+        }`,
         undefined,
         undefined,
         undefined,
@@ -535,7 +581,8 @@ export const createRect = <T>(
         canvas,
         elements,
         rectNode,
-        pathHiddenElement
+        pathHiddenElement,
+        disableInteraction
       );
 
       thumbConnectorElement.pathName = thumb.pathName;
@@ -543,11 +590,15 @@ export const createRect = <T>(
       thumbConnectorElement.isConnectPoint = true;
       thumbConnectorElement.thumbConnectionType = thumb.connectionType;
       thumbConnectorElement.thumbOffsetY = thumb.offsetY ?? 0;
+      thumbConnectorElement.thumbControlPointDistance =
+        thumb.controlPointDistance;
 
-      thumbConnectorElement.onCanReceiveDroppedComponent =
-        onCanReceiveDroppedComponent;
-      thumbConnectorElement.onReceiveDroppedComponent =
-        onReceiveDroppedComponent;
+      if (!disableInteraction) {
+        thumbConnectorElement.onCanReceiveDroppedComponent =
+          onCanReceiveDroppedComponent;
+        thumbConnectorElement.onReceiveDroppedComponent =
+          onReceiveDroppedComponent;
+      }
       thumbConnectorElement.update = onEndThumbConnectorElementupdate;
 
       thumbConnectors.push(thumbConnectorElement);

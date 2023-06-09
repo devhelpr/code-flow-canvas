@@ -7,13 +7,16 @@ import { registerCustomFunction } from '@devhelpr/expression-compiler';
 export const run = <T>(
   nodes: ElementNodeMap<T>,
   animatePath: (
-    nodeId: string,
+    node: INodeComponent<T>,
     color: string,
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
       input: string
-    ) => { result: boolean; output: string; followPathByName?: string },
+    ) =>
+      | { result: boolean; output: string; followPathByName?: string }
+      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
+    onStopped?: () => void,
     input?: string,
     followPathByName?: string
   ) => void
@@ -64,13 +67,27 @@ export const run = <T>(
       }
       if (result !== false) {
         animatePath(
-          node.id,
+          node as unknown as INodeComponent<T>,
           'white',
           (nodeId: string, node: INodeComponent<T>, input: string) => {
             console.log('Next nodeId', nodeId, node, input);
             let result: any = false;
             const formInfo = node.nodeInfo as unknown as any;
-            if (formInfo.compute) {
+
+            if (formInfo.computeAsync) {
+              return new Promise((resolve, reject) => {
+                formInfo.computeAsync(input).then((computeResult: any) => {
+                  result = computeResult.result;
+                  followPath = computeResult.followPath;
+
+                  resolve({
+                    result: true,
+                    output: result ?? input,
+                    followPathByName: followPath,
+                  });
+                });
+              });
+            } else if (formInfo.compute) {
               const computeResult = formInfo.compute(input);
               result = computeResult.result;
               followPath = computeResult.followPath;
@@ -91,6 +108,9 @@ export const run = <T>(
               output: result ?? input,
               followPathByName: followPath,
             };
+          },
+          () => {
+            // stopped
           },
           result,
           followPath

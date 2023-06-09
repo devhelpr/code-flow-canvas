@@ -47,6 +47,9 @@ export const createCubicBezier = <T>(
   );
   connection.isControlled = isControlled;
   connection.onClick = () => {
+    if (connection.isControlled) {
+      return;
+    }
     console.log('connection click', connection.id);
     setSelectNode(connection.id);
   };

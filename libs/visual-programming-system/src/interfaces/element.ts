@@ -60,7 +60,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   components: INodeComponentRelation<T>[];
   startNode?: INodeComponent<T>;
   endNode?: INodeComponent<T>;
-  connections? : INodeComponent<T>[];
+  connections?: INodeComponent<T>[];
   startNodeThumb?: INodeComponent<T>;
   endNodeThumb?: INodeComponent<T>;
   isControlled?: boolean;
@@ -69,6 +69,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   thumbIndex?: number;
   thumbOffsetY?: number;
   thumbType?: ThumbType;
+  thumbControlPointDistance?: number;
   thumbConnectionType?: ThumbConnectionType;
   thumbConnectors?: INodeComponent<T>[];
   update?: (
@@ -96,7 +97,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
     thumbType: ThumbType,
     index?: number,
     connectedNode?: INodeComponent<T>,
-    thumbOffsetY?: number
+    thumbOffsetY?: number,
+    controlPointDistance?: number
   ) => IControlAndEndPoint;
   setVisibility?: (isVisible: boolean) => void;
   delete?: () => void;
@@ -143,4 +145,6 @@ export type IThumb = {
   pathName?: string;
   color?: string;
   offsetY?: number;
+  controlPointDistance?: number;
+  hidden?: boolean;
 };
