@@ -95,10 +95,10 @@ export const createRect = <T>(
   ) => {
     if (nodeType === ControlAndEndPointNodeType.start) {
       const xDistance = Math.abs(
-        rectNode.x + (rectNode.width ?? 0) - (connectedNode?.x ?? 0)
+        (connectedNode?.x ?? 0) - (rectNode.x + (rectNode.width ?? 0))
       );
       const yDistance = Math.abs(
-        rectNode.y + (rectNode.height ?? 0) - (connectedNode?.y ?? 0)
+        (connectedNode?.y ?? 0) - (rectNode.y + (rectNode.height ?? 0))
       );
 
       let x =
@@ -126,7 +126,7 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y + (controlPointDistance ?? rectNode.height ?? 0) + 50,
+          cy: y + (controlPointDistance ?? yDistance ?? 0) + 50,
           nodeType,
         };
       } else if (thumbType === ThumbType.StartConnectorTop) {
@@ -139,13 +139,13 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y - (controlPointDistance ?? rectNode.height ?? 0) - 50,
+          cy: y - (controlPointDistance ?? yDistance ?? 0) - 50,
           nodeType,
         };
       }
 
       x = x + thumbRadius * 3;
-      const cx = x + (controlPointDistance ?? (rectNode.width || 0)) + 50;
+      const cx = x + (controlPointDistance ?? xDistance ?? 0) + 50;
 
       return {
         x: x,
@@ -157,10 +157,10 @@ export const createRect = <T>(
     }
     if (nodeType === ControlAndEndPointNodeType.end) {
       const xDistance = Math.abs(
-        rectNode.x - (connectedNode?.x ?? 0) + (connectedNode?.width ?? 0)
+        rectNode.x - ((connectedNode?.x ?? 0) + (connectedNode?.width ?? 0))
       );
       const yDistance = Math.abs(
-        rectNode.y - (connectedNode?.y ?? 0) + (connectedNode?.height ?? 0)
+        rectNode.y - ((connectedNode?.y ?? 0) + (connectedNode?.height ?? 0))
       );
 
       let x =
@@ -188,14 +188,14 @@ export const createRect = <T>(
           x: x,
           y: y,
           cx: x,
-          cy: y - (controlPointDistance ?? rectNode.height ?? 0) - 50,
+          cy: y - (controlPointDistance ?? yDistance ?? 0) - 50,
           nodeType,
         };
       }
 
       x = x - thumbRadius * 3;
 
-      const cx = x - (controlPointDistance ?? (rectNode.width || 0)) - 50;
+      const cx = x - (controlPointDistance ?? xDistance ?? 0) - 50;
       return {
         x: x,
         y: y,

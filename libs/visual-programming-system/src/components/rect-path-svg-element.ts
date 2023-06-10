@@ -485,6 +485,12 @@ export const createRectPathSVGElement = <T>(
               points.beginY,
               divElement
             );
+            lookAtNodeComponent.update(
+              lookAtNodeComponent,
+              points.beginX,
+              points.beginY,
+              lookAtNodeComponent.endNode
+            );
           }
           if (
             end &&
@@ -497,6 +503,12 @@ export const createRectPathSVGElement = <T>(
               points.beginX,
               points.beginY,
               divElement
+            );
+            lookAtNodeComponent.update(
+              lookAtNodeComponent,
+              points.beginX,
+              points.beginY,
+              lookAtNodeComponent.startNode
             );
           }
         }
