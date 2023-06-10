@@ -325,7 +325,7 @@ export const createCanvasApp = <T>(
       );
 
       // Determine the scale factor for the zoom
-      const scaleFactor = 1 + delta * 0.1;
+      const scaleFactor = 1 + delta * 0.05;
 
       const scaleBy = scaleFactor;
       // if (scaleBy < 0.95) {
