@@ -66,9 +66,12 @@ export interface INodeComponent<T> extends IElementNode<T> {
   isControlled?: boolean;
   isConnectPoint?: boolean;
   shapeType?: ShapeType;
+
   thumbIndex?: number;
   thumbOffsetY?: number;
   thumbType?: ThumbType;
+  thumbName?: string;
+
   thumbControlPointDistance?: number;
   thumbConnectionType?: ThumbConnectionType;
   thumbConnectors?: INodeComponent<T>[];
@@ -139,6 +142,7 @@ export type ThumbConnectionType =
   (typeof ThumbConnectionType)[keyof typeof ThumbConnectionType];
 
 export type IThumb = {
+  name?: string;
   thumbType: ThumbType;
   thumbIndex: number;
   connectionType: ThumbConnectionType;
