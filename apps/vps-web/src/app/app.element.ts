@@ -695,7 +695,8 @@ export class AppElement extends HTMLElement {
                 {
                   classNames: `bg-slate-500 p-4 rounded`,
                   //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
-                }
+                },
+                true
               );
               rect.nodeComponent.nodeInfo = {
                 column: loopColumns,
