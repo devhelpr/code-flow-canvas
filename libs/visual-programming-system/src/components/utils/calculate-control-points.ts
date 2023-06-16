@@ -21,12 +21,13 @@ export const onCalculateControlPoints = <T>(
   controlPointDistance?: number
 ) => {
   if (nodeType === ControlAndEndPointNodeType.start) {
-    const xDistance = Math.abs(
-      (connectedNode?.x ?? 0) - (rectNode.x + (rectNode.width ?? 0))
-    );
-    const yDistance = Math.abs(
-      (connectedNode?.y ?? 0) - (rectNode.y + (rectNode.height ?? 0))
-    );
+    const xDistance =
+      Math.abs((connectedNode?.x ?? 0) - (rectNode.x + (rectNode.width ?? 0))) *
+      0.5;
+    const yDistance =
+      Math.abs(
+        (connectedNode?.y ?? 0) - (rectNode.y + (rectNode.height ?? 0))
+      ) * 0.5;
 
     let x =
       rectNode.x +
@@ -57,9 +58,10 @@ export const onCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.StartConnectorTop) {
-      const yDistance = Math.abs(
-        rectNode.y - (rectNode.height ?? 0) - (connectedNode?.y ?? 0)
-      );
+      const yDistance =
+        Math.abs(
+          rectNode.y - (rectNode.height ?? 0) - (connectedNode?.y ?? 0)
+        ) * 0.5;
 
       y = y - thumbRadius * 3;
       return {
@@ -83,12 +85,14 @@ export const onCalculateControlPoints = <T>(
     };
   }
   if (nodeType === ControlAndEndPointNodeType.end) {
-    const xDistance = Math.abs(
-      rectNode.x - ((connectedNode?.x ?? 0) + (connectedNode?.width ?? 0))
-    );
-    const yDistance = Math.abs(
-      rectNode.y - ((connectedNode?.y ?? 0) + (connectedNode?.height ?? 0))
-    );
+    const xDistance =
+      Math.abs(
+        rectNode.x - ((connectedNode?.x ?? 0) + (connectedNode?.width ?? 0))
+      ) * 0.5;
+    const yDistance =
+      Math.abs(
+        rectNode.y - ((connectedNode?.y ?? 0) + (connectedNode?.height ?? 0))
+      ) * 0.5;
 
     let x =
       rectNode.x +

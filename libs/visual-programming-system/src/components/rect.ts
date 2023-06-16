@@ -33,6 +33,7 @@ import {
   thumbWidth,
 } from './utils/calculate-connector-thumbs';
 import { onCalculateControlPoints } from './utils/calculate-control-points';
+import { setPosition } from './utils/set-position';
 
 export const createRect = <T>(
   canvas: INodeComponent<T>,
@@ -105,47 +106,6 @@ export const createRect = <T>(
       controlPointDistance
     );
   };
-
-  function setPosition(
-    element: INodeComponent<T>,
-    x: number,
-    y: number,
-    followRelations = true,
-    updatePosition = true
-  ) {
-    if (!followRelations) {
-      if (updatePosition) {
-        (
-          element.domElement as unknown as HTMLElement | SVGElement
-        ).style.transform = `translate(${x}px, ${y}px)`;
-        element.x = x;
-        element.y = y;
-      }
-      return;
-    }
-
-    let doPosition = true;
-    element.components.forEach((componentRelation) => {
-      if (
-        componentRelation.type === NodeComponentRelationType.self ||
-        componentRelation.type === NodeComponentRelationType.controller ||
-        componentRelation.type === NodeComponentRelationType.controllerTarget
-      ) {
-        if (componentRelation.update) {
-          if (
-            !componentRelation.update(
-              componentRelation.component,
-              x,
-              y,
-              element
-            )
-          ) {
-            doPosition = false;
-          }
-        }
-      }
-    });
-  }
 
   const startPointElement = createThumbSVGElement(
     rectNode.domElement,
@@ -480,6 +440,7 @@ export const createRect = <T>(
       thumbConnectorElement.thumbOffsetY = thumb.offsetY ?? 0;
       thumbConnectorElement.thumbControlPointDistance =
         thumb.controlPointDistance;
+      thumbConnectorElement.thumbLinkedToNode = rectNode;
 
       if (!disableInteraction) {
         thumbConnectorElement.onCanReceiveDroppedComponent =

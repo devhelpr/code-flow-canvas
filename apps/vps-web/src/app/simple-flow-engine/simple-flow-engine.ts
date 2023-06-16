@@ -55,16 +55,21 @@ export const runNode = <T>(
 
         if (formInfo.computeAsync) {
           return new Promise((resolve, reject) => {
-            formInfo.computeAsync(input).then((computeResult: any) => {
-              result = computeResult.result;
-              followPath = computeResult.followPath;
+            formInfo
+              .computeAsync(input)
+              .then((computeResult: any) => {
+                result = computeResult.result;
+                followPath = computeResult.followPath;
 
-              resolve({
-                result: true,
-                output: result ?? input,
-                followPathByName: followPath,
+                resolve({
+                  result: true,
+                  output: computeResult.output ?? input,
+                  followPathByName: followPath,
+                });
+              })
+              .catch((error: any) => {
+                reject(error);
               });
-            });
           });
         } else if (formInfo.compute) {
           const computeResult = formInfo.compute(input);
@@ -144,4 +149,85 @@ export const run = <T>(
     }
   });
   return true;
+};
+
+export const runNodeFromThumb = <T>(
+  nodeThumb: INodeComponent<T>,
+  animatePath: (
+    node: INodeComponent<T>,
+    color: string,
+    onNextNode?: (
+      nodeId: string,
+      node: INodeComponent<T>,
+      input: string
+    ) =>
+      | { result: boolean; output: string; followPathByName?: string }
+      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
+    onStopped?: (input: string) => void,
+    input?: string,
+    followPathByName?: string
+  ) => void,
+  onStopped?: (input: string) => void,
+  input?: string
+) => {
+  //let result: any = false;
+  let followPath: string | undefined = undefined;
+
+  animatePath(
+    nodeThumb as unknown as INodeComponent<T>,
+    'white',
+    (nodeId: string, node: INodeComponent<T>, input: string) => {
+      console.log('Next nodeId', nodeId, node, input);
+      let result: any = false;
+      const formInfo = node.nodeInfo as unknown as any;
+
+      if (formInfo.computeAsync) {
+        return new Promise((resolve, reject) => {
+          formInfo
+            .computeAsync(input)
+            .then((computeResult: any) => {
+              result = computeResult.result;
+              followPath = computeResult.followPath;
+
+              resolve({
+                result: true,
+                output: result ?? input,
+                followPathByName: followPath,
+              });
+            })
+            .catch((e: any) => {
+              console.log('runNodeFromThumb error', e);
+              reject();
+            });
+        });
+      } else if (formInfo.compute) {
+        const computeResult = formInfo.compute(input);
+        result = computeResult.result;
+        followPath = computeResult.followPath;
+      } else {
+        result = false;
+        followPath = undefined;
+      }
+      console.log('expression result', result);
+      if (result === false) {
+        return {
+          result: false,
+          output: result,
+        };
+      }
+
+      return {
+        result: true,
+        output: result ?? input,
+        followPathByName: followPath,
+      };
+    },
+    (input: string) => {
+      if (onStopped) {
+        onStopped(input);
+      }
+    },
+    input,
+    followPath
+  );
 };

@@ -41,6 +41,7 @@ import {
   setSpeedMeter,
   timers,
   animatePath as _animatePath,
+  animatePathFromThumb as _animatePathFromThumb,
 } from './follow-path/animate-path';
 
 const template = document.createElement('template');
@@ -512,7 +513,7 @@ export class AppElement extends HTMLElement {
           event.preventDefault();
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
-          const map = getMap<NodeInfo>(animatePath);
+          const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
           map.createVisualNode(canvasApp, startX, startY);
 
           return false;
@@ -522,47 +523,47 @@ export class AppElement extends HTMLElement {
       'Add "map"'
     );
 
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
 
-    //       const x = Math.floor(Math.random() * 250);
-    //       const y = Math.floor(Math.random() * 500);
+          const x = Math.floor(Math.random() * 250);
+          const y = Math.floor(Math.random() * 500);
 
-    //       // if (Math.random() >= 0.5) {
-    //       //const bezierCurve =
-    //       canvasApp.createCubicBezier(
-    //         x,
-    //         y,
-    //         x + 150,
-    //         y + 150,
-    //         x + 50,
-    //         y + 50,
-    //         x + 75,
-    //         y + 75
-    //       );
-    //       // } else {
-    //       // bezierCurve = createQuadraticBezier(
-    //       //   canvas as unknown as INodeComponent<NodeInfo>,
-    //       //   pathHiddenElement,
-    //       //   this.elements,
-    //       //   x,
-    //       //   y,
-    //       //   x + 150,
-    //       //   y + 150,
-    //       //   x + 50,
-    //       //   y + 50
-    //       // );
-    //       // }
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add bezier curve'
-    // );
+          // if (Math.random() >= 0.5) {
+          //const bezierCurve =
+          canvasApp.createCubicBezier(
+            x,
+            y,
+            x + 150,
+            y + 150,
+            x + 50,
+            y + 50,
+            x + 75,
+            y + 75
+          );
+          // } else {
+          // bezierCurve = createQuadraticBezier(
+          //   canvas as unknown as INodeComponent<NodeInfo>,
+          //   pathHiddenElement,
+          //   this.elements,
+          //   x,
+          //   y,
+          //   x + 150,
+          //   y + 150,
+          //   x + 50,
+          //   y + 50
+          // );
+          // }
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add bezier curve'
+    );
 
     // createElement(
     //   'button',
@@ -832,9 +833,11 @@ export class AppElement extends HTMLElement {
       onStopped?: (input: string) => void,
       input?: string,
       followPathByName?: string, // normal, success, failure, "subflow",
-      node1?: IElementNode<unknown>,
-      node2?: IElementNode<unknown>,
-      node3?: IElementNode<unknown>,
+      animatedNodes?: {
+        node1?: IElementNode<unknown>;
+        node2?: IElementNode<unknown>;
+        node3?: IElementNode<unknown>;
+      },
       offsetX?: number,
       offsetY?: number,
       followPathToEndThumb?: boolean
@@ -850,9 +853,51 @@ export class AppElement extends HTMLElement {
         onStopped,
         input,
         followPathByName,
-        node1,
-        node2,
-        node3,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb
+      );
+    };
+
+    const animatePathFromThumb = (
+      node: INodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: (
+        nodeId: string,
+        node: INodeComponent<NodeInfo>,
+        input: string
+      ) =>
+        | { result: boolean; output: string; followPathByName?: string }
+        | Promise<{
+            result: boolean;
+            output: string;
+            followPathByName?: string;
+          }>,
+      onStopped?: (input: string) => void,
+      input?: string,
+      followPathByName?: string, // normal, success, failure, "subflow",
+      animatedNodes?: {
+        node1?: IElementNode<unknown>;
+        node2?: IElementNode<unknown>;
+        node3?: IElementNode<unknown>;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean
+    ) => {
+      if (!this.canvasApp) {
+        throw new Error('canvasApp not defined');
+      }
+      return _animatePathFromThumb<NodeInfo>(
+        this.canvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
         offsetX,
         offsetY,
         followPathToEndThumb
