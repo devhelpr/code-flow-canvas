@@ -153,7 +153,7 @@ export const getMap = <T>(
                   const mapStep = (value: string) => {
                     animatePathFromThumb(
                       thumb,
-                      'red',
+                      'white',
                       undefined,
                       (input: string | any[]) => {
                         if (connection.startNodeThumb) {
