@@ -11,7 +11,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
-import test from 'node:test';
 
 const getThumbNode = (
   thumbType: ThumbType,
@@ -91,6 +90,7 @@ export const getMap = <T>(
 
   let succesThumb: INodeComponent<NodeInfo> | undefined = undefined;
   let testThumb: INodeComponent<NodeInfo> | undefined = undefined;
+  let textNode: HTMLElement | undefined = undefined;
 
   const initializeCompute = () => {
     hasInitialValue = true;
@@ -99,6 +99,9 @@ export const getMap = <T>(
       // if (rect) {
       //   rect.resize(240);
       // }
+    }
+    if (textNode) {
+      textNode.textContent = 'Map';
     }
     return;
   };
@@ -113,17 +116,15 @@ export const getMap = <T>(
       }
 
       if (inputNode) {
-        console.log('compute in map input before animatePath', input);
         animatePath(
           inputNode,
           'white',
           undefined,
           (input: string | any[]) => {
-            console.log('onstopped in map input', input);
-
-            //if (Array.isArray(input)) {
             const takeValue = input.at(mapLoop);
-            mapLoop++;
+            if (textNode) {
+              textNode.textContent = `${mapLoop + 1}/${values.length}`;
+            }
 
             const connection = rect?.nodeComponent.connections?.find(
               (connection) => {
@@ -133,12 +134,8 @@ export const getMap = <T>(
                 );
               }
             );
-            console.log(
-              'rect?.nodeComponent.connection',
-              rect?.nodeComponent.connections
-            );
+
             if (connection && connection.startNodeThumb) {
-              console.log('startNodeThumb found');
               if (!connection.endNode) {
                 reject();
               } else {
@@ -152,55 +149,73 @@ export const getMap = <T>(
                 );
 
                 if (testThumb) {
-                  animatePathFromThumb(
-                    testThumb,
-                    'red',
-                    undefined,
-                    (input: string | any[]) => {
-                      console.log('onstopped in map testThumb', input);
-                    },
-                    takeValue ?? '',
-                    undefined,
-                    undefined,
-                    node.x + 50 + 5,
-                    node.y + 50 + 5,
-                    undefined,
-                    true
-                  );
-                }
-
-                runNodeFromThumb(
-                  connection.startNodeThumb,
-                  animatePathFromThumb,
-                  (input: string | any[]) => {
-                    if (!succesThumb) {
-                      reject();
-                      return;
-                    }
-                    mapResults.push(input);
-
+                  const thumb = testThumb;
+                  const mapStep = (value: string) => {
                     animatePathFromThumb(
-                      succesThumb,
-                      'white',
-                      (
-                        _nodeId: string,
-                        node: INodeComponent<T>,
-                        input: string | any[]
-                      ) => {
-                        console.log('onnextnode in map input', node, input);
-                        return {
-                          result: true,
-                          output: input ?? [],
-                          followPathByName: 'test', // if this is set .. the test subpath is followed
-                        };
-                      },
+                      thumb,
+                      'red',
+                      undefined,
                       (input: string | any[]) => {
-                        resolve({
-                          result: true,
-                          output: input ?? [],
-                        });
+                        if (connection.startNodeThumb) {
+                          runNodeFromThumb(
+                            connection.startNodeThumb,
+                            animatePathFromThumb,
+                            (input: string | any[]) => {
+                              mapResults.push(input);
+                              mapLoop++;
+
+                              if (mapLoop < values.length) {
+                                if (textNode) {
+                                  textNode.textContent = `${mapLoop + 1}/${
+                                    values.length
+                                  }`;
+                                }
+
+                                mapStep(values.at(mapLoop));
+                              } else {
+                                if (textNode) {
+                                  textNode.textContent = `Map`;
+                                }
+                                if (!succesThumb) {
+                                  reject();
+                                  return;
+                                }
+
+                                animatePathFromThumb(
+                                  succesThumb,
+                                  'white',
+                                  (
+                                    _nodeId: string,
+                                    node: INodeComponent<T>,
+                                    input: string | any[]
+                                  ) => {
+                                    return {
+                                      result: true,
+                                      output: input ?? [],
+                                      followPathByName: 'test', // if this is set .. the test subpath is followed
+                                    };
+                                  },
+                                  (input: string | any[]) => {
+                                    resolve({
+                                      result: true,
+                                      output: input ?? [],
+                                    });
+                                  },
+                                  mapResults ?? [],
+                                  undefined,
+                                  undefined,
+                                  node.x + 50 + 5,
+                                  node.y + 50 + 5,
+                                  undefined,
+                                  true
+                                );
+                              }
+                            },
+                            input
+                          );
+                        }
                       },
-                      mapResults ?? [],
+                      value ?? '',
                       undefined,
                       undefined,
                       node.x + 50 + 5,
@@ -208,12 +223,11 @@ export const getMap = <T>(
                       undefined,
                       true
                     );
-                  },
-                  takeValue ?? ''
-                );
+                  };
+                  mapStep(takeValue ?? '');
+                }
               }
             } else {
-              console.log('no startNodeThumb found');
               return reject();
             }
           },
@@ -450,6 +464,7 @@ export const getMap = <T>(
           undefined,
           'map'
         ) as unknown as INodeComponent<NodeInfo>;
+        textNode = jsxCircleComponentWrapper.domElement as HTMLElement;
 
         const end = mapCanvasApp.createRect(
           130,
