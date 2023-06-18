@@ -26,35 +26,14 @@ export const getShowInput = () => {
     }
     return;
   };
-  const compute = (input: string) => {
-    inputValues.push(input);
+  const compute = (input: string | any[]) => {
+    inputValues = Array.isArray(input) ? input : [input];
     if (htmlNode) {
-      const inputElement = createElement(
-        'div',
-        {
-          class:
-            'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
-        },
-        undefined,
-        input.toString()
-      ) as unknown as INodeComponent<NodeInfo>;
-
       if (hasInitialValue) {
-        htmlNode.domElement.textContent = '';
         hasInitialValue = false;
       }
 
-      // if (htmlNode.domElement.firstChild) {
-      //   htmlNode.domElement.insertBefore(
-      //     inputElement.domElement as unknown as HTMLElement,
-      //     htmlNode.domElement.firstChild
-      //   );
-      // } else {
-      htmlNode.domElement.appendChild(
-        inputElement.domElement as unknown as HTMLElement
-      );
-      //}
-
+      htmlNode.domElement.textContent = inputValues.toString();
       if (rect) {
         rect.resize(240);
       }
@@ -73,7 +52,7 @@ export const getShowInput = () => {
       htmlNode = createElement(
         'div',
         {
-          class: '',
+          class: 'break-words',
         },
         undefined,
         'Input'
@@ -114,7 +93,8 @@ export const getShowInput = () => {
           classNames: `bg-slate-500 p-4 rounded`,
         },
         undefined,
-        false
+        false,
+        true
       );
       rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = [];

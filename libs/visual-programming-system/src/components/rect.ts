@@ -52,7 +52,8 @@ export const createRect = <T>(
     classNames?: string;
   },
   hasStaticWidthHeight?: boolean,
-  disableInteraction?: boolean
+  disableInteraction?: boolean,
+  disableManualResize?: boolean
 ) => {
   let widthHelper = width;
   let heightHelper = height;
@@ -131,7 +132,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction || hasStaticWidthHeight
+    disableInteraction || hasStaticWidthHeight || disableManualResize
   );
 
   startPointElement.update = (
@@ -170,7 +171,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction || hasStaticWidthHeight
+    disableInteraction || hasStaticWidthHeight || disableManualResize
   );
   rightTopPointElement.update = (
     component?: INodeComponent<T>,
@@ -206,7 +207,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction || hasStaticWidthHeight
+    disableInteraction || hasStaticWidthHeight || disableManualResize
   );
   leftBottomElement.update = (
     component?: INodeComponent<T>,
@@ -243,7 +244,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction || hasStaticWidthHeight
+    disableInteraction || hasStaticWidthHeight || disableManualResize
   );
   rightBottomElement.update = (
     component?: INodeComponent<T>,

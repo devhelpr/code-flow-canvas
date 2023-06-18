@@ -43,6 +43,7 @@ import {
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
 } from './follow-path/animate-path';
+import { getArray } from './nodes/array';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -504,6 +505,23 @@ export class AppElement extends HTMLElement {
       menubarElement.domElement,
       'Add "show input"'
     );
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          const startX = Math.floor(Math.random() * 250);
+          const startY = Math.floor(Math.random() * 500);
+          const array = getArray();
+          array.createVisualNode(canvasApp, startX, startY);
+
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add "array"'
+    );
 
     createElement(
       'button',
@@ -523,47 +541,47 @@ export class AppElement extends HTMLElement {
       'Add "map"'
     );
 
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
 
-          const x = Math.floor(Math.random() * 250);
-          const y = Math.floor(Math.random() * 500);
+    //       const x = Math.floor(Math.random() * 250);
+    //       const y = Math.floor(Math.random() * 500);
 
-          // if (Math.random() >= 0.5) {
-          //const bezierCurve =
-          canvasApp.createCubicBezier(
-            x,
-            y,
-            x + 150,
-            y + 150,
-            x + 50,
-            y + 50,
-            x + 75,
-            y + 75
-          );
-          // } else {
-          // bezierCurve = createQuadraticBezier(
-          //   canvas as unknown as INodeComponent<NodeInfo>,
-          //   pathHiddenElement,
-          //   this.elements,
-          //   x,
-          //   y,
-          //   x + 150,
-          //   y + 150,
-          //   x + 50,
-          //   y + 50
-          // );
-          // }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add bezier curve'
-    );
+    //       // if (Math.random() >= 0.5) {
+    //       //const bezierCurve =
+    //       canvasApp.createCubicBezier(
+    //         x,
+    //         y,
+    //         x + 150,
+    //         y + 150,
+    //         x + 50,
+    //         y + 50,
+    //         x + 75,
+    //         y + 75
+    //       );
+    //       // } else {
+    //       // bezierCurve = createQuadraticBezier(
+    //       //   canvas as unknown as INodeComponent<NodeInfo>,
+    //       //   pathHiddenElement,
+    //       //   this.elements,
+    //       //   x,
+    //       //   y,
+    //       //   x + 150,
+    //       //   y + 150,
+    //       //   x + 50,
+    //       //   y + 50
+    //       // );
+    //       // }
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add bezier curve'
+    // );
 
     // createElement(
     //   'button',

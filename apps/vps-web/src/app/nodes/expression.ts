@@ -86,11 +86,13 @@ export const getExpression = () => {
             thumbType: ThumbType.StartConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
+            color: 'white',
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
+            color: 'white',
           },
         ],
         jsxComponentWrapper,

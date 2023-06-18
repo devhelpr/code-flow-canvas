@@ -7,7 +7,8 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
-export const getSum = () => {
+export const getArray = () => {
+  let inputValues: any[] = [];
   let node: INodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -16,8 +17,9 @@ export const getSum = () => {
 
   const initializeCompute = () => {
     hasInitialValue = true;
+    inputValues = [];
     if (htmlNode) {
-      htmlNode.domElement.textContent = 'Sum';
+      htmlNode.domElement.textContent = 'Array';
       if (rect) {
         rect.resize(240);
       }
@@ -25,14 +27,7 @@ export const getSum = () => {
     return;
   };
   const compute = (input: string) => {
-    let values: any[] = [];
-    values = input as unknown as any[];
-    if (!Array.isArray(input)) {
-      values = [input];
-    }
-    const sum = values
-      .map((value) => parseInt(value) ?? 0)
-      .reduce((a, b) => a + b, 0);
+    inputValues.push(input);
     if (htmlNode) {
       const inputElement = createElement(
         'div',
@@ -45,16 +40,27 @@ export const getSum = () => {
       ) as unknown as INodeComponent<NodeInfo>;
 
       if (hasInitialValue) {
+        htmlNode.domElement.textContent = '';
         hasInitialValue = false;
       }
-      htmlNode.domElement.textContent = sum.toString();
+
+      // if (htmlNode.domElement.firstChild) {
+      //   htmlNode.domElement.insertBefore(
+      //     inputElement.domElement as unknown as HTMLElement,
+      //     htmlNode.domElement.firstChild
+      //   );
+      // } else {
+      htmlNode.domElement.appendChild(
+        inputElement.domElement as unknown as HTMLElement
+      );
+      //}
 
       if (rect) {
         rect.resize(240);
       }
     }
     return {
-      result: sum.toString(),
+      result: [...inputValues],
       followPath: undefined,
     };
   };
@@ -70,7 +76,7 @@ export const getSum = () => {
           class: '',
         },
         undefined,
-        'Sum'
+        'Array'
       ) as unknown as INodeComponent<NodeInfo>;
 
       const wrapper = createElement(
@@ -101,6 +107,7 @@ export const getSum = () => {
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             offsetY: 20,
+            color: 'white',
           },
         ],
         wrapper,
@@ -113,9 +120,9 @@ export const getSum = () => {
       );
       rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = 'sum';
+      rect.nodeComponent.nodeInfo.taskType = 'array';
 
-      createNamedSignal(`sum-${rect.nodeComponent.id}`, '');
+      createNamedSignal(`array-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;

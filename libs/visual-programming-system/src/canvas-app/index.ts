@@ -539,7 +539,8 @@ export const createCanvasApp = <T>(
         classNames?: string;
       },
       hasStaticWidthHeight?: boolean,
-      disableInteraction?: boolean
+      disableInteraction?: boolean,
+      disableManualResize?: boolean
     ) =>
       createRect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -556,7 +557,8 @@ export const createCanvasApp = <T>(
         markup,
         layoutProperties,
         hasStaticWidthHeight,
-        disableInteraction
+        disableInteraction,
+        disableManualResize
       ),
     createCubicBezier: (
       startX: number,
