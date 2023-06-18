@@ -74,6 +74,7 @@ export const getIfCondition = () => {
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
+            color: 'white',
           },
         ],
         jsxComponentWrapper,
