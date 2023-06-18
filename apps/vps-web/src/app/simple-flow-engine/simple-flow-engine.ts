@@ -16,15 +16,19 @@ export const runNode = <T>(
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
-      input: string
+      input: string | any[]
     ) =>
-      | { result: boolean; output: string; followPathByName?: string }
-      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
-    onStopped?: (input: string) => void,
-    input?: string,
+      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | Promise<{
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+        }>,
+    onStopped?: (input: string | any[]) => void,
+    input?: string | any[],
     followPathByName?: string
   ) => void,
-  onStopped?: (input: string) => void,
+  onStopped?: (input: string | any[]) => void,
   input?: string
 ) => {
   const formInfo = node.nodeInfo as unknown as any;
@@ -48,7 +52,7 @@ export const runNode = <T>(
     animatePath(
       node as unknown as INodeComponent<T>,
       'white',
-      (nodeId: string, node: INodeComponent<T>, input: string) => {
+      (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
         console.log('Next nodeId', nodeId, node, input);
         let result: any = false;
         const formInfo = node.nodeInfo as unknown as any;
@@ -93,7 +97,7 @@ export const runNode = <T>(
           followPathByName: followPath,
         };
       },
-      (input: string) => {
+      (input: string | any[]) => {
         if (onStopped) {
           onStopped(input);
         }
@@ -113,12 +117,16 @@ export const run = <T>(
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
-      input: string
+      input: string | any[]
     ) =>
-      | { result: boolean; output: string; followPathByName?: string }
-      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
-    onStopped?: (input: string) => void,
-    input?: string,
+      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | Promise<{
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+        }>,
+    onStopped?: (input: string | any[]) => void,
+    input?: string | any[],
     followPathByName?: string
   ) => void
 ) => {
@@ -159,16 +167,20 @@ export const runNodeFromThumb = <T>(
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
-      input: string
+      input: string | any[]
     ) =>
-      | { result: boolean; output: string; followPathByName?: string }
-      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
-    onStopped?: (input: string) => void,
-    input?: string,
+      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | Promise<{
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+        }>,
+    onStopped?: (input: string | any[]) => void,
+    input?: string | any[],
     followPathByName?: string
   ) => void,
-  onStopped?: (input: string) => void,
-  input?: string
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[]
 ) => {
   //let result: any = false;
   let followPath: string | undefined = undefined;
@@ -176,7 +188,7 @@ export const runNodeFromThumb = <T>(
   animatePath(
     nodeThumb as unknown as INodeComponent<T>,
     'white',
-    (nodeId: string, node: INodeComponent<T>, input: string) => {
+    (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
       console.log('Next nodeId', nodeId, node, input);
       let result: any = false;
       const formInfo = node.nodeInfo as unknown as any;
@@ -222,7 +234,7 @@ export const runNodeFromThumb = <T>(
         followPathByName: followPath,
       };
     },
-    (input: string) => {
+    (input: string | any[]) => {
       if (onStopped) {
         onStopped(input);
       }

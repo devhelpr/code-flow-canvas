@@ -10,10 +10,8 @@ import {
   INodeComponentRelation,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import {
-  runNode,
-  runNodeFromThumb,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
+import test from 'node:test';
 
 const getThumbNode = (
   thumbType: ThumbType,
@@ -30,6 +28,7 @@ const getThumbNode = (
     });
     return thumbNode;
   }
+  return undefined;
 };
 
 export const getMap = <T>(
@@ -39,17 +38,22 @@ export const getMap = <T>(
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
-      input: string
+      input: string | any[]
     ) =>
-      | { result: boolean; output: string; followPathByName?: string }
-      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
-    onStopped?: (input: string) => void,
-    input?: string,
+      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | Promise<{
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+        }>,
+    onStopped?: (input: string | any[]) => void,
+    input?: string | any[],
     followPathByName?: string,
     animatedNodes?: undefined,
     offsetX?: number,
     offsetY?: number,
-    followPathToEndThumb?: boolean
+    followPathToEndThumb?: boolean,
+    singleStep?: boolean
   ) => void,
   animatePathFromThumb: (
     node: INodeComponent<T>,
@@ -57,17 +61,22 @@ export const getMap = <T>(
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
-      input: string
+      input: string | any[]
     ) =>
-      | { result: boolean; output: string; followPathByName?: string }
-      | Promise<{ result: boolean; output: string; followPathByName?: string }>,
-    onStopped?: (input: string) => void,
-    input?: string,
+      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | Promise<{
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+        }>,
+    onStopped?: (input: string | any[]) => void,
+    input?: string | any[],
     followPathByName?: string,
     animatedNodes?: undefined,
     offsetX?: number,
     offsetY?: number,
-    followPathToEndThumb?: boolean
+    followPathToEndThumb?: boolean,
+    singleStep?: boolean
   ) => void
 ) => {
   let node: INodeComponent<NodeInfo>;
@@ -79,7 +88,9 @@ export const getMap = <T>(
   let inputNode: INodeComponent<NodeInfo> | undefined = undefined;
   let outputNode: INodeComponent<NodeInfo> | undefined = undefined;
   let testNode: INodeComponent<NodeInfo> | undefined = undefined;
+
   let succesThumb: INodeComponent<NodeInfo> | undefined = undefined;
+  let testThumb: INodeComponent<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     hasInitialValue = true;
@@ -91,40 +102,28 @@ export const getMap = <T>(
     }
     return;
   };
-  const compute = (input: string) => {
+  const compute = (input: string | any[]) => {
+    const mapResults: any[] = [];
     return new Promise((resolve, reject) => {
+      let mapLoop = 0;
       let values: any[] = [];
       values = input as unknown as any[];
       if (!Array.isArray(input)) {
         values = [input];
       }
+
       if (inputNode) {
         console.log('compute in map input before animatePath', input);
         animatePath(
           inputNode,
           'white',
-          (nodeId: string, node: INodeComponent<T>, input: string) => {
-            console.log('onnextnode in map input', node, input);
-            return {
-              result: true,
-              output: input ?? '',
-              followPathByName: 'test', // if this is set .. the test subpath is followed
-            };
-          },
-          (input: string) => {
+          undefined,
+          (input: string | any[]) => {
             console.log('onstopped in map input', input);
 
-            // stopped internal flow
-            // - follow "test" path (call animatePath with current node and "test" as followPathByName)
-            // - wait for it to finish ("onStopped")
-
-            // - follow default path ...call animatePath with end node and undefined as followPathByName
-            // - wait for it to finish ("onStopped") and resolve
-
-            // animatePath(
-            //   rect?.nodeComponent as INodeComponent<NodeInfo>,
-            //   'green',
-            //   (nodeId: string, node: INodeComponent<T>, input: string) => {
+            //if (Array.isArray(input)) {
+            const takeValue = input.at(mapLoop);
+            mapLoop++;
 
             const connection = rect?.nodeComponent.connections?.find(
               (connection) => {
@@ -140,63 +139,91 @@ export const getMap = <T>(
             );
             if (connection && connection.startNodeThumb) {
               console.log('startNodeThumb found');
-              //return new Promise((resolve, reject) =>
-              {
-                if (!connection.endNode) {
-                  reject();
-                } else {
-                  runNodeFromThumb(
-                    connection.startNodeThumb,
-                    animatePathFromThumb,
-                    (input: string) => {
-                      if (!succesThumb) {
-                        reject();
-                        return;
-                      }
+              if (!connection.endNode) {
+                reject();
+              } else {
+                const testConnection = rect?.nodeComponent.connections?.find(
+                  (connection) => {
+                    return (
+                      connection.startNode?.id === rect?.nodeComponent.id &&
+                      connection.startNodeThumb?.pathName === 'test'
+                    );
+                  }
+                );
 
-                      animatePathFromThumb(
-                        succesThumb,
-                        'white',
-                        (
-                          nodeId: string,
-                          node: INodeComponent<T>,
-                          input: string
-                        ) => {
-                          console.log('onnextnode in map input', node, input);
-                          return {
-                            result: true,
-                            output: input ?? '',
-                            followPathByName: 'test', // if this is set .. the test subpath is followed
-                          };
-                        },
-                        (input: string) => {
-                          resolve({
-                            result: true,
-                            output: input ?? '',
-                          });
-                        },
-                        input ?? '',
-                        undefined,
-                        undefined,
-                        node.x + 50 + 5,
-                        node.y + 50 + 5
-                      );
+                if (testThumb) {
+                  animatePathFromThumb(
+                    testThumb,
+                    'red',
+                    undefined,
+                    (input: string | any[]) => {
+                      console.log('onstopped in map testThumb', input);
                     },
-                    input
+                    takeValue ?? '',
+                    undefined,
+                    undefined,
+                    node.x + 50 + 5,
+                    node.y + 50 + 5,
+                    undefined,
+                    true
                   );
                 }
+
+                runNodeFromThumb(
+                  connection.startNodeThumb,
+                  animatePathFromThumb,
+                  (input: string | any[]) => {
+                    if (!succesThumb) {
+                      reject();
+                      return;
+                    }
+                    mapResults.push(input);
+
+                    animatePathFromThumb(
+                      succesThumb,
+                      'white',
+                      (
+                        _nodeId: string,
+                        node: INodeComponent<T>,
+                        input: string | any[]
+                      ) => {
+                        console.log('onnextnode in map input', node, input);
+                        return {
+                          result: true,
+                          output: input ?? [],
+                          followPathByName: 'test', // if this is set .. the test subpath is followed
+                        };
+                      },
+                      (input: string | any[]) => {
+                        resolve({
+                          result: true,
+                          output: input ?? [],
+                        });
+                      },
+                      mapResults ?? [],
+                      undefined,
+                      undefined,
+                      node.x + 50 + 5,
+                      node.y + 50 + 5,
+                      undefined,
+                      true
+                    );
+                  },
+                  takeValue ?? ''
+                );
               }
-              //);
             } else {
               console.log('no startNodeThumb found');
-              return reject(); //Promise.reject();
+              return reject();
             }
           },
-          input ?? '',
+          values ?? [],
           undefined,
           undefined,
           node.x + 50 + 5,
-          node.y + 50 + 5
+          node.y + 50 + 5,
+          undefined,
+          true
         );
       }
     });
@@ -630,6 +657,7 @@ export const getMap = <T>(
             end.nodeComponent,
             'test'
           );
+          testThumb = connnection4.nodeComponent.startNodeThumb;
           end.nodeComponent.connections?.push(connnection4.nodeComponent);
         }
 

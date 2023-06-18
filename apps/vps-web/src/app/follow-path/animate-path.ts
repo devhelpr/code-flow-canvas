@@ -20,16 +20,16 @@ export type FollowPathFunction = <T>(
   onNextNode?: (
     nodeId: string,
     node: INodeComponent<T>,
-    input: string
+    input: string | any[]
   ) =>
-    | { result: boolean; output: string; followPathByName?: string }
+    | { result: boolean; output: string | any[]; followPathByName?: string }
     | Promise<{
         result: boolean;
-        output: string;
+        output: string | any[];
         followPathByName?: string;
       }>,
-  onStopped?: (input: string) => void,
-  input?: string,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
   animatedNodes?: {
     node1?: IElementNode<unknown>;
@@ -38,7 +38,8 @@ export type FollowPathFunction = <T>(
   },
   offsetX?: number,
   offsetY?: number,
-  followPathToEndThumb?: boolean
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
 ) => void;
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
@@ -65,16 +66,16 @@ export const animatePathForNodeConnectionPairs = <T>(
   onNextNode?: (
     nodeId: string,
     node: INodeComponent<T>,
-    input: string
+    input: string | any[]
   ) =>
-    | { result: boolean; output: string; followPathByName?: string }
+    | { result: boolean; output: string | any[]; followPathByName?: string }
     | Promise<{
         result: boolean;
-        output: string;
+        output: string | any[];
         followPathByName?: string;
       }>,
-  onStopped?: (input: string) => void,
-  input?: string,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
   followPathByName?: string,
   animatedNodes?: {
     node1?: IElementNode<unknown>;
@@ -83,7 +84,8 @@ export const animatePathForNodeConnectionPairs = <T>(
   },
   offsetX?: number,
   offsetY?: number,
-  followPathToEndThumb?: boolean
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
 ) => {
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
@@ -181,7 +183,8 @@ export const animatePathForNodeConnectionPairs = <T>(
           connection.startNodeThumb?.thumbIndex,
           end,
           connection.startNodeThumb?.thumbOffsetY ?? 0,
-          connection.startNodeThumb?.thumbControlPointDistance
+          connection.startNodeThumb?.thumbControlPointDistance,
+          connection.endNodeThumb
         );
 
         const endHelper = end.onCalculateControlPoints(
@@ -191,7 +194,8 @@ export const animatePathForNodeConnectionPairs = <T>(
           connection.endNodeThumb?.thumbIndex,
           start,
           connection.endNodeThumb?.thumbOffsetY ?? 0,
-          connection.endNodeThumb?.thumbControlPointDistance
+          connection.endNodeThumb?.thumbControlPointDistance,
+          connection.startNodeThumb
         );
 
         const tx = 40;
@@ -237,11 +241,12 @@ export const animatePathForNodeConnectionPairs = <T>(
           timers.delete(cancel);
 
           if (!onNextNode || onNextNode) {
-            const onNextOrPromise = onNextNode?.(end.id, end, input ?? '') ?? {
-              result: true,
-              output: '',
-              followPathByName: undefined,
-            };
+            const onNextOrPromise = singleStep ??
+              onNextNode?.(end.id, end, input ?? '') ?? {
+                result: true,
+                output: '',
+                followPathByName: undefined,
+              };
 
             if ((onNextOrPromise as unknown as Promise<unknown>).then) {
               canvasApp?.elements.delete(testCircle.id);
@@ -353,16 +358,16 @@ export const animatePath: FollowPathFunction = <T>(
   onNextNode?: (
     nodeId: string,
     node: INodeComponent<T>,
-    input: string
+    input: string | any[]
   ) =>
-    | { result: boolean; output: string; followPathByName?: string }
+    | { result: boolean; output: string | any[]; followPathByName?: string }
     | Promise<{
         result: boolean;
-        output: string;
+        output: string | any[];
         followPathByName?: string;
       }>,
-  onStopped?: (input: string) => void,
-  input?: string,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
   followPathByName?: string,
   animatedNodes?: {
     node1?: IElementNode<unknown>;
@@ -371,7 +376,8 @@ export const animatePath: FollowPathFunction = <T>(
   },
   offsetX?: number,
   offsetY?: number,
-  followPathToEndThumb?: boolean
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
 ) => {
   const nodeConnectionPairs = getNodeConnectionPairById<T>(
     canvasApp,
@@ -391,7 +397,8 @@ export const animatePath: FollowPathFunction = <T>(
     animatedNodes,
     offsetX,
     offsetY,
-    followPathToEndThumb
+    followPathToEndThumb,
+    singleStep
   );
 };
 
@@ -402,16 +409,16 @@ export const animatePathFromThumb: FollowPathFunction = <T>(
   onNextNode?: (
     nodeId: string,
     node: INodeComponent<T>,
-    input: string
+    input: string | any[]
   ) =>
-    | { result: boolean; output: string; followPathByName?: string }
+    | { result: boolean; output: string | any[]; followPathByName?: string }
     | Promise<{
         result: boolean;
-        output: string;
+        output: string | any[];
         followPathByName?: string;
       }>,
-  onStopped?: (input: string) => void,
-  input?: string,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
   followPathByName?: string,
   animatedNodes?: {
     node1?: IElementNode<unknown>;
@@ -420,7 +427,8 @@ export const animatePathFromThumb: FollowPathFunction = <T>(
   },
   offsetX?: number,
   offsetY?: number,
-  followPathToEndThumb?: boolean
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
 ) => {
   const connectionsPairs = getNodeConnectionPairsFromThumb<T>(canvasApp, node);
 
@@ -435,6 +443,7 @@ export const animatePathFromThumb: FollowPathFunction = <T>(
     animatedNodes,
     offsetX,
     offsetY,
-    followPathToEndThumb
+    followPathToEndThumb,
+    singleStep
   );
 };

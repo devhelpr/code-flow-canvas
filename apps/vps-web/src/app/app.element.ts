@@ -822,16 +822,16 @@ export class AppElement extends HTMLElement {
       onNextNode?: (
         nodeId: string,
         node: INodeComponent<NodeInfo>,
-        input: string
+        input: string | any[]
       ) =>
-        | { result: boolean; output: string; followPathByName?: string }
+        | { result: boolean; output: string | any[]; followPathByName?: string }
         | Promise<{
             result: boolean;
-            output: string;
+            output: string | any[];
             followPathByName?: string;
           }>,
-      onStopped?: (input: string) => void,
-      input?: string,
+      onStopped?: (input: string | any[]) => void,
+      input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
       animatedNodes?: {
         node1?: IElementNode<unknown>;
@@ -840,7 +840,8 @@ export class AppElement extends HTMLElement {
       },
       offsetX?: number,
       offsetY?: number,
-      followPathToEndThumb?: boolean
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -856,7 +857,8 @@ export class AppElement extends HTMLElement {
         animatedNodes,
         offsetX,
         offsetY,
-        followPathToEndThumb
+        followPathToEndThumb,
+        singleStep
       );
     };
 
@@ -866,16 +868,16 @@ export class AppElement extends HTMLElement {
       onNextNode?: (
         nodeId: string,
         node: INodeComponent<NodeInfo>,
-        input: string
+        input: string | any[]
       ) =>
-        | { result: boolean; output: string; followPathByName?: string }
+        | { result: boolean; output: string | any[]; followPathByName?: string }
         | Promise<{
             result: boolean;
-            output: string;
+            output: string | any[];
             followPathByName?: string;
           }>,
-      onStopped?: (input: string) => void,
-      input?: string,
+      onStopped?: (input: string | any[]) => void,
+      input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
       animatedNodes?: {
         node1?: IElementNode<unknown>;
@@ -884,7 +886,8 @@ export class AppElement extends HTMLElement {
       },
       offsetX?: number,
       offsetY?: number,
-      followPathToEndThumb?: boolean
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -900,7 +903,8 @@ export class AppElement extends HTMLElement {
         animatedNodes,
         offsetX,
         offsetY,
-        followPathToEndThumb
+        followPathToEndThumb,
+        singleStep
       );
     };
 

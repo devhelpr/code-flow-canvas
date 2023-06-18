@@ -106,7 +106,9 @@ export const getSum = () => {
         wrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
-        }
+        },
+        undefined,
+        false
       );
       rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = [];

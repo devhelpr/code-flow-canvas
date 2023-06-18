@@ -93,7 +93,8 @@ export const createRect = <T>(
     index?: number,
     connectedNode?: INodeComponent<T>,
     thumbOffsetY?: number,
-    controlPointDistance?: number
+    controlPointDistance?: number,
+    connectedNodeThumb?: INodeComponent<T>
   ) => {
     return onCalculateControlPoints(
       rectNode,
@@ -103,7 +104,8 @@ export const createRect = <T>(
       index,
       connectedNode,
       thumbOffsetY,
-      controlPointDistance
+      controlPointDistance,
+      connectedNodeThumb
     );
   };
 
@@ -129,7 +131,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction
+    disableInteraction || hasStaticWidthHeight
   );
 
   startPointElement.update = (
@@ -168,7 +170,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction
+    disableInteraction || hasStaticWidthHeight
   );
   rightTopPointElement.update = (
     component?: INodeComponent<T>,
@@ -204,7 +206,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction
+    disableInteraction || hasStaticWidthHeight
   );
   leftBottomElement.update = (
     component?: INodeComponent<T>,
@@ -241,7 +243,7 @@ export const createRect = <T>(
     undefined,
     undefined,
     undefined,
-    disableInteraction
+    disableInteraction || hasStaticWidthHeight
   );
   rightBottomElement.update = (
     component?: INodeComponent<T>,

@@ -102,7 +102,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
     index?: number,
     connectedNode?: INodeComponent<T>,
     thumbOffsetY?: number,
-    controlPointDistance?: number
+    controlPointDistance?: number,
+    connectedNodeThumb?: INodeComponent<T>
   ) => IControlAndEndPoint;
   setVisibility?: (isVisible: boolean) => void;
   delete?: () => void;
