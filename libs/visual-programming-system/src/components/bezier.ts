@@ -13,6 +13,7 @@ import {
   setSelectNode,
 } from '../reactivity';
 import { ThumbType } from '../types';
+import { LineType } from '../types/line-type';
 import { createConnectionSVGElement } from './connection-svg-element';
 import { createThumbSVGElement } from './thumb-svg-element';
 
@@ -48,6 +49,7 @@ export const createCubicBezier = <T>(
     false,
     isDashed
   );
+  connection.lineType = LineType.BezierCubic;
   connection.isControlled = isControlled;
   connection.onClick = () => {
     if (connection.isControlled) {
@@ -322,13 +324,7 @@ export const createCubicBezier = <T>(
   createEffect(() => {
     //const selectedNode = getSelectedNode();
     const visibility = getVisbility(); // && selectedNode && selectedNode === connection.id;
-    // console.log(
-    //   'connection visibility',
-    //   visibility,
-    //   getVisbility(),
-    //   selectedNode,
-    //   connection.id
-    // );
+    //console.log('connection bezier visibility', visibility, connection.id);
     (startPointElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
     (endPointElement.domElement as unknown as SVGElement).style.display =
@@ -390,7 +386,8 @@ export const createQuadraticBezier = <T>(
   endY: number,
   controlPoint1X: number,
   controlPoint1Y: number,
-  isControlled = false
+  isControlled = false,
+  isDashed = false
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
@@ -405,10 +402,15 @@ export const createQuadraticBezier = <T>(
     0,
     0,
     pathHiddenElement,
-    true
+    true,
+    isDashed
   );
+  connection.lineType = LineType.BezierQuadratic;
   connection.isControlled = isControlled;
   connection.onClick = () => {
+    if (connection.isControlled) {
+      return;
+    }
     console.log('connection click', connection.id);
     setSelectNode(connection.id);
   };
@@ -438,7 +440,13 @@ export const createQuadraticBezier = <T>(
     '#ff000080',
     startX,
     startY,
-    'begin'
+    'begin',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true
   );
   startPointElement.parent = connection;
   startPointElement.isControlled = isControlled;
@@ -464,7 +472,13 @@ export const createQuadraticBezier = <T>(
     '#ff000080',
     endX,
     endY,
-    'end'
+    'end',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true
   );
   endPointElement.parent = connection;
   endPointElement.isControlled = isControlled;
@@ -609,13 +623,7 @@ export const createQuadraticBezier = <T>(
   createEffect(() => {
     //const selectedNode = getSelectedNode();
     const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
-    // console.log(
-    //   'connection visibility',
-    //   visibility,
-    //   getVisbility(),
-    //   selectedNode,
-    //   connection.id
-    // );
+    //console.log('connection visibility', visibility, connection.id);
     (startPointElement.domElement as unknown as SVGElement).style.display =
       visibility ? 'block' : 'none';
     (endPointElement.domElement as unknown as SVGElement).style.display =

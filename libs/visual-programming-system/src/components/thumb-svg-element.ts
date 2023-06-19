@@ -13,7 +13,7 @@ import { IPointerDownResult } from '../interfaces/pointers';
 import { ThumbType } from '../types';
 import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
-import { createCubicBezier } from './bezier';
+import { createCubicBezier, createQuadraticBezier } from './bezier';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 
 export const createThumbSVGElement = <T>(

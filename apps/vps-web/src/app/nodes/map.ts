@@ -550,16 +550,8 @@ export const getMap = <T>(
         // end.nodeComponent.connections?.push(connnection.nodeComponent);
 
         // connnect node connector to start
-        const connnection2 = mapCanvasApp.createCubicBezier(
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        );
+
+        const connnection2 = mapCanvasApp.createCubicBezier();
 
         if (input && connnection2.nodeComponent) {
           connnection2.nodeComponent.isControlled = true;
@@ -597,16 +589,8 @@ export const getMap = <T>(
         }
 
         // connnect node connector to end
-        const connnection3 = mapCanvasApp.createCubicBezier(
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        );
+        const connnection3 = mapCanvasApp.createCubicBezier();
+
         if (end && connnection3.nodeComponent) {
           connnection3.nodeComponent.isControlled = true;
 
@@ -646,9 +630,7 @@ export const getMap = <T>(
         }
 
         // connnect node connector to end
-        const connnection4 = mapCanvasApp.createCubicBezier(
-          0,
-          0,
+        const connnection4 = mapCanvasApp.createQuadraticBezier(
           0,
           0,
           0,

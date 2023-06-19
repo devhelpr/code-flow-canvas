@@ -1,5 +1,9 @@
 import { setCamera, transformToCamera } from '../camera';
-import { createCubicBezier, createRect } from '../components';
+import {
+  createCubicBezier,
+  createQuadraticBezier,
+  createRect,
+} from '../components';
 import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
@@ -561,14 +565,14 @@ export const createCanvasApp = <T>(
         disableManualResize
       ),
     createCubicBezier: (
-      startX: number,
-      startY: number,
-      endX: number,
-      endY: number,
-      controlPointX1: number,
-      controlPointY1: number,
-      controlPointX2: number,
-      controlPointY2: number,
+      startX?: number,
+      startY?: number,
+      endX?: number,
+      endY?: number,
+      controlPointX1?: number,
+      controlPointY1?: number,
+      controlPointX2?: number,
+      controlPointY2?: number,
       isControlled?: boolean,
       isDashed = false
     ) =>
@@ -577,14 +581,38 @@ export const createCanvasApp = <T>(
         interactionStateMachine,
         pathHiddenElement,
         elements,
-        startX,
-        startY,
-        endX,
-        endY,
-        controlPointX1,
-        controlPointY1,
-        controlPointX2,
-        controlPointY2,
+        startX ?? 0,
+        startY ?? 0,
+        endX ?? 0,
+        endY ?? 0,
+        controlPointX1 ?? 0,
+        controlPointY1 ?? 0,
+        controlPointX2 ?? 0,
+        controlPointY2 ?? 0,
+        isControlled,
+        isDashed
+      ),
+    createQuadraticBezier: (
+      startX?: number,
+      startY?: number,
+      endX?: number,
+      endY?: number,
+      controlPointX?: number,
+      controlPointY?: number,
+      isControlled?: boolean,
+      isDashed = false
+    ) =>
+      createQuadraticBezier<T>(
+        canvas as unknown as INodeComponent<T>,
+        interactionStateMachine,
+        pathHiddenElement,
+        elements,
+        startX ?? 0,
+        startY ?? 0,
+        endX ?? 0,
+        endY ?? 0,
+        controlPointX ?? 0,
+        controlPointY ?? 0,
         isControlled,
         isDashed
       ),

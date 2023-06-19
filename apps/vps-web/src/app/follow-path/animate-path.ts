@@ -4,8 +4,10 @@ import {
   createElement,
   CurveType,
   getPointOnCubicBezierCurve,
+  getPointOnQuadraticBezierCurve,
   IElementNode,
   INodeComponent,
+  LineType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import {
@@ -173,7 +175,7 @@ export const animatePathForNodeConnectionPairs = <T>(
         end.onCalculateControlPoints &&
         connection &&
         connection.controlPoints &&
-        connection.controlPoints.length === 2
+        connection.controlPoints.length >= 1
       ) {
         const startHelper = start.onCalculateControlPoints(
           ControlAndEndPointNodeType.start,
@@ -200,19 +202,31 @@ export const animatePathForNodeConnectionPairs = <T>(
 
         const tx = 40;
         const ty = 40;
-        const bezierCurvePoints = getPointOnCubicBezierCurve(
-          Math.min(loop, 1),
-          { x: startHelper.x + tx, y: startHelper.y + ty },
-          {
-            x: startHelper.cx + tx,
-            y: startHelper.cy + ty,
-          },
-          {
-            x: endHelper.cx + tx,
-            y: endHelper.cy + ty,
-          },
-          { x: endHelper.x + tx, y: endHelper.y + ty }
-        );
+
+        const bezierCurvePoints =
+          connection.lineType === LineType.BezierCubic
+            ? getPointOnCubicBezierCurve(
+                Math.min(loop, 1),
+                { x: startHelper.x + tx, y: startHelper.y + ty },
+                {
+                  x: startHelper.cx + tx,
+                  y: startHelper.cy + ty,
+                },
+                {
+                  x: endHelper.cx + tx,
+                  y: endHelper.cy + ty,
+                },
+                { x: endHelper.x + tx, y: endHelper.y + ty }
+              )
+            : getPointOnQuadraticBezierCurve(
+                Math.min(loop, 1),
+                { x: startHelper.x + tx, y: startHelper.y + ty },
+                {
+                  x: startHelper.cx + tx,
+                  y: startHelper.cy + ty,
+                },
+                { x: endHelper.x + tx, y: endHelper.y + ty }
+              );
 
         if (!animatedNodes?.node1) {
           domCircle.style.display = 'flex';

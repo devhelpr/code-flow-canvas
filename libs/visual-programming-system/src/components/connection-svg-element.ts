@@ -593,8 +593,9 @@ export const createConnectionSVGElement = <T>(
       );
 
       if (connectionInfo) {
-        connectionInfo.controllers?.controlPoint1.setVisibility?.(false);
-        connectionInfo.controllers?.controlPoint2.setVisibility?.(false);
+        connectionInfo.controllers?.controlPoint1?.setVisibility?.(false);
+        connectionInfo.controllers?.controlPoint2?.setVisibility?.(false);
+        connectionInfo.controllers?.controlPoint?.setVisibility?.(false);
 
         connectionInfo.controllers?.start.update(
           connectionInfo.controllers?.start,
@@ -610,14 +611,21 @@ export const createConnectionSVGElement = <T>(
           nodeComponent
         );
 
-        connectionInfo.controllers?.controlPoint1.update(
+        connectionInfo.controllers?.controlPoint?.update(
+          connectionInfo.controllers?.controlPoint,
+          points.cx1,
+          points.cy1,
+          nodeComponent
+        );
+
+        connectionInfo.controllers?.controlPoint1?.update(
           connectionInfo.controllers?.controlPoint1,
           points.cx1,
           points.cy1,
           nodeComponent
         );
 
-        connectionInfo.controllers?.controlPoint2.update(
+        connectionInfo.controllers?.controlPoint2?.update(
           connectionInfo.controllers?.controlPoint2,
           points.cx2,
           points.cy2,

@@ -38,7 +38,7 @@ export const getNodeConnectionPairById = <T>(
             end &&
             canvasApp?.canvas &&
             connection.controlPoints &&
-            connection.controlPoints.length === 2
+            connection.controlPoints.length >= 1
           ) {
             if (followPathToEndThumb) {
               if (
@@ -116,7 +116,7 @@ export const getNodeConnectionPairsFromThumb = <T>(
             end &&
             canvasApp?.canvas &&
             connection.controlPoints &&
-            connection.controlPoints.length === 2
+            connection.controlPoints.length >= 1
           ) {
             connectionPairs.push({
               start,
