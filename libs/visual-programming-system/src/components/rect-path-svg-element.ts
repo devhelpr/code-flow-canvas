@@ -207,38 +207,6 @@ export const createRectPathSVGElement = <T>(
       );
 
       if (connectionInfo && getThumbPosition) {
-        const topLeft = getThumbPosition(ThumbType.TopLeft);
-        connectionInfo.controllers?.start.update(
-          connectionInfo.controllers?.start,
-          topLeft.x,
-          topLeft.y,
-          actionComponent
-        );
-
-        const topRight = getThumbPosition(ThumbType.TopRight);
-        connectionInfo.controllers?.rightTop.update(
-          connectionInfo.controllers?.rightTop,
-          topRight.x,
-          topRight.y,
-          actionComponent
-        );
-
-        const bottomLeft = getThumbPosition(ThumbType.BottomLeft);
-        connectionInfo.controllers?.leftBottom.update(
-          connectionInfo.controllers?.leftBottom,
-          bottomLeft.x,
-          bottomLeft.y,
-          actionComponent
-        );
-
-        const bottomRight = getThumbPosition(ThumbType.BottomRight);
-        connectionInfo.controllers?.rightBottom.update(
-          connectionInfo.controllers?.rightBottom,
-          bottomRight.x,
-          bottomRight.y,
-          actionComponent
-        );
-
         connectionInfo.controllers?.thumbConnectors.forEach(
           (connector: INodeComponent<T>) => {
             if (connector && connector.update && connector.thumbType) {
@@ -267,55 +235,6 @@ export const createRectPathSVGElement = <T>(
       );
 
       if (connectionInfo && connectionInfo.controllers) {
-        if (actionComponent.specifier === 'leftBottom') {
-          if (x <= points.beginX + points.width - minSize) {
-            points.width = points.width - (x - points.beginX);
-            points.beginX = x;
-          } else {
-            return false;
-          }
-
-          if (y - points.beginY >= minSize) {
-            points.height = y - points.beginY;
-          } else {
-            return false;
-          }
-        } else if (actionComponent.specifier === 'rightBottom') {
-          if (x - points.beginX >= minSize && y - points.beginY >= minSize) {
-            points.width = x - points.beginX;
-            points.height = y - points.beginY;
-          } else {
-            return false;
-          }
-        } else if (actionComponent.specifier === 'rightTop') {
-          if (x - points.beginX >= minSize) {
-            points.width = x - points.beginX;
-          } else {
-            return false;
-          }
-          if (y <= points.beginY + points.height - minSize) {
-            points.height = points.height - (y - points.beginY);
-            points.beginY = y;
-          } else {
-            return false;
-          }
-        } else if (actionComponent.specifier === 'begin') {
-          if (x <= points.beginX + points.width - minSize) {
-            points.width = points.width - (x - points.beginX);
-            points.beginX = x;
-          } else {
-            return false;
-          }
-          if (y <= points.beginY + points.height - minSize) {
-            points.height = points.height - (y - points.beginY);
-            points.beginY = y;
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-
         const getRectPoint = (
           specifier?: string,
           thumbConnector?: INodeComponent<T>
@@ -323,31 +242,7 @@ export const createRectPathSVGElement = <T>(
           if (!getThumbPosition) {
             return { x: 0, y: 0 };
           }
-          if (specifier === 'begin') {
-            const topLeft = getThumbPosition(ThumbType.TopLeft);
-            return {
-              x: topLeft.x,
-              y: topLeft.y,
-            };
-          } else if (specifier === 'rightTop') {
-            const topRight = getThumbPosition(ThumbType.TopRight);
-            return {
-              x: topRight.x,
-              y: topRight.y,
-            };
-          } else if (specifier === 'leftBottom') {
-            const bottomLeft = getThumbPosition(ThumbType.BottomLeft);
-            return {
-              x: bottomLeft.x,
-              y: bottomLeft.y,
-            };
-          } else if (specifier === 'rightBottom') {
-            const bottomRight = getThumbPosition(ThumbType.BottomRight);
-            return {
-              x: bottomRight.x,
-              y: bottomRight.y,
-            };
-          } else if (!specifier && thumbConnector && thumbConnector.thumbType) {
+          if (!specifier && thumbConnector && thumbConnector.thumbType) {
             const position = getThumbPosition(
               thumbConnector.thumbType,
               thumbConnector.thumbIndex ?? 0,
@@ -360,48 +255,11 @@ export const createRectPathSVGElement = <T>(
           }
           return false;
         };
-        let point = getRectPoint(connectionInfo.controllers?.start.specifier);
-        if (point) {
-          connectionInfo.controllers?.start.update(
-            connectionInfo.controllers?.start,
-            point.x,
-            point.y,
-            incomingComponent
-          );
-        }
-        point = getRectPoint(connectionInfo.controllers?.rightTop.specifier);
-        if (point) {
-          connectionInfo.controllers?.rightTop.update(
-            connectionInfo.controllers?.rightTop,
-            point.x,
-            point.y,
-            incomingComponent
-          );
-        }
-        point = getRectPoint(connectionInfo.controllers?.leftBottom.specifier);
-        if (point) {
-          connectionInfo.controllers?.leftBottom.update(
-            connectionInfo.controllers?.leftBottom,
-            point.x,
-            point.y,
-            incomingComponent
-          );
-        }
-
-        point = getRectPoint(connectionInfo.controllers?.rightBottom.specifier);
-        if (point) {
-          connectionInfo.controllers?.rightBottom.update(
-            connectionInfo.controllers?.rightBottom,
-            point.x,
-            point.y,
-            incomingComponent
-          );
-        }
 
         connectionInfo.controllers?.thumbConnectors.forEach(
           (connector: INodeComponent<T>) => {
             if (connector && connector.specifier) {
-              point = getRectPoint(undefined, connector);
+              const point = getRectPoint(undefined, connector);
               if (point && connector.update) {
                 console.log(
                   'update thumb connector',
