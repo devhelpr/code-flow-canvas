@@ -132,6 +132,9 @@ export const createThumbSVGElement = <T>(
         (nodeComponent.domElement as unknown as SVGElement).classList.add(
           'cursor-pointer'
         );
+        (nodeComponent.domElement as unknown as SVGElement).classList.remove(
+          'cursor-not-allowed'
+        );
         if (nodeComponent.isConnectPoint) {
           let canReceiveDrop = false;
           if (nodeComponent.onCanReceiveDroppedComponent) {
@@ -148,6 +151,9 @@ export const createThumbSVGElement = <T>(
                 (
                   nodeComponent.domElement as unknown as SVGElement
                 ).classList.remove('cursor-pointer');
+                (
+                  nodeComponent.domElement as unknown as SVGElement
+                ).classList.add('cursor-not-allowed');
                 console.log(
                   'svg cant register drop target for current dragging element'
                 );
@@ -164,9 +170,17 @@ export const createThumbSVGElement = <T>(
         if (disableInteraction) {
           return;
         }
+
         if (nodeComponent.isConnectPoint) {
           console.log('svg unregister drop target', nodeComponent.id);
           interactionStateMachine.clearDropTarget(nodeComponent);
+
+          (nodeComponent.domElement as unknown as SVGElement).classList.remove(
+            'cursor-not-allowed'
+          );
+          (nodeComponent.domElement as unknown as SVGElement).classList.remove(
+            'cursor-pointer'
+          );
         }
       },
       pointerdown: (e: PointerEvent) => {

@@ -286,7 +286,7 @@ export const getBaseIterator = <T>(
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded cursor-pointer`,
+          class: `bg-slate-500 p-4 rounded`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -444,9 +444,9 @@ export const getBaseIterator = <T>(
         const jsxComponentWrapper = createElement(
           'div',
           {
-            //class: `bg-slate-500 p-4 rounded cursor-pointer`,
+            //class: `bg-slate-500 p-4 rounded`,
             class:
-              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded cursor-pointer',
+              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded',
             style: {
               'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
             },
@@ -486,9 +486,8 @@ export const getBaseIterator = <T>(
         const jsxCircleComponentWrapper = createElement(
           'div',
           {
-            //class: `bg-slate-500 p-4 rounded cursor-pointer`,
             class:
-              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded cursor-pointer',
+              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded',
             style: {
               'clip-path': 'circle(50%)',
             },

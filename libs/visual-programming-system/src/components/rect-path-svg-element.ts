@@ -99,9 +99,7 @@ export const createRectPathSVGElement = <T>(
 
   if (markup !== undefined && typeof markup === 'string') {
     const compiledMarkup = compileMarkup(
-      `<div class="${
-        layoutProperties?.classNames ?? ''
-      } overflow-hidden cursor-pointer">
+      `<div class="${layoutProperties?.classNames ?? ''} overflow-hidden">
         ${markup ?? ''}
       </div>`
     );

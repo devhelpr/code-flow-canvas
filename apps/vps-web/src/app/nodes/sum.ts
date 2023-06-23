@@ -76,7 +76,7 @@ export const getSum = () => {
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded cursor-pointer max-w-[240px]`,
+          class: `bg-slate-500 p-4 rounded max-w-[240px]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement

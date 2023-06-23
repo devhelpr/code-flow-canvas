@@ -29,9 +29,8 @@ export const getIfCondition = () => {
       const jsxComponentWrapper = createElement(
         'div',
         {
-          //class: `bg-slate-500 p-4 rounded cursor-pointer`,
           class:
-            'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded cursor-pointer',
+            'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded',
           style: {
             'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
           },

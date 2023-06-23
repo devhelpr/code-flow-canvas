@@ -227,7 +227,7 @@ export const createConnectionSVGElement = <T>(
   pathElement = createNSElement(
     'path',
     {
-      class: 'cursor-pointer pointer-events-auto',
+      class: 'pointer-events-auto',
       d: isQuadratic
         ? `M${pathPoints.beginX - bbox.x} ${pathPoints.beginY - bbox.y} Q${
             pathPoints.cx1 - bbox.x

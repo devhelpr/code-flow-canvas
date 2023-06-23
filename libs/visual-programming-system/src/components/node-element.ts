@@ -37,7 +37,7 @@ export const createNodeElement = <T>(
     {
       class: `
         absolute
-        select-none cursor-pointer
+        select-none
         transition-transform
         ease-in-out duration-[75ms]
         `,

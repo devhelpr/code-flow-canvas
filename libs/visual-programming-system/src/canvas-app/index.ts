@@ -422,7 +422,7 @@ export const createCanvasApp = <T>(
   const pathHiddenElement = createNSElement<T>(
     'path',
     {
-      class: 'cursor-pointer pointer-events-auto',
+      class: 'pointer-events-auto',
     },
     hiddenSVG.domElement
   );

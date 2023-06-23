@@ -192,7 +192,7 @@ export const getTestNode = <T>(
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded cursor-pointer`,
+          class: `bg-slate-500 p-4 rounded`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement

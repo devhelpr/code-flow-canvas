@@ -61,7 +61,7 @@ export const getExpression = () => {
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded cursor-pointer`,
+          class: `bg-slate-500 p-4 rounded`,
         },
         undefined,
         FormComponent({

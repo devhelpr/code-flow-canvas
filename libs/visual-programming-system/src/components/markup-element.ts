@@ -36,7 +36,7 @@ export const createMarkupElement = <T>(
     compiledMarkup.body.tagName || 'div',
     {
       class:
-        'absolute p-10 select-none cursor-pointer text-center transition-transform ease-in-out duration-[75ms]',
+        'absolute p-10 select-none text-center transition-transform ease-in-out duration-[75ms]',
       style: {
         'background-color':
           '#' + Math.floor(Math.random() * 16777215).toString(16),
