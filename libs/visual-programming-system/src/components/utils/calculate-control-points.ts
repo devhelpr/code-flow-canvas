@@ -34,7 +34,6 @@ const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
 export const onCalculateControlPoints = <T>(
   rectNode: INodeComponent<T>,
   nodeType: ControlAndEndPointNodeType,
-  curveType: CurveType,
   thumbType: ThumbType,
   index?: number,
   connectedNode?: INodeComponent<T>,

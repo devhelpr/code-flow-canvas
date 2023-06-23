@@ -342,7 +342,6 @@ export const createConnectionSVGElement = <T>(
         const start = onCalculateControlPoints(
           nodeComponent?.startNode,
           ControlAndEndPointNodeType.start,
-          CurveType.bezierCubic,
           nodeComponent.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
           nodeComponent.startNodeThumb?.thumbIndex,
@@ -364,7 +363,6 @@ export const createConnectionSVGElement = <T>(
         const end = onCalculateControlPoints(
           nodeComponent?.endNode,
           ControlAndEndPointNodeType.end,
-          CurveType.bezierCubic,
           nodeComponent.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
           nodeComponent.endNodeThumb?.thumbIndex,
           nodeComponent.startNode,
@@ -403,7 +401,6 @@ export const createConnectionSVGElement = <T>(
         const start = onCalculateControlPoints(
           actionComponent,
           ControlAndEndPointNodeType.start,
-          CurveType.bezierCubic,
           incomingComponent.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
           incomingComponent.startNodeThumb?.thumbIndex,
@@ -423,7 +420,6 @@ export const createConnectionSVGElement = <T>(
         const end = onCalculateControlPoints(
           actionComponent,
           ControlAndEndPointNodeType.end,
-          CurveType.bezierCubic,
           incomingComponent.endNodeThumb?.thumbType ??
             ThumbType.EndConnectorCenter,
           incomingComponent.endNodeThumb?.thumbIndex,
