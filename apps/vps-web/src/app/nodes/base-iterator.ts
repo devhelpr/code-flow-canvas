@@ -200,7 +200,7 @@ export const getBaseIterator = <T>(
                                 mapStep(values.at(mapLoop));
                               } else {
                                 if (textNode) {
-                                  textNode.textContent = `Map`;
+                                  textNode.textContent = nodeTitle;
                                 }
                                 if (!succesThumb) {
                                   reject();
