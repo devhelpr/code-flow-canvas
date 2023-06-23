@@ -278,7 +278,7 @@ export const animatePathForNodeConnectionPairs = <T>(
               .then((result: any) => {
                 //const result =
                 console.log('animatePath onNextNode result', input, result);
-                if (result.result) {
+                if (result.result !== undefined) {
                   animatePath<T>(
                     canvasApp,
                     end,

@@ -1,58 +1,54 @@
 import { INodeComponent } from '@devhelpr/visual-programming-system';
-import { getBaseMap, SubOutputActionType } from './base-map';
+import { getBaseIterator, SubOutputActionType } from './base-iterator';
+
+export type AnimatePathFunction = <T>(
+  node: INodeComponent<T>,
+  color: string,
+  onNextNode?: (
+    nodeId: string,
+    node: INodeComponent<T>,
+    input: string | any[]
+  ) =>
+    | { result: boolean; output: string | any[]; followPathByName?: string }
+    | Promise<{
+        result: boolean;
+        output: string | any[];
+        followPathByName?: string;
+      }>,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
+  followPathByName?: string,
+  animatedNodes?: undefined,
+  offsetX?: number,
+  offsetY?: number,
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
+) => void;
 
 export const getMap = <T>(
-  animatePath: (
-    node: INodeComponent<T>,
-    color: string,
-    onNextNode?: (
-      nodeId: string,
-      node: INodeComponent<T>,
-      input: string | any[]
-    ) =>
-      | { result: boolean; output: string | any[]; followPathByName?: string }
-      | Promise<{
-          result: boolean;
-          output: string | any[];
-          followPathByName?: string;
-        }>,
-    onStopped?: (input: string | any[]) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: undefined,
-    offsetX?: number,
-    offsetY?: number,
-    followPathToEndThumb?: boolean,
-    singleStep?: boolean
-  ) => void,
-  animatePathFromThumb: (
-    node: INodeComponent<T>,
-    color: string,
-    onNextNode?: (
-      nodeId: string,
-      node: INodeComponent<T>,
-      input: string | any[]
-    ) =>
-      | { result: boolean; output: string | any[]; followPathByName?: string }
-      | Promise<{
-          result: boolean;
-          output: string | any[];
-          followPathByName?: string;
-        }>,
-    onStopped?: (input: string | any[]) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: undefined,
-    offsetX?: number,
-    offsetY?: number,
-    followPathToEndThumb?: boolean,
-    singleStep?: boolean
-  ) => void
+  animatePath: AnimatePathFunction,
+  animatePathFromThumb: AnimatePathFunction
 ) => {
-  return getBaseMap(
+  return getBaseIterator(
     'map',
     'Map',
     (input) => SubOutputActionType.pushToResult,
+    animatePath,
+    animatePathFromThumb
+  );
+};
+
+export const getFilter = <T>(
+  animatePath: AnimatePathFunction,
+  animatePathFromThumb: AnimatePathFunction
+) => {
+  return getBaseIterator(
+    'filter',
+    'Filter',
+    (input) =>
+      Boolean(input) === true
+        ? SubOutputActionType.keepInput
+        : SubOutputActionType.filterFromResult,
     animatePath,
     animatePathFromThumb
   );

@@ -37,7 +37,7 @@ import { getExpression } from './nodes/expression';
 import { getIfCondition } from './nodes/if-condition';
 import { getShowInput } from './nodes/show-input';
 import { getSum } from './nodes/sum';
-import { getMap } from './nodes/map';
+import { getFilter, getMap } from './nodes/map';
 import {
   setSpeedMeter,
   timers,
@@ -540,6 +540,24 @@ export class AppElement extends HTMLElement {
       },
       menubarElement.domElement,
       'Add "map"'
+    );
+
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
+          const startX = Math.floor(Math.random() * 250);
+          const startY = Math.floor(Math.random() * 500);
+          const filter = getFilter<NodeInfo>(animatePath, animatePathFromThumb);
+          filter.createVisualNode(canvasApp, startX, startY);
+
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add "filter"'
     );
 
     // createElement(

@@ -49,7 +49,7 @@ export const runNode = <T>(
     result = false;
     followPath = undefined;
   }
-  if (result !== false) {
+  if (result !== undefined) {
     animatePath(
       node as unknown as INodeComponent<T>,
       'white',
@@ -85,7 +85,7 @@ export const runNode = <T>(
           followPath = undefined;
         }
         console.log('expression result', result);
-        if (result === false) {
+        if (result === undefined) {
           return {
             result: false,
             output: result,
@@ -222,7 +222,7 @@ export const runNodeFromThumb = <T>(
         followPath = undefined;
       }
       console.log('expression result', result);
-      if (result === false) {
+      if (result === undefined) {
         return {
           result: false,
           output: result,

@@ -39,7 +39,7 @@ const getThumbNode = (
   return undefined;
 };
 
-export const getBaseMap = <T>(
+export const getBaseIterator = <T>(
   nodeTypeName: string,
   nodeTitle: string,
   onSubOutputActionType: (input: string) => SubOutputActionType,
@@ -183,6 +183,10 @@ export const getBaseMap = <T>(
                                 action === SubOutputActionType.keepInput
                               ) {
                                 mapResults.push(value);
+                              } else if (
+                                action === SubOutputActionType.filterFromResult
+                              ) {
+                                // TODO: implement
                               }
                               mapLoop++;
 
