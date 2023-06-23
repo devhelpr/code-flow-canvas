@@ -99,6 +99,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     component: INodeComponent<T>
   ) => void;
   onCalculateControlPoints?: (
+    rectNode: INodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
     curveType: CurveType,
     thumbType: ThumbType,

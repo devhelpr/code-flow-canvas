@@ -171,13 +171,13 @@ export const animatePathForNodeConnectionPairs = <T>(
       if (
         start &&
         end &&
-        start.onCalculateControlPoints &&
-        end.onCalculateControlPoints &&
+        connection.onCalculateControlPoints &&
         connection &&
         connection.controlPoints &&
         connection.controlPoints.length >= 1
       ) {
-        const startHelper = start.onCalculateControlPoints(
+        const startHelper = connection.onCalculateControlPoints(
+          start,
           ControlAndEndPointNodeType.start,
           CurveType.bezierCubic,
           connection.startNodeThumb?.thumbType ??
@@ -189,7 +189,8 @@ export const animatePathForNodeConnectionPairs = <T>(
           connection.endNodeThumb
         );
 
-        const endHelper = end.onCalculateControlPoints(
+        const endHelper = connection.onCalculateControlPoints(
+          end,
           ControlAndEndPointNodeType.end,
           CurveType.bezierCubic,
           connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,

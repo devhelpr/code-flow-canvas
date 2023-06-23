@@ -32,7 +32,6 @@ import {
   thumbRadius,
   thumbWidth,
 } from './utils/calculate-connector-thumbs';
-import { onCalculateControlPoints } from './utils/calculate-control-points';
 import { setPosition } from './utils/set-position';
 
 export const createRect = <T>(
@@ -86,29 +85,6 @@ export const createRect = <T>(
 
   widthHelper = rectNode.width ?? 0;
   heightHelper = rectNode.height ?? 0;
-
-  rectNode.onCalculateControlPoints = (
-    nodeType: ControlAndEndPointNodeType,
-    curveType: CurveType,
-    thumbType: ThumbType,
-    index?: number,
-    connectedNode?: INodeComponent<T>,
-    thumbOffsetY?: number,
-    controlPointDistance?: number,
-    connectedNodeThumb?: INodeComponent<T>
-  ) => {
-    return onCalculateControlPoints(
-      rectNode,
-      nodeType,
-      curveType,
-      thumbType,
-      index,
-      connectedNode,
-      thumbOffsetY,
-      controlPointDistance,
-      connectedNodeThumb
-    );
-  };
 
   const onCanReceiveDroppedComponent = (
     thumbNode: INodeComponent<T>,

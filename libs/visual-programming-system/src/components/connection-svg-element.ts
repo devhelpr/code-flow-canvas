@@ -13,6 +13,7 @@ import { ThumbType } from '../types';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
+import { onCalculateControlPoints as onCalculateCubicBezierControlPoints } from './utils/calculate-control-points';
 
 const thumbRadius = 10;
 const thumbWidth = 100;
@@ -50,7 +51,8 @@ export const createConnectionSVGElement = <T>(
   controlPoint2Y: number,
   pathHiddenElement: IElementNode<T>,
   isQuadratic = false,
-  isDashed = false
+  isDashed = false,
+  onCalculateControlPoints = onCalculateCubicBezierControlPoints
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -302,6 +304,8 @@ export const createConnectionSVGElement = <T>(
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.set(pathElement.id, pathElement);
 
+  nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
+
   nodeComponent.update = (
     incomingComponent?: INodeComponent<T>,
     x?: number,
@@ -335,49 +339,46 @@ export const createConnectionSVGElement = <T>(
     ) {
       // needed for updating without using parameters (...update() )
       if (nodeComponent?.startNode) {
-        if (nodeComponent?.startNode.onCalculateControlPoints) {
-          const start = nodeComponent.startNode.onCalculateControlPoints(
-            ControlAndEndPointNodeType.start,
-            CurveType.bezierCubic,
-            nodeComponent.startNodeThumb?.thumbType ??
-              ThumbType.StartConnectorCenter,
-            nodeComponent.startNodeThumb?.thumbIndex,
-            nodeComponent.endNode,
-            nodeComponent.startNodeThumb?.thumbOffsetY ?? 0,
-            nodeComponent.startNodeThumb?.thumbControlPointDistance,
-            nodeComponent.endNodeThumb
-          );
+        const start = onCalculateControlPoints(
+          nodeComponent?.startNode,
+          ControlAndEndPointNodeType.start,
+          CurveType.bezierCubic,
+          nodeComponent.startNodeThumb?.thumbType ??
+            ThumbType.StartConnectorCenter,
+          nodeComponent.startNodeThumb?.thumbIndex,
+          nodeComponent.endNode,
+          nodeComponent.startNodeThumb?.thumbOffsetY ?? 0,
+          nodeComponent.startNodeThumb?.thumbControlPointDistance,
+          nodeComponent.endNodeThumb
+        );
 
-          points.beginX = start.x;
-          points.beginY = start.y;
-          points.cx1 = start.cx;
-          points.cy1 = start.cy;
-          skipChecks = true;
-          updateThumbs = true;
-        }
+        points.beginX = start.x;
+        points.beginY = start.y;
+        points.cx1 = start.cx;
+        points.cy1 = start.cy;
+        skipChecks = true;
+        updateThumbs = true;
       }
 
       if (nodeComponent?.endNode) {
-        if (nodeComponent?.endNode.onCalculateControlPoints) {
-          const end = nodeComponent.endNode.onCalculateControlPoints(
-            ControlAndEndPointNodeType.end,
-            CurveType.bezierCubic,
-            nodeComponent.endNodeThumb?.thumbType ??
-              ThumbType.EndConnectorCenter,
-            nodeComponent.endNodeThumb?.thumbIndex,
-            nodeComponent.startNode,
-            nodeComponent.endNodeThumb?.thumbOffsetY ?? 0,
-            nodeComponent.endNodeThumb?.thumbControlPointDistance,
-            nodeComponent.startNodeThumb
-          );
-          points.endX = end.x;
-          points.endY = end.y;
-          points.cx2 = end.cx;
-          points.cy2 = end.cy;
-          skipChecks = true;
+        const end = onCalculateControlPoints(
+          nodeComponent?.endNode,
+          ControlAndEndPointNodeType.end,
+          CurveType.bezierCubic,
+          nodeComponent.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
+          nodeComponent.endNodeThumb?.thumbIndex,
+          nodeComponent.startNode,
+          nodeComponent.endNodeThumb?.thumbOffsetY ?? 0,
+          nodeComponent.endNodeThumb?.thumbControlPointDistance,
+          nodeComponent.startNodeThumb
+        );
+        points.endX = end.x;
+        points.endY = end.y;
+        points.cx2 = end.cx;
+        points.cy2 = end.cy;
+        skipChecks = true;
 
-          updateThumbs = true;
-        }
+        updateThumbs = true;
       }
 
       if (!updateThumbs) {
@@ -399,48 +400,42 @@ export const createConnectionSVGElement = <T>(
         incomingComponent.startNode &&
         actionComponent.id === incomingComponent.startNode.id
       ) {
-        if (actionComponent.onCalculateControlPoints) {
-          const start = actionComponent.onCalculateControlPoints(
-            ControlAndEndPointNodeType.start,
-            CurveType.bezierCubic,
-            incomingComponent.startNodeThumb?.thumbType ??
-              ThumbType.StartConnectorCenter,
-            incomingComponent.startNodeThumb?.thumbIndex,
-            incomingComponent.endNode,
-            incomingComponent.startNodeThumb?.thumbOffsetY ?? 0,
-            incomingComponent.startNodeThumb?.thumbControlPointDistance,
-            incomingComponent.endNodeThumb
-          );
-          points.beginX = start.x;
-          points.beginY = start.y;
-          points.cx1 = start.cx;
-          points.cy1 = start.cy;
-        } else {
-          return false;
-        }
+        const start = onCalculateControlPoints(
+          actionComponent,
+          ControlAndEndPointNodeType.start,
+          CurveType.bezierCubic,
+          incomingComponent.startNodeThumb?.thumbType ??
+            ThumbType.StartConnectorCenter,
+          incomingComponent.startNodeThumb?.thumbIndex,
+          incomingComponent.endNode,
+          incomingComponent.startNodeThumb?.thumbOffsetY ?? 0,
+          incomingComponent.startNodeThumb?.thumbControlPointDistance,
+          incomingComponent.endNodeThumb
+        );
+        points.beginX = start.x;
+        points.beginY = start.y;
+        points.cx1 = start.cx;
+        points.cy1 = start.cy;
       } else if (
         incomingComponent.endNode &&
         actionComponent.id === incomingComponent.endNode.id
       ) {
-        if (actionComponent.onCalculateControlPoints) {
-          const end = actionComponent.onCalculateControlPoints(
-            ControlAndEndPointNodeType.end,
-            CurveType.bezierCubic,
-            incomingComponent.endNodeThumb?.thumbType ??
-              ThumbType.EndConnectorCenter,
-            incomingComponent.endNodeThumb?.thumbIndex,
-            incomingComponent.startNode,
-            incomingComponent.endNodeThumb?.thumbOffsetY ?? 0,
-            incomingComponent.endNodeThumb?.thumbControlPointDistance,
-            incomingComponent.startNodeThumb
-          );
-          points.endX = end.x;
-          points.endY = end.y;
-          points.cx2 = end.cx;
-          points.cy2 = end.cy;
-        } else {
-          return false;
-        }
+        const end = onCalculateControlPoints(
+          actionComponent,
+          ControlAndEndPointNodeType.end,
+          CurveType.bezierCubic,
+          incomingComponent.endNodeThumb?.thumbType ??
+            ThumbType.EndConnectorCenter,
+          incomingComponent.endNodeThumb?.thumbIndex,
+          incomingComponent.startNode,
+          incomingComponent.endNodeThumb?.thumbOffsetY ?? 0,
+          incomingComponent.endNodeThumb?.thumbControlPointDistance,
+          incomingComponent.startNodeThumb
+        );
+        points.endX = end.x;
+        points.endY = end.y;
+        points.cx2 = end.cx;
+        points.cy2 = end.cy;
       } else {
         const diffC1x = points.cx1 - points.beginX;
         const diffC1y = points.cy1 - points.beginY;
