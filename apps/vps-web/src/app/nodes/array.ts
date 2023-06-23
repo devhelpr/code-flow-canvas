@@ -101,6 +101,8 @@ export const getArray = () => {
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             offsetY: 20,
+            label: '[]',
+            thumbConstraint: 'array',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -108,6 +110,8 @@ export const getArray = () => {
             connectionType: ThumbConnectionType.end,
             offsetY: 20,
             color: 'white',
+            label: '#',
+            thumbConstraint: 'value',
           },
         ],
         wrapper,

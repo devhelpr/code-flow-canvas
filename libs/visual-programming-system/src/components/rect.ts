@@ -91,21 +91,60 @@ export const createRect = <T>(
 
   const onCanReceiveDroppedComponent = (
     thumbNode: IThumbNodeComponent<T>,
-    component: INodeComponent<T>
+    component: INodeComponent<T>,
+    receivingThumbNode: IThumbNodeComponent<T>
   ) => {
     // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
-    return (
-      ((component &&
-        component.parent &&
-        thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-        component.specifier === 'end') ||
-        (component &&
-          component.parent &&
-          thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-          component.specifier === 'begin')) ??
-      false
-    );
+
+    if (
+      component &&
+      component.parent &&
+      thumbNode.thumbConnectionType === ThumbConnectionType.end &&
+      component.specifier === 'end'
+    ) {
+      // thumbNode is the thumb that is being dropped on
+      // component.parent.startNodeThumb is the thumb that is being dragged from
+
+      console.log(
+        'DROPPED ON RIGHT THUMB',
+        thumbNode.thumbConstraint,
+        (component.parent as unknown as IConnectionNodeComponent<T>)
+          .startNodeThumb?.thumbConstraint
+      );
+      if (
+        thumbNode.thumbConstraint !==
+        (component.parent as unknown as IConnectionNodeComponent<T>)
+          .startNodeThumb?.thumbConstraint
+      ) {
+        return false;
+      }
+      return true;
+    } else if (
+      component &&
+      component.parent &&
+      thumbNode.thumbConnectionType === ThumbConnectionType.start &&
+      component.specifier === 'begin'
+    ) {
+      // thumbNode is the thumb that is being dropped on
+      // component.parent.endNodeThumb is the thumb that is being dragged from
+
+      console.log(
+        'DROPPED ON LEFT THUMB',
+        thumbNode.thumbConstraint,
+        (component.parent as unknown as IConnectionNodeComponent<T>)
+          .endNodeThumb?.thumbConstraint
+      );
+      if (
+        thumbNode.thumbConstraint !==
+        (component.parent as unknown as IConnectionNodeComponent<T>)
+          .endNodeThumb?.thumbConstraint
+      ) {
+        return false;
+      }
+      return true;
+    }
+    return false;
   };
 
   const onReceiveDroppedComponent = (
@@ -263,7 +302,8 @@ export const createRect = <T>(
         elements,
         rectNode,
         pathHiddenElement,
-        disableInteraction
+        disableInteraction,
+        thumb.label
       );
 
       thumbConnectorElement.thumbName = thumb.name;
@@ -275,6 +315,7 @@ export const createRect = <T>(
       thumbConnectorElement.thumbControlPointDistance =
         thumb.controlPointDistance;
       thumbConnectorElement.thumbLinkedToNode = rectNode;
+      thumbConnectorElement.thumbConstraint = thumb.thumbConstraint;
 
       if (!disableInteraction) {
         thumbConnectorElement.onCanReceiveDroppedComponent =

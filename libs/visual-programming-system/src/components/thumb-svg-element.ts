@@ -3,6 +3,7 @@ import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
+  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
@@ -40,7 +41,8 @@ export const createThumbSVGElement = <T>(
   canvasElements?: ElementNodeMap<T>,
   parentRectNode?: IRectNodeComponent<T>,
   pathHiddenElement?: IElementNode<T>,
-  disableInteraction?: boolean
+  disableInteraction?: boolean,
+  label?: string
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -86,9 +88,7 @@ export const createThumbSVGElement = <T>(
 
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
     nodeComponent.id;
-  let circleElement: IElementNode<T> | undefined = undefined;
-  //circleElement = createNSElement(
-  circleElement = createElement(
+  const circleElement: IElementNode<T> | undefined = createElement(
     'div', //'circle',
     {
       class: `${
@@ -133,26 +133,29 @@ export const createThumbSVGElement = <T>(
           'cursor-pointer'
         );
         if (nodeComponent.isConnectPoint) {
+          let canReceiveDrop = false;
           if (nodeComponent.onCanReceiveDroppedComponent) {
             //TODO : get the current interactive element and check if it can be dropped here
             const state = interactionStateMachine.getCurrentInteractionState();
             if (state && state.element) {
-              const canReceiveDrop = nodeComponent.onCanReceiveDroppedComponent(
+              canReceiveDrop = nodeComponent.onCanReceiveDroppedComponent(
                 nodeComponent,
-                state.element
+                state.element as unknown as IConnectionNodeComponent<T>,
+                nodeComponent
               );
+
               if (!canReceiveDrop) {
                 (
                   nodeComponent.domElement as unknown as SVGElement
                 ).classList.remove('cursor-pointer');
                 console.log(
-                  'svg cant register drop target for current dragging element',
-                  state.element.id
+                  'svg cant register drop target for current dragging element'
                 );
                 return;
               }
             }
           }
+
           console.log('svg register drop target', nodeComponent.id);
           interactionStateMachine.setCurrentDropTarget(nodeComponent);
         }
@@ -373,6 +376,29 @@ export const createThumbSVGElement = <T>(
 
   if (!circleElement) throw new Error('circleElement is undefined');
 
+  if (label) {
+    // const isLeftSideThumb =
+    //   thumbType === ThumbType.End ||
+    //   thumbType === ThumbType.EndConnectorBottom ||
+    //   thumbType === ThumbType.EndConnectorCenter ||
+    //   thumbType === ThumbType.EndConnectorLeft ||
+    //   thumbType === ThumbType.EndConnectorRight ||
+    //   thumbType === ThumbType.EndConnectorTop;
+
+    // ${isLeftSideThumb ? 'right-[24px]' : 'left-[24px]'}
+
+    createElement(
+      'div', //'circle',
+      {
+        class: `pointer-events-none absolute text-[12px] flex items-center justify-center
+        w-[14px] h-[14px] text-base-[14px]
+        text-center
+        top-[-1px] text-black `,
+      },
+      circleElement.domElement,
+      label
+    );
+  }
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.set(circleElement.id, circleElement);
   nodeComponent.specifier = specifier;

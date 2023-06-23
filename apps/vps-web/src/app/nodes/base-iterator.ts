@@ -306,6 +306,8 @@ export const getBaseIterator = <T>(
             connectionType: ThumbConnectionType.start,
             offsetY: 20,
             name: 'output',
+            label: '[]',
+            thumbConstraint: 'array',
           },
           {
             thumbType: ThumbType.StartConnectorRight,
@@ -315,6 +317,8 @@ export const getBaseIterator = <T>(
             color: 'white',
             pathName: 'test',
             name: 'iteration',
+            label: '#',
+            thumbConstraint: 'value',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -322,6 +326,8 @@ export const getBaseIterator = <T>(
             connectionType: ThumbConnectionType.end,
             offsetY: 20,
             name: 'output',
+            label: '[]',
+            thumbConstraint: 'array',
           },
         ],
         wrapper,

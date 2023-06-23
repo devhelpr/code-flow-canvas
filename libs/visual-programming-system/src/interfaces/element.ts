@@ -78,8 +78,9 @@ export interface INodeComponent<T> extends IElementNode<T> {
   pointerUp?: () => void;
   onClick?: () => void;
   onCanReceiveDroppedComponent?: (
-    thumbNode: INodeComponent<T>,
-    component: INodeComponent<T>
+    thumbNode: IThumbNodeComponent<T>,
+    component: IConnectionNodeComponent<T>,
+    receivingThumbNode: IThumbNodeComponent<T>
   ) => boolean;
   onReceiveDroppedComponent?: (
     thumbNode: INodeComponent<T>,
@@ -122,6 +123,9 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
 
   thumbControlPointDistance?: number;
   thumbConnectionType?: ThumbConnectionType;
+
+  thumbConstraint?: string;
+  thumbLabel?: string;
 }
 
 export const ControlAndEndPointNodeType = {
@@ -167,4 +171,6 @@ export type IThumb = {
   offsetY?: number;
   controlPointDistance?: number;
   hidden?: boolean;
+  label?: string;
+  thumbConstraint?: string;
 };
