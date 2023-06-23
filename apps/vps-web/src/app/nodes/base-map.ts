@@ -12,6 +12,15 @@ import {
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 
+export const SubOutputActionType = {
+  pushToResult: 'pushToResult',
+  filterFromResult: 'filterFromResult',
+  keepInput: 'keepInput',
+} as const;
+
+export type SubOutputActionType =
+  (typeof SubOutputActionType)[keyof typeof SubOutputActionType];
+
 const getThumbNode = (
   thumbType: ThumbType,
   node: INodeComponent<NodeInfo>,
@@ -31,9 +40,9 @@ const getThumbNode = (
 };
 
 export const getBaseMap = <T>(
-  nodeTypeName : string,
+  nodeTypeName: string,
   nodeTitle: string,
-  onCompute : (input: string | any[]) => boolean,
+  onSubOutputActionType: (input: string) => SubOutputActionType,
   animatePath: (
     node: INodeComponent<T>,
     color: string,
@@ -164,7 +173,17 @@ export const getBaseMap = <T>(
                             connection.startNodeThumb,
                             animatePathFromThumb,
                             (input: string | any[]) => {
-                              mapResults.push(input);
+                              // TODO : fix this type assertion
+                              const action = onSubOutputActionType(
+                                input as unknown as string
+                              );
+                              if (action === SubOutputActionType.pushToResult) {
+                                mapResults.push(input);
+                              } else if (
+                                action === SubOutputActionType.keepInput
+                              ) {
+                                mapResults.push(value);
+                              }
                               mapLoop++;
 
                               if (mapLoop < values.length) {
