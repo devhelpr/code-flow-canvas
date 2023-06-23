@@ -10,6 +10,7 @@ import {
   INodeComponentRelation,
   IRectNodeComponent,
   IThumb,
+  IThumbNodeComponent,
   NodeComponentRelationType,
   ThumbConnectionType,
 } from '../interfaces/element';
@@ -89,7 +90,7 @@ export const createRect = <T>(
   heightHelper = rectNode.height ?? 0;
 
   const onCanReceiveDroppedComponent = (
-    thumbNode: INodeComponent<T>,
+    thumbNode: IThumbNodeComponent<T>,
     component: INodeComponent<T>
   ) => {
     // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
@@ -108,7 +109,7 @@ export const createRect = <T>(
   };
 
   const onReceiveDroppedComponent = (
-    thumbNode: INodeComponent<T>,
+    thumbNode: IThumbNodeComponent<T>,
     component: INodeComponent<T>
   ) => {
     // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)

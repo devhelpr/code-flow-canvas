@@ -3,6 +3,7 @@ import {
   IConnectionNodeComponent,
   INodeComponent,
   IRectNodeComponent,
+  IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 
 export const getNodeConnectionPairById = <T>(
@@ -83,7 +84,7 @@ export const getNodeConnectionPairById = <T>(
 
 export const getNodeConnectionPairsFromThumb = <T>(
   canvasApp: CanvasAppInstance,
-  nodeThumb: INodeComponent<T>
+  nodeThumb: IThumbNodeComponent<T>
 ) => {
   const connectionPairs: {
     start: IRectNodeComponent<T>;

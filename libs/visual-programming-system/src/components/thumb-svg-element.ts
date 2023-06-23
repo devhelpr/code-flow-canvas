@@ -7,6 +7,7 @@ import {
   INodeComponent,
   INodeComponentRelation,
   IRectNodeComponent,
+  IThumbNodeComponent,
   NodeComponentRelationType,
   ThumbConnectionType,
 } from '../interfaces/element';
@@ -53,7 +54,7 @@ export const createThumbSVGElement = <T>(
   //console.log('createSVGElement', initialX, initialY, specifier);
   // const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
   //   'svg',
-  const nodeComponent: INodeComponent<T> = createElement(
+  const nodeComponent: IThumbNodeComponent<T> = createElement(
     'div',
     {
       // will-change-transform

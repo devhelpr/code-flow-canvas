@@ -7,6 +7,7 @@ import {
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
+  IThumbNodeComponent,
 } from '../interfaces/element';
 import { ShapeType } from '../types/shape-type';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
@@ -210,7 +211,7 @@ export const createRectPathSVGElement = <T>(
 
       if (connectionInfo && getThumbPosition) {
         connectionInfo.controllers?.thumbConnectors.forEach(
-          (connector: INodeComponent<T>) => {
+          (connector: IThumbNodeComponent<T>) => {
             if (connector && connector.update && connector.thumbType) {
               const position = getThumbPosition(
                 connector.thumbType,
@@ -239,7 +240,7 @@ export const createRectPathSVGElement = <T>(
       if (connectionInfo && connectionInfo.controllers) {
         const getRectPoint = (
           specifier?: string,
-          thumbConnector?: INodeComponent<T>
+          thumbConnector?: IThumbNodeComponent<T>
         ) => {
           if (!getThumbPosition) {
             return { x: 0, y: 0 };
@@ -259,7 +260,7 @@ export const createRectPathSVGElement = <T>(
         };
 
         connectionInfo.controllers?.thumbConnectors.forEach(
-          (connector: INodeComponent<T>) => {
+          (connector: IThumbNodeComponent<T>) => {
             if (connector && connector.specifier) {
               const point = getRectPoint(undefined, connector);
               if (point && connector.update) {

@@ -65,15 +65,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   isConnectPoint?: boolean;
   shapeType?: ShapeType;
 
-  thumbIndex?: number;
-  thumbOffsetY?: number;
-  thumbType?: ThumbType;
-  thumbName?: string;
-  thumbLinkedToNode?: IRectNodeComponent<T>;
-
-  thumbControlPointDistance?: number;
-  thumbConnectionType?: ThumbConnectionType;
-  thumbConnectors?: INodeComponent<T>[];
+  thumbConnectors?: IThumbNodeComponent<T>[];
   update?: (
     component?: INodeComponent<T>,
     x?: number,
@@ -107,8 +99,8 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   startNode?: IRectNodeComponent<T>;
   endNode?: IRectNodeComponent<T>;
 
-  startNodeThumb?: INodeComponent<T>;
-  endNodeThumb?: INodeComponent<T>;
+  startNodeThumb?: IThumbNodeComponent<T>;
+  endNodeThumb?: IThumbNodeComponent<T>;
   onCalculateControlPoints?: (
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
@@ -119,6 +111,17 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
     controlPointDistance?: number,
     connectedNodeThumb?: INodeComponent<T>
   ) => IControlAndEndPoint;
+}
+
+export interface IThumbNodeComponent<T> extends INodeComponent<T> {
+  thumbIndex?: number;
+  thumbOffsetY?: number;
+  thumbType?: ThumbType;
+  thumbName?: string;
+  thumbLinkedToNode?: IRectNodeComponent<T>;
+
+  thumbControlPointDistance?: number;
+  thumbConnectionType?: ThumbConnectionType;
 }
 
 export const ControlAndEndPointNodeType = {

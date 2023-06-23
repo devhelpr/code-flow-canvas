@@ -3,6 +3,7 @@ import {
   CurveType,
   INodeComponent,
   IRectNodeComponent,
+  IThumbNodeComponent,
 } from '../../interfaces';
 import { ThumbType } from '../../types';
 import {
@@ -40,7 +41,7 @@ export const onCalculateControlPoints = <T>(
   connectedNode?: IRectNodeComponent<T>,
   thumbOffsetY?: number,
   controlPointDistance?: number,
-  connectedNodeThumb?: INodeComponent<T>
+  connectedNodeThumb?: IThumbNodeComponent<T>
 ) => {
   // TODO : use thumb coordinates to calculate control points
 
