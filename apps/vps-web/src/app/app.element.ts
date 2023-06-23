@@ -23,6 +23,7 @@ import {
   ControlAndEndPointNodeType,
   CurveType,
   createNamedSignal,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -738,10 +739,10 @@ export class AppElement extends HTMLElement {
             while (loopColumns < maxColumns - 1) {
               const start = elementList[
                 loopRows * maxColumns + loopColumns
-              ][1] as unknown as INodeComponent<NodeInfo>;
+              ][1] as unknown as IRectNodeComponent<NodeInfo>;
               const end = elementList[
                 (loopRows + 1) * maxColumns + loopColumns + 1
-              ][1] as unknown as INodeComponent<NodeInfo>;
+              ][1] as unknown as IRectNodeComponent<NodeInfo>;
               console.log(loopRows, loopColumns, 'start', start, 'end', end);
 
               const curve = canvasApp.createCubicBezier(

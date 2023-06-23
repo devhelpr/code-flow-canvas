@@ -3,8 +3,10 @@ import { getCamera, transformToCamera } from '../camera';
 import {
   DOMElementNode,
   ElementNodeMap,
+  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
+  IRectNodeComponent,
 } from '../interfaces/element';
 import { ShapeType } from '../types/shape-type';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
@@ -82,7 +84,7 @@ export const createRectPathSVGElement = <T>(
       class: 'absolute top-0 left-0 select-none ', //will-change-transform
     },
     canvasElement
-  ) as unknown as INodeComponent<T> | undefined;
+  ) as unknown as IRectNodeComponent<T> | undefined;
 
   if (!divElement) throw new Error('divElement is undefined');
 
@@ -314,9 +316,9 @@ export const createRectPathSVGElement = <T>(
     if (divElement) {
       // get all connections that have this node as start or end
       elements.forEach((e) => {
-        const lookAtNodeComponent = e as unknown as INodeComponent<T>;
+        const lookAtNodeComponent = e as unknown as IConnectionNodeComponent<T>;
         if (
-          lookAtNodeComponent.nodeType === 'shape' ||
+          lookAtNodeComponent.nodeType === 'shape' || // TODO : check if this is still needed
           lookAtNodeComponent.nodeType === 'connection'
         ) {
           const start = lookAtNodeComponent.components.find(

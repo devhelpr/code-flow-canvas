@@ -4,9 +4,11 @@ import {
   ControlAndEndPointNodeType,
   CurveType,
   ElementNodeMap,
+  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
+  IRectNodeComponent,
   IThumb,
   NodeComponentRelationType,
   ThumbConnectionType,
@@ -78,7 +80,7 @@ export const createRect = <T>(
     hasStaticWidthHeight,
     disableInteraction
   );
-  const rectNode: INodeComponent<T> = rectPathInstance.nodeComponent;
+  const rectNode: IRectNodeComponent<T> = rectPathInstance.nodeComponent;
 
   // rectNode.nodeType is "shape" .. if thats changed then the dragging of nodes doesnt work anymore
   rectNode.shapeType = 'rect';
@@ -135,18 +137,20 @@ export const createRect = <T>(
         thumbNode.thumbConnectionType === ThumbConnectionType.start &&
         component.specifier === 'begin')
     ) {
+      const parentConnection =
+        component.parent as unknown as IConnectionNodeComponent<T>;
       let nodeReference = rectNode;
       if (component.specifier === 'begin') {
-        previousConnectedNodeId = component.parent.startNode?.id ?? '';
-        component.parent.startNode = rectNode;
-        component.parent.startNodeThumb = thumbNode;
+        previousConnectedNodeId = parentConnection.startNode?.id ?? '';
+        parentConnection.startNode = rectNode;
+        parentConnection.startNodeThumb = thumbNode;
       } else {
-        previousConnectedNodeId = component.parent.endNode?.id ?? '';
-        component.parent.endNode = rectNode;
-        component.parent.endNodeThumb = thumbNode;
-        if (component.parent.startNode) {
+        previousConnectedNodeId = parentConnection.endNode?.id ?? '';
+        parentConnection.endNode = rectNode;
+        parentConnection.endNodeThumb = thumbNode;
+        if (parentConnection.startNode) {
           // use start node as reference for the curve's begin point
-          nodeReference = component.parent.startNode;
+          nodeReference = parentConnection.startNode;
         }
       }
       component.parent.isControlled = true;
@@ -187,21 +191,21 @@ export const createRect = <T>(
           rectNode
         );
         if (component.specifier === 'begin') {
-          if (component.parent.endNode) {
+          if (parentConnection.endNode) {
             component.parent.update(
               component.parent,
               nodeReference.x,
               nodeReference.y,
-              component.parent.endNode
+              parentConnection.endNode
             );
           }
         } else {
-          if (component.parent.startNode) {
+          if (parentConnection.startNode) {
             component.parent.update(
               component.parent,
               nodeReference.x,
               nodeReference.y,
-              component.parent.startNode
+              parentConnection.startNode
             );
           }
         }

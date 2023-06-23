@@ -5,8 +5,10 @@ import {
   CurveType,
   getPointOnCubicBezierCurve,
   getPointOnQuadraticBezierCurve,
+  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
+  IRectNodeComponent,
   LineType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -60,9 +62,9 @@ export const animatePathForNodeConnectionPairs = <T>(
   nodeConnectionPairs:
     | false
     | {
-        start: INodeComponent<T>;
-        end: INodeComponent<T>;
-        connection: INodeComponent<T>;
+        start: IRectNodeComponent<T>;
+        end: IRectNodeComponent<T>;
+        connection: IConnectionNodeComponent<T>;
       }[],
   color: string,
   onNextNode?: (

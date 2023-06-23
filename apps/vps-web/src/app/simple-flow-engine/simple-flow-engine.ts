@@ -1,5 +1,6 @@
 import {
   ElementNodeMap,
+  IConnectionNodeComponent,
   INodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -146,7 +147,7 @@ export const run = <T>(
   nodes.forEach((node) => {
     const nodeComponent = node as unknown as INodeComponent<T>;
     const connectionsFromEndNode = nodeList.filter((e) => {
-      const element = e[1] as INodeComponent<T>;
+      const element = e[1] as IConnectionNodeComponent<T>;
       return element.endNode?.id === node.id;
     });
     if (

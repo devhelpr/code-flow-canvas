@@ -43,7 +43,7 @@ export interface INodeComponentRelation<T> {
 }
 
 export interface INodeComponent<T> extends IElementNode<T> {
-  parent?: INodeComponent<T>;
+  parent?: IRectNodeComponent<T>;
   x: number;
   y: number;
   width?: number;
@@ -60,11 +60,6 @@ export interface INodeComponent<T> extends IElementNode<T> {
   nodeType?: string;
   pathName?: string;
   components: INodeComponentRelation<T>[];
-  startNode?: INodeComponent<T>;
-  endNode?: INodeComponent<T>;
-  connections?: INodeComponent<T>[];
-  startNodeThumb?: INodeComponent<T>;
-  endNodeThumb?: INodeComponent<T>;
 
   isControlled?: boolean;
   isConnectPoint?: boolean;
@@ -74,7 +69,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   thumbOffsetY?: number;
   thumbType?: ThumbType;
   thumbName?: string;
-  thumbLinkedToNode?: INodeComponent<T>;
+  thumbLinkedToNode?: IRectNodeComponent<T>;
 
   thumbControlPointDistance?: number;
   thumbConnectionType?: ThumbConnectionType;
@@ -98,19 +93,32 @@ export interface INodeComponent<T> extends IElementNode<T> {
     thumbNode: INodeComponent<T>,
     component: INodeComponent<T>
   ) => void;
+
+  setVisibility?: (isVisible: boolean) => void;
+  delete?: () => void;
+  getThumbCircleElement?: () => HTMLElement | SVGElement;
+}
+
+export interface IRectNodeComponent<T> extends INodeComponent<T> {
+  connections?: IConnectionNodeComponent<T>[];
+}
+
+export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
+  startNode?: IRectNodeComponent<T>;
+  endNode?: IRectNodeComponent<T>;
+
+  startNodeThumb?: INodeComponent<T>;
+  endNodeThumb?: INodeComponent<T>;
   onCalculateControlPoints?: (
-    rectNode: INodeComponent<T>,
+    rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
     thumbType: ThumbType,
     index?: number,
-    connectedNode?: INodeComponent<T>,
+    connectedNode?: IRectNodeComponent<T>,
     thumbOffsetY?: number,
     controlPointDistance?: number,
     connectedNodeThumb?: INodeComponent<T>
   ) => IControlAndEndPoint;
-  setVisibility?: (isVisible: boolean) => void;
-  delete?: () => void;
-  getThumbCircleElement?: () => HTMLElement | SVGElement;
 }
 
 export const ControlAndEndPointNodeType = {

@@ -2,6 +2,7 @@ import {
   ControlAndEndPointNodeType,
   CurveType,
   INodeComponent,
+  IRectNodeComponent,
 } from '../../interfaces';
 import { ThumbType } from '../../types';
 import {
@@ -32,11 +33,11 @@ const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
 };
 
 export const onCalculateControlPoints = <T>(
-  rectNode: INodeComponent<T>,
+  rectNode: IRectNodeComponent<T>,
   nodeType: ControlAndEndPointNodeType,
   thumbType: ThumbType,
   index?: number,
-  connectedNode?: INodeComponent<T>,
+  connectedNode?: IRectNodeComponent<T>,
   thumbOffsetY?: number,
   controlPointDistance?: number,
   connectedNodeThumb?: INodeComponent<T>

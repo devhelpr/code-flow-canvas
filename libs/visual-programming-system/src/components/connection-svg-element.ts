@@ -5,6 +5,7 @@ import {
   CurveType,
   DOMElementNode,
   ElementNodeMap,
+  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
 } from '../interfaces/element';
@@ -180,7 +181,7 @@ export const createConnectionSVGElement = <T>(
     markerBegin.domElement
   );
 
-  let nodeComponent: INodeComponent<T> | undefined = undefined;
+  let nodeComponent: IConnectionNodeComponent<T> | undefined = undefined;
   nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
   nodeComponent.nodeType = 'connection';
@@ -307,7 +308,7 @@ export const createConnectionSVGElement = <T>(
   nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
 
   nodeComponent.update = (
-    incomingComponent?: INodeComponent<T>,
+    incomingComponent?: IConnectionNodeComponent<T>,
     x?: number,
     y?: number,
     actionComponent?: INodeComponent<T>

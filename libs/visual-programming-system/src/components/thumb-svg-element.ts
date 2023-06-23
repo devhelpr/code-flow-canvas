@@ -6,6 +6,7 @@ import {
   IElementNode,
   INodeComponent,
   INodeComponentRelation,
+  IRectNodeComponent,
   NodeComponentRelationType,
   ThumbConnectionType,
 } from '../interfaces/element';
@@ -36,7 +37,7 @@ export const createThumbSVGElement = <T>(
   relativePositioned?: boolean,
   canvas?: INodeComponent<T>,
   canvasElements?: ElementNodeMap<T>,
-  parentNode?: INodeComponent<T>,
+  parentRectNode?: IRectNodeComponent<T>,
   pathHiddenElement?: IElementNode<T>,
   disableInteraction?: boolean
 ) => {
@@ -184,7 +185,7 @@ export const createThumbSVGElement = <T>(
           if (
             nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
             nodeComponent.isConnectPoint &&
-            parentNode &&
+            parentRectNode &&
             canvasElements
           ) {
             console.log('thumb pointerdown', nodeComponent.id, nodeComponent);
@@ -220,12 +221,12 @@ export const createThumbSVGElement = <T>(
               curve.nodeComponent.isControlled = true;
               curve.nodeComponent.components.push({
                 type: NodeComponentRelationType.start,
-                component: parentNode,
+                component: parentRectNode,
               } as unknown as INodeComponentRelation<T>);
 
-              curve.nodeComponent.startNode = parentNode;
+              curve.nodeComponent.startNode = parentRectNode;
               curve.nodeComponent.startNodeThumb = nodeComponent;
-              parentNode.connections?.push(curve.nodeComponent);
+              parentRectNode.connections?.push(curve.nodeComponent);
 
               if (curve.nodeComponent.update) {
                 curve.nodeComponent.update();

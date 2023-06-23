@@ -1,25 +1,27 @@
 import {
   CanvasAppInstance,
+  IConnectionNodeComponent,
   INodeComponent,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 
 export const getNodeConnectionPairById = <T>(
   canvasApp: CanvasAppInstance,
-  node: INodeComponent<T>,
+  node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean
 ) => {
   const connectionPairs: {
-    start: INodeComponent<T>;
-    end: INodeComponent<T>;
-    connection: INodeComponent<T>;
+    start: IRectNodeComponent<T>;
+    end: IRectNodeComponent<T>;
+    connection: IConnectionNodeComponent<T>;
   }[] = [];
 
   if (node) {
-    const start = node as unknown as INodeComponent<T>;
+    const start = node as unknown as IRectNodeComponent<T>;
     if (start) {
       const connectionsFromStartNode = start.connections;
-      let connection: INodeComponent<T> | undefined = undefined;
+      let connection: IConnectionNodeComponent<T> | undefined = undefined;
 
       if (connectionsFromStartNode && connectionsFromStartNode.length > 0) {
         connectionsFromStartNode.forEach((connectionNode) => {
@@ -84,16 +86,17 @@ export const getNodeConnectionPairsFromThumb = <T>(
   nodeThumb: INodeComponent<T>
 ) => {
   const connectionPairs: {
-    start: INodeComponent<T>;
-    end: INodeComponent<T>;
-    connection: INodeComponent<T>;
+    start: IRectNodeComponent<T>;
+    end: IRectNodeComponent<T>;
+    connection: IConnectionNodeComponent<T>;
   }[] = [];
 
   if (nodeThumb) {
-    const start = nodeThumb.thumbLinkedToNode as unknown as INodeComponent<T>;
+    const start =
+      nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<T>;
     if (start) {
       const connectionsFromStartNode = start.connections;
-      let connection: INodeComponent<T> | undefined = undefined;
+      let connection: IConnectionNodeComponent<T> | undefined = undefined;
 
       if (connectionsFromStartNode && connectionsFromStartNode.length > 0) {
         connectionsFromStartNode.forEach((connectionNode) => {
