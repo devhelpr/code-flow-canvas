@@ -165,7 +165,7 @@ export const createRect = <T>(
           );
         }
       );
-      rectNode.connections?.push(component.parent);
+      rectNode.connections?.push(parentConnection);
 
       const index = component.parent.components.findIndex((c) =>
         component.specifier === 'begin'

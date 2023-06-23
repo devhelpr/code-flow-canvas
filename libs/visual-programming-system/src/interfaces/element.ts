@@ -101,7 +101,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
 
   startNodeThumb?: IThumbNodeComponent<T>;
   endNodeThumb?: IThumbNodeComponent<T>;
-  onCalculateControlPoints?: (
+  onCalculateControlPoints: (
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
     thumbType: ThumbType,

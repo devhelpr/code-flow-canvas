@@ -182,9 +182,16 @@ export const createConnectionSVGElement = <T>(
   );
 
   let nodeComponent: IConnectionNodeComponent<T> | undefined = undefined;
-  nodeComponent = createSVGNodeComponent('g', {}, svgParent.domElement);
+  nodeComponent = createSVGNodeComponent(
+    'g',
+    {},
+    svgParent.domElement
+  ) as unknown as IConnectionNodeComponent<T>;
+
   if (!nodeComponent) throw new Error('nodeComponent is undefined');
+
   nodeComponent.nodeType = 'connection';
+  nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
 
   nodeComponent.delete = () => {
     svgParent.domElement.remove();
@@ -305,10 +312,8 @@ export const createConnectionSVGElement = <T>(
   elements.set(nodeComponent.id, nodeComponent);
   nodeComponent.elements.set(pathElement.id, pathElement);
 
-  nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
-
   nodeComponent.update = (
-    incomingComponent?: IConnectionNodeComponent<T>,
+    incomingComponent?: INodeComponent<T>,
     x?: number,
     y?: number,
     actionComponent?: INodeComponent<T>
@@ -318,7 +323,8 @@ export const createConnectionSVGElement = <T>(
     //   incomingComponent?.nodeType,
     //   actionComponent?.nodeType
     // );
-
+    const connection =
+      incomingComponent as unknown as IConnectionNodeComponent<T>;
     if (
       !incomingComponent &&
       x === undefined &&
@@ -396,38 +402,37 @@ export const createConnectionSVGElement = <T>(
         actionComponent.nodeType === 'shape')
     ) {
       if (
-        incomingComponent.startNode &&
-        actionComponent.id === incomingComponent.startNode.id
+        connection.startNode &&
+        actionComponent.id === connection.startNode.id
       ) {
         const start = onCalculateControlPoints(
           actionComponent,
           ControlAndEndPointNodeType.start,
-          incomingComponent.startNodeThumb?.thumbType ??
+          connection.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
-          incomingComponent.startNodeThumb?.thumbIndex,
-          incomingComponent.endNode,
-          incomingComponent.startNodeThumb?.thumbOffsetY ?? 0,
-          incomingComponent.startNodeThumb?.thumbControlPointDistance,
-          incomingComponent.endNodeThumb
+          connection.startNodeThumb?.thumbIndex,
+          connection.endNode,
+          connection.startNodeThumb?.thumbOffsetY ?? 0,
+          connection.startNodeThumb?.thumbControlPointDistance,
+          connection.endNodeThumb
         );
         points.beginX = start.x;
         points.beginY = start.y;
         points.cx1 = start.cx;
         points.cy1 = start.cy;
       } else if (
-        incomingComponent.endNode &&
-        actionComponent.id === incomingComponent.endNode.id
+        connection.endNode &&
+        actionComponent.id === connection.endNode.id
       ) {
         const end = onCalculateControlPoints(
           actionComponent,
           ControlAndEndPointNodeType.end,
-          incomingComponent.endNodeThumb?.thumbType ??
-            ThumbType.EndConnectorCenter,
-          incomingComponent.endNodeThumb?.thumbIndex,
-          incomingComponent.startNode,
-          incomingComponent.endNodeThumb?.thumbOffsetY ?? 0,
-          incomingComponent.endNodeThumb?.thumbControlPointDistance,
-          incomingComponent.startNodeThumb
+          connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
+          connection.endNodeThumb?.thumbIndex,
+          connection.startNode,
+          connection.endNodeThumb?.thumbOffsetY ?? 0,
+          connection.endNodeThumb?.thumbControlPointDistance,
+          connection.startNodeThumb
         );
         points.endX = end.x;
         points.endY = end.y;
