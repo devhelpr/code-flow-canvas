@@ -8,6 +8,7 @@ import {
   CanvasAppInstance,
   NodeComponentRelationType,
   INodeComponentRelation,
+  IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
@@ -67,7 +68,7 @@ export const getBaseIterator = <T>(
     singleStep?: boolean
   ) => void,
   animatePathFromThumb: (
-    node: INodeComponent<T>,
+    node: IThumbNodeComponent<T>,
     color: string,
     onNextNode?: (
       nodeId: string,
@@ -100,8 +101,8 @@ export const getBaseIterator = <T>(
   let outputNode: INodeComponent<NodeInfo> | undefined = undefined;
   let testNode: INodeComponent<NodeInfo> | undefined = undefined;
 
-  let succesThumb: INodeComponent<NodeInfo> | undefined = undefined;
-  let testThumb: INodeComponent<NodeInfo> | undefined = undefined;
+  let succesThumb: IThumbNodeComponent<NodeInfo> | undefined = undefined;
+  let testThumb: IThumbNodeComponent<NodeInfo> | undefined = undefined;
   let textNode: HTMLElement | undefined = undefined;
 
   const initializeCompute = () => {

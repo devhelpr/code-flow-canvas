@@ -111,6 +111,7 @@ export const getExpression = () => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      return node;
     },
   };
 };

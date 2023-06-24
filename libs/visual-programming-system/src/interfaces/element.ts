@@ -83,7 +83,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     receivingThumbNode: IThumbNodeComponent<T>
   ) => boolean;
   onReceiveDroppedComponent?: (
-    thumbNode: INodeComponent<T>,
+    thumbNode: IThumbNodeComponent<T>,
     component: INodeComponent<T>
   ) => void;
 
@@ -110,7 +110,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
     connectedNode?: IRectNodeComponent<T>,
     thumbOffsetY?: number,
     controlPointDistance?: number,
-    connectedNodeThumb?: INodeComponent<T>
+    connectedNodeThumb?: IThumbNodeComponent<T>
   ) => IControlAndEndPoint;
 }
 
@@ -118,7 +118,7 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
   thumbIndex?: number;
   thumbOffsetY?: number;
   thumbType?: ThumbType;
-  thumbName?: string;
+  thumbName: string;
   thumbLinkedToNode?: IRectNodeComponent<T>;
 
   thumbControlPointDistance?: number;

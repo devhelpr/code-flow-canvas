@@ -55,7 +55,8 @@ export const createRect = <T>(
   },
   hasStaticWidthHeight?: boolean,
   disableInteraction?: boolean,
-  disableManualResize?: boolean
+  disableManualResize?: boolean,
+  canvasUpdated?: () => void
 ) => {
   let widthHelper = width;
   let heightHelper = height;
@@ -79,7 +80,8 @@ export const createRect = <T>(
     markup,
     layoutProperties,
     hasStaticWidthHeight,
-    disableInteraction
+    disableInteraction,
+    canvasUpdated
   );
   const rectNode: IRectNodeComponent<T> = rectPathInstance.nodeComponent;
 
@@ -250,6 +252,10 @@ export const createRect = <T>(
           }
         }
       }
+
+      if (canvasUpdated) {
+        canvasUpdated();
+      }
     }
   };
 
@@ -267,7 +273,7 @@ export const createRect = <T>(
     return true;
   };
 
-  const thumbConnectors: INodeComponent<T>[] = [];
+  const thumbConnectors: IThumbNodeComponent<T>[] = [];
 
   if (thumbs) {
     thumbs.forEach((thumb, index) => {
@@ -282,6 +288,10 @@ export const createRect = <T>(
         rectNode.domElement,
         interactionStateMachine,
         rectNode.elements,
+        thumb.name ??
+          (thumb.connectionType === ThumbConnectionType.start
+            ? 'output'
+            : 'input'),
         thumb.thumbType,
         thumb.color ?? '#008080',
         x,
@@ -306,7 +316,6 @@ export const createRect = <T>(
         thumb.label
       );
 
-      thumbConnectorElement.thumbName = thumb.name;
       thumbConnectorElement.pathName = thumb.pathName;
       thumbConnectorElement.isControlled = true;
       thumbConnectorElement.isConnectPoint = true;

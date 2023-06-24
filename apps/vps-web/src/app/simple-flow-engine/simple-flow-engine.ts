@@ -2,6 +2,7 @@ import {
   ElementNodeMap,
   IConnectionNodeComponent,
   INodeComponent,
+  IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
@@ -161,9 +162,9 @@ export const run = <T>(
 };
 
 export const runNodeFromThumb = <T>(
-  nodeThumb: INodeComponent<T>,
-  animatePath: (
-    node: INodeComponent<T>,
+  nodeThumb: IThumbNodeComponent<T>,
+  animatePathFromThumb: (
+    node: IThumbNodeComponent<T>,
     color: string,
     onNextNode?: (
       nodeId: string,
@@ -186,8 +187,8 @@ export const runNodeFromThumb = <T>(
   //let result: any = false;
   let followPath: string | undefined = undefined;
 
-  animatePath(
-    nodeThumb as unknown as INodeComponent<T>,
+  animatePathFromThumb(
+    nodeThumb,
     'white',
     (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
       console.log('Next nodeId', nodeId, node, input);

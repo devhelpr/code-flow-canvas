@@ -42,7 +42,8 @@ export const createRectPathSVGElement = <T>(
     classNames?: string;
   },
   hasStaticWidthHeight?: boolean,
-  disableInteraction?: boolean
+  disableInteraction?: boolean,
+  canvasUpdated?: () => void
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -372,6 +373,11 @@ export const createRectPathSVGElement = <T>(
           }
         }
       });
+    }
+
+    // TODO : only do this when the interaction finishes...
+    if (canvasUpdated) {
+      canvasUpdated();
     }
     return true;
   };

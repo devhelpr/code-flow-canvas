@@ -23,6 +23,7 @@ export const createThumbSVGElement = <T>(
   canvasElement: DOMElementNode,
   interactionStateMachine: InteractionStateMachine<T>,
   elements: ElementNodeMap<T>,
+  thumbName: string,
   thumbType: ThumbType,
   color?: string,
   xInitial?: string | number,
@@ -80,8 +81,9 @@ export const createThumbSVGElement = <T>(
       height: height ?? 100,
     },
     canvasElement
-  ) as INodeComponent<T>;
+  ) as IThumbNodeComponent<T>;
 
+  nodeComponent.thumbName = thumbName;
   nodeComponent.x = 0;
   nodeComponent.y = 0;
   nodeComponent.components = [];
@@ -446,7 +448,9 @@ export const createThumbSVGElement = <T>(
       return;
     }
 
-    const dropTarget = interactionStateMachine.getCurrentDropTarget();
+    // TODO : check if droptarget is the correct type BEFOFE casting
+    const dropTarget =
+      interactionStateMachine.getCurrentDropTarget() as unknown as IThumbNodeComponent<T>;
     if (dropTarget) {
       console.log(
         'DROPPED ON TARGET',

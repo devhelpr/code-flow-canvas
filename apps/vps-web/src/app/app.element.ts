@@ -24,6 +24,8 @@ import {
   CurveType,
   createNamedSignal,
   IRectNodeComponent,
+  IConnectionNodeComponent,
+  IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -45,6 +47,10 @@ import {
   animatePathFromThumb as _animatePathFromThumb,
 } from './follow-path/animate-path';
 import { getArray } from './nodes/array';
+import {
+  createIndexedDBStorageProvider,
+  FlowrunnerIndexedDbStorageProvider,
+} from './storage/indexeddb-storage-provider';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -73,6 +79,7 @@ export class AppElement extends HTMLElement {
 
   canvas?: IElementNode<NodeInfo> = undefined;
   canvasApp?: CanvasAppInstance = undefined;
+  storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
@@ -117,6 +124,14 @@ export class AppElement extends HTMLElement {
     const canvasApp = createCanvasApp<NodeInfo>(rootElement);
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
+    createIndexedDBStorageProvider().then((storageProvider) => {
+      this.storageProvider = storageProvider;
+    });
+    canvasApp.setOnCanvasUpdated(() => {
+      if (this.storageProvider) {
+        serializeFlow();
+      }
+    });
     canvasApp.setOnCanvasClick((x, y) => {
       setSelectNode(undefined);
 
@@ -454,6 +469,50 @@ export class AppElement extends HTMLElement {
     //   'Add rect'
     // );
 
+    const cleanupNodeInfoForSerializing = (nodeInfo: NodeInfo) => {
+      const nodeInfoCopy: any = {};
+      for (const key in nodeInfo) {
+        if (typeof nodeInfo[key] !== 'function' && key !== 'formElements') {
+          nodeInfoCopy[key] = nodeInfo[key];
+        }
+      }
+      return nodeInfoCopy;
+    };
+
+    const serializeFlow = () => {
+      const arr = Array.from(canvasApp.elements, function (entry) {
+        const obj = entry[1] as INodeComponent<NodeInfo>;
+        if (obj.nodeType === 'connection') {
+          const connection =
+            obj as unknown as IConnectionNodeComponent<NodeInfo>;
+          return {
+            id: connection.id,
+            x: connection.x,
+            y: connection.y,
+            startNodeId: connection.startNode?.id,
+            endNodeId: connection.endNode?.id,
+            startThumbName: connection.startNodeThumb?.thumbName,
+            endThumbName: connection.endNodeThumb?.thumbName,
+            lineType: connection.lineType,
+            nodeType: obj.nodeType,
+            shapeType: obj.shapeType,
+            nodeInfo: cleanupNodeInfoForSerializing(connection.nodeInfo),
+          };
+        }
+        return {
+          id: obj.id,
+          x: obj.x,
+          y: obj.y,
+          width: obj.width,
+          height: obj.height,
+          nodeType: obj.nodeType,
+          shapeType: obj.shapeType,
+          nodeInfo: cleanupNodeInfoForSerializing(obj.nodeInfo),
+        };
+      });
+      console.log(arr);
+    };
+
     createElement(
       'button',
       {
@@ -463,7 +522,7 @@ export class AppElement extends HTMLElement {
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
           const expression = getExpression();
-          expression.createVisualNode(canvasApp, startX, startY);
+          const node = expression.createVisualNode(canvasApp, startX, startY);
           return false;
         },
       },
@@ -900,7 +959,7 @@ export class AppElement extends HTMLElement {
     };
 
     const animatePathFromThumb = (
-      node: INodeComponent<NodeInfo>,
+      node: IThumbNodeComponent<NodeInfo>,
       color: string,
       onNextNode?: (
         nodeId: string,

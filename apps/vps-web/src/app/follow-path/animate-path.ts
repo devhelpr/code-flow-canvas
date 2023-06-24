@@ -9,6 +9,7 @@ import {
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
+  IThumbNodeComponent,
   LineType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -417,9 +418,9 @@ export const animatePath: FollowPathFunction = <T>(
   );
 };
 
-export const animatePathFromThumb: FollowPathFunction = <T>(
+export const animatePathFromThumb = <T>(
   canvasApp: CanvasAppInstance,
-  node: INodeComponent<T>,
+  node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: (
     nodeId: string,

@@ -35,7 +35,7 @@ export const createCanvasApp = <T>(
   let startClientDragX = 0;
   let startClientDragY = 0;
   let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
-
+  let onCanvasUpdated: (() => void) | undefined = undefined;
   //w-full h-full origin-top-left
   const canvas = createElement<T>(
     'div',
@@ -430,6 +430,9 @@ export const createCanvasApp = <T>(
   return {
     elements,
     canvas,
+    setOnCanvasUpdated: (onCanvasUpdatedHandler: () => void) => {
+      onCanvasUpdated = onCanvasUpdatedHandler;
+    },
     setOnCanvasClick: (
       onClickCanvasHandler: (x: number, y: number) => void
     ) => {
@@ -545,8 +548,8 @@ export const createCanvasApp = <T>(
       hasStaticWidthHeight?: boolean,
       disableInteraction?: boolean,
       disableManualResize?: boolean
-    ) =>
-      createRect<T>(
+    ) => {
+      const rect = createRect<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
         pathHiddenElement,
@@ -562,8 +565,14 @@ export const createCanvasApp = <T>(
         layoutProperties,
         hasStaticWidthHeight,
         disableInteraction,
-        disableManualResize
-      ),
+        disableManualResize,
+        onCanvasUpdated
+      );
+      if (onCanvasUpdated) {
+        onCanvasUpdated();
+      }
+      return rect;
+    },
     createCubicBezier: (
       startX?: number,
       startY?: number,
@@ -575,8 +584,8 @@ export const createCanvasApp = <T>(
       controlPointY2?: number,
       isControlled?: boolean,
       isDashed = false
-    ) =>
-      createCubicBezier<T>(
+    ) => {
+      const curve = createCubicBezier<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
         pathHiddenElement,
@@ -591,7 +600,12 @@ export const createCanvasApp = <T>(
         controlPointY2 ?? 0,
         isControlled,
         isDashed
-      ),
+      );
+      if (onCanvasUpdated) {
+        onCanvasUpdated();
+      }
+      return curve;
+    },
     createQuadraticBezier: (
       startX?: number,
       startY?: number,
@@ -601,8 +615,8 @@ export const createCanvasApp = <T>(
       controlPointY?: number,
       isControlled?: boolean,
       isDashed = false
-    ) =>
-      createQuadraticBezier<T>(
+    ) => {
+      const curve = createQuadraticBezier<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
         pathHiddenElement,
@@ -615,7 +629,12 @@ export const createCanvasApp = <T>(
         controlPointY ?? 0,
         isControlled,
         isDashed
-      ),
+      );
+      if (onCanvasUpdated) {
+        onCanvasUpdated();
+      }
+      return curve;
+    },
     deleteElementFromNode: (
       element: INodeComponent<T>,
       child: INodeComponent<T>
@@ -623,6 +642,10 @@ export const createCanvasApp = <T>(
       if (element && child) {
         element.elements.delete(child.id);
         element.domElement.removeChild(child.domElement);
+
+        if (onCanvasUpdated) {
+          onCanvasUpdated();
+        }
       }
     },
   };

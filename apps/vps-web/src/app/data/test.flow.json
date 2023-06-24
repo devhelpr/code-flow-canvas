@@ -1,0 +1,15 @@
+{
+  "schemaType": "fbp",
+  "schemaVersion": "0.0.1",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "flows": {
+    "flow1": {
+      "flowType": "fbp",
+      "nodes": []
+    },
+    "flow2": {
+      "flowType": "fbp",
+      "nodes": []
+    }
+  }
+}
