@@ -173,4 +173,5 @@ export type IThumb = {
   hidden?: boolean;
   label?: string;
   thumbConstraint?: string;
+  thumbShape? : 'circle' | 'diamond';
 };

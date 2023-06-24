@@ -43,7 +43,8 @@ export const createThumbSVGElement = <T>(
   parentRectNode?: IRectNodeComponent<T>,
   pathHiddenElement?: IElementNode<T>,
   disableInteraction?: boolean,
-  label?: string
+  label?: string,
+  thumbShape? : 'circle' | 'diamond'
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -91,38 +92,39 @@ export const createThumbSVGElement = <T>(
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
     nodeComponent.id;
   const circleElement: IElementNode<T> | undefined = createElement(
-    'div', //'circle',
+    'div',
     {
       class: `${
         disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
-      } rounded-full origin-center border-[3px]`,
+      }  origin-center`, // rounded-full border-[3px]
       style: {
         width: `${(radius ?? 10) * 2}px`,
         height: `${(radius ?? 10) * 2}px`,
         transform: `translate(${-(radius ?? 10) + (width ?? 100) / 2}px, ${
           -(radius ?? 10) + (height ?? 100) / 2
         }px)`,
-        'border-color': isTransparent
+        'clip-path': thumbShape === "diamond" ?'polygon(50% 0, 100% 50%, 50% 100%, 0 50%' : 'circle(50%)',
+        'background-color': isTransparent
           ? 'transparent'
           : borderColor
           ? borderColor
           : 'black',
-        'background-color': isTransparent
-          ? 'transparent'
-          : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+        // 'background-color': isTransparent
+        //   ? 'transparent'
+        //   : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
       },
-      cx: (width ?? 100) / 2,
-      cy: (height ?? 100) / 2,
-      r: radius ?? 10,
-      stroke: isTransparent
-        ? 'transparent'
-        : borderColor
-        ? borderColor
-        : 'black',
-      'stroke-width': 3,
-      fill: isTransparent
-        ? 'transparent'
-        : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+      // cx: (width ?? 100) / 2,
+      // cy: (height ?? 100) / 2,
+      // r: radius ?? 10,
+      // stroke: isTransparent
+      //   ? 'transparent'
+      //   : borderColor
+      //   ? borderColor
+      //   : 'black',
+      // 'stroke-width': 3,
+      // fill: isTransparent
+      //   ? 'transparent'
+      //   : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
       pointerover: (_e: PointerEvent) => {
         if (disableInteraction) {
           return;
@@ -391,7 +393,17 @@ export const createThumbSVGElement = <T>(
   );
 
   if (!circleElement) throw new Error('circleElement is undefined');
-
+  const innerCircle = createElement('div',{
+    class: `absolute top-[3px] left-[3px]`,
+    style:{
+      width: `${((radius ?? 10) * 2) - 6}px`,
+      height: `${((radius ?? 10) * 2) - 6}px`,
+      'clip-path': thumbShape === "diamond" ?'polygon(50% 0, 100% 50%, 50% 100%, 0 50%' : 'circle(50%)',     
+      'background-color': isTransparent
+        ? 'transparent'
+        : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+    }
+  }, circleElement.domElement)
   if (label) {
     // const isLeftSideThumb =
     //   thumbType === ThumbType.End ||
@@ -406,12 +418,12 @@ export const createThumbSVGElement = <T>(
     createElement(
       'div', //'circle',
       {
-        class: `pointer-events-none absolute text-[12px] flex items-center justify-center
+        class: `pointer-events-none absolute text-[11px] flex items-center justify-center
         w-[14px] h-[14px] text-base-[14px]
         text-center
         top-[-1px] text-black `,
       },
-      circleElement.domElement,
+      innerCircle.domElement,
       label
     );
   }

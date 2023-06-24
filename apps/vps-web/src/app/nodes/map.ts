@@ -77,6 +77,7 @@ export const getFilter = <T>(
         ? SubOutputActionType.keepInput
         : SubOutputActionType.filterFromResult,
     animatePath,
-    animatePathFromThumb
+    animatePathFromThumb,
+    true
   );
 };

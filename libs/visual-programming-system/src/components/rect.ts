@@ -313,7 +313,8 @@ export const createRect = <T>(
         rectNode,
         pathHiddenElement,
         disableInteraction,
-        thumb.label
+        thumb.label,
+        thumb.thumbShape ?? "circle"
       );
 
       thumbConnectorElement.pathName = thumb.pathName;

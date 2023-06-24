@@ -89,7 +89,8 @@ export const getBaseIterator = <T>(
     offsetY?: number,
     followPathToEndThumb?: boolean,
     singleStep?: boolean
-  ) => void
+  ) => void,
+  isConditionalSubflow? : boolean
 ) => {
   let node: INodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -320,6 +321,7 @@ export const getBaseIterator = <T>(
             name: 'iteration',
             label: '#',
             thumbConstraint: 'value',
+            thumbShape: isConditionalSubflow ? "diamond" : "circle",
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
