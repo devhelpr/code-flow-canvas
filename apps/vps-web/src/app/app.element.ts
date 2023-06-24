@@ -799,7 +799,10 @@ export class AppElement extends HTMLElement {
                 column: loopColumns,
                 row: loopRows,
                 compute: () => {
-                  return true;
+                  return {
+                    output: true,
+                    result: true
+                  }
                 },
               };
 
