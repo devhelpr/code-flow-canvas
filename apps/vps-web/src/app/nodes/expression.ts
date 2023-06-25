@@ -116,7 +116,6 @@ export const getExpression = (updated?: () => void) => {
           type: 'expression',
         }
       );
-      rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = formElements;
 
       createNamedSignal(`expression${rect.nodeComponent.id}`, '');
