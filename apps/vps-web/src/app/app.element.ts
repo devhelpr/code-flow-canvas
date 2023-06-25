@@ -228,11 +228,8 @@ export class AppElement extends HTMLElement {
         this.restoring = false;
       });
     });
-    canvasApp.setOnCanvasUpdated(() => {
-      if (this.restoring) {
-        return;
-      }
 
+    const store = () => {
       if (this.storageProvider) {
         const nodesList = serializeFlow();
         const flow: Flow<NodeInfo> = {
@@ -248,7 +245,14 @@ export class AppElement extends HTMLElement {
         };
         this.storageProvider.saveFlow('1234', flow);
       }
+    };
+    canvasApp.setOnCanvasUpdated(() => {
+      if (this.restoring) {
+        return;
+      }
+      store();
     });
+
     canvasApp.setOnCanvasClick((x, y) => {
       setSelectNode(undefined);
 
@@ -313,6 +317,7 @@ export class AppElement extends HTMLElement {
           event.preventDefault();
           event.stopPropagation();
           this.clearCanvas();
+          store();
           return false;
         },
       },
