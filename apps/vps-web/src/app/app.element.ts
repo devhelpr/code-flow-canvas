@@ -150,7 +150,7 @@ export class AppElement extends HTMLElement {
             node.nodeType === 'shape' &&
             node.nodeInfo?.type === 'expression'
           ) {
-            const expression = getExpression();
+            const expression = getExpression(canvasUpdated);
             expression.createVisualNode(
               canvasApp,
               node.x,
@@ -286,11 +286,15 @@ export class AppElement extends HTMLElement {
         this.storageProvider.saveFlow('1234', flow);
       }
     };
-    canvasApp.setOnCanvasUpdated(() => {
+
+    const canvasUpdated = () => {
       if (this.restoring) {
         return;
       }
       store();
+    };
+    canvasApp.setOnCanvasUpdated(() => {
+      canvasUpdated();
     });
 
     canvasApp.setOnCanvasClick((x, y) => {
@@ -683,8 +687,8 @@ export class AppElement extends HTMLElement {
           event.preventDefault();
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
-          const expression = getExpression();
-          const node = expression.createVisualNode(canvasApp, startX, startY);
+          const expression = getExpression(canvasUpdated);
+          expression.createVisualNode(canvasApp, startX, startY);
           return false;
         },
       },

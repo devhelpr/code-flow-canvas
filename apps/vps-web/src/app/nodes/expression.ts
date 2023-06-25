@@ -9,7 +9,7 @@ import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { compileExpression } from '@devhelpr/expression-compiler';
 
-export const getExpression = () => {
+export const getExpression = (updated?: () => void) => {
   let node: INodeComponent<NodeInfo>;
   let currentValue = 0;
   const initializeCompute = () => {
@@ -56,6 +56,9 @@ export const getExpression = () => {
               Expression: value,
             };
             console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
           },
         },
       ];
@@ -118,7 +121,6 @@ export const getExpression = () => {
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.type = 'expression';
-      return node;
     },
   };
 };
