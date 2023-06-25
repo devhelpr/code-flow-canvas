@@ -53,7 +53,8 @@ export const createConnectionSVGElement = <T>(
   pathHiddenElement: IElementNode<T>,
   isQuadratic = false,
   isDashed = false,
-  onCalculateControlPoints = onCalculateCubicBezierControlPoints
+  onCalculateControlPoints = onCalculateCubicBezierControlPoints,
+  canvasUpdated?: () => void
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -643,6 +644,13 @@ export const createConnectionSVGElement = <T>(
 
     return true;
   };
+
+  nodeComponent.updateEnd = () => {
+    if (canvasUpdated) {
+      canvasUpdated();
+    }
+  };
+
   nodeComponent.x = 0;
   nodeComponent.y = 0;
   return nodeComponent;

@@ -72,6 +72,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     y?: number,
     actionComponent?: INodeComponent<T>
   ) => boolean;
+  updateEnd?: () => void;
   initPointerDown?: (initialXOffset: number, initialYOffset: number) => void;
   pointerDown?: () => void;
   pointerMove?: () => void;
@@ -173,5 +174,5 @@ export type IThumb = {
   hidden?: boolean;
   label?: string;
   thumbConstraint?: string;
-  thumbShape? : 'circle' | 'diamond';
+  thumbShape?: 'circle' | 'diamond';
 };

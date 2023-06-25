@@ -31,7 +31,8 @@ export const createCubicBezier = <T>(
   controlPoint2X: number,
   controlPoint2Y: number,
   isControlled = false,
-  isDashed = false
+  isDashed = false,
+  canvasUpdated?: () => void
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
@@ -47,7 +48,9 @@ export const createCubicBezier = <T>(
     controlPoint2Y,
     pathHiddenElement,
     false,
-    isDashed
+    isDashed,
+    undefined,
+    canvasUpdated
   );
   connection.lineType = LineType.BezierCubic;
   connection.isControlled = isControlled;
@@ -391,7 +394,8 @@ export const createQuadraticBezier = <T>(
   controlPoint1X: number,
   controlPoint1Y: number,
   isControlled = false,
-  isDashed = false
+  isDashed = false,
+  canvasUpdated?: () => void
 ) => {
   const connection = createConnectionSVGElement(
     canvas.domElement,
@@ -407,7 +411,9 @@ export const createQuadraticBezier = <T>(
     0,
     pathHiddenElement,
     true,
-    isDashed
+    isDashed,
+    undefined,
+    canvasUpdated
   );
   connection.lineType = LineType.BezierQuadratic;
   connection.isControlled = isControlled;

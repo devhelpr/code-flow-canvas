@@ -181,6 +181,10 @@ export const pointerUp = <T>(
         if (element.pointerUp) {
           element.pointerUp();
         }
+
+        if (element.updateEnd) {
+          element.updateEnd();
+        }
       }
     }
   }

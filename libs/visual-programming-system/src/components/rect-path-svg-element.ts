@@ -375,11 +375,14 @@ export const createRectPathSVGElement = <T>(
       });
     }
 
+    return true;
+  };
+
+  divElement.updateEnd = () => {
     // TODO : only do this when the interaction finishes...
     if (canvasUpdated) {
       canvasUpdated();
     }
-    return true;
   };
 
   divElement.x = startX;
