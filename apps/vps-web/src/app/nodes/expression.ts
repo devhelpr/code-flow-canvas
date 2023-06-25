@@ -114,6 +114,9 @@ export const getExpression = (updated?: () => void) => {
         id,
         {
           type: 'expression',
+          formValues: {
+            Expression: expression ?? '',
+          },
         }
       );
       rect.nodeComponent.nodeInfo.formElements = formElements;

@@ -198,8 +198,8 @@ export class AppElement extends HTMLElement {
 
           nodesList.forEach((node) => {
             if (node.nodeType === 'connection') {
-              let start: INodeComponent<NodeInfo> | undefined = undefined;
-              let end: INodeComponent<NodeInfo> | undefined = undefined;
+              let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
+              let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
               if (node.startNodeId) {
                 const startElement = elementList.find((e) => {
                   const element = e[1] as IElementNode<NodeInfo>;
@@ -261,6 +261,10 @@ export class AppElement extends HTMLElement {
                   node.endThumbName ?? '',
                   end
                 );
+              }
+              if (start && end) {
+                start.connections?.push(curve.nodeComponent);
+                end.connections?.push(curve.nodeComponent);
               }
               if (curve.nodeComponent.update) {
                 curve.nodeComponent.update();
