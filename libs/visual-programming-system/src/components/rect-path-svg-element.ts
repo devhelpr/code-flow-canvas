@@ -43,7 +43,8 @@ export const createRectPathSVGElement = <T>(
   },
   hasStaticWidthHeight?: boolean,
   disableInteraction?: boolean,
-  canvasUpdated?: () => void
+  canvasUpdated?: () => void,
+  id?: string
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -85,7 +86,9 @@ export const createRectPathSVGElement = <T>(
     {
       class: 'absolute top-0 left-0 select-none ', //will-change-transform
     },
-    canvasElement
+    canvasElement,
+    undefined,
+    id
   ) as unknown as IRectNodeComponent<T> | undefined;
 
   if (!divElement) throw new Error('divElement is undefined');

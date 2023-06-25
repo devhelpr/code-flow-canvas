@@ -35,4 +35,9 @@ export interface FlowNode<T> {
   shapeType?: ShapeType;
 
   nodeInfo?: T;
+
+  startNodeId?: string;
+  endNodeId?: string;
+  startThumbName?: string;
+  endThumbName?: string;
 }

@@ -54,7 +54,8 @@ export const createConnectionSVGElement = <T>(
   isQuadratic = false,
   isDashed = false,
   onCalculateControlPoints = onCalculateCubicBezierControlPoints,
-  canvasUpdated?: () => void
+  canvasUpdated?: () => void,
+  id?: string
 ) => {
   /*
     draw svg path based on bbox of the hidden path
@@ -186,7 +187,10 @@ export const createConnectionSVGElement = <T>(
   nodeComponent = createSVGNodeComponent(
     'g',
     {},
-    svgParent.domElement
+    svgParent.domElement,
+    undefined,
+    undefined,
+    id
   ) as unknown as IConnectionNodeComponent<T>;
 
   if (!nodeComponent) throw new Error('nodeComponent is undefined');

@@ -547,7 +547,8 @@ export const createCanvasApp = <T>(
       },
       hasStaticWidthHeight?: boolean,
       disableInteraction?: boolean,
-      disableManualResize?: boolean
+      disableManualResize?: boolean,
+      id?: string
     ) => {
       const rect = createRect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -566,7 +567,8 @@ export const createCanvasApp = <T>(
         hasStaticWidthHeight,
         disableInteraction,
         disableManualResize,
-        onCanvasUpdated
+        onCanvasUpdated,
+        id
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -583,7 +585,8 @@ export const createCanvasApp = <T>(
       controlPointX2?: number,
       controlPointY2?: number,
       isControlled?: boolean,
-      isDashed = false
+      isDashed = false,
+      id?: string
     ) => {
       const curve = createCubicBezier<T>(
         canvas as unknown as INodeComponent<T>,
@@ -599,7 +602,9 @@ export const createCanvasApp = <T>(
         controlPointX2 ?? 0,
         controlPointY2 ?? 0,
         isControlled,
-        isDashed
+        isDashed,
+        onCanvasUpdated,
+        id
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -614,7 +619,8 @@ export const createCanvasApp = <T>(
       controlPointX?: number,
       controlPointY?: number,
       isControlled?: boolean,
-      isDashed = false
+      isDashed = false,
+      id?: string
     ) => {
       const curve = createQuadraticBezier<T>(
         canvas as unknown as INodeComponent<T>,
@@ -628,7 +634,9 @@ export const createCanvasApp = <T>(
         controlPointX ?? 0,
         controlPointY ?? 0,
         isControlled,
-        isDashed
+        isDashed,
+        onCanvasUpdated,
+        id
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();

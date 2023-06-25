@@ -26,6 +26,7 @@ import {
   IRectNodeComponent,
   IConnectionNodeComponent,
   IThumbNodeComponent,
+  Flow,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -77,6 +78,8 @@ export class AppElement extends HTMLElement {
     }
   }
 
+  restoring = false;
+
   canvas?: IElementNode<NodeInfo> = undefined;
   canvasApp?: CanvasAppInstance = undefined;
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
@@ -124,12 +127,126 @@ export class AppElement extends HTMLElement {
     const canvasApp = createCanvasApp<NodeInfo>(rootElement);
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
+
     createIndexedDBStorageProvider().then((storageProvider) => {
+      this.restoring = true;
       this.storageProvider = storageProvider;
+
+      this.clearCanvas();
+      storageProvider.getFlow('1234').then((flow) => {
+        console.log('flow', flow);
+        const nodesList = flow.flows.flow.nodes;
+        nodesList.forEach((node) => {
+          if (
+            node.nodeType === 'shape' &&
+            node.nodeInfo?.type === 'expression'
+          ) {
+            const expression = getExpression();
+            expression.createVisualNode(
+              canvasApp,
+              node.x,
+              node.y,
+              node.nodeInfo?.formValues?.Expression ?? undefined,
+              node.id
+            );
+          }
+        });
+
+        const elementList = Array.from(canvasApp?.elements ?? []);
+
+        nodesList.forEach((node) => {
+          if (node.nodeType === 'connection') {
+            let start: INodeComponent<NodeInfo> | undefined = undefined;
+            let end: INodeComponent<NodeInfo> | undefined = undefined;
+            if (node.startNodeId) {
+              const startElement = elementList.find((e) => {
+                const element = e[1] as IElementNode<NodeInfo>;
+                return element.id === node.startNodeId;
+              });
+              if (startElement) {
+                start = startElement[1] as unknown as INodeComponent<NodeInfo>;
+              }
+            }
+            if (node.endNodeId) {
+              const endElement = elementList.find((e) => {
+                const element = e[1] as IElementNode<NodeInfo>;
+                return element.id === node.endNodeId;
+              });
+              if (endElement) {
+                end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+              }
+            }
+
+            const curve = canvasApp.createCubicBezier(
+              start?.x ?? 0,
+              start?.y ?? 0,
+              end?.x ?? 0,
+              end?.y ?? 0,
+              0,
+              0,
+              0,
+              0,
+              false,
+              undefined,
+              node.id
+            );
+
+            curve.nodeComponent.isControlled = true;
+            curve.nodeComponent.nodeInfo = {};
+
+            if (start && curve.nodeComponent) {
+              curve.nodeComponent.components.push({
+                type: NodeComponentRelationType.start,
+                component: start,
+              } as unknown as INodeComponentRelation<NodeInfo>);
+
+              curve.nodeComponent.startNode = start;
+              curve.nodeComponent.startNodeThumb = this.getThumbNode(
+                ThumbType.StartConnectorCenter,
+                start
+              );
+            }
+
+            if (end && curve.nodeComponent) {
+              curve.nodeComponent.components.push({
+                type: NodeComponentRelationType.end,
+                component: end,
+              } as unknown as INodeComponentRelation<NodeInfo>);
+
+              curve.nodeComponent.endNode = end;
+              curve.nodeComponent.endNodeThumb = this.getThumbNode(
+                ThumbType.EndConnectorCenter,
+                end
+              );
+            }
+            if (curve.nodeComponent.update) {
+              curve.nodeComponent.update();
+            }
+          }
+        });
+        canvasApp.centerCamera();
+        this.restoring = false;
+      });
     });
     canvasApp.setOnCanvasUpdated(() => {
+      if (this.restoring) {
+        return;
+      }
+
       if (this.storageProvider) {
-        serializeFlow();
+        const nodesList = serializeFlow();
+        const flow: Flow<NodeInfo> = {
+          schemaType: 'flow',
+          schemaVersion: '0.0.1',
+          id: '1234',
+          flows: {
+            flow: {
+              flowType: 'flow',
+              nodes: nodesList,
+            },
+          },
+        };
+        this.storageProvider.saveFlow('1234', flow);
       }
     });
     canvasApp.setOnCanvasClick((x, y) => {
@@ -480,7 +597,7 @@ export class AppElement extends HTMLElement {
     };
 
     const serializeFlow = () => {
-      const arr = Array.from(canvasApp.elements, function (entry) {
+      const nodesList = Array.from(canvasApp.elements, function (entry) {
         const obj = entry[1] as INodeComponent<NodeInfo>;
         if (obj.nodeType === 'connection') {
           const connection =
@@ -510,7 +627,7 @@ export class AppElement extends HTMLElement {
           nodeInfo: cleanupNodeInfoForSerializing(obj.nodeInfo),
         };
       });
-      console.log(arr);
+      return nodesList;
     };
 
     createElement(
@@ -801,8 +918,8 @@ export class AppElement extends HTMLElement {
                 compute: () => {
                   return {
                     output: true,
-                    result: true
-                  }
+                    result: true,
+                  };
                 },
               };
 

@@ -56,7 +56,8 @@ export const createRect = <T>(
   hasStaticWidthHeight?: boolean,
   disableInteraction?: boolean,
   disableManualResize?: boolean,
-  canvasUpdated?: () => void
+  canvasUpdated?: () => void,
+  id?: string
 ) => {
   let widthHelper = width;
   let heightHelper = height;
@@ -81,7 +82,8 @@ export const createRect = <T>(
     layoutProperties,
     hasStaticWidthHeight,
     disableInteraction,
-    canvasUpdated
+    canvasUpdated,
+    id
   );
   const rectNode: IRectNodeComponent<T> = rectPathInstance.nodeComponent;
 
@@ -314,7 +316,7 @@ export const createRect = <T>(
         pathHiddenElement,
         disableInteraction,
         thumb.label,
-        thumb.thumbShape ?? "circle"
+        thumb.thumbShape ?? 'circle'
       );
 
       thumbConnectorElement.pathName = thumb.pathName;

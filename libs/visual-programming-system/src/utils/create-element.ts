@@ -7,9 +7,10 @@ export const createElement = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
-  content?: string | HTMLElement
+  content?: string | HTMLElement,
+  id?: string
 ): IElementNode<T> => {
-  const id = crypto.randomUUID();
+  const nodeId = id ?? crypto.randomUUID();
   let domElement: HTMLElement | Text | undefined = undefined;
   let isTextNode = false;
   if (!elementName && content) {
@@ -60,7 +61,7 @@ export const createElement = <T>(
     }
   }
   return {
-    id: id,
+    id: nodeId,
     domElement: domElement,
     elements: createElementMap<T>(),
   };
@@ -70,14 +71,15 @@ export const createNSElement = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
-  content?: string
+  content?: string,
+  id?: string
 ): IElementNode<T> => {
-  const id = crypto.randomUUID();
+  const nodeId = id ?? crypto.randomUUID();
   const domElement = document.createElementNS(
     'http://www.w3.org/2000/svg',
     elementName
   );
-  domElement.id = `${id}`;
+  domElement.id = `${nodeId}`;
   if (attributes) {
     Object.keys(attributes).forEach((key) => {
       if (typeof attributes[key] === 'object') {
@@ -107,7 +109,7 @@ export const createNSElement = <T>(
     domElement.textContent = content;
   }
   return {
-    id: id,
+    id: nodeId,
     domElement: domElement,
     elements: createElementMap<T>(),
   };

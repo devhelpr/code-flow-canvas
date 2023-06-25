@@ -5,9 +5,16 @@ export const createNodeComponent = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
-  content?: string
+  content?: string,
+  id?: string
 ): INodeComponent<T> => {
-  const element = createElement<T>(elementName, attributes, parent, content);
+  const element = createElement<T>(
+    elementName,
+    attributes,
+    parent,
+    content,
+    id
+  );
   return {
     ...element,
     x: 0,
@@ -25,9 +32,16 @@ export const createSVGNodeComponent = <T>(
     nodeComponent?: INodeComponent<T>,
     x?: number,
     y?: number
-  ) => boolean
+  ) => boolean,
+  id?: string
 ): INodeComponent<T> => {
-  const element = createNSElement<T>(elementName, attributes, parent, content);
+  const element = createNSElement<T>(
+    elementName,
+    attributes,
+    parent,
+    content,
+    id
+  );
   return {
     ...element,
     x: 0,

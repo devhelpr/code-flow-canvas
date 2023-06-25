@@ -41,13 +41,15 @@ export const getExpression = () => {
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
-      y: number
+      y: number,
+      expression?: string,
+      id?: string
     ) => {
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: 'Expression',
-          value: '',
+          value: expression ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -102,7 +104,11 @@ export const getExpression = () => {
         jsxComponentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
-        }
+        },
+        undefined,
+        undefined,
+        undefined,
+        id
       );
       rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = formElements;
@@ -111,6 +117,7 @@ export const getExpression = () => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      node.nodeInfo.type = 'expression';
       return node;
     },
   };
