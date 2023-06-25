@@ -142,131 +142,138 @@ export class AppElement extends HTMLElement {
       this.storageProvider = storageProvider;
 
       this.clearCanvas();
-      storageProvider.getFlow('1234').then((flow) => {
-        console.log('flow', flow);
-        const nodesList = flow.flows.flow.nodes;
-        nodesList.forEach((node) => {
-          if (
-            node.nodeType === 'shape' &&
-            node.nodeInfo?.type === 'expression'
-          ) {
-            const expression = getExpression(canvasUpdated);
-            expression.createVisualNode(
-              canvasApp,
-              node.x,
-              node.y,
-              node.nodeInfo?.formValues?.Expression ?? undefined,
-              node.id
-            );
-          }
-
-          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'if') {
-            const ifCondition = getIfCondition();
-            ifCondition.createVisualNode(canvasApp, node.x, node.y, node.id);
-          }
-
-          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'array') {
-            const array = getArray();
-            array.createVisualNode(canvasApp, node.x, node.y, node.id);
-          }
-
-          if (
-            node.nodeType === 'shape' &&
-            node.nodeInfo?.type === 'show-input'
-          ) {
-            const showInput = getShowInput();
-            showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
-          }
-
-          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'map') {
-            const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
-            map.createVisualNode(canvasApp, node.x, node.y, node.id);
-          }
-
-          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'filter') {
-            const filter = getFilter<NodeInfo>(
-              animatePath,
-              animatePathFromThumb
-            );
-            filter.createVisualNode(canvasApp, node.x, node.y, node.id);
-          }
-        });
-
-        const elementList = Array.from(canvasApp?.elements ?? []);
-
-        nodesList.forEach((node) => {
-          if (node.nodeType === 'connection') {
-            let start: INodeComponent<NodeInfo> | undefined = undefined;
-            let end: INodeComponent<NodeInfo> | undefined = undefined;
-            if (node.startNodeId) {
-              const startElement = elementList.find((e) => {
-                const element = e[1] as IElementNode<NodeInfo>;
-                return element.id === node.startNodeId;
-              });
-              if (startElement) {
-                start = startElement[1] as unknown as INodeComponent<NodeInfo>;
-              }
-            }
-            if (node.endNodeId) {
-              const endElement = elementList.find((e) => {
-                const element = e[1] as IElementNode<NodeInfo>;
-                return element.id === node.endNodeId;
-              });
-              if (endElement) {
-                end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-              }
-            }
-
-            const curve = canvasApp.createCubicBezier(
-              start?.x ?? 0,
-              start?.y ?? 0,
-              end?.x ?? 0,
-              end?.y ?? 0,
-              0,
-              0,
-              0,
-              0,
-              false,
-              undefined,
-              node.id
-            );
-
-            curve.nodeComponent.isControlled = true;
-            curve.nodeComponent.nodeInfo = {};
-
-            if (start && curve.nodeComponent) {
-              curve.nodeComponent.components.push({
-                type: NodeComponentRelationType.start,
-                component: start,
-              } as unknown as INodeComponentRelation<NodeInfo>);
-
-              curve.nodeComponent.startNode = start;
-              curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
-                node.startThumbName ?? '',
-                start
+      storageProvider
+        .getFlow('1234')
+        .then((flow) => {
+          console.log('flow', flow);
+          const nodesList = flow.flows.flow.nodes;
+          nodesList.forEach((node) => {
+            if (
+              node.nodeType === 'shape' &&
+              node.nodeInfo?.type === 'expression'
+            ) {
+              const expression = getExpression(canvasUpdated);
+              expression.createVisualNode(
+                canvasApp,
+                node.x,
+                node.y,
+                node.nodeInfo?.formValues?.Expression ?? undefined,
+                node.id
               );
             }
 
-            if (end && curve.nodeComponent) {
-              curve.nodeComponent.components.push({
-                type: NodeComponentRelationType.end,
-                component: end,
-              } as unknown as INodeComponentRelation<NodeInfo>);
+            if (node.nodeType === 'shape' && node.nodeInfo?.type === 'if') {
+              const ifCondition = getIfCondition();
+              ifCondition.createVisualNode(canvasApp, node.x, node.y, node.id);
+            }
 
-              curve.nodeComponent.endNode = end;
-              curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
-                node.endThumbName ?? '',
-                end
+            if (node.nodeType === 'shape' && node.nodeInfo?.type === 'array') {
+              const array = getArray();
+              array.createVisualNode(canvasApp, node.x, node.y, node.id);
+            }
+
+            if (
+              node.nodeType === 'shape' &&
+              node.nodeInfo?.type === 'show-input'
+            ) {
+              const showInput = getShowInput();
+              showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
+            }
+
+            if (node.nodeType === 'shape' && node.nodeInfo?.type === 'map') {
+              const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
+              map.createVisualNode(canvasApp, node.x, node.y, node.id);
+            }
+
+            if (node.nodeType === 'shape' && node.nodeInfo?.type === 'filter') {
+              const filter = getFilter<NodeInfo>(
+                animatePath,
+                animatePathFromThumb
               );
+              filter.createVisualNode(canvasApp, node.x, node.y, node.id);
             }
-            if (curve.nodeComponent.update) {
-              curve.nodeComponent.update();
+          });
+
+          const elementList = Array.from(canvasApp?.elements ?? []);
+
+          nodesList.forEach((node) => {
+            if (node.nodeType === 'connection') {
+              let start: INodeComponent<NodeInfo> | undefined = undefined;
+              let end: INodeComponent<NodeInfo> | undefined = undefined;
+              if (node.startNodeId) {
+                const startElement = elementList.find((e) => {
+                  const element = e[1] as IElementNode<NodeInfo>;
+                  return element.id === node.startNodeId;
+                });
+                if (startElement) {
+                  start =
+                    startElement[1] as unknown as INodeComponent<NodeInfo>;
+                }
+              }
+              if (node.endNodeId) {
+                const endElement = elementList.find((e) => {
+                  const element = e[1] as IElementNode<NodeInfo>;
+                  return element.id === node.endNodeId;
+                });
+                if (endElement) {
+                  end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+                }
+              }
+
+              const curve = canvasApp.createCubicBezier(
+                start?.x ?? 0,
+                start?.y ?? 0,
+                end?.x ?? 0,
+                end?.y ?? 0,
+                0,
+                0,
+                0,
+                0,
+                false,
+                undefined,
+                node.id
+              );
+
+              curve.nodeComponent.isControlled = true;
+              curve.nodeComponent.nodeInfo = {};
+
+              if (start && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.start,
+                  component: start,
+                } as unknown as INodeComponentRelation<NodeInfo>);
+
+                curve.nodeComponent.startNode = start;
+                curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
+                  node.startThumbName ?? '',
+                  start
+                );
+              }
+
+              if (end && curve.nodeComponent) {
+                curve.nodeComponent.components.push({
+                  type: NodeComponentRelationType.end,
+                  component: end,
+                } as unknown as INodeComponentRelation<NodeInfo>);
+
+                curve.nodeComponent.endNode = end;
+                curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
+                  node.endThumbName ?? '',
+                  end
+                );
+              }
+              if (curve.nodeComponent.update) {
+                curve.nodeComponent.update();
+              }
             }
-          }
+          });
+          canvasApp.centerCamera();
+          this.restoring = false;
+        })
+        .catch((error) => {
+          console.log('error', error);
+          this.restoring = false;
         });
-        canvasApp.centerCamera();
-        this.restoring = false;
-      });
     });
 
     const store = () => {

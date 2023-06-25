@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve vps-web"
+    "start": "nx serve vps-web",
+    "build": "nx build vps-web"
   },
   "private": true,
   "dependencies": {

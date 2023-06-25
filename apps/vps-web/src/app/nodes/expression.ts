@@ -111,7 +111,10 @@ export const getExpression = (updated?: () => void) => {
         undefined,
         undefined,
         undefined,
-        id
+        id,
+        {
+          type: 'expression',
+        }
       );
       rect.nodeComponent.nodeInfo = {};
       rect.nodeComponent.nodeInfo.formElements = formElements;
@@ -120,7 +123,6 @@ export const getExpression = (updated?: () => void) => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.type = 'expression';
     },
   };
 };

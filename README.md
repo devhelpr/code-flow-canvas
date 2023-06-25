@@ -19,8 +19,6 @@ Visual programming system build with web components using DOM as a canvas mixing
         - register the events within the state-machine?
     - update x and y custom properties of the node-component ..  not just only on the dom element
 
-- add svg test component
-- connect two nodes with a line
 
 - update parts of a markup-node-component
 

@@ -1,5 +1,4 @@
 import { Flow } from '@devhelpr/visual-programming-system';
-import { type } from 'os';
 import { NodeInfo } from '../types/node-info';
 
 const getNewId = () => {
@@ -179,6 +178,8 @@ function getFlow(flowId: string) {
         _flowName = objectRequest.result.name;
         resolve(objectRequest.result.flow as unknown as Flow<NodeInfo>);
       } else {
+        reject(Error('object not found'));
+        return;
         const flow = JSON.parse(getDefaultFlow()) as unknown as Flow<NodeInfo>;
         transactions.push({
           flowId: flow.id,

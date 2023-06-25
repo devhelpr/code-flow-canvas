@@ -379,7 +379,7 @@ export const createCanvasApp = <T>(
 
     rootElement.addEventListener('click', (event: MouseEvent) => {
       if (disableInteraction) {
-        return;
+        return false;
       }
       const tagName = (event.target as HTMLElement)?.tagName;
 
@@ -403,6 +403,7 @@ export const createCanvasApp = <T>(
           return false;
         }
       }
+      return true;
     });
   }
 
