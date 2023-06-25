@@ -62,7 +62,8 @@ export const getSum = () => {
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
-      y: number
+      y: number,
+      id?: string
     ) => {
       htmlNode = createElement(
         'div',
@@ -97,6 +98,7 @@ export const getSum = () => {
             offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
+            name: 'output',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -105,6 +107,7 @@ export const getSum = () => {
             offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
+            name: 'input',
           },
         ],
         wrapper,
@@ -113,11 +116,13 @@ export const getSum = () => {
         },
         undefined,
         false,
-        true
+        true,
+        id,
+        {
+          type: 'sum',
+          formElements: [],
+        }
       );
-      rect.nodeComponent.nodeInfo = {};
-      rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = 'sum';
 
       createNamedSignal(`sum-${rect.nodeComponent.id}`, '');
 

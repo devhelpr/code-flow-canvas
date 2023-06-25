@@ -68,7 +68,8 @@ export const getArray = () => {
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
-      y: number
+      y: number,
+      id?: string
     ) => {
       htmlNode = createElement(
         'div',
@@ -103,6 +104,7 @@ export const getArray = () => {
             offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
+            name: 'output',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -112,6 +114,7 @@ export const getArray = () => {
             color: 'white',
             label: '#',
             thumbConstraint: 'value',
+            name: 'input',
           },
         ],
         wrapper,
@@ -120,12 +123,13 @@ export const getArray = () => {
         },
         undefined,
         false,
-        true
+        true,
+        id,
+        {
+          type: 'array',
+          formElements: [],
+        }
       );
-      rect.nodeComponent.nodeInfo = {};
-      rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = 'array';
-
       createNamedSignal(`array-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;

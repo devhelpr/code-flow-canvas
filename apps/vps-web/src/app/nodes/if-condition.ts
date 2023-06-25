@@ -24,7 +24,8 @@ export const getIfCondition = () => {
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
-      y: number
+      y: number,
+      id?: string
     ) => {
       const jsxComponentWrapper = createElement(
         'div',
@@ -63,6 +64,7 @@ export const getIfCondition = () => {
             color: 'rgba(95,204,37,1)',
             label: '#',
             thumbConstraint: 'value',
+            name: 'success',
           },
           {
             thumbType: ThumbType.StartConnectorBottom,
@@ -72,6 +74,7 @@ export const getIfCondition = () => {
             color: 'rgba(204,37,37,1)',
             label: '#',
             thumbConstraint: 'value',
+            name: 'failure',
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
@@ -80,16 +83,22 @@ export const getIfCondition = () => {
             color: 'white',
             label: '#',
             thumbConstraint: 'value',
+            name: 'input',
           },
         ],
         jsxComponentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
+        },
+        undefined,
+        undefined,
+        undefined,
+        id,
+        {
+          formElements: [],
+          type: 'if',
         }
       );
-      rect.nodeComponent.nodeInfo = {};
-      rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = 'if';
 
       createNamedSignal(`if${rect.nodeComponent.id}`, '');
 

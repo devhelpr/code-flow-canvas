@@ -114,6 +114,15 @@ export class AppElement extends HTMLElement {
     }
   };
 
+  getThumbNodeByName = (name: string, node: INodeComponent<NodeInfo>) => {
+    if (node.thumbConnectors) {
+      const thumbNode = node.thumbConnectors.find((thumbNode) => {
+        return thumbNode.thumbName === name;
+      });
+      return thumbNode;
+    }
+  };
+
   constructor() {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
@@ -149,6 +158,37 @@ export class AppElement extends HTMLElement {
               node.nodeInfo?.formValues?.Expression ?? undefined,
               node.id
             );
+          }
+
+          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'if') {
+            const ifCondition = getIfCondition();
+            ifCondition.createVisualNode(canvasApp, node.x, node.y, node.id);
+          }
+
+          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'array') {
+            const array = getArray();
+            array.createVisualNode(canvasApp, node.x, node.y, node.id);
+          }
+
+          if (
+            node.nodeType === 'shape' &&
+            node.nodeInfo?.type === 'show-input'
+          ) {
+            const showInput = getShowInput();
+            showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
+          }
+
+          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'map') {
+            const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
+            map.createVisualNode(canvasApp, node.x, node.y, node.id);
+          }
+
+          if (node.nodeType === 'shape' && node.nodeInfo?.type === 'filter') {
+            const filter = getFilter<NodeInfo>(
+              animatePath,
+              animatePathFromThumb
+            );
+            filter.createVisualNode(canvasApp, node.x, node.y, node.id);
           }
         });
 
@@ -201,8 +241,8 @@ export class AppElement extends HTMLElement {
               } as unknown as INodeComponentRelation<NodeInfo>);
 
               curve.nodeComponent.startNode = start;
-              curve.nodeComponent.startNodeThumb = this.getThumbNode(
-                ThumbType.StartConnectorCenter,
+              curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
+                node.startThumbName ?? '',
                 start
               );
             }
@@ -214,8 +254,8 @@ export class AppElement extends HTMLElement {
               } as unknown as INodeComponentRelation<NodeInfo>);
 
               curve.nodeComponent.endNode = end;
-              curve.nodeComponent.endNodeThumb = this.getThumbNode(
-                ThumbType.EndConnectorCenter,
+              curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
+                node.endThumbName ?? '',
                 end
               );
             }

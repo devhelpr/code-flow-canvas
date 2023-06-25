@@ -71,7 +71,7 @@ export const getExpression = () => {
           formElements,
           hasSubmitButton: false,
           onSave: (formValues) => {
-            //
+            console.log('onSave', formValues);
           },
         }) as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;

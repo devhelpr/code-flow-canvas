@@ -47,7 +47,8 @@ export const getShowInput = () => {
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
-      y: number
+      y: number,
+      id?: string
     ) => {
       htmlNode = createElement(
         'div',
@@ -82,6 +83,7 @@ export const getShowInput = () => {
             offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
+            name: 'output',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -90,6 +92,7 @@ export const getShowInput = () => {
             offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
+            name: 'input',
           },
         ],
         wrapper,
@@ -98,11 +101,13 @@ export const getShowInput = () => {
         },
         undefined,
         false,
-        true
+        true,
+        id,
+        {
+          type: 'show-input',
+          formElements: [],
+        }
       );
-      rect.nodeComponent.nodeInfo = {};
-      rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = 'showInput';
 
       createNamedSignal(`showInput-${rect.nodeComponent.id}`, '');
 

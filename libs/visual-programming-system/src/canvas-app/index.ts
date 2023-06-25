@@ -548,7 +548,8 @@ export const createCanvasApp = <T>(
       hasStaticWidthHeight?: boolean,
       disableInteraction?: boolean,
       disableManualResize?: boolean,
-      id?: string
+      id?: string,
+      nodeInfo?: T
     ) => {
       const rect = createRect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -570,6 +571,7 @@ export const createCanvasApp = <T>(
         onCanvasUpdated,
         id
       );
+      rect.nodeComponent.nodeInfo = nodeInfo;
       if (onCanvasUpdated) {
         onCanvasUpdated();
       }

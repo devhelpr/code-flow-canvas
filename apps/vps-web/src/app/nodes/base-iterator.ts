@@ -90,7 +90,7 @@ export const getBaseIterator = <T>(
     followPathToEndThumb?: boolean,
     singleStep?: boolean
   ) => void,
-  isConditionalSubflow? : boolean
+  isConditionalSubflow?: boolean
 ) => {
   let node: INodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -274,7 +274,8 @@ export const getBaseIterator = <T>(
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
-      y: number
+      y: number,
+      id?: string
     ) => {
       htmlNode = createElement(
         'div',
@@ -321,14 +322,14 @@ export const getBaseIterator = <T>(
             name: 'iteration',
             label: '#',
             thumbConstraint: 'value',
-            thumbShape: isConditionalSubflow ? "diamond" : "circle",
+            thumbShape: isConditionalSubflow ? 'diamond' : 'circle',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             offsetY: 20,
-            name: 'output',
+            name: 'input',
             label: '[]',
             thumbConstraint: 'array',
           },
@@ -337,11 +338,19 @@ export const getBaseIterator = <T>(
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        true
+        true,
+        undefined,
+        undefined,
+        id,
+        {
+          FormElements: [],
+          type: nodeTypeName,
+          taskTyp: nodeTypeName,
+        }
       );
-      rect.nodeComponent.nodeInfo = {};
-      rect.nodeComponent.nodeInfo.formElements = [];
-      rect.nodeComponent.nodeInfo.taskType = nodeTypeName;
+      // rect.nodeComponent.nodeInfo = {};
+      // rect.nodeComponent.nodeInfo.formElements = [];
+      // rect.nodeComponent.nodeInfo.taskType = nodeTypeName;
 
       if (htmlNode.domElement) {
         mapCanvasApp = createCanvasApp<NodeInfo>(
