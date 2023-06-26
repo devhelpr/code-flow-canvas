@@ -27,6 +27,7 @@ export const InputField = (props: InputFieldProps) => {
       type="text"
       class="block w-full p-1"
       name={props.fieldName}
+      autocomplete="off"
       value={props.value}
       oninput={(event: InputEvent) => {
         const input = event.target as HTMLInputElement;

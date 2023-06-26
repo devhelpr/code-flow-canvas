@@ -44,7 +44,7 @@ export const createThumbSVGElement = <T>(
   pathHiddenElement?: IElementNode<T>,
   disableInteraction?: boolean,
   label?: string,
-  thumbShape? : 'circle' | 'diamond'
+  thumbShape?: 'circle' | 'diamond'
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -103,7 +103,10 @@ export const createThumbSVGElement = <T>(
         transform: `translate(${-(radius ?? 10) + (width ?? 100) / 2}px, ${
           -(radius ?? 10) + (height ?? 100) / 2
         }px)`,
-        'clip-path': thumbShape === "diamond" ?'polygon(50% 0, 100% 50%, 50% 100%, 0 50%' : 'circle(50%)',
+        'clip-path':
+          thumbShape === 'diamond'
+            ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
+            : 'circle(50%)',
         'background-color': isTransparent
           ? 'transparent'
           : borderColor
@@ -154,6 +157,10 @@ export const createThumbSVGElement = <T>(
               if (!canReceiveDrop) {
                 (
                   nodeComponent.domElement as unknown as SVGElement
+                ).style.filter = 'none';
+
+                (
+                  nodeComponent.domElement as unknown as SVGElement
                 ).classList.remove('cursor-pointer');
                 (
                   nodeComponent.domElement as unknown as SVGElement
@@ -162,6 +169,10 @@ export const createThumbSVGElement = <T>(
                   'svg cant register drop target for current dragging element'
                 );
                 return;
+              } else {
+                (
+                  nodeComponent.domElement as unknown as SVGElement
+                ).style.filter = 'invert(1)';
               }
             }
           }
@@ -178,6 +189,9 @@ export const createThumbSVGElement = <T>(
         if (nodeComponent.isConnectPoint) {
           console.log('svg unregister drop target', nodeComponent.id);
           interactionStateMachine.clearDropTarget(nodeComponent);
+
+          (nodeComponent.domElement as unknown as SVGElement).style.filter =
+            'none';
 
           (nodeComponent.domElement as unknown as SVGElement).classList.remove(
             'cursor-not-allowed'
@@ -367,6 +381,9 @@ export const createThumbSVGElement = <T>(
           if (nodeComponent && nodeComponent.domElement) {
             //clearDropTarget(nodeComponent);
 
+            (nodeComponent.domElement as unknown as SVGElement).style.filter =
+              'none';
+
             const canvasRect = (
               canvasElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
@@ -393,17 +410,24 @@ export const createThumbSVGElement = <T>(
   );
 
   if (!circleElement) throw new Error('circleElement is undefined');
-  const innerCircle = createElement('div',{
-    class: `absolute top-[3px] left-[3px]`,
-    style:{
-      width: `${((radius ?? 10) * 2) - 6}px`,
-      height: `${((radius ?? 10) * 2) - 6}px`,
-      'clip-path': thumbShape === "diamond" ?'polygon(50% 0, 100% 50%, 50% 100%, 0 50%' : 'circle(50%)',     
-      'background-color': isTransparent
-        ? 'transparent'
-        : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
-    }
-  }, circleElement.domElement)
+  const innerCircle = createElement(
+    'div',
+    {
+      class: `absolute top-[3px] left-[3px]`,
+      style: {
+        width: `${(radius ?? 10) * 2 - 6}px`,
+        height: `${(radius ?? 10) * 2 - 6}px`,
+        'clip-path':
+          thumbShape === 'diamond'
+            ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
+            : 'circle(50%)',
+        'background-color': isTransparent
+          ? 'transparent'
+          : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
+      },
+    },
+    circleElement.domElement
+  );
   if (label) {
     // const isLeftSideThumb =
     //   thumbType === ThumbType.End ||
