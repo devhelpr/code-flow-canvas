@@ -95,7 +95,6 @@ export const createRectPathSVGElement = <T>(
 
   divElement.nodeType = 'shape';
   divElement.shapeType = shapeType;
-  divElement.components = [];
 
   let astElement: any;
 
@@ -199,20 +198,13 @@ export const createRectPathSVGElement = <T>(
     ) {
       points.beginX = x - 50;
       points.beginY = y - 50;
-      //if (nodeComponent && divElement) {
       if (divElement) {
-        // nodeComponent.x = points.beginX;
-        // nodeComponent.y = points.beginY;
-
         divElement.x = points.beginX;
         divElement.y = points.beginY;
       }
-      const connectionInfo = incomingComponent.components.find(
-        (c) => c.type === 'self'
-      );
 
-      if (connectionInfo && getThumbPosition) {
-        connectionInfo.controllers?.thumbConnectors.forEach(
+      if (getThumbPosition) {
+        incomingComponent?.thumbConnectors?.forEach(
           (connector: IThumbNodeComponent<T>) => {
             if (connector && connector.update && connector.thumbType) {
               const position = getThumbPosition(
@@ -235,54 +227,44 @@ export const createRectPathSVGElement = <T>(
         return false;
       }
 
-      const connectionInfo = incomingComponent.components.find(
-        (c) => c.type === 'self'
-      );
+      const getRectPoint = (
+        specifier?: string,
+        thumbConnector?: IThumbNodeComponent<T>
+      ) => {
+        if (!getThumbPosition) {
+          return { x: 0, y: 0 };
+        }
+        if (!specifier && thumbConnector && thumbConnector.thumbType) {
+          const position = getThumbPosition(
+            thumbConnector.thumbType,
+            thumbConnector.thumbIndex ?? 0,
+            thumbConnector.thumbOffsetY ?? 0
+          );
+          return {
+            x: position.x,
+            y: position.y,
+          };
+        }
+        return false;
+      };
 
-      if (connectionInfo && connectionInfo.controllers) {
-        const getRectPoint = (
-          specifier?: string,
-          thumbConnector?: IThumbNodeComponent<T>
-        ) => {
-          if (!getThumbPosition) {
-            return { x: 0, y: 0 };
-          }
-          if (!specifier && thumbConnector && thumbConnector.thumbType) {
-            const position = getThumbPosition(
-              thumbConnector.thumbType,
-              thumbConnector.thumbIndex ?? 0,
-              thumbConnector.thumbOffsetY ?? 0
-            );
-            return {
-              x: position.x,
-              y: position.y,
-            };
-          }
-          return false;
-        };
-
-        connectionInfo.controllers?.thumbConnectors.forEach(
-          (connector: IThumbNodeComponent<T>) => {
-            if (connector && connector.specifier) {
-              const point = getRectPoint(undefined, connector);
-              if (point && connector.update) {
-                console.log(
-                  'update thumb connector',
-                  connector.thumbType,
-                  point.x,
-                  point.y
-                );
-                connector.update(
-                  connector,
-                  point.x,
-                  point.y,
-                  incomingComponent
-                );
-              }
+      incomingComponent?.thumbConnectors?.forEach(
+        (connector: IThumbNodeComponent<T>) => {
+          if (connector && connector.specifier) {
+            const point = getRectPoint(undefined, connector);
+            if (point && connector.update) {
+              console.log(
+                'update thumb connector',
+                connector.thumbType,
+                point.x,
+                point.y
+              );
+              connector.update(connector, point.x, point.y, incomingComponent);
             }
           }
-        );
-      }
+        }
+      );
+      //}
     }
 
     const begin = getPoint(points.beginX, points.beginY);
@@ -318,24 +300,12 @@ export const createRectPathSVGElement = <T>(
 
     if (divElement) {
       // get all connections that have this node as start or end
-      elements.forEach((e) => {
-        const lookAtNodeComponent = e as unknown as IConnectionNodeComponent<T>;
-        if (
-          lookAtNodeComponent.nodeType === 'shape' || // TODO : check if this is still needed
-          lookAtNodeComponent.nodeType === 'connection'
-        ) {
-          const start = lookAtNodeComponent.components.find(
-            (c) =>
-              divElement &&
-              c.type === 'start' &&
-              c.component?.id === divElement.id
-          );
-          const end = lookAtNodeComponent.components.find(
-            (c) =>
-              divElement &&
-              c.type === 'end' &&
-              c.component?.id === divElement.id
-          );
+      divElement.connections?.forEach((lookAtNodeComponent) => {
+        if (lookAtNodeComponent.nodeType === 'connection') {
+          const start =
+            lookAtNodeComponent.startNode === divElement && lookAtNodeComponent;
+          const end =
+            lookAtNodeComponent.endNode === divElement && lookAtNodeComponent;
           if (
             start &&
             lookAtNodeComponent &&

@@ -12,36 +12,6 @@ export interface IElementNode<T> {
 export type DOMElementNode = HTMLElement | SVGElement | Text;
 export type ElementNodeMap<T> = Map<string, IElementNode<T>>;
 
-export enum NodeComponentRelationType {
-  self = 'self',
-  //childComponent = 'childComponent',
-  controller = 'controller',
-  //sibling = 'sibling',
-  controllerTarget = 'controllerTarget',
-  connection = 'connection',
-  start = 'start',
-  end = 'end',
-}
-export interface INodeComponentRelation<T> {
-  component: INodeComponent<T>;
-  type: NodeComponentRelationType;
-  // connectionStart?: INodeComponent;
-  // connectionEnd?: INodeComponent;
-  update?: (
-    component?: INodeComponent<T>,
-    x?: number,
-    y?: number,
-    actionComponent?: INodeComponent<T>
-  ) => boolean;
-  commitUpdate?: (
-    component: INodeComponent<T>,
-    x: number,
-    y: number,
-    actionComponent: INodeComponent<T>
-  ) => void;
-  controllers?: any;
-}
-
 export interface INodeComponent<T> extends IElementNode<T> {
   parent?: IRectNodeComponent<T>;
   x: number;
@@ -59,7 +29,6 @@ export interface INodeComponent<T> extends IElementNode<T> {
   specifier?: string;
   nodeType?: string;
   pathName?: string;
-  components: INodeComponentRelation<T>[];
 
   isControlled?: boolean;
   isConnectPoint?: boolean;
@@ -100,7 +69,7 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
 export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   startNode?: IRectNodeComponent<T>;
   endNode?: IRectNodeComponent<T>;
-
+  controlPointNodes?: IThumbNodeComponent<T>[];
   startNodeThumb?: IThumbNodeComponent<T>;
   endNodeThumb?: IThumbNodeComponent<T>;
   onCalculateControlPoints: (

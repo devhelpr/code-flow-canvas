@@ -1,4 +1,4 @@
-import { INodeComponent, NodeComponentRelationType } from '../../interfaces';
+import { INodeComponent, IRectNodeComponent } from '../../interfaces';
 
 export function setPosition<T>(
   element: INodeComponent<T>,
@@ -18,20 +18,12 @@ export function setPosition<T>(
     return;
   }
 
-  let doPosition = true;
-  element.components.forEach((componentRelation) => {
-    if (
-      componentRelation.type === NodeComponentRelationType.self ||
-      componentRelation.type === NodeComponentRelationType.controller ||
-      componentRelation.type === NodeComponentRelationType.controllerTarget
-    ) {
-      if (componentRelation.update) {
-        if (
-          !componentRelation.update(componentRelation.component, x, y, element)
-        ) {
-          doPosition = false;
-        }
-      }
-    }
-  });
+  if ((element as unknown as IRectNodeComponent<T>)?.parent?.update) {
+    (element as unknown as IRectNodeComponent<T>)?.parent?.update?.(
+      (element as unknown as IRectNodeComponent<T>)?.parent,
+      x,
+      y,
+      element
+    );
+  }
 }

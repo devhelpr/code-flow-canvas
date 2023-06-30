@@ -2,9 +2,9 @@
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
+  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
-  NodeComponentRelationType,
 } from '../interfaces/element';
 import {
   createEffect,
@@ -77,17 +77,11 @@ export const createCubicBezier = <T>(
     if (!followRelations) {
       return;
     }
-    element.components.forEach((componentRelation) => {
-      if (
-        componentRelation.type === NodeComponentRelationType.self ||
-        componentRelation.type === NodeComponentRelationType.controller ||
-        componentRelation.type === NodeComponentRelationType.controllerTarget
-      ) {
-        if (componentRelation.update) {
-          componentRelation.update(componentRelation.component, x, y, element);
-        }
-      }
-    });
+
+    // update the connection of this thumb
+    if (element.parent && element.parent.update) {
+      element.parent.update(element.parent, x, y, element);
+    }
   }
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
@@ -164,6 +158,7 @@ export const createCubicBezier = <T>(
     'c1'
   );
   controlPoint1Element.isControlled = isControlled;
+  controlPoint1Element.parent = connection;
   controlPoint1Element.update = (
     component?: INodeComponent<T>,
     x?: number,
@@ -188,7 +183,9 @@ export const createCubicBezier = <T>(
     controlPoint2Y,
     'c2'
   );
+
   controlPoint2Element.isControlled = isControlled;
+  controlPoint2Element.parent = connection;
   controlPoint2Element.update = (
     component?: INodeComponent<T>,
     x?: number,
@@ -202,133 +199,8 @@ export const createCubicBezier = <T>(
     return true;
   };
 
-  startPointElement.components.push({
-    component: connection,
-    type: NodeComponentRelationType.controllerTarget,
-    update: (
-      component?: INodeComponent<T>,
-      x?: number,
-      y?: number,
-      actionComponent?: INodeComponent<T>
-    ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
-        return false;
-      }
-
-      if (component.update) {
-        return component.update(component, x, y, actionComponent);
-      }
-      return true;
-    },
-  });
-
-  endPointElement.components.push({
-    component: connection,
-    type: NodeComponentRelationType.controllerTarget,
-    update: (
-      component?: INodeComponent<T>,
-      x?: number,
-      y?: number,
-      actionComponent?: INodeComponent<T>
-    ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
-        return false;
-      }
-
-      if (component.update) {
-        return component.update(component, x, y, actionComponent);
-      }
-      return true;
-    },
-  });
-
-  // endPointElement.components.push({
-  //   component: connection,
-  //   type: NodeComponentRelationType.connection,
-  //   connectionStart: endPointElement,
-  //   connectionEnd: controlPoint1Element,
-  // });
-  controlPoint1Element.components.push(
-    // {
-    //   component: connection,
-    //   type: NodeComponentRelationType.connection,
-    //   connectionStart: endPointElement,
-    //   connectionEnd: controlPoint1Element,
-    // },
-    {
-      component: connection,
-      type: NodeComponentRelationType.controllerTarget,
-      update: (
-        component?: INodeComponent<T>,
-        x?: number,
-        y?: number,
-        actionComponent?: INodeComponent<T>
-      ) => {
-        if (
-          !component ||
-          x === undefined ||
-          y === undefined ||
-          !actionComponent
-        ) {
-          return false;
-        }
-
-        if (component.update) {
-          return component.update(component, x, y, actionComponent);
-        }
-        return true;
-      },
-    }
-  );
-
-  connection.components.push({
-    component: connection,
-    type: NodeComponentRelationType.self,
-    update: (component?: INodeComponent<T>, x?: number, y?: number) => true,
-    commitUpdate: (component: INodeComponent<T>, x: number, y: number) => {
-      //
-    },
-    controllers: {
-      start: startPointElement,
-      end: endPointElement,
-      controlPoint1: controlPoint1Element,
-      controlPoint2: controlPoint2Element,
-    },
-  });
-  controlPoint2Element.components.push({
-    component: connection,
-    type: NodeComponentRelationType.controllerTarget,
-    update: (
-      component?: INodeComponent<T>,
-      x?: number,
-      y?: number,
-      actionComponent?: INodeComponent<T>
-    ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
-        return false;
-      }
-
-      if (component.update) {
-        return component.update(component, x, y, actionComponent);
-      }
-      return true;
-    },
-  });
+  connection.controlPointNodes?.push(controlPoint1Element);
+  connection.controlPointNodes?.push(controlPoint2Element);
 
   createEffect(() => {
     //const selectedNode = getSelectedNode();
@@ -433,18 +305,6 @@ export const createQuadraticBezier = <T>(
     (
       element.domElement as unknown as HTMLElement | SVGElement
     ).style.transform = `translate(${x}px, ${y}px)`;
-
-    element.components.forEach((componentRelation) => {
-      if (
-        componentRelation.type === NodeComponentRelationType.self ||
-        componentRelation.type === NodeComponentRelationType.controller ||
-        componentRelation.type === NodeComponentRelationType.controllerTarget
-      ) {
-        if (componentRelation.update) {
-          componentRelation.update(componentRelation.component, x, y, element);
-        }
-      }
-    });
   }
   const startPointElement = createThumbSVGElement(
     canvas.domElement,
@@ -523,6 +383,7 @@ export const createQuadraticBezier = <T>(
     'c1'
   );
   controlPoint1Element.isControlled = isControlled;
+  controlPoint1Element.parent = connection;
   controlPoint1Element.update = (
     component?: INodeComponent<T>,
     x?: number,
@@ -535,107 +396,7 @@ export const createQuadraticBezier = <T>(
     setPosition(component, x, y);
     return true;
   };
-
-  startPointElement.components.push({
-    component: connection,
-    type: NodeComponentRelationType.controllerTarget,
-    update: (
-      component?: INodeComponent<T>,
-      x?: number,
-      y?: number,
-      actionComponent?: INodeComponent<T>
-    ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
-        return false;
-      }
-
-      if (component.update) {
-        return component.update(component, x, y, actionComponent);
-      }
-      return true;
-    },
-  });
-
-  endPointElement.components.push({
-    component: connection,
-    type: NodeComponentRelationType.controllerTarget,
-    update: (
-      component?: INodeComponent<T>,
-      x?: number,
-      y?: number,
-      actionComponent?: INodeComponent<T>
-    ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
-        return false;
-      }
-
-      if (component.update) {
-        return component.update(component, x, y, actionComponent);
-      }
-      return true;
-    },
-  });
-
-  // endPointElement.components.push({
-  //   component: connection,
-  //   type: NodeComponentRelationType.connection,
-  //   connectionStart: endPointElement,
-  //   connectionEnd: controlPoint1Element,
-  // });
-  controlPoint1Element.components.push(
-    // {
-    //   component: connection,
-    //   type: NodeComponentRelationType.connection,
-    //   connectionStart: endPointElement,
-    //   connectionEnd: controlPoint1Element,
-    // },
-    {
-      component: connection,
-      type: NodeComponentRelationType.controllerTarget,
-      update: (
-        component?: INodeComponent<T>,
-        x?: number,
-        y?: number,
-        actionComponent?: INodeComponent<T>
-      ) => {
-        if (
-          !component ||
-          x === undefined ||
-          y === undefined ||
-          !actionComponent
-        ) {
-          return false;
-        }
-
-        if (component.update) {
-          return component.update(component, x, y, actionComponent);
-        }
-        return true;
-      },
-    }
-  );
-
-  connection.components.push({
-    component: connection,
-    type: NodeComponentRelationType.self,
-    update: (component?: INodeComponent<T>, x?: number, y?: number) => true,
-    commitUpdate: (component: INodeComponent<T>, x: number, y: number) => true,
-    controllers: {
-      start: startPointElement,
-      end: endPointElement,
-      controlPoint: controlPoint1Element,
-    },
-  });
+  connection.controlPointNodes?.push(controlPoint1Element);
 
   createEffect(() => {
     //const selectedNode = getSelectedNode();

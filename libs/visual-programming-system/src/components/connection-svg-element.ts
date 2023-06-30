@@ -197,7 +197,7 @@ export const createConnectionSVGElement = <T>(
 
   nodeComponent.nodeType = 'connection';
   nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
-
+  nodeComponent.controlPointNodes = [];
   nodeComponent.delete = () => {
     svgParent.domElement.remove();
   };
@@ -279,32 +279,50 @@ export const createConnectionSVGElement = <T>(
               svgParent.domElement
             );
 
-            const connectionInfo = nodeComponent.components.find(
-              (c) => c.type === 'self'
+            (canvasElement as unknown as HTMLElement | SVGElement).append(
+              nodeComponent.startNode?.domElement as Node
             );
 
-            if (connectionInfo) {
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.start.domElement
-              );
-              (canvasElement as unknown as HTMLElement | SVGElement).append(
-                connectionInfo.controllers?.end.domElement
-              );
+            (canvasElement as unknown as HTMLElement | SVGElement).append(
+              nodeComponent.endNode?.domElement as Node
+            );
 
+            if (nodeComponent.controlPointNodes) {
               if (isQuadratic) {
                 (canvasElement as unknown as HTMLElement | SVGElement).append(
-                  connectionInfo.controllers?.controlPoint.domElement
+                  nodeComponent.controlPointNodes[0].domElement as Node
                 );
               } else {
                 (canvasElement as unknown as HTMLElement | SVGElement).append(
-                  connectionInfo.controllers?.controlPoint1.domElement
+                  nodeComponent.controlPointNodes[0].domElement as Node
                 );
-
                 (canvasElement as unknown as HTMLElement | SVGElement).append(
-                  connectionInfo.controllers?.controlPoint2.domElement
+                  nodeComponent.controlPointNodes[1].domElement as Node
                 );
               }
             }
+            // if (connectionInfo) {
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.start.domElement
+            //   );
+            //   (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //     connectionInfo.controllers?.end.domElement
+            //   );
+
+            //   if (isQuadratic) {
+            //     (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //       connectionInfo.controllers?.controlPoint.domElement
+            //     );
+            //   } else {
+            //     (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //       connectionInfo.controllers?.controlPoint1.domElement
+            //     );
+
+            //     (canvasElement as unknown as HTMLElement | SVGElement).append(
+            //       connectionInfo.controllers?.controlPoint2.domElement
+            //     );
+            //   }
+            // }
           }
         }
       },
@@ -461,53 +479,25 @@ export const createConnectionSVGElement = <T>(
         points.endX = x - thumbTransformX + diffEndX;
         points.endY = y - thumbTransformY + diffEndY;
       }
-      const connectionInfo = incomingComponent.components.find(
-        (c) => c.type === 'self'
-      );
 
-      if (connectionInfo) {
-        connectionInfo.controllers?.start.update(
-          connectionInfo.controllers?.start,
-          points.beginX,
-          points.beginY,
+      if (nodeComponent?.controlPointNodes?.length) {
+        nodeComponent.controlPointNodes[0].setVisibility?.(
+          !(nodeComponent?.startNode || nodeComponent?.endNode)
+        );
+        nodeComponent.controlPointNodes[0].update?.(
+          nodeComponent.controlPointNodes[0],
+          points.cx1,
+          points.cy1,
           actionComponent
         );
-
-        connectionInfo.controllers?.end.update(
-          connectionInfo.controllers?.end,
-          points.endX,
-          points.endY,
-          actionComponent
-        );
-
-        if (isQuadratic) {
-          connectionInfo.controllers?.controlPoint.setVisibility?.(
+        if (!isQuadratic) {
+          nodeComponent.controlPointNodes[1].setVisibility?.(
             !(nodeComponent?.startNode || nodeComponent?.endNode)
           );
-          connectionInfo.controllers?.controlPoint.update(
-            connectionInfo.controllers?.controlPoint,
+          nodeComponent.controlPointNodes[1].update?.(
+            nodeComponent.controlPointNodes[0],
             points.cx1,
             points.cy1,
-            actionComponent
-          );
-        } else {
-          connectionInfo.controllers?.controlPoint1.setVisibility?.(
-            !(nodeComponent?.startNode || nodeComponent?.endNode)
-          );
-          connectionInfo.controllers?.controlPoint1.update(
-            connectionInfo.controllers?.controlPoint1,
-            points.cx1,
-            points.cy1,
-            actionComponent
-          );
-
-          connectionInfo.controllers?.controlPoint2.setVisibility?.(
-            !(nodeComponent?.startNode || nodeComponent?.endNode)
-          );
-          connectionInfo.controllers?.controlPoint2.update(
-            connectionInfo.controllers?.controlPoint2,
-            points.cx2,
-            points.cy2,
             actionComponent
           );
         }
@@ -590,47 +580,38 @@ export const createConnectionSVGElement = <T>(
     }
 
     if (updateThumbs && nodeComponent) {
-      const connectionInfo = nodeComponent.components.find(
-        (c) => c.type === 'self'
+      nodeComponent.startNode?.update?.(
+        nodeComponent.startNode,
+        points.cx1,
+        points.cy1,
+        nodeComponent
       );
 
-      if (connectionInfo) {
-        connectionInfo.controllers?.controlPoint1?.setVisibility?.(false);
-        connectionInfo.controllers?.controlPoint2?.setVisibility?.(false);
-        connectionInfo.controllers?.controlPoint?.setVisibility?.(false);
+      nodeComponent.endNode?.update?.(
+        nodeComponent.endNode,
+        points.cx1,
+        points.cy1,
+        nodeComponent
+      );
 
-        connectionInfo.controllers?.start.update(
-          connectionInfo.controllers?.start,
-          points.beginX,
-          points.beginY,
-          nodeComponent
-        );
-
-        connectionInfo.controllers?.end.update(
-          connectionInfo.controllers?.end,
-          points.endX,
-          points.endY,
-          nodeComponent
-        );
-
-        connectionInfo.controllers?.controlPoint?.update(
-          connectionInfo.controllers?.controlPoint,
+      if (nodeComponent?.controlPointNodes?.length) {
+        nodeComponent.controlPointNodes?.[0].setVisibility?.(false);
+        nodeComponent.controlPointNodes?.[0].update?.(
+          nodeComponent.controlPointNodes?.[0],
           points.cx1,
           points.cy1,
           nodeComponent
         );
+      }
 
-        connectionInfo.controllers?.controlPoint1?.update(
-          connectionInfo.controllers?.controlPoint1,
+      if (!isQuadratic) {
+        if (nodeComponent?.controlPointNodes?.length) {
+          nodeComponent.controlPointNodes?.[1].setVisibility?.(false);
+        }
+        nodeComponent.controlPointNodes?.[1].update?.(
+          nodeComponent.controlPointNodes?.[1],
           points.cx1,
           points.cy1,
-          nodeComponent
-        );
-
-        connectionInfo.controllers?.controlPoint2?.update(
-          connectionInfo.controllers?.controlPoint2,
-          points.cx2,
-          points.cy2,
           nodeComponent
         );
       }

@@ -6,8 +6,6 @@ import {
   ThumbType,
   createCanvasApp,
   CanvasAppInstance,
-  NodeComponentRelationType,
-  INodeComponentRelation,
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
@@ -562,10 +560,6 @@ export const getBaseIterator = <T>(
         // connnection.nodeComponent.nodeInfo = {};
 
         // if (start && connnection.nodeComponent) {
-        //   connnection.nodeComponent.components.push({
-        //     type: NodeComponentRelationType.start,
-        //     component: start,
-        //   } as unknown as INodeComponentRelation<NodeInfo>);
 
         //   connnection.nodeComponent.startNode = start.nodeComponent;
         //   connnection.nodeComponent.startNodeThumb = getThumbNode(
@@ -575,11 +569,6 @@ export const getBaseIterator = <T>(
         // }
 
         // if (end && connnection.nodeComponent) {
-        //   connnection.nodeComponent.components.push({
-        //     type: NodeComponentRelationType.end,
-        //     component: end,
-        //   } as unknown as INodeComponentRelation<NodeInfo>);
-
         //   connnection.nodeComponent.endNode = end.nodeComponent;
         //   connnection.nodeComponent.endNodeThumb = getThumbNode(
         //     ThumbType.EndConnectorCenter,
@@ -598,12 +587,6 @@ export const getBaseIterator = <T>(
 
         if (input && connnection2.nodeComponent) {
           connnection2.nodeComponent.isControlled = true;
-
-          connnection2.nodeComponent.components.push({
-            type: NodeComponentRelationType.start,
-            component: input,
-          } as unknown as INodeComponentRelation<NodeInfo>);
-
           connnection2.nodeComponent.startNode = input.nodeComponent;
           connnection2.nodeComponent.startNodeThumb = getThumbNode(
             ThumbType.StartConnectorCenter,
@@ -614,12 +597,6 @@ export const getBaseIterator = <T>(
 
         if (end && connnection2.nodeComponent) {
           connnection2.nodeComponent.isControlled = true;
-
-          connnection2.nodeComponent.components.push({
-            type: NodeComponentRelationType.end,
-            component: end,
-          } as unknown as INodeComponentRelation<NodeInfo>);
-
           connnection2.nodeComponent.endNode = end.nodeComponent;
           connnection2.nodeComponent.endNodeThumb = getThumbNode(
             ThumbType.EndConnectorCenter,
@@ -636,12 +613,6 @@ export const getBaseIterator = <T>(
 
         if (end && connnection3.nodeComponent) {
           connnection3.nodeComponent.isControlled = true;
-
-          connnection3.nodeComponent.components.push({
-            type: NodeComponentRelationType.start,
-            component: end,
-          } as unknown as INodeComponentRelation<NodeInfo>);
-
           connnection3.nodeComponent.startNode = end.nodeComponent;
           connnection3.nodeComponent.startNodeThumb = getThumbNode(
             ThumbType.StartConnectorTop,
@@ -653,12 +624,6 @@ export const getBaseIterator = <T>(
 
         if (output && connnection3.nodeComponent) {
           connnection3.nodeComponent.isControlled = true;
-
-          connnection3.nodeComponent.components.push({
-            type: NodeComponentRelationType.end,
-            component: output,
-          } as unknown as INodeComponentRelation<NodeInfo>);
-
           connnection3.nodeComponent.endNode = output.nodeComponent;
           connnection3.nodeComponent.endNodeThumb = getThumbNode(
             ThumbType.StartConnectorCenter,
@@ -685,12 +650,6 @@ export const getBaseIterator = <T>(
         );
         if (end && connnection4.nodeComponent) {
           connnection4.nodeComponent.isControlled = true;
-
-          connnection4.nodeComponent.components.push({
-            type: NodeComponentRelationType.start,
-            component: end,
-          } as unknown as INodeComponentRelation<NodeInfo>);
-
           connnection4.nodeComponent.startNode = end.nodeComponent;
           connnection4.nodeComponent.startNodeThumb = getThumbNode(
             ThumbType.StartConnectorBottom,
@@ -703,12 +662,6 @@ export const getBaseIterator = <T>(
 
         if (subOutput && connnection4.nodeComponent) {
           connnection4.nodeComponent.isControlled = true;
-
-          connnection4.nodeComponent.components.push({
-            type: NodeComponentRelationType.end,
-            component: subOutput,
-          } as unknown as INodeComponentRelation<NodeInfo>);
-
           connnection4.nodeComponent.endNode = subOutput.nodeComponent;
           connnection4.nodeComponent.endNodeThumb = getThumbNode(
             ThumbType.StartConnectorCenter,

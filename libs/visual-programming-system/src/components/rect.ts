@@ -7,11 +7,9 @@ import {
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
-  INodeComponentRelation,
   IRectNodeComponent,
   IThumb,
   IThumbNodeComponent,
-  NodeComponentRelationType,
   ThumbConnectionType,
 } from '../interfaces/element';
 import {
@@ -210,22 +208,6 @@ export const createRect = <T>(
       );
       rectNode.connections?.push(parentConnection);
 
-      const index = component.parent.components.findIndex((c) =>
-        component.specifier === 'begin'
-          ? c.type === NodeComponentRelationType.start
-          : c.type === NodeComponentRelationType.end
-      );
-      if (index > -1) {
-        component.parent.components.splice(index, 1);
-      }
-      component.parent.components.push({
-        type:
-          component.specifier === 'begin'
-            ? NodeComponentRelationType.start
-            : NodeComponentRelationType.end,
-        component: rectNode,
-      } as unknown as INodeComponentRelation<T>);
-
       // Update both sides of the connection to get a correct curve
       if (component.parent.update) {
         component.parent.update(
@@ -341,20 +323,6 @@ export const createRect = <T>(
     });
   }
   rectNode.thumbConnectors = thumbConnectors;
-
-  rectNode.components.push({
-    component: rectNode,
-    type: NodeComponentRelationType.self,
-    update: (component?: INodeComponent<T>, x?: number, y?: number) => {
-      return true;
-    },
-    commitUpdate: (component: INodeComponent<T>, x: number, y: number) => {
-      //
-    },
-    controllers: {
-      thumbConnectors: [...thumbConnectors],
-    },
-  });
 
   rectNode.onClick = () => {
     console.log('CLICKED ON RECT', rectNode.id);

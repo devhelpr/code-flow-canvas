@@ -6,10 +6,8 @@ import {
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
-  INodeComponentRelation,
   IRectNodeComponent,
   IThumbNodeComponent,
-  NodeComponentRelationType,
   ThumbConnectionType,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
@@ -87,7 +85,6 @@ export const createThumbSVGElement = <T>(
   nodeComponent.thumbName = thumbName;
   nodeComponent.x = 0;
   nodeComponent.y = 0;
-  nodeComponent.components = [];
 
   (nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
     nodeComponent.id;
@@ -255,10 +252,6 @@ export const createThumbSVGElement = <T>(
                 curve.endPointElement.id
               );
               curve.nodeComponent.isControlled = true;
-              curve.nodeComponent.components.push({
-                type: NodeComponentRelationType.start,
-                component: parentRectNode,
-              } as unknown as INodeComponentRelation<T>);
 
               curve.nodeComponent.startNode = parentRectNode;
               curve.nodeComponent.startNodeThumb = nodeComponent;

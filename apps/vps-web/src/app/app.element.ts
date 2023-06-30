@@ -6,8 +6,6 @@ import {
   createElement,
   IElementNode,
   INodeComponent,
-  INodeComponentRelation,
-  NodeComponentRelationType,
   createEffect,
   getSelectedNode,
   setSelectNode,
@@ -260,11 +258,6 @@ export class AppElement extends HTMLElement {
                 curve.nodeComponent.nodeInfo = {};
 
                 if (start && curve.nodeComponent) {
-                  curve.nodeComponent.components.push({
-                    type: NodeComponentRelationType.start,
-                    component: start,
-                  } as unknown as INodeComponentRelation<NodeInfo>);
-
                   curve.nodeComponent.startNode = start;
                   curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
                     node.startThumbName ?? '',
@@ -273,11 +266,6 @@ export class AppElement extends HTMLElement {
                 }
 
                 if (end && curve.nodeComponent) {
-                  curve.nodeComponent.components.push({
-                    type: NodeComponentRelationType.end,
-                    component: end,
-                  } as unknown as INodeComponentRelation<NodeInfo>);
-
                   curve.nodeComponent.endNode = end;
                   curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
                     node.endThumbName ?? '',
@@ -507,10 +495,6 @@ export class AppElement extends HTMLElement {
     //           curve.nodeComponent.nodeInfo = flowNode;
 
     //           if (start && curve.nodeComponent) {
-    //             curve.nodeComponent.components.push({
-    //               type: NodeComponentRelationType.start,
-    //               component: start,
-    //             } as unknown as INodeComponentRelation<NodeInfo>);
 
     //             curve.nodeComponent.startNode = start;
     //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
@@ -520,10 +504,6 @@ export class AppElement extends HTMLElement {
     //           }
 
     //           if (end && curve.nodeComponent) {
-    //             curve.nodeComponent.components.push({
-    //               type: NodeComponentRelationType.end,
-    //               component: end,
-    //             } as unknown as INodeComponentRelation<NodeInfo>);
 
     //             curve.nodeComponent.endNode = end;
     //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
@@ -821,47 +801,47 @@ export class AppElement extends HTMLElement {
       'Add "filter"'
     );
 
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
+    createElement(
+      'button',
+      {
+        class: button,
+        click: (event) => {
+          event.preventDefault();
 
-    //       const x = Math.floor(Math.random() * 250);
-    //       const y = Math.floor(Math.random() * 500);
+          const x = Math.floor(Math.random() * 250);
+          const y = Math.floor(Math.random() * 500);
 
-    //       // if (Math.random() >= 0.5) {
-    //       //const bezierCurve =
-    //       canvasApp.createCubicBezier(
-    //         x,
-    //         y,
-    //         x + 150,
-    //         y + 150,
-    //         x + 50,
-    //         y + 50,
-    //         x + 75,
-    //         y + 75
-    //       );
-    //       // } else {
-    //       // bezierCurve = createQuadraticBezier(
-    //       //   canvas as unknown as INodeComponent<NodeInfo>,
-    //       //   pathHiddenElement,
-    //       //   this.elements,
-    //       //   x,
-    //       //   y,
-    //       //   x + 150,
-    //       //   y + 150,
-    //       //   x + 50,
-    //       //   y + 50
-    //       // );
-    //       // }
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add bezier curve'
-    // );
+          // if (Math.random() >= 0.5) {
+          //const bezierCurve =
+          canvasApp.createCubicBezier(
+            x,
+            y,
+            x + 150,
+            y + 150,
+            x + 50,
+            y + 50,
+            x + 75,
+            y + 75
+          );
+          // } else {
+          // bezierCurve = createQuadraticBezier(
+          //   canvas as unknown as INodeComponent<NodeInfo>,
+          //   pathHiddenElement,
+          //   this.elements,
+          //   x,
+          //   y,
+          //   x + 150,
+          //   y + 150,
+          //   x + 50,
+          //   y + 50
+          // );
+          // }
+          return false;
+        },
+      },
+      menubarElement.domElement,
+      'Add bezier curve'
+    );
 
     // createElement(
     //   'button',
@@ -1046,11 +1026,6 @@ export class AppElement extends HTMLElement {
               };
 
               if (start && curve.nodeComponent) {
-                curve.nodeComponent.components.push({
-                  type: NodeComponentRelationType.start,
-                  component: start,
-                } as unknown as INodeComponentRelation<NodeInfo>);
-
                 curve.nodeComponent.startNode = start;
                 curve.nodeComponent.startNodeThumb = this.getThumbNode(
                   ThumbType.StartConnectorCenter,
@@ -1059,11 +1034,6 @@ export class AppElement extends HTMLElement {
               }
 
               if (end && curve.nodeComponent) {
-                curve.nodeComponent.components.push({
-                  type: NodeComponentRelationType.end,
-                  component: end,
-                } as unknown as INodeComponentRelation<NodeInfo>);
-
                 curve.nodeComponent.endNode = end;
                 curve.nodeComponent.endNodeThumb = this.getThumbNode(
                   ThumbType.EndConnectorCenter,
