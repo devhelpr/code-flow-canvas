@@ -11,21 +11,31 @@ import { compileExpression } from '@devhelpr/expression-compiler';
 
 export const getExpression = (updated?: () => void) => {
   let node: INodeComponent<NodeInfo>;
+  let errorNode: INodeComponent<NodeInfo>;
+
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
     return;
   };
   const compute = (input: string) => {
-    const runExpression = compileExpression(
-      node.nodeInfo.formValues?.['Expression'] ?? ''
-    );
-
+    (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
+      const runExpression = compileExpression(
+        node.nodeInfo.formValues?.['Expression'] ?? ''
+      );
       result = runExpression({ input: input, currentValue: currentValue });
+      if (isNaN(result) || result === undefined) {
+        throw new Error("Expression couldn't be run");
+      }
     } catch (error) {
-      result = false;
+      result = undefined;
+      (errorNode.domElement as unknown as HTMLElement).classList.remove(
+        'hidden'
+      );
+      (errorNode.domElement as unknown as HTMLElement).textContent =
+        error?.toString() ?? 'Error';
       console.log('expression error', error);
     }
     if (result) {
@@ -120,6 +130,21 @@ export const getExpression = (updated?: () => void) => {
         }
       );
       rect.nodeComponent.nodeInfo.formElements = formElements;
+      errorNode = createElement(
+        'div',
+        {
+          class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[100px] w-full hidden
+            after:content-['']
+            after:w-0 after:h-0 
+            after:border-l-[10px] after:border-l-transparent
+            after:border-t-[10px] after:border-t-red-500
+            after:border-r-[10px] after:border-r-transparent
+            after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
+          `,
+        },
+        rect.nodeComponent.domElement,
+        'error'
+      ) as unknown as INodeComponent<NodeInfo>;
 
       createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;

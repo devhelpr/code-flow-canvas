@@ -801,47 +801,47 @@ export class AppElement extends HTMLElement {
       'Add "filter"'
     );
 
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
+    // createElement(
+    //   'button',
+    //   {
+    //     class: button,
+    //     click: (event) => {
+    //       event.preventDefault();
 
-          const x = Math.floor(Math.random() * 250);
-          const y = Math.floor(Math.random() * 500);
+    //       const x = Math.floor(Math.random() * 250);
+    //       const y = Math.floor(Math.random() * 500);
 
-          // if (Math.random() >= 0.5) {
-          //const bezierCurve =
-          canvasApp.createCubicBezier(
-            x,
-            y,
-            x + 150,
-            y + 150,
-            x + 50,
-            y + 50,
-            x + 75,
-            y + 75
-          );
-          // } else {
-          // bezierCurve = createQuadraticBezier(
-          //   canvas as unknown as INodeComponent<NodeInfo>,
-          //   pathHiddenElement,
-          //   this.elements,
-          //   x,
-          //   y,
-          //   x + 150,
-          //   y + 150,
-          //   x + 50,
-          //   y + 50
-          // );
-          // }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add bezier curve'
-    );
+    //       // if (Math.random() >= 0.5) {
+    //       //const bezierCurve =
+    //       canvasApp.createCubicBezier(
+    //         x,
+    //         y,
+    //         x + 150,
+    //         y + 150,
+    //         x + 50,
+    //         y + 50,
+    //         x + 75,
+    //         y + 75
+    //       );
+    //       // } else {
+    //       // bezierCurve = createQuadraticBezier(
+    //       //   canvas as unknown as INodeComponent<NodeInfo>,
+    //       //   pathHiddenElement,
+    //       //   this.elements,
+    //       //   x,
+    //       //   y,
+    //       //   x + 150,
+    //       //   y + 150,
+    //       //   x + 50,
+    //       //   y + 50
+    //       // );
+    //       // }
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'Add bezier curve'
+    // );
 
     // createElement(
     //   'button',
