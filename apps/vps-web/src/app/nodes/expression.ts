@@ -22,11 +22,10 @@ export const getExpression = (updated?: () => void) => {
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
-      const runExpression = compileExpression(
-        node.nodeInfo.formValues?.['Expression'] ?? ''
-      );
+      const expression = node.nodeInfo.formValues?.['Expression'] ?? '';
+      const runExpression = compileExpression(expression);
       result = runExpression({ input: input, currentValue: currentValue });
-      if (isNaN(result) || result === undefined) {
+      if (expression !== '' && (isNaN(result) || result === undefined)) {
         throw new Error("Expression couldn't be run");
       }
     } catch (error) {
