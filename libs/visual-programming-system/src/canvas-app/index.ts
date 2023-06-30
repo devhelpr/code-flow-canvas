@@ -36,7 +36,7 @@ export const createCanvasApp = <T>(
   let startClientDragY = 0;
   let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
   let onCanvasUpdated: (() => void) | undefined = undefined;
-  //w-full h-full origin-top-left
+
   const canvas = createElement<T>(
     'div',
     {
