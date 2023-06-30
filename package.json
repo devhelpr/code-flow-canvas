@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve vps-web",
-    "build": "nx build vps-web"
+    "build": "nx build vps-web",
+    "test": "nx run-many --all --target=test"
   },
   "private": true,
   "dependencies": {

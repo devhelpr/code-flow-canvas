@@ -8,5 +8,6 @@ export * from './types';
 export * from './utils';
 export * from './canvas-app';
 export * from './utils/bezier';
+export * from './spatial-partitioning';
 //export * from './jsx/jsx-pragma';
 //export * from './jsx-runtime';
