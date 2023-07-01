@@ -17,7 +17,7 @@ The above is the generic structure of the visual programming system. It can be i
 - elements
 - nodeInfo : T
 - parent? : BaseNode<T>
-- canvasApp : CanvasApp
+- canvas : BaseNode<T>
   
 - update()
     - reposition and setup visual properties depending on node class type and properties
@@ -40,6 +40,10 @@ The above is the generic structure of the visual programming system. It can be i
 - onReceiveDroppedComponent()
 - onClick()
 
+RectNodes can contain:
+	- string markup
+	- raw dom element with children
+	- a canvas with nodes
 
 ## ConnectionNode
 - xStart, yStart
@@ -99,9 +103,11 @@ The above is the generic structure of the visual programming system. It can be i
   - When a RectNode is moved, the connections are updated
 
 - Connections can be moved by dragging the start or end thumb
-- Connections can be moved by dragging the line itself when the start and end thumb are not connected to a RectNode
+- Connections can be moved by dragging the line itself, and when the start and/or end thumb are connected to a RectNode: the rectnode's are also moved
 
 - When a RectNode is selected, it can also be moved by the keyboard cursor keys
+
+- When a RectNode is selected, special drag handlers are shown which can be used to drag the downstream and upstream connections and nodes.
 
 
 ## Hit testing
