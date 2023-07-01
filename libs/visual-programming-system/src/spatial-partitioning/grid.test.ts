@@ -15,7 +15,7 @@ describe('Grid', () => {
       }
     }
     grid.cells.forEach((cell) => {
-      const neighbours = grid.searchNeighbours(cell);
+      const neighbours = grid.getNeighbours(cell);
       expect(neighbours.length).toBeLessThanOrEqual(8);
       cell.neighbours = neighbours;
     });
@@ -31,5 +31,10 @@ describe('Grid', () => {
     expect(cell2).toBeDefined();
     expect(cell2?.x).toBe(500);
     expect(cell2?.y).toBe(1000);
+
+    const cell3 = grid.getCellForPosition(150, 150);
+    expect(cell3).toBeDefined();
+    expect(cell3?.x).toBe(100);
+    expect(cell3?.y).toBe(100);
   });
 });

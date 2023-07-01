@@ -30,7 +30,8 @@ export abstract class BaseGrid<T> {
     node: INodeComponent<T>
   ): BaseCell<T> | undefined;
   abstract addCell(cell: BaseCell<T>): void;
-  abstract searchNeighbours(cell: BaseCell<T>): GridCellNeighbour<T>[];
+  abstract getNeighbours(cell: BaseCell<T>): GridCellNeighbour<T>[];
+  abstract getCellForPosition(x: number, y: number): BaseCell<T> | undefined;
 }
 
 export abstract class BaseCell<T> {
@@ -71,9 +72,22 @@ export class Grid<T> extends BaseGrid<T> {
   }
   addCell(cell: Cell<T>): void {
     this.cells.push(cell);
-    cell.neighbours = this.searchNeighbours(cell);
+    cell.neighbours = this.getNeighbours(cell);
   }
-  searchNeighbours(cell: Cell<T>): GridCellNeighbour<T>[] {
+  getCellForPosition(x: number, y: number): Cell<T> | undefined {
+    return this.cells.find((cell) => {
+      if (
+        x >= cell.x &&
+        x <= cell.x + this.cellWidth &&
+        y >= cell.y &&
+        y <= cell.y + this.cellHeight
+      ) {
+        return true;
+      }
+      return false;
+    });
+  }
+  getNeighbours(cell: Cell<T>): GridCellNeighbour<T>[] {
     const neighbours: { cell: Cell<T>; type: GridCellNeighbourType }[] = [];
     this.cells.forEach((baseCell) => {
       const neighbour = baseCell as Cell<T>;
