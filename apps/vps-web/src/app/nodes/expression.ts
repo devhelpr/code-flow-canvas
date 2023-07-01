@@ -7,7 +7,11 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import { compileExpression } from '@devhelpr/expression-compiler';
+import {
+  compileExpression,
+  compileExpressionAsInfo,
+  runExpression,
+} from '@devhelpr/expression-compiler';
 
 export const getExpression = (updated?: () => void) => {
   let node: INodeComponent<NodeInfo>;
@@ -23,8 +27,20 @@ export const getExpression = (updated?: () => void) => {
     let result: any = false;
     try {
       const expression = node.nodeInfo.formValues?.['Expression'] ?? '';
-      const runExpression = compileExpression(expression);
-      result = runExpression({ input: input, currentValue: currentValue });
+      const compiledExpressionInfo = compileExpressionAsInfo(expression);
+      const expressionFunction = (
+        new Function(
+          'payload',
+          `${compiledExpressionInfo.script}`
+        ) as unknown as (payload?: any) => any
+      ).bind(compiledExpressionInfo.bindings);
+      result = runExpression(
+        expressionFunction,
+        { input: input, currentValue: currentValue },
+        true,
+        compiledExpressionInfo.payloadProperties
+      );
+
       if (expression !== '' && (isNaN(result) || result === undefined)) {
         throw new Error("Expression couldn't be run");
       }
