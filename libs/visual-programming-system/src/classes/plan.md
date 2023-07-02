@@ -122,3 +122,9 @@ RectNodes can contain:
 
 - The visual programming system is stored in a json format in indexeddb
 
+## Graphical system abstraction
+
+- The visual programming system is not dependent on a specific graphical system
+- CoreRenderingEngine
+- DOMRenderingEngine
+- WebGLRenderingEngine
