@@ -615,15 +615,15 @@ export const createConnectionSVGElement = <T>(
     }
 
     if (updateThumbs && nodeComponent) {
-      nodeComponent.startNode?.update?.(
-        nodeComponent.startNode,
+      nodeComponent.connectionStartNodeThumb?.update?.(
+        nodeComponent.connectionStartNodeThumb,
         points.beginX,
         points.beginY,
         nodeComponent
       );
 
-      nodeComponent.endNode?.update?.(
-        nodeComponent.endNode,
+      nodeComponent.connectionEndNodeThumb?.update?.(
+        nodeComponent.connectionEndNodeThumb,
         points.endX,
         points.endY,
         nodeComponent

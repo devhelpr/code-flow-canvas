@@ -114,6 +114,7 @@ export const createCubicBezier = <T>(
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
+  connection.connectionStartNodeThumb = startPointElement;
 
   const endPointElement = createThumbSVGElement(
     canvas.domElement,
@@ -146,6 +147,7 @@ export const createCubicBezier = <T>(
     setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
     return true;
   };
+  connection.connectionEndNodeThumb = endPointElement;
   const controlPoint1Element = createThumbSVGElement(
     canvas.domElement,
     interactionStateMachine,
