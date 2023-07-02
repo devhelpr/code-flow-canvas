@@ -129,7 +129,7 @@ export const createThumbSVGElement = <T>(
         if (disableInteraction) {
           return;
         }
-        console.log('svg pointerover', nodeComponent.id);
+        console.log('svg pointerover', nodeComponent.id, nodeComponent);
         (nodeComponent.domElement as unknown as SVGElement).classList.remove(
           'cursor-pointer'
         );
