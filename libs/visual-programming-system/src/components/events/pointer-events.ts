@@ -3,11 +3,7 @@ import {
   InteractionEvent,
   InteractionStateMachine,
 } from '../../interaction-state-machine';
-import {
-  DOMElementNode,
-  INodeComponent,
-  NodeComponentRelationType,
-} from '../../interfaces/element';
+import { DOMElementNode, INodeComponent } from '../../interfaces/element';
 import { IPointerDownResult } from '../../interfaces/pointers';
 
 export const pointerDown = <T>(

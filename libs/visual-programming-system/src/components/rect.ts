@@ -237,6 +237,10 @@ export const createRect = <T>(
         }
       }
 
+      (canvas.domElement as unknown as HTMLElement | SVGElement).append(
+        parentConnection.startNode?.domElement as unknown as HTMLElement
+      );
+
       if (canvasUpdated) {
         canvasUpdated();
       }

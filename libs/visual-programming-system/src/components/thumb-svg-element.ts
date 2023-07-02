@@ -203,6 +203,13 @@ export const createThumbSVGElement = <T>(
           return;
         }
         if (nodeComponent) {
+          if (
+            nodeComponent.parent &&
+            (nodeComponent.parent as unknown as IConnectionNodeComponent<T>)
+              .startNode
+          ) {
+            //return;
+          }
           /* 
           TODO:
           if:
@@ -214,7 +221,11 @@ export const createThumbSVGElement = <T>(
           - create a connection starting from this node and thumb
           - initialize the interaction state machine with the new connection
           */
-
+          console.log(
+            'thumb pointerdown before check',
+            nodeComponent.id,
+            nodeComponent
+          );
           if (
             nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
             nodeComponent.isConnectPoint &&
@@ -242,7 +253,7 @@ export const createThumbSVGElement = <T>(
               y - 50,
               x - 50,
               y - 50,
-              false
+              true
             );
 
             if (curve && canvas) {
@@ -296,6 +307,9 @@ export const createThumbSVGElement = <T>(
                 circleDomElement.classList.remove('pointer-events-auto');
                 circleDomElement.classList.add('pointer-events-none');
               }
+              // (
+              //   nodeComponent.parent?.domElement as unknown as HTMLElement
+              // ).append(nodeComponent.domElement);
 
               console.log(
                 'new curve interactionInfoResult',
@@ -462,6 +476,22 @@ export const createThumbSVGElement = <T>(
     (nodeComponent.domElement as unknown as SVGElement).style.display = `${
       visible ? 'block' : 'none'
     }`;
+
+    if (visible && !disableInteraction) {
+      (circleElement.domElement as unknown as SVGElement).classList.remove(
+        'pointer-events-none'
+      );
+      (circleElement.domElement as unknown as SVGElement).classList.add(
+        'pointer-events-auto'
+      );
+    } else {
+      (circleElement.domElement as unknown as SVGElement).classList.remove(
+        'pointer-events-auto'
+      );
+      (circleElement.domElement as unknown as SVGElement).classList.add(
+        'pointer-events-none'
+      );
+    }
   };
 
   nodeComponent.initPointerDown = (

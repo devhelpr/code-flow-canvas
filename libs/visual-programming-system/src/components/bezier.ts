@@ -397,6 +397,8 @@ export const createQuadraticBezier = <T>(
     return true;
   };
   connection.controlPointNodes?.push(controlPoint1Element);
+  connection.connectionStartNodeThumb = startPointElement;
+  connection.connectionEndNodeThumb = endPointElement;
 
   createEffect(() => {
     //const selectedNode = getSelectedNode();

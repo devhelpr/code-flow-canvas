@@ -13,7 +13,7 @@ export type DOMElementNode = HTMLElement | SVGElement | Text;
 export type ElementNodeMap<T> = Map<string, IElementNode<T>>;
 
 export interface INodeComponent<T> extends IElementNode<T> {
-  parent?: IRectNodeComponent<T>;
+  parent?: INodeComponent<T>;
   x: number;
   y: number;
   width?: number;
@@ -22,9 +22,6 @@ export interface INodeComponent<T> extends IElementNode<T> {
   offsetX?: number;
   offsetY?: number;
   radius?: number;
-
-  lineType?: LineType;
-  controlPoints?: { x: number; y: number }[];
 
   specifier?: string;
   nodeType?: string;
@@ -63,10 +60,14 @@ export interface INodeComponent<T> extends IElementNode<T> {
 }
 
 export interface IRectNodeComponent<T> extends INodeComponent<T> {
-  connections?: IConnectionNodeComponent<T>[];
+  connections: IConnectionNodeComponent<T>[];
 }
 
 export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
+  lineType?: LineType;
+  controlPoints?: { x: number; y: number }[];
+  connectionStartNodeThumb?: IThumbNodeComponent<T>;
+  connectionEndNodeThumb?: IThumbNodeComponent<T>;
   startNode?: IRectNodeComponent<T>;
   endNode?: IRectNodeComponent<T>;
   controlPointNodes?: IThumbNodeComponent<T>[];

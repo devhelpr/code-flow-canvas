@@ -8,6 +8,7 @@ import {
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
+  IRectNodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { ThumbType } from '../types';
@@ -280,11 +281,11 @@ export const createConnectionSVGElement = <T>(
             );
 
             (canvasElement as unknown as HTMLElement | SVGElement).append(
-              nodeComponent.startNode?.domElement as Node
+              nodeComponent.connectionStartNodeThumb?.domElement as Node
             );
 
             (canvasElement as unknown as HTMLElement | SVGElement).append(
-              nodeComponent.endNode?.domElement as Node
+              nodeComponent.connectionEndNodeThumb?.domElement as Node
             );
 
             if (nodeComponent.controlPointNodes) {
@@ -429,7 +430,7 @@ export const createConnectionSVGElement = <T>(
         actionComponent.id === connection.startNode.id
       ) {
         const start = onCalculateControlPoints(
-          actionComponent,
+          actionComponent as unknown as IRectNodeComponent<T>,
           ControlAndEndPointNodeType.start,
           connection.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
@@ -448,7 +449,7 @@ export const createConnectionSVGElement = <T>(
         actionComponent.id === connection.endNode.id
       ) {
         const end = onCalculateControlPoints(
-          actionComponent,
+          actionComponent as unknown as IRectNodeComponent<T>,
           ControlAndEndPointNodeType.end,
           connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
           connection.endNodeThumb?.thumbIndex,
@@ -480,6 +481,40 @@ export const createConnectionSVGElement = <T>(
         points.endY = y - thumbTransformY + diffEndY;
       }
 
+      if (nodeComponent?.startNode) {
+        // nodeComponent.startNode?.update?.(
+        //   nodeComponent.startNode,
+        //   points.beginX,
+        //   points.beginY,
+        //   actionComponent
+        // );
+
+        const circle =
+          nodeComponent.connectionStartNodeThumb?.getThumbCircleElement?.();
+        (circle as unknown as HTMLElement)?.classList?.remove?.(
+          'pointer-events-auto'
+        );
+        (circle as unknown as HTMLElement)?.classList?.remove?.(
+          'pointer-events-none'
+        );
+      }
+
+      if (nodeComponent?.endNode) {
+        // nodeComponent.endNode?.update?.(
+        //   nodeComponent.endNode,
+        //   points.endX,
+        //   points.endY,
+        //   actionComponent
+        // );
+        const circle =
+          nodeComponent.connectionEndNodeThumb?.getThumbCircleElement?.();
+        (circle as unknown as HTMLElement)?.classList?.remove?.(
+          'pointer-events-auto'
+        );
+        (circle as unknown as HTMLElement)?.classList?.remove?.(
+          'pointer-events-none'
+        );
+      }
       if (nodeComponent?.controlPointNodes?.length) {
         nodeComponent.controlPointNodes[0].setVisibility?.(
           !(nodeComponent?.startNode || nodeComponent?.endNode)
@@ -495,9 +530,9 @@ export const createConnectionSVGElement = <T>(
             !(nodeComponent?.startNode || nodeComponent?.endNode)
           );
           nodeComponent.controlPointNodes[1].update?.(
-            nodeComponent.controlPointNodes[0],
-            points.cx1,
-            points.cy1,
+            nodeComponent.controlPointNodes[1],
+            points.cx2,
+            points.cy2,
             actionComponent
           );
         }
@@ -582,15 +617,15 @@ export const createConnectionSVGElement = <T>(
     if (updateThumbs && nodeComponent) {
       nodeComponent.startNode?.update?.(
         nodeComponent.startNode,
-        points.cx1,
-        points.cy1,
+        points.beginX,
+        points.beginY,
         nodeComponent
       );
 
       nodeComponent.endNode?.update?.(
         nodeComponent.endNode,
-        points.cx1,
-        points.cy1,
+        points.endX,
+        points.endY,
         nodeComponent
       );
 
