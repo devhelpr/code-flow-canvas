@@ -11,12 +11,13 @@ registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
 });
 
-export interface RunNodeResult {
+export interface RunNodeResult<T> {
   input: string | any[];
   output: string | any[];
   result: boolean;
   nodeId: string;
   path: string;
+  node: IRectNodeComponent<T>;
 }
 
 export const runNode = <T>(
@@ -39,9 +40,12 @@ export const runNode = <T>(
     input?: string | any[],
     followPathByName?: string
   ) => void,
-  onStopped?: (input: string | any[], pathExecution?: RunNodeResult[]) => void,
+  onStopped?: (
+    input: string | any[],
+    pathExecution?: RunNodeResult<T>[]
+  ) => void,
   input?: string,
-  pathExecution?: RunNodeResult[]
+  pathExecution?: RunNodeResult<T>[]
 ) => {
   const formInfo = node.nodeInfo as unknown as any;
   console.log(
@@ -68,12 +72,13 @@ export const runNode = <T>(
         result: !!result,
         nodeId: node.id,
         path: followPath ?? '',
+        node: node,
       });
     }
     animatePath(
       node,
       'white',
-      (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
+      (nodeId: string, node: IRectNodeComponent<T>, input: string | any[]) => {
         console.log('Next nodeId', nodeId, node, input);
         let result: any = false;
         const formInfo = node.nodeInfo as unknown as any;
@@ -93,6 +98,7 @@ export const runNode = <T>(
                     result: result,
                     nodeId: node.id,
                     path: followPath ?? '',
+                    node: node,
                   });
                 }
 
@@ -129,6 +135,7 @@ export const runNode = <T>(
             result: !!result,
             nodeId: node.id,
             path: followPath ?? '',
+            node: node,
           });
         }
 
@@ -169,6 +176,10 @@ export const run = <T>(
     onStopped?: (input: string | any[]) => void,
     input?: string | any[],
     followPathByName?: string
+  ) => void,
+  onFinishRun?: (
+    input: string | any[],
+    pathExecution?: RunNodeResult<T>[]
   ) => void
 ) => {
   /*
@@ -197,10 +208,10 @@ export const run = <T>(
       runNode<T>(
         nodeComponent,
         animatePath,
-        (input: string | any[], pathExecution?: RunNodeResult[]) => {
-          setTimeout(() => {
-            console.log('running flow stopped', pathExecution);
-          }, 0);
+        (input: string | any[], pathExecution?: RunNodeResult<T>[]) => {
+          if (onFinishRun) {
+            onFinishRun(input, pathExecution);
+          }
         },
         undefined,
         []

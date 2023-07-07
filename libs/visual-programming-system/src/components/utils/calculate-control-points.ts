@@ -17,7 +17,6 @@ const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   let factor = 0.15;
   let thumbFactor = 1;
   if (Math.abs((y2 ?? 0) - y1) < 50) {
-    console.log('straight line y', y2 ?? 0, y1);
     factor *= Math.abs((y2 ?? 0) - y1) / 50;
     thumbFactor = Math.abs((y2 ?? 0) - y1) / 50;
   }

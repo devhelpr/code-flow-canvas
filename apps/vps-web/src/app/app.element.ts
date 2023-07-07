@@ -32,7 +32,7 @@ import flowData from '../example-data/tiltest.json';
 
 import { FormComponent } from './components/form-component';
 
-import { run } from './simple-flow-engine/simple-flow-engine';
+import { run, RunNodeResult } from './simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from './types/node-info';
 import { getExpression } from './nodes/expression';
 import { getIfCondition } from './nodes/if-condition';
@@ -50,6 +50,7 @@ import {
   createIndexedDBStorageProvider,
   FlowrunnerIndexedDbStorageProvider,
 } from './storage/indexeddb-storage-provider';
+import { getPointOnConnection } from './follow-path/point-on-connection';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -82,6 +83,8 @@ export class AppElement extends HTMLElement {
   canvasApp?: CanvasAppInstance = undefined;
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
+  pathExecutions: RunNodeResult<NodeInfo>[][] = [];
+
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
     const node = element as unknown as INodeComponent<NodeInfo>;
@@ -95,12 +98,39 @@ export class AppElement extends HTMLElement {
   };
 
   clearCanvas = () => {
+    this.clearPathExecution();
+    this.pathExecutions = [];
     this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
     });
     this.canvasApp?.elements.clear();
     this.canvasApp?.setCamera(0, 0, 1);
+  };
+
+  testCircle: IElementNode<NodeInfo> | undefined = undefined;
+  message: IElementNode<NodeInfo> | undefined = undefined;
+  messageText: IElementNode<NodeInfo> | undefined = undefined;
+
+  currentPathExecution: RunNodeResult<NodeInfo>[] | undefined = undefined;
+
+  clearPathExecution = () => {
+    if (this.currentPathExecution) {
+      this.currentPathExecution.forEach((path) => {
+        if (path.node && path.node.domElement) {
+          (path.node.domElement.firstChild as HTMLElement)?.classList.remove(
+            'bg-blue-500'
+          );
+        }
+      });
+      const domCircle = this.testCircle?.domElement as HTMLElement;
+      const domMessage = this.message?.domElement as HTMLElement;
+      domCircle.style.display = 'none';
+      domMessage.style.display = 'none';
+      domCircle.classList.add('hidden');
+      domMessage.classList.add('hidden');
+      this.currentPathExecution = undefined;
+    }
   };
 
   getThumbNode = (thumbType: ThumbType, node: INodeComponent<NodeInfo>) => {
@@ -1186,8 +1216,19 @@ export class AppElement extends HTMLElement {
         class: `${button} relative ',//top-[60px]`,
         click: (event) => {
           event.preventDefault();
+          this.clearPathExecution();
           if (this.canvasApp?.elements) {
-            run<NodeInfo>(this.canvasApp?.elements, animatePath);
+            run<NodeInfo>(
+              this.canvasApp?.elements,
+              animatePath,
+              (input, pathExecution) => {
+                if (pathExecution) {
+                  (pathRange.domElement as HTMLInputElement).value = '0';
+                  this.pathExecutions.push(pathExecution);
+                  console.log('run finished', input, pathExecution);
+                }
+              }
+            );
           }
           return false;
         },
@@ -1215,6 +1256,131 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
+      ''
+    );
+
+    this.testCircle = createElement(
+      'div',
+      {
+        class: `absolute bg-blue-500 top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded hidden`,
+        style: {
+          'clip-path': 'circle(50%)',
+        },
+      },
+      canvasApp?.canvas.domElement,
+      ''
+    );
+
+    // eslint-disable-next-line prefer-const
+    this.message = createElement(
+      'div',
+      {
+        class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
+        style: {
+          'clip-path':
+            'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+        },
+      },
+      canvasApp?.canvas.domElement,
+      ''
+    );
+
+    this.messageText = createElement(
+      'div',
+      {
+        class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+      },
+      this.message.domElement,
+      ''
+    );
+
+    const bgRange = createElement(
+      'div',
+      {
+        class:
+          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 flex items-center z-10', //top-[60px]',
+        name: 'path-track-bg',
+      },
+      rootElement,
+      ''
+    );
+
+    const pathRange = createElement(
+      'input',
+      {
+        type: 'range',
+        class: 'p-2 m-2 relative w-full', //top-[60px]',
+        name: 'path-track',
+        min: '0',
+        max: '100000',
+        value: 1,
+        input: (event) => {
+          const lastPathExecution =
+            this.pathExecutions[this.pathExecutions.length - 1];
+          if (lastPathExecution) {
+            this.currentPathExecution = lastPathExecution;
+            const value = parseInt((event.target as HTMLInputElement).value);
+            if (!isNaN(value)) {
+              const stepSize = 100000 / (lastPathExecution.length - 1);
+              const step = Math.floor(value / stepSize);
+              const pathStep = lastPathExecution[step];
+              const node = pathStep.node;
+              lastPathExecution.forEach((path) => {
+                if (path.node && path.node.domElement) {
+                  (
+                    (path.node.domElement as HTMLElement)
+                      .firstChild as HTMLElement
+                  ).classList.remove('bg-blue-500');
+                }
+              });
+              if (node && node.domElement) {
+                (
+                  (node.domElement as HTMLElement).firstChild as HTMLElement
+                ).classList.add('bg-blue-500');
+
+                const pointValue = value - step * stepSize;
+                const percentage = pointValue / stepSize;
+
+                if (value % stepSize !== 0 && step < lastPathExecution.length) {
+                  (this.testCircle?.domElement as HTMLElement).classList.remove(
+                    'hidden'
+                  );
+                  (this.message?.domElement as HTMLElement).classList.remove(
+                    'hidden'
+                  );
+
+                  const nextNodeId = lastPathExecution[step + 1].nodeId;
+                  pathStep.node.connections.forEach((connection) => {
+                    if (
+                      connection.startNode?.id === pathStep.nodeId &&
+                      connection.endNode?.id === nextNodeId
+                    ) {
+                      const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+                        percentage,
+                        connection,
+                        connection.startNode,
+                        connection.endNode
+                      );
+                      const domCircle = this.testCircle
+                        ?.domElement as HTMLElement;
+                      const domMessage = this.message
+                        ?.domElement as HTMLElement;
+                      const domMessageText = this.messageText
+                        ?.domElement as HTMLElement;
+                      domCircle.style.display = 'flex';
+                      domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                      domMessage.style.display = 'flex';
+                      domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                      domMessageText.textContent = pathStep.output.toString();
+                    }
+                  });
+                }
+              }
+            }
+          }
+        },
+      },
+      bgRange.domElement,
       ''
     );
 
