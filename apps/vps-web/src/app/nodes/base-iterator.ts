@@ -10,7 +10,10 @@ import {
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
+import {
+  runNodeFromThumb,
+  RunNodeResult,
+} from '../simple-flow-engine/simple-flow-engine';
 
 export const SubOutputActionType = {
   pushToResult: 'pushToResult',
@@ -118,7 +121,10 @@ export const getBaseIterator = <T>(
     }
     return;
   };
-  const compute = (input: string | any[]) => {
+  const compute = (
+    input: string | any[],
+    pathExecution?: RunNodeResult<T>[]
+  ) => {
     const mapResults: any[] = [];
     return new Promise((resolve, reject) => {
       let mapLoop = 0;
@@ -170,6 +176,20 @@ export const getBaseIterator = <T>(
                       undefined,
                       (input: string | any[]) => {
                         if (connection.startNodeThumb) {
+                          // TODO : push result to pathExecution
+                          if (pathExecution && connection.startNode) {
+                            pathExecution.push({
+                              nodeId: node.id,
+                              connection: connection,
+                              node: connection.startNode,
+                              endNode: connection.endNode,
+                              path: 'test',
+                              result: true,
+                              input: value,
+                              output: input,
+                            });
+                          }
+
                           runNodeFromThumb(
                             connection.startNodeThumb,
                             animatePathFromThumb,
@@ -189,6 +209,7 @@ export const getBaseIterator = <T>(
                               ) {
                                 // TODO: implement
                               }
+
                               mapLoop++;
 
                               if (mapLoop < values.length) {
@@ -238,7 +259,8 @@ export const getBaseIterator = <T>(
                                 );
                               }
                             },
-                            input
+                            input,
+                            pathExecution
                           );
                         }
                       },

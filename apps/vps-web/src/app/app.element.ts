@@ -119,7 +119,7 @@ export class AppElement extends HTMLElement {
       this.currentPathExecution.forEach((path) => {
         if (path.node && path.node.domElement) {
           (path.node.domElement.firstChild as HTMLElement)?.classList.remove(
-            'bg-blue-500'
+            'bg-blue-400'
           );
         }
       });
@@ -1330,13 +1330,13 @@ export class AppElement extends HTMLElement {
                   (
                     (path.node.domElement as HTMLElement)
                       .firstChild as HTMLElement
-                  ).classList.remove('bg-blue-500');
+                  ).classList.remove('bg-blue-400');
                 }
               });
               if (node && node.domElement) {
                 (
                   (node.domElement as HTMLElement).firstChild as HTMLElement
-                ).classList.add('bg-blue-500');
+                ).classList.add('bg-blue-400');
 
                 const pointValue = value - step * stepSize;
                 const percentage = pointValue / stepSize;
@@ -1350,30 +1350,50 @@ export class AppElement extends HTMLElement {
                   );
 
                   const nextNodeId = lastPathExecution[step + 1].nodeId;
-                  pathStep.node.connections.forEach((connection) => {
-                    if (
-                      connection.startNode?.id === pathStep.nodeId &&
-                      connection.endNode?.id === nextNodeId
-                    ) {
-                      const bezierCurvePoints = getPointOnConnection<NodeInfo>(
-                        percentage,
-                        connection,
-                        connection.startNode,
-                        connection.endNode
-                      );
-                      const domCircle = this.testCircle
-                        ?.domElement as HTMLElement;
-                      const domMessage = this.message
-                        ?.domElement as HTMLElement;
-                      const domMessageText = this.messageText
-                        ?.domElement as HTMLElement;
-                      domCircle.style.display = 'flex';
-                      domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                      domMessage.style.display = 'flex';
-                      domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                      domMessageText.textContent = pathStep.output.toString();
-                    }
-                  });
+                  if (pathStep.endNode && pathStep.connection) {
+                    const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+                      percentage,
+                      pathStep.connection,
+                      node,
+                      pathStep.endNode
+                    );
+                    const domCircle = this.testCircle
+                      ?.domElement as HTMLElement;
+                    const domMessage = this.message?.domElement as HTMLElement;
+                    const domMessageText = this.messageText
+                      ?.domElement as HTMLElement;
+                    domCircle.style.display = 'flex';
+                    domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                    domMessage.style.display = 'flex';
+                    domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                    domMessageText.textContent = pathStep.output.toString();
+                  } else {
+                    pathStep.node.connections.forEach((connection) => {
+                      if (
+                        connection.startNode?.id === pathStep.nodeId &&
+                        connection.endNode?.id === nextNodeId
+                      ) {
+                        const bezierCurvePoints =
+                          getPointOnConnection<NodeInfo>(
+                            percentage,
+                            connection,
+                            connection.startNode,
+                            connection.endNode
+                          );
+                        const domCircle = this.testCircle
+                          ?.domElement as HTMLElement;
+                        const domMessage = this.message
+                          ?.domElement as HTMLElement;
+                        const domMessageText = this.messageText
+                          ?.domElement as HTMLElement;
+                        domCircle.style.display = 'flex';
+                        domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                        domMessage.style.display = 'flex';
+                        domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                        domMessageText.textContent = pathStep.output.toString();
+                      }
+                    });
+                  }
                 }
               }
             }

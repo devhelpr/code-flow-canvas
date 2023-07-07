@@ -18,6 +18,8 @@ export interface RunNodeResult<T> {
   nodeId: string;
   path: string;
   node: IRectNodeComponent<T>;
+  endNode?: IRectNodeComponent<T>;
+  connection?: IConnectionNodeComponent<T>;
 }
 
 export const runNode = <T>(
@@ -57,7 +59,7 @@ export const runNode = <T>(
   let result: any = false;
   let followPath: string | undefined = undefined;
   if (formInfo?.compute) {
-    const computeResult = formInfo.compute(input ?? '');
+    const computeResult = formInfo.compute(input ?? '', pathExecution);
     result = computeResult.result;
     followPath = computeResult.followPath;
   } else {
@@ -86,7 +88,7 @@ export const runNode = <T>(
         if (formInfo.computeAsync) {
           return new Promise((resolve, reject) => {
             formInfo
-              .computeAsync(input)
+              .computeAsync(input, pathExecution)
               .then((computeResult: any) => {
                 result = computeResult.result;
                 followPath = computeResult.followPath;
@@ -94,7 +96,7 @@ export const runNode = <T>(
                 if (pathExecution) {
                   pathExecution.push({
                     input: input ?? '',
-                    output: result,
+                    output: computeResult.output ?? input,
                     result: result,
                     nodeId: node.id,
                     path: followPath ?? '',
@@ -113,7 +115,7 @@ export const runNode = <T>(
               });
           });
         } else if (formInfo.compute) {
-          const computeResult = formInfo.compute(input);
+          const computeResult = formInfo.compute(input, pathExecution);
           result = computeResult.result;
           followPath = computeResult.followPath;
         } else {
@@ -242,7 +244,8 @@ export const runNodeFromThumb = <T>(
     followPathByName?: string
   ) => void,
   onStopped?: (input: string | any[]) => void,
-  input?: string | any[]
+  input?: string | any[],
+  pathExecution?: RunNodeResult<T>[]
 ) => {
   //let result: any = false;
   let followPath: string | undefined = undefined;
@@ -262,6 +265,17 @@ export const runNodeFromThumb = <T>(
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
+
+              if (pathExecution) {
+                pathExecution.push({
+                  input: input ?? '',
+                  output: computeResult.output ?? input,
+                  result: result,
+                  nodeId: node.id,
+                  path: followPath ?? '',
+                  node: node as unknown as IRectNodeComponent<T>,
+                });
+              }
 
               resolve({
                 result: true,
@@ -288,6 +302,17 @@ export const runNodeFromThumb = <T>(
           result: false,
           output: result,
         };
+      }
+
+      if (pathExecution) {
+        pathExecution.push({
+          input: input ?? '',
+          output: result,
+          result: !!result,
+          nodeId: node.id,
+          path: followPath ?? '',
+          node: node as unknown as IRectNodeComponent<T>,
+        });
       }
 
       return {
