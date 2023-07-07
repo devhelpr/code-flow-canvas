@@ -2,6 +2,7 @@ import {
   ElementNodeMap,
   IConnectionNodeComponent,
   INodeComponent,
+  IRectNodeComponent,
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -10,14 +11,22 @@ registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
 });
 
+export interface RunNodeResult {
+  input: string | any[];
+  output: string | any[];
+  result: boolean;
+  nodeId: string;
+  path: string;
+}
+
 export const runNode = <T>(
-  node: INodeComponent<T>,
+  node: IRectNodeComponent<T>,
   animatePath: (
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     color: string,
     onNextNode?: (
       nodeId: string,
-      node: INodeComponent<T>,
+      node: IRectNodeComponent<T>,
       input: string | any[]
     ) =>
       | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -30,8 +39,9 @@ export const runNode = <T>(
     input?: string | any[],
     followPathByName?: string
   ) => void,
-  onStopped?: (input: string | any[]) => void,
-  input?: string
+  onStopped?: (input: string | any[], pathExecution?: RunNodeResult[]) => void,
+  input?: string,
+  pathExecution?: RunNodeResult[]
 ) => {
   const formInfo = node.nodeInfo as unknown as any;
   console.log(
@@ -51,8 +61,17 @@ export const runNode = <T>(
     followPath = undefined;
   }
   if (result !== undefined) {
+    if (pathExecution) {
+      pathExecution.push({
+        input: input ?? '',
+        output: result,
+        result: !!result,
+        nodeId: node.id,
+        path: followPath ?? '',
+      });
+    }
     animatePath(
-      node as unknown as INodeComponent<T>,
+      node,
       'white',
       (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
         console.log('Next nodeId', nodeId, node, input);
@@ -66,6 +85,16 @@ export const runNode = <T>(
               .then((computeResult: any) => {
                 result = computeResult.result;
                 followPath = computeResult.followPath;
+
+                if (pathExecution) {
+                  pathExecution.push({
+                    input: input ?? '',
+                    output: result,
+                    result: result,
+                    nodeId: node.id,
+                    path: followPath ?? '',
+                  });
+                }
 
                 resolve({
                   result: true,
@@ -93,6 +122,16 @@ export const runNode = <T>(
           };
         }
 
+        if (pathExecution) {
+          pathExecution.push({
+            input: input ?? '',
+            output: result,
+            result: !!result,
+            nodeId: node.id,
+            path: followPath ?? '',
+          });
+        }
+
         return {
           result: true,
           output: result ?? input,
@@ -101,7 +140,7 @@ export const runNode = <T>(
       },
       (input: string | any[]) => {
         if (onStopped) {
-          onStopped(input);
+          onStopped(input, pathExecution);
         }
       },
       result,
@@ -114,11 +153,11 @@ export const runNode = <T>(
 export const run = <T>(
   nodes: ElementNodeMap<T>,
   animatePath: (
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     color: string,
     onNextNode?: (
       nodeId: string,
-      node: INodeComponent<T>,
+      node: IRectNodeComponent<T>,
       input: string | any[]
     ) =>
       | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -146,7 +185,7 @@ export const run = <T>(
 
   const nodeList = Array.from(nodes);
   nodes.forEach((node) => {
-    const nodeComponent = node as unknown as INodeComponent<T>;
+    const nodeComponent = node as unknown as IRectNodeComponent<T>;
     const connectionsFromEndNode = nodeList.filter((e) => {
       const element = e[1] as IConnectionNodeComponent<T>;
       return element.endNode?.id === node.id;
@@ -155,7 +194,17 @@ export const run = <T>(
       nodeComponent.nodeType !== 'connection' &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0)
     ) {
-      runNode<T>(nodeComponent, animatePath);
+      runNode<T>(
+        nodeComponent,
+        animatePath,
+        (input: string | any[], pathExecution?: RunNodeResult[]) => {
+          setTimeout(() => {
+            console.log('running flow stopped', pathExecution);
+          }, 0);
+        },
+        undefined,
+        []
+      );
     }
   });
   return true;

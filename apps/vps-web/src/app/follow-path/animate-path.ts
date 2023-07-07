@@ -20,11 +20,11 @@ import {
 
 export type FollowPathFunction = <T>(
   canvasApp: CanvasAppInstance,
-  node: INodeComponent<T>,
+  node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: (
     nodeId: string,
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -70,7 +70,7 @@ export const animatePathForNodeConnectionPairs = <T>(
   color: string,
   onNextNode?: (
     nodeId: string,
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -369,11 +369,11 @@ export const animatePathForNodeConnectionPairs = <T>(
 
 export const animatePath: FollowPathFunction = <T>(
   canvasApp: CanvasAppInstance,
-  node: INodeComponent<T>,
+  node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: (
     nodeId: string,
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -424,7 +424,7 @@ export const animatePathFromThumb = <T>(
   color: string,
   onNextNode?: (
     nodeId: string,
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }

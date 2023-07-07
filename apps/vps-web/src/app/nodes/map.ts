@@ -1,15 +1,16 @@
 import {
   INodeComponent,
+  IRectNodeComponent,
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { getBaseIterator, SubOutputActionType } from './base-iterator';
 
 export type AnimatePathFunction = <T>(
-  node: INodeComponent<T>,
+  node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: (
     nodeId: string,
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }

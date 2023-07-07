@@ -220,64 +220,65 @@ export class AppElement extends HTMLElement {
               if (node.nodeType === 'connection') {
                 let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
                 let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
-                if (node.startNodeId) {
-                  const startElement = elementList.find((e) => {
-                    const element = e[1] as IElementNode<NodeInfo>;
-                    return element.id === node.startNodeId;
-                  });
-                  if (startElement) {
-                    start =
-                      startElement[1] as unknown as INodeComponent<NodeInfo>;
+                if (node.startNodeId && node.endNodeId) {
+                  if (node.startNodeId) {
+                    const startElement = elementList.find((e) => {
+                      const element = e[1] as IElementNode<NodeInfo>;
+                      return element.id === node.startNodeId;
+                    });
+                    if (startElement) {
+                      start =
+                        startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                    }
                   }
-                }
-                if (node.endNodeId) {
-                  const endElement = elementList.find((e) => {
-                    const element = e[1] as IElementNode<NodeInfo>;
-                    return element.id === node.endNodeId;
-                  });
-                  if (endElement) {
-                    end = endElement[1] as unknown as INodeComponent<NodeInfo>;
+                  if (node.endNodeId) {
+                    const endElement = elementList.find((e) => {
+                      const element = e[1] as IElementNode<NodeInfo>;
+                      return element.id === node.endNodeId;
+                    });
+                    if (endElement) {
+                      end =
+                        endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                    }
                   }
-                }
 
-                const curve = canvasApp.createCubicBezier(
-                  start?.x ?? 0,
-                  start?.y ?? 0,
-                  end?.x ?? 0,
-                  end?.y ?? 0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  false,
-                  undefined,
-                  node.id
-                );
-
-                curve.nodeComponent.isControlled = true;
-                curve.nodeComponent.nodeInfo = {};
-
-                if (start && curve.nodeComponent) {
-                  curve.nodeComponent.startNode = start;
-                  curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
-                    node.startThumbName ?? '',
-                    start
+                  const curve = canvasApp.createCubicBezier(
+                    start?.x ?? 0,
+                    start?.y ?? 0,
+                    end?.x ?? 0,
+                    end?.y ?? 0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    false,
+                    undefined,
+                    node.id
                   );
-                }
 
-                if (end && curve.nodeComponent) {
-                  curve.nodeComponent.endNode = end;
-                  curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
-                    node.endThumbName ?? '',
-                    end
-                  );
-                }
-                if (start && end) {
-                  start.connections?.push(curve.nodeComponent);
-                  end.connections?.push(curve.nodeComponent);
-                }
-                if (curve.nodeComponent.update) {
-                  curve.nodeComponent.update();
+                  curve.nodeComponent.isControlled = true;
+                  curve.nodeComponent.nodeInfo = {};
+
+                  if (start && curve.nodeComponent) {
+                    curve.nodeComponent.startNode = start;
+                    curve.nodeComponent.startNodeThumb =
+                      this.getThumbNodeByName(node.startThumbName ?? '', start);
+                  }
+
+                  if (end && curve.nodeComponent) {
+                    curve.nodeComponent.endNode = end;
+                    curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
+                      node.endThumbName ?? '',
+                      end
+                    );
+                  }
+                  if (start && end) {
+                    start.connections?.push(curve.nodeComponent);
+                    end.connections?.push(curve.nodeComponent);
+                  }
+                  if (curve.nodeComponent.update) {
+                    curve.nodeComponent.update();
+                  }
                 }
               }
             });
@@ -1088,11 +1089,11 @@ export class AppElement extends HTMLElement {
     // );
 
     const animatePath = (
-      node: INodeComponent<NodeInfo>,
+      node: IRectNodeComponent<NodeInfo>,
       color: string,
       onNextNode?: (
         nodeId: string,
-        node: INodeComponent<NodeInfo>,
+        node: IRectNodeComponent<NodeInfo>,
         input: string | any[]
       ) =>
         | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -1138,7 +1139,7 @@ export class AppElement extends HTMLElement {
       color: string,
       onNextNode?: (
         nodeId: string,
-        node: INodeComponent<NodeInfo>,
+        node: IRectNodeComponent<NodeInfo>,
         input: string | any[]
       ) =>
         | { result: boolean; output: string | any[]; followPathByName?: string }

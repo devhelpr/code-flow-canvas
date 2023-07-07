@@ -7,6 +7,7 @@ import {
   createCanvasApp,
   CanvasAppInstance,
   IThumbNodeComponent,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
@@ -43,11 +44,11 @@ export const getBaseIterator = <T>(
   nodeTitle: string,
   onSubOutputActionType: (input: string) => SubOutputActionType,
   animatePath: (
-    node: INodeComponent<T>,
+    node: IRectNodeComponent<T>,
     color: string,
     onNextNode?: (
       nodeId: string,
-      node: INodeComponent<T>,
+      node: IRectNodeComponent<T>,
       input: string | any[]
     ) =>
       | { result: boolean; output: string | any[]; followPathByName?: string }
@@ -129,7 +130,7 @@ export const getBaseIterator = <T>(
 
       if (inputNode) {
         animatePath(
-          inputNode,
+          inputNode as IRectNodeComponent<NodeInfo>,
           'white',
           undefined,
           (input: string | any[]) => {
