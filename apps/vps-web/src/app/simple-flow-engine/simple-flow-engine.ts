@@ -17,6 +17,7 @@ export interface RunNodeResult<T> {
   result: boolean;
   nodeId: string;
   path: string;
+  scopeNode?: IRectNodeComponent<T>;
   node: IRectNodeComponent<T>;
   endNode?: IRectNodeComponent<T>;
   connection?: IConnectionNodeComponent<T>;
@@ -245,7 +246,8 @@ export const runNodeFromThumb = <T>(
   ) => void,
   onStopped?: (input: string | any[]) => void,
   input?: string | any[],
-  pathExecution?: RunNodeResult<T>[]
+  pathExecution?: RunNodeResult<T>[],
+  scopeNode?: IRectNodeComponent<T>
 ) => {
   //let result: any = false;
   let followPath: string | undefined = undefined;
@@ -269,6 +271,7 @@ export const runNodeFromThumb = <T>(
               if (pathExecution) {
                 pathExecution.push({
                   input: input ?? '',
+                  scopeNode,
                   output: computeResult.output ?? input,
                   result: result,
                   nodeId: node.id,
@@ -310,6 +313,7 @@ export const runNodeFromThumb = <T>(
           output: result,
           result: !!result,
           nodeId: node.id,
+          scopeNode,
           path: followPath ?? '',
           node: node as unknown as IRectNodeComponent<T>,
         });

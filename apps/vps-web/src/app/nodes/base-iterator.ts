@@ -181,6 +181,7 @@ export const getBaseIterator = <T>(
                             pathExecution.push({
                               nodeId: node.id,
                               connection: connection,
+                              scopeNode: connection.startNode,
                               node: connection.startNode,
                               endNode: connection.endNode,
                               path: 'test',
@@ -260,7 +261,8 @@ export const getBaseIterator = <T>(
                               }
                             },
                             input,
-                            pathExecution
+                            pathExecution,
+                            connection.startNode
                           );
                         }
                       },

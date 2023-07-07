@@ -84,6 +84,7 @@ export class AppElement extends HTMLElement {
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
   pathExecutions: RunNodeResult<NodeInfo>[][] = [];
+  scopeNodeDomElement: HTMLElement | undefined = undefined;
 
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
@@ -115,6 +116,9 @@ export class AppElement extends HTMLElement {
   currentPathExecution: RunNodeResult<NodeInfo>[] | undefined = undefined;
 
   clearPathExecution = () => {
+    if (this.scopeNodeDomElement) {
+      this.scopeNodeDomElement.classList.remove('bg-blue-300');
+    }
     if (this.currentPathExecution) {
       this.currentPathExecution.forEach((path) => {
         if (path.node && path.node.domElement) {
@@ -1318,6 +1322,10 @@ export class AppElement extends HTMLElement {
           const lastPathExecution =
             this.pathExecutions[this.pathExecutions.length - 1];
           if (lastPathExecution) {
+            if (this.scopeNodeDomElement) {
+              this.scopeNodeDomElement.classList.remove('bg-blue-300');
+              this.scopeNodeDomElement = undefined;
+            }
             this.currentPathExecution = lastPathExecution;
             const value = parseInt((event.target as HTMLInputElement).value);
             if (!isNaN(value)) {
@@ -1325,6 +1333,12 @@ export class AppElement extends HTMLElement {
               const step = Math.floor(value / stepSize);
               const pathStep = lastPathExecution[step];
               const node = pathStep.node;
+              if (pathStep.scopeNode) {
+                this.scopeNodeDomElement = (
+                  pathStep.scopeNode.domElement as HTMLElement
+                ).firstChild as HTMLElement;
+                this.scopeNodeDomElement.classList.add('bg-blue-300');
+              }
               lastPathExecution.forEach((path) => {
                 if (path.node && path.node.domElement) {
                   (
