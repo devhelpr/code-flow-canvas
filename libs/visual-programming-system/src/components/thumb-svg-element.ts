@@ -42,7 +42,8 @@ export const createThumbSVGElement = <T>(
   pathHiddenElement?: IElementNode<T>,
   disableInteraction?: boolean,
   label?: string,
-  thumbShape?: 'circle' | 'diamond'
+  thumbShape?: 'circle' | 'diamond',
+  canvasUpdated?: () => void
 ) => {
   let interactionInfo: IPointerDownResult = {
     xOffsetWithinElementOnFirstClick: 0,
@@ -253,7 +254,9 @@ export const createThumbSVGElement = <T>(
               y - 50,
               x - 50,
               y - 50,
-              true
+              true,
+              undefined,
+              canvasUpdated
             );
 
             if (curve && canvas) {
@@ -539,6 +542,13 @@ export const createThumbSVGElement = <T>(
       | SVGElement;
     circleDomElement.classList.add('pointer-events-auto');
     circleDomElement.classList.remove('pointer-events-none');
+
+    if (
+      nodeComponent.parent &&
+      nodeComponent.parent.nodeType === 'connection'
+    ) {
+      nodeComponent.parent.update?.();
+    }
   };
 
   const circleDomElement = circleElement?.domElement as unknown as

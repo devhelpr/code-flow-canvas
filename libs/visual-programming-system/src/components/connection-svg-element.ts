@@ -579,6 +579,17 @@ export const createConnectionSVGElement = <T>(
       endY: end.y,
     };
 
+    if (nodeComponent && !nodeComponent.controlPoints) {
+      if (isQuadratic) {
+        nodeComponent.controlPoints = [{ x: 0, y: 0 }];
+      } else {
+        nodeComponent.controlPoints = [
+          { x: 0, y: 0 },
+          { x: 0, y: 0 },
+        ];
+      }
+    }
+
     if (nodeComponent && nodeComponent.controlPoints) {
       if (isQuadratic) {
         if (nodeComponent.controlPoints.length === 1) {
@@ -650,6 +661,12 @@ export const createConnectionSVGElement = <T>(
           nodeComponent
         );
       }
+      nodeComponent.x = points.beginX;
+      nodeComponent.y = points.beginY;
+      nodeComponent.endX = points.endX;
+      nodeComponent.endY = points.endY;
+
+      //console.log('connection update', nodeComponent);
     }
 
     (
@@ -673,5 +690,7 @@ export const createConnectionSVGElement = <T>(
 
   nodeComponent.x = 0;
   nodeComponent.y = 0;
+  nodeComponent.endX = 0;
+  nodeComponent.endY = 0;
   return nodeComponent;
 };

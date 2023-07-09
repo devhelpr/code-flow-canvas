@@ -161,6 +161,7 @@ export const pointerUp = <T>(
           console.log(
             'update pointerUp',
             element.id,
+            element,
             x,
             y,
             interactionInfo.xOffsetWithinElementOnFirstClick,
@@ -179,7 +180,11 @@ export const pointerUp = <T>(
         }
 
         if (element.updateEnd) {
+          console.log('updateEnd', element);
           element.updateEnd();
+        } else if (element.parent && element.parent.updateEnd) {
+          console.log('updateEnd parent', element.parent);
+          element.parent.updateEnd();
         }
       }
     }

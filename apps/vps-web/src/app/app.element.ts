@@ -254,7 +254,8 @@ export class AppElement extends HTMLElement {
               if (node.nodeType === 'connection') {
                 let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
                 let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
-                if (node.startNodeId && node.endNodeId) {
+                //if (node.startNodeId && node.endNodeId) {
+                {
                   if (node.startNodeId) {
                     const startElement = elementList.find((e) => {
                       const element = e[1] as IElementNode<NodeInfo>;
@@ -275,16 +276,27 @@ export class AppElement extends HTMLElement {
                         endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
                     }
                   }
+                  let c1x = 0;
+                  let c1y = 0;
+                  let c2x = 0;
+                  let c2y = 0;
+
+                  if (node.controlPoints && node.controlPoints.length > 0) {
+                    c1x = node.controlPoints[0].x ?? 0;
+                    c1y = node.controlPoints[0].y ?? 0;
+                    c2x = node.controlPoints[1].x ?? 0;
+                    c2y = node.controlPoints[1].y ?? 0;
+                  }
 
                   const curve = canvasApp.createCubicBezier(
-                    start?.x ?? 0,
-                    start?.y ?? 0,
-                    end?.x ?? 0,
-                    end?.y ?? 0,
-                    0,
-                    0,
-                    0,
-                    0,
+                    start?.x ?? node.x ?? 0,
+                    start?.y ?? node.y ?? 0,
+                    end?.x ?? node.endX ?? 0,
+                    end?.y ?? node.endY ?? 0,
+                    c1x,
+                    c1y,
+                    c2x,
+                    c2y,
                     false,
                     undefined,
                     node.id
@@ -306,8 +318,10 @@ export class AppElement extends HTMLElement {
                       end
                     );
                   }
-                  if (start && end) {
+                  if (start) {
                     start.connections?.push(curve.nodeComponent);
+                  }
+                  if (end) {
                     end.connections?.push(curve.nodeComponent);
                   }
                   if (curve.nodeComponent.update) {
@@ -331,6 +345,7 @@ export class AppElement extends HTMLElement {
     const store = () => {
       if (this.storageProvider) {
         const nodesList = serializeFlow();
+        console.log('nodesList', nodesList);
         const flow: Flow<NodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
@@ -706,6 +721,8 @@ export class AppElement extends HTMLElement {
             id: connection.id,
             x: connection.x,
             y: connection.y,
+            endX: connection.endX,
+            endY: connection.endY,
             startNodeId: connection.startNode?.id,
             endNodeId: connection.endNode?.id,
             startThumbName: connection.startNodeThumb?.thumbName,

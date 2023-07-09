@@ -64,6 +64,8 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
 }
 
 export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
+  endX: number;
+  endY: number;
   lineType?: LineType;
   controlPoints?: { x: number; y: number }[];
   connectionStartNodeThumb?: IThumbNodeComponent<T>;

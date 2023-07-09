@@ -302,7 +302,8 @@ export const createRect = <T>(
         pathHiddenElement,
         disableInteraction,
         thumb.label,
-        thumb.thumbShape ?? 'circle'
+        thumb.thumbShape ?? 'circle',
+        canvasUpdated
       );
 
       thumbConnectorElement.pathName = thumb.pathName;
