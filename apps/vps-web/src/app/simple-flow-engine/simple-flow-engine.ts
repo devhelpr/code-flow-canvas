@@ -247,7 +247,8 @@ export const runNodeFromThumb = <T>(
   onStopped?: (input: string | any[]) => void,
   input?: string | any[],
   pathExecution?: RunNodeResult<T>[],
-  scopeNode?: IRectNodeComponent<T>
+  scopeNode?: IRectNodeComponent<T>,
+  loopIndex?: number
 ) => {
   //let result: any = false;
   let followPath: string | undefined = undefined;
@@ -263,7 +264,7 @@ export const runNodeFromThumb = <T>(
       if (formInfo.computeAsync) {
         return new Promise((resolve, reject) => {
           formInfo
-            .computeAsync(input)
+            .computeAsync(input, pathExecution, loopIndex)
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
@@ -292,7 +293,7 @@ export const runNodeFromThumb = <T>(
             });
         });
       } else if (formInfo.compute) {
-        const computeResult = formInfo.compute(input);
+        const computeResult = formInfo.compute(input, pathExecution, loopIndex);
         result = computeResult.result;
         followPath = computeResult.followPath;
       } else {

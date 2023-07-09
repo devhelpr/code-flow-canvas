@@ -262,7 +262,8 @@ export const getBaseIterator = <T>(
                             },
                             input,
                             pathExecution,
-                            connection.startNode
+                            connection.startNode,
+                            mapLoop
                           );
                         }
                       },

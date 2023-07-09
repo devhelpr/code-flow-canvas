@@ -12,6 +12,7 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
+import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
 export const getExpression = (updated?: () => void) => {
   let node: INodeComponent<NodeInfo>;
@@ -22,7 +23,11 @@ export const getExpression = (updated?: () => void) => {
     currentValue = 0;
     return;
   };
-  const compute = (input: string) => {
+  const compute = (
+    input: string,
+    pathExecution?: RunNodeResult<NodeInfo>[],
+    loopIndex?: number
+  ) => {
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
@@ -36,7 +41,7 @@ export const getExpression = (updated?: () => void) => {
       ).bind(compiledExpressionInfo.bindings);
       result = runExpression(
         expressionFunction,
-        { input: input, currentValue: currentValue },
+        { input: input, currentValue: currentValue, index: loopIndex ?? 0 },
         true,
         compiledExpressionInfo.payloadProperties
       );
