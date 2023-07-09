@@ -29,7 +29,7 @@ export const getNodeConnectionPairById = <T>(
           if (connectionNode.startNode?.id !== start.id) {
             return;
           }
-          let end: INodeComponent<T> | undefined = undefined;
+          let end: IRectNodeComponent<T> | undefined = undefined;
           connection = connectionNode as unknown as IConnectionNodeComponent<T>;
 
           if (connection && connection.endNode) {
@@ -108,7 +108,7 @@ export const getNodeConnectionPairsFromThumb = <T>(
             return;
           }
 
-          let end: INodeComponent<T> | undefined = undefined;
+          let end: IRectNodeComponent<T> | undefined = undefined;
           connection = connectionNode;
 
           if (connection && connection.endNode) {
