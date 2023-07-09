@@ -61,7 +61,8 @@ template.innerHTML = `
 
 const button =
   'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap';
-const menubar = 'fixed top-0 z-20 flex flex-row items-center justify-start';
+const menubar =
+  'fixed top-0 z-20 flex flex-row flex-nowrap items-center justify-start height-[50px] overflow-hidden bg-slate-700 w-full';
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -1459,8 +1460,8 @@ export class AppElement extends HTMLElement {
       'div',
       {
         id: 'textAreaContainer',
-        class:
-          'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
+        class: 'absolute w-1/4 h-[300px] z-50 p-2 bg-slate-400 hidden',
+        //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
       rootElement
     );
@@ -1495,7 +1496,7 @@ export class AppElement extends HTMLElement {
       const nodeElementId = getSelectedNode();
       console.log('selected nodeElement', nodeElementId);
       if (nodeElementId === currentNodeElementId) {
-        return;
+        //return;
       }
 
       removeFormElement();
@@ -1613,6 +1614,37 @@ export class AppElement extends HTMLElement {
         (
           sidebarContainer.domElement as unknown as HTMLElement
         ).classList.remove('hidden');
+
+        const sidebar = sidebarContainer.domElement as unknown as HTMLElement;
+        const nodeComponent = node as INodeComponent<NodeInfo>;
+
+        const camera = this.canvasApp?.getCamera();
+
+        const xCamera = camera?.x ?? 0;
+        const yCamera = camera?.y ?? 0;
+        const scaleCamera = camera?.scale ?? 1;
+        const xNode = nodeComponent.x ?? 0;
+        const yNode = nodeComponent.y ?? 0;
+        const widthNode = nodeComponent.width ?? 0;
+        const heightNode = nodeComponent.height ?? 0;
+
+        console.log(
+          'selectedNode',
+          xCamera,
+          yCamera,
+          scaleCamera,
+          xNode,
+          yNode,
+          widthNode,
+          heightNode
+        );
+
+        sidebar.style.left = `${
+          xCamera + xNode * scaleCamera + (widthNode + 100) * scaleCamera
+        }px`;
+        sidebar.style.top = `${
+          yCamera + yNode * scaleCamera + 40 * scaleCamera
+        }px`;
       } else {
         selectedNode.domElement.textContent = '';
         (sidebarContainer.domElement as unknown as HTMLElement).classList.add(

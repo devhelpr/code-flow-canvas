@@ -439,6 +439,13 @@ export const createCanvasApp = <T>(
     ) => {
       onClickCanvas = onClickCanvasHandler;
     },
+    getCamera: () => {
+      return {
+        x: xCamera,
+        y: yCamera,
+        scale: scaleCamera,
+      };
+    },
     setCamera: (x: number, y: number, scale: number) => {
       xCamera = x;
       yCamera = y;
@@ -502,7 +509,7 @@ export const createCanvasApp = <T>(
         const rootWidth = rootElement.clientWidth;
         const rootHeight = rootElement.clientHeight;
 
-        const width = maxX - minX + 20;
+        const width = maxX - minX + 20 + 20 + 80;
         const height = maxY - minY;
         const scale = rootWidth / width;
 
