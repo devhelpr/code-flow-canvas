@@ -1,8 +1,4 @@
-import {
-  createEffect as createTestEffect,
-  createNamedSignal,
-  createSignal,
-} from '@devhelpr/visual-programming-system';
+import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 
 export interface InputFieldProps {
   formId: string;
@@ -12,17 +8,18 @@ export interface InputFieldProps {
 }
 
 export const InputField = (props: InputFieldProps) => {
-  const [value, setValue] = createSignal(props.value);
-  const [currentValue, setCurrentValue] = createNamedSignal(
-    props.formId,
-    props.value
-  );
-  createTestEffect(() => {
-    console.log('createTestEffect', currentValue());
+  let inputRef: HTMLInputElement | null = null;
+
+  trackNamedSignal(`${props.formId}_${props.fieldName}`, (value) => {
+    console.log('trackNamedSignal', props.formId, props.fieldName, value);
+    if (inputRef) {
+      inputRef.value = value;
+    }
   });
 
   return (
     <input
+      reference={(reference: HTMLInputElement) => (inputRef = reference)}
       id={props.fieldName}
       type="text"
       class="block w-full p-1"

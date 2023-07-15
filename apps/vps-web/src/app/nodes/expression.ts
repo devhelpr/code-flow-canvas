@@ -1,6 +1,5 @@
 import {
   createElement,
-  createNamedSignal,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -75,6 +74,9 @@ export const getExpression = (updated?: () => void) => {
       expression?: string,
       id?: string
     ) => {
+      console.log('createVisualNode createNamedSignal', expression, id);
+      //createNamedSignal(id + '_' + 'Expression', expression ?? '');
+
       const formElements = [
         {
           fieldType: FormFieldType.Text,
@@ -100,7 +102,7 @@ export const getExpression = (updated?: () => void) => {
         },
         undefined,
         FormComponent({
-          id: 'test',
+          id: id ?? '',
           formElements,
           hasSubmitButton: false,
           onSave: (formValues) => {
@@ -166,7 +168,7 @@ export const getExpression = (updated?: () => void) => {
         'error'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      createNamedSignal(`expression${rect.nodeComponent.id}`, '');
+      //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;

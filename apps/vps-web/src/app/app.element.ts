@@ -20,11 +20,11 @@ import {
   getPointOnCubicBezierCurve,
   ControlAndEndPointNodeType,
   CurveType,
-  createNamedSignal,
   IRectNodeComponent,
   IConnectionNodeComponent,
   IThumbNodeComponent,
   Flow,
+  updateNamedSignal,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -1505,13 +1505,13 @@ export class AppElement extends HTMLElement {
         const nodeInfo: any = node?.nodeInfo ?? {};
         console.log('nodeInfo', nodeInfo);
 
-        const [currentValue, setCurrentValue] = createNamedSignal(
-          'test',
-          (nodeInfo.formValues ?? {})['Expression'] ?? ''
-        );
+        // const [currentValue, setCurrentValue] = createNamedSignal(
+        //   nodeElementId,
+        //   (nodeInfo.formValues ?? {})['Expression'] ?? ''
+        // );
 
         const form = FormComponent({
-          id: 'test',
+          id: nodeElementId,
           onSave: (values: any) => {
             console.log('onSave', values);
 
@@ -1519,11 +1519,23 @@ export class AppElement extends HTMLElement {
             if (node) {
               if ((node.nodeInfo as any).formElements) {
                 (node.nodeInfo as any).formValues = values;
+                Object.entries(values).forEach(([key, value]) => {
+                  console.log(
+                    'updateNamedSignal',
+                    nodeElementId + '_' + key,
+                    value
+                  );
+                  updateNamedSignal(
+                    nodeElementId + '_' + key,
+                    value as unknown as string
+                  );
+                });
               } else {
                 node.nodeInfo = values;
               }
             }
-            setCurrentValue(values['Expression']);
+            //setCurrentValue(values['Expression']);
+
             removeFormElement();
             currentNodeElementId = undefined;
 

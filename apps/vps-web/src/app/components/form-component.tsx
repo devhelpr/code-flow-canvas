@@ -48,6 +48,7 @@ export const FormComponent = (props: FormComponentProps) => (
                   fieldName={item.fieldName}
                   value={item.value}
                   onChange={(value: string) => {
+                    item.value = value;
                     if (item.onChange) {
                       item.onChange(value);
                     }

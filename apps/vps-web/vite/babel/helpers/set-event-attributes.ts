@@ -10,6 +10,43 @@ export const setEventAttributes = (
     attributes.forEach((attribute) => {
       if (
         attribute.type === 'JSXAttribute' &&
+        attribute.name.name.toString() === 'reference'
+      ) {
+        console.log('reference attribute', attribute);
+
+        if (
+          attribute.value &&
+          attribute.value.type === 'JSXExpressionContainer' &&
+          attribute.value.expression &&
+          attribute.value.expression.type === 'ArrowFunctionExpression'
+        ) {
+          statements.push(
+            t.expressionStatement(
+              t.callExpression(attribute.value.expression, [
+                t.identifier(elementName),
+              ])
+            )
+          );
+        } else if (
+          attribute.value &&
+          attribute.value.type === 'JSXExpressionContainer' &&
+          attribute.value.expression &&
+          attribute.value.expression.type === 'Identifier'
+        ) {
+          statements.push(
+            t.expressionStatement(
+              t.assignmentExpression(
+                '=',
+                t.identifier(attribute.value.expression.name),
+                t.identifier(elementName)
+              )
+            )
+          );
+          return;
+        }
+      }
+      if (
+        attribute.type === 'JSXAttribute' &&
         attribute.value &&
         attribute.value.type === 'JSXExpressionContainer' &&
         attribute.value.expression &&

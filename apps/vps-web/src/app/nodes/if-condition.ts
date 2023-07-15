@@ -1,6 +1,5 @@
 import {
   createElement,
-  createNamedSignal,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -100,7 +99,7 @@ export const getIfCondition = () => {
         }
       );
 
-      createNamedSignal(`if${rect.nodeComponent.id}`, '');
+      //createNamedSignal(`if${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;

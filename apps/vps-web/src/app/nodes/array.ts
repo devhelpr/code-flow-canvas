@@ -1,6 +1,5 @@
 import {
   createElement,
-  createNamedSignal,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -130,7 +129,6 @@ export const getArray = () => {
           formElements: [],
         }
       );
-      createNamedSignal(`array-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;

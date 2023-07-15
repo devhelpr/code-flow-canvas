@@ -1,6 +1,5 @@
 import {
   createElement,
-  createNamedSignal,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -123,8 +122,6 @@ export const getSum = () => {
           formElements: [],
         }
       );
-
-      createNamedSignal(`sum-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;

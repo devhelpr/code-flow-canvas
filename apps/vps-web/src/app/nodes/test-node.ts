@@ -1,6 +1,5 @@
 import {
   createElement,
-  createNamedSignal,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -538,8 +537,6 @@ export const getTestNode = <T>(
           connnection4.nodeComponent.update();
         }
       }
-
-      createNamedSignal(`testnode-${rect.nodeComponent.id}`, '');
 
       node = rect.nodeComponent;
       node.nodeInfo.computeAsync = compute;
