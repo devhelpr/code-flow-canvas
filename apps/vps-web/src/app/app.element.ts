@@ -51,6 +51,9 @@ import {
   FlowrunnerIndexedDbStorageProvider,
 } from './storage/indexeddb-storage-provider';
 import { getPointOnConnection } from './follow-path/point-on-connection';
+import { AppComponents } from './components/app-components';
+import { getFetch } from './nodes/fetch';
+import { getShowObject } from './nodes/show-object';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -248,6 +251,28 @@ export class AppElement extends HTMLElement {
                   animatePathFromThumb
                 );
                 filter.createVisualNode(canvasApp, node.x, node.y, node.id);
+              }
+
+              if (
+                node.nodeType === 'shape' &&
+                node.nodeInfo?.type === 'fetch'
+              ) {
+                const expression = getFetch(canvasUpdated);
+                expression.createVisualNode(
+                  canvasApp,
+                  node.x,
+                  node.y,
+                  node.id,
+                  node.nodeInfo?.formValues?.url ?? undefined
+                );
+              }
+
+              if (
+                node.nodeType === 'shape' &&
+                node.nodeInfo?.type === 'show-object'
+              ) {
+                const expression = getShowObject();
+                expression.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
             });
 
@@ -753,169 +778,168 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: button,
+        class: `${button} relative ',//top-[60px]`,
         click: (event) => {
           event.preventDefault();
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-          const expression = getExpression(canvasUpdated);
-          expression.createVisualNode(canvasApp, startX, startY);
+          this.clearPathExecution();
+          if (this.canvasApp?.elements) {
+            run<NodeInfo>(
+              this.canvasApp?.elements,
+              animatePath,
+              (input, pathExecution) => {
+                if (pathExecution) {
+                  (pathRange.domElement as HTMLInputElement).value = '0';
+                  this.pathExecutions.push(pathExecution);
+                  console.log('run finished', input, pathExecution);
+                }
+              }
+            );
+          }
           return false;
         },
       },
       menubarElement.domElement,
-      'Add "expression"'
+      'run'
     );
 
+    let speedMeter = 1;
+    createElement(
+      'input',
+      {
+        type: 'range',
+        class: 'p-2 m-2 relative ', //top-[60px]',
+        name: 'speed',
+        min: '0.1',
+        max: '100',
+        change: (event) => {
+          speedMeter = parseInt((event.target as HTMLInputElement).value);
+          setSpeedMeter(speedMeter);
+          const timerList = Array.from(timers ?? []);
+          timerList.forEach((timer) => {
+            timer[1]();
+          });
+        },
+      },
+      menubarElement.domElement,
+      ''
+    );
+
+    const createOption = (
+      selectElement: HTMLSelectElement,
+      value: string,
+      text: string
+    ) => {
+      const option = createElement(
+        'option',
+        {
+          value: value,
+        },
+        selectElement,
+        text
+      );
+      return option;
+    };
+
+    const selectNodeType = createElement(
+      'select',
+      {
+        type: 'select',
+        class: 'p-2 m-2 relative ', //top-[60px]',
+        name: 'select-node-type',
+        change: (event) => {
+          //
+        },
+      },
+      menubarElement.domElement,
+      ''
+    );
+    if (selectNodeType?.domElement) {
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'expression',
+        'expression'
+      );
+      createOption(selectNodeType.domElement as HTMLSelectElement, 'if', 'if');
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'show-input',
+        'show-input'
+      );
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'fetch',
+        'fetch'
+      );
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'show-object',
+        'show-object'
+      );
+
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'array',
+        'array'
+      );
+
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'map',
+        'map'
+      );
+
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'filter',
+        'filter'
+      );
+    }
     createElement(
       'button',
       {
         class: button,
         click: (event) => {
           event.preventDefault();
+          const nodeType = (selectNodeType.domElement as HTMLSelectElement)
+            .value;
+
           const startX = Math.floor(Math.random() * 250);
           const startY = Math.floor(Math.random() * 500);
-          const ifCondition = getIfCondition();
-          ifCondition.createVisualNode(canvasApp, startX, startY);
 
+          if (nodeType === 'expression') {
+            const expression = getExpression(canvasUpdated);
+            expression.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'if') {
+            const ifCondition = getIfCondition();
+            ifCondition.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'show-input') {
+            const showInput = getShowInput();
+            showInput.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'fetch') {
+            const fetch = getFetch();
+            fetch.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'show-object') {
+            const showObject = getShowObject();
+            showObject.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'array') {
+            const array = getArray();
+            array.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'map') {
+            const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
+            map.createVisualNode(canvasApp, startX, startY);
+          } else if (nodeType === 'filter') {
+            const filter = getFilter<NodeInfo>(
+              animatePath,
+              animatePathFromThumb
+            );
+            filter.createVisualNode(canvasApp, startX, startY);
+          }
           return false;
         },
       },
       menubarElement.domElement,
-      'Add "if-condition"'
+      'Add node'
     );
-
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-          const showInput = getShowInput();
-          showInput.createVisualNode(canvasApp, startX, startY);
-
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add "show input"'
-    );
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-          const array = getArray();
-          array.createVisualNode(canvasApp, startX, startY);
-
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add "array"'
-    );
-
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-          const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
-          map.createVisualNode(canvasApp, startX, startY);
-
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add "map"'
-    );
-
-    createElement(
-      'button',
-      {
-        class: button,
-        click: (event) => {
-          event.preventDefault();
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-          const filter = getFilter<NodeInfo>(animatePath, animatePathFromThumb);
-          filter.createVisualNode(canvasApp, startX, startY);
-
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add "filter"'
-    );
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
-
-    //       const x = Math.floor(Math.random() * 250);
-    //       const y = Math.floor(Math.random() * 500);
-
-    //       // if (Math.random() >= 0.5) {
-    //       //const bezierCurve =
-    //       canvasApp.createCubicBezier(
-    //         x,
-    //         y,
-    //         x + 150,
-    //         y + 150,
-    //         x + 50,
-    //         y + 50,
-    //         x + 75,
-    //         y + 75
-    //       );
-    //       // } else {
-    //       // bezierCurve = createQuadraticBezier(
-    //       //   canvas as unknown as INodeComponent<NodeInfo>,
-    //       //   pathHiddenElement,
-    //       //   this.elements,
-    //       //   x,
-    //       //   y,
-    //       //   x + 150,
-    //       //   y + 150,
-    //       //   x + 50,
-    //       //   y + 50
-    //       // );
-    //       // }
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add bezier curve'
-    // );
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
-
-    //       createMarkupElement(
-    //         '<div><h2>TITLE</h2><p>subtitle</p></div>',
-    //         canvasApp.canvas.domElement,
-    //         canvasApp.elements
-    //       );
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add markup element'
-    // );
 
     createElement(
       'button',
@@ -930,20 +954,6 @@ export class AppElement extends HTMLElement {
       menubarElement.domElement,
       'center'
     );
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       setVisibility(!getVisbility());
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'switch visibility'
-    // );
 
     createElement(
       'button',
@@ -1234,55 +1244,6 @@ export class AppElement extends HTMLElement {
       );
     };
 
-    createElement(
-      'button',
-      {
-        class: `${button} relative ',//top-[60px]`,
-        click: (event) => {
-          event.preventDefault();
-          this.clearPathExecution();
-          if (this.canvasApp?.elements) {
-            run<NodeInfo>(
-              this.canvasApp?.elements,
-              animatePath,
-              (input, pathExecution) => {
-                if (pathExecution) {
-                  (pathRange.domElement as HTMLInputElement).value = '0';
-                  this.pathExecutions.push(pathExecution);
-                  console.log('run finished', input, pathExecution);
-                }
-              }
-            );
-          }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'run'
-    );
-
-    let speedMeter = 1;
-    createElement(
-      'input',
-      {
-        type: 'range',
-        class: 'p-2 m-2 relative ', //top-[60px]',
-        name: 'speed',
-        min: '0.1',
-        max: '100',
-        change: (event) => {
-          speedMeter = parseInt((event.target as HTMLInputElement).value);
-          setSpeedMeter(speedMeter);
-          const timerList = Array.from(timers ?? []);
-          timerList.forEach((timer) => {
-            timer[1]();
-          });
-        },
-      },
-      menubarElement.domElement,
-      ''
-    );
-
     this.testCircle = createElement(
       'div',
       {
@@ -1467,6 +1428,12 @@ export class AppElement extends HTMLElement {
       },
       rootElement
     );
+    createElement(
+      'div',
+      {},
+      rootElement,
+      AppComponents({}) as unknown as HTMLElement
+    ) as unknown as INodeComponent<unknown>;
 
     // let raf = -1;
     // let inputTimeout = -1;
@@ -1706,30 +1673,6 @@ export class AppElement extends HTMLElement {
     // console.log('element', element);
     // rootElement.append(element as unknown as Node);
 
-    registerCustomFunction('setStartPoint', [], (x: number, y: number) => {
-      console.log('setStartPoint', x, y);
-      if (bezierCurve) {
-        bezierCurve.setStartPoint(x, y);
-      }
-    });
-    registerCustomFunction('setControlPoint1', [], (x: number, y: number) => {
-      console.log('setControlPoint1', x, y);
-      if (bezierCurve) {
-        bezierCurve.setControlPoint1(x, y);
-      }
-    });
-    registerCustomFunction('setControlPoint2', [], (x: number, y: number) => {
-      console.log('setControlPoint2', x, y);
-      if (bezierCurve) {
-        bezierCurve.setControlPoint2(x, y);
-      }
-    });
-    registerCustomFunction('setEndPoint', [], (x: number, y: number) => {
-      console.log('setEndPoint', x, y);
-      if (bezierCurve) {
-        bezierCurve.setEndPoint(x, y);
-      }
-    });
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
     });
