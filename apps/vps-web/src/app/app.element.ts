@@ -860,15 +860,16 @@ export class AppElement extends HTMLElement {
         'expression'
       );
       createOption(selectNodeType.domElement as HTMLSelectElement, 'if', 'if');
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'show-input',
-        'show-input'
-      );
+
       createOption(
         selectNodeType.domElement as HTMLSelectElement,
         'fetch',
         'fetch'
+      );
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'show-input',
+        'show-input'
       );
       createOption(
         selectNodeType.domElement as HTMLSelectElement,

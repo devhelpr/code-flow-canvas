@@ -29,7 +29,39 @@ export const appendChildrenToTemplate = (
       //console.log('item.expression', item.tagName, item.expression);
 
       if (item.runExpression === RunExpressionType.fragment) {
-        //
+        const children = (item.expression as unknown as babelTypes.JSXElement)
+          .children;
+
+        const contentChildren: Content[] = handleChildren(
+          t,
+          item.tagName,
+          (item.expression as unknown as babelTypes.JSXElement).children,
+          []
+        );
+        if (children && children.length > 0 && contentChildren.length > 0) {
+          const clonedFunction = t.arrowFunctionExpression(
+            [],
+            children[0] as unknown as babelTypes.JSXElement
+          );
+          const statement = t.blockStatement([
+            t.expressionStatement(
+              t.callExpression(
+                t.arrowFunctionExpression(
+                  [],
+                  t.callExpression(
+                    t.memberExpression(
+                      t.identifier(templateVariableName),
+                      t.identifier('appendChild')
+                    ),
+                    [t.callExpression(clonedFunction, [])]
+                  )
+                ),
+                []
+              )
+            ),
+          ]);
+          statements.push(statement);
+        }
       } else if (item.runExpression === RunExpressionType.ifCondition) {
         console.log('appendChildrenToTemplate runExpression ifCondition'); //, (item.expression as unknown as babelTypes.JSXElement).children);
         const children = (item.expression as unknown as babelTypes.JSXElement)
