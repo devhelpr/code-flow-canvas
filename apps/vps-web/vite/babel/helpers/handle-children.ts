@@ -20,6 +20,24 @@ const createRenderListStatements = (
   };
 };
 
+const createFragmentStatement = (
+  childIndex: number,
+  parentId: string,
+  item: babelTypes.JSXElement
+): Content => {
+  console.log('createFragmentConditionStatement', childIndex, parentId);
+  return {
+    index: childIndex,
+    parentId,
+    tagName: 'div',
+    content: '',
+    isExpression: true,
+    runExpression: RunExpressionType.fragment,
+    expression: item,
+    attributes: item.openingElement.attributes,
+  };
+};
+
 const createIfConditionStatement = (
   childIndex: number,
   parentId: string,
@@ -139,6 +157,9 @@ export const handleChildren = (
         childIndex++;
       } else if (tagName === 'if:Condition') {
         content.push(createIfConditionStatement(childIndex, parentId, item));
+        childIndex++;
+      } else if (tagName === 'element:Fragment') {
+        content.push(createFragmentStatement(childIndex, parentId, item));
         childIndex++;
       } else if (
         item.children &&

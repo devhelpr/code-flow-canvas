@@ -27,7 +27,10 @@ export const appendChildrenToTemplate = (
 
     if (item.isExpression === true && item.expression) {
       //console.log('item.expression', item.tagName, item.expression);
-      if (item.runExpression === RunExpressionType.ifCondition) {
+
+      if (item.runExpression === RunExpressionType.fragment) {
+        //
+      } else if (item.runExpression === RunExpressionType.ifCondition) {
         console.log('appendChildrenToTemplate runExpression ifCondition'); //, (item.expression as unknown as babelTypes.JSXElement).children);
         const children = (item.expression as unknown as babelTypes.JSXElement)
           .children;
