@@ -898,7 +898,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: button,
+        class: `${button} bg-blue-500 hover:bg-blue-700`,
         click: (event) => {
           event.preventDefault();
           const nodeType = (selectNodeType.domElement as HTMLSelectElement)

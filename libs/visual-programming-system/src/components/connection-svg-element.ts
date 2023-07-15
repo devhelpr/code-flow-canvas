@@ -408,6 +408,12 @@ export const createConnectionSVGElement = <T>(
         skipChecks = true;
 
         updateThumbs = true;
+      } else {
+        points.cx2 = points.endX - 150;
+        points.cy2 = points.endY;
+        skipChecks = true;
+
+        updateThumbs = true;
       }
 
       if (!updateThumbs) {
@@ -552,6 +558,9 @@ export const createConnectionSVGElement = <T>(
         } else if (actionComponent.specifier === 'end') {
           points.endX = x;
           points.endY = y;
+
+          points.cx2 = points.endX - 150;
+          points.cy2 = points.endY;
         } else if (actionComponent.specifier === 'begin') {
           points.beginX = x;
           points.beginY = y;
