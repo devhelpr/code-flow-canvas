@@ -5,7 +5,12 @@ export const getAttributes = (
   attributes?: (babelTypes.JSXAttribute | babelTypes.JSXSpreadAttribute)[],
   passThroughAttributes?: boolean
 ) => {
-  const supportedExpressionTypes = ['ArrayExpression', 'MemberExpression'];
+  const supportedExpressionTypes = [
+    'ArrayExpression',
+    'MemberExpression',
+    'ConditionalExpression',
+    'BinaryExpression',
+  ];
 
   if (passThroughAttributes) {
     supportedExpressionTypes.push('ArrowFunctionExpression');

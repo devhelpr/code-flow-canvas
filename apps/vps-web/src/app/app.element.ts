@@ -212,7 +212,9 @@ export class AppElement extends HTMLElement {
                   canvasApp,
                   node.x,
                   node.y,
-                  node.id
+                  node.id,
+                  node.nodeInfo?.formValues?.Mode ?? '',
+                  node.nodeInfo?.formValues?.expression ?? ''
                 );
               }
 

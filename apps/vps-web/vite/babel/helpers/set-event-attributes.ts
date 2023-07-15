@@ -45,19 +45,23 @@ export const setEventAttributes = (
           return;
         }
       }
+
       if (
         attribute.type === 'JSXAttribute' &&
         attribute.value &&
         attribute.value.type === 'JSXExpressionContainer' &&
         attribute.value.expression &&
         (attribute.value.expression.type === 'ArrowFunctionExpression' ||
-          attribute.value.expression.type === 'MemberExpression')
+          attribute.value.expression.type === 'MemberExpression' ||
+          attribute.value.expression.type === 'ConditionalExpression')
       ) {
-        // console.log(
-        //   'attribute.value.expression',
-        //   attribute.value.expression.type,
-        //   attribute.value.expression
-        // );
+        if (attribute.value.expression.type === 'ConditionalExpression') {
+          console.log(
+            'attribute.value.expression',
+            attribute.value.expression.type,
+            attribute.value.expression
+          );
+        }
         statements.push(
           t.expressionStatement(
             t.callExpression(

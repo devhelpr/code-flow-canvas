@@ -1,19 +1,69 @@
 import {
+  compileExpressionAsInfo,
+  runExpression,
+} from '@devhelpr/expression-compiler';
+import {
   createElement,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
+  trackNamedSignal,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent } from '../components/form-component';
+import { FormFieldType } from '../components/form-component';
+import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
-export const getIfCondition = () => {
+export const getIfCondition = (updated?: () => void) => {
   let node: INodeComponent<NodeInfo>;
 
+  let currentValue = 0;
   const initializeCompute = () => {
+    currentValue = 0;
     return;
   };
-  const compute = (input: string) => {
+  const compute = (
+    input: string,
+    pathExecution?: RunNodeResult<NodeInfo>[],
+    loopIndex?: number
+  ) => {
+    if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
+      let result: any = false;
+      try {
+        const expression = node.nodeInfo.formValues?.['expression'] ?? '';
+        const compiledExpressionInfo = compileExpressionAsInfo(expression);
+        const expressionFunction = (
+          new Function(
+            'payload',
+            `${compiledExpressionInfo.script}`
+          ) as unknown as (payload?: any) => any
+        ).bind(compiledExpressionInfo.bindings);
+        result = runExpression(
+          expressionFunction,
+          { input: input, currentValue: currentValue, index: loopIndex ?? 0 },
+          true,
+          compiledExpressionInfo.payloadProperties
+        );
+
+        if (expression !== '' && (isNaN(result) || result === undefined)) {
+          throw new Error("Expression couldn't be run");
+        }
+      } catch (error) {
+        result = undefined;
+        // (errorNode.domElement as unknown as HTMLElement).classList.remove(
+        //   'hidden'
+        // );
+        // (errorNode.domElement as unknown as HTMLElement).textContent =
+        //   error?.toString() ?? 'Error';
+        console.log('expression error', error);
+      }
+      if (result) {
+        currentValue = result;
+      }
+      return {
+        result: input,
+        followPath: result ? 'success' : 'failure',
+      };
+    }
     return {
       result: input,
       followPath: Math.random() < 0.5 ? 'success' : 'failure',
@@ -24,8 +74,47 @@ export const getIfCondition = () => {
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      mode?: string,
+      expression?: string
     ) => {
+      const formElements = [
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'Mode',
+          value: mode ?? '',
+          options: [
+            { value: 'random', label: 'Random' },
+            { value: 'expression', label: 'Expression' },
+          ],
+          onChange: (value: string) => {
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              Mode: value,
+            };
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'expression',
+          value: expression ?? '',
+          onChange: (value: string) => {
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              expression: value,
+            };
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+      ];
+
       const jsxComponentWrapper = createElement(
         'div',
         {
@@ -36,7 +125,7 @@ export const getIfCondition = () => {
           },
         },
         undefined,
-        'random'
+        mode === 'random' ? 'random' : expression ?? 'expression'
         // FormComponent({
         //   id: 'test',
         //   formElements: [],
@@ -46,6 +135,13 @@ export const getIfCondition = () => {
         //   },
         //}) as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
+
+      console.log('trackNamedSignal register if-condition', id);
+      trackNamedSignal(`${id}_expression`, (value) => {
+        console.log('trackNamedSignal if-condition', id, value);
+        jsxComponentWrapper.domElement.textContent =
+          mode === 'random' ? 'random' : value ?? 'expression';
+      });
 
       const rect = canvasApp.createRect(
         x,
@@ -96,6 +192,10 @@ export const getIfCondition = () => {
         {
           formElements: [],
           type: 'if',
+          formValues: {
+            Mode: mode ?? 'random',
+            expression: expression ?? '',
+          },
         }
       );
 
@@ -104,6 +204,7 @@ export const getIfCondition = () => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      node.nodeInfo.formElements = formElements;
     },
   };
 };

@@ -40,7 +40,9 @@ export const setAttributes = (
         (attribute.value.expression.type === 'ArrowFunctionExpression' ||
           attribute.value.expression.type === 'ArrayExpression' ||
           attribute.value.expression.type === 'Identifier' ||
-          attribute.value.expression.type === 'TemplateLiteral')
+          attribute.value.expression.type === 'TemplateLiteral' ||
+          attribute.value.expression.type === 'ConditionalExpression' ||
+          attribute.value.expression.type === 'BinaryExpression')
       ) {
         // TODO .. set these on the clone nodes..?
         // console.log(

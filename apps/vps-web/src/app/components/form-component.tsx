@@ -1,17 +1,29 @@
 import { InputField } from './form-fields/input';
+import { SelectField } from './form-fields/select';
 import { TextAreaField } from './form-fields/textarea';
 
 export const FormFieldType = {
   Text: 'Text',
   TextArea: 'TextArea',
+  Select: 'Select',
 } as const;
 
 export type FormFieldType = (typeof FormFieldType)[keyof typeof FormFieldType];
 
-export type FormField = {
+export type FormField = (
+  | {
+      fieldType: 'Select';
+      options: { value: string; label: string }[];
+    }
+  | {
+      fieldType: 'Text';
+    }
+  | {
+      fieldType: 'TextArea';
+    }
+) & {
   fieldName: string;
   value: string;
-  fieldType: FormFieldType;
   onChange?: (value: string) => void;
 };
 
@@ -62,14 +74,22 @@ export const FormComponent = (props: FormComponentProps) => (
                 value={item.value}
               ></TextAreaField>
             </if:Condition>
-            {/*<button
-              type="button"
-              onclick={() => {
-                alert('clicked');
-              }}
-            >
-              CLICK
-            </button>*/}
+            <if:Condition test={item.fieldType === FormFieldType.Select}>
+              <div>
+                <SelectField
+                  formId={props.id}
+                  fieldName={item.fieldName}
+                  value={item.value}
+                  options={item.fieldType === 'Select' ? item.options : []}
+                  onChange={(value: string) => {
+                    item.value = value;
+                    if (item.onChange) {
+                      item.onChange(value);
+                    }
+                  }}
+                ></SelectField>
+              </div>
+            </if:Condition>
           </div>
         )}
       </list:Render>
