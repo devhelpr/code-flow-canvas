@@ -25,10 +25,20 @@ export const getArray = () => {
     }
     return;
   };
-  const compute = (input: string) => {
-    const previousOutput = [...inputValues];
-    inputValues.push(input);
-    if (htmlNode) {
+
+  const setValue = (values: any[]) => {
+    if (htmlNode && htmlNode.domElement) {
+      (htmlNode.domElement as HTMLElement).textContent = '';
+
+      while (htmlNode.domElement.firstChild) {
+        if (htmlNode.domElement) {
+          htmlNode.domElement.removeChild(
+            (htmlNode.domElement as HTMLElement).lastChild as Node
+          );
+        }
+      }
+    }
+    values.forEach((value) => {
       const inputElement = createElement(
         'div',
         {
@@ -36,13 +46,8 @@ export const getArray = () => {
             'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
         },
         undefined,
-        input.toString()
+        value.toString()
       ) as unknown as INodeComponent<NodeInfo>;
-
-      if (hasInitialValue) {
-        htmlNode.domElement.textContent = '';
-        hasInitialValue = false;
-      }
 
       // if (htmlNode.domElement.firstChild) {
       //   htmlNode.domElement.insertBefore(
@@ -50,14 +55,36 @@ export const getArray = () => {
       //     htmlNode.domElement.firstChild
       //   );
       // } else {
-      htmlNode.domElement.appendChild(
-        inputElement.domElement as unknown as HTMLElement
-      );
-      //}
-
-      if (rect) {
-        rect.resize(240);
+      if (htmlNode) {
+        htmlNode.domElement.appendChild(
+          inputElement.domElement as unknown as HTMLElement
+        );
       }
+    });
+    //}
+
+    if (rect) {
+      rect.resize(240);
+    }
+  };
+
+  const compute = (input: string) => {
+    const previousOutput = [...inputValues];
+    inputValues.push(input);
+    if (htmlNode) {
+      if (hasInitialValue) {
+        htmlNode.domElement.textContent = '';
+        hasInitialValue = false;
+      }
+      setValue(inputValues);
+
+      // htmlNode.domElement.appendChild(
+      //   inputElement.domElement as unknown as HTMLElement
+      // );
+
+      // if (rect) {
+      //   rect.resize(240);
+      // }
     }
     return {
       result: [...inputValues],
@@ -135,47 +162,7 @@ export const getArray = () => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.setValue = (values: any[]) => {
-        if (htmlNode && htmlNode.domElement) {
-          (htmlNode.domElement as HTMLElement).textContent = '';
-
-          while (htmlNode.domElement.firstChild) {
-            if (htmlNode.domElement) {
-              htmlNode.domElement.removeChild(
-                (htmlNode.domElement as HTMLElement).lastChild as Node
-              );
-            }
-          }
-        }
-        values.forEach((value) => {
-          const inputElement = createElement(
-            'div',
-            {
-              class:
-                'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
-            },
-            undefined,
-            value.toString()
-          ) as unknown as INodeComponent<NodeInfo>;
-
-          // if (htmlNode.domElement.firstChild) {
-          //   htmlNode.domElement.insertBefore(
-          //     inputElement.domElement as unknown as HTMLElement,
-          //     htmlNode.domElement.firstChild
-          //   );
-          // } else {
-          if (htmlNode) {
-            htmlNode.domElement.appendChild(
-              inputElement.domElement as unknown as HTMLElement
-            );
-          }
-        });
-        //}
-
-        if (rect) {
-          rect.resize(240);
-        }
-      };
+      node.nodeInfo.setValue = setValue;
     },
   };
 };

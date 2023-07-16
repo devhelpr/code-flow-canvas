@@ -87,6 +87,8 @@ export class AppElement extends HTMLElement {
   pathExecutions: RunNodeResult<NodeInfo>[][] = [];
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
+  currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
+
   clearElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
     const node = element as unknown as INodeComponent<NodeInfo>;
@@ -101,7 +103,9 @@ export class AppElement extends HTMLElement {
 
   clearCanvas = () => {
     this.clearPathExecution();
+    this.currentPathUnderInspection = undefined;
     this.pathExecutions = [];
+
     this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
       this.clearElement(element as unknown as IElementNode<NodeInfo>);
@@ -580,6 +584,8 @@ export class AppElement extends HTMLElement {
               }
             }
           });
+          this.pathExecutions = [];
+          this.currentPathUnderInspection = undefined;
           return false;
         },
       },
@@ -876,6 +882,7 @@ export class AppElement extends HTMLElement {
         click: (event) => {
           event.preventDefault();
           this.clearPathExecution();
+          this.currentPathUnderInspection = undefined;
           if (this.canvasApp?.elements) {
             run<NodeInfo>(
               this.canvasApp?.elements,
@@ -1006,196 +1013,196 @@ export class AppElement extends HTMLElement {
       }) as unknown as HTMLElement
     );
 
-    createElement(
-      'button',
-      {
-        class: navBarButton,
-        click: (event) => {
-          event.preventDefault();
-          this.canvasApp?.centerCamera();
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'center'
-    );
+    // createElement(
+    //   'button',
+    //   {
+    //     class: navBarButton,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       this.canvasApp?.centerCamera();
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'center'
+    // );
 
-    createElement(
-      'button',
-      {
-        class: navBarButton,
-        click: (event) => {
-          event.preventDefault();
-          this.clearCanvas();
+    // createElement(
+    //   'button',
+    //   {
+    //     class: navBarButton,
+    //     click: (event) => {
+    //       event.preventDefault();
+    //       this.clearCanvas();
 
-          const maxRows = 20;
-          const maxColumns = 20;
+    //       const maxRows = 20;
+    //       const maxColumns = 20;
 
-          const dateTimestampAll = performance.now();
+    //       const dateTimestampAll = performance.now();
 
-          const spacing = 500;
-          let loopRows = 0;
-          while (loopRows < maxRows) {
-            let loopColumns = 0;
-            while (loopColumns < maxColumns) {
-              const dateTimestamp = performance.now();
+    //       const spacing = 500;
+    //       let loopRows = 0;
+    //       while (loopRows < maxRows) {
+    //         let loopColumns = 0;
+    //         while (loopColumns < maxColumns) {
+    //           const dateTimestamp = performance.now();
 
-              const clipPaths = [
-                'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
-                'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
-                'circle(50%)',
-                'polygon(50% 0, 100% 100%, 0 100%)',
-                'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-                'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
-                'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
-              ];
-              const color = `rgb(${
-                128 + Math.floor(Math.random() * 128)
-              },${Math.floor(Math.random() * 16)},${Math.floor(
-                Math.random() * 16
-              )})`;
+    //           const clipPaths = [
+    //             'polygon(50% 2.4%, 34.5% 33.8%, 0% 38.8%, 25% 63.1%, 19.1% 97.6%, 50% 81.3%, 80.9% 97.6%, 75% 63.1%, 100% 38.8%, 65.5% 33.8%)',
+    //             'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+    //             'circle(50%)',
+    //             'polygon(50% 0, 100% 100%, 0 100%)',
+    //             'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+    //             'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+    //             'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+    //           ];
+    //           const color = `rgb(${
+    //             128 + Math.floor(Math.random() * 128)
+    //           },${Math.floor(Math.random() * 16)},${Math.floor(
+    //             Math.random() * 16
+    //           )})`;
 
-              const testNode = createElement(
-                'button',
-                {
-                  class:
-                    'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
-                  style: {
-                    'background-color': color,
-                    'clip-path':
-                      clipPaths[
-                        Math.round(Math.random() * (clipPaths.length - 1))
-                      ],
-                  },
-                  click: (event) => {
-                    event.preventDefault();
-                    //alert(`click ${testNode.id}`);
-                    animatePath(rect.nodeComponent, color);
-                    return false;
-                  },
-                },
-                undefined,
-                `${loopRows * maxColumns + loopColumns}`
-              );
+    //           const testNode = createElement(
+    //             'button',
+    //             {
+    //               class:
+    //                 'flex text-centerv text-white text-xl items-center justify-center w-[100px] h-[120px] overflow-hidden bg-red-500 rounded cursor-pointer',
+    //               style: {
+    //                 'background-color': color,
+    //                 'clip-path':
+    //                   clipPaths[
+    //                     Math.round(Math.random() * (clipPaths.length - 1))
+    //                   ],
+    //               },
+    //               click: (event) => {
+    //                 event.preventDefault();
+    //                 //alert(`click ${testNode.id}`);
+    //                 animatePath(rect.nodeComponent, color);
+    //                 return false;
+    //               },
+    //             },
+    //             undefined,
+    //             `${loopRows * maxColumns + loopColumns}`
+    //           );
 
-              const rect = canvasApp?.createRect(
-                loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
-                loopRows * spacing + Math.floor(-75 + Math.random() * 150),
-                100,
-                100,
-                'node',
-                undefined,
-                [
-                  {
-                    thumbType: ThumbType.StartConnectorCenter,
-                    thumbIndex: 0,
-                    connectionType: ThumbConnectionType.start,
-                  },
-                  {
-                    thumbType: ThumbType.EndConnectorCenter,
-                    thumbIndex: 0,
-                    connectionType: ThumbConnectionType.end,
-                  },
-                ],
-                testNode as unknown as INodeComponent<NodeInfo>,
-                // `<div class="text-center">${
-                //   loopRows * maxColumns + loopColumns
-                // }</div>`
-                {
-                  classNames: `bg-slate-500 p-4 rounded`,
-                  //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
-                },
-                true
-              );
-              rect.nodeComponent.nodeInfo = {
-                column: loopColumns,
-                row: loopRows,
-                compute: () => {
-                  return {
-                    output: true,
-                    result: true,
-                  };
-                },
-              };
+    //           const rect = canvasApp?.createRect(
+    //             loopColumns * spacing + Math.floor(-75 + Math.random() * 150),
+    //             loopRows * spacing + Math.floor(-75 + Math.random() * 150),
+    //             100,
+    //             100,
+    //             'node',
+    //             undefined,
+    //             [
+    //               {
+    //                 thumbType: ThumbType.StartConnectorCenter,
+    //                 thumbIndex: 0,
+    //                 connectionType: ThumbConnectionType.start,
+    //               },
+    //               {
+    //                 thumbType: ThumbType.EndConnectorCenter,
+    //                 thumbIndex: 0,
+    //                 connectionType: ThumbConnectionType.end,
+    //               },
+    //             ],
+    //             testNode as unknown as INodeComponent<NodeInfo>,
+    //             // `<div class="text-center">${
+    //             //   loopRows * maxColumns + loopColumns
+    //             // }</div>`
+    //             {
+    //               classNames: `bg-slate-500 p-4 rounded`,
+    //               //classNames: `bg-slate-500 rounded flex justify-center items-center text-center w-[80px] h-[100px] `,
+    //             },
+    //             true
+    //           );
+    //           rect.nodeComponent.nodeInfo = {
+    //             column: loopColumns,
+    //             row: loopRows,
+    //             compute: () => {
+    //               return {
+    //                 output: true,
+    //                 result: true,
+    //               };
+    //             },
+    //           };
 
-              //console.log('createRect', performance.now() - dateTimestamp);
-              loopColumns++;
-            }
-            loopRows++;
-          }
+    //           //console.log('createRect', performance.now() - dateTimestamp);
+    //           loopColumns++;
+    //         }
+    //         loopRows++;
+    //       }
 
-          const elementList = Array.from(canvasApp?.elements ?? []);
-          loopRows = 0;
-          while (loopRows < maxRows - 1) {
-            let loopColumns = 0;
-            while (loopColumns < maxColumns - 1) {
-              const start = elementList[
-                loopRows * maxColumns + loopColumns
-              ][1] as unknown as IRectNodeComponent<NodeInfo>;
-              const end = elementList[
-                (loopRows + 1) * maxColumns + loopColumns + 1
-              ][1] as unknown as IRectNodeComponent<NodeInfo>;
-              console.log(loopRows, loopColumns, 'start', start, 'end', end);
+    //       const elementList = Array.from(canvasApp?.elements ?? []);
+    //       loopRows = 0;
+    //       while (loopRows < maxRows - 1) {
+    //         let loopColumns = 0;
+    //         while (loopColumns < maxColumns - 1) {
+    //           const start = elementList[
+    //             loopRows * maxColumns + loopColumns
+    //           ][1] as unknown as IRectNodeComponent<NodeInfo>;
+    //           const end = elementList[
+    //             (loopRows + 1) * maxColumns + loopColumns + 1
+    //           ][1] as unknown as IRectNodeComponent<NodeInfo>;
+    //           console.log(loopRows, loopColumns, 'start', start, 'end', end);
 
-              const curve = canvasApp.createCubicBezier(
-                loopColumns * spacing,
-                loopRows * spacing,
-                (loopColumns + 1) * spacing,
-                loopRows * spacing,
-                loopColumns * spacing + 100,
-                loopRows * spacing + spacing / 2,
-                (loopColumns + 1) * spacing + 100,
-                loopRows * spacing + spacing / 2,
-                false
-              );
+    //           const curve = canvasApp.createCubicBezier(
+    //             loopColumns * spacing,
+    //             loopRows * spacing,
+    //             (loopColumns + 1) * spacing,
+    //             loopRows * spacing,
+    //             loopColumns * spacing + 100,
+    //             loopRows * spacing + spacing / 2,
+    //             (loopColumns + 1) * spacing + 100,
+    //             loopRows * spacing + spacing / 2,
+    //             false
+    //           );
 
-              curve.nodeComponent.isControlled = true;
-              curve.nodeComponent.nodeInfo = {
-                column: loopColumns,
-                row: loopRows,
-              };
+    //           curve.nodeComponent.isControlled = true;
+    //           curve.nodeComponent.nodeInfo = {
+    //             column: loopColumns,
+    //             row: loopRows,
+    //           };
 
-              if (start && curve.nodeComponent) {
-                curve.nodeComponent.startNode = start;
-                curve.nodeComponent.startNodeThumb = this.getThumbNode(
-                  ThumbType.StartConnectorCenter,
-                  start
-                );
-              }
+    //           if (start && curve.nodeComponent) {
+    //             curve.nodeComponent.startNode = start;
+    //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
+    //               ThumbType.StartConnectorCenter,
+    //               start
+    //             );
+    //           }
 
-              if (end && curve.nodeComponent) {
-                curve.nodeComponent.endNode = end;
-                curve.nodeComponent.endNodeThumb = this.getThumbNode(
-                  ThumbType.EndConnectorCenter,
-                  end
-                );
-              }
-              if (curve.nodeComponent.update) {
-                curve.nodeComponent.update();
-              }
-              start.connections?.push(curve.nodeComponent);
-              end.connections?.push(curve.nodeComponent);
-              console.log('createCubicBezier', curve);
+    //           if (end && curve.nodeComponent) {
+    //             curve.nodeComponent.endNode = end;
+    //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
+    //               ThumbType.EndConnectorCenter,
+    //               end
+    //             );
+    //           }
+    //           if (curve.nodeComponent.update) {
+    //             curve.nodeComponent.update();
+    //           }
+    //           start.connections?.push(curve.nodeComponent);
+    //           end.connections?.push(curve.nodeComponent);
+    //           console.log('createCubicBezier', curve);
 
-              loopColumns++;
-            }
-            loopRows++;
-          }
+    //           loopColumns++;
+    //         }
+    //         loopRows++;
+    //       }
 
-          console.log('createRect All', performance.now() - dateTimestampAll);
+    //       console.log('createRect All', performance.now() - dateTimestampAll);
 
-          const dateTimestamp = performance.now();
+    //       const dateTimestamp = performance.now();
 
-          this.canvasApp?.centerCamera();
+    //       this.canvasApp?.centerCamera();
 
-          console.log('centerCamera', performance.now() - dateTimestamp);
+    //       console.log('centerCamera', performance.now() - dateTimestamp);
 
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'stress test'
-    );
+    //       return false;
+    //     },
+    //   },
+    //   menubarElement.domElement,
+    //   'stress test'
+    // );
 
     // createElement(
     //   'button',
@@ -1233,7 +1240,7 @@ export class AppElement extends HTMLElement {
     this.message = createElement(
       'div',
       {
-        class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
+        class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-auto origin-center px-2 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
         style: {
           'clip-path':
             'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
@@ -1267,6 +1274,8 @@ export class AppElement extends HTMLElement {
       value: number,
       lastPathExecution: RunNodeResult<any>[]
     ) => {
+      this.currentPathUnderInspection = lastPathExecution;
+
       if (this.scopeNodeDomElement) {
         this.scopeNodeDomElement.classList.remove('bg-blue-300');
         this.scopeNodeDomElement = undefined;
@@ -1376,12 +1385,25 @@ export class AppElement extends HTMLElement {
         max: '100000',
         value: 1,
         input: (event) => {
-          const lastPathExecution =
-            this.pathExecutions[this.pathExecutions.length - 1];
-          if (lastPathExecution) {
+          if (this.currentPathUnderInspection === undefined) {
+            // inspect latest path execution when no path is being inspected
+            const executionPathElement = rootElement.querySelector(
+              '#execution-path'
+            ) as HTMLInputElement;
+            if (executionPathElement) {
+              executionPathElement.value = '100';
+            }
+
+            this.currentPathUnderInspection =
+              this.pathExecutions[this.pathExecutions.length - 1];
+          }
+          if (this.currentPathUnderInspection) {
             const value = parseInt((event.target as HTMLInputElement).value);
             if (!isNaN(value)) {
-              showProgressOnPathExecution(value, lastPathExecution);
+              showProgressOnPathExecution(
+                value,
+                this.currentPathUnderInspection
+              );
             }
           }
         },

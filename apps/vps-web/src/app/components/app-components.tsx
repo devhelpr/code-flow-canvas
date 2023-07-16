@@ -10,6 +10,8 @@ export const AppComponents = (props: AppComponentsProps) => (
   <element:Fragment>
     <div class="fixed w-[50px] h-[calc(100%-135px)] top-[60px] right-0 left-auto z-50 p-2 bg-slate-400">
       <input
+        id="execution-path"
+        name="execution-path"
         type="range"
         class="w-full h-full vertical-slider accent-blue-500"
         orient="vertical"
