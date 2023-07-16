@@ -1429,13 +1429,7 @@ export class AppElement extends HTMLElement {
       },
       rootElement
     );
-    createElement(
-      'div',
-      {},
-      rootElement,
-      AppComponents({}) as unknown as HTMLElement
-    ) as unknown as INodeComponent<unknown>;
-
+    rootElement.appendChild(AppComponents({}) as unknown as HTMLElement);
     // let raf = -1;
     // let inputTimeout = -1;
 

@@ -5,6 +5,7 @@ import { setAttributes } from './set-attributes';
 import { structuredCloneHelper } from './structured-clone';
 import { handleChildren } from './handle-children';
 import { addToParent } from './add-to-parent';
+import { e } from 'vitest/dist/index-5aad25c1';
 
 export const appendChildrenToTemplate = (
   t: typeof babelTypes,
@@ -17,6 +18,7 @@ export const appendChildrenToTemplate = (
   let parentId = '';
 
   content.forEach((item, childIndex) => {
+    const orgParentId = parentId;
     const elementId = `${
       templateVariableName !== 'template' ? templateVariableName : ''
     }elementChild_${childIndex}`;
@@ -27,8 +29,8 @@ export const appendChildrenToTemplate = (
 
     if (item.isExpression === true && item.expression) {
       //console.log('item.expression', item.tagName, item.expression);
-
       if (item.runExpression === RunExpressionType.fragment) {
+        console.log('fragment parent', orgParentId);
         const children = (item.expression as unknown as babelTypes.JSXElement)
           .children;
 
@@ -39,28 +41,42 @@ export const appendChildrenToTemplate = (
           []
         );
         if (children && children.length > 0 && contentChildren.length > 0) {
-          const clonedFunction = t.arrowFunctionExpression(
-            [],
-            children[0] as unknown as babelTypes.JSXElement
-          );
-          const statement = t.blockStatement([
-            t.expressionStatement(
-              t.callExpression(
-                t.arrowFunctionExpression(
-                  [],
-                  t.callExpression(
-                    t.memberExpression(
-                      t.identifier(templateVariableName),
-                      t.identifier('appendChild')
-                    ),
-                    [t.callExpression(clonedFunction, [])]
-                  )
-                ),
-                []
-              )
-            ),
-          ]);
-          statements.push(statement);
+          if (orgParentId !== '') {
+            const clonedFunction = t.arrowFunctionExpression(
+              [],
+              children[0] as unknown as babelTypes.JSXElement
+            );
+            const statement = t.blockStatement([
+              t.expressionStatement(
+                t.callExpression(
+                  t.arrowFunctionExpression(
+                    [],
+                    t.callExpression(
+                      t.memberExpression(
+                        t.identifier(templateVariableName),
+                        t.identifier('appendChild')
+                      ),
+                      [t.callExpression(clonedFunction, [])]
+                    )
+                  ),
+                  []
+                )
+              ),
+            ]);
+            statements.push(statement);
+          } else {
+            console.log('fragment elementId', elementId);
+            //  t.expressionStatement(
+            //   children[0] as unknown as babelTypes.JSXElement
+            // );
+            const statement = t.variableDeclaration('const', [
+              t.variableDeclarator(
+                t.identifier(elementId),
+                children[0] as unknown as babelTypes.JSXElement
+              ),
+            ]);
+            statements.push(statement);
+          }
         }
       } else if (item.runExpression === RunExpressionType.ifCondition) {
         console.log('appendChildrenToTemplate runExpression ifCondition'); //, (item.expression as unknown as babelTypes.JSXElement).children);

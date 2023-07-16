@@ -4,11 +4,11 @@ export interface AppComponentsProps {
 }
 
 //  <_:_>fragment</_:_>
+// <div data-test="app-components">
+//   </div>
 
 export const AppComponents = (props: AppComponentsProps) => (
-  <div data-test="app-components">
-    <element:Fragment>
-      <div>fragment</div>
-    </element:Fragment>
-  </div>
+  <element:Fragment>
+    <div>fragment</div>
+  </element:Fragment>
 );
