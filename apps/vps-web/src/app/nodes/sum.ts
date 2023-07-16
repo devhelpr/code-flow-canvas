@@ -10,11 +10,13 @@ export const getSum = () => {
   let node: INodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
+  let currentSum = 0;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
     hasInitialValue = true;
+    currentSum = 0;
     if (htmlNode) {
       htmlNode.domElement.textContent = 'Sum';
       if (rect) {
@@ -24,6 +26,7 @@ export const getSum = () => {
     return;
   };
   const compute = (input: string) => {
+    const previousOutput = currentSum;
     let values: any[] = [];
     values = input as unknown as any[];
     if (!Array.isArray(input)) {
@@ -52,9 +55,11 @@ export const getSum = () => {
         rect.resize(240);
       }
     }
+    currentSum = sum;
     return {
       result: sum.toString(),
       followPath: undefined,
+      previousOutput: (previousOutput ?? '').toString(),
     };
   };
   return {
@@ -95,8 +100,9 @@ export const getSum = () => {
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             offsetY: 20,
-            label: '[]',
-            thumbConstraint: 'array',
+            label: '#',
+            color: 'white',
+            thumbConstraint: 'value',
             name: 'output',
           },
           {
@@ -126,6 +132,15 @@ export const getSum = () => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      node.nodeInfo.setValue = (value: string) => {
+        if (htmlNode) {
+          htmlNode.domElement.textContent = value.toString();
+
+          if (rect) {
+            rect.resize(240);
+          }
+        }
+      };
     },
   };
 };

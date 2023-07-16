@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AppComponentsProps {
-  //
+  setExecutionPath: (value: number) => void;
 }
 
 //  <_:_>fragment</_:_>
@@ -9,6 +8,22 @@ export interface AppComponentsProps {
 
 export const AppComponents = (props: AppComponentsProps) => (
   <element:Fragment>
-    <div>fragment</div>
+    <div class="fixed w-[50px] h-[calc(100%-135px)] top-[60px] right-0 left-auto z-50 p-2 bg-slate-400">
+      <input
+        type="range"
+        class="w-full h-full vertical-slider accent-blue-500"
+        orient="vertical"
+        min="0"
+        max="100"
+        step="1"
+        value="0"
+        oninput={(event: InputEvent) => {
+          const value = parseInt((event.target as HTMLInputElement).value);
+          if (!isNaN(value)) {
+            props.setExecutionPath(value);
+          }
+        }}
+      ></input>
+    </div>
   </element:Fragment>
 );

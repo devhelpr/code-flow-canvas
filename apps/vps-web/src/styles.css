@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind base;
 @tailwind utilities;
+
+.vertical-slider {
+	-webkit-appearance: slider-vertical;
+}

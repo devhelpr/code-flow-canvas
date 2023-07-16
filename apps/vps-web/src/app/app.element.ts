@@ -52,8 +52,10 @@ import {
 } from './storage/indexeddb-storage-provider';
 import { getPointOnConnection } from './follow-path/point-on-connection';
 import { AppComponents } from './components/app-components';
+import { NavbarComponents } from './components/navbar-components';
 import { getFetch } from './nodes/fetch';
 import { getShowObject } from './nodes/show-object';
+import { menubarClasses, navBarButton } from './consts/classes';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -61,11 +63,6 @@ template.innerHTML = `
   <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
-
-const button =
-  'rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap';
-const menubar =
-  'fixed top-0 z-20 flex flex-row flex-nowrap items-center justify-start height-[50px] overflow-hidden bg-slate-700 w-full';
 
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
@@ -182,6 +179,98 @@ export class AppElement extends HTMLElement {
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
 
+    const animatePath = (
+      node: IRectNodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: (
+        nodeId: string,
+        node: IRectNodeComponent<NodeInfo>,
+        input: string | any[]
+      ) =>
+        | { result: boolean; output: string | any[]; followPathByName?: string }
+        | Promise<{
+            result: boolean;
+            output: string | any[];
+            followPathByName?: string;
+          }>,
+      onStopped?: (input: string | any[]) => void,
+      input?: string | any[],
+      followPathByName?: string, // normal, success, failure, "subflow",
+      animatedNodes?: {
+        node1?: IElementNode<unknown>;
+        node2?: IElementNode<unknown>;
+        node3?: IElementNode<unknown>;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean
+    ) => {
+      if (!this.canvasApp) {
+        throw new Error('canvasApp not defined');
+      }
+      return _animatePath<NodeInfo>(
+        this.canvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb,
+        singleStep
+      );
+    };
+
+    const animatePathFromThumb = (
+      node: IThumbNodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: (
+        nodeId: string,
+        node: IRectNodeComponent<NodeInfo>,
+        input: string | any[]
+      ) =>
+        | { result: boolean; output: string | any[]; followPathByName?: string }
+        | Promise<{
+            result: boolean;
+            output: string | any[];
+            followPathByName?: string;
+          }>,
+      onStopped?: (input: string | any[]) => void,
+      input?: string | any[],
+      followPathByName?: string, // normal, success, failure, "subflow",
+      animatedNodes?: {
+        node1?: IElementNode<unknown>;
+        node2?: IElementNode<unknown>;
+        node3?: IElementNode<unknown>;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean
+    ) => {
+      if (!this.canvasApp) {
+        throw new Error('canvasApp not defined');
+      }
+      return _animatePathFromThumb<NodeInfo>(
+        this.canvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb,
+        singleStep
+      );
+    };
+
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
@@ -227,6 +316,11 @@ export class AppElement extends HTMLElement {
               ) {
                 const array = getArray();
                 array.createVisualNode(canvasApp, node.x, node.y, node.id);
+              }
+
+              if (node.nodeType === 'shape' && node.nodeInfo?.type === 'sum') {
+                const sum = getSum();
+                sum.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
               if (
@@ -431,7 +525,7 @@ export class AppElement extends HTMLElement {
     const menubarElement = createElement(
       'div',
       {
-        class: menubar,
+        class: menubarClasses,
       },
       rootElement
     );
@@ -458,7 +552,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: button,
+        class: navBarButton,
         click: (event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -474,7 +568,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: button,
+        class: navBarButton,
         click: (event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -496,7 +590,7 @@ export class AppElement extends HTMLElement {
     // createElement(
     //   'button',
     //   {
-    //     class: button,
+    //     class: navBarButton,
     //     click: (event) => {
     //       event.preventDefault();
     //       this.clearCanvas();
@@ -605,7 +699,7 @@ export class AppElement extends HTMLElement {
     // createElement(
     //   'button',
     //   {
-    //     class: button,
+    //     class: navBarButton,
     //     click: (event) => {
     //       event.preventDefault();
     //       console.log('click RECT', (event.target as HTMLElement)?.tagName);
@@ -778,7 +872,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: `${button} relative ',//top-[60px]`,
+        class: `${navBarButton} relative ',//top-[60px]`,
         click: (event) => {
           event.preventDefault();
           this.clearPathExecution();
@@ -885,6 +979,12 @@ export class AppElement extends HTMLElement {
 
       createOption(
         selectNodeType.domElement as HTMLSelectElement,
+        'sum',
+        'sum'
+      );
+
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
         'map',
         'map'
       );
@@ -895,57 +995,21 @@ export class AppElement extends HTMLElement {
         'filter'
       );
     }
-    createElement(
-      'button',
-      {
-        class: `${button} bg-blue-500 hover:bg-blue-700`,
-        click: (event) => {
-          event.preventDefault();
-          const nodeType = (selectNodeType.domElement as HTMLSelectElement)
-            .value;
 
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
-
-          if (nodeType === 'expression') {
-            const expression = getExpression(canvasUpdated);
-            expression.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'if') {
-            const ifCondition = getIfCondition();
-            ifCondition.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'show-input') {
-            const showInput = getShowInput();
-            showInput.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'fetch') {
-            const fetch = getFetch();
-            fetch.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'show-object') {
-            const showObject = getShowObject();
-            showObject.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'array') {
-            const array = getArray();
-            array.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'map') {
-            const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
-            map.createVisualNode(canvasApp, startX, startY);
-          } else if (nodeType === 'filter') {
-            const filter = getFilter<NodeInfo>(
-              animatePath,
-              animatePathFromThumb
-            );
-            filter.createVisualNode(canvasApp, startX, startY);
-          }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Add node'
+    menubarElement.domElement.appendChild(
+      NavbarComponents({
+        selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+        animatePath: animatePath,
+        animatePathFromThumb: animatePathFromThumb,
+        canvasUpdated: canvasUpdated,
+        canvasApp: this.canvasApp,
+      }) as unknown as HTMLElement
     );
 
     createElement(
       'button',
       {
-        class: button,
+        class: navBarButton,
         click: (event) => {
           event.preventDefault();
           this.canvasApp?.centerCamera();
@@ -959,7 +1023,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'button',
       {
-        class: button,
+        class: navBarButton,
         click: (event) => {
           event.preventDefault();
           this.clearCanvas();
@@ -1153,98 +1217,6 @@ export class AppElement extends HTMLElement {
     //   'move point over lines'
     // );
 
-    const animatePath = (
-      node: IRectNodeComponent<NodeInfo>,
-      color: string,
-      onNextNode?: (
-        nodeId: string,
-        node: IRectNodeComponent<NodeInfo>,
-        input: string | any[]
-      ) =>
-        | { result: boolean; output: string | any[]; followPathByName?: string }
-        | Promise<{
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-          }>,
-      onStopped?: (input: string | any[]) => void,
-      input?: string | any[],
-      followPathByName?: string, // normal, success, failure, "subflow",
-      animatedNodes?: {
-        node1?: IElementNode<unknown>;
-        node2?: IElementNode<unknown>;
-        node3?: IElementNode<unknown>;
-      },
-      offsetX?: number,
-      offsetY?: number,
-      followPathToEndThumb?: boolean,
-      singleStep?: boolean
-    ) => {
-      if (!this.canvasApp) {
-        throw new Error('canvasApp not defined');
-      }
-      return _animatePath<NodeInfo>(
-        this.canvasApp,
-        node,
-        color,
-        onNextNode,
-        onStopped,
-        input,
-        followPathByName,
-        animatedNodes,
-        offsetX,
-        offsetY,
-        followPathToEndThumb,
-        singleStep
-      );
-    };
-
-    const animatePathFromThumb = (
-      node: IThumbNodeComponent<NodeInfo>,
-      color: string,
-      onNextNode?: (
-        nodeId: string,
-        node: IRectNodeComponent<NodeInfo>,
-        input: string | any[]
-      ) =>
-        | { result: boolean; output: string | any[]; followPathByName?: string }
-        | Promise<{
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-          }>,
-      onStopped?: (input: string | any[]) => void,
-      input?: string | any[],
-      followPathByName?: string, // normal, success, failure, "subflow",
-      animatedNodes?: {
-        node1?: IElementNode<unknown>;
-        node2?: IElementNode<unknown>;
-        node3?: IElementNode<unknown>;
-      },
-      offsetX?: number,
-      offsetY?: number,
-      followPathToEndThumb?: boolean,
-      singleStep?: boolean
-    ) => {
-      if (!this.canvasApp) {
-        throw new Error('canvasApp not defined');
-      }
-      return _animatePathFromThumb<NodeInfo>(
-        this.canvasApp,
-        node,
-        color,
-        onNextNode,
-        onStopped,
-        input,
-        followPathByName,
-        animatedNodes,
-        offsetX,
-        offsetY,
-        followPathToEndThumb,
-        singleStep
-      );
-    };
-
     this.testCircle = createElement(
       'div',
       {
@@ -1291,6 +1263,109 @@ export class AppElement extends HTMLElement {
       ''
     );
 
+    const showProgressOnPathExecution = (
+      value: number,
+      lastPathExecution: RunNodeResult<any>[]
+    ) => {
+      if (this.scopeNodeDomElement) {
+        this.scopeNodeDomElement.classList.remove('bg-blue-300');
+        this.scopeNodeDomElement = undefined;
+      }
+      this.currentPathExecution = lastPathExecution;
+
+      const stepSize = 100000 / (lastPathExecution.length - 1);
+      const step = Math.floor(value / stepSize);
+      const pathStep = lastPathExecution[step];
+      const node = pathStep.node;
+      if (pathStep.scopeNode) {
+        this.scopeNodeDomElement = (
+          pathStep.scopeNode.domElement as HTMLElement
+        ).firstChild as HTMLElement;
+        this.scopeNodeDomElement.classList.add('bg-blue-300');
+      }
+      lastPathExecution.forEach((path, indexPath) => {
+        if (path.node && path.node.domElement) {
+          (
+            (path.node.domElement as HTMLElement).firstChild as HTMLElement
+          ).classList.remove('bg-blue-400');
+        }
+      });
+      if (node && node.domElement) {
+        (
+          (node.domElement as HTMLElement).firstChild as HTMLElement
+        ).classList.add('bg-blue-400');
+
+        const pointValue = value - step * stepSize;
+        const percentage = pointValue / stepSize;
+        console.log(
+          'showProgressOnPathExecution',
+          step,
+          lastPathExecution.length
+        );
+        let loop = 0;
+        while (loop < lastPathExecution.length) {
+          const path = lastPathExecution[loop];
+          if (path.node && path.node.nodeInfo && path.node.nodeInfo.setValue) {
+            if (loop > step) {
+              path.node.nodeInfo.setValue(path.previousOutput ?? path.output);
+            } else {
+              path.node.nodeInfo.setValue(path.output);
+            }
+          }
+          loop++;
+        }
+        if (value % stepSize !== 0 && step < lastPathExecution.length) {
+          (this.testCircle?.domElement as HTMLElement).classList.remove(
+            'hidden'
+          );
+          (this.message?.domElement as HTMLElement).classList.remove('hidden');
+
+          const nextNodeId = lastPathExecution[step + 1].nodeId;
+          if (pathStep.endNode && pathStep.connection) {
+            const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+              percentage,
+              pathStep.connection,
+              node,
+              pathStep.endNode
+            );
+            const domCircle = this.testCircle?.domElement as HTMLElement;
+            const domMessage = this.message?.domElement as HTMLElement;
+            const domMessageText = this.messageText?.domElement as HTMLElement;
+            domCircle.style.display = 'flex';
+            domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+            domMessage.style.display = 'flex';
+            domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+            domMessageText.textContent = pathStep.output.toString();
+            domMessage.title = pathStep.output.toString();
+          } else {
+            pathStep.node.connections.forEach((connection) => {
+              if (
+                connection.startNode?.id === pathStep.nodeId &&
+                connection.endNode?.id === nextNodeId
+              ) {
+                const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+                  percentage,
+                  connection,
+                  connection.startNode,
+                  connection.endNode
+                );
+                const domCircle = this.testCircle?.domElement as HTMLElement;
+                const domMessage = this.message?.domElement as HTMLElement;
+                const domMessageText = this.messageText
+                  ?.domElement as HTMLElement;
+                domCircle.style.display = 'flex';
+                domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                domMessage.style.display = 'flex';
+                domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+                domMessageText.textContent = pathStep.output.toString();
+                domMessage.title = pathStep.output.toString();
+              }
+            });
+          }
+        }
+      }
+    };
+
     const pathRange = createElement(
       'input',
       {
@@ -1304,94 +1379,9 @@ export class AppElement extends HTMLElement {
           const lastPathExecution =
             this.pathExecutions[this.pathExecutions.length - 1];
           if (lastPathExecution) {
-            if (this.scopeNodeDomElement) {
-              this.scopeNodeDomElement.classList.remove('bg-blue-300');
-              this.scopeNodeDomElement = undefined;
-            }
-            this.currentPathExecution = lastPathExecution;
             const value = parseInt((event.target as HTMLInputElement).value);
             if (!isNaN(value)) {
-              const stepSize = 100000 / (lastPathExecution.length - 1);
-              const step = Math.floor(value / stepSize);
-              const pathStep = lastPathExecution[step];
-              const node = pathStep.node;
-              if (pathStep.scopeNode) {
-                this.scopeNodeDomElement = (
-                  pathStep.scopeNode.domElement as HTMLElement
-                ).firstChild as HTMLElement;
-                this.scopeNodeDomElement.classList.add('bg-blue-300');
-              }
-              lastPathExecution.forEach((path) => {
-                if (path.node && path.node.domElement) {
-                  (
-                    (path.node.domElement as HTMLElement)
-                      .firstChild as HTMLElement
-                  ).classList.remove('bg-blue-400');
-                }
-              });
-              if (node && node.domElement) {
-                (
-                  (node.domElement as HTMLElement).firstChild as HTMLElement
-                ).classList.add('bg-blue-400');
-
-                const pointValue = value - step * stepSize;
-                const percentage = pointValue / stepSize;
-
-                if (value % stepSize !== 0 && step < lastPathExecution.length) {
-                  (this.testCircle?.domElement as HTMLElement).classList.remove(
-                    'hidden'
-                  );
-                  (this.message?.domElement as HTMLElement).classList.remove(
-                    'hidden'
-                  );
-
-                  const nextNodeId = lastPathExecution[step + 1].nodeId;
-                  if (pathStep.endNode && pathStep.connection) {
-                    const bezierCurvePoints = getPointOnConnection<NodeInfo>(
-                      percentage,
-                      pathStep.connection,
-                      node,
-                      pathStep.endNode
-                    );
-                    const domCircle = this.testCircle
-                      ?.domElement as HTMLElement;
-                    const domMessage = this.message?.domElement as HTMLElement;
-                    const domMessageText = this.messageText
-                      ?.domElement as HTMLElement;
-                    domCircle.style.display = 'flex';
-                    domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                    domMessage.style.display = 'flex';
-                    domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                    domMessageText.textContent = pathStep.output.toString();
-                  } else {
-                    pathStep.node.connections.forEach((connection) => {
-                      if (
-                        connection.startNode?.id === pathStep.nodeId &&
-                        connection.endNode?.id === nextNodeId
-                      ) {
-                        const bezierCurvePoints =
-                          getPointOnConnection<NodeInfo>(
-                            percentage,
-                            connection,
-                            connection.startNode,
-                            connection.endNode
-                          );
-                        const domCircle = this.testCircle
-                          ?.domElement as HTMLElement;
-                        const domMessage = this.message
-                          ?.domElement as HTMLElement;
-                        const domMessageText = this.messageText
-                          ?.domElement as HTMLElement;
-                        domCircle.style.display = 'flex';
-                        domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                        domMessage.style.display = 'flex';
-                        domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                        domMessageText.textContent = pathStep.output.toString();
-                      }
-                    });
-                  }
-                }
-              }
+              showProgressOnPathExecution(value, lastPathExecution);
             }
           }
         },
@@ -1429,7 +1419,45 @@ export class AppElement extends HTMLElement {
       },
       rootElement
     );
-    rootElement.appendChild(AppComponents({}) as unknown as HTMLElement);
+
+    const setExecutionPath = (value: number) => {
+      const index = Math.round(
+        ((this.pathExecutions.length - 1) * value) / 100
+      );
+
+      const pathExecution = this.pathExecutions[index];
+      if (pathExecution) {
+        const progressOoPathExecution = parseInt(
+          (pathRange.domElement as HTMLInputElement).value
+        );
+
+        console.log(
+          'setExecutionPath',
+          index,
+          value,
+          //          this.pathExecutions.length,
+          progressOoPathExecution, // this cannot be compared with  the index of pathExectution..
+          pathExecution.length
+        );
+
+        // pathExecution.forEach((path, index) => {
+        //   if (path.node && path.node.nodeInfo && path.node.nodeInfo.setValue) {
+        //     if (index < progressOoPathExecution - 1) {
+        //       path.node.nodeInfo.setValue(path.previousOutput ?? path.output);
+        //     } else {
+        //       path.node.nodeInfo.setValue(path.output);
+        //     }
+        //   }
+        // });
+
+        showProgressOnPathExecution(progressOoPathExecution, pathExecution);
+      }
+    };
+    rootElement.appendChild(
+      AppComponents({
+        setExecutionPath,
+      }) as unknown as HTMLElement
+    );
     // let raf = -1;
     // let inputTimeout = -1;
 

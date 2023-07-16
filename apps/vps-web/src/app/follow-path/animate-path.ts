@@ -19,6 +19,62 @@ import {
 } from './get-node-connection-pairs';
 import { getPointOnConnection } from './point-on-connection';
 
+export type AnimatePathFunction<T> = (
+  node: IRectNodeComponent<T>,
+  color: string,
+  onNextNode?: (
+    nodeId: string,
+    node: IRectNodeComponent<T>,
+    input: string | any[]
+  ) =>
+    | { result: boolean; output: string | any[]; followPathByName?: string }
+    | Promise<{
+        result: boolean;
+        output: string | any[];
+        followPathByName?: string;
+      }>,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
+  followPathByName?: string, // normal, success, failure, "subflow",
+  animatedNodes?: {
+    node1?: IElementNode<unknown>;
+    node2?: IElementNode<unknown>;
+    node3?: IElementNode<unknown>;
+  },
+  offsetX?: number,
+  offsetY?: number,
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
+) => void;
+
+export type AnimatePathFromThumbFunction<T> = (
+  node: IThumbNodeComponent<T>,
+  color: string,
+  onNextNode?: (
+    nodeId: string,
+    node: IRectNodeComponent<T>,
+    input: string | any[]
+  ) =>
+    | { result: boolean; output: string | any[]; followPathByName?: string }
+    | Promise<{
+        result: boolean;
+        output: string | any[];
+        followPathByName?: string;
+      }>,
+  onStopped?: (input: string | any[]) => void,
+  input?: string | any[],
+  followPathByName?: string, // normal, success, failure, "subflow",
+  animatedNodes?: {
+    node1?: IElementNode<unknown>;
+    node2?: IElementNode<unknown>;
+    node3?: IElementNode<unknown>;
+  },
+  offsetX?: number,
+  offsetY?: number,
+  followPathToEndThumb?: boolean,
+  singleStep?: boolean
+) => void;
+
 export type FollowPathFunction = <T>(
   canvasApp: CanvasAppInstance,
   node: IRectNodeComponent<T>,

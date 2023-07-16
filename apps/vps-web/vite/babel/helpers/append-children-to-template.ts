@@ -66,9 +66,8 @@ export const appendChildrenToTemplate = (
             statements.push(statement);
           } else {
             console.log('fragment elementId', elementId);
-            //  t.expressionStatement(
-            //   children[0] as unknown as babelTypes.JSXElement
-            // );
+            // TODO : fragment can currently only contain one child element...
+            // for multiple children the current construction does not work
             const statement = t.variableDeclaration('const', [
               t.variableDeclarator(
                 t.identifier(elementId),

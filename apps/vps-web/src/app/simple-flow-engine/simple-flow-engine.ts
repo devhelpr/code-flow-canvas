@@ -13,9 +13,11 @@ registerCustomFunction('random', [], () => {
 
 export interface RunNodeResult<T> {
   input: string | any[];
+  previousOutput: string | any[];
   output: string | any[];
   result: boolean;
   nodeId: string;
+  nodeType: string;
   path: string;
   scopeNode?: IRectNodeComponent<T>;
   node: IRectNodeComponent<T>;
@@ -59,10 +61,12 @@ export const runNode = <T>(
   );
   let result: any = false;
   let followPath: string | undefined = undefined;
+  let previousOutput: any = undefined;
   if (formInfo?.compute) {
     const computeResult = formInfo.compute(input ?? '', pathExecution);
     result = computeResult.result;
     followPath = computeResult.followPath;
+    previousOutput = computeResult.previousOutput;
   } else {
     result = false;
     followPath = undefined;
@@ -72,10 +76,12 @@ export const runNode = <T>(
       pathExecution.push({
         input: input ?? '',
         output: result,
+        previousOutput: previousOutput,
         result: !!result,
         nodeId: node.id,
         path: followPath ?? '',
         node: node,
+        nodeType: (node.nodeInfo as any)?.type ?? '',
       });
     }
     animatePath(
@@ -84,6 +90,7 @@ export const runNode = <T>(
       (nodeId: string, node: IRectNodeComponent<T>, input: string | any[]) => {
         console.log('Next nodeId', nodeId, node, input);
         let result: any = false;
+        let previousOutput: any = undefined;
         const formInfo = node.nodeInfo as unknown as any;
 
         if (formInfo.computeAsync) {
@@ -97,11 +104,13 @@ export const runNode = <T>(
                 if (pathExecution) {
                   pathExecution.push({
                     input: input ?? '',
+                    previousOutput: computeResult.previousOutput,
                     output: computeResult.output ?? input,
                     result: result,
                     nodeId: node.id,
                     path: followPath ?? '',
                     node: node,
+                    nodeType: (node.nodeInfo as any)?.type ?? '',
                   });
                 }
 
@@ -119,6 +128,7 @@ export const runNode = <T>(
           const computeResult = formInfo.compute(input, pathExecution);
           result = computeResult.result;
           followPath = computeResult.followPath;
+          previousOutput = computeResult.previousOutput;
         } else {
           result = false;
           followPath = undefined;
@@ -135,10 +145,12 @@ export const runNode = <T>(
           pathExecution.push({
             input: input ?? '',
             output: result,
+            previousOutput: previousOutput,
             result: !!result,
             nodeId: node.id,
             path: followPath ?? '',
             node: node,
+            nodeType: (node.nodeInfo as any)?.type ?? '',
           });
         }
 
@@ -259,6 +271,7 @@ export const runNodeFromThumb = <T>(
     (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
       console.log('Next nodeId', nodeId, node, input);
       let result: any = false;
+      let previousOutput: any = undefined;
       const formInfo = node.nodeInfo as unknown as any;
 
       if (formInfo.computeAsync) {
@@ -274,10 +287,12 @@ export const runNodeFromThumb = <T>(
                   input: input ?? '',
                   scopeNode,
                   output: computeResult.output ?? input,
+                  previousOutput: computeResult.previousOutput,
                   result: result,
                   nodeId: node.id,
                   path: followPath ?? '',
                   node: node as unknown as IRectNodeComponent<T>,
+                  nodeType: (node.nodeInfo as any)?.type ?? '',
                 });
               }
 
@@ -296,6 +311,7 @@ export const runNodeFromThumb = <T>(
         const computeResult = formInfo.compute(input, pathExecution, loopIndex);
         result = computeResult.result;
         followPath = computeResult.followPath;
+        previousOutput = computeResult.previousOutput;
       } else {
         result = false;
         followPath = undefined;
@@ -312,11 +328,13 @@ export const runNodeFromThumb = <T>(
         pathExecution.push({
           input: input ?? '',
           output: result,
+          previousOutput: previousOutput,
           result: !!result,
           nodeId: node.id,
           scopeNode,
           path: followPath ?? '',
           node: node as unknown as IRectNodeComponent<T>,
+          nodeType: (node.nodeInfo as any)?.type ?? '',
         });
       }
 
