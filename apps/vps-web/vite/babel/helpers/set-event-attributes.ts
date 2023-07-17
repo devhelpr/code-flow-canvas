@@ -53,7 +53,8 @@ export const setEventAttributes = (
         attribute.value.expression &&
         (attribute.value.expression.type === 'ArrowFunctionExpression' ||
           attribute.value.expression.type === 'MemberExpression' ||
-          attribute.value.expression.type === 'ConditionalExpression')
+          attribute.value.expression.type === 'ConditionalExpression' ||
+          attribute.value.expression.type === 'BinaryExpression')
       ) {
         if (attribute.value.expression.type === 'ConditionalExpression') {
           console.log(
@@ -62,26 +63,49 @@ export const setEventAttributes = (
             attribute.value.expression
           );
         }
-        statements.push(
-          t.expressionStatement(
-            t.callExpression(
-              t.memberExpression(
-                t.identifier(elementName),
-                attribute.name.name.toString().startsWith('on')
-                  ? t.identifier('addEventListener')
-                  : t.identifier('setAttribute')
-              ),
-              [
-                t.stringLiteral(
-                  attribute.name.name.toString().startsWith('on')
-                    ? attribute.name.name.toString().slice(2)
-                    : attribute.name.name.toString()
+
+        if (attribute.name.name.toString() === 'selected') {
+          statements.push(
+            t.ifStatement(
+              attribute.value.expression,
+              t.blockStatement([
+                t.expressionStatement(
+                  t.callExpression(
+                    t.memberExpression(
+                      t.identifier(elementName),
+                      t.identifier('setAttribute')
+                    ),
+                    [
+                      t.stringLiteral(attribute.name.name.toString()),
+                      t.stringLiteral(attribute.name.name.toString()),
+                    ]
+                  )
                 ),
-                attribute.value.expression,
-              ]
+              ])
             )
-          )
-        );
+          );
+        } else {
+          statements.push(
+            t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier(elementName),
+                  attribute.name.name.toString().startsWith('on')
+                    ? t.identifier('addEventListener')
+                    : t.identifier('setAttribute')
+                ),
+                [
+                  t.stringLiteral(
+                    attribute.name.name.toString().startsWith('on')
+                      ? attribute.name.name.toString().slice(2)
+                      : attribute.name.name.toString()
+                  ),
+                  attribute.value.expression,
+                ]
+              )
+            )
+          );
+        }
       }
     });
   }

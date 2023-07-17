@@ -137,10 +137,22 @@ export const getIfCondition = (updated?: () => void) => {
       ) as unknown as INodeComponent<NodeInfo>;
 
       console.log('trackNamedSignal register if-condition', id);
+
+      let currentMode = mode;
+      let currentValue = expression ?? '';
+
+      trackNamedSignal(`${id}_Mode`, (value) => {
+        console.log('trackNamedSignal if-condition', id, value);
+        currentMode = value;
+        jsxComponentWrapper.domElement.textContent =
+          currentMode === 'random' ? 'random' : currentValue ?? 'expression';
+      });
+
       trackNamedSignal(`${id}_expression`, (value) => {
         console.log('trackNamedSignal if-condition', id, value);
+        currentValue = value;
         jsxComponentWrapper.domElement.textContent =
-          mode === 'random' ? 'random' : value ?? 'expression';
+          currentMode === 'random' ? 'random' : currentValue ?? 'expression';
       });
 
       const rect = canvasApp.createRect(
