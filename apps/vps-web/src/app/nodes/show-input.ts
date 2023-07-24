@@ -108,6 +108,10 @@ export const getShowInput = () => {
         }
       );
 
+      if (!rect.nodeComponent) {
+        throw new Error('rect.nodeComponent is undefined');
+      }
+
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;

@@ -151,6 +151,9 @@ export const getExpression = (updated?: () => void) => {
           },
         }
       );
+      if (!rect.nodeComponent) {
+        throw new Error('rect.nodeComponent is undefined');
+      }
       rect.nodeComponent.nodeInfo.formElements = formElements;
       errorNode = createElement(
         'div',

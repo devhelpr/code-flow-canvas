@@ -427,7 +427,9 @@ export class AppElement extends HTMLElement {
                     undefined,
                     node.id
                   );
-
+                  if (!curve.nodeComponent) {
+                    return;
+                  }
                   curve.nodeComponent.isControlled = true;
                   curve.nodeComponent.nodeInfo = {};
 

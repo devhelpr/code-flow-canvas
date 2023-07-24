@@ -143,11 +143,16 @@ export const getBaseIterator = <T>(
             if (textNode) {
               textNode.textContent = `${mapLoop + 1}/${values.length}`;
             }
-
-            const connection = rect?.nodeComponent.connections?.find(
+            if (!rect?.nodeComponent) {
+              reject();
+              return;
+            }
+            const connection = rect.nodeComponent.connections?.find(
               (connection) => {
                 return (
-                  connection.startNode?.id === rect?.nodeComponent.id &&
+                  rect &&
+                  rect.nodeComponent &&
+                  connection.startNode?.id === rect.nodeComponent.id &&
                   connection.startNodeThumb?.pathName === 'test'
                 );
               }
@@ -160,7 +165,9 @@ export const getBaseIterator = <T>(
                 const testConnection = rect?.nodeComponent.connections?.find(
                   (connection) => {
                     return (
-                      connection.startNode?.id === rect?.nodeComponent.id &&
+                      rect &&
+                      rect.nodeComponent &&
+                      connection.startNode?.id === rect.nodeComponent.id &&
                       connection.startNodeThumb?.pathName === 'test'
                     );
                   }
@@ -176,7 +183,13 @@ export const getBaseIterator = <T>(
                       (input: string | any[]) => {
                         if (connection.startNodeThumb) {
                           // TODO : push result to pathExecution
-                          if (pathExecution && connection.startNode) {
+                          if (
+                            node &&
+                            pathExecution &&
+                            connection &&
+                            connection.startNode &&
+                            connection.endNode
+                          ) {
                             pathExecution.push({
                               nodeId: node.id,
                               connection: connection,
@@ -187,6 +200,8 @@ export const getBaseIterator = <T>(
                               result: true,
                               input: value,
                               output: input,
+                              previousOutput: input,
+                              nodeType: nodeTypeName,
                             });
                           }
 
@@ -610,7 +625,7 @@ export const getBaseIterator = <T>(
 
         const connnection2 = mapCanvasApp.createCubicBezier();
 
-        if (input && connnection2.nodeComponent) {
+        if (input && input.nodeComponent && connnection2.nodeComponent) {
           connnection2.nodeComponent.isControlled = true;
           connnection2.nodeComponent.startNode = input.nodeComponent;
           connnection2.nodeComponent.startNodeThumb = getThumbNode(
@@ -620,7 +635,7 @@ export const getBaseIterator = <T>(
           input.nodeComponent.connections?.push(connnection2.nodeComponent);
         }
 
-        if (end && connnection2.nodeComponent) {
+        if (end && end.nodeComponent && connnection2.nodeComponent) {
           connnection2.nodeComponent.isControlled = true;
           connnection2.nodeComponent.endNode = end.nodeComponent;
           connnection2.nodeComponent.endNodeThumb = getThumbNode(
@@ -629,14 +644,14 @@ export const getBaseIterator = <T>(
           );
           end.nodeComponent.connections?.push(connnection2.nodeComponent);
         }
-        if (connnection2.nodeComponent.update) {
+        if (connnection2.nodeComponent && connnection2.nodeComponent.update) {
           connnection2.nodeComponent.update();
         }
 
         // connnect node connector to end
         const connnection3 = mapCanvasApp.createCubicBezier();
 
-        if (end && connnection3.nodeComponent) {
+        if (end && end.nodeComponent && connnection3.nodeComponent) {
           connnection3.nodeComponent.isControlled = true;
           connnection3.nodeComponent.startNode = end.nodeComponent;
           connnection3.nodeComponent.startNodeThumb = getThumbNode(
@@ -647,7 +662,12 @@ export const getBaseIterator = <T>(
           //end.nodeComponent.connections?.push(connnection3.nodeComponent);
         }
 
-        if (output && connnection3.nodeComponent) {
+        if (
+          output &&
+          output.nodeComponent &&
+          end.nodeComponent &&
+          connnection3.nodeComponent
+        ) {
           connnection3.nodeComponent.isControlled = true;
           connnection3.nodeComponent.endNode = output.nodeComponent;
           connnection3.nodeComponent.endNodeThumb = getThumbNode(
@@ -658,7 +678,7 @@ export const getBaseIterator = <T>(
           output.nodeComponent.connections?.push(connnection3.nodeComponent);
         }
 
-        if (connnection3.nodeComponent.update) {
+        if (connnection3.nodeComponent && connnection3.nodeComponent.update) {
           connnection3.nodeComponent.update();
         }
 
@@ -673,7 +693,7 @@ export const getBaseIterator = <T>(
           true,
           true
         );
-        if (end && connnection4.nodeComponent) {
+        if (end && end.nodeComponent && connnection4.nodeComponent) {
           connnection4.nodeComponent.isControlled = true;
           connnection4.nodeComponent.startNode = end.nodeComponent;
           connnection4.nodeComponent.startNodeThumb = getThumbNode(
@@ -685,7 +705,11 @@ export const getBaseIterator = <T>(
           end.nodeComponent.connections?.push(connnection4.nodeComponent);
         }
 
-        if (subOutput && connnection4.nodeComponent) {
+        if (
+          subOutput &&
+          subOutput.nodeComponent &&
+          connnection4.nodeComponent
+        ) {
           connnection4.nodeComponent.isControlled = true;
           connnection4.nodeComponent.endNode = subOutput.nodeComponent;
           connnection4.nodeComponent.endNodeThumb = getThumbNode(
@@ -696,9 +720,12 @@ export const getBaseIterator = <T>(
           subOutput.nodeComponent.connections?.push(connnection4.nodeComponent);
         }
 
-        if (connnection4.nodeComponent.update) {
+        if (connnection4.nodeComponent && connnection4.nodeComponent.update) {
           connnection4.nodeComponent.update();
         }
+      }
+      if (!rect.nodeComponent) {
+        throw new Error('rect.nodeComponent is undefined');
       }
 
       node = rect.nodeComponent;
