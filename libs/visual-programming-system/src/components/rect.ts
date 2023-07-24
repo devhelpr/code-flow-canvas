@@ -172,7 +172,7 @@ export class Rect<T> {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
             this.onCanReceiveDroppedComponent;
           thumbNode.nodeComponent.onReceiveDroppedComponent =
-            this.onReceiveDroppedComponent;
+            this.onReceiveDroppedComponent(this.rectNode);
         }
         thumbNode.nodeComponent.update = this.onEndThumbConnectorElementupdate;
 
@@ -196,107 +196,105 @@ export class Rect<T> {
     this.rectPathInstance.resize(width);
   }
 
-  private onReceiveDroppedComponent(
-    thumbNode: IThumbNodeComponent<T>,
-    component: INodeComponent<T>
-  ) {
-    // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
-
-    if (!this.rectNode) {
-      return;
-    }
-    console.log(
-      'DROPPED ON RIGHT THUMB',
-      thumbNode,
-      component.id,
-      component.parent,
-      component.specifier,
-      this.rectNode.x,
-      this.rectNode.y,
-      this.rectNode.id
-    );
-
-    let previousConnectedNodeId = '';
-
-    // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
-    // (not to be confused with the resize handlers)
-    if (
-      (component &&
-        component.parent &&
-        thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-        component.specifier === 'end') ||
-      (component &&
-        component.parent &&
-        thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-        component.specifier === 'begin')
-    ) {
-      const parentConnection =
-        component.parent as unknown as IConnectionNodeComponent<T>;
-      let nodeReference = this.rectNode;
-      if (component.specifier === 'begin') {
-        previousConnectedNodeId = parentConnection.startNode?.id ?? '';
-        parentConnection.startNode = this.rectNode;
-        parentConnection.startNodeThumb = thumbNode;
-      } else {
-        previousConnectedNodeId = parentConnection.endNode?.id ?? '';
-        parentConnection.endNode = this.rectNode;
-        parentConnection.endNodeThumb = thumbNode;
-        if (parentConnection.startNode) {
-          // use start node as reference for the curve's begin point
-          nodeReference = parentConnection.startNode;
-        }
+  private onReceiveDroppedComponent =
+    (rectNode: IRectNodeComponent<T>) =>
+    (thumbNode: IThumbNodeComponent<T>, component: INodeComponent<T>) => {
+      // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
+      if (!rectNode) {
+        return;
       }
-      component.parent.isControlled = true;
-
-      // remove the previous connected node from the connections of the rectNode
-      this.rectNode.connections = (this.rectNode.connections ?? []).filter(
-        (connection) => {
-          return (
-            connection.startNode?.id !== previousConnectedNodeId &&
-            connection.endNode?.id !== previousConnectedNodeId
-          );
-        }
+      console.log(
+        'DROPPED ON RIGHT THUMB',
+        thumbNode,
+        component.id,
+        component.parent,
+        component.specifier,
+        rectNode.x,
+        rectNode.y,
+        rectNode.id
       );
-      this.rectNode.connections?.push(parentConnection);
 
-      // Update both sides of the connection to get a correct curve
-      if (component.parent.update) {
-        component.parent.update(
-          component.parent,
-          nodeReference.x,
-          nodeReference.y,
-          this.rectNode
-        );
+      let previousConnectedNodeId = '';
+
+      // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
+      // (not to be confused with the resize handlers)
+      if (
+        (component &&
+          component.parent &&
+          thumbNode.thumbConnectionType === ThumbConnectionType.end &&
+          component.specifier === 'end') ||
+        (component &&
+          component.parent &&
+          thumbNode.thumbConnectionType === ThumbConnectionType.start &&
+          component.specifier === 'begin')
+      ) {
+        const parentConnection =
+          component.parent as unknown as IConnectionNodeComponent<T>;
+        let nodeReference = rectNode;
         if (component.specifier === 'begin') {
-          if (parentConnection.endNode) {
-            component.parent.update(
-              component.parent,
-              nodeReference.x,
-              nodeReference.y,
-              parentConnection.endNode
-            );
-          }
+          previousConnectedNodeId = parentConnection.startNode?.id ?? '';
+          parentConnection.startNode = this.rectNode;
+          parentConnection.startNodeThumb = thumbNode;
         } else {
+          previousConnectedNodeId = parentConnection.endNode?.id ?? '';
+          parentConnection.endNode = this.rectNode;
+          parentConnection.endNodeThumb = thumbNode;
           if (parentConnection.startNode) {
-            component.parent.update(
-              component.parent,
-              nodeReference.x,
-              nodeReference.y,
-              parentConnection.startNode
-            );
+            // use start node as reference for the curve's begin point
+            nodeReference = parentConnection.startNode;
           }
         }
-      }
+        component.parent.isControlled = true;
 
-      (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
-        parentConnection.startNode?.domElement as unknown as HTMLElement
-      );
+        // remove the previous connected node from the connections of the rectNode
+        rectNode.connections = (rectNode.connections ?? []).filter(
+          (connection) => {
+            return (
+              connection.startNode?.id !== previousConnectedNodeId &&
+              connection.endNode?.id !== previousConnectedNodeId
+            );
+          }
+        );
+        rectNode.connections?.push(parentConnection);
 
-      if (this.canvasUpdated) {
-        this.canvasUpdated();
+        // Update both sides of the connection to get a correct curve
+        if (component.parent.update) {
+          component.parent.update(
+            component.parent,
+            nodeReference.x,
+            nodeReference.y,
+            this.rectNode
+          );
+          if (component.specifier === 'begin') {
+            if (parentConnection.endNode) {
+              component.parent.update(
+                component.parent,
+                nodeReference.x,
+                nodeReference.y,
+                parentConnection.endNode
+              );
+            }
+          } else {
+            if (parentConnection.startNode) {
+              component.parent.update(
+                component.parent,
+                nodeReference.x,
+                nodeReference.y,
+                parentConnection.startNode
+              );
+            }
+          }
+        }
+
+        (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
+          parentConnection.startNode?.domElement as unknown as HTMLElement
+        );
+
+        if (this.canvasUpdated) {
+          this.canvasUpdated();
+        }
       }
-    }
-  }
+    };
 
   private onCanReceiveDroppedComponent(
     thumbNode: IThumbNodeComponent<T>,
