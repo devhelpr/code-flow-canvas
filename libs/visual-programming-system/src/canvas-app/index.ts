@@ -1,9 +1,7 @@
 import { setCamera, transformToCamera } from '../camera';
-import {
-  createCubicBezier,
-  createQuadraticBezier,
-  createRect,
-} from '../components';
+import { QuadraticBezierConnection } from '../components/quadratic-bezier-connection';
+import { CubicBezierConnection } from '../components/qubic-bezier-connection';
+import { Rect } from '../components/rect';
 import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
@@ -559,7 +557,7 @@ export const createCanvasApp = <T>(
       id?: string,
       nodeInfo?: T
     ) => {
-      const rect = createRect<T>(
+      const rectInstance = new Rect<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
         pathHiddenElement,
@@ -579,11 +577,35 @@ export const createCanvasApp = <T>(
         onCanvasUpdated,
         id
       );
-      rect.nodeComponent.nodeInfo = nodeInfo;
+
+      // const rect = createRect<T>(
+      //   canvas as unknown as INodeComponent<T>,
+      //   interactionStateMachine,
+      //   pathHiddenElement,
+      //   elements,
+      //   x,
+      //   y,
+      //   width,
+      //   height,
+      //   text,
+      //   shapeType,
+      //   thumbs,
+      //   markup,
+      //   layoutProperties,
+      //   hasStaticWidthHeight,
+      //   disableInteraction,
+      //   disableManualResize,
+      //   onCanvasUpdated,
+      //   id
+      // );
+      if (!rectInstance || !rectInstance.nodeComponent) {
+        throw new Error('rectInstance is undefined');
+      }
+      rectInstance.nodeComponent.nodeInfo = nodeInfo;
       if (onCanvasUpdated) {
         onCanvasUpdated();
       }
-      return rect;
+      return rectInstance;
     },
     createCubicBezier: (
       startX?: number,
@@ -598,7 +620,7 @@ export const createCanvasApp = <T>(
       isDashed = false,
       id?: string
     ) => {
-      const curve = createCubicBezier<T>(
+      const curve = new CubicBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
         pathHiddenElement,
@@ -632,7 +654,7 @@ export const createCanvasApp = <T>(
       isDashed = false,
       id?: string
     ) => {
-      const curve = createQuadraticBezier<T>(
+      const curve = new QuadraticBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
         pathHiddenElement,
