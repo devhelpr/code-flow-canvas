@@ -19,6 +19,17 @@ import { CubicBezierConnection } from './qubic-bezier-connection';
 
 export class ThumbNode<T> {
   nodeComponent?: IThumbNodeComponent<T>;
+  interactionStateMachine: InteractionStateMachine<T>;
+  disableInteraction = false;
+  canvas: INodeComponent<T> | undefined;
+  parentRectNode?: IRectNodeComponent<T>;
+  canvasElement: DOMElementNode;
+  canvasElements?: ElementNodeMap<T>;
+  pathHiddenElement?: IElementNode<T>;
+  canvasUpdated?: () => void;
+  circleElement: IElementNode<T> | undefined;
+  interactionInfo: IPointerDownResult;
+
   constructor(
     canvasElement: DOMElementNode,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -47,7 +58,16 @@ export class ThumbNode<T> {
     thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void
   ) {
-    let interactionInfo: IPointerDownResult = {
+    this.interactionStateMachine = interactionStateMachine;
+    this.disableInteraction = disableInteraction ?? false;
+    this.canvas = canvas;
+    this.parentRectNode = parentRectNode;
+    this.canvasElement = canvasElement;
+    this.canvasElements = canvasElements;
+    this.pathHiddenElement = pathHiddenElement;
+    this.canvasUpdated = canvasUpdated;
+
+    this.interactionInfo = {
       xOffsetWithinElementOnFirstClick: 0,
       yOffsetWithinElementOnFirstClick: 0,
     };
@@ -95,7 +115,7 @@ export class ThumbNode<T> {
 
     (this.nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
       this.nodeComponent.id;
-    const circleElement: IElementNode<T> | undefined = createElement(
+    this.circleElement = createElement(
       'div',
       {
         class: `${
@@ -120,343 +140,17 @@ export class ThumbNode<T> {
           //   ? 'transparent'
           //   : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
         },
-        // cx: (width ?? 100) / 2,
-        // cy: (height ?? 100) / 2,
-        // r: radius ?? 10,
-        // stroke: isTransparent
-        //   ? 'transparent'
-        //   : borderColor
-        //   ? borderColor
-        //   : 'black',
-        // 'stroke-width': 3,
-        // fill: isTransparent
-        //   ? 'transparent'
-        //   : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
-        pointerover: (_e: PointerEvent) => {
-          if (disableInteraction) {
-            return;
-          }
-          if (!this.nodeComponent) {
-            return;
-          }
-          console.log(
-            'svg pointerover',
-            this.nodeComponent.id,
-            this.nodeComponent
-          );
-          (
-            this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.remove('cursor-pointer');
-          (
-            this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.add('cursor-pointer');
-          (
-            this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.remove('cursor-not-allowed');
-          if (this.nodeComponent.isConnectPoint) {
-            let canReceiveDrop = false;
-            if (this.nodeComponent.onCanReceiveDroppedComponent) {
-              //TODO : get the current interactive element and check if it can be dropped here
-              const state =
-                interactionStateMachine.getCurrentInteractionState();
-              if (state && state.element) {
-                canReceiveDrop =
-                  this.nodeComponent.onCanReceiveDroppedComponent(
-                    this.nodeComponent,
-                    state.element as unknown as IConnectionNodeComponent<T>,
-                    this.nodeComponent
-                  );
 
-                if (!canReceiveDrop) {
-                  (
-                    this.nodeComponent.domElement as unknown as SVGElement
-                  ).style.filter = 'none';
-
-                  (
-                    this.nodeComponent.domElement as unknown as SVGElement
-                  ).classList.remove('cursor-pointer');
-                  (
-                    this.nodeComponent.domElement as unknown as SVGElement
-                  ).classList.add('cursor-not-allowed');
-                  console.log(
-                    'svg cant register drop target for current dragging element'
-                  );
-                  return;
-                } else {
-                  (
-                    this.nodeComponent.domElement as unknown as SVGElement
-                  ).style.filter = 'invert(1)';
-                }
-              }
-            }
-
-            console.log('svg register drop target', this.nodeComponent.id);
-            interactionStateMachine.setCurrentDropTarget(this.nodeComponent);
-          }
-        },
-        pointerleave: (_e: PointerEvent) => {
-          if (disableInteraction) {
-            return;
-          }
-          if (!this.nodeComponent) {
-            return;
-          }
-
-          if (this.nodeComponent.isConnectPoint) {
-            console.log('svg unregister drop target', this.nodeComponent.id);
-            interactionStateMachine.clearDropTarget(this.nodeComponent);
-
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).style.filter = 'none';
-
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.remove('cursor-not-allowed');
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.remove('cursor-pointer');
-          }
-        },
-        pointerdown: (e: PointerEvent) => {
-          if (disableInteraction) {
-            return;
-          }
-          if (this.nodeComponent) {
-            if (
-              this.nodeComponent.parent &&
-              (
-                this.nodeComponent
-                  .parent as unknown as IConnectionNodeComponent<T>
-              ).startNode
-            ) {
-              //return;
-            }
-            /* 
-          TODO:
-          if:
-          - no interaction is in progress
-          - thumb is node thumb connector
-          - thumbConnectionType is start
-          - node is not connected
-          then:
-          - create a connection starting from this node and thumb
-          - initialize the interaction state machine with the new connection
-          */
-            console.log(
-              'thumb pointerdown before check',
-              this.nodeComponent.id,
-              this.nodeComponent
-            );
-            if (
-              this.nodeComponent.thumbConnectionType ===
-                ThumbConnectionType.start &&
-              this.nodeComponent.isConnectPoint &&
-              parentRectNode &&
-              canvasElements
-            ) {
-              console.log(
-                'thumb pointerdown',
-                this.nodeComponent.id,
-                this.nodeComponent
-              );
-              //e.preventDefault();
-
-              // const elementRect = (
-              //   nodeComponent.domElement as unknown as HTMLElement | SVGElement
-              // ).getBoundingClientRect();
-              const { x, y } = transformToCamera(e.clientX, e.clientY);
-              //const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-              const curve = new CubicBezierConnection<T>(
-                canvas as unknown as INodeComponent<T>,
-                interactionStateMachine,
-                pathHiddenElement as unknown as IElementNode<T>,
-                canvasElements,
-                x - 50,
-                y - 50,
-                x - 50,
-                y - 50,
-                x - 50,
-                y - 50,
-                x - 50,
-                y - 50,
-                true,
-                undefined,
-                canvasUpdated
-              );
-
-              if (!curve || !curve.nodeComponent || !curve.endPointElement) {
-                throw new Error('curve not created');
-              }
-
-              if (curve && canvas) {
-                console.log(
-                  'new curve created',
-                  curve.nodeComponent.id,
-                  curve.endPointElement.id
-                );
-                curve.nodeComponent.isControlled = true;
-
-                curve.nodeComponent.startNode = parentRectNode;
-                curve.nodeComponent.startNodeThumb = this.nodeComponent;
-                parentRectNode.connections?.push(curve.nodeComponent);
-
-                if (curve.nodeComponent.update) {
-                  curve.nodeComponent.update();
-                }
-
-                const elementRect = (
-                  curve.endPointElement.domElement as unknown as
-                    | HTMLElement
-                    | SVGElement
-                ).getBoundingClientRect();
-
-                const rectCamera = transformToCamera(
-                  elementRect.x,
-                  elementRect.y
-                );
-
-                const interactionInfoResult = pointerDown(
-                  x - rectCamera.x,
-                  y - rectCamera.y,
-                  curve.endPointElement,
-                  canvas.domElement,
-                  interactionStateMachine
-                );
-                if (
-                  interactionInfoResult &&
-                  curve.endPointElement.initPointerDown
-                ) {
-                  curve.endPointElement.initPointerDown(
-                    interactionInfoResult.xOffsetWithinElementOnFirstClick,
-                    interactionInfoResult.yOffsetWithinElementOnFirstClick
-                  );
-                }
-
-                if (curve.endPointElement.getThumbCircleElement) {
-                  const circleDomElement =
-                    curve.endPointElement.getThumbCircleElement();
-                  console.log('circleDomElement', circleDomElement);
-                  circleDomElement.classList.remove('pointer-events-auto');
-                  circleDomElement.classList.add('pointer-events-none');
-                }
-                // (
-                //   nodeComponent.parent?.domElement as unknown as HTMLElement
-                // ).append(nodeComponent.domElement);
-
-                console.log(
-                  'new curve interactionInfoResult',
-                  interactionInfoResult
-                );
-              }
-
-              return;
-            }
-
-            if (this.nodeComponent.isControlled) {
-              return;
-            }
-            const elementRect = (
-              this.nodeComponent.domElement as unknown as
-                | HTMLElement
-                | SVGElement
-            ).getBoundingClientRect();
-
-            const { x, y } = transformToCamera(e.clientX, e.clientY);
-            const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-
-            const interactionInfoResult = pointerDown(
-              x - rectCamera.x,
-              y - rectCamera.y,
-              this.nodeComponent,
-              canvasElement,
-              interactionStateMachine
-            );
-
-            if (interactionInfoResult) {
-              interactionInfo = interactionInfoResult;
-              const circleDomElement = circleElement?.domElement as unknown as
-                | HTMLElement
-                | SVGElement;
-              circleDomElement.classList.remove('pointer-events-auto');
-              circleDomElement.classList.add('pointer-events-none');
-            }
-          }
-        },
-        pointermove: (e: PointerEvent) => {
-          if (disableInteraction) {
-            return;
-          }
-          if (!this.nodeComponent) {
-            return;
-          }
-
-          const canvasRect = (
-            canvasElement as unknown as HTMLElement | SVGElement
-          ).getBoundingClientRect();
-
-          if (this.nodeComponent && this.nodeComponent.domElement) {
-            const { x, y } = transformToCamera(e.clientX, e.clientY);
-            if (
-              pointerMove(
-                x,
-                y,
-                this.nodeComponent,
-                canvasElement,
-                interactionInfo,
-                interactionStateMachine
-              )
-            ) {
-              // console.log(
-              //   'svg pointermove',
-              //   nodeComponent.id,
-              //   nodeComponent.domElement,
-              //   e.clientX - canvasRect.x,
-              //   e.clientY - canvasRect.y
-              // );
-            }
-          }
-        },
-        pointerup: (e: PointerEvent) => {
-          if (disableInteraction) {
-            return;
-          }
-          if (!this.nodeComponent) {
-            return;
-          }
-
-          if (this.nodeComponent.domElement) {
-            //clearDropTarget(nodeComponent);
-
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).style.filter = 'none';
-
-            const canvasRect = (
-              canvasElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
-
-            const { x, y } = transformToCamera(e.clientX, e.clientY);
-            pointerUp(
-              x,
-              y,
-              this.nodeComponent,
-              canvasElement,
-              interactionInfo,
-              interactionStateMachine
-            );
-            const circleDomElement = circleElement?.domElement as unknown as
-              | HTMLElement
-              | SVGElement;
-            circleDomElement.classList.add('pointer-events-auto');
-            circleDomElement.classList.remove('pointer-events-none');
-          }
-        },
+        pointerover: this.onPointerOver,
+        pointerleave: this.onPointerLeave,
+        pointerdown: this.onPointerDown,
+        pointermove: this.onPointerMove,
+        pointerup: this.onPointerUp,
       },
       this.nodeComponent.domElement
     );
 
-    if (!circleElement) throw new Error('circleElement is undefined');
+    if (!this.circleElement) throw new Error('circleElement is undefined');
     const innerCircle = createElement(
       'div',
       {
@@ -473,19 +167,9 @@ export class ThumbNode<T> {
             : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
         },
       },
-      circleElement.domElement
+      this.circleElement.domElement
     );
     if (label) {
-      // const isLeftSideThumb =
-      //   thumbType === ThumbType.End ||
-      //   thumbType === ThumbType.EndConnectorBottom ||
-      //   thumbType === ThumbType.EndConnectorCenter ||
-      //   thumbType === ThumbType.EndConnectorLeft ||
-      //   thumbType === ThumbType.EndConnectorRight ||
-      //   thumbType === ThumbType.EndConnectorTop;
-
-      // ${isLeftSideThumb ? 'right-[24px]' : 'left-[24px]'}
-
       createElement(
         'div', //'circle',
         {
@@ -499,7 +183,7 @@ export class ThumbNode<T> {
       );
     }
     elements.set(this.nodeComponent.id, this.nodeComponent);
-    this.nodeComponent.elements.set(circleElement.id, circleElement);
+    this.nodeComponent.elements.set(this.circleElement.id, this.circleElement);
     this.nodeComponent.specifier = specifier;
     this.nodeComponent.x = parseInt(initialX.toString()) | 0;
     this.nodeComponent.y = parseInt(initialY.toString()) | 0;
@@ -521,19 +205,13 @@ export class ThumbNode<T> {
       ).style.display = `${visible ? 'block' : 'none'}`;
 
       if (visible && !disableInteraction) {
-        (circleElement.domElement as unknown as SVGElement).classList.remove(
-          'pointer-events-none'
-        );
-        (circleElement.domElement as unknown as SVGElement).classList.add(
-          'pointer-events-auto'
-        );
+        const circleDomElement = this.circleElement
+          ?.domElement as unknown as SVGElement;
+        circleDomElement.classList.remove('pointer-events-none');
+        circleDomElement.classList.add('pointer-events-auto');
       } else {
-        (circleElement.domElement as unknown as SVGElement).classList.remove(
-          'pointer-events-auto'
-        );
-        (circleElement.domElement as unknown as SVGElement).classList.add(
-          'pointer-events-none'
-        );
+        circleDomElement.classList.remove('pointer-events-auto');
+        circleDomElement.classList.add('pointer-events-none');
       }
     };
 
@@ -541,63 +219,347 @@ export class ThumbNode<T> {
       initialXOffset: number,
       initialYOffset: number
     ) => {
-      interactionInfo.xOffsetWithinElementOnFirstClick = initialXOffset;
-      interactionInfo.yOffsetWithinElementOnFirstClick = initialYOffset;
+      this.interactionInfo.xOffsetWithinElementOnFirstClick = initialXOffset;
+      this.interactionInfo.yOffsetWithinElementOnFirstClick = initialYOffset;
     };
 
-    this.nodeComponent.pointerUp = () => {
-      if (disableInteraction) {
-        return;
-      }
+    this.nodeComponent.pointerUp = this.onPointerThumbUp;
 
-      if (!this.nodeComponent) {
-        return;
-      }
-
-      // TODO : check if droptarget is the correct type BEFOFE casting
-      const dropTarget =
-        interactionStateMachine.getCurrentDropTarget() as unknown as IThumbNodeComponent<T>;
-      if (dropTarget) {
-        console.log(
-          'DROPPED ON TARGET',
-          dropTarget.id,
-          this.nodeComponent.id,
-          this.nodeComponent.specifier,
-          this.nodeComponent.onReceiveDroppedComponent
-        );
-        if (
-          dropTarget.onReceiveDroppedComponent &&
-          dropTarget.id !== this.nodeComponent.id
-        ) {
-          dropTarget.onReceiveDroppedComponent(dropTarget, this.nodeComponent);
-        }
-      }
-
-      console.log(
-        'svg pointerup nodecomponent',
-        this.nodeComponent.id,
-        this.nodeComponent,
-        dropTarget
-      );
-      interactionStateMachine.clearDropTarget(this.nodeComponent);
-
-      const circleDomElement = circleElement?.domElement as unknown as
-        | HTMLElement
-        | SVGElement;
-      circleDomElement.classList.add('pointer-events-auto');
-      circleDomElement.classList.remove('pointer-events-none');
-
-      if (
-        this.nodeComponent.parent &&
-        this.nodeComponent.parent.nodeType === 'connection'
-      ) {
-        this.nodeComponent.parent.update?.();
-      }
-    };
-
-    const circleDomElement = circleElement?.domElement as unknown as
+    const circleDomElement = this.circleElement?.domElement as unknown as
       | HTMLElement
       | SVGElement;
     this.nodeComponent.getThumbCircleElement = () => circleDomElement;
   }
+
+  onPointerOver = (_e: PointerEvent) => {
+    if (this.disableInteraction) {
+      return;
+    }
+    if (!this.nodeComponent) {
+      return;
+    }
+    console.log('svg pointerover', this.nodeComponent.id, this.nodeComponent);
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      'cursor-pointer'
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
+      'cursor-pointer'
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      'cursor-not-allowed'
+    );
+    if (this.nodeComponent.isConnectPoint) {
+      let canReceiveDrop = false;
+      if (this.nodeComponent.onCanReceiveDroppedComponent) {
+        //TODO : get the current interactive element and check if it can be dropped here
+        const state = this.interactionStateMachine.getCurrentInteractionState();
+        if (state && state.element) {
+          canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
+            this.nodeComponent,
+            state.element as unknown as IConnectionNodeComponent<T>,
+            this.nodeComponent
+          );
+
+          if (!canReceiveDrop) {
+            (
+              this.nodeComponent.domElement as unknown as SVGElement
+            ).style.filter = 'none';
+
+            (
+              this.nodeComponent.domElement as unknown as SVGElement
+            ).classList.remove('cursor-pointer');
+            (
+              this.nodeComponent.domElement as unknown as SVGElement
+            ).classList.add('cursor-not-allowed');
+            console.log(
+              'svg cant register drop target for current dragging element'
+            );
+            return;
+          } else {
+            (
+              this.nodeComponent.domElement as unknown as SVGElement
+            ).style.filter = 'invert(1)';
+          }
+        }
+      }
+
+      console.log('svg register drop target', this.nodeComponent.id);
+      this.interactionStateMachine.setCurrentDropTarget(this.nodeComponent);
+    }
+  };
+
+  onPointerLeave = (_e: PointerEvent) => {
+    if (this.disableInteraction) {
+      return;
+    }
+    if (!this.nodeComponent) {
+      return;
+    }
+
+    if (this.nodeComponent.isConnectPoint) {
+      console.log('svg unregister drop target', this.nodeComponent.id);
+      this.interactionStateMachine.clearDropTarget(this.nodeComponent);
+
+      (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
+        'none';
+
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+        'cursor-not-allowed'
+      );
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+        'cursor-pointer'
+      );
+    }
+  };
+  onPointerDown = (e: PointerEvent) => {
+    if (this.disableInteraction) {
+      return;
+    }
+    if (this.nodeComponent) {
+      if (
+        this.nodeComponent.parent &&
+        (this.nodeComponent.parent as unknown as IConnectionNodeComponent<T>)
+          .startNode
+      ) {
+        //return;
+      }
+      /* 
+    TODO:
+    if:
+    - no interaction is in progress
+    - thumb is node thumb connector
+    - thumbConnectionType is start
+    - node is not connected
+    then:
+    - create a connection starting from this node and thumb
+    - initialize the interaction state machine with the new connection
+    */
+      console.log(
+        'thumb pointerdown before check',
+        this.nodeComponent.id,
+        this.nodeComponent
+      );
+      if (
+        this.nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
+        this.nodeComponent.isConnectPoint &&
+        this.parentRectNode &&
+        this.canvasElements
+      ) {
+        console.log(
+          'thumb pointerdown',
+          this.nodeComponent.id,
+          this.nodeComponent
+        );
+        //e.preventDefault();
+
+        // const elementRect = (
+        //   nodeComponent.domElement as unknown as HTMLElement | SVGElement
+        // ).getBoundingClientRect();
+        const { x, y } = transformToCamera(e.clientX, e.clientY);
+        //const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+        const curve = new CubicBezierConnection<T>(
+          this.canvas as unknown as INodeComponent<T>,
+          this.interactionStateMachine,
+          this.pathHiddenElement as unknown as IElementNode<T>,
+          this.canvasElements,
+          x - 50,
+          y - 50,
+          x - 50,
+          y - 50,
+          x - 50,
+          y - 50,
+          x - 50,
+          y - 50,
+          true,
+          undefined,
+          this.canvasUpdated
+        );
+
+        if (!curve || !curve.nodeComponent || !curve.endPointElement) {
+          throw new Error('curve not created');
+        }
+
+        if (curve && this.canvas) {
+          console.log(
+            'new curve created',
+            curve.nodeComponent.id,
+            curve.endPointElement.id
+          );
+          curve.nodeComponent.isControlled = true;
+
+          curve.nodeComponent.startNode = this.parentRectNode;
+          curve.nodeComponent.startNodeThumb = this.nodeComponent;
+          this.parentRectNode.connections?.push(curve.nodeComponent);
+
+          if (curve.nodeComponent.update) {
+            curve.nodeComponent.update();
+          }
+
+          const elementRect = (
+            curve.endPointElement.domElement as unknown as
+              | HTMLElement
+              | SVGElement
+          ).getBoundingClientRect();
+
+          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
+          const interactionInfoResult = pointerDown(
+            x - rectCamera.x,
+            y - rectCamera.y,
+            curve.endPointElement,
+            this.canvas.domElement,
+            this.interactionStateMachine
+          );
+          if (interactionInfoResult && curve.endPointElement.initPointerDown) {
+            curve.endPointElement.initPointerDown(
+              interactionInfoResult.xOffsetWithinElementOnFirstClick,
+              interactionInfoResult.yOffsetWithinElementOnFirstClick
+            );
+          }
+
+          if (curve.endPointElement.getThumbCircleElement) {
+            const circleDomElement =
+              curve.endPointElement.getThumbCircleElement();
+            console.log('circleDomElement', circleDomElement);
+            circleDomElement.classList.remove('pointer-events-auto');
+            circleDomElement.classList.add('pointer-events-none');
+          }
+          // (
+          //   nodeComponent.parent?.domElement as unknown as HTMLElement
+          // ).append(nodeComponent.domElement);
+
+          console.log('new curve interactionInfoResult', interactionInfoResult);
+        }
+
+        return;
+      }
+
+      if (this.nodeComponent.isControlled) {
+        return;
+      }
+      const elementRect = (
+        this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
+      ).getBoundingClientRect();
+
+      const { x, y } = transformToCamera(e.clientX, e.clientY);
+      const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
+      const interactionInfoResult = pointerDown(
+        x - rectCamera.x,
+        y - rectCamera.y,
+        this.nodeComponent,
+        this.canvasElement,
+        this.interactionStateMachine
+      );
+
+      if (interactionInfoResult) {
+        this.interactionInfo = interactionInfoResult;
+        const circleDomElement = this.circleElement?.domElement as unknown as
+          | HTMLElement
+          | SVGElement;
+        circleDomElement.classList.remove('pointer-events-auto');
+        circleDomElement.classList.add('pointer-events-none');
+      }
+    }
+  };
+
+  onPointerMove = (e: PointerEvent) => {
+    if (this.disableInteraction) {
+      return;
+    }
+    if (!this.nodeComponent) {
+      return;
+    }
+
+    if (this.nodeComponent && this.nodeComponent.domElement) {
+      const { x, y } = transformToCamera(e.clientX, e.clientY);
+      pointerMove(
+        x,
+        y,
+        this.nodeComponent,
+        this.canvasElement,
+        this.interactionInfo,
+        this.interactionStateMachine
+      );
+    }
+  };
+
+  onPointerUp = (e: PointerEvent) => {
+    if (this.disableInteraction) {
+      return;
+    }
+    if (!this.nodeComponent) {
+      return;
+    }
+
+    if (this.nodeComponent.domElement) {
+      (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
+        'none';
+
+      const { x, y } = transformToCamera(e.clientX, e.clientY);
+      pointerUp(
+        x,
+        y,
+        this.nodeComponent,
+        this.canvasElement,
+        this.interactionInfo,
+        this.interactionStateMachine
+      );
+      const circleDomElement = this.circleElement?.domElement as unknown as
+        | HTMLElement
+        | SVGElement;
+      circleDomElement.classList.add('pointer-events-auto');
+      circleDomElement.classList.remove('pointer-events-none');
+    }
+  };
+
+  onPointerThumbUp = () => {
+    if (this.disableInteraction) {
+      return;
+    }
+
+    if (!this.nodeComponent) {
+      return;
+    }
+
+    // TODO : check if droptarget is the correct type BEFOFE casting
+    const dropTarget =
+      this.interactionStateMachine.getCurrentDropTarget() as unknown as IThumbNodeComponent<T>;
+    if (dropTarget) {
+      console.log(
+        'DROPPED ON TARGET',
+        dropTarget.id,
+        this.nodeComponent.id,
+        this.nodeComponent.specifier,
+        this.nodeComponent.onReceiveDroppedComponent
+      );
+      if (
+        dropTarget.onReceiveDroppedComponent &&
+        dropTarget.id !== this.nodeComponent.id
+      ) {
+        dropTarget.onReceiveDroppedComponent(dropTarget, this.nodeComponent);
+      }
+    }
+
+    console.log(
+      'svg pointerup nodecomponent',
+      this.nodeComponent.id,
+      this.nodeComponent,
+      dropTarget
+    );
+    this.interactionStateMachine.clearDropTarget(this.nodeComponent);
+
+    const circleDomElement = this.circleElement?.domElement as unknown as
+      | HTMLElement
+      | SVGElement;
+    circleDomElement.classList.add('pointer-events-auto');
+    circleDomElement.classList.remove('pointer-events-none');
+
+    if (
+      this.nodeComponent.parent &&
+      this.nodeComponent.parent.nodeType === 'connection'
+    ) {
+      this.nodeComponent.parent.update?.();
+    }
+  };
 }
