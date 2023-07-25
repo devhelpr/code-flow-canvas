@@ -154,51 +154,7 @@ export class Connection<T> {
       this.svgParent.domElement
     );
 
-    const defs = createNSElement('defs', {}, this.svgParent.domElement);
-    const marker = createNSElement(
-      'marker',
-      {
-        id: 'arrow',
-        refX: '1.5',
-        refY: '2',
-        markerUnits: 'strokeWidth',
-        markerWidth: '4',
-        markerHeight: '4',
-        orient: 'auto',
-      },
-      defs.domElement
-    );
-    createNSElement(
-      'path',
-      {
-        d: 'M0,0 V4 L2,2 Z',
-        fill: 'white',
-      },
-      marker.domElement
-    );
-
-    const markerBegin = createNSElement(
-      'marker',
-      {
-        id: 'arrowbegin',
-        refX: '2',
-        refY: '2',
-        markerUnits: 'strokeWidth',
-        markerWidth: '4',
-        markerHeight: '4',
-        orient: 'auto',
-      },
-      defs.domElement
-    );
-    createNSElement(
-      'path',
-      {
-        d: 'M2,2 L2,2 L0,2 Z', // 'M2,0 L2,4 L0,2 Z',
-        stroke: 'white',
-        fill: 'white',
-      },
-      markerBegin.domElement
-    );
+    this.createArrowMarker();
 
     this.nodeComponent = createSVGNodeComponent(
       'g',
@@ -717,4 +673,55 @@ export class Connection<T> {
     }
     return true;
   };
+
+  createArrowMarker() {
+    if (!this.svgParent) {
+      return;
+    }
+    const defs = createNSElement('defs', {}, this.svgParent.domElement);
+    const marker = createNSElement(
+      'marker',
+      {
+        id: 'arrow',
+        refX: '1.5',
+        refY: '2',
+        markerUnits: 'strokeWidth',
+        markerWidth: '4',
+        markerHeight: '4',
+        orient: 'auto',
+      },
+      defs.domElement
+    );
+    createNSElement(
+      'path',
+      {
+        d: 'M0,0 V4 L2,2 Z',
+        fill: 'white',
+      },
+      marker.domElement
+    );
+
+    const markerBegin = createNSElement(
+      'marker',
+      {
+        id: 'arrowbegin',
+        refX: '2',
+        refY: '2',
+        markerUnits: 'strokeWidth',
+        markerWidth: '4',
+        markerHeight: '4',
+        orient: 'auto',
+      },
+      defs.domElement
+    );
+    createNSElement(
+      'path',
+      {
+        d: 'M2,2 L2,2 L0,2 Z', // 'M2,0 L2,4 L0,2 Z',
+        stroke: 'white',
+        fill: 'white',
+      },
+      markerBegin.domElement
+    );
+  }
 }
