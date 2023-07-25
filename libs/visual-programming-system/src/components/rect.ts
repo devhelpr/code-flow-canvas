@@ -41,13 +41,23 @@ import { getPoint } from './utils/get-point';
 import { setPosition } from './utils/set-position';
 
 export class Rect<T> {
-  private rectNode: IRectNodeComponent<T> | undefined;
-  private rectPathInstance: ReturnType<typeof this.createRectPathSVGElement>;
-
   nodeComponent?: IRectNodeComponent<T>;
+
+  private rectNode: IRectNodeComponent<T> | undefined;
+  private rectInfo: ReturnType<typeof this.createRectElement>;
+
   private canvas: INodeComponent<T> | undefined;
   private canvasUpdated?: () => void;
   private interactionStateMachine: InteractionStateMachine<T>;
+  private hasStaticWidthHeight?: boolean;
+
+  private points = {
+    beginX: 0,
+    beginY: 0,
+    width: 0,
+    height: 0,
+  };
+
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -73,11 +83,11 @@ export class Rect<T> {
     this.canvas = canvas;
     this.canvasUpdated = canvasUpdated;
     this.interactionStateMachine = interactionStateMachine;
-
+    this.hasStaticWidthHeight = hasStaticWidthHeight;
     let widthHelper = width;
     let heightHelper = height;
 
-    this.rectPathInstance = this.createRectPathSVGElement(
+    this.rectInfo = this.createRectElement(
       canvas.domElement,
       elements,
       startX,
@@ -99,7 +109,42 @@ export class Rect<T> {
       canvasUpdated,
       id
     );
-    this.rectNode = this.rectPathInstance.nodeComponent;
+    this.rectNode = this.rectInfo.nodeComponent;
+
+    this.rectNode.update = this.onUpdate(
+      this.rectNode,
+      this.rectInfo.astElement,
+      (thumbType: ThumbType, index?: number, offsetY?: number) => {
+        if (!this.rectNode) {
+          throw new Error('this.rectNode is undefined');
+        }
+        return thumbPosition<T>(this.rectNode, thumbType, index, offsetY);
+      }
+    );
+
+    this.rectNode.updateEnd = () => {
+      if (canvasUpdated) {
+        canvasUpdated();
+      }
+    };
+
+    this.rectNode.x = startX;
+    this.rectNode.y = startY;
+    this.rectNode.width = width;
+    this.rectNode.height = height;
+
+    if (!hasStaticWidthHeight) {
+      const astElementSize = (
+        this.rectInfo.astElement?.domElement as unknown as HTMLElement
+      ).getBoundingClientRect();
+
+      const { scale } = getCamera();
+      this.rectNode.width = astElementSize.width / scale;
+      this.rectNode.height = astElementSize.height / scale - 20;
+      this.points.width = astElementSize.width / scale;
+      this.points.height = astElementSize.height / scale - 20;
+    }
+    this.rectNode.update(this.rectNode, startX, startY, this.rectNode);
 
     // rectNode.nodeType is "shape" .. if thats changed then the dragging of nodes doesnt work anymore
     this.rectNode.shapeType = 'rect';
@@ -192,8 +237,42 @@ export class Rect<T> {
     this.nodeComponent = this.rectNode;
   }
 
-  resize(width?: number) {
-    this.rectPathInstance.resize(width);
+  public resize(width?: number) {
+    if (this.hasStaticWidthHeight || !this.rectNode) {
+      return;
+    }
+
+    const astElementHtmlElement = this.rectInfo.astElement
+      ?.domElement as unknown as HTMLElement;
+    if (astElementHtmlElement) {
+      astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
+      astElementHtmlElement.style.height = 'auto';
+    }
+
+    const rectContainerDOMElement = this.rectNode
+      .domElement as unknown as HTMLElement;
+    rectContainerDOMElement.style.width = width ? `${width}px` : 'auto';
+    rectContainerDOMElement.style.height = `auto`;
+
+    const astElementSize = astElementHtmlElement.getBoundingClientRect();
+
+    const { scale } = getCamera();
+    this.rectNode.width = astElementSize.width / scale - 20;
+    this.rectNode.height = astElementSize.height / scale - 20;
+    this.points.width = astElementSize.width / scale - 20;
+    this.points.height = astElementSize.height / scale - 20;
+
+    rectContainerDOMElement.style.width = `${this.rectNode.width}px`;
+    rectContainerDOMElement.style.height = `${this.rectNode.height}px`;
+
+    if (this.rectNode.update) {
+      this.rectNode.update(
+        this.rectNode,
+        this.rectNode.x + 50,
+        this.rectNode.y + 50,
+        this.rectNode
+      );
+    }
   }
 
   private onReceiveDroppedComponent =
@@ -368,14 +447,7 @@ export class Rect<T> {
     return true;
   }
 
-  points = {
-    beginX: 0,
-    beginY: 0,
-    width: 0,
-    height: 0,
-  };
-
-  protected createRectPathSVGElement(
+  protected createRectElement(
     canvasElement: DOMElementNode,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -485,6 +557,7 @@ export class Rect<T> {
     if (!rectContainerElement) throw new Error('nodeComponent is undefined');
 
     const bbox = this.getBBoxPath(pathPoints);
+
     const divDomElement =
       rectContainerElement.domElement as unknown as HTMLElement;
     divDomElement.style.width = `${bbox.width}px`;
@@ -493,85 +566,9 @@ export class Rect<T> {
 
     elements.set(rectContainerElement.id, rectContainerElement);
 
-    rectContainerElement.update = this.onUpdate(
-      rectContainerElement,
-      astElement,
-      getThumbPosition
-    );
-
-    rectContainerElement.updateEnd = () => {
-      // TODO : only do this when the interaction finishes...
-      if (canvasUpdated) {
-        canvasUpdated();
-      }
-    };
-
-    rectContainerElement.x = startX;
-    rectContainerElement.y = startY;
-    rectContainerElement.width = width;
-    rectContainerElement.height = height;
-
-    if (!hasStaticWidthHeight) {
-      const astElementSize = (
-        astElement?.domElement as unknown as HTMLElement
-      ).getBoundingClientRect();
-
-      const { scale } = getCamera();
-      rectContainerElement.width = astElementSize.width / scale;
-      rectContainerElement.height = astElementSize.height / scale - 20;
-      this.points.width = astElementSize.width / scale;
-      this.points.height = astElementSize.height / scale - 20;
-    }
-    rectContainerElement.update(
-      rectContainerElement,
-      startX,
-      startY,
-      rectContainerElement
-    );
-
     return {
       nodeComponent: rectContainerElement,
-      resize: (width?: number) => {
-        if (hasStaticWidthHeight) {
-          return;
-        }
-        const astElementHtmlElement =
-          astElement?.domElement as unknown as HTMLElement;
-        astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
-        astElementHtmlElement.style.height = 'auto';
-
-        (
-          rectContainerElement.domElement as unknown as HTMLElement
-        ).style.width = width ? `${width}px` : 'auto';
-        (
-          rectContainerElement.domElement as unknown as HTMLElement
-        ).style.height = `auto`;
-
-        const astElementSize = astElementHtmlElement.getBoundingClientRect();
-
-        const { scale } = getCamera();
-        rectContainerElement.width = astElementSize.width / scale - 20;
-        rectContainerElement.height = astElementSize.height / scale - 20;
-        this.points.width = astElementSize.width / scale - 20;
-        this.points.height = astElementSize.height / scale - 20;
-
-        (
-          rectContainerElement.domElement as unknown as HTMLElement
-        ).style.width = `${rectContainerElement.width}px`;
-
-        (
-          rectContainerElement.domElement as unknown as HTMLElement
-        ).style.height = `${rectContainerElement.height}px`;
-
-        if (rectContainerElement.update) {
-          rectContainerElement.update(
-            rectContainerElement,
-            rectContainerElement.x + 50,
-            rectContainerElement.y + 50,
-            rectContainerElement
-          );
-        }
-      },
+      astElement,
     };
   }
 
