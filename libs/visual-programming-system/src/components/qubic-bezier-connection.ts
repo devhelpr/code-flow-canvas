@@ -244,7 +244,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       return true;
     };
 
-    this.nodeComponent.controlPointNodes?.push(controlPoint2Node.nodeComponent);
+    this.nodeComponent.controlPointNodes?.push(controlPoint1Node.nodeComponent);
     this.nodeComponent.controlPointNodes?.push(controlPoint2Node.nodeComponent);
 
     createEffect(() => {
