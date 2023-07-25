@@ -375,7 +375,7 @@ export class Rect<T> {
     height: 0,
   };
 
-  createRectPathSVGElement(
+  protected createRectPathSVGElement(
     canvasElement: DOMElementNode,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -426,7 +426,7 @@ export class Rect<T> {
       height: this.points.height,
     };
 
-    const divElement = createElement(
+    const rectContainerElement = createElement(
       'div',
       {
         class: 'absolute top-0 left-0 select-none ', //will-change-transform
@@ -436,10 +436,11 @@ export class Rect<T> {
       id
     ) as unknown as IRectNodeComponent<T> | undefined;
 
-    if (!divElement) throw new Error('divElement is undefined');
+    if (!rectContainerElement)
+      throw new Error('rectContainerElement is undefined');
 
-    divElement.nodeType = 'shape';
-    divElement.shapeType = shapeType;
+    rectContainerElement.nodeType = 'shape';
+    rectContainerElement.shapeType = shapeType;
 
     let astElement: any;
 
@@ -455,17 +456,21 @@ export class Rect<T> {
         throw new Error('Invalid markup');
       }
 
-      if (compiledMarkup && divElement && divElement.domElement) {
+      if (
+        compiledMarkup &&
+        rectContainerElement &&
+        rectContainerElement.domElement
+      ) {
         astElement = createASTNodeElement(
           compiledMarkup.body,
-          divElement.domElement,
-          divElement.elements
+          rectContainerElement.domElement,
+          rectContainerElement.elements
         );
       }
     } else if (markup !== undefined) {
       astElement = markup as unknown as INodeComponent<T>;
-      divElement.domElement.appendChild(astElement.domElement);
-      divElement.elements.set(astElement.id, astElement);
+      rectContainerElement.domElement.appendChild(astElement.domElement);
+      rectContainerElement.elements.set(astElement.id, astElement);
     } else {
       throw new Error('No markup or INodeComponent');
     }
@@ -473,39 +478,38 @@ export class Rect<T> {
     if (astElement && hasPointerEvents) {
       astElement.domElement.addEventListener(
         'pointerdown',
-        this.astElementOnClick(divElement, pathPoints)
+        this.astElementOnClick(rectContainerElement, pathPoints)
       );
     }
 
-    if (!divElement) throw new Error('nodeComponent is undefined');
+    if (!rectContainerElement) throw new Error('nodeComponent is undefined');
 
     const bbox = this.getBBoxPath(pathPoints);
+    const divDomElement =
+      rectContainerElement.domElement as unknown as HTMLElement;
+    divDomElement.style.width = `${bbox.width}px`;
+    divDomElement.style.height = `${bbox.height}px`;
+    divDomElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-    (
-      divElement.domElement as unknown as HTMLElement
-    ).style.width = `${bbox.width}px`;
-    (
-      divElement.domElement as unknown as HTMLElement
-    ).style.height = `${bbox.height}px`;
-    (
-      divElement.domElement as unknown as HTMLElement
-    ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+    elements.set(rectContainerElement.id, rectContainerElement);
 
-    elements.set(divElement.id, divElement);
+    rectContainerElement.update = this.onUpdate(
+      rectContainerElement,
+      astElement,
+      getThumbPosition
+    );
 
-    divElement.update = this.onUpdate(divElement, astElement, getThumbPosition);
-
-    divElement.updateEnd = () => {
+    rectContainerElement.updateEnd = () => {
       // TODO : only do this when the interaction finishes...
       if (canvasUpdated) {
         canvasUpdated();
       }
     };
 
-    divElement.x = startX;
-    divElement.y = startY;
-    divElement.width = width;
-    divElement.height = height;
+    rectContainerElement.x = startX;
+    rectContainerElement.y = startY;
+    rectContainerElement.width = width;
+    rectContainerElement.height = height;
 
     if (!hasStaticWidthHeight) {
       const astElementSize = (
@@ -513,15 +517,20 @@ export class Rect<T> {
       ).getBoundingClientRect();
 
       const { scale } = getCamera();
-      divElement.width = astElementSize.width / scale;
-      divElement.height = astElementSize.height / scale - 20;
+      rectContainerElement.width = astElementSize.width / scale;
+      rectContainerElement.height = astElementSize.height / scale - 20;
       this.points.width = astElementSize.width / scale;
       this.points.height = astElementSize.height / scale - 20;
     }
-    divElement.update(divElement, startX, startY, divElement);
+    rectContainerElement.update(
+      rectContainerElement,
+      startX,
+      startY,
+      rectContainerElement
+    );
 
     return {
-      nodeComponent: divElement,
+      nodeComponent: rectContainerElement,
       resize: (width?: number) => {
         if (hasStaticWidthHeight) {
           return;
@@ -531,33 +540,35 @@ export class Rect<T> {
         astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
         astElementHtmlElement.style.height = 'auto';
 
-        (divElement.domElement as unknown as HTMLElement).style.width = width
-          ? `${width}px`
-          : 'auto';
-        (divElement.domElement as unknown as HTMLElement).style.height = `auto`;
+        (
+          rectContainerElement.domElement as unknown as HTMLElement
+        ).style.width = width ? `${width}px` : 'auto';
+        (
+          rectContainerElement.domElement as unknown as HTMLElement
+        ).style.height = `auto`;
 
         const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
         const { scale } = getCamera();
-        divElement.width = astElementSize.width / scale - 20;
-        divElement.height = astElementSize.height / scale - 20;
+        rectContainerElement.width = astElementSize.width / scale - 20;
+        rectContainerElement.height = astElementSize.height / scale - 20;
         this.points.width = astElementSize.width / scale - 20;
         this.points.height = astElementSize.height / scale - 20;
 
         (
-          divElement.domElement as unknown as HTMLElement
-        ).style.width = `${divElement.width}px`;
+          rectContainerElement.domElement as unknown as HTMLElement
+        ).style.width = `${rectContainerElement.width}px`;
 
         (
-          divElement.domElement as unknown as HTMLElement
-        ).style.height = `${divElement.height}px`;
+          rectContainerElement.domElement as unknown as HTMLElement
+        ).style.height = `${rectContainerElement.height}px`;
 
-        if (divElement.update) {
-          divElement.update(
-            divElement,
-            divElement.x + 50,
-            divElement.y + 50,
-            divElement
+        if (rectContainerElement.update) {
+          rectContainerElement.update(
+            rectContainerElement,
+            rectContainerElement.x + 50,
+            rectContainerElement.y + 50,
+            rectContainerElement
           );
         }
       },
@@ -566,7 +577,7 @@ export class Rect<T> {
 
   astElementOnClick =
     (
-      divElement: IRectNodeComponent<T>,
+      rectContainerElement: IRectNodeComponent<T>,
       pathPoints: {
         beginX: number;
         beginY: number;
@@ -582,9 +593,9 @@ export class Rect<T> {
       )
         return;
 
-      if (divElement && this.canvas) {
+      if (rectContainerElement && this.canvas) {
         const elementRect = (
-          divElement.domElement as unknown as HTMLElement | SVGElement
+          rectContainerElement.domElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
 
         const { x, y } = transformToCamera(e.clientX, e.clientY);
@@ -594,14 +605,14 @@ export class Rect<T> {
         const interactionInfoResult = pointerDown(
           x - rectCamera.x - (pathPoints.beginX - bbox.x),
           y - rectCamera.y - (pathPoints.beginY - bbox.y),
-          divElement,
+          rectContainerElement,
           this.canvas.domElement,
           this.interactionStateMachine
         );
         if (interactionInfoResult) {
           (
             this.canvas?.domElement as unknown as HTMLElement | SVGElement
-          ).append(divElement.domElement);
+          ).append(rectContainerElement.domElement);
         }
       }
     };
@@ -622,7 +633,7 @@ export class Rect<T> {
 
   onUpdate =
     (
-      divElement: IRectNodeComponent<T>,
+      rectContainerElement: IRectNodeComponent<T>,
       astElement: INodeComponent<T>,
       getThumbPosition?: (
         thumbType: ThumbType,
@@ -653,9 +664,9 @@ export class Rect<T> {
       ) {
         this.points.beginX = x - 50;
         this.points.beginY = y - 50;
-        if (divElement) {
-          divElement.x = this.points.beginX;
-          divElement.y = this.points.beginY;
+        if (rectContainerElement) {
+          rectContainerElement.x = this.points.beginX;
+          rectContainerElement.y = this.points.beginY;
         }
 
         if (getThumbPosition) {
@@ -738,50 +749,44 @@ export class Rect<T> {
 
       const bbox = this.getBBoxPath(pathPoints);
 
-      (
-        divElement.domElement as unknown as HTMLElement
-      ).style.width = `${bbox.width}px`;
-      (
-        divElement.domElement as unknown as HTMLElement
-      ).style.height = `${bbox.height}px`;
-      (
-        divElement.domElement as unknown as HTMLElement
-      ).style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+      const divDomElement =
+        rectContainerElement.domElement as unknown as HTMLElement;
+      divDomElement.style.width = `${bbox.width}px`;
+      divDomElement.style.height = `${bbox.height}px`;
+      divDomElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-      if (divElement) {
-        divElement.x = this.points.beginX;
-        divElement.y = this.points.beginY;
-        divElement.width = this.points.width;
-        divElement.height = this.points.height;
+      if (rectContainerElement) {
+        rectContainerElement.x = this.points.beginX;
+        rectContainerElement.y = this.points.beginY;
+        rectContainerElement.width = this.points.width;
+        rectContainerElement.height = this.points.height;
       }
 
-      (
-        astElement.domElement as unknown as HTMLElement
-      ).style.width = `${bbox.width}px`;
-      (
-        astElement.domElement as unknown as HTMLElement
-      ).style.height = `${bbox.height}px`;
+      const astDomElement = astElement.domElement as unknown as HTMLElement;
+      astDomElement.style.width = `${bbox.width}px`;
+      astDomElement.style.height = `${bbox.height}px`;
 
-      if (divElement) {
+      if (rectContainerElement) {
         // get all connections that have this node as start or end
-        divElement.connections?.forEach((lookAtNodeComponent) => {
+        rectContainerElement.connections?.forEach((lookAtNodeComponent) => {
           if (lookAtNodeComponent.nodeType === 'connection') {
             const start =
-              lookAtNodeComponent.startNode === divElement &&
+              lookAtNodeComponent.startNode === rectContainerElement &&
               lookAtNodeComponent;
             const end =
-              lookAtNodeComponent.endNode === divElement && lookAtNodeComponent;
+              lookAtNodeComponent.endNode === rectContainerElement &&
+              lookAtNodeComponent;
             if (
               start &&
               lookAtNodeComponent &&
               lookAtNodeComponent.update &&
-              divElement
+              rectContainerElement
             ) {
               lookAtNodeComponent.update(
                 lookAtNodeComponent,
                 this.points.beginX,
                 this.points.beginY,
-                divElement
+                rectContainerElement
               );
               lookAtNodeComponent.update(
                 lookAtNodeComponent,
@@ -794,13 +799,13 @@ export class Rect<T> {
               end &&
               lookAtNodeComponent &&
               lookAtNodeComponent.update &&
-              divElement
+              rectContainerElement
             ) {
               lookAtNodeComponent.update(
                 lookAtNodeComponent,
                 this.points.beginX,
                 this.points.beginY,
-                divElement
+                rectContainerElement
               );
               lookAtNodeComponent.update(
                 lookAtNodeComponent,

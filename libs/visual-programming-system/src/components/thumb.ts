@@ -251,7 +251,6 @@ export class ThumbNode<T> {
     if (this.nodeComponent.isConnectPoint) {
       let canReceiveDrop = false;
       if (this.nodeComponent.onCanReceiveDroppedComponent) {
-        //TODO : get the current interactive element and check if it can be dropped here
         const state = this.interactionStateMachine.getCurrentInteractionState();
         if (state && state.element) {
           canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
