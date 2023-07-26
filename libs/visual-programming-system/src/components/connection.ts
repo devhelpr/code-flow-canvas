@@ -533,6 +533,7 @@ export class Connection<T> {
         return false;
       }
 
+      // Neem de x en y van de controller-thumb over...
       if (actionComponent && x !== undefined && y !== undefined) {
         if (actionComponent.connectionControllerType === 'c1') {
           this.points.cx1 = x;

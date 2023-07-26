@@ -654,10 +654,8 @@ export class Rect<T> {
       }
 
       if (
-        (incomingComponent.nodeType === 'connection' &&
-          actionComponent.nodeType === 'connection') ||
-        (incomingComponent.nodeType === 'shape' &&
-          actionComponent.nodeType === 'shape')
+        incomingComponent.nodeType === 'shape' &&
+        actionComponent.nodeType === 'shape'
       ) {
         this.points.beginX = x - 50;
         this.points.beginY = y - 50;
@@ -685,138 +683,86 @@ export class Rect<T> {
             }
           );
         }
-      } else {
-        if (!actionComponent.connectionControllerType) {
-          return false;
-        }
 
-        const getRectPoint = (
-          connectionControllerType?: string,
-          thumbConnector?: IThumbNodeComponent<T>
-        ) => {
-          if (!getThumbPosition) {
-            return { x: 0, y: 0 };
-          }
-          if (
-            !connectionControllerType &&
-            thumbConnector &&
-            thumbConnector.thumbType
-          ) {
-            const position = getThumbPosition(
-              thumbConnector.thumbType,
-              thumbConnector.thumbIndex ?? 0,
-              thumbConnector.thumbOffsetY ?? 0
-            );
-            return {
-              x: position.x,
-              y: position.y,
-            };
-          }
-          return false;
+        const begin = getPoint(this.points.beginX, this.points.beginY);
+
+        const pathPoints = {
+          beginX: begin.x,
+          beginY: begin.y,
+          width: this.points.width,
+          height: this.points.height,
         };
 
-        incomingComponent?.thumbConnectors?.forEach(
-          (connector: IThumbNodeComponent<T>) => {
-            if (connector && connector.connectionControllerType) {
-              const point = getRectPoint(undefined, connector);
-              if (point && connector.update) {
-                console.log(
-                  'update thumb connector',
-                  connector.thumbType,
-                  point.x,
-                  point.y
+        const bbox = this.getBBoxPath(pathPoints);
+
+        const divDomElement =
+          rectContainerElement.domElement as unknown as HTMLElement;
+        divDomElement.style.width = `${bbox.width}px`;
+        divDomElement.style.height = `${bbox.height}px`;
+        divDomElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+
+        if (rectContainerElement) {
+          rectContainerElement.x = this.points.beginX;
+          rectContainerElement.y = this.points.beginY;
+          rectContainerElement.width = this.points.width;
+          rectContainerElement.height = this.points.height;
+        }
+
+        const astDomElement = astElement.domElement as unknown as HTMLElement;
+        astDomElement.style.width = `${bbox.width}px`;
+        astDomElement.style.height = `${bbox.height}px`;
+
+        if (rectContainerElement) {
+          // get all connections that have this node as start or end
+          rectContainerElement.connections?.forEach((lookAtNodeComponent) => {
+            if (lookAtNodeComponent.nodeType === 'connection') {
+              const start =
+                lookAtNodeComponent.startNode === rectContainerElement &&
+                lookAtNodeComponent;
+              const end =
+                lookAtNodeComponent.endNode === rectContainerElement &&
+                lookAtNodeComponent;
+              if (
+                start &&
+                lookAtNodeComponent &&
+                lookAtNodeComponent.update &&
+                rectContainerElement
+              ) {
+                lookAtNodeComponent.update(
+                  lookAtNodeComponent,
+                  this.points.beginX,
+                  this.points.beginY,
+                  rectContainerElement
                 );
-                connector.update(
-                  connector,
-                  point.x,
-                  point.y,
-                  incomingComponent
+                lookAtNodeComponent.update(
+                  lookAtNodeComponent,
+                  this.points.beginX,
+                  this.points.beginY,
+                  lookAtNodeComponent.endNode
+                );
+              }
+              if (
+                end &&
+                lookAtNodeComponent &&
+                lookAtNodeComponent.update &&
+                rectContainerElement
+              ) {
+                lookAtNodeComponent.update(
+                  lookAtNodeComponent,
+                  this.points.beginX,
+                  this.points.beginY,
+                  rectContainerElement
+                );
+                lookAtNodeComponent.update(
+                  lookAtNodeComponent,
+                  this.points.beginX,
+                  this.points.beginY,
+                  lookAtNodeComponent.startNode
                 );
               }
             }
-          }
-        );
-        //}
-      }
-
-      const begin = getPoint(this.points.beginX, this.points.beginY);
-
-      const pathPoints = {
-        beginX: begin.x,
-        beginY: begin.y,
-        width: this.points.width,
-        height: this.points.height,
-      };
-
-      const bbox = this.getBBoxPath(pathPoints);
-
-      const divDomElement =
-        rectContainerElement.domElement as unknown as HTMLElement;
-      divDomElement.style.width = `${bbox.width}px`;
-      divDomElement.style.height = `${bbox.height}px`;
-      divDomElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
-
-      if (rectContainerElement) {
-        rectContainerElement.x = this.points.beginX;
-        rectContainerElement.y = this.points.beginY;
-        rectContainerElement.width = this.points.width;
-        rectContainerElement.height = this.points.height;
-      }
-
-      const astDomElement = astElement.domElement as unknown as HTMLElement;
-      astDomElement.style.width = `${bbox.width}px`;
-      astDomElement.style.height = `${bbox.height}px`;
-
-      if (rectContainerElement) {
-        // get all connections that have this node as start or end
-        rectContainerElement.connections?.forEach((lookAtNodeComponent) => {
-          if (lookAtNodeComponent.nodeType === 'connection') {
-            const start =
-              lookAtNodeComponent.startNode === rectContainerElement &&
-              lookAtNodeComponent;
-            const end =
-              lookAtNodeComponent.endNode === rectContainerElement &&
-              lookAtNodeComponent;
-            if (
-              start &&
-              lookAtNodeComponent &&
-              lookAtNodeComponent.update &&
-              rectContainerElement
-            ) {
-              lookAtNodeComponent.update(
-                lookAtNodeComponent,
-                this.points.beginX,
-                this.points.beginY,
-                rectContainerElement
-              );
-              lookAtNodeComponent.update(
-                lookAtNodeComponent,
-                this.points.beginX,
-                this.points.beginY,
-                lookAtNodeComponent.endNode
-              );
-            }
-            if (
-              end &&
-              lookAtNodeComponent &&
-              lookAtNodeComponent.update &&
-              rectContainerElement
-            ) {
-              lookAtNodeComponent.update(
-                lookAtNodeComponent,
-                this.points.beginX,
-                this.points.beginY,
-                rectContainerElement
-              );
-              lookAtNodeComponent.update(
-                lookAtNodeComponent,
-                this.points.beginX,
-                this.points.beginY,
-                lookAtNodeComponent.startNode
-              );
-            }
-          }
-        });
+          });
+        }
       }
 
       return true;
