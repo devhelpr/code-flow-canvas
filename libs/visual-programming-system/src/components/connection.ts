@@ -326,19 +326,13 @@ export class Connection<T> {
   };
 
   onUpdate = (
-    incomingComponent?: INodeComponent<T>,
+    target?: INodeComponent<T>,
     x?: number,
     y?: number,
-    actionComponent?: INodeComponent<T>
+    initiator?: INodeComponent<T>
   ) => {
-    const connection =
-      incomingComponent as unknown as IConnectionNodeComponent<T>;
-    if (
-      !incomingComponent &&
-      x === undefined &&
-      y === undefined &&
-      !actionComponent
-    ) {
+    const connection = target as unknown as IConnectionNodeComponent<T>;
+    if (!target && x === undefined && y === undefined && !initiator) {
       // eslint-disable-next-line no-console
       // update all in this condition...
     }
@@ -346,12 +340,7 @@ export class Connection<T> {
     let skipChecks = false;
     let updateThumbs = false;
 
-    if (
-      !incomingComponent ||
-      x === undefined ||
-      y === undefined ||
-      !actionComponent
-    ) {
+    if (!target || x === undefined || y === undefined || !initiator) {
       // needed for updating without using parameters (...update() )
       if (this.nodeComponent?.startNode) {
         const start = this.onCalculateControlPoints(
@@ -408,20 +397,16 @@ export class Connection<T> {
 
     if (
       !skipChecks &&
-      incomingComponent &&
-      actionComponent &&
+      target &&
+      initiator &&
       x !== undefined &&
       y !== undefined &&
-      incomingComponent.nodeType === 'connection' &&
-      (actionComponent.nodeType === 'connection' ||
-        actionComponent.nodeType === 'shape')
+      target.nodeType === 'connection' &&
+      (initiator.nodeType === 'connection' || initiator.nodeType === 'shape')
     ) {
-      if (
-        connection.startNode &&
-        actionComponent.id === connection.startNode.id
-      ) {
+      if (connection.startNode && initiator.id === connection.startNode.id) {
         const start = this.onCalculateControlPoints(
-          actionComponent as unknown as IRectNodeComponent<T>,
+          initiator as unknown as IRectNodeComponent<T>,
           ControlAndEndPointNodeType.start,
           connection.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
@@ -435,12 +420,9 @@ export class Connection<T> {
         this.points.beginY = start.y;
         this.points.cx1 = start.cx;
         this.points.cy1 = start.cy;
-      } else if (
-        connection.endNode &&
-        actionComponent.id === connection.endNode.id
-      ) {
+      } else if (connection.endNode && initiator.id === connection.endNode.id) {
         const end = this.onCalculateControlPoints(
-          actionComponent as unknown as IRectNodeComponent<T>,
+          initiator as unknown as IRectNodeComponent<T>,
           ControlAndEndPointNodeType.end,
           connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
           connection.endNodeThumb?.thumbIndex,
@@ -473,13 +455,6 @@ export class Connection<T> {
       }
 
       if (this.nodeComponent?.startNode) {
-        // nodeComponent.startNode?.update?.(
-        //   nodeComponent.startNode,
-        //   points.beginX,
-        //   points.beginY,
-        //   actionComponent
-        // );
-
         const circle =
           this.nodeComponent.connectionStartNodeThumb?.getThumbCircleElement?.();
         (circle as unknown as HTMLElement)?.classList?.remove?.(
@@ -491,12 +466,6 @@ export class Connection<T> {
       }
 
       if (this.nodeComponent?.endNode) {
-        // nodeComponent.endNode?.update?.(
-        //   nodeComponent.endNode,
-        //   points.endX,
-        //   points.endY,
-        //   actionComponent
-        // );
         const circle =
           this.nodeComponent.connectionEndNodeThumb?.getThumbCircleElement?.();
         (circle as unknown as HTMLElement)?.classList?.remove?.(
@@ -514,7 +483,7 @@ export class Connection<T> {
           this.nodeComponent.controlPointNodes[0],
           this.points.cx1,
           this.points.cy1,
-          actionComponent
+          initiator
         );
         if (!this.isQuadratic) {
           this.nodeComponent.controlPointNodes[1].setVisibility?.(
@@ -524,30 +493,30 @@ export class Connection<T> {
             this.nodeComponent.controlPointNodes[1],
             this.points.cx2,
             this.points.cy2,
-            actionComponent
+            initiator
           );
         }
       }
     } else if (!skipChecks) {
-      if (actionComponent && !actionComponent.connectionControllerType) {
+      if (initiator && !initiator.connectionControllerType) {
         return false;
       }
 
       // Neem de x en y van de controller-thumb over...
-      if (actionComponent && x !== undefined && y !== undefined) {
-        if (actionComponent.connectionControllerType === 'c1') {
+      if (initiator && x !== undefined && y !== undefined) {
+        if (initiator.connectionControllerType === 'c1') {
           this.points.cx1 = x;
           this.points.cy1 = y;
-        } else if (actionComponent.connectionControllerType === 'c2') {
+        } else if (initiator.connectionControllerType === 'c2') {
           this.points.cx2 = x;
           this.points.cy2 = y;
-        } else if (actionComponent.connectionControllerType === 'end') {
+        } else if (initiator.connectionControllerType === 'end') {
           this.points.endX = x;
           this.points.endY = y;
 
           this.points.cx2 = this.points.endX - 150;
           this.points.cy2 = this.points.endY;
-        } else if (actionComponent.connectionControllerType === 'begin') {
+        } else if (initiator.connectionControllerType === 'begin') {
           this.points.beginX = x;
           this.points.beginY = y;
         } else {

@@ -434,16 +434,16 @@ export class Rect<T> {
   }
 
   onEndThumbConnectorElementupdate(
-    component?: INodeComponent<T>,
+    target?: INodeComponent<T>,
     x?: number,
     y?: number,
-    actionComponent?: INodeComponent<T>
+    initiator?: INodeComponent<T>
   ) {
-    if (!component || x === undefined || y === undefined || !actionComponent) {
+    if (!target || x === undefined || y === undefined || !initiator) {
       return false;
     }
 
-    setPosition(component, x, y, actionComponent?.nodeType !== 'shape', false);
+    setPosition(target, x, y, initiator?.nodeType !== 'shape', false);
     return true;
   }
 
@@ -639,24 +639,16 @@ export class Rect<T> {
       ) => { x: number; y: number }
     ) =>
     (
-      incomingComponent?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (
-        !incomingComponent ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
 
-      if (
-        incomingComponent.nodeType === 'shape' &&
-        actionComponent.nodeType === 'shape'
-      ) {
+      if (target.nodeType === 'shape' && initiator.nodeType === 'shape') {
         this.points.beginX = x - 50;
         this.points.beginY = y - 50;
         if (rectContainerElement) {
@@ -665,7 +657,7 @@ export class Rect<T> {
         }
 
         if (getThumbPosition) {
-          incomingComponent?.thumbConnectors?.forEach(
+          target?.thumbConnectors?.forEach(
             (connector: IThumbNodeComponent<T>) => {
               if (connector && connector.update && connector.thumbType) {
                 const position = getThumbPosition(
@@ -673,12 +665,7 @@ export class Rect<T> {
                   connector.thumbIndex ?? 0,
                   connector.thumbOffsetY ?? 0
                 );
-                connector.update(
-                  connector,
-                  position.x,
-                  position.y,
-                  actionComponent
-                );
+                connector.update(connector, position.x, position.y, initiator);
               }
             }
           );

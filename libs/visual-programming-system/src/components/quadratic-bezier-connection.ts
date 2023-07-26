@@ -97,21 +97,16 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     startPointNode.nodeComponent.parent = this.nodeComponent;
     startPointNode.nodeComponent.isControlled = isControlled;
     startPointNode.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
 
-      setPosition(component, x, y);
+      setPosition(target, x, y);
       return true;
     };
 
@@ -138,21 +133,16 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     endPointNode.nodeComponent.parent = this.nodeComponent;
     endPointNode.nodeComponent.isControlled = isControlled;
     endPointNode.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initator) {
         return false;
       }
 
-      setPosition(component, x, y);
+      setPosition(target, x, y);
       return true;
     };
     const controlPoint1Node = new ThumbNode<T>(
@@ -172,20 +162,15 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     controlPoint1Node.nodeComponent.isControlled = isControlled;
     controlPoint1Node.nodeComponent.parent = this.nodeComponent;
     controlPoint1Node.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      setPosition(component, x, y);
+      setPosition(target, x, y);
       return true;
     };
     this.nodeComponent.controlPointNodes?.push(controlPoint1Node.nodeComponent);

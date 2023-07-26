@@ -113,20 +113,15 @@ export class CubicBezierConnection<T> extends Connection<T> {
     startPointNode.nodeComponent.isControlled = isControlled;
     startPointNode.nodeComponent.parent = this.nodeComponent;
     startPointNode.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initator) {
         return false;
       }
-      setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+      setPosition(target, x, y, initator?.nodeType !== 'connection');
       return true;
     };
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
@@ -155,20 +150,15 @@ export class CubicBezierConnection<T> extends Connection<T> {
     endPointNode.nodeComponent.isControlled = isControlled;
     endPointNode.nodeComponent.parent = this.nodeComponent;
     endPointNode.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+      setPosition(target, x, y, initiator?.nodeType !== 'connection');
       return true;
     };
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
@@ -190,21 +180,16 @@ export class CubicBezierConnection<T> extends Connection<T> {
     controlPoint1Node.nodeComponent.isControlled = isControlled;
     controlPoint1Node.nodeComponent.parent = this.nodeComponent;
     controlPoint1Node.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initator) {
         return false;
       }
 
-      setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+      setPosition(target, x, y, initator?.nodeType !== 'connection');
       return true;
     };
     const controlPoint2Node = new ThumbNode<T>(
@@ -226,20 +211,15 @@ export class CubicBezierConnection<T> extends Connection<T> {
     controlPoint2Node.nodeComponent.isControlled = isControlled;
     controlPoint2Node.nodeComponent.parent = this.nodeComponent;
     controlPoint2Node.nodeComponent.update = (
-      component?: INodeComponent<T>,
+      target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      actionComponent?: INodeComponent<T>
+      initator?: INodeComponent<T>
     ) => {
-      if (
-        !component ||
-        x === undefined ||
-        y === undefined ||
-        !actionComponent
-      ) {
+      if (!target || x === undefined || y === undefined || !initator) {
         return false;
       }
-      setPosition(component, x, y, actionComponent?.nodeType !== 'connection');
+      setPosition(target, x, y, initator?.nodeType !== 'connection');
       return true;
     };
 
