@@ -287,7 +287,7 @@ export class Rect<T> {
         thumbNode,
         component.id,
         component.parent,
-        component.specifier,
+        component.connectionControllerType,
         rectNode.x,
         rectNode.y,
         rectNode.id
@@ -295,22 +295,22 @@ export class Rect<T> {
 
       let previousConnectedNodeId = '';
 
-      // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
+      // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
       // (not to be confused with the resize handlers)
       if (
         (component &&
           component.parent &&
           thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-          component.specifier === 'end') ||
+          component.connectionControllerType === 'end') ||
         (component &&
           component.parent &&
           thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-          component.specifier === 'begin')
+          component.connectionControllerType === 'begin')
       ) {
         const parentConnection =
           component.parent as unknown as IConnectionNodeComponent<T>;
         let nodeReference = rectNode;
-        if (component.specifier === 'begin') {
+        if (component.connectionControllerType === 'begin') {
           previousConnectedNodeId = parentConnection.startNode?.id ?? '';
           parentConnection.startNode = this.rectNode;
           parentConnection.startNodeThumb = thumbNode;
@@ -344,7 +344,7 @@ export class Rect<T> {
             nodeReference.y,
             this.rectNode
           );
-          if (component.specifier === 'begin') {
+          if (component.connectionControllerType === 'begin') {
             if (parentConnection.endNode) {
               component.parent.update(
                 component.parent,
@@ -380,14 +380,14 @@ export class Rect<T> {
     component: INodeComponent<T>,
     receivingThumbNode: IThumbNodeComponent<T>
   ) {
-    // check for 'begin' or 'end' specifier which are the drag handlers of the connection/path
+    // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
 
     if (
       component &&
       component.parent &&
       thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-      component.specifier === 'end'
+      component.connectionControllerType === 'end'
     ) {
       // thumbNode is the thumb that is being dropped on
       // component.parent.startNodeThumb is the thumb that is being dragged from
@@ -410,7 +410,7 @@ export class Rect<T> {
       component &&
       component.parent &&
       thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-      component.specifier === 'begin'
+      component.connectionControllerType === 'begin'
     ) {
       // thumbNode is the thumb that is being dropped on
       // component.parent.endNodeThumb is the thumb that is being dragged from
@@ -686,18 +686,22 @@ export class Rect<T> {
           );
         }
       } else {
-        if (!actionComponent.specifier) {
+        if (!actionComponent.connectionControllerType) {
           return false;
         }
 
         const getRectPoint = (
-          specifier?: string,
+          connectionControllerType?: string,
           thumbConnector?: IThumbNodeComponent<T>
         ) => {
           if (!getThumbPosition) {
             return { x: 0, y: 0 };
           }
-          if (!specifier && thumbConnector && thumbConnector.thumbType) {
+          if (
+            !connectionControllerType &&
+            thumbConnector &&
+            thumbConnector.thumbType
+          ) {
             const position = getThumbPosition(
               thumbConnector.thumbType,
               thumbConnector.thumbIndex ?? 0,
@@ -713,7 +717,7 @@ export class Rect<T> {
 
         incomingComponent?.thumbConnectors?.forEach(
           (connector: IThumbNodeComponent<T>) => {
-            if (connector && connector.specifier) {
+            if (connector && connector.connectionControllerType) {
               const point = getRectPoint(undefined, connector);
               if (point && connector.update) {
                 console.log(

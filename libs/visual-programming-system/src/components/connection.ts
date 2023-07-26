@@ -529,24 +529,24 @@ export class Connection<T> {
         }
       }
     } else if (!skipChecks) {
-      if (actionComponent && !actionComponent.specifier) {
+      if (actionComponent && !actionComponent.connectionControllerType) {
         return false;
       }
 
       if (actionComponent && x !== undefined && y !== undefined) {
-        if (actionComponent.specifier === 'c1') {
+        if (actionComponent.connectionControllerType === 'c1') {
           this.points.cx1 = x;
           this.points.cy1 = y;
-        } else if (actionComponent.specifier === 'c2') {
+        } else if (actionComponent.connectionControllerType === 'c2') {
           this.points.cx2 = x;
           this.points.cy2 = y;
-        } else if (actionComponent.specifier === 'end') {
+        } else if (actionComponent.connectionControllerType === 'end') {
           this.points.endX = x;
           this.points.endY = y;
 
           this.points.cx2 = this.points.endX - 150;
           this.points.cy2 = this.points.endY;
-        } else if (actionComponent.specifier === 'begin') {
+        } else if (actionComponent.connectionControllerType === 'begin') {
           this.points.beginX = x;
           this.points.beginY = y;
         } else {

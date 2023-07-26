@@ -23,7 +23,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   offsetY?: number;
   radius?: number;
 
-  specifier?: string;
+  connectionControllerType?: string;
   nodeType?: string;
   pathName?: string;
 

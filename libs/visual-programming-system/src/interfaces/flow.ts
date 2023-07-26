@@ -29,7 +29,7 @@ export interface FlowNode<T> {
   lineType?: LineType;
   controlPoints?: { x: number; y: number }[];
 
-  specifier?: string;
+  connectionControllerType?: string;
   nodeType?: string;
   pathName?: string;
 

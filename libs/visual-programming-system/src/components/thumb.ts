@@ -39,7 +39,7 @@ export class ThumbNode<T> {
     color?: string,
     xInitial?: string | number,
     yInitial?: string | number,
-    specifier?: string,
+    connectionControllerType?: string,
     nodeType?: string,
     additionalClasses?: string,
     width?: number,
@@ -76,7 +76,7 @@ export class ThumbNode<T> {
       xInitial !== undefined ? xInitial : Math.floor(Math.random() * 1024);
     const initialY =
       yInitial !== undefined ? yInitial : Math.floor(Math.random() * 500);
-    //console.log('createSVGElement', initialX, initialY, specifier);
+    //console.log('createSVGElement', initialX, initialY, connectionControllerType);
     // const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
     //   'svg',
     this.nodeComponent = createElement(
@@ -184,7 +184,7 @@ export class ThumbNode<T> {
     }
     elements.set(this.nodeComponent.id, this.nodeComponent);
     this.nodeComponent.elements.set(this.circleElement.id, this.circleElement);
-    this.nodeComponent.specifier = specifier;
+    this.nodeComponent.connectionControllerType = connectionControllerType;
     this.nodeComponent.x = parseInt(initialX.toString()) | 0;
     this.nodeComponent.y = parseInt(initialY.toString()) | 0;
     this.nodeComponent.nodeType = nodeType;
@@ -529,7 +529,7 @@ export class ThumbNode<T> {
         'DROPPED ON TARGET',
         dropTarget.id,
         this.nodeComponent.id,
-        this.nodeComponent.specifier,
+        this.nodeComponent.connectionControllerType,
         this.nodeComponent.onReceiveDroppedComponent
       );
       if (

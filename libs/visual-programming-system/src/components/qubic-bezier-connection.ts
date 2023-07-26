@@ -16,7 +16,6 @@ import {
 import { ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
-import { createConnectionSVGElement } from './connection-svg-element';
 import { ThumbNode } from './thumb';
 
 export class CubicBezierConnection<T> extends Connection<T> {
