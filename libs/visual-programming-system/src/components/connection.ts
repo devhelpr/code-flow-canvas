@@ -250,7 +250,7 @@ export class Connection<T> {
     if (this.isQuadratic && this.pathHiddenElement) {
       (this.pathHiddenElement.domElement as any).setAttribute(
         'd',
-        `M${this.pathPoints.beginX} ${this.pathPoints.beginY} Q${this.pathPoints.cx1} ${this.pathPoints.cy1} ${this.pathPoints.endX} $this.pathPoints.endY}`
+        `M${this.pathPoints.beginX} ${this.pathPoints.beginY} Q${this.pathPoints.cx1} ${this.pathPoints.cy1} ${this.pathPoints.endX} ${this.pathPoints.endY}`
       );
     } else {
       (this.pathHiddenElement?.domElement as any).setAttribute(
