@@ -310,6 +310,42 @@ export class ThumbNode<T> {
       );
     }
   };
+
+  initiateDraggingConnection = (
+    connectionThumb: IThumbNodeComponent<T>,
+    x: number,
+    y: number
+  ) => {
+    if (!this.canvas) {
+      return;
+    }
+    const elementRect = (
+      connectionThumb.domElement as unknown as HTMLElement | SVGElement
+    ).getBoundingClientRect();
+
+    const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
+    const interactionInfoResult = pointerDown(
+      x - rectCamera.x,
+      y - rectCamera.y,
+      connectionThumb,
+      this.canvas.domElement,
+      this.interactionStateMachine
+    );
+    if (interactionInfoResult && connectionThumb.initPointerDown) {
+      connectionThumb.initPointerDown(
+        interactionInfoResult.xOffsetWithinElementOnFirstClick,
+        interactionInfoResult.yOffsetWithinElementOnFirstClick
+      );
+    }
+
+    if (connectionThumb.getThumbCircleElement) {
+      const circleDomElement = connectionThumb.getThumbCircleElement();
+
+      circleDomElement.classList.remove('pointer-events-auto');
+      circleDomElement.classList.add('pointer-events-none');
+    }
+  };
   onPointerDown = (e: PointerEvent) => {
     if (this.disableInteraction) {
       return;
@@ -317,39 +353,14 @@ export class ThumbNode<T> {
     if (this.nodeComponent) {
       // hold shift to disconnect node from start point
       if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
-        console.log(
-          'connections found',
-          this.nodeComponent,
-          this.nodeComponent.thumbLinkedToNode.connections
-        );
-
         const { x, y } = transformToCamera(e.clientX, e.clientY);
         const curve = this.nodeComponent.thumbLinkedToNode.connections[0];
-
-        const connection =
-          this.nodeComponent.connectionControllerType === 'start'
+        const connectionThumb =
+          this.nodeComponent.thumbConnectionType === 'start'
             ? curve.connectionStartNodeThumb
             : curve.connectionEndNodeThumb;
-        if (connection) {
-          const elementRect = (
-            connection.domElement as unknown as HTMLElement | SVGElement
-          ).getBoundingClientRect();
-
-          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-
-          const interactionInfoResult = pointerDown(
-            x - rectCamera.x,
-            y - rectCamera.y,
-            connection,
-            this.canvas.domElement,
-            this.interactionStateMachine
-          );
-          if (interactionInfoResult && connection.initPointerDown) {
-            connection.initPointerDown(
-              interactionInfoResult.xOffsetWithinElementOnFirstClick,
-              interactionInfoResult.yOffsetWithinElementOnFirstClick
-            );
-          }
+        if (connectionThumb) {
+          this.initiateDraggingConnection(connectionThumb, x, y);
         }
 
         return;
@@ -366,29 +377,15 @@ export class ThumbNode<T> {
     - create a connection starting from this node and thumb
     - initialize the interaction state machine with the new connection
     */
-      console.log(
-        'thumb pointerdown before check',
-        this.nodeComponent.id,
-        this.nodeComponent
-      );
+
       if (
         this.nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
         this.nodeComponent.isConnectPoint &&
         this.parentRectNode &&
         this.canvasElements
       ) {
-        console.log(
-          'thumb pointerdown',
-          this.nodeComponent.id,
-          this.nodeComponent
-        );
-        //e.preventDefault();
-
-        // const elementRect = (
-        //   nodeComponent.domElement as unknown as HTMLElement | SVGElement
-        // ).getBoundingClientRect();
         const { x, y } = transformToCamera(e.clientX, e.clientY);
-        //const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
         const curve = new CubicBezierConnection<T>(
           this.canvas as unknown as INodeComponent<T>,
           this.interactionStateMachine,
@@ -412,11 +409,6 @@ export class ThumbNode<T> {
         }
 
         if (curve && this.canvas) {
-          console.log(
-            'new curve created',
-            curve.nodeComponent.id,
-            curve.endPointElement.id
-          );
           curve.nodeComponent.isControlled = true;
 
           curve.nodeComponent.startNode = this.parentRectNode;
@@ -427,40 +419,7 @@ export class ThumbNode<T> {
             curve.nodeComponent.update();
           }
 
-          const elementRect = (
-            curve.endPointElement.domElement as unknown as
-              | HTMLElement
-              | SVGElement
-          ).getBoundingClientRect();
-
-          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-
-          const interactionInfoResult = pointerDown(
-            x - rectCamera.x,
-            y - rectCamera.y,
-            curve.endPointElement,
-            this.canvas.domElement,
-            this.interactionStateMachine
-          );
-          if (interactionInfoResult && curve.endPointElement.initPointerDown) {
-            curve.endPointElement.initPointerDown(
-              interactionInfoResult.xOffsetWithinElementOnFirstClick,
-              interactionInfoResult.yOffsetWithinElementOnFirstClick
-            );
-          }
-
-          if (curve.endPointElement.getThumbCircleElement) {
-            const circleDomElement =
-              curve.endPointElement.getThumbCircleElement();
-            console.log('circleDomElement', circleDomElement);
-            circleDomElement.classList.remove('pointer-events-auto');
-            circleDomElement.classList.add('pointer-events-none');
-          }
-          // (
-          //   nodeComponent.parent?.domElement as unknown as HTMLElement
-          // ).append(nodeComponent.domElement);
-
-          console.log('new curve interactionInfoResult', interactionInfoResult);
+          this.initiateDraggingConnection(curve.endPointElement, x, y);
         }
 
         return;
