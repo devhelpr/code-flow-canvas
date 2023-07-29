@@ -319,16 +319,20 @@ export class ThumbNode<T> {
       if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
         console.log(
           'connections found',
+          this.nodeComponent,
           this.nodeComponent.thumbLinkedToNode.connections
         );
 
         const { x, y } = transformToCamera(e.clientX, e.clientY);
         const curve = this.nodeComponent.thumbLinkedToNode.connections[0];
-        if (curve.connectionStartNodeThumb) {
+
+        const connection =
+          this.nodeComponent.connectionControllerType === 'start'
+            ? curve.connectionStartNodeThumb
+            : curve.connectionEndNodeThumb;
+        if (connection) {
           const elementRect = (
-            curve.connectionStartNodeThumb.domElement as unknown as
-              | HTMLElement
-              | SVGElement
+            connection.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
 
           const rectCamera = transformToCamera(elementRect.x, elementRect.y);
@@ -336,15 +340,12 @@ export class ThumbNode<T> {
           const interactionInfoResult = pointerDown(
             x - rectCamera.x,
             y - rectCamera.y,
-            curve.connectionStartNodeThumb,
+            connection,
             this.canvas.domElement,
             this.interactionStateMachine
           );
-          if (
-            interactionInfoResult &&
-            curve.connectionStartNodeThumb.initPointerDown
-          ) {
-            curve.connectionStartNodeThumb.initPointerDown(
+          if (interactionInfoResult && connection.initPointerDown) {
+            connection.initPointerDown(
               interactionInfoResult.xOffsetWithinElementOnFirstClick,
               interactionInfoResult.yOffsetWithinElementOnFirstClick
             );
