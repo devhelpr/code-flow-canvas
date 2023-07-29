@@ -363,7 +363,7 @@ export class ThumbNode<T> {
         if (
           this.nodeComponent.thumbLinkedToNode &&
           selectedNode &&
-          selectedNode.nodeType === 'connection' &&
+          selectedNode.nodeType === NodeType.Connection &&
           this.canvas
         ) {
           const { x, y } = transformToCamera(e.clientX, e.clientY);
@@ -576,7 +576,7 @@ export class ThumbNode<T> {
 
     if (
       this.nodeComponent.parent &&
-      this.nodeComponent.parent.nodeType === 'connection'
+      this.nodeComponent.parent.nodeType === NodeType.Connection
     ) {
       this.nodeComponent.parent.update?.();
     }

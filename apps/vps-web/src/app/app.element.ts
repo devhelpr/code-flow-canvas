@@ -25,6 +25,7 @@ import {
   IThumbNodeComponent,
   Flow,
   updateNamedSignal,
+  NodeType,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -289,7 +290,7 @@ export class AppElement extends HTMLElement {
             const nodesList = flow.flows.flow.nodes;
             nodesList.forEach((node) => {
               if (
-                node.nodeType === 'shape' &&
+                node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'expression'
               ) {
                 const expression = getExpression(canvasUpdated);
@@ -302,7 +303,10 @@ export class AppElement extends HTMLElement {
                 );
               }
 
-              if (node.nodeType === 'shape' && node.nodeInfo?.type === 'if') {
+              if (
+                node.nodeType === NodeType.Shape &&
+                node.nodeInfo?.type === 'if'
+              ) {
                 const ifCondition = getIfCondition();
                 ifCondition.createVisualNode(
                   canvasApp,
@@ -315,33 +319,39 @@ export class AppElement extends HTMLElement {
               }
 
               if (
-                node.nodeType === 'shape' &&
+                node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'array'
               ) {
                 const array = getArray();
                 array.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
-              if (node.nodeType === 'shape' && node.nodeInfo?.type === 'sum') {
+              if (
+                node.nodeType === NodeType.Shape &&
+                node.nodeInfo?.type === 'sum'
+              ) {
                 const sum = getSum();
                 sum.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
               if (
-                node.nodeType === 'shape' &&
+                node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'show-input'
               ) {
                 const showInput = getShowInput();
                 showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
-              if (node.nodeType === 'shape' && node.nodeInfo?.type === 'map') {
+              if (
+                node.nodeType === NodeType.Shape &&
+                node.nodeInfo?.type === 'map'
+              ) {
                 const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
                 map.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
               if (
-                node.nodeType === 'shape' &&
+                node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'filter'
               ) {
                 const filter = getFilter<NodeInfo>(
@@ -352,7 +362,7 @@ export class AppElement extends HTMLElement {
               }
 
               if (
-                node.nodeType === 'shape' &&
+                node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'fetch'
               ) {
                 const expression = getFetch(canvasUpdated);
@@ -366,7 +376,7 @@ export class AppElement extends HTMLElement {
               }
 
               if (
-                node.nodeType === 'shape' &&
+                node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'show-object'
               ) {
                 const expression = getShowObject();
@@ -377,7 +387,7 @@ export class AppElement extends HTMLElement {
             const elementList = Array.from(canvasApp?.elements ?? []);
 
             nodesList.forEach((node) => {
-              if (node.nodeType === 'connection') {
+              if (node.nodeType === NodeType.Connection) {
                 let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
                 let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
                 //if (node.startNodeId && node.endNodeId) {
@@ -580,7 +590,7 @@ export class AppElement extends HTMLElement {
           event.stopPropagation();
           this.canvasApp?.elements.forEach((node) => {
             const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
-            if (nodeComponent.nodeType !== 'connection') {
+            if (nodeComponent.nodeType !== NodeType.Connection) {
               if (nodeComponent.nodeInfo.initializeCompute) {
                 nodeComponent.nodeInfo.initializeCompute();
               }
@@ -844,7 +854,7 @@ export class AppElement extends HTMLElement {
     const serializeFlow = () => {
       const nodesList = Array.from(canvasApp.elements, function (entry) {
         const obj = entry[1] as INodeComponent<NodeInfo>;
-        if (obj.nodeType === 'connection') {
+        if (obj.nodeType === NodeType.Connection) {
           const connection =
             obj as unknown as IConnectionNodeComponent<NodeInfo>;
           return {
@@ -1520,7 +1530,9 @@ export class AppElement extends HTMLElement {
         selectedNode.domElement.textContent = `${nodeElementId}`;
         const node = this.canvasApp?.elements?.get(nodeElementId);
 
-        if ((node as INodeComponent<NodeInfo>).nodeType === 'connection') {
+        if (
+          (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
+        ) {
           return;
         }
         const nodeInfo: any = node?.nodeInfo ?? {};

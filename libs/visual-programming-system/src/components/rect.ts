@@ -39,6 +39,7 @@ import {
 } from './utils/calculate-connector-thumbs';
 import { getPoint } from './utils/get-point';
 import { setPosition } from './utils/set-position';
+import { NodeType } from '../types/node-type';
 
 export class Rect<T> {
   nodeComponent?: IRectNodeComponent<T>;
@@ -179,7 +180,7 @@ export class Rect<T> {
           x,
           y,
           `thumb-connector-${index}`,
-          'connector',
+          NodeType.Connector,
           `top-0 left-0 origin-center ${
             thumb.hidden ? 'invisible pointer-events-none' : ''
           }`,
@@ -454,7 +455,7 @@ export class Rect<T> {
       return false;
     }
 
-    setPosition(target, x, y, initiator?.nodeType !== 'shape', false);
+    setPosition(target, x, y, initiator?.nodeType !== NodeType.Shape, false);
     return true;
   }
 
@@ -522,7 +523,7 @@ export class Rect<T> {
     if (!rectContainerElement)
       throw new Error('rectContainerElement is undefined');
 
-    rectContainerElement.nodeType = 'shape';
+    rectContainerElement.nodeType = NodeType.Shape;
     rectContainerElement.shapeType = shapeType;
 
     let astElement: any;
@@ -659,7 +660,10 @@ export class Rect<T> {
         return false;
       }
 
-      if (target.nodeType === 'shape' && initiator.nodeType === 'shape') {
+      if (
+        target.nodeType === NodeType.Shape &&
+        initiator.nodeType === NodeType.Shape
+      ) {
         this.points.beginX = x - 50;
         this.points.beginY = y - 50;
         if (rectContainerElement) {
@@ -713,7 +717,7 @@ export class Rect<T> {
         if (rectContainerElement) {
           // get all connections that have this node as start or end
           rectContainerElement.connections?.forEach((connection) => {
-            if (connection.nodeType === 'connection') {
+            if (connection.nodeType === NodeType.Connection) {
               const start =
                 connection.startNode === rectContainerElement && connection;
               const end =

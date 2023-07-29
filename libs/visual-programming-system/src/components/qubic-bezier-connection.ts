@@ -15,6 +15,7 @@ import {
 } from '../reactivity';
 import { ThumbType } from '../types';
 import { LineType } from '../types/line-type';
+import { NodeType } from '../types/node-type';
 import { Connection } from './connection';
 import { ThumbNode } from './thumb';
 
@@ -100,7 +101,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       startX,
       startY,
       'begin',
-      undefined,
+      NodeType.ConnectionController,
       undefined,
       undefined,
       undefined,
@@ -121,7 +122,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initator) {
         return false;
       }
-      setPosition(target, x, y, initator?.nodeType !== 'connection');
+      setPosition(target, x, y, initator?.nodeType !== NodeType.Connection);
       return true;
     };
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
@@ -136,7 +137,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       endX,
       endY,
       'end',
-      undefined,
+      NodeType.ConnectionController,
       undefined,
       undefined,
       undefined,
@@ -158,7 +159,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      setPosition(target, x, y, initiator?.nodeType !== 'connection');
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
@@ -172,7 +173,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
       '#00ff00',
       controlPoint1X,
       controlPoint1Y,
-      'c1'
+      'c1',
+      NodeType.ConnectionController
     );
     if (!controlPoint1Node.nodeComponent) {
       throw new Error('controlPoint1Node nodeComponent is undefined');
@@ -189,7 +191,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
         return false;
       }
 
-      setPosition(target, x, y, initator?.nodeType !== 'connection');
+      setPosition(target, x, y, initator?.nodeType !== NodeType.Connection);
       return true;
     };
     const controlPoint2Node = new ThumbNode<T>(
@@ -201,7 +203,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
       '#0000ff',
       controlPoint2X,
       controlPoint2Y,
-      'c2'
+      'c2',
+      NodeType.ConnectionController
     );
 
     if (!controlPoint2Node.nodeComponent) {
@@ -219,7 +222,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initator) {
         return false;
       }
-      setPosition(target, x, y, initator?.nodeType !== 'connection');
+      setPosition(target, x, y, initator?.nodeType !== NodeType.Connection);
       return true;
     };
 

@@ -13,6 +13,7 @@ import {
 import { IPointerDownResult } from '../interfaces/pointers';
 import { setSelectNode } from '../reactivity';
 import { ThumbType } from '../types';
+import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
@@ -168,7 +169,7 @@ export class Connection<T> {
 
     if (!this.nodeComponent) throw new Error('nodeComponent is undefined');
 
-    this.nodeComponent.nodeType = 'connection';
+    this.nodeComponent.nodeType = NodeType.Connection;
     this.nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
     this.nodeComponent.controlPointNodes = [];
     this.nodeComponent.delete = () => {
@@ -410,8 +411,9 @@ export class Connection<T> {
       initiator &&
       x !== undefined &&
       y !== undefined &&
-      target.nodeType === 'connection' &&
-      (initiator.nodeType === 'connection' || initiator.nodeType === 'shape')
+      target.nodeType === NodeType.Connection &&
+      (initiator.nodeType === NodeType.Connection ||
+        initiator.nodeType === NodeType.Shape)
     ) {
       if (connection.startNode && initiator.id === connection.startNode.id) {
         const start = this.onCalculateControlPoints(
