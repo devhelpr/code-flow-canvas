@@ -315,13 +315,45 @@ export class ThumbNode<T> {
       return;
     }
     if (this.nodeComponent) {
-      if (
-        this.nodeComponent.parent &&
-        (this.nodeComponent.parent as unknown as IConnectionNodeComponent<T>)
-          .startNode
-      ) {
-        //return;
+      // hold shift to disconnect node from start point
+      if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
+        console.log(
+          'connections found',
+          this.nodeComponent.thumbLinkedToNode.connections
+        );
+
+        const { x, y } = transformToCamera(e.clientX, e.clientY);
+        const curve = this.nodeComponent.thumbLinkedToNode.connections[0];
+        if (curve.connectionStartNodeThumb) {
+          const elementRect = (
+            curve.connectionStartNodeThumb.domElement as unknown as
+              | HTMLElement
+              | SVGElement
+          ).getBoundingClientRect();
+
+          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+
+          const interactionInfoResult = pointerDown(
+            x - rectCamera.x,
+            y - rectCamera.y,
+            curve.connectionStartNodeThumb,
+            this.canvas.domElement,
+            this.interactionStateMachine
+          );
+          if (
+            interactionInfoResult &&
+            curve.connectionStartNodeThumb.initPointerDown
+          ) {
+            curve.connectionStartNodeThumb.initPointerDown(
+              interactionInfoResult.xOffsetWithinElementOnFirstClick,
+              interactionInfoResult.yOffsetWithinElementOnFirstClick
+            );
+          }
+        }
+
+        return;
       }
+
       /* 
     TODO:
     if:
@@ -530,13 +562,13 @@ export class ThumbNode<T> {
         dropTarget.id,
         this.nodeComponent.id,
         this.nodeComponent.connectionControllerType,
-        this.nodeComponent.onReceiveDroppedComponent
+        this.nodeComponent.onReceiveDraggedConnection
       );
       if (
-        dropTarget.onReceiveDroppedComponent &&
+        dropTarget.onReceiveDraggedConnection &&
         dropTarget.id !== this.nodeComponent.id
       ) {
-        dropTarget.onReceiveDroppedComponent(dropTarget, this.nodeComponent);
+        dropTarget.onReceiveDraggedConnection(dropTarget, this.nodeComponent);
       }
     }
 

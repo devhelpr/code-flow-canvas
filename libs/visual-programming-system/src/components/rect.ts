@@ -216,8 +216,8 @@ export class Rect<T> {
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
             this.onCanReceiveDroppedComponent;
-          thumbNode.nodeComponent.onReceiveDroppedComponent =
-            this.onReceiveDroppedComponent(this.rectNode);
+          thumbNode.nodeComponent.onReceiveDraggedConnection =
+            this.onReceiveDraggedConnection(this.rectNode);
         }
         thumbNode.nodeComponent.update = this.onEndThumbConnectorElementupdate;
 
@@ -275,7 +275,7 @@ export class Rect<T> {
     }
   }
 
-  private onReceiveDroppedComponent =
+  private onReceiveDraggedConnection =
     (rectNode: IRectNodeComponent<T>) =>
     (thumbNode: IThumbNodeComponent<T>, component: INodeComponent<T>) => {
       // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
@@ -307,34 +307,43 @@ export class Rect<T> {
           thumbNode.thumbConnectionType === ThumbConnectionType.start &&
           component.connectionControllerType === 'begin')
       ) {
-        const parentConnection =
+        const draggedConnection =
           component.parent as unknown as IConnectionNodeComponent<T>;
         let nodeReference = rectNode;
         if (component.connectionControllerType === 'begin') {
-          previousConnectedNodeId = parentConnection.startNode?.id ?? '';
-          parentConnection.startNode = this.rectNode;
-          parentConnection.startNodeThumb = thumbNode;
+          previousConnectedNodeId = draggedConnection.startNode?.id ?? '';
+
+          // remove connection from current start node
+          const previousConnectionId = draggedConnection.id;
+          if (previousConnectionId && draggedConnection.startNode) {
+            draggedConnection.startNode.connections =
+              draggedConnection.startNode.connections.filter((connection) => {
+                return connection.id !== previousConnectionId;
+              });
+          }
+          draggedConnection.startNode = this.rectNode;
+          draggedConnection.startNodeThumb = thumbNode;
         } else {
-          previousConnectedNodeId = parentConnection.endNode?.id ?? '';
-          parentConnection.endNode = this.rectNode;
-          parentConnection.endNodeThumb = thumbNode;
-          if (parentConnection.startNode) {
+          previousConnectedNodeId = draggedConnection.endNode?.id ?? '';
+
+          // remove connection from current end node
+          const previousConnectionId = draggedConnection.id;
+          if (draggedConnection.endNode) {
+            draggedConnection.endNode.connections =
+              draggedConnection.endNode.connections.filter((connection) => {
+                return connection.id !== previousConnectionId;
+              });
+          }
+          draggedConnection.endNode = this.rectNode;
+          draggedConnection.endNodeThumb = thumbNode;
+          if (draggedConnection.startNode) {
             // use start node as reference for the curve's begin point
-            nodeReference = parentConnection.startNode;
+            nodeReference = draggedConnection.startNode;
           }
         }
         component.parent.isControlled = true;
 
-        // remove the previous connected node from the connections of the rectNode
-        rectNode.connections = (rectNode.connections ?? []).filter(
-          (connection) => {
-            return (
-              connection.startNode?.id !== previousConnectedNodeId &&
-              connection.endNode?.id !== previousConnectedNodeId
-            );
-          }
-        );
-        rectNode.connections?.push(parentConnection);
+        rectNode.connections?.push(draggedConnection);
 
         // Update both sides of the connection to get a correct curve
         if (component.parent.update) {
@@ -345,28 +354,28 @@ export class Rect<T> {
             this.rectNode
           );
           if (component.connectionControllerType === 'begin') {
-            if (parentConnection.endNode) {
+            if (draggedConnection.endNode) {
               component.parent.update(
                 component.parent,
                 nodeReference.x,
                 nodeReference.y,
-                parentConnection.endNode
+                draggedConnection.endNode
               );
             }
           } else {
-            if (parentConnection.startNode) {
+            if (draggedConnection.startNode) {
               component.parent.update(
                 component.parent,
                 nodeReference.x,
                 nodeReference.y,
-                parentConnection.startNode
+                draggedConnection.startNode
               );
             }
           }
         }
 
         (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
-          parentConnection.startNode?.domElement as unknown as HTMLElement
+          draggedConnection.startNode?.domElement as unknown as HTMLElement
         );
 
         if (this.canvasUpdated) {
@@ -422,9 +431,11 @@ export class Rect<T> {
           .endNodeThumb?.thumbConstraint
       );
       if (
-        thumbNode.thumbConstraint !==
         (component.parent as unknown as IConnectionNodeComponent<T>)
-          .endNodeThumb?.thumbConstraint
+          .endNodeThumb?.thumbConstraint !== undefined &&
+        thumbNode.thumbConstraint !==
+          (component.parent as unknown as IConnectionNodeComponent<T>)
+            .endNodeThumb?.thumbConstraint
       ) {
         return false;
       }
@@ -701,50 +712,48 @@ export class Rect<T> {
 
         if (rectContainerElement) {
           // get all connections that have this node as start or end
-          rectContainerElement.connections?.forEach((lookAtNodeComponent) => {
-            if (lookAtNodeComponent.nodeType === 'connection') {
+          rectContainerElement.connections?.forEach((connection) => {
+            if (connection.nodeType === 'connection') {
               const start =
-                lookAtNodeComponent.startNode === rectContainerElement &&
-                lookAtNodeComponent;
+                connection.startNode === rectContainerElement && connection;
               const end =
-                lookAtNodeComponent.endNode === rectContainerElement &&
-                lookAtNodeComponent;
+                connection.endNode === rectContainerElement && connection;
               if (
                 start &&
-                lookAtNodeComponent &&
-                lookAtNodeComponent.update &&
+                connection &&
+                connection.update &&
                 rectContainerElement
               ) {
-                lookAtNodeComponent.update(
-                  lookAtNodeComponent,
+                connection.update(
+                  connection,
                   this.points.beginX,
                   this.points.beginY,
                   rectContainerElement
                 );
-                lookAtNodeComponent.update(
-                  lookAtNodeComponent,
+                connection.update(
+                  connection,
                   this.points.beginX,
                   this.points.beginY,
-                  lookAtNodeComponent.endNode
+                  connection.endNode
                 );
               }
               if (
                 end &&
-                lookAtNodeComponent &&
-                lookAtNodeComponent.update &&
+                connection &&
+                connection.update &&
                 rectContainerElement
               ) {
-                lookAtNodeComponent.update(
-                  lookAtNodeComponent,
+                connection.update(
+                  connection,
                   this.points.beginX,
                   this.points.beginY,
                   rectContainerElement
                 );
-                lookAtNodeComponent.update(
-                  lookAtNodeComponent,
+                connection.update(
+                  connection,
                   this.points.beginX,
                   this.points.beginY,
-                  lookAtNodeComponent.startNode
+                  connection.startNode
                 );
               }
             }

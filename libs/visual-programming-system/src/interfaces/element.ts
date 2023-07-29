@@ -49,7 +49,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
     component: IConnectionNodeComponent<T>,
     receivingThumbNode: IThumbNodeComponent<T>
   ) => boolean;
-  onReceiveDroppedComponent?: (
+  onReceiveDraggedConnection?: (
     thumbNode: IThumbNodeComponent<T>,
     component: INodeComponent<T>
   ) => void;
