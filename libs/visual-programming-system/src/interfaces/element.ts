@@ -1,5 +1,6 @@
 import { ThumbType } from '../types';
 import { LineType } from '../types/line-type';
+import { NodeType } from '../types/node-type';
 import { ShapeType } from '../types/shape-type';
 
 export interface IElementNode<T> {
@@ -24,7 +25,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   radius?: number;
 
   connectionControllerType?: string;
-  nodeType?: string;
+  nodeType?: NodeType;
   pathName?: string;
 
   isControlled?: boolean;

@@ -11,7 +11,9 @@ import {
   ThumbConnectionType,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
+import { getSelectedNode } from '../reactivity';
 import { ThumbType } from '../types';
+import { NodeType } from '../types/node-type';
 import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
@@ -40,7 +42,7 @@ export class ThumbNode<T> {
     xInitial?: string | number,
     yInitial?: string | number,
     connectionControllerType?: string,
-    nodeType?: string,
+    nodeType?: NodeType,
     additionalClasses?: string,
     width?: number,
     height?: number,
@@ -352,6 +354,32 @@ export class ThumbNode<T> {
     }
     if (this.nodeComponent) {
       // hold shift to disconnect node from start point
+
+      const selectedNodeId = getSelectedNode();
+      if (selectedNodeId) {
+        const selectedNode = this.canvasElements?.get(
+          selectedNodeId
+        ) as unknown as INodeComponent<T>;
+        if (
+          this.nodeComponent.thumbLinkedToNode &&
+          selectedNode &&
+          selectedNode.nodeType === 'connection' &&
+          this.canvas
+        ) {
+          const { x, y } = transformToCamera(e.clientX, e.clientY);
+          const curve = selectedNode as unknown as IConnectionNodeComponent<T>;
+          const connectionThumb =
+            this.nodeComponent.thumbConnectionType === 'start'
+              ? curve.connectionStartNodeThumb
+              : curve.connectionEndNodeThumb;
+          if (connectionThumb) {
+            this.initiateDraggingConnection(connectionThumb, x, y);
+          }
+
+          return;
+        }
+      }
+
       if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
         const { x, y } = transformToCamera(e.clientX, e.clientY);
         const curve = this.nodeComponent.thumbLinkedToNode.connections[0];

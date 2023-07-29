@@ -1517,7 +1517,12 @@ export class AppElement extends HTMLElement {
 
       removeFormElement();
       if (nodeElementId) {
+        selectedNode.domElement.textContent = `${nodeElementId}`;
         const node = this.canvasApp?.elements?.get(nodeElementId);
+
+        if ((node as INodeComponent<NodeInfo>).nodeType === 'connection') {
+          return;
+        }
         const nodeInfo: any = node?.nodeInfo ?? {};
         console.log('nodeInfo', nodeInfo);
 
@@ -1638,7 +1643,6 @@ export class AppElement extends HTMLElement {
         );
         formElement = formElementInstance as INodeComponent<NodeInfo>;
 
-        selectedNode.domElement.textContent = `${nodeElementId}`;
         (
           sidebarContainer.domElement as unknown as HTMLElement
         ).classList.remove('hidden');

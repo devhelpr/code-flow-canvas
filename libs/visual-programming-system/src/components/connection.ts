@@ -11,6 +11,7 @@ import {
   IRectNodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
+import { setSelectNode } from '../reactivity';
 import { ThumbType } from '../types';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
@@ -202,7 +203,7 @@ export class Connection<T> {
     this.pathElement = createNSElement(
       'path',
       {
-        class: 'pointer-events-auto',
+        class: 'pointer-events-auto cursor-pointer',
         d: isQuadratic
           ? `M${this.pathPoints.beginX - bbox.x} ${
               this.pathPoints.beginY - bbox.y
@@ -231,6 +232,14 @@ export class Connection<T> {
 
     elements.set(this.nodeComponent.id, this.nodeComponent);
     this.nodeComponent.elements.set(this.pathElement.id, this.pathElement);
+
+    this.pathElement.domElement.addEventListener('click', () => {
+      if (!this.nodeComponent) {
+        return;
+      }
+      //console.log('CLICKED ON RECT', this.rectNode.id);
+      setSelectNode(this.nodeComponent.id);
+    });
 
     this.nodeComponent.update = this.onUpdate;
 
