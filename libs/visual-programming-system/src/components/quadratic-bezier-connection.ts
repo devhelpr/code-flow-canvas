@@ -13,7 +13,7 @@ import {
   getSelectedNode,
   setSelectNode,
 } from '../reactivity';
-import { ThumbType } from '../types';
+import { NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
 import { ThumbNode } from './thumb';
@@ -84,7 +84,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       startX,
       startY,
       'begin',
-      undefined,
+      NodeType.ConnectionController,
       undefined,
       undefined,
       undefined,
@@ -120,7 +120,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       endX,
       endY,
       'end',
-      undefined,
+      NodeType.ConnectionController,
       undefined,
       undefined,
       undefined,
@@ -154,7 +154,8 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       '#00ff00',
       controlPoint1X,
       controlPoint1Y,
-      'c1'
+      'c1',
+      NodeType.ConnectionController
     );
     if (!controlPoint1Node.nodeComponent) {
       throw new Error('controlPoint1Node.nodeComponent is undefined');
