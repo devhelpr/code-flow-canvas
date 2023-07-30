@@ -1,4 +1,14 @@
-import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
+import {
+  CanvasAppInstance,
+  IConnectionNodeComponent,
+  IElementNode,
+  INodeComponent,
+  IRectNodeComponent,
+  NodeType,
+  createElementMap,
+  getSelectedNode,
+  setSelectNode,
+} from '@devhelpr/visual-programming-system';
 import { navBarButton } from '../consts/classes';
 import {
   AnimatePathFromThumbFunction,
@@ -20,6 +30,7 @@ export interface NavbarComponentsProps {
   animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>;
   canvasUpdated: () => void;
   canvasApp: CanvasAppInstance;
+  removeElement: (element: IElementNode<NodeInfo>) => void;
 }
 
 export const NavbarComponents = (props: NavbarComponentsProps) => (
@@ -82,6 +93,68 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
         }}
       >
         Center
+      </button>
+      <button
+        class={`${navBarButton}`}
+        onclick={(event: Event) => {
+          event.preventDefault();
+          const nodeElementId = getSelectedNode();
+          if (nodeElementId) {
+            const node = props.canvasApp?.elements?.get(
+              nodeElementId
+            ) as INodeComponent<NodeInfo>;
+            if (node) {
+              if (node.nodeType === NodeType.Connection) {
+                // Remove the connection from the start and end nodes
+                const connection = node as IConnectionNodeComponent<NodeInfo>;
+                if (connection.startNode) {
+                  connection.startNode.connections =
+                    connection.startNode?.connections?.filter(
+                      (c) => c.id !== connection.id
+                    );
+                }
+                if (connection.endNode) {
+                  connection.endNode.connections =
+                    connection.endNode?.connections?.filter(
+                      (c) => c.id !== connection.id
+                    );
+                }
+              } else if (node.nodeType === NodeType.Shape) {
+                //does the shape have connections? yes.. remove the link between the connection and the node
+                // OR .. remove the connection as well !?
+                const shapeNode = node as IRectNodeComponent<NodeInfo>;
+                if (shapeNode.connections) {
+                  shapeNode.connections.forEach((c) => {
+                    const connection = props.canvasApp?.elements?.get(
+                      c.id
+                    ) as IConnectionNodeComponent<NodeInfo>;
+                    if (connection) {
+                      if (connection.startNode?.id === node.id) {
+                        connection.startNode = undefined;
+                        connection.startNodeThumb = undefined;
+                      }
+                      if (connection.endNode?.id === node.id) {
+                        connection.endNode = undefined;
+                        connection.endNodeThumb = undefined;
+                      }
+                    }
+                  });
+                }
+              } else {
+                return;
+              }
+
+              props.removeElement(node);
+              props.canvasApp?.elements?.delete(nodeElementId);
+
+              setSelectNode(undefined);
+              props.canvasUpdated();
+            }
+          }
+          return false;
+        }}
+      >
+        Delete
       </button>
     </div>
   </element:Fragment>

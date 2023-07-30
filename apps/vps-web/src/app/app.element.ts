@@ -1020,6 +1020,7 @@ export class AppElement extends HTMLElement {
         animatePathFromThumb: animatePathFromThumb,
         canvasUpdated: canvasUpdated,
         canvasApp: this.canvasApp,
+        removeElement: this.removeElement,
       }) as unknown as HTMLElement
     );
 
