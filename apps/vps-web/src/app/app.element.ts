@@ -57,6 +57,7 @@ import { NavbarComponents } from './components/navbar-components';
 import { getFetch } from './nodes/fetch';
 import { getShowObject } from './nodes/show-object';
 import { menubarClasses, navBarButton } from './consts/classes';
+import { getCanvasNode } from './nodes/canvas-node';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -381,6 +382,14 @@ export class AppElement extends HTMLElement {
               ) {
                 const expression = getShowObject();
                 expression.createVisualNode(canvasApp, node.x, node.y, node.id);
+              }
+
+              if (
+                node.nodeType === NodeType.Shape &&
+                node.nodeInfo?.type === 'canvas-node'
+              ) {
+                const canvasNode = getCanvasNode();
+                canvasNode.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
             });
 
@@ -1010,6 +1019,12 @@ export class AppElement extends HTMLElement {
         selectNodeType.domElement as HTMLSelectElement,
         'filter',
         'filter'
+      );
+
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'canvas-node',
+        'canvas-node'
       );
     }
 

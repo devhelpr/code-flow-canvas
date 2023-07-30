@@ -23,6 +23,7 @@ import { getShowInput } from '../nodes/show-input';
 import { getShowObject } from '../nodes/show-object';
 import { getSum } from '../nodes/sum';
 import { NodeInfo } from '../types/node-info';
+import { getCanvasNode } from '../nodes/canvas-node';
 
 export interface NavbarComponentsProps {
   selectNodeType: HTMLSelectElement;
@@ -78,6 +79,9 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
               props.animatePathFromThumb
             );
             filter.createVisualNode(props.canvasApp, startX, startY);
+          } else if (nodeType === 'canvas-node') {
+            const canvasNode = getCanvasNode();
+            canvasNode.createVisualNode(props.canvasApp, startX, startY);
           }
           return false;
         }}
