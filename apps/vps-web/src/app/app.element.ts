@@ -90,14 +90,14 @@ export class AppElement extends HTMLElement {
 
   currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
 
-  clearElement = (element: IElementNode<NodeInfo>) => {
+  removeElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
     const node = element as unknown as INodeComponent<NodeInfo>;
     if (node && node.delete) {
       node.delete();
     }
     element.elements.forEach((element: IElementNode<NodeInfo>) => {
-      this.clearElement(element as unknown as IElementNode<NodeInfo>);
+      this.removeElement(element as unknown as IElementNode<NodeInfo>);
     });
     element.elements = createElementMap<NodeInfo>();
   };
@@ -109,7 +109,7 @@ export class AppElement extends HTMLElement {
 
     this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
-      this.clearElement(element as unknown as IElementNode<NodeInfo>);
+      this.removeElement(element as unknown as IElementNode<NodeInfo>);
     });
     this.canvasApp?.elements.clear();
     this.canvasApp?.setCamera(0, 0, 1);
