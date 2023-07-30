@@ -5,6 +5,7 @@ import {
 } from '../../interaction-state-machine';
 import { DOMElementNode, INodeComponent } from '../../interfaces/element';
 import { IPointerDownResult } from '../../interfaces/pointers';
+import { NodeType } from '../../types';
 
 export const pointerDown = <T>(
   x: number,
@@ -36,7 +37,10 @@ export const pointerDown = <T>(
   ) {
     xOffsetWithinElementOnFirstClick = x;
     yOffsetWithinElementOnFirstClick = y;
-    if (element?.nodeType !== 'connection' && element?.nodeType !== 'shape') {
+    if (
+      element?.nodeType !== NodeType.Connection &&
+      element?.nodeType !== NodeType.Shape
+    ) {
       (canvasElement as unknown as HTMLElement | SVGElement).append(
         element.domElement
       );

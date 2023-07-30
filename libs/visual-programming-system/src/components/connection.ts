@@ -16,7 +16,7 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
-import { pointerDown } from './events/pointer-events';
+import { pointerDown, pointerMove } from './events/pointer-events';
 import { onCalculateControlPoints as onCalculateCubicBezierControlPoints } from './utils/calculate-control-points';
 
 const thumbRadius = 10;
@@ -225,6 +225,7 @@ export class Connection<T> {
         ...dashedStroke,
         fill: 'transparent',
         pointerdown: this.onPointerDown,
+        pointermove: this.onPointerMove,
       },
       this.nodeComponent.domElement
     );
@@ -280,9 +281,13 @@ export class Connection<T> {
     };
   }
 
+  interactionInfo: false | IPointerDownResult = false;
   onPointerDown = (e: PointerEvent) => {
+    console.log('CONNECTION POINTER DOWN', this.nodeComponent?.isControlled);
     if (this.nodeComponent?.isControlled) {
-      return;
+      // TODO : remove tbis return ... and in onPointerMove check this and
+      //   updated the start/end nodes !?
+      //return;
     }
     if (this.nodeComponent) {
       const elementRect = (
@@ -301,6 +306,7 @@ export class Connection<T> {
         this.canvasElement,
         this.interactionStateMachine
       );
+      this.interactionInfo = interactionInfoResult;
       if (interactionInfoResult && this.svgParent) {
         // interactionInfo = interactionInfoResult;
         // isClicking = true;
@@ -332,6 +338,77 @@ export class Connection<T> {
           }
         }
       }
+    }
+  };
+
+  onPointerMove = (e: PointerEvent) => {
+    if (!this.nodeComponent) {
+      return;
+    }
+
+    if (
+      this.nodeComponent &&
+      this.nodeComponent.domElement &&
+      this.interactionInfo
+    ) {
+      const { x, y } = transformToCamera(e.clientX, e.clientY);
+      if (
+        pointerMove(
+          x,
+          y,
+          this.nodeComponent,
+          this.canvasElement,
+          this.interactionInfo,
+          this.interactionStateMachine
+        )
+      ) {
+        if (this.nodeComponent.startNode) {
+          console.log(
+            'UPDATE START NODE',
+            x,
+            y,
+            this.points.beginX,
+            this.points.beginY
+          );
+          this.nodeComponent.startNode.update?.(
+            this.nodeComponent.startNode,
+            this.points.beginX,
+            this.points.beginY,
+            this.nodeComponent
+          );
+        }
+
+        if (this.nodeComponent.endNode) {
+          console.log(
+            'UPDATE END NODE',
+            x,
+            y,
+            this.points.endX,
+            this.points.endY
+          );
+          this.nodeComponent.endNode.update?.(
+            this.nodeComponent.endNode,
+            this.points.endX,
+            this.points.endY,
+            this.nodeComponent
+          );
+        }
+
+        // if (this.nodeComponent.endNode) {
+        //   this.nodeComponent.endNode.update?.(
+        //     this.nodeComponent.endNode,
+        //     this.points.endX,
+        //     this.points.endY,
+        //     this.nodeComponent
+        //   );
+        // }
+      }
+    }
+
+    if (this.nodeComponent?.isControlled) {
+      // TODO : remove tbis return ... and in onPointerMove check this and
+      //   updated the start/end nodes !?
+      return;
     }
   };
 

@@ -32,10 +32,10 @@ export interface INodeComponent<T> extends IElementNode<T> {
 
   thumbConnectors?: IThumbNodeComponent<T>[];
   update?: (
-    component?: INodeComponent<T>,
+    target?: INodeComponent<T>,
     x?: number,
     y?: number,
-    actionComponent?: INodeComponent<T>
+    initiator?: INodeComponent<T>
   ) => boolean;
   updateEnd?: () => void;
   initPointerDown?: (initialXOffset: number, initialYOffset: number) => void;
