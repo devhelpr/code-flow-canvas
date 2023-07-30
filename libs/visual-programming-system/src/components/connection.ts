@@ -149,7 +149,7 @@ export class Connection<T> {
       {
         width: 0,
         height: 0,
-        class: 'absolute top-0 left-0 pointer-events-none',
+        class: 'absolute top-0 left-0 pointer-events-none', //pointer-events-bounding-box',
       },
       canvasElement
     );
@@ -225,7 +225,6 @@ export class Connection<T> {
         'stroke-width': 50,
         fill: 'transparent',
         pointerdown: this.onPointerDown,
-        pointermove: this.onPointerMove,
       },
       this.nodeComponent.domElement
     );
@@ -233,6 +232,7 @@ export class Connection<T> {
     this.pathElement = createNSElement(
       'path',
       {
+        class: 'pointer-events-none',
         d: path,
         stroke: 'white',
         'marker-start': 'url(#arrowbegin)',
@@ -251,15 +251,18 @@ export class Connection<T> {
     elements.set(this.nodeComponent.id, this.nodeComponent);
     this.nodeComponent.elements.set(this.pathElement.id, this.pathElement);
 
-    this.pathTransparentElement.domElement.addEventListener('click', () => {
-      if (!this.nodeComponent) {
-        return;
-      }
-      console.log('CLICKED ON CONNECTION', this.nodeComponent.id);
-      setSelectNode(this.nodeComponent.id);
-    });
+    // this.nodeComponent.domElement.addEventListener(
+    //   'click',
+    //   () => {
+    //     console.log('CLICKED ON CONNECTION', this.nodeComponent?.id);
+    //     if (!this.nodeComponent) {
+    //       return;
+    //     }
 
-    //this.nodeComponent.pointerMove = this.onPointerMove as () => void;
+    //     setSelectNode(this.nodeComponent.id);
+    //   },
+    //   true
+    // );
 
     this.nodeComponent.update = this.onUpdate;
 
@@ -302,12 +305,9 @@ export class Connection<T> {
   interactionInfo: false | IPointerDownResult = false;
   onPointerDown = (e: PointerEvent) => {
     console.log('CONNECTION POINTER DOWN', this.nodeComponent?.isControlled);
-    if (this.nodeComponent?.isControlled) {
-      // TODO : remove tbis return ... and in onPointerMove check this and
-      //   updated the start/end nodes !?
-      //return;
-    }
     if (this.nodeComponent) {
+      setSelectNode(this.nodeComponent.id);
+
       const elementRect = (
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
@@ -356,28 +356,6 @@ export class Connection<T> {
           }
         }
       }
-    }
-  };
-
-  onPointerMove = (e: PointerEvent) => {
-    if (!this.nodeComponent) {
-      return;
-    }
-    if (
-      this.nodeComponent &&
-      this.nodeComponent.domElement &&
-      this.interactionInfo
-    ) {
-      const { x, y } = transformToCamera(e.clientX, e.clientY);
-
-      pointerMove(
-        x,
-        y,
-        this.nodeComponent,
-        this.canvasElement,
-        this.interactionInfo,
-        this.interactionStateMachine
-      );
     }
   };
 
