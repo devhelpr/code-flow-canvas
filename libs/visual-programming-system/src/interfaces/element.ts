@@ -1,7 +1,6 @@
 import { ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
-import { ShapeType } from '../types/shape-type';
 
 export interface IElementNode<T> {
   id: string;
@@ -30,7 +29,6 @@ export interface INodeComponent<T> extends IElementNode<T> {
 
   isControlled?: boolean;
   isConnectPoint?: boolean;
-  shapeType?: ShapeType;
 
   thumbConnectors?: IThumbNodeComponent<T>[];
   update?: (

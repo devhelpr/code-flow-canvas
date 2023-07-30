@@ -1,4 +1,4 @@
-import { LineType, ShapeType } from '../types';
+import { LineType } from '../types';
 
 export interface Flow<T> {
   schemaType: string;
@@ -35,7 +35,6 @@ export interface FlowNode<T> {
 
   isControlled?: boolean;
   isConnectPoint?: boolean;
-  shapeType?: ShapeType;
 
   nodeInfo?: T;
 

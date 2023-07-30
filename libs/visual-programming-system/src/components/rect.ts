@@ -22,7 +22,6 @@ import {
   setSelectNode,
 } from '../reactivity';
 import { ThumbType } from '../types';
-import { ShapeType } from '../types/shape-type';
 import { createASTNodeElement, createElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
 import { ThumbNode } from './thumb';
@@ -69,7 +68,6 @@ export class Rect<T> {
     width: number,
     height: number,
     text?: string,
-    shapeType?: ShapeType,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T>,
     layoutProperties?: {
@@ -97,7 +95,6 @@ export class Rect<T> {
       heightHelper,
       pathHiddenElement,
       text,
-      shapeType,
       thumbOffsetX,
       thumbOffsetY,
       (thumbType: ThumbType, index?: number, offsetY?: number) => {
@@ -146,9 +143,6 @@ export class Rect<T> {
       this.points.height = astElementSize.height / scale - 20;
     }
     this.rectNode.update(this.rectNode, startX, startY, this.rectNode);
-
-    // rectNode.nodeType is "shape" .. if thats changed then the dragging of nodes doesnt work anymore
-    this.rectNode.shapeType = 'rect';
 
     widthHelper = this.rectNode.width ?? 0;
     heightHelper = this.rectNode.height ?? 0;
@@ -468,7 +462,6 @@ export class Rect<T> {
     height: number,
     pathHiddenElement: IElementNode<T>,
     text?: string,
-    shapeType?: ShapeType,
     thumbOffsetX?: number,
     thumbOffsetY?: number,
     getThumbPosition?: (
@@ -524,7 +517,6 @@ export class Rect<T> {
       throw new Error('rectContainerElement is undefined');
 
     rectContainerElement.nodeType = NodeType.Shape;
-    rectContainerElement.shapeType = shapeType;
 
     let astElement: any;
 

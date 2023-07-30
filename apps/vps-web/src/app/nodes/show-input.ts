@@ -73,7 +73,6 @@ export const getShowInput = () => {
         200,
         100,
         undefined,
-        undefined,
         [
           {
             thumbType: ThumbType.StartConnectorRight,

@@ -339,7 +339,6 @@ export const getBaseIterator = <T>(
         300,
         200,
         undefined,
-        undefined,
         [
           {
             thumbType: ThumbType.StartConnectorRight,
@@ -406,7 +405,6 @@ export const getBaseIterator = <T>(
           1,
           1,
           undefined,
-          undefined,
           [
             {
               thumbType: ThumbType.StartConnectorCenter,
@@ -436,7 +434,6 @@ export const getBaseIterator = <T>(
           1,
           1,
           undefined,
-          undefined,
           [
             {
               thumbType: ThumbType.StartConnectorCenter,
@@ -465,7 +462,6 @@ export const getBaseIterator = <T>(
           70 - 25 + 18,
           1,
           1,
-          undefined,
           undefined,
           [
             {
@@ -552,7 +548,6 @@ export const getBaseIterator = <T>(
           80,
           40,
           40,
-          undefined,
           undefined,
           [
             {

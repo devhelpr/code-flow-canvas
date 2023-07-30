@@ -117,7 +117,6 @@ export const getExpression = (updated?: () => void) => {
         200,
         100,
         undefined,
-        undefined,
         [
           {
             thumbType: ThumbType.StartConnectorCenter,

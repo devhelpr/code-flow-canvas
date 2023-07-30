@@ -123,7 +123,6 @@ export const getArray = () => {
         200,
         100,
         undefined,
-        undefined,
         [
           {
             thumbType: ThumbType.StartConnectorRight,
@@ -158,6 +157,9 @@ export const getArray = () => {
           formElements: [],
         }
       );
+      if (!rect.nodeComponent) {
+        throw new Error('rect.nodeComponent is undefined');
+      }
 
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;

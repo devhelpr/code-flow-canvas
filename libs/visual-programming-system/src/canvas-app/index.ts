@@ -10,7 +10,7 @@ import {
 } from '../interaction-state-machine';
 import { INodeComponent, IThumb } from '../interfaces';
 import { setSelectNode } from '../reactivity';
-import { ShapeType } from '../types';
+import { NodeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
 
 export const createCanvasApp = <T>(
@@ -472,7 +472,7 @@ export const createCanvasApp = <T>(
       elements.forEach((element) => {
         const elementHelper = element as unknown as INodeComponent<T>;
         if (
-          elementHelper.shapeType === 'rect' &&
+          elementHelper.nodeType === NodeType.Shape &&
           elementHelper.width !== undefined &&
           elementHelper.height !== undefined
         ) {
@@ -545,7 +545,6 @@ export const createCanvasApp = <T>(
       width: number,
       height: number,
       text?: string,
-      shapeType?: ShapeType,
       thumbs?: IThumb[],
       markup?: string | INodeComponent<T>,
       layoutProperties?: {
@@ -567,7 +566,6 @@ export const createCanvasApp = <T>(
         width,
         height,
         text,
-        shapeType,
         thumbs,
         markup,
         layoutProperties,
@@ -588,7 +586,6 @@ export const createCanvasApp = <T>(
       //   width,
       //   height,
       //   text,
-      //   shapeType,
       //   thumbs,
       //   markup,
       //   layoutProperties,

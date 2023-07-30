@@ -869,7 +869,6 @@ export class AppElement extends HTMLElement {
             endThumbName: connection.endNodeThumb?.thumbName,
             lineType: connection.lineType,
             nodeType: obj.nodeType,
-            shapeType: obj.shapeType,
             nodeInfo: cleanupNodeInfoForSerializing(connection.nodeInfo),
           };
         }
@@ -880,7 +879,6 @@ export class AppElement extends HTMLElement {
           width: obj.width,
           height: obj.height,
           nodeType: obj.nodeType,
-          shapeType: obj.shapeType,
           nodeInfo: cleanupNodeInfoForSerializing(obj.nodeInfo),
         };
       });
