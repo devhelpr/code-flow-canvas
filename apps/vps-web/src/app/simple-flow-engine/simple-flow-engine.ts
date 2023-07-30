@@ -4,6 +4,7 @@ import {
   INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
+  NodeType,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
@@ -217,7 +218,7 @@ export const run = <T>(
       return element.endNode?.id === node.id;
     });
     if (
-      nodeComponent.nodeType !== 'connection' &&
+      nodeComponent.nodeType !== NodeType.Connection &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0)
     ) {
       runNode<T>(
