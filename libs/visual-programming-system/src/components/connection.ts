@@ -67,6 +67,7 @@ export class Connection<T> {
 
   onCalculateControlPoints = onCalculateCubicBezierControlPoints;
   pathElement: IElementNode<T> | undefined = undefined;
+  pathTransparentElement: IElementNode<T> | undefined = undefined;
   svgParent: IElementNode<T> | undefined = undefined;
   canvasElement: DOMElementNode;
   interactionStateMachine: InteractionStateMachine<T>;
@@ -201,28 +202,27 @@ export class Connection<T> {
         }
       : undefined;
 
-    this.pathElement = createNSElement(
+    const path = isQuadratic
+      ? `M${this.pathPoints.beginX - bbox.x} ${
+          this.pathPoints.beginY - bbox.y
+        } Q${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
+          this.pathPoints.endX - bbox.x
+        } ${this.pathPoints.endY - bbox.y}`
+      : `M${this.pathPoints.beginX - bbox.x} ${
+          this.pathPoints.beginY - bbox.y
+        } C${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
+          this.pathPoints.cx2 - bbox.x
+        } ${this.pathPoints.cy2 - bbox.y} ${this.pathPoints.endX - bbox.x} ${
+          this.pathPoints.endY - bbox.y
+        }`;
+
+    this.pathTransparentElement = createNSElement(
       'path',
       {
         class: 'pointer-events-auto cursor-pointer',
-        d: isQuadratic
-          ? `M${this.pathPoints.beginX - bbox.x} ${
-              this.pathPoints.beginY - bbox.y
-            } Q${this.pathPoints.cx1 - bbox.x} ${
-              this.pathPoints.cy1 - bbox.y
-            } ${this.pathPoints.endX - bbox.x} ${this.pathPoints.endY - bbox.y}`
-          : `M${this.pathPoints.beginX - bbox.x} ${
-              this.pathPoints.beginY - bbox.y
-            } C${this.pathPoints.cx1 - bbox.x} ${
-              this.pathPoints.cy1 - bbox.y
-            } ${this.pathPoints.cx2 - bbox.x} ${this.pathPoints.cy2 - bbox.y} ${
-              this.pathPoints.endX - bbox.x
-            } ${this.pathPoints.endY - bbox.y}`,
-        stroke: 'white',
-        'marker-start': 'url(#arrowbegin)',
-        'marker-end': 'url(#arrow)',
-        'stroke-width': 3,
-        ...dashedStroke,
+        d: path,
+        stroke: 'transparent',
+        'stroke-width': 50,
         fill: 'transparent',
         pointerdown: this.onPointerDown,
         pointermove: this.onPointerMove,
@@ -230,16 +230,32 @@ export class Connection<T> {
       this.nodeComponent.domElement
     );
 
+    this.pathElement = createNSElement(
+      'path',
+      {
+        d: path,
+        stroke: 'white',
+        'marker-start': 'url(#arrowbegin)',
+        'marker-end': 'url(#arrow)',
+        'stroke-width': 3,
+        ...dashedStroke,
+        fill: 'transparent',
+      },
+      this.nodeComponent.domElement
+    );
+
     if (!this.pathElement) throw new Error('pathElement is undefined');
+    if (!this.pathTransparentElement)
+      throw new Error('pathTransparentElement is undefined');
 
     elements.set(this.nodeComponent.id, this.nodeComponent);
     this.nodeComponent.elements.set(this.pathElement.id, this.pathElement);
 
-    this.pathElement.domElement.addEventListener('click', () => {
+    this.pathTransparentElement.domElement.addEventListener('click', () => {
       if (!this.nodeComponent) {
         return;
       }
-      //console.log('CLICKED ON RECT', this.rectNode.id);
+      console.log('CLICKED ON CONNECTION', this.nodeComponent.id);
       setSelectNode(this.nodeComponent.id);
     });
 
@@ -642,24 +658,29 @@ export class Connection<T> {
 
     const bbox = this.getBBoxPath();
     if (this.isQuadratic) {
-      (this.pathElement?.domElement as HTMLElement).setAttribute(
+      const path = `M${this.pathPoints.beginX - bbox.x} ${
+        this.pathPoints.beginY - bbox.y
+      } Q${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y}  ${
+        this.pathPoints.endX - bbox.x
+      } ${this.pathPoints.endY - bbox.y}`;
+      (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
+      (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
         'd',
-        `M${this.pathPoints.beginX - bbox.x} ${
-          this.pathPoints.beginY - bbox.y
-        } Q${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y}  ${
-          this.pathPoints.endX - bbox.x
-        } ${this.pathPoints.endY - bbox.y}`
+        path
       );
     } else {
-      (this.pathElement?.domElement as HTMLElement).setAttribute(
+      const path = `M${this.pathPoints.beginX - bbox.x} ${
+        this.pathPoints.beginY - bbox.y
+      } C${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
+        this.pathPoints.cx2 - bbox.x
+      } ${this.pathPoints.cy2 - bbox.y}  ${this.pathPoints.endX - bbox.x} ${
+        this.pathPoints.endY - bbox.y
+      }`;
+
+      (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
+      (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
         'd',
-        `M${this.pathPoints.beginX - bbox.x} ${
-          this.pathPoints.beginY - bbox.y
-        } C${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
-          this.pathPoints.cx2 - bbox.x
-        } ${this.pathPoints.cy2 - bbox.y}  ${this.pathPoints.endX - bbox.x} ${
-          this.pathPoints.endY - bbox.y
-        }`
+        path
       );
     }
 
