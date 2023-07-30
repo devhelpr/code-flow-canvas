@@ -12,7 +12,7 @@ import {
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { setSelectNode } from '../reactivity';
-import { ThumbType } from '../types';
+import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
@@ -515,19 +515,27 @@ export class Connection<T> {
 
       // Neem de x en y van de controller-thumb over...
       if (initiator && x !== undefined && y !== undefined) {
-        if (initiator.connectionControllerType === 'c1') {
+        if (
+          initiator.connectionControllerType === ConnectionControllerType.c1
+        ) {
           this.points.cx1 = x;
           this.points.cy1 = y;
-        } else if (initiator.connectionControllerType === 'c2') {
+        } else if (
+          initiator.connectionControllerType === ConnectionControllerType.c2
+        ) {
           this.points.cx2 = x;
           this.points.cy2 = y;
-        } else if (initiator.connectionControllerType === 'end') {
+        } else if (
+          initiator.connectionControllerType === ConnectionControllerType.end
+        ) {
           this.points.endX = x;
           this.points.endY = y;
 
           this.points.cx2 = this.points.endX - 150;
           this.points.cy2 = this.points.endY;
-        } else if (initiator.connectionControllerType === 'begin') {
+        } else if (
+          initiator.connectionControllerType === ConnectionControllerType.begin
+        ) {
           this.points.beginX = x;
           this.points.beginY = y;
         } else {

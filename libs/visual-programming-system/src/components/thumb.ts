@@ -12,7 +12,7 @@ import {
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { getSelectedNode } from '../reactivity';
-import { ThumbType } from '../types';
+import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
@@ -41,7 +41,7 @@ export class ThumbNode<T> {
     color?: string,
     xInitial?: string | number,
     yInitial?: string | number,
-    connectionControllerType?: string,
+    connectionControllerType?: ConnectionControllerType,
     nodeType?: NodeType,
     additionalClasses?: string,
     width?: number,
@@ -557,6 +557,42 @@ export class ThumbNode<T> {
         dropTarget.id !== this.nodeComponent.id
       ) {
         dropTarget.onReceiveDraggedConnection(dropTarget, this.nodeComponent);
+      }
+    } else {
+      if (this.nodeComponent.nodeType === NodeType.ConnectionController) {
+        if (
+          this.nodeComponent.connectionControllerType ===
+          ConnectionControllerType.begin
+        ) {
+          if (this.nodeComponent?.parent) {
+            const connection = this.nodeComponent
+              .parent as unknown as IConnectionNodeComponent<T>;
+            if (connection.startNode) {
+              connection.startNode.connections =
+                connection.startNode.connections?.filter(
+                  (c) => c.id !== connection.id
+                );
+              connection.startNode = undefined;
+              connection.startNodeThumb = undefined;
+            }
+          }
+        } else if (
+          this.nodeComponent.connectionControllerType ===
+          ConnectionControllerType.end
+        ) {
+          if (this.nodeComponent?.parent) {
+            const connection = this.nodeComponent
+              .parent as unknown as IConnectionNodeComponent<T>;
+            if (connection.endNode) {
+              connection.endNode.connections =
+                connection.endNode.connections?.filter(
+                  (c) => c.id !== connection.id
+                );
+              connection.endNode = undefined;
+              connection.endNodeThumb = undefined;
+            }
+          }
+        }
       }
     }
 

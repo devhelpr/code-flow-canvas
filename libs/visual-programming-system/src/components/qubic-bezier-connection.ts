@@ -13,7 +13,7 @@ import {
   getSelectedNode,
   setSelectNode,
 } from '../reactivity';
-import { ThumbType } from '../types';
+import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
 import { Connection } from './connection';
@@ -100,7 +100,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       '#ff000080',
       startX,
       startY,
-      'begin',
+      ConnectionControllerType.begin,
       NodeType.ConnectionController,
       undefined,
       undefined,
@@ -136,7 +136,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       '#ffff4080',
       endX,
       endY,
-      'end',
+      ConnectionControllerType.end,
       NodeType.ConnectionController,
       undefined,
       undefined,
@@ -173,7 +173,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       '#00ff00',
       controlPoint1X,
       controlPoint1Y,
-      'c1',
+      ConnectionControllerType.c1,
       NodeType.ConnectionController
     );
     if (!controlPoint1Node.nodeComponent) {
@@ -203,7 +203,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       '#0000ff',
       controlPoint2X,
       controlPoint2Y,
-      'c2',
+      ConnectionControllerType.c2,
       NodeType.ConnectionController
     );
 

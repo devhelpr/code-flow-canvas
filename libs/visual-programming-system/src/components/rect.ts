@@ -21,7 +21,7 @@ import {
   getVisbility,
   setSelectNode,
 } from '../reactivity';
-import { ThumbType } from '../types';
+import { ConnectionControllerType, ThumbType } from '../types';
 import { createASTNodeElement, createElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
 import { ThumbNode } from './thumb';
@@ -173,7 +173,7 @@ export class Rect<T> {
           thumb.color ?? '#008080',
           x,
           y,
-          `thumb-connector-${index}`,
+          undefined,
           NodeType.Connector,
           `top-0 left-0 origin-center ${
             thumb.hidden ? 'invisible pointer-events-none' : ''
@@ -288,26 +288,25 @@ export class Rect<T> {
         rectNode.id
       );
 
-      let previousConnectedNodeId = '';
-
       // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
       // (not to be confused with the resize handlers)
       if (
         (component &&
           component.parent &&
           thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-          component.connectionControllerType === 'end') ||
+          component.connectionControllerType ===
+            ConnectionControllerType.end) ||
         (component &&
           component.parent &&
           thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-          component.connectionControllerType === 'begin')
+          component.connectionControllerType === ConnectionControllerType.begin)
       ) {
         const draggedConnection =
           component.parent as unknown as IConnectionNodeComponent<T>;
         let nodeReference = rectNode;
-        if (component.connectionControllerType === 'begin') {
-          previousConnectedNodeId = draggedConnection.startNode?.id ?? '';
-
+        if (
+          component.connectionControllerType === ConnectionControllerType.begin
+        ) {
           // remove connection from current start node
           const previousConnectionId = draggedConnection.id;
           if (previousConnectionId && draggedConnection.startNode) {
@@ -319,8 +318,6 @@ export class Rect<T> {
           draggedConnection.startNode = this.rectNode;
           draggedConnection.startNodeThumb = thumbNode;
         } else {
-          previousConnectedNodeId = draggedConnection.endNode?.id ?? '';
-
           // remove connection from current end node
           const previousConnectionId = draggedConnection.id;
           if (draggedConnection.endNode) {
@@ -348,7 +345,10 @@ export class Rect<T> {
             nodeReference.y,
             this.rectNode
           );
-          if (component.connectionControllerType === 'begin') {
+          if (
+            component.connectionControllerType ===
+            ConnectionControllerType.begin
+          ) {
             if (draggedConnection.endNode) {
               component.parent.update(
                 component.parent,
@@ -391,7 +391,7 @@ export class Rect<T> {
       component &&
       component.parent &&
       thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-      component.connectionControllerType === 'end'
+      component.connectionControllerType === ConnectionControllerType.end
     ) {
       // thumbNode is the thumb that is being dropped on
       // component.parent.startNodeThumb is the thumb that is being dragged from
@@ -414,7 +414,7 @@ export class Rect<T> {
       component &&
       component.parent &&
       thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-      component.connectionControllerType === 'begin'
+      component.connectionControllerType === ConnectionControllerType.begin
     ) {
       // thumbNode is the thumb that is being dropped on
       // component.parent.endNodeThumb is the thumb that is being dragged from

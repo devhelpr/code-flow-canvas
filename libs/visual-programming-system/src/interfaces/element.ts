@@ -1,4 +1,4 @@
-import { ThumbType } from '../types';
+import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
 
@@ -23,7 +23,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   offsetY?: number;
   radius?: number;
 
-  connectionControllerType?: string;
+  connectionControllerType?: ConnectionControllerType;
   nodeType?: NodeType;
   pathName?: string;
 
