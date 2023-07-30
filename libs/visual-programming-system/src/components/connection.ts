@@ -243,6 +243,8 @@ export class Connection<T> {
       setSelectNode(this.nodeComponent.id);
     });
 
+    //this.nodeComponent.pointerMove = this.onPointerMove as () => void;
+
     this.nodeComponent.update = this.onUpdate;
 
     this.nodeComponent.updateEnd = () => {
@@ -345,70 +347,21 @@ export class Connection<T> {
     if (!this.nodeComponent) {
       return;
     }
-
     if (
       this.nodeComponent &&
       this.nodeComponent.domElement &&
       this.interactionInfo
     ) {
       const { x, y } = transformToCamera(e.clientX, e.clientY);
-      if (
-        pointerMove(
-          x,
-          y,
-          this.nodeComponent,
-          this.canvasElement,
-          this.interactionInfo,
-          this.interactionStateMachine
-        )
-      ) {
-        if (this.nodeComponent.startNode) {
-          console.log(
-            'UPDATE START NODE',
-            x,
-            y,
-            this.points.beginX,
-            this.points.beginY
-          );
-          this.nodeComponent.startNode.update?.(
-            this.nodeComponent.startNode,
-            this.points.beginX,
-            this.points.beginY,
-            this.nodeComponent
-          );
-        }
 
-        if (this.nodeComponent.endNode) {
-          console.log(
-            'UPDATE END NODE',
-            x,
-            y,
-            this.points.endX,
-            this.points.endY
-          );
-          this.nodeComponent.endNode.update?.(
-            this.nodeComponent.endNode,
-            this.points.endX,
-            this.points.endY,
-            this.nodeComponent
-          );
-        }
-
-        // if (this.nodeComponent.endNode) {
-        //   this.nodeComponent.endNode.update?.(
-        //     this.nodeComponent.endNode,
-        //     this.points.endX,
-        //     this.points.endY,
-        //     this.nodeComponent
-        //   );
-        // }
-      }
-    }
-
-    if (this.nodeComponent?.isControlled) {
-      // TODO : remove tbis return ... and in onPointerMove check this and
-      //   updated the start/end nodes !?
-      return;
+      pointerMove(
+        x,
+        y,
+        this.nodeComponent,
+        this.canvasElement,
+        this.interactionInfo,
+        this.interactionStateMachine
+      );
     }
   };
 
@@ -628,6 +581,29 @@ export class Connection<T> {
     const cPoint2 = getPoint(this.points.cx2, this.points.cy2);
     const end = getPoint(this.points.endX, this.points.endY);
 
+    if (
+      this.nodeComponent &&
+      initiator &&
+      initiator.nodeType === NodeType.Connection
+    ) {
+      if (this.nodeComponent.startNode) {
+        this.nodeComponent.startNode.update?.(
+          this.nodeComponent.startNode,
+          this.points.beginX,
+          this.points.beginY,
+          this.nodeComponent
+        );
+      }
+
+      if (this.nodeComponent.endNode) {
+        this.nodeComponent.endNode.update?.(
+          this.nodeComponent.endNode,
+          this.points.endX,
+          this.points.endY,
+          this.nodeComponent
+        );
+      }
+    }
     this.pathPoints = {
       beginX: begin.x,
       beginY: begin.y,

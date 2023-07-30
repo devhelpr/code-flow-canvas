@@ -89,13 +89,7 @@ export const pointerMove = <T>(
       element
     );
 
-    if (
-      interactionState &&
-      element &&
-      element.domElement
-      //interactionState.timeSinceStart > CLICK_MOVEMENT_THRESHOLD
-    ) {
-      //console.log('move', element.id, interactionState);
+    if (interactionState && element && element.domElement) {
       if (element.update) {
         element.update(
           element,
@@ -108,7 +102,6 @@ export const pointerMove = <T>(
       if (element.pointerMove) {
         element.pointerMove();
       }
-      //}
 
       return true;
     }

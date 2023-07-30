@@ -154,18 +154,12 @@ export const createCanvasApp = <T>(
           currentState.target,
           currentState.element
         );
+
         if (interactionState) {
           if (interactionState.target?.id === canvas.id) {
             setCameraPosition(event.clientX, event.clientY);
           } else {
-            const canvasRect = (
-              canvas.domElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
-
-            const { x, y } = transformToCamera(
-              event.clientX, //- canvasRect.x,
-              event.clientY //- canvasRect.y
-            );
+            const { x, y } = transformToCamera(event.clientX, event.clientY);
 
             currentState.target.pointerMove &&
               currentState.target.pointerMove<T>(

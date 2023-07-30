@@ -722,7 +722,6 @@ export class Rect<T> {
         if (startThumb && startNode && startNode.id === target.id) {
           const tx = startThumb.x;
           const ty = startThumb.y;
-          console.log(tx, ty);
 
           this.points.beginX = x - 50 - tx - 100;
           this.points.beginY = y - ty;
@@ -730,7 +729,6 @@ export class Rect<T> {
         if (endThumb && endNode && endNode.id === target.id) {
           const tx = endThumb.x;
           const ty = endThumb.y;
-          console.log(tx, ty);
 
           this.points.beginX = x - tx + 50 - 20;
           this.points.beginY = y - ty;
