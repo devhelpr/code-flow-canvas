@@ -601,7 +601,8 @@ export const createCanvasApp = <T>(
       controlPointY2?: number,
       isControlled?: boolean,
       isDashed = false,
-      id?: string
+      id?: string,
+      parentNode?: INodeComponent<T>
     ) => {
       const curve = new CubicBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
@@ -619,7 +620,8 @@ export const createCanvasApp = <T>(
         isControlled,
         isDashed,
         onCanvasUpdated,
-        id
+        id,
+        parentNode
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -635,7 +637,8 @@ export const createCanvasApp = <T>(
       controlPointY?: number,
       isControlled?: boolean,
       isDashed = false,
-      id?: string
+      id?: string,
+      parentNode?: INodeComponent<T>
     ) => {
       const curve = new QuadraticBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
@@ -651,7 +654,8 @@ export const createCanvasApp = <T>(
         isControlled,
         isDashed,
         onCanvasUpdated,
-        id
+        id,
+        parentNode
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();

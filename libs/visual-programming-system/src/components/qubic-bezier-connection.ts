@@ -38,7 +38,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
     isControlled = false,
     isDashed = false,
     canvasUpdated?: () => void,
-    id?: string
+    id?: string,
+    parentNode?: INodeComponent<T>
   ) {
     super(
       canvas.domElement,
@@ -57,7 +58,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
       isDashed,
       undefined,
       canvasUpdated,
-      id
+      id,
+      parentNode
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');

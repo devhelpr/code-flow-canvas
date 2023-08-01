@@ -197,7 +197,8 @@ export class Rect<T> {
           disableInteraction,
           thumb.label,
           thumb.thumbShape ?? 'circle',
-          canvasUpdated
+          canvasUpdated,
+          parentNode
         );
 
         if (!thumbNode.nodeComponent) {
@@ -670,13 +671,6 @@ export class Rect<T> {
         target.nodeType === NodeType.Shape &&
         initiator.nodeType === NodeType.Shape
       ) {
-        console.log(
-          'parentCamera onupdate',
-          this.parentOffsetX,
-          this.parentOffsetY,
-          x,
-          y
-        );
         this.points.beginX = x - 50;
         this.points.beginY = y - 50;
         if (rectContainerElement) {

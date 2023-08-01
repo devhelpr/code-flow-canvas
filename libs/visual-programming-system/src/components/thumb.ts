@@ -31,6 +31,7 @@ export class ThumbNode<T> {
   canvasUpdated?: () => void;
   circleElement: IElementNode<T> | undefined;
   interactionInfo: IPointerDownResult;
+  parentNode?: INodeComponent<T>;
 
   constructor(
     canvasElement: DOMElementNode,
@@ -58,7 +59,8 @@ export class ThumbNode<T> {
     disableInteraction?: boolean,
     label?: string,
     thumbShape?: 'circle' | 'diamond',
-    canvasUpdated?: () => void
+    canvasUpdated?: () => void,
+    parentNode?: INodeComponent<T>
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.disableInteraction = disableInteraction ?? false;
@@ -68,6 +70,7 @@ export class ThumbNode<T> {
     this.canvasElements = canvasElements;
     this.pathHiddenElement = pathHiddenElement;
     this.canvasUpdated = canvasUpdated;
+    this.parentNode = parentNode;
 
     this.interactionInfo = {
       xOffsetWithinElementOnFirstClick: 0,
@@ -327,9 +330,16 @@ export class ThumbNode<T> {
 
     const rectCamera = transformToCamera(elementRect.x, elementRect.y);
 
+    let parentCameraX = 0;
+    let parentCameraY = 0;
+    if (this.parentNode) {
+      parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
+      parentCameraY = this.parentNode.y + 40;
+    }
+
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x,
-      y - rectCamera.y,
+      x - rectCamera.x + parentCameraX,
+      y - rectCamera.y + parentCameraY,
       connectionThumb,
       this.canvas.domElement,
       this.interactionStateMachine
@@ -354,7 +364,7 @@ export class ThumbNode<T> {
     }
     if (this.nodeComponent) {
       // hold shift to disconnect node from start point
-
+      e.stopPropagation();
       const selectedNodeId = getSelectedNode();
       if (selectedNodeId) {
         const selectedNode = this.canvasElements?.get(
@@ -400,8 +410,17 @@ export class ThumbNode<T> {
         this.parentRectNode &&
         this.canvasElements
       ) {
-        const { x, y } = transformToCamera(e.clientX, e.clientY);
-
+        let parentCameraX = 0;
+        let parentCameraY = 0;
+        if (this.parentNode) {
+          parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y + 40;
+        }
+        let { x, y } = transformToCamera(e.clientX, e.clientY);
+        const xorg = x;
+        const yorg = y;
+        x = x - parentCameraX;
+        y = y - parentCameraY;
         const curve = new CubicBezierConnection<T>(
           this.canvas as unknown as INodeComponent<T>,
           this.interactionStateMachine,
@@ -417,7 +436,9 @@ export class ThumbNode<T> {
           y - 50,
           true,
           undefined,
-          this.canvasUpdated
+          this.canvasUpdated,
+          undefined,
+          this.parentNode
         );
 
         if (!curve || !curve.nodeComponent || !curve.endPointElement) {
@@ -435,7 +456,7 @@ export class ThumbNode<T> {
             curve.nodeComponent.update();
           }
 
-          this.initiateDraggingConnection(curve.endPointElement, x, y);
+          this.initiateDraggingConnection(curve.endPointElement, xorg, yorg);
         }
 
         return;

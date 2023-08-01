@@ -415,6 +415,98 @@ export class AppElement extends HTMLElement {
                       );
                     }
                   });
+
+                  const elementList = Array.from(
+                    (canvasVisualNode.nodeInfo.canvasAppInstance
+                      .elements as ElementNodeMap<NodeInfo>) ?? []
+                  );
+                  node.elements.forEach((node) => {
+                    if (
+                      node.nodeType === NodeType.Connection &&
+                      canvasVisualNode.nodeInfo
+                    ) {
+                      let start: IRectNodeComponent<NodeInfo> | undefined =
+                        undefined;
+                      let end: IRectNodeComponent<NodeInfo> | undefined =
+                        undefined;
+                      if (node.startNodeId) {
+                        const startElement = elementList.find((e) => {
+                          const element = e[1] as IElementNode<NodeInfo>;
+                          return element.id === node.startNodeId;
+                        });
+                        if (startElement) {
+                          start =
+                            startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                        }
+                      }
+                      if (node.endNodeId) {
+                        const endElement = elementList.find((e) => {
+                          const element = e[1] as IElementNode<NodeInfo>;
+                          return element.id === node.endNodeId;
+                        });
+                        if (endElement) {
+                          end =
+                            endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                        }
+                      }
+                      let c1x = 0;
+                      let c1y = 0;
+                      let c2x = 0;
+                      let c2y = 0;
+
+                      if (node.controlPoints && node.controlPoints.length > 0) {
+                        c1x = node.controlPoints[0].x ?? 0;
+                        c1y = node.controlPoints[0].y ?? 0;
+                        c2x = node.controlPoints[1].x ?? 0;
+                        c2y = node.controlPoints[1].y ?? 0;
+                      }
+
+                      const curve =
+                        canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
+                          (start?.x ?? node.x ?? 0) + 50,
+                          (start?.y ?? node.y ?? 0) + 50,
+                          (end?.x ?? node.endX ?? 0) + 50,
+                          (end?.y ?? node.endY ?? 0) + 50,
+                          c1x + 50,
+                          c1y + 50,
+                          c2x + 50,
+                          c2y + 50,
+                          false,
+                          undefined,
+                          node.id,
+                          canvasVisualNode
+                        );
+                      if (!curve.nodeComponent) {
+                        return;
+                      }
+                      curve.nodeComponent.isControlled = true;
+                      curve.nodeComponent.nodeInfo = {};
+
+                      if (start && curve.nodeComponent) {
+                        curve.nodeComponent.startNode = start;
+                        curve.nodeComponent.startNodeThumb =
+                          this.getThumbNodeByName(
+                            node.startThumbName ?? '',
+                            start
+                          );
+                      }
+
+                      if (end && curve.nodeComponent) {
+                        curve.nodeComponent.endNode = end;
+                        curve.nodeComponent.endNodeThumb =
+                          this.getThumbNodeByName(node.endThumbName ?? '', end);
+                      }
+                      if (start) {
+                        start.connections?.push(curve.nodeComponent);
+                      }
+                      if (end) {
+                        end.connections?.push(curve.nodeComponent);
+                      }
+                      if (curve.nodeComponent.update) {
+                        curve.nodeComponent.update();
+                      }
+                    }
+                  });
                 }
               }
             });
@@ -425,81 +517,80 @@ export class AppElement extends HTMLElement {
               if (node.nodeType === NodeType.Connection) {
                 let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
                 let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
-                //if (node.startNodeId && node.endNodeId) {
-                {
-                  if (node.startNodeId) {
-                    const startElement = elementList.find((e) => {
-                      const element = e[1] as IElementNode<NodeInfo>;
-                      return element.id === node.startNodeId;
-                    });
-                    if (startElement) {
-                      start =
-                        startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                    }
+                if (node.startNodeId) {
+                  const startElement = elementList.find((e) => {
+                    const element = e[1] as IElementNode<NodeInfo>;
+                    return element.id === node.startNodeId;
+                  });
+                  if (startElement) {
+                    start =
+                      startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
                   }
-                  if (node.endNodeId) {
-                    const endElement = elementList.find((e) => {
-                      const element = e[1] as IElementNode<NodeInfo>;
-                      return element.id === node.endNodeId;
-                    });
-                    if (endElement) {
-                      end =
-                        endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                    }
+                }
+                if (node.endNodeId) {
+                  const endElement = elementList.find((e) => {
+                    const element = e[1] as IElementNode<NodeInfo>;
+                    return element.id === node.endNodeId;
+                  });
+                  if (endElement) {
+                    end =
+                      endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
                   }
-                  let c1x = 0;
-                  let c1y = 0;
-                  let c2x = 0;
-                  let c2y = 0;
+                }
+                let c1x = 0;
+                let c1y = 0;
+                let c2x = 0;
+                let c2y = 0;
 
-                  if (node.controlPoints && node.controlPoints.length > 0) {
-                    c1x = node.controlPoints[0].x ?? 0;
-                    c1y = node.controlPoints[0].y ?? 0;
-                    c2x = node.controlPoints[1].x ?? 0;
-                    c2y = node.controlPoints[1].y ?? 0;
-                  }
+                if (node.controlPoints && node.controlPoints.length > 0) {
+                  c1x = node.controlPoints[0].x ?? 0;
+                  c1y = node.controlPoints[0].y ?? 0;
+                  c2x = node.controlPoints[1].x ?? 0;
+                  c2y = node.controlPoints[1].y ?? 0;
+                }
 
-                  const curve = canvasApp.createCubicBezier(
-                    start?.x ?? node.x ?? 0,
-                    start?.y ?? node.y ?? 0,
-                    end?.x ?? node.endX ?? 0,
-                    end?.y ?? node.endY ?? 0,
-                    c1x,
-                    c1y,
-                    c2x,
-                    c2y,
-                    false,
-                    undefined,
-                    node.id
+                const curve = canvasApp.createCubicBezier(
+                  start?.x ?? node.x ?? 0,
+                  start?.y ?? node.y ?? 0,
+                  end?.x ?? node.endX ?? 0,
+                  end?.y ?? node.endY ?? 0,
+                  c1x,
+                  c1y,
+                  c2x,
+                  c2y,
+                  false,
+                  undefined,
+                  node.id
+                );
+                if (!curve.nodeComponent) {
+                  return;
+                }
+                curve.nodeComponent.isControlled = true;
+                curve.nodeComponent.nodeInfo = {};
+
+                if (start && curve.nodeComponent) {
+                  curve.nodeComponent.startNode = start;
+                  curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
+                    node.startThumbName ?? '',
+                    start
                   );
-                  if (!curve.nodeComponent) {
-                    return;
-                  }
-                  curve.nodeComponent.isControlled = true;
-                  curve.nodeComponent.nodeInfo = {};
+                }
 
-                  if (start && curve.nodeComponent) {
-                    curve.nodeComponent.startNode = start;
-                    curve.nodeComponent.startNodeThumb =
-                      this.getThumbNodeByName(node.startThumbName ?? '', start);
-                  }
-
-                  if (end && curve.nodeComponent) {
-                    curve.nodeComponent.endNode = end;
-                    curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
-                      node.endThumbName ?? '',
-                      end
-                    );
-                  }
-                  if (start) {
-                    start.connections?.push(curve.nodeComponent);
-                  }
-                  if (end) {
-                    end.connections?.push(curve.nodeComponent);
-                  }
-                  if (curve.nodeComponent.update) {
-                    curve.nodeComponent.update();
-                  }
+                if (end && curve.nodeComponent) {
+                  curve.nodeComponent.endNode = end;
+                  curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
+                    node.endThumbName ?? '',
+                    end
+                  );
+                }
+                if (start) {
+                  start.connections?.push(curve.nodeComponent);
+                }
+                if (end) {
+                  end.connections?.push(curve.nodeComponent);
+                }
+                if (curve.nodeComponent.update) {
+                  curve.nodeComponent.update();
                 }
               }
             });

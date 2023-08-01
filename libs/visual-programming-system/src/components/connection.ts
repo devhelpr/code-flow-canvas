@@ -74,6 +74,7 @@ export class Connection<T> {
 
   pathHiddenElement: IElementNode<T> | null = null;
   isQuadratic = false;
+  parentNode?: INodeComponent<T>;
 
   constructor(
     canvasElement: DOMElementNode,
@@ -92,7 +93,8 @@ export class Connection<T> {
     isDashed = false,
     onCalculateControlPoints = onCalculateCubicBezierControlPoints,
     canvasUpdated?: () => void,
-    id?: string
+    id?: string,
+    parentNode?: INodeComponent<T>
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -102,20 +104,13 @@ export class Connection<T> {
       - subtract bbox x and y from the path points
       - set transform of svg to the bbox x and y
       - set the width and height of the svg to the bbox width and height   
-  */
+    */
     this.onCalculateControlPoints = onCalculateControlPoints;
     this.isQuadratic = isQuadratic;
     this.pathHiddenElement = pathHiddenElement;
     this.canvasElement = canvasElement;
     this.interactionStateMachine = interactionStateMachine;
-
-    // let interactionInfo: IPointerDownResult = {
-    //   xOffsetWithinElementOnFirstClick: 0,
-    //   yOffsetWithinElementOnFirstClick: 0,
-    // };
-
-    // let isClicking = false;
-    // let isMoving = false;
+    this.parentNode = parentNode;
 
     this.points = {
       beginX: startX,
@@ -306,6 +301,7 @@ export class Connection<T> {
   onPointerDown = (e: PointerEvent) => {
     console.log('CONNECTION POINTER DOWN', this.nodeComponent?.isControlled);
     if (this.nodeComponent) {
+      e.stopPropagation();
       setSelectNode(this.nodeComponent.id);
 
       const elementRect = (
@@ -316,10 +312,22 @@ export class Connection<T> {
 
       const { x, y } = transformToCamera(e.clientX, e.clientY);
       const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+      let parentCameraX = 0;
+      let parentCameraY = 0;
+      if (this.parentNode) {
+        parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
+        parentCameraY = this.parentNode.y + 40;
+      }
 
       const interactionInfoResult = pointerDown<T>(
-        x - rectCamera.x - (this.pathPoints.beginX - bbox.x - 10),
-        y - rectCamera.y - (this.pathPoints.beginY - bbox.y - 10),
+        x -
+          rectCamera.x -
+          (this.pathPoints.beginX - bbox.x - 10) +
+          parentCameraX,
+        y -
+          rectCamera.y -
+          (this.pathPoints.beginY - bbox.y - 10) +
+          parentCameraY,
         this.nodeComponent,
         this.canvasElement,
         this.interactionStateMachine
