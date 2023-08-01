@@ -61,9 +61,7 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
                   50,
                   undefined,
                   undefined,
-                  node,
-                  node.x,
-                  node.y
+                  node
                 );
 
                 return;

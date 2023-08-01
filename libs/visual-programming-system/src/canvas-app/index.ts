@@ -127,7 +127,11 @@ export const createCanvasApp = <T>(
       }
       let currentState = interactionStateMachine.getCurrentInteractionState();
 
-      if (currentState.state === InteractionState.Idle && isClicking) {
+      if (
+        currentState.state === InteractionState.Idle &&
+        isClicking &&
+        !disableZoom
+      ) {
         startClientDragX = event.clientX;
         startClientDragY = event.clientY;
         startDragX = xCamera;
@@ -555,9 +559,7 @@ export const createCanvasApp = <T>(
       disableManualResize?: boolean,
       id?: string,
       nodeInfo?: T,
-      parentNode?: INodeComponent<T>,
-      parentOffsetX?: number,
-      parentOffsetY?: number
+      parentNode?: INodeComponent<T>
     ) => {
       const rectInstance = new Rect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -577,9 +579,7 @@ export const createCanvasApp = <T>(
         disableManualResize,
         onCanvasUpdated,
         id,
-        parentNode,
-        parentOffsetX,
-        parentOffsetY
+        parentNode
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');

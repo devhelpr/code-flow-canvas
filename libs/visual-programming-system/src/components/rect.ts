@@ -50,8 +50,9 @@ export class Rect<T> {
   private canvasUpdated?: () => void;
   private interactionStateMachine: InteractionStateMachine<T>;
   private hasStaticWidthHeight?: boolean;
-  public parentOffsetX?: number;
-  public parentOffsetY?: number;
+  protected parentOffsetX?: number;
+  protected parentOffsetY?: number;
+  protected parentNode?: INodeComponent<T>;
 
   private points = {
     beginX: 0,
@@ -80,9 +81,7 @@ export class Rect<T> {
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
     id?: string,
-    parentNode?: INodeComponent<T>,
-    parentOffsetX?: number,
-    parentOffsetY?: number
+    parentNode?: INodeComponent<T>
   ) {
     this.canvas = canvas;
     this.canvasUpdated = canvasUpdated;
@@ -90,8 +89,7 @@ export class Rect<T> {
     this.hasStaticWidthHeight = hasStaticWidthHeight;
     let widthHelper = width;
     let heightHelper = height;
-    this.parentOffsetX = parentOffsetX;
-    this.parentOffsetY = parentOffsetY;
+    this.parentNode = parentNode;
 
     this.rectInfo = this.createRectElement(
       canvas.domElement,
@@ -614,12 +612,9 @@ export class Rect<T> {
 
         let parentCameraX = 0;
         let parentCameraY = 0;
-        if (
-          this.parentOffsetX !== undefined &&
-          this.parentOffsetY !== undefined
-        ) {
-          parentCameraX = this.parentOffsetX;
-          parentCameraY = this.parentOffsetY;
+        if (this.parentNode) {
+          parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y + 40;
         }
 
         const interactionInfoResult = pointerDown(

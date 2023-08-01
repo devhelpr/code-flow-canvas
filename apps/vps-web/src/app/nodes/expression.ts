@@ -73,9 +73,7 @@ export const getExpression = (updated?: () => void) => {
       y: number,
       expression?: string,
       id?: string,
-      parentNode?: INodeComponent<NodeInfo>,
-      parentOffsetX?: number,
-      parentOffsetY?: number
+      parentNode?: INodeComponent<NodeInfo>
     ) => {
       console.log('createVisualNode createNamedSignal', expression, id);
       //createNamedSignal(id + '_' + 'Expression', expression ?? '');
@@ -152,9 +150,7 @@ export const getExpression = (updated?: () => void) => {
             Expression: expression ?? '',
           },
         },
-        parentNode,
-        parentOffsetX,
-        parentOffsetY
+        parentNode
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
