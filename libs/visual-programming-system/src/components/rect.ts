@@ -80,6 +80,7 @@ export class Rect<T> {
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
     id?: string,
+    parentNode?: INodeComponent<T>,
     parentOffsetX?: number,
     parentOffsetY?: number
   ) {

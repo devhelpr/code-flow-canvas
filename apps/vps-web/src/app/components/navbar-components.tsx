@@ -61,6 +61,7 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
                   50,
                   undefined,
                   undefined,
+                  node,
                   node.x,
                   node.y
                 );
@@ -100,7 +101,7 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
             );
             filter.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'canvas-node') {
-            const canvasNode = getCanvasNode();
+            const canvasNode = getCanvasNode(props.canvasUpdated);
             canvasNode.createVisualNode(props.canvasApp, startX, startY);
           }
           return false;

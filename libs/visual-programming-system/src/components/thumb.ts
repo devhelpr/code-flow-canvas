@@ -394,18 +394,6 @@ export class ThumbNode<T> {
         return;
       }
 
-      /* 
-    TODO:
-    if:
-    - no interaction is in progress
-    - thumb is node thumb connector
-    - thumbConnectionType is start
-    - node is not connected
-    then:
-    - create a connection starting from this node and thumb
-    - initialize the interaction state machine with the new connection
-    */
-
       if (
         this.nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
         this.nodeComponent.isConnectPoint &&

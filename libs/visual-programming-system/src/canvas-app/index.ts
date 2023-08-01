@@ -555,6 +555,7 @@ export const createCanvasApp = <T>(
       disableManualResize?: boolean,
       id?: string,
       nodeInfo?: T,
+      parentNode?: INodeComponent<T>,
       parentOffsetX?: number,
       parentOffsetY?: number
     ) => {
@@ -576,29 +577,10 @@ export const createCanvasApp = <T>(
         disableManualResize,
         onCanvasUpdated,
         id,
+        parentNode,
         parentOffsetX,
         parentOffsetY
       );
-
-      // const rect = createRect<T>(
-      //   canvas as unknown as INodeComponent<T>,
-      //   interactionStateMachine,
-      //   pathHiddenElement,
-      //   elements,
-      //   x,
-      //   y,
-      //   width,
-      //   height,
-      //   text,
-      //   thumbs,
-      //   markup,
-      //   layoutProperties,
-      //   hasStaticWidthHeight,
-      //   disableInteraction,
-      //   disableManualResize,
-      //   onCanvasUpdated,
-      //   id
-      // );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');
       }

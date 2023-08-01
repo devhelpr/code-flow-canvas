@@ -73,6 +73,7 @@ export const getExpression = (updated?: () => void) => {
       y: number,
       expression?: string,
       id?: string,
+      parentNode?: INodeComponent<NodeInfo>,
       parentOffsetX?: number,
       parentOffsetY?: number
     ) => {
@@ -151,6 +152,7 @@ export const getExpression = (updated?: () => void) => {
             Expression: expression ?? '',
           },
         },
+        parentNode,
         parentOffsetX,
         parentOffsetY
       );
