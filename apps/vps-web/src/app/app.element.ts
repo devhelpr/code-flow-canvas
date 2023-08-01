@@ -381,7 +381,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'show-object'
               ) {
-                const expression = getShowObject();
+                const expression = getShowObject(canvasUpdated);
                 expression.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -389,7 +389,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'canvas-node'
               ) {
-                const canvasNode = getCanvasNode();
+                const canvasNode = getCanvasNode(canvasUpdated);
                 const canvasVisualNode = canvasNode.createVisualNode(
                   canvasApp,
                   node.x,

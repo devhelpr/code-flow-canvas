@@ -111,6 +111,10 @@ export const getCanvasNode = (updated?: () => void) => {
           ''
         );
 
+        canvasAppInstance.setOnCanvasUpdated(() => {
+          updated?.();
+        });
+
         (canvasAppInstance.canvas.domElement as HTMLElement).classList.add(
           'pointer-events-auto'
         );
