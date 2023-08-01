@@ -16,7 +16,7 @@ export const getCanvasNode = (updated?: () => void) => {
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
-  let mapCanvasApp: CanvasAppInstance | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance | undefined = undefined;
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -44,7 +44,7 @@ export const getCanvasNode = (updated?: () => void) => {
       htmlNode = createElement(
         'div',
         {
-          class: '',
+          class: 'w-full h-full overflow-hidden',
         },
         undefined,
         ''
@@ -53,7 +53,7 @@ export const getCanvasNode = (updated?: () => void) => {
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded`,
+          class: `bg-slate-300 rounded`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -104,13 +104,15 @@ export const getCanvasNode = (updated?: () => void) => {
       // rect.nodeComponent.nodeInfo.taskType = nodeTypeName;
 
       if (htmlNode.domElement) {
-        mapCanvasApp = createCanvasApp<NodeInfo>(
+        canvasAppInstance = createCanvasApp<NodeInfo>(
           htmlNode.domElement as HTMLElement,
-          true
+          false,
+          true,
+          ''
         );
 
-        (mapCanvasApp.canvas.domElement as HTMLElement).classList.add(
-          'pointer-events-none'
+        (canvasAppInstance.canvas.domElement as HTMLElement).classList.add(
+          'pointer-events-auto'
         );
       }
       if (!rect.nodeComponent) {
@@ -120,6 +122,9 @@ export const getCanvasNode = (updated?: () => void) => {
       node = rect.nodeComponent;
       node.nodeInfo.computeAsync = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      node.nodeInfo.canvasAppInstance = canvasAppInstance;
+
+      return node;
     },
   };
 };

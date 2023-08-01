@@ -26,6 +26,7 @@ import {
   Flow,
   updateNamedSignal,
   NodeType,
+  ElementNodeMap,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -389,7 +390,33 @@ export class AppElement extends HTMLElement {
                 node.nodeInfo?.type === 'canvas-node'
               ) {
                 const canvasNode = getCanvasNode();
-                canvasNode.createVisualNode(canvasApp, node.x, node.y, node.id);
+                const canvasVisualNode = canvasNode.createVisualNode(
+                  canvasApp,
+                  node.x,
+                  node.y,
+                  node.id
+                );
+
+                if (node.elements) {
+                  node.elements.forEach((element) => {
+                    if (
+                      element.nodeType === NodeType.Shape &&
+                      element.nodeInfo?.type === 'expression' &&
+                      canvasVisualNode.nodeInfo
+                    ) {
+                      const expression = getExpression(canvasUpdated);
+                      expression.createVisualNode(
+                        canvasVisualNode.nodeInfo.canvasAppInstance,
+                        element.x + 50,
+                        element.y + 50,
+                        element.nodeInfo?.formValues?.Expression ?? undefined,
+                        element.id,
+                        node.x,
+                        node.y
+                      );
+                    }
+                  });
+                }
               }
             });
 
@@ -853,15 +880,22 @@ export class AppElement extends HTMLElement {
     const cleanupNodeInfoForSerializing = (nodeInfo: NodeInfo) => {
       const nodeInfoCopy: any = {};
       for (const key in nodeInfo) {
-        if (typeof nodeInfo[key] !== 'function' && key !== 'formElements') {
+        if (
+          typeof nodeInfo[key] !== 'function' &&
+          key !== 'formElements' &&
+          key !== 'canvasAppInstance'
+        ) {
           nodeInfoCopy[key] = nodeInfo[key];
         }
       }
       return nodeInfoCopy;
     };
 
-    const serializeFlow = () => {
-      const nodesList = Array.from(canvasApp.elements, function (entry) {
+    const serializeElementsMap = (
+      elements: ElementNodeMap<NodeInfo>,
+      parent?: any
+    ) => {
+      const nodesList = Array.from(elements, function (entry) {
         const obj = entry[1] as INodeComponent<NodeInfo>;
         if (obj.nodeType === NodeType.Connection) {
           const connection =
@@ -881,6 +915,18 @@ export class AppElement extends HTMLElement {
             nodeInfo: cleanupNodeInfoForSerializing(connection.nodeInfo),
           };
         }
+
+        console.log('obj', obj, parent);
+
+        let elements: any = undefined;
+        if (obj.nodeInfo && obj.nodeInfo.canvasAppInstance) {
+          elements = serializeElementsMap(
+            obj.nodeInfo.canvasAppInstance.elements,
+            obj
+          );
+
+          console.log('SUB ELEMENTS FOUND ', elements);
+        }
         return {
           id: obj.id,
           x: obj.x,
@@ -888,10 +934,15 @@ export class AppElement extends HTMLElement {
           width: obj.width,
           height: obj.height,
           nodeType: obj.nodeType,
+          elements,
           nodeInfo: cleanupNodeInfoForSerializing(obj.nodeInfo),
         };
       });
       return nodesList;
+    };
+
+    const serializeFlow = () => {
+      return serializeElementsMap(canvasApp.elements);
     };
 
     createElement(
@@ -1544,7 +1595,11 @@ export class AppElement extends HTMLElement {
         selectedNode.domElement.textContent = `${nodeElementId}`;
         const node = this.canvasApp?.elements?.get(nodeElementId);
 
+        if (!node) {
+          return;
+        }
         if (
+          node &&
           (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
         ) {
           return;

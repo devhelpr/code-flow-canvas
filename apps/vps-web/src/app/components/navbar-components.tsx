@@ -24,6 +24,7 @@ import { getShowObject } from '../nodes/show-object';
 import { getSum } from '../nodes/sum';
 import { NodeInfo } from '../types/node-info';
 import { getCanvasNode } from '../nodes/canvas-node';
+import { e } from 'vitest/dist/index-5aad25c1';
 
 export interface NavbarComponentsProps {
   selectNodeType: HTMLSelectElement;
@@ -48,6 +49,25 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
 
           if (nodeType === 'expression') {
             const expression = getExpression(props.canvasUpdated);
+            const nodeElementId = getSelectedNode();
+            if (nodeElementId) {
+              const node = props.canvasApp?.elements?.get(
+                nodeElementId
+              ) as INodeComponent<NodeInfo>;
+              if (node && node.nodeInfo.taskTyp === 'canvas-node') {
+                expression.createVisualNode(
+                  node.nodeInfo.canvasAppInstance,
+                  50,
+                  50,
+                  undefined,
+                  undefined,
+                  node.x,
+                  node.y
+                );
+
+                return;
+              }
+            }
             expression.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'if') {
             const ifCondition = getIfCondition();

@@ -42,4 +42,6 @@ export interface FlowNode<T> {
   endNodeId?: string;
   startThumbName?: string;
   endThumbName?: string;
+
+  elements?: FlowNode<T>[];
 }

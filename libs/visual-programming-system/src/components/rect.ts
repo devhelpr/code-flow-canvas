@@ -50,6 +50,8 @@ export class Rect<T> {
   private canvasUpdated?: () => void;
   private interactionStateMachine: InteractionStateMachine<T>;
   private hasStaticWidthHeight?: boolean;
+  public parentOffsetX?: number;
+  public parentOffsetY?: number;
 
   private points = {
     beginX: 0,
@@ -77,7 +79,9 @@ export class Rect<T> {
     disableInteraction?: boolean,
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
-    id?: string
+    id?: string,
+    parentOffsetX?: number,
+    parentOffsetY?: number
   ) {
     this.canvas = canvas;
     this.canvasUpdated = canvasUpdated;
@@ -85,6 +89,8 @@ export class Rect<T> {
     this.hasStaticWidthHeight = hasStaticWidthHeight;
     let widthHelper = width;
     let heightHelper = height;
+    this.parentOffsetX = parentOffsetX;
+    this.parentOffsetY = parentOffsetY;
 
     this.rectInfo = this.createRectElement(
       canvas.domElement,
@@ -594,6 +600,8 @@ export class Rect<T> {
       )
         return;
 
+      e.stopPropagation();
+
       if (rectContainerElement && this.canvas) {
         const elementRect = (
           rectContainerElement.domElement as unknown as HTMLElement | SVGElement
@@ -601,11 +609,21 @@ export class Rect<T> {
 
         const { x, y } = transformToCamera(e.clientX, e.clientY);
         const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-
         const bbox = this.getBBoxPath(pathPoints);
+
+        let parentCameraX = 0;
+        let parentCameraY = 0;
+        if (
+          this.parentOffsetX !== undefined &&
+          this.parentOffsetY !== undefined
+        ) {
+          parentCameraX = this.parentOffsetX;
+          parentCameraY = this.parentOffsetY;
+        }
+
         const interactionInfoResult = pointerDown(
-          x - rectCamera.x - (pathPoints.beginX - bbox.x),
-          y - rectCamera.y - (pathPoints.beginY - bbox.y),
+          x - rectCamera.x + parentCameraX - (pathPoints.beginX - bbox.x),
+          y - rectCamera.y + parentCameraY - (pathPoints.beginY - bbox.y),
           rectContainerElement,
           this.canvas.domElement,
           this.interactionStateMachine
@@ -656,6 +674,13 @@ export class Rect<T> {
         target.nodeType === NodeType.Shape &&
         initiator.nodeType === NodeType.Shape
       ) {
+        console.log(
+          'parentCamera onupdate',
+          this.parentOffsetX,
+          this.parentOffsetY,
+          x,
+          y
+        );
         this.points.beginX = x - 50;
         this.points.beginY = y - 50;
         if (rectContainerElement) {

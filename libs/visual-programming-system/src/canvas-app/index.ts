@@ -15,7 +15,9 @@ import { createElement, createElementMap, createNSElement } from '../utils';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
-  disableInteraction?: boolean
+  disableInteraction?: boolean,
+  disableZoom?: boolean,
+  backgroundColor?: string
 ) => {
   const interactionStateMachine = createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
@@ -39,8 +41,9 @@ export const createCanvasApp = <T>(
     'div',
     {
       id: 'canvas',
-      class:
-        'w-full h-full origin-top-left bg-slate-800 flex-auto relative z-10 transition-none transform-gpu',
+      class: `w-full h-full origin-top-left ${
+        backgroundColor ?? 'bg-slate-800'
+      } flex-auto relative z-10 transition-none transform-gpu`,
     },
     rootElement
   );
@@ -301,75 +304,78 @@ export const createCanvasApp = <T>(
     });
 
     let wheelTime = -1;
-    rootElement.addEventListener('wheel', (event: WheelEvent) => {
-      if (disableInteraction) {
-        return;
-      }
-      event.preventDefault();
-
-      if (wheelTime === -1) {
-        wheelTime = event.timeStamp;
-      }
-      let timeDiff = event.timeStamp - wheelTime;
-      if (event.shiftKey) {
-        timeDiff = timeDiff * 16;
-      }
-      //const delta = result.pixelY; // / timeDiff;
-      const delta = Math.max(
-        -1,
-        Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
-      );
-
-      // Determine the scale factor for the zoom
-      const scaleFactor = 1 + delta * 0.05;
-
-      const scaleBy = scaleFactor;
-      // if (scaleBy < 0.95) {
-      //   scaleBy = 0.95;
-      // } else if (scaleBy > 1.05) {
-      //   scaleBy = 1.05;
-      // }
-
-      if (canvas.domElement) {
-        const mousePointTo = {
-          x: event.clientX / scaleCamera - xCamera / scaleCamera,
-          y: event.clientY / scaleCamera - yCamera / scaleCamera,
-        };
-
-        scaleCamera = scaleCamera * scaleBy;
-        //result.pixelY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
-        if (scaleCamera < 0.05) {
-          scaleCamera = 0.05;
-        } else if (scaleCamera > 5) {
-          scaleCamera = 5;
+    if (!disableZoom) {
+      rootElement.addEventListener('wheel', (event: WheelEvent) => {
+        if (disableInteraction) {
+          return;
         }
+        event.preventDefault();
 
-        const newPos = {
-          x: -(mousePointTo.x - event.clientX / scaleCamera) * scaleCamera,
-          y: -(mousePointTo.y - event.clientY / scaleCamera) * scaleCamera,
-        };
+        if (wheelTime === -1) {
+          wheelTime = event.timeStamp;
+        }
+        let timeDiff = event.timeStamp - wheelTime;
+        if (event.shiftKey) {
+          timeDiff = timeDiff * 16;
+        }
+        //const delta = result.pixelY; // / timeDiff;
+        const delta = Math.max(
+          -1,
+          Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
+        );
 
-        xCamera = newPos.x;
-        yCamera = newPos.y;
+        // Determine the scale factor for the zoom
+        const scaleFactor = 1 + delta * 0.05;
 
-        setCamera(xCamera, yCamera, scaleCamera);
+        const scaleBy = scaleFactor;
+        // if (scaleBy < 0.95) {
+        //   scaleBy = 0.95;
+        // } else if (scaleBy > 1.05) {
+        //   scaleBy = 1.05;
+        // }
 
-        (canvas.domElement as unknown as HTMLElement).style.transform =
-          'translate(' +
-          xCamera +
-          'px,' +
-          yCamera +
-          'px) ' +
-          'scale(' +
-          scaleCamera +
-          ',' +
-          scaleCamera +
-          ') ';
-      }
-      return false;
-    });
+        if (canvas.domElement) {
+          const mousePointTo = {
+            x: event.clientX / scaleCamera - xCamera / scaleCamera,
+            y: event.clientY / scaleCamera - yCamera / scaleCamera,
+          };
+
+          scaleCamera = scaleCamera * scaleBy;
+          //result.pixelY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
+          if (scaleCamera < 0.05) {
+            scaleCamera = 0.05;
+          } else if (scaleCamera > 5) {
+            scaleCamera = 5;
+          }
+
+          const newPos = {
+            x: -(mousePointTo.x - event.clientX / scaleCamera) * scaleCamera,
+            y: -(mousePointTo.y - event.clientY / scaleCamera) * scaleCamera,
+          };
+
+          xCamera = newPos.x;
+          yCamera = newPos.y;
+
+          setCamera(xCamera, yCamera, scaleCamera);
+
+          (canvas.domElement as unknown as HTMLElement).style.transform =
+            'translate(' +
+            xCamera +
+            'px,' +
+            yCamera +
+            'px) ' +
+            'scale(' +
+            scaleCamera +
+            ',' +
+            scaleCamera +
+            ') ';
+        }
+        return false;
+      });
+    }
 
     rootElement.addEventListener('click', (event: MouseEvent) => {
+      console.log('click canvas', event.target);
       if (disableInteraction) {
         return false;
       }
@@ -548,7 +554,9 @@ export const createCanvasApp = <T>(
       disableInteraction?: boolean,
       disableManualResize?: boolean,
       id?: string,
-      nodeInfo?: T
+      nodeInfo?: T,
+      parentOffsetX?: number,
+      parentOffsetY?: number
     ) => {
       const rectInstance = new Rect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -567,7 +575,9 @@ export const createCanvasApp = <T>(
         disableInteraction,
         disableManualResize,
         onCanvasUpdated,
-        id
+        id,
+        parentOffsetX,
+        parentOffsetY
       );
 
       // const rect = createRect<T>(
