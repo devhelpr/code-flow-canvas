@@ -28,7 +28,7 @@ export const getCanvasNode = (updated?: () => void) => {
     loopIndex?: number
   ) => {
     return {
-      result: 1,
+      result: input,
       followPath: undefined,
     };
   };
@@ -125,7 +125,7 @@ export const getCanvasNode = (updated?: () => void) => {
       }
 
       node = rect.nodeComponent;
-      node.nodeInfo.computeAsync = compute;
+      node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.canvasAppInstance = canvasAppInstance;
 
