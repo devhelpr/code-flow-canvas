@@ -38,7 +38,6 @@ export const getCanvasNode = (updated?: () => void) => {
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      expression?: string,
       id?: string
     ) => {
       htmlNode = createElement(
@@ -74,6 +73,7 @@ export const getCanvasNode = (updated?: () => void) => {
             name: 'output',
             label: '#',
             thumbConstraint: 'value',
+            color: 'white',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -83,6 +83,7 @@ export const getCanvasNode = (updated?: () => void) => {
             name: 'input',
             label: '#',
             thumbConstraint: 'value',
+            color: 'white',
           },
         ],
         wrapper,
