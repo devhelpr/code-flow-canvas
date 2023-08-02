@@ -559,7 +559,8 @@ export const createCanvasApp = <T>(
       disableManualResize?: boolean,
       id?: string,
       nodeInfo?: T,
-      parentNode?: INodeComponent<T>
+      parentNode?: INodeComponent<T>,
+      isStaticPosition?: boolean
     ) => {
       const rectInstance = new Rect<T>(
         canvas as unknown as INodeComponent<T>,
@@ -579,7 +580,8 @@ export const createCanvasApp = <T>(
         disableManualResize,
         onCanvasUpdated,
         id,
-        parentNode
+        parentNode,
+        isStaticPosition
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');

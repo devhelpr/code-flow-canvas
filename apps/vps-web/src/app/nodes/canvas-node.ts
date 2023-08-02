@@ -104,12 +104,93 @@ export const getCanvasNode = (updated?: () => void) => {
       // rect.nodeComponent.nodeInfo.formElements = [];
       // rect.nodeComponent.nodeInfo.taskType = nodeTypeName;
 
+      if (!rect.nodeComponent) {
+        throw new Error('rect.nodeComponent is undefined');
+      }
+
       if (htmlNode.domElement) {
         canvasAppInstance = createCanvasApp<NodeInfo>(
           htmlNode.domElement as HTMLElement,
           false,
           true,
           ''
+        );
+
+        canvasAppInstance.createRect(
+          -11,
+          29.5,
+          1,
+          1,
+          undefined,
+          [
+            {
+              thumbType: ThumbType.StartConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.start,
+              //hidden: true,
+              thumbConstraint: 'value',
+              color: 'white',
+              label: '#',
+            },
+            {
+              thumbType: ThumbType.EndConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.end,
+              thumbConstraint: 'value',
+              color: 'white',
+              label: '#',
+              hidden: true,
+            },
+          ],
+          '',
+          {
+            classNames: `pointer-events-auto`,
+          },
+          true,
+          false,
+          undefined,
+          id + '_input',
+          undefined,
+          rect.nodeComponent,
+          true
+        );
+
+        canvasAppInstance.createRect(
+          630,
+          29.5,
+          1,
+          1,
+          undefined,
+          [
+            {
+              thumbType: ThumbType.StartConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.start,
+              hidden: true,
+              thumbConstraint: 'value',
+              color: 'white',
+              label: '#',
+            },
+            {
+              thumbType: ThumbType.EndConnectorCenter,
+              thumbIndex: 0,
+              connectionType: ThumbConnectionType.end,
+              thumbConstraint: 'value',
+              color: 'white',
+              label: '#',
+            },
+          ],
+          '',
+          {
+            classNames: `pointer-events-auto`,
+          },
+          true,
+          false,
+          undefined,
+          id + '_output',
+          undefined,
+          rect.nodeComponent,
+          true
         );
 
         canvasAppInstance.setOnCanvasUpdated(() => {
@@ -119,9 +200,6 @@ export const getCanvasNode = (updated?: () => void) => {
         (canvasAppInstance.canvas.domElement as HTMLElement).classList.add(
           'pointer-events-auto'
         );
-      }
-      if (!rect.nodeComponent) {
-        throw new Error('rect.nodeComponent is undefined');
       }
 
       node = rect.nodeComponent;

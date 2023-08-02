@@ -50,8 +50,7 @@ export class Rect<T> {
   private canvasUpdated?: () => void;
   private interactionStateMachine: InteractionStateMachine<T>;
   private hasStaticWidthHeight?: boolean;
-  protected parentOffsetX?: number;
-  protected parentOffsetY?: number;
+  public isStaticPosition?: boolean;
   protected parentNode?: INodeComponent<T>;
 
   private points = {
@@ -81,7 +80,8 @@ export class Rect<T> {
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
     id?: string,
-    parentNode?: INodeComponent<T>
+    parentNode?: INodeComponent<T>,
+    isStaticPosition?: boolean
   ) {
     this.canvas = canvas;
     this.canvasUpdated = canvasUpdated;
@@ -90,6 +90,7 @@ export class Rect<T> {
     let widthHelper = width;
     let heightHelper = height;
     this.parentNode = parentNode;
+    this.isStaticPosition = isStaticPosition;
 
     this.rectInfo = this.createRectElement(
       canvas.domElement,
@@ -113,6 +114,7 @@ export class Rect<T> {
       id
     );
     this.rectNode = this.rectInfo.nodeComponent;
+    this.rectNode.isStaticPosition = isStaticPosition ?? false;
 
     this.rectNode.update = this.onUpdate(
       this.rectNode,
@@ -722,7 +724,8 @@ export class Rect<T> {
         astDomElement.style.height = `${bbox.height}px`;
       } else if (
         target.nodeType === NodeType.Shape &&
-        initiator.nodeType === NodeType.Connection
+        initiator.nodeType === NodeType.Connection &&
+        !this.isStaticPosition
       ) {
         const startThumb = (initiator as unknown as IConnectionNodeComponent<T>)
           .startNodeThumb;

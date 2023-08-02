@@ -479,6 +479,8 @@ export class Connection<T> {
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
       } else {
+        const isStaticStart = connection.startNode?.isStaticPosition ?? false;
+        const isStaticEnd = connection.endNode?.isStaticPosition ?? false;
         const diffC1x = this.points.cx1 - this.points.beginX;
         const diffC1y = this.points.cy1 - this.points.beginY;
         const diffC2x = this.points.cx2 - this.points.beginX;
@@ -486,15 +488,20 @@ export class Connection<T> {
         const diffEndX = this.points.endX - this.points.beginX;
         const diffEndY = this.points.endY - this.points.beginY;
 
-        this.points.beginX = x - thumbTransformX;
-        this.points.beginY = y - thumbTransformY;
+        if (!isStaticStart) {
+          this.points.beginX = x - thumbTransformX;
+          this.points.beginY = y - thumbTransformY;
 
-        this.points.cx1 = x - thumbTransformX + diffC1x;
-        this.points.cy1 = y - thumbTransformY + diffC1y;
-        this.points.cx2 = x - thumbTransformX + diffC2x;
-        this.points.cy2 = y - thumbTransformY + diffC2y;
-        this.points.endX = x - thumbTransformX + diffEndX;
-        this.points.endY = y - thumbTransformY + diffEndY;
+          this.points.cx1 = x - thumbTransformX + diffC1x;
+          this.points.cy1 = y - thumbTransformY + diffC1y;
+        }
+
+        if (!isStaticEnd) {
+          this.points.cx2 = x - thumbTransformX + diffC2x;
+          this.points.cy2 = y - thumbTransformY + diffC2y;
+          this.points.endX = x - thumbTransformX + diffEndX;
+          this.points.endY = y - thumbTransformY + diffEndY;
+        }
       }
 
       if (this.nodeComponent?.startNode) {
