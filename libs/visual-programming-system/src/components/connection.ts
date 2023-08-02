@@ -334,9 +334,6 @@ export class Connection<T> {
       );
       this.interactionInfo = interactionInfoResult;
       if (interactionInfoResult && this.svgParent) {
-        // interactionInfo = interactionInfoResult;
-        // isClicking = true;
-        // isMoving = false;
         (this.canvasElement as unknown as HTMLElement | SVGElement).append(
           this.svgParent.domElement
         );
