@@ -88,7 +88,7 @@ export class ThumbNode<T> {
       'div',
       {
         // will-change-transform
-        class: `absolute cursor-pointer transition-none   pointer-events-none ${
+        class: `absolute cursor-pointer transition-none pointer-events-none ${
           additionalClasses || ''
         }`,
         style: {
@@ -99,10 +99,10 @@ export class ThumbNode<T> {
           height: `${height ?? 100}px`,
           top: relativePositioned
             ? `calc(${initialY} - ${(height ?? 100) / 2}px)`
-            : '0px',
+            : '-50px',
           left: relativePositioned
             ? `calc(${initialX} - ${(width ?? 100) / 2}px)`
-            : '0px',
+            : '-50px',
         },
         width: width ?? 100,
         height: height ?? 100,
@@ -195,8 +195,8 @@ export class ThumbNode<T> {
     this.nodeComponent.nodeType = nodeType;
     this.nodeComponent.width = 100;
     this.nodeComponent.height = 100;
-    this.nodeComponent.offsetX = 50;
-    this.nodeComponent.offsetY = 50;
+    this.nodeComponent.offsetX = 0;
+    this.nodeComponent.offsetY = 0;
     this.nodeComponent.radius = 10;
     this.nodeComponent.thumbIndex = index ?? 0;
     this.nodeComponent.thumbType = thumbType;
@@ -333,8 +333,8 @@ export class ThumbNode<T> {
     let parentCameraX = 0;
     let parentCameraY = 0;
     if (this.parentNode) {
-      parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
-      parentCameraY = this.parentNode.y + 40;
+      parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
+      parentCameraY = this.parentNode.y - 10; //+ 40;
     }
 
     const interactionInfoResult = pointerDown(
@@ -374,6 +374,7 @@ export class ThumbNode<T> {
           this.nodeComponent.thumbLinkedToNode &&
           selectedNode &&
           selectedNode.nodeType === NodeType.Connection &&
+          this.nodeComponent.thumbLinkedToNode.id === selectedNode.id &&
           this.canvas
         ) {
           const { x, y } = transformToCamera(e.clientX, e.clientY);
@@ -413,8 +414,8 @@ export class ThumbNode<T> {
         let parentCameraX = 0;
         let parentCameraY = 0;
         if (this.parentNode) {
-          parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y + 40;
+          parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y - 10; //+ 40;
         }
         let { x, y } = transformToCamera(e.clientX, e.clientY);
         const xorg = x;
@@ -426,14 +427,14 @@ export class ThumbNode<T> {
           this.interactionStateMachine,
           this.pathHiddenElement as unknown as IElementNode<T>,
           this.canvasElements,
-          x - 50,
-          y - 50,
-          x - 50,
-          y - 50,
-          x - 50,
-          y - 50,
-          x - 50,
-          y - 50,
+          x,
+          y,
+          x,
+          y,
+          x,
+          y,
+          x,
+          y,
           true,
           undefined,
           this.canvasUpdated,

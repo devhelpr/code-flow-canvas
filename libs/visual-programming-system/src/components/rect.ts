@@ -271,8 +271,8 @@ export class Rect<T> {
     if (this.rectNode.update) {
       this.rectNode.update(
         this.rectNode,
-        this.rectNode.x + 50,
-        this.rectNode.y + 50,
+        this.rectNode.x,
+        this.rectNode.y,
         this.rectNode
       );
     }
@@ -616,8 +616,8 @@ export class Rect<T> {
         let parentCameraX = 0;
         let parentCameraY = 0;
         if (this.parentNode) {
-          parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y + 40;
+          parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y - 10; //+ 40;
         }
 
         const interactionInfoResult = pointerDown(
@@ -673,8 +673,8 @@ export class Rect<T> {
         target.nodeType === NodeType.Shape &&
         initiator.nodeType === NodeType.Shape
       ) {
-        this.points.beginX = x - 50;
-        this.points.beginY = y - 50;
+        this.points.beginX = x;
+        this.points.beginY = y;
         if (rectContainerElement) {
           rectContainerElement.x = this.points.beginX;
           rectContainerElement.y = this.points.beginY;
@@ -740,15 +740,13 @@ export class Rect<T> {
         if (startThumb && startNode && startNode.id === target.id) {
           const tx = startThumb.x;
           const ty = startThumb.y;
-
-          this.points.beginX = x - 50 - tx - 100;
+          this.points.beginX = x - tx - 150;
           this.points.beginY = y - ty;
         }
         if (endThumb && endNode && endNode.id === target.id) {
           const tx = endThumb.x;
           const ty = endThumb.y;
-
-          this.points.beginX = x - tx + 50 - 20;
+          this.points.beginX = x - tx - 20 + 50;
           this.points.beginY = y - ty;
         }
 
@@ -812,12 +810,14 @@ export class Rect<T> {
                 this.points.beginY,
                 rectContainerElement
               );
-              connection.update(
-                connection,
-                this.points.beginX,
-                this.points.beginY,
-                connection.endNode
-              );
+              if (connection.endNode) {
+                connection.update(
+                  connection,
+                  this.points.beginX,
+                  this.points.beginY,
+                  connection.endNode
+                );
+              }
             }
             if (
               end &&
@@ -831,12 +831,14 @@ export class Rect<T> {
                 this.points.beginY,
                 rectContainerElement
               );
-              connection.update(
-                connection,
-                this.points.beginX,
-                this.points.beginY,
-                connection.startNode
-              );
+              if (connection.startNode) {
+                connection.update(
+                  connection,
+                  this.points.beginX,
+                  this.points.beginY,
+                  connection.startNode
+                );
+              }
             }
           }
         });

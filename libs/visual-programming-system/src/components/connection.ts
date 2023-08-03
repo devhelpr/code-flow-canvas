@@ -19,21 +19,18 @@ import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown, pointerMove } from './events/pointer-events';
 import { onCalculateControlPoints as onCalculateCubicBezierControlPoints } from './utils/calculate-control-points';
 
-const thumbRadius = 10;
-const thumbWidth = 100;
-const thumbHeight = 100;
+// const thumbRadius = 10;
+// const thumbWidth = 100;
+// const thumbHeight = 100;
 
-const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
-const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
-
-const thumbTransformX = thumbWidth / 2;
-const thumbTransformY = thumbHeight / 2;
+// const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
+// const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
 
 // TODO : make the "50" a constant or incoming parameter
 function getPoint(x: number, y: number) {
   const pt = new DOMPoint();
-  pt.x = x + thumbTransformX;
-  pt.y = y + thumbTransformY;
+  pt.x = x; // + thumbTransformX;
+  pt.y = y; // + thumbTransformY;
 
   return {
     x: pt.x,
@@ -44,6 +41,16 @@ function getPoint(x: number, y: number) {
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
   points = {
+    beginX: 0,
+    beginY: 0,
+    cx1: 0,
+    cy1: 0,
+    cx2: 0,
+    cy2: 0,
+    endX: 0,
+    endY: 0,
+  };
+  orgPoints = {
     beginX: 0,
     beginY: 0,
     cx1: 0,
@@ -298,11 +305,14 @@ export class Connection<T> {
   }
 
   interactionInfo: false | IPointerDownResult = false;
+
   onPointerDown = (e: PointerEvent) => {
     console.log('CONNECTION POINTER DOWN', this.nodeComponent?.isControlled);
     if (this.nodeComponent) {
       e.stopPropagation();
       setSelectNode(this.nodeComponent.id);
+
+      this.orgPoints = { ...this.points };
 
       const elementRect = (
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
@@ -315,8 +325,8 @@ export class Connection<T> {
       let parentCameraX = 0;
       let parentCameraY = 0;
       if (this.parentNode) {
-        parentCameraX = this.parentNode.x + 40; // TODO : explain this 40 values???
-        parentCameraY = this.parentNode.y + 40;
+        parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
+        parentCameraY = this.parentNode.y - 10; //+ 40;
       }
 
       const interactionInfoResult = pointerDown<T>(
@@ -419,7 +429,6 @@ export class Connection<T> {
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
         skipChecks = true;
-
         updateThumbs = true;
       } else {
         this.points.cx2 = this.points.endX - 150;
@@ -480,24 +489,37 @@ export class Connection<T> {
         const isStaticEnd = connection.endNode?.isStaticPosition ?? false;
         const diffC1x = this.points.cx1 - this.points.beginX;
         const diffC1y = this.points.cy1 - this.points.beginY;
-        const diffC2x = this.points.cx2 - this.points.beginX;
-        const diffC2y = this.points.cy2 - this.points.beginY;
-        const diffEndX = this.points.endX - this.points.beginX;
-        const diffEndY = this.points.endY - this.points.beginY;
+        let diffC2x = this.points.cx2 - this.points.beginX;
+        let diffC2y = this.points.cy2 - this.points.beginY;
+        let diffEndX = this.points.endX - this.points.beginX;
+        let diffEndY = this.points.endY - this.points.beginY;
+        if (isStaticStart && !isStaticEnd) {
+          // this needs to be the org distance at the moment the drag started...
 
-        if (!isStaticStart) {
-          this.points.beginX = x - thumbTransformX;
-          this.points.beginY = y - thumbTransformY;
-
-          this.points.cx1 = x - thumbTransformX + diffC1x;
-          this.points.cy1 = y - thumbTransformY + diffC1y;
+          diffC2x = this.orgPoints.cx2 - this.points.beginX;
+          diffC2y = this.orgPoints.cy2 - this.points.beginY;
+          diffEndX = this.orgPoints.endX - this.points.beginX;
+          diffEndY = this.orgPoints.endY - this.points.beginY;
         }
 
-        if (!isStaticEnd) {
-          this.points.cx2 = x - thumbTransformX + diffC2x;
-          this.points.cy2 = y - thumbTransformY + diffC2y;
-          this.points.endX = x - thumbTransformX + diffEndX;
-          this.points.endY = y - thumbTransformY + diffEndY;
+        if (!isStaticStart) {
+          this.points.beginX = x;
+          this.points.beginY = y;
+
+          this.points.cx1 = x + diffC1x;
+          this.points.cy1 = y + diffC1y;
+        }
+
+        if (!isStaticEnd && !isStaticStart) {
+          this.points.cx2 = x + diffC2x;
+          this.points.cy2 = y + diffC2y;
+          this.points.endX = x + diffEndX;
+          this.points.endY = y + diffEndY;
+        } else if (!isStaticEnd && isStaticStart) {
+          this.points.cx2 = x + diffC2x;
+          this.points.cy2 = y + diffC2y;
+          this.points.endX = x + diffEndX;
+          this.points.endY = y + diffEndY;
         }
       }
 
@@ -526,11 +548,23 @@ export class Connection<T> {
         this.nodeComponent.controlPointNodes[0].setVisibility?.(
           !(this.nodeComponent?.startNode || this.nodeComponent?.endNode)
         );
+        this.nodeComponent.connectionStartNodeThumb?.update?.(
+          this.nodeComponent?.connectionStartNodeThumb,
+          this.points.beginX,
+          this.points.beginY,
+          this.nodeComponent
+        );
+        this.nodeComponent.connectionEndNodeThumb?.update?.(
+          this.nodeComponent?.connectionEndNodeThumb,
+          this.points.endX,
+          this.points.endY,
+          this.nodeComponent
+        );
         this.nodeComponent.controlPointNodes[0].update?.(
           this.nodeComponent.controlPointNodes[0],
           this.points.cx1,
           this.points.cy1,
-          initiator
+          this.nodeComponent
         );
         if (!this.isQuadratic) {
           this.nodeComponent.controlPointNodes[1].setVisibility?.(
@@ -540,7 +574,7 @@ export class Connection<T> {
             this.nodeComponent.controlPointNodes[1],
             this.points.cx2,
             this.points.cy2,
-            initiator
+            this.nodeComponent
           );
         }
       }
@@ -666,7 +700,6 @@ export class Connection<T> {
       } ${this.pathPoints.cy2 - bbox.y}  ${this.pathPoints.endX - bbox.x} ${
         this.pathPoints.endY - bbox.y
       }`;
-
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
       (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
         'd',

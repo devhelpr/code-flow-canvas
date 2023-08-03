@@ -78,19 +78,19 @@ export class CubicBezierConnection<T> extends Connection<T> {
       element: INodeComponent<T>,
       x: number,
       y: number,
-      followRelations = true
+      updateConnection = true
     ) {
       (
         element.domElement as unknown as HTMLElement | SVGElement
       ).style.transform = `translate(${x}px, ${y}px)`;
 
-      if (!followRelations) {
+      if (!updateConnection) {
         return;
       }
 
       // update the connection of this thumb
       if (element.parent && element.parent.update) {
-        element.parent.update(element.parent, x, y, element);
+        element.parent.update(element.parent, x + 50, y + 50, element);
       }
     }
     const startPointNode = new ThumbNode<T>(
