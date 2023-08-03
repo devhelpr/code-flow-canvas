@@ -1,5 +1,11 @@
 import { transformToCamera } from '../camera';
-import { thumbHeight, thumbRadius, thumbWidth } from '../constants/measures';
+import {
+  thumbHalfHeight,
+  thumbHalfWidth,
+  thumbHeight,
+  thumbRadius,
+  thumbWidth,
+} from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -99,10 +105,10 @@ export class ThumbNode<T> {
           height: `${height ?? thumbHeight}px`,
           top: relativePositioned
             ? `calc(${initialY} - ${(height ?? thumbHeight) / 2}px)`
-            : '-50px',
+            : `-${thumbHalfHeight}px`,
           left: relativePositioned
             ? `calc(${initialX} - ${(width ?? thumbWidth) / 2}px)`
-            : '-50px',
+            : `-${thumbHalfWidth}px`,
         },
         width: width ?? thumbWidth,
         height: height ?? thumbHeight,
@@ -161,8 +167,8 @@ export class ThumbNode<T> {
       {
         class: `absolute top-[3px] left-[3px]`,
         style: {
-          width: `${(radius ?? 10) * 2 - 6}px`,
-          height: `${(radius ?? 10) * 2 - 6}px`,
+          width: `${(radius ?? thumbRadius) * 2 - 6}px`,
+          height: `${(radius ?? thumbRadius) * 2 - 6}px`,
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
