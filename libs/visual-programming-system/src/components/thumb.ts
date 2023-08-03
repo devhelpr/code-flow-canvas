@@ -1,4 +1,5 @@
 import { transformToCamera } from '../camera';
+import { thumbHeight, thumbRadius, thumbWidth } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -14,8 +15,7 @@ import { IPointerDownResult } from '../interfaces/pointers';
 import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
-import { createElement, createNSElement } from '../utils/create-element';
-import { createSVGNodeComponent } from '../utils/create-node-component';
+import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 import { CubicBezierConnection } from './qubic-bezier-connection';
 
@@ -95,17 +95,17 @@ export class ThumbNode<T> {
           transform: relativePositioned
             ? ''
             : `translate(${initialX}px, ${initialY}px)`,
-          width: `${width ?? 100}px`,
-          height: `${height ?? 100}px`,
+          width: `${width ?? thumbWidth}px`,
+          height: `${height ?? thumbHeight}px`,
           top: relativePositioned
-            ? `calc(${initialY} - ${(height ?? 100) / 2}px)`
+            ? `calc(${initialY} - ${(height ?? thumbHeight) / 2}px)`
             : '-50px',
           left: relativePositioned
-            ? `calc(${initialX} - ${(width ?? 100) / 2}px)`
+            ? `calc(${initialX} - ${(width ?? thumbWidth) / 2}px)`
             : '-50px',
         },
-        width: width ?? 100,
-        height: height ?? 100,
+        width: width ?? thumbWidth,
+        height: height ?? thumbHeight,
       },
       canvasElement
     ) as IThumbNodeComponent<T>;
@@ -127,11 +127,11 @@ export class ThumbNode<T> {
           disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
         }  origin-center`, // rounded-full border-[3px]
         style: {
-          width: `${(radius ?? 10) * 2}px`,
-          height: `${(radius ?? 10) * 2}px`,
-          transform: `translate(${-(radius ?? 10) + (width ?? 100) / 2}px, ${
-            -(radius ?? 10) + (height ?? 100) / 2
-          }px)`,
+          width: `${(radius ?? thumbRadius) * 2}px`,
+          height: `${(radius ?? thumbRadius) * 2}px`,
+          transform: `translate(${
+            -(radius ?? thumbRadius) + (width ?? thumbWidth) / 2
+          }px, ${-(radius ?? thumbRadius) + (height ?? thumbHeight) / 2}px)`,
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
@@ -193,11 +193,11 @@ export class ThumbNode<T> {
     this.nodeComponent.x = parseInt(initialX.toString()) | 0;
     this.nodeComponent.y = parseInt(initialY.toString()) | 0;
     this.nodeComponent.nodeType = nodeType;
-    this.nodeComponent.width = 100;
-    this.nodeComponent.height = 100;
+    this.nodeComponent.width = thumbWidth;
+    this.nodeComponent.height = thumbHeight;
     this.nodeComponent.offsetX = 0;
     this.nodeComponent.offsetY = 0;
-    this.nodeComponent.radius = 10;
+    this.nodeComponent.radius = thumbRadius;
     this.nodeComponent.thumbIndex = index ?? 0;
     this.nodeComponent.thumbType = thumbType;
 
@@ -333,8 +333,8 @@ export class ThumbNode<T> {
     let parentCameraX = 0;
     let parentCameraY = 0;
     if (this.parentNode) {
-      parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
-      parentCameraY = this.parentNode.y - 10; //+ 40;
+      parentCameraX = this.parentNode.x - thumbRadius; //+ 40; // TODO : explain this 40 values???
+      parentCameraY = this.parentNode.y - thumbRadius; //+ 40;
     }
 
     const interactionInfoResult = pointerDown(
@@ -414,8 +414,8 @@ export class ThumbNode<T> {
         let parentCameraX = 0;
         let parentCameraY = 0;
         if (this.parentNode) {
-          parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y - 10; //+ 40;
+          parentCameraX = this.parentNode.x - thumbRadius; //+ 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y - thumbRadius; //+ 40;
         }
         let { x, y } = transformToCamera(e.clientX, e.clientY);
         const xorg = x;

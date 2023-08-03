@@ -1,4 +1,5 @@
 import { transformToCamera } from '../camera';
+import { thumbRadius } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
@@ -16,15 +17,8 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
-import { pointerDown, pointerMove } from './events/pointer-events';
+import { pointerDown } from './events/pointer-events';
 import { onCalculateControlPoints as onCalculateCubicBezierControlPoints } from './utils/calculate-control-points';
-
-// const thumbRadius = 10;
-// const thumbWidth = 100;
-// const thumbHeight = 100;
-
-// const thumbOffsetX = -thumbWidth / 2 + thumbRadius;
-// const thumbOffsetY = -thumbHeight / 2 + thumbRadius;
 
 // TODO : make the "50" a constant or incoming parameter
 function getPoint(x: number, y: number) {
@@ -325,8 +319,8 @@ export class Connection<T> {
       let parentCameraX = 0;
       let parentCameraY = 0;
       if (this.parentNode) {
-        parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
-        parentCameraY = this.parentNode.y - 10; //+ 40;
+        parentCameraX = this.parentNode.x - thumbRadius; //+ 40; // TODO : explain this 40 values???
+        parentCameraY = this.parentNode.y - thumbRadius; //+ 40;
       }
 
       const interactionInfoResult = pointerDown<T>(

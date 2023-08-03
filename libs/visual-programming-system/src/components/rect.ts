@@ -3,8 +3,6 @@ import { compileMarkup } from '@devhelpr/markup-compiler';
 import { getCamera, transformToCamera } from '../camera';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
-  ControlAndEndPointNodeType,
-  CurveType,
   DOMElementNode,
   ElementNodeMap,
   IConnectionNodeComponent,
@@ -15,26 +13,16 @@ import {
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces/element';
-import {
-  createEffect,
-  getSelectedNode,
-  getVisbility,
-  setSelectNode,
-} from '../reactivity';
+import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { createASTNodeElement, createElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
 import { ThumbNode } from './thumb';
 import {
-  calculateConnectorX,
-  calculateConnectorY,
-  thumbHeight,
   thumbInitialPosition,
   thumbOffsetX,
   thumbOffsetY,
   thumbPosition,
-  thumbRadius,
-  thumbWidth,
 } from './utils/calculate-connector-thumbs';
 import { getPoint } from './utils/get-point';
 import { setPosition } from './utils/set-position';

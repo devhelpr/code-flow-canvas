@@ -1,7 +1,6 @@
+import { thumbRadius } from '../../constants/measures';
 import {
   ControlAndEndPointNodeType,
-  CurveType,
-  INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '../../interfaces';
@@ -9,7 +8,6 @@ import { ThumbType } from '../../types';
 import {
   calculateConnectorX,
   calculateConnectorY,
-  thumbRadius,
 } from './calculate-connector-thumbs';
 import { calculate2DDistance } from './distance';
 

@@ -1,9 +1,6 @@
+import { thumbRadius } from '../../constants/measures';
 import { INodeComponent } from '../../interfaces/element';
 import { ThumbType } from '../../types/thumb-type';
-
-export const thumbRadius = 10;
-// export const thumbWidth = 100;
-// export const thumbHeight = 100;
 
 export const thumbOffsetX = 0; // -thumbWidth / 2 + thumbRadius;
 export const thumbOffsetY = 0; //-thumbHeight / 2 + thumbRadius;

@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { thumbHalfHeight, thumbHalfWidth } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
-  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
   IThumbNodeComponent,
 } from '../interfaces/element';
-import {
-  createEffect,
-  getVisbility,
-  getSelectedNode,
-  setSelectNode,
-} from '../reactivity';
+import { createEffect, getVisbility, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
@@ -90,7 +85,12 @@ export class CubicBezierConnection<T> extends Connection<T> {
 
       // update the connection of this thumb
       if (element.parent && element.parent.update) {
-        element.parent.update(element.parent, x + 50, y + 50, element);
+        element.parent.update(
+          element.parent,
+          x + thumbHalfWidth,
+          y + thumbHalfHeight,
+          element
+        );
       }
     }
     const startPointNode = new ThumbNode<T>(
