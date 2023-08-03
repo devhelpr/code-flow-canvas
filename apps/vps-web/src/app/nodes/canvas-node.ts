@@ -5,11 +5,13 @@ import {
   ThumbConnectionType,
   ThumbType,
   createCanvasApp,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
+import { l } from 'vitest/dist/index-5aad25c1';
 
 export const getCanvasNode = (updated?: () => void) => {
   let node: INodeComponent<NodeInfo>;
@@ -17,6 +19,9 @@ export const getCanvasNode = (updated?: () => void) => {
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
   let canvasAppInstance: CanvasAppInstance | undefined = undefined;
+  let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
+  let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
+
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -34,6 +39,9 @@ export const getCanvasNode = (updated?: () => void) => {
   };
 
   return {
+    getInfo: () => {
+      return { input, output };
+    },
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
@@ -116,7 +124,7 @@ export const getCanvasNode = (updated?: () => void) => {
           ''
         );
 
-        canvasAppInstance.createRect(
+        const inputInstance = canvasAppInstance.createRect(
           -11,
           29.5,
           1,
@@ -154,8 +162,9 @@ export const getCanvasNode = (updated?: () => void) => {
           rect.nodeComponent,
           true
         );
+        input = inputInstance.nodeComponent;
 
-        canvasAppInstance.createRect(
+        const outputInstance = canvasAppInstance.createRect(
           630,
           29.5,
           1,
@@ -192,6 +201,7 @@ export const getCanvasNode = (updated?: () => void) => {
           rect.nodeComponent,
           true
         );
+        output = outputInstance.nodeComponent;
 
         canvasAppInstance.setOnCanvasUpdated(() => {
           updated?.();

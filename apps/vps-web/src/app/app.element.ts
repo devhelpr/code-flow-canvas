@@ -416,6 +416,8 @@ export class AppElement extends HTMLElement {
                     }
                   });
 
+                  const info = canvasNode.getInfo();
+
                   const elementList = Array.from(
                     (canvasVisualNode.nodeInfo.canvasAppInstance
                       .elements as ElementNodeMap<NodeInfo>) ?? []
@@ -429,7 +431,11 @@ export class AppElement extends HTMLElement {
                         undefined;
                       let end: IRectNodeComponent<NodeInfo> | undefined =
                         undefined;
-                      if (node.startNodeId) {
+
+                      // undefined_input undefined_output
+                      if (node.startNodeId === 'undefined_input') {
+                        start = info.input;
+                      } else if (node.startNodeId) {
                         const startElement = elementList.find((e) => {
                           const element = e[1] as IElementNode<NodeInfo>;
                           return element.id === node.startNodeId;
@@ -439,7 +445,10 @@ export class AppElement extends HTMLElement {
                             startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
                         }
                       }
-                      if (node.endNodeId) {
+
+                      if (node.endNodeId === 'undefined_output') {
+                        end = info.output;
+                      } else if (node.endNodeId) {
                         const endElement = elementList.find((e) => {
                           const element = e[1] as IElementNode<NodeInfo>;
                           return element.id === node.endNodeId;
