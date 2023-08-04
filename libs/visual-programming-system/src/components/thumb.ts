@@ -445,7 +445,7 @@ export class ThumbNode<T> {
           y,
           x,
           y,
-          true,
+          false,
           undefined,
           this.canvasUpdated,
           undefined,
@@ -457,8 +457,6 @@ export class ThumbNode<T> {
         }
 
         if (curve && this.canvas) {
-          curve.nodeComponent.isControlled = true;
-
           curve.nodeComponent.startNode = this.parentRectNode;
           curve.nodeComponent.startNodeThumb = this.nodeComponent;
           this.parentRectNode.connections?.push(curve.nodeComponent);
@@ -524,6 +522,7 @@ export class ThumbNode<T> {
   };
 
   onPointerUp = (e: PointerEvent) => {
+    console.log('onPointerUp');
     if (this.disableInteraction) {
       return;
     }
@@ -547,6 +546,7 @@ export class ThumbNode<T> {
       const circleDomElement = this.circleElement?.domElement as unknown as
         | HTMLElement
         | SVGElement;
+      console.log('onPointerUp circleDomElement', circleDomElement);
       circleDomElement.classList.add('pointer-events-auto');
       circleDomElement.classList.remove('pointer-events-none');
     }
