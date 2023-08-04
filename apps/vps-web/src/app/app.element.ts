@@ -407,8 +407,8 @@ export class AppElement extends HTMLElement {
                       const expression = getExpression(canvasUpdated);
                       expression.createVisualNode(
                         canvasVisualNode.nodeInfo.canvasAppInstance,
-                        element.x + 50,
-                        element.y + 50,
+                        element.x,
+                        element.y,
                         element.nodeInfo?.formValues?.Expression ?? undefined,
                         element.id,
                         canvasVisualNode
@@ -472,14 +472,14 @@ export class AppElement extends HTMLElement {
 
                       const curve =
                         canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
-                          (start?.x ?? node.x ?? 0) + 50,
-                          (start?.y ?? node.y ?? 0) + 50,
-                          (end?.x ?? node.endX ?? 0) + 50,
-                          (end?.y ?? node.endY ?? 0) + 50,
-                          c1x + 50,
-                          c1y + 50,
-                          c2x + 50,
-                          c2y + 50,
+                          start?.x ?? node.x ?? 0,
+                          start?.y ?? node.y ?? 0,
+                          end?.x ?? node.endX ?? 0,
+                          end?.y ?? node.endY ?? 0,
+                          c1x,
+                          c1y,
+                          c2x,
+                          c2y,
                           false,
                           undefined,
                           node.id,

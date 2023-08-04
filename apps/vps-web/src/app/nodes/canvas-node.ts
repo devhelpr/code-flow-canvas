@@ -6,6 +6,7 @@ import {
   ThumbType,
   createCanvasApp,
   IRectNodeComponent,
+  thumbRadius,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
@@ -77,7 +78,7 @@ export const getCanvasNode = (updated?: () => void) => {
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            offsetY: 20,
+            offsetY: 0,
             name: 'output',
             label: '#',
             thumbConstraint: 'value',
@@ -87,7 +88,7 @@ export const getCanvasNode = (updated?: () => void) => {
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            offsetY: 20,
+            offsetY: 0,
             name: 'input',
             label: '#',
             thumbConstraint: 'value',
@@ -126,7 +127,7 @@ export const getCanvasNode = (updated?: () => void) => {
 
         const inputInstance = canvasAppInstance.createRect(
           -11,
-          29.5,
+          thumbRadius - 0.5, //thumbRadius + 10 + 9.5,
           1,
           1,
           undefined,
@@ -166,7 +167,7 @@ export const getCanvasNode = (updated?: () => void) => {
 
         const outputInstance = canvasAppInstance.createRect(
           630,
-          29.5,
+          thumbRadius - 0.5, //thumbRadius + 10 + 9.5,
           1,
           1,
           undefined,

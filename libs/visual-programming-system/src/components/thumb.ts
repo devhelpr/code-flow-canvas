@@ -1,9 +1,13 @@
 import { transformToCamera } from '../camera';
 import {
+  paddingRect,
+  thumbFontSizeClass,
   thumbHalfHeight,
   thumbHalfWidth,
   thumbHeight,
+  thumbInnerCircleSizeClasses,
   thumbRadius,
+  thumbTextBaseSizeClass,
   thumbWidth,
 } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
@@ -165,10 +169,10 @@ export class ThumbNode<T> {
     const innerCircle = createElement(
       'div',
       {
-        class: `absolute top-[3px] left-[3px]`,
+        class: `absolute top-[3px] left-[3px]`, //top-[3px] left-[3px
         style: {
-          width: `${(radius ?? thumbRadius) * 2 - 6}px`,
-          height: `${(radius ?? thumbRadius) * 2 - 6}px`,
+          width: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
+          height: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
@@ -184,8 +188,8 @@ export class ThumbNode<T> {
       createElement(
         'div', //'circle',
         {
-          class: `pointer-events-none absolute text-[11px] flex items-center justify-center
-        w-[14px] h-[14px] text-base-[14px]
+          class: `pointer-events-none absolute ${thumbFontSizeClass} flex items-center justify-center
+        ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
         text-center
         top-[-1px] text-black `,
         },
@@ -339,8 +343,8 @@ export class ThumbNode<T> {
     let parentCameraX = 0;
     let parentCameraY = 0;
     if (this.parentNode) {
-      parentCameraX = this.parentNode.x - thumbRadius; //+ 40; // TODO : explain this 40 values???
-      parentCameraY = this.parentNode.y - thumbRadius; //+ 40;
+      parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
+      parentCameraY = this.parentNode.y - paddingRect; //+ 40;
     }
 
     const interactionInfoResult = pointerDown(
@@ -420,8 +424,8 @@ export class ThumbNode<T> {
         let parentCameraX = 0;
         let parentCameraY = 0;
         if (this.parentNode) {
-          parentCameraX = this.parentNode.x - thumbRadius; //+ 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y - thumbRadius; //+ 40;
+          parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y - paddingRect; //+ 40;
         }
         let { x, y } = transformToCamera(e.clientX, e.clientY);
         const xorg = x;

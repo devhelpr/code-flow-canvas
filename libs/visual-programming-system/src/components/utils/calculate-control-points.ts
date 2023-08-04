@@ -1,4 +1,9 @@
-import { thumbRadius } from '../../constants/measures';
+import {
+  connectionToThumbDistance,
+  thumbHeight,
+  thumbRadius,
+  controlPointCurvingDistance,
+} from '../../constants/measures';
 import {
   ControlAndEndPointNodeType,
   IRectNodeComponent,
@@ -14,9 +19,9 @@ import { calculate2DDistance } from './distance';
 const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   let factor = 0.15;
   let thumbFactor = 1;
-  if (Math.abs((y2 ?? 0) - y1) < 50) {
-    factor *= Math.abs((y2 ?? 0) - y1) / 50;
-    thumbFactor = Math.abs((y2 ?? 0) - y1) / 50;
+  if (Math.abs((y2 ?? 0) - y1) < controlPointCurvingDistance) {
+    factor *= Math.abs((y2 ?? 0) - y1) / controlPointCurvingDistance;
+    thumbFactor = Math.abs((y2 ?? 0) - y1) / controlPointCurvingDistance;
   }
 
   // if (Math.abs((x2 ?? 0) - x1) < 50) {
@@ -83,7 +88,7 @@ export const onCalculateControlPoints = <T>(
       (thumbOffsetY ?? 0);
 
     if (thumbType === ThumbType.StartConnectorBottom) {
-      y = y + thumbRadius * 3;
+      y = y + connectionToThumbDistance * 3;
       const { distance, thumbFactor } = getFactor(
         x,
         y,
@@ -94,11 +99,14 @@ export const onCalculateControlPoints = <T>(
         x: x,
         y: y,
         cx: x,
-        cy: y + (controlPointDistance ?? distance ?? 0) + 50 * thumbFactor,
+        cy:
+          y +
+          (controlPointDistance ?? distance ?? 0) +
+          controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
     } else if (thumbType === ThumbType.StartConnectorTop) {
-      y = y - thumbRadius * 3;
+      y = y - connectionToThumbDistance * 3;
       const { distance, thumbFactor } = getFactor(
         x,
         y,
@@ -109,19 +117,26 @@ export const onCalculateControlPoints = <T>(
         x: x,
         y: y,
         cx: x,
-        cy: y - (controlPointDistance ?? distance ?? 0) - 50 * thumbFactor,
+        cy:
+          y -
+          (controlPointDistance ?? distance ?? 0) -
+          controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
     }
 
-    x = x + thumbRadius * 3;
+    x = x + connectionToThumbDistance * 3;
+
     const { distance, thumbFactor } = getFactor(
       x,
       y,
       connectedNodeX,
       connectedNodeY
     );
-    const cx = x + (controlPointDistance ?? distance ?? 0) + 50 * thumbFactor;
+    const cx =
+      x +
+      (controlPointDistance ?? distance ?? 0) +
+      controlPointCurvingDistance * thumbFactor;
 
     return {
       x: x,
@@ -152,7 +167,7 @@ export const onCalculateControlPoints = <T>(
       (thumbOffsetY ?? 0);
 
     if (thumbType === ThumbType.EndConnectorTop) {
-      y = y - thumbRadius * 3;
+      y = y - connectionToThumbDistance * 3;
       const { distance, thumbFactor } = getFactor(
         x,
         y,
@@ -163,19 +178,26 @@ export const onCalculateControlPoints = <T>(
         x: x,
         y: y,
         cx: x,
-        cy: y - (controlPointDistance ?? distance ?? 0) - 50 * thumbFactor,
+        cy:
+          y -
+          (controlPointDistance ?? distance ?? 0) -
+          controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
     }
 
-    x = x - thumbRadius * 3;
+    x = x - connectionToThumbDistance * 3;
+
     const { distance, thumbFactor } = getFactor(
       x,
       y,
       connectedNodeX,
       connectedNodeY
     );
-    const cx = x - (controlPointDistance ?? distance ?? 0) - 50 * thumbFactor;
+    const cx =
+      x -
+      (controlPointDistance ?? distance ?? 0) -
+      controlPointCurvingDistance * thumbFactor;
     return {
       x: x,
       y: y,

@@ -27,6 +27,7 @@ import {
 import { getPoint } from './utils/get-point';
 import { setPosition } from './utils/set-position';
 import { NodeType } from '../types/node-type';
+import { paddingRect, totalPaddingRect } from '../constants/measures';
 
 export class Rect<T> {
   nodeComponent?: IRectNodeComponent<T>;
@@ -604,8 +605,8 @@ export class Rect<T> {
         let parentCameraX = 0;
         let parentCameraY = 0;
         if (this.parentNode) {
-          parentCameraX = this.parentNode.x - 10; //+ 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y - 10; //+ 40;
+          parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
+          parentCameraY = this.parentNode.y - paddingRect; //+ 40;
         }
 
         const interactionInfoResult = pointerDown(
@@ -630,10 +631,10 @@ export class Rect<T> {
     height: number;
   }) {
     return {
-      x: pathPoints.beginX - 10,
-      y: pathPoints.beginY - 10,
-      width: pathPoints.width + 20,
-      height: pathPoints.height + 20,
+      x: pathPoints.beginX - paddingRect,
+      y: pathPoints.beginY - paddingRect,
+      width: pathPoints.width + totalPaddingRect,
+      height: pathPoints.height + totalPaddingRect,
     };
   }
 

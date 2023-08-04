@@ -1,5 +1,5 @@
 import { transformToCamera } from '../camera';
-import { thumbRadius } from '../constants/measures';
+import { paddingRect, totalPaddingRect } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
@@ -291,10 +291,10 @@ export class Connection<T> {
     ).getBBox();
 
     return {
-      x: bbox.x - 10,
-      y: bbox.y - 10,
-      width: bbox.width + 20,
-      height: bbox.height + 20,
+      x: bbox.x - paddingRect,
+      y: bbox.y - paddingRect,
+      width: bbox.width + totalPaddingRect,
+      height: bbox.height + totalPaddingRect,
     };
   }
 
@@ -319,18 +319,18 @@ export class Connection<T> {
       let parentCameraX = 0;
       let parentCameraY = 0;
       if (this.parentNode) {
-        parentCameraX = this.parentNode.x - thumbRadius; //+ 40; // TODO : explain this 40 values???
-        parentCameraY = this.parentNode.y - thumbRadius; //+ 40;
+        parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
+        parentCameraY = this.parentNode.y - paddingRect; //+ 40;
       }
 
       const interactionInfoResult = pointerDown<T>(
         x -
           rectCamera.x -
-          (this.pathPoints.beginX - bbox.x - 10) +
+          (this.pathPoints.beginX - bbox.x - paddingRect) +
           parentCameraX,
         y -
           rectCamera.y -
-          (this.pathPoints.beginY - bbox.y - 10) +
+          (this.pathPoints.beginY - bbox.y - paddingRect) +
           parentCameraY,
         this.nodeComponent,
         this.canvasElement,
