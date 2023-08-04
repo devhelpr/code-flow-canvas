@@ -558,19 +558,33 @@ export class AppElement extends HTMLElement {
                   c2y = node.controlPoints[1].y ?? 0;
                 }
 
-                const curve = canvasApp.createCubicBezier(
-                  start?.x ?? node.x ?? 0,
-                  start?.y ?? node.y ?? 0,
-                  end?.x ?? node.endX ?? 0,
-                  end?.y ?? node.endY ?? 0,
-                  c1x,
-                  c1y,
-                  c2x,
-                  c2y,
-                  false,
-                  undefined,
-                  node.id
-                );
+                const curve =
+                  node.lineType === 'BezierCubic'
+                    ? canvasApp.createCubicBezier(
+                        start?.x ?? node.x ?? 0,
+                        start?.y ?? node.y ?? 0,
+                        end?.x ?? node.endX ?? 0,
+                        end?.y ?? node.endY ?? 0,
+                        c1x,
+                        c1y,
+                        c2x,
+                        c2y,
+                        false,
+                        undefined,
+                        node.id
+                      )
+                    : canvasApp.createQuadraticBezier(
+                        start?.x ?? node.x ?? 0,
+                        start?.y ?? node.y ?? 0,
+                        end?.x ?? node.endX ?? 0,
+                        end?.y ?? node.endY ?? 0,
+                        c1x,
+                        c1y,
+                        false,
+                        undefined,
+                        node.id
+                      );
+
                 if (!curve.nodeComponent) {
                   return;
                 }

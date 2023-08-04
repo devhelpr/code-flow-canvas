@@ -119,12 +119,12 @@ export class CubicBezierConnection<T> extends Connection<T> {
       target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      initator?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (!target || x === undefined || y === undefined || !initator) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      setPosition(target, x, y, initator?.nodeType !== NodeType.Connection);
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
@@ -187,13 +187,13 @@ export class CubicBezierConnection<T> extends Connection<T> {
       target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      initator?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (!target || x === undefined || y === undefined || !initator) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
 
-      setPosition(target, x, y, initator?.nodeType !== NodeType.Connection);
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
     const controlPoint2Node = new ThumbNode<T>(
@@ -219,12 +219,12 @@ export class CubicBezierConnection<T> extends Connection<T> {
       target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      initator?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (!target || x === undefined || y === undefined || !initator) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      setPosition(target, x, y, initator?.nodeType !== NodeType.Connection);
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
 

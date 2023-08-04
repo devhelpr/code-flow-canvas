@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
@@ -71,10 +72,29 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       setSelectNode(this.nodeComponent.id);
     };
 
-    function setPosition(element: INodeComponent<T>, x: number, y: number) {
+    function setPosition(
+      element: INodeComponent<T>,
+      x: number,
+      y: number,
+      updateConnection = true
+    ) {
       (
         element.domElement as unknown as HTMLElement | SVGElement
       ).style.transform = `translate(${x}px, ${y}px)`;
+
+      if (!updateConnection) {
+        return;
+      }
+
+      // update the connection of this thumb
+      if (element.parent && element.parent.update) {
+        element.parent.update(
+          element.parent,
+          x + thumbHalfWidth,
+          y + thumbHalfHeight,
+          element
+        );
+      }
     }
     const startPointNode = new ThumbNode<T>(
       canvas.domElement,
@@ -108,7 +128,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         return false;
       }
 
-      setPosition(target, x, y);
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
 
@@ -138,13 +158,13 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       target?: INodeComponent<T>,
       x?: number,
       y?: number,
-      initator?: INodeComponent<T>
+      initiator?: INodeComponent<T>
     ) => {
-      if (!target || x === undefined || y === undefined || !initator) {
+      if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
 
-      setPosition(target, x, y);
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
     const controlPoint1Node = new ThumbNode<T>(
@@ -173,7 +193,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      setPosition(target, x, y);
+      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
     this.nodeComponent.controlPointNodes?.push(controlPoint1Node.nodeComponent);

@@ -27,6 +27,7 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+import { QuadraticBezierConnection } from './quadratic-bezier-connection';
 import { CubicBezierConnection } from './qubic-bezier-connection';
 
 export class ThumbNode<T> {
@@ -451,6 +452,24 @@ export class ThumbNode<T> {
           undefined,
           this.parentNode
         );
+        // new QuadraticBezierConnection<T>(
+        //     this.canvas as unknown as INodeComponent<T>,
+        //     this.interactionStateMachine,
+        //     this.pathHiddenElement as unknown as IElementNode<T>,
+        //     this.canvasElements,
+        //     x,
+        //     y,
+        //     x,
+        //     y,
+        //     x,
+        //     y,
+
+        //     false,
+        //     undefined,
+        //     this.canvasUpdated,
+        //     undefined,
+        //     this.parentNode
+        //   );
 
         if (!curve || !curve.nodeComponent || !curve.endPointElement) {
           throw new Error('curve not created');
