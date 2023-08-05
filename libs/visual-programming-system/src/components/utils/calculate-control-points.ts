@@ -123,6 +123,16 @@ export const onCalculateControlPoints = <T>(
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
+    } else if (thumbType === ThumbType.Center) {
+      x += (rectNode.width ?? 0) / 2;
+      y += (rectNode.height ?? 0) / 2;
+      return {
+        x: x,
+        y: y,
+        cx: x,
+        cy: y,
+        nodeType,
+      };
     }
 
     x = x + connectionToThumbDistance * 3;
@@ -182,6 +192,16 @@ export const onCalculateControlPoints = <T>(
           y -
           (controlPointDistance ?? distance ?? 0) -
           controlPointCurvingDistance * thumbFactor,
+        nodeType,
+      };
+    } else if (thumbType === ThumbType.Center) {
+      x += (rectNode.width ?? 0) / 2;
+      y += (rectNode.height ?? 0) / 2;
+      return {
+        x: x,
+        y: y,
+        cx: x,
+        cy: y,
         nodeType,
       };
     }

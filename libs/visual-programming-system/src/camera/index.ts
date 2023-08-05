@@ -12,7 +12,7 @@ export const getCamera = () => {
   return { x, y, scale };
 };
 
-export const transformToCamera = (tx: number, ty: number) => {
+export const transformCameraSpaceToWorldSpace = (tx: number, ty: number) => {
   return {
     x: (tx - x) / scale,
     y: (ty - y) / scale,

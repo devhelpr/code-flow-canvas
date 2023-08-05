@@ -1,4 +1,4 @@
-import { transformToCamera } from '../camera';
+import { transformCameraSpaceToWorldSpace } from '../camera';
 import {
   paddingRect,
   thumbFontSizeClass,
@@ -42,7 +42,7 @@ export class ThumbNode<T> {
   canvasUpdated?: () => void;
   circleElement: IElementNode<T> | undefined;
   interactionInfo: IPointerDownResult;
-  parentNode?: INodeComponent<T>;
+  containerNode?: INodeComponent<T>;
 
   constructor(
     canvasElement: DOMElementNode,
@@ -71,7 +71,7 @@ export class ThumbNode<T> {
     label?: string,
     thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
-    parentNode?: INodeComponent<T>
+    containerNode?: INodeComponent<T>
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.disableInteraction = disableInteraction ?? false;
@@ -81,7 +81,7 @@ export class ThumbNode<T> {
     this.canvasElements = canvasElements;
     this.pathHiddenElement = pathHiddenElement;
     this.canvasUpdated = canvasUpdated;
-    this.parentNode = parentNode;
+    this.containerNode = containerNode;
 
     this.interactionInfo = {
       xOffsetWithinElementOnFirstClick: 0,
@@ -339,18 +339,21 @@ export class ThumbNode<T> {
       connectionThumb.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
 
-    const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+    const rectCamera = transformCameraSpaceToWorldSpace(
+      elementRect.x,
+      elementRect.y
+    );
 
-    let parentCameraX = 0;
-    let parentCameraY = 0;
-    if (this.parentNode) {
-      parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
-      parentCameraY = this.parentNode.y - paddingRect; //+ 40;
+    let parentX = 0;
+    let parentY = 0;
+    if (this.containerNode) {
+      parentX = this.containerNode.x - paddingRect;
+      parentY = this.containerNode.y - paddingRect;
     }
 
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x + parentCameraX,
-      y - rectCamera.y + parentCameraY,
+      x - rectCamera.x + parentX,
+      y - rectCamera.y + parentY,
       connectionThumb,
       this.canvas.domElement,
       this.interactionStateMachine
@@ -369,12 +372,17 @@ export class ThumbNode<T> {
       circleDomElement.classList.add('pointer-events-none');
     }
   };
+
   onPointerDown = (e: PointerEvent) => {
     if (this.disableInteraction) {
       return;
     }
+
     if (this.nodeComponent) {
-      // hold shift to disconnect node from start point
+      if (this.nodeComponent.thumbType === ThumbType.Center) {
+        return;
+      }
+
       e.stopPropagation();
       const selectedNodeId = getSelectedNode();
       if (selectedNodeId) {
@@ -388,7 +396,10 @@ export class ThumbNode<T> {
           this.nodeComponent.thumbLinkedToNode.id === selectedNode.id &&
           this.canvas
         ) {
-          const { x, y } = transformToCamera(e.clientX, e.clientY);
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            e.clientX,
+            e.clientY
+          );
           const curve = selectedNode as unknown as IConnectionNodeComponent<T>;
           const connectionThumb =
             this.nodeComponent.thumbConnectionType === 'start'
@@ -403,7 +414,7 @@ export class ThumbNode<T> {
       }
 
       if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
-        const { x, y } = transformToCamera(e.clientX, e.clientY);
+        const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
         const curve = this.nodeComponent.thumbLinkedToNode.connections[0];
         const connectionThumb =
           this.nodeComponent.thumbConnectionType === 'start'
@@ -422,17 +433,17 @@ export class ThumbNode<T> {
         this.parentRectNode &&
         this.canvasElements
       ) {
-        let parentCameraX = 0;
-        let parentCameraY = 0;
-        if (this.parentNode) {
-          parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y - paddingRect; //+ 40;
+        let parentX = 0;
+        let parentY = 0;
+        if (this.containerNode) {
+          parentX = this.containerNode.x - paddingRect;
+          parentY = this.containerNode.y - paddingRect;
         }
-        let { x, y } = transformToCamera(e.clientX, e.clientY);
+        let { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
         const xorg = x;
         const yorg = y;
-        x = x - parentCameraX;
-        y = y - parentCameraY;
+        x = x - parentX;
+        y = y - parentY;
         const curve = new CubicBezierConnection<T>(
           this.canvas as unknown as INodeComponent<T>,
           this.interactionStateMachine,
@@ -450,7 +461,7 @@ export class ThumbNode<T> {
           undefined,
           this.canvasUpdated,
           undefined,
-          this.parentNode
+          this.containerNode
         );
         // new QuadraticBezierConnection<T>(
         //     this.canvas as unknown as INodeComponent<T>,
@@ -468,7 +479,7 @@ export class ThumbNode<T> {
         //     undefined,
         //     this.canvasUpdated,
         //     undefined,
-        //     this.parentNode
+        //     this.containerNode
         //   );
 
         if (!curve || !curve.nodeComponent || !curve.endPointElement) {
@@ -497,8 +508,11 @@ export class ThumbNode<T> {
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
-      const { x, y } = transformToCamera(e.clientX, e.clientY);
-      const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+      const rectCamera = transformCameraSpaceToWorldSpace(
+        elementRect.x,
+        elementRect.y
+      );
 
       const interactionInfoResult = pointerDown(
         x - rectCamera.x,
@@ -528,7 +542,7 @@ export class ThumbNode<T> {
     }
 
     if (this.nodeComponent && this.nodeComponent.domElement) {
-      const { x, y } = transformToCamera(e.clientX, e.clientY);
+      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
       pointerMove(
         x,
         y,
@@ -553,7 +567,7 @@ export class ThumbNode<T> {
       (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
         'none';
 
-      const { x, y } = transformToCamera(e.clientX, e.clientY);
+      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
       pointerUp(
         x,
         y,
@@ -580,10 +594,15 @@ export class ThumbNode<T> {
       return;
     }
 
+    // TODO : figure out why below the end connection is removed...
+    // ... this causes problems when the connection was just connected to a rect-thumb...
+    // ... rect-thumbs handle this themselves...
+
     // TODO : check if droptarget is the correct type BEFOFE casting
     const dropTarget =
       this.interactionStateMachine.getCurrentDropTarget() as unknown as IThumbNodeComponent<T>;
-    if (dropTarget) {
+    const state = this.interactionStateMachine.getCurrentInteractionState();
+    if (dropTarget && state) {
       console.log(
         'DROPPED ON TARGET',
         dropTarget.id,
@@ -591,7 +610,27 @@ export class ThumbNode<T> {
         this.nodeComponent.connectionControllerType,
         this.nodeComponent.onReceiveDraggedConnection
       );
-      if (
+
+      if (dropTarget.nodeType === NodeType.Shape) {
+        const rectNode = dropTarget as unknown as IRectNodeComponent<T>;
+        const connection = this.nodeComponent
+          .parent as unknown as IConnectionNodeComponent<T>;
+        if (connection) {
+          if (rectNode.thumbConnectors?.[0].thumbType === ThumbType.Center) {
+            connection.endNode = rectNode;
+            connection.endNodeThumb = rectNode.thumbConnectors?.[0];
+
+            rectNode.connections?.push(connection);
+
+            connection.update?.(
+              connection,
+              connection.startNode?.x ?? 0,
+              connection.startNode?.y ?? 0,
+              rectNode
+            );
+          }
+        }
+      } else if (
         dropTarget.onReceiveDraggedConnection &&
         dropTarget.id !== this.nodeComponent.id
       ) {

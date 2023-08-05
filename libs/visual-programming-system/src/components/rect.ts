@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { compileMarkup } from '@devhelpr/markup-compiler';
-import { getCamera, transformToCamera } from '../camera';
+import { getCamera, transformCameraSpaceToWorldSpace } from '../camera';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -30,19 +30,21 @@ import { NodeType } from '../types/node-type';
 import { paddingRect, totalPaddingRect } from '../constants/measures';
 
 export class Rect<T> {
-  nodeComponent?: IRectNodeComponent<T>;
-
-  private rectNode: IRectNodeComponent<T> | undefined;
-  private rectInfo: ReturnType<typeof this.createRectElement>;
-
-  private canvas: INodeComponent<T> | undefined;
-  private canvasUpdated?: () => void;
-  private interactionStateMachine: InteractionStateMachine<T>;
-  private hasStaticWidthHeight?: boolean;
+  public nodeComponent?: IRectNodeComponent<T>;
   public isStaticPosition?: boolean;
-  protected parentNode?: INodeComponent<T>;
 
-  private points = {
+  protected rectNode: IRectNodeComponent<T> | undefined;
+  protected rectInfo: ReturnType<typeof this.createRectElement>;
+
+  protected canvas: INodeComponent<T> | undefined;
+  protected canvasElements?: ElementNodeMap<T>;
+  protected pathHiddenElement?: IElementNode<T>;
+  protected canvasUpdated?: () => void;
+  protected interactionStateMachine: InteractionStateMachine<T>;
+  protected hasStaticWidthHeight?: boolean;
+  protected containerNode?: INodeComponent<T>;
+
+  protected points = {
     beginX: 0,
     beginY: 0,
     width: 0,
@@ -69,17 +71,19 @@ export class Rect<T> {
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
     id?: string,
-    parentNode?: INodeComponent<T>,
+    containerNode?: INodeComponent<T>,
     isStaticPosition?: boolean
   ) {
     this.canvas = canvas;
+    this.canvasElements = elements;
     this.canvasUpdated = canvasUpdated;
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
     let widthHelper = width;
     let heightHelper = height;
-    this.parentNode = parentNode;
+    this.containerNode = containerNode;
     this.isStaticPosition = isStaticPosition;
+    this.pathHiddenElement = pathHiddenElement;
 
     this.rectInfo = this.createRectElement(
       canvas.domElement,
@@ -104,6 +108,17 @@ export class Rect<T> {
     );
     this.rectNode = this.rectInfo.nodeComponent;
     this.rectNode.isStaticPosition = isStaticPosition ?? false;
+
+    // this.rectNode.domElement?.addEventListener('pointerup', this.onPointerUp);
+    // this.rectNode.domElement?.addEventListener(
+    //   'pointerover',
+    //   this.onPointerOver
+    // );
+
+    // this.rectNode.domElement?.addEventListener(
+    //   'pointerleave',
+    //   this.onPointerLeave
+    // );
 
     this.rectNode.update = this.onUpdate(
       this.rectNode,
@@ -189,7 +204,7 @@ export class Rect<T> {
           thumb.label,
           thumb.thumbShape ?? 'circle',
           canvasUpdated,
-          parentNode
+          containerNode
         );
 
         if (!thumbNode.nodeComponent) {
@@ -267,7 +282,7 @@ export class Rect<T> {
     }
   }
 
-  private onReceiveDraggedConnection =
+  protected onReceiveDraggedConnection =
     (rectNode: IRectNodeComponent<T>) =>
     (thumbNode: IThumbNodeComponent<T>, component: INodeComponent<T>) => {
       // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
@@ -450,7 +465,7 @@ export class Rect<T> {
     return true;
   }
 
-  protected createRectElement(
+  protected createRectElement = (
     canvasElement: DOMElementNode,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -474,7 +489,7 @@ export class Rect<T> {
     disableInteraction?: boolean,
     canvasUpdated?: () => void,
     id?: string
-  ) {
+  ) => {
     /*
       draw svg path based on bbox of the hidden path
         
@@ -571,9 +586,13 @@ export class Rect<T> {
       nodeComponent: rectContainerElement,
       astElement,
     };
-  }
+  };
 
-  astElementOnPointerDown =
+  protected onPointerDown = (e: PointerEvent) => {
+    return false;
+  };
+
+  private astElementOnPointerDown =
     (
       rectContainerElement: IRectNodeComponent<T>,
       pathPoints: {
@@ -583,35 +602,45 @@ export class Rect<T> {
         height: number;
       }
     ) =>
-    (e: PointerEvent) => {
+    (event: PointerEvent) => {
       if (
         ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-          (e.target as HTMLElement)?.tagName
+          (event.target as HTMLElement)?.tagName
         ) >= 0
       )
         return;
 
-      e.stopPropagation();
+      event.stopPropagation();
+
+      if (this.onPointerDown(event)) {
+        return;
+      }
 
       if (rectContainerElement && this.canvas) {
         const elementRect = (
           rectContainerElement.domElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
 
-        const { x, y } = transformToCamera(e.clientX, e.clientY);
-        const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+        const { x, y } = transformCameraSpaceToWorldSpace(
+          event.clientX,
+          event.clientY
+        );
+        const rect = transformCameraSpaceToWorldSpace(
+          elementRect.x,
+          elementRect.y
+        );
         const bbox = this.getBBoxPath(pathPoints);
 
-        let parentCameraX = 0;
-        let parentCameraY = 0;
-        if (this.parentNode) {
-          parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
-          parentCameraY = this.parentNode.y - paddingRect; //+ 40;
+        let parentX = 0;
+        let parentY = 0;
+        if (this.containerNode) {
+          parentX = this.containerNode.x - paddingRect;
+          parentY = this.containerNode.y - paddingRect;
         }
 
         const interactionInfoResult = pointerDown(
-          x - rectCamera.x + parentCameraX - (pathPoints.beginX - bbox.x),
-          y - rectCamera.y + parentCameraY - (pathPoints.beginY - bbox.y),
+          x - rect.x + parentX - (pathPoints.beginX - bbox.x),
+          y - rect.y + parentY - (pathPoints.beginY - bbox.y),
           rectContainerElement,
           this.canvas.domElement,
           this.interactionStateMachine
@@ -624,7 +653,7 @@ export class Rect<T> {
       }
     };
 
-  getBBoxPath(pathPoints: {
+  protected getBBoxPath(pathPoints: {
     beginX: number;
     beginY: number;
     width: number;
@@ -638,7 +667,7 @@ export class Rect<T> {
     };
   }
 
-  onUpdate =
+  protected onUpdate =
     (
       rectContainerElement: IRectNodeComponent<T>,
       astElement: INodeComponent<T>,

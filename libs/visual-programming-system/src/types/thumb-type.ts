@@ -16,6 +16,7 @@ export const ThumbType = {
   EndConnectorBottom: 'EndConnectorBottom',
   StartConnectorCenter: 'StartConnectorCenter',
   EndConnectorCenter: 'EndConnectorCenter',
+  Center: 'Center',
 } as const;
 
 export type ThumbType = (typeof ThumbType)[keyof typeof ThumbType];

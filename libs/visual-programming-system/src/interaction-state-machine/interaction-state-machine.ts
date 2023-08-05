@@ -49,7 +49,6 @@ export interface InteractionTarget<T> {
   interactionInfo: IPointerDownResult;
 }
 
-
 //type GenericInteractionTarget = InteractionTarget<T>;
 //type GenericNodeComponent = INodeComponent<T>;
 
@@ -63,24 +62,25 @@ interface InterActionInfo<T> {
 }
 
 export interface InteractionStateMachine<T> {
-  interactionEventState : (
+  interactionEventState: (
     event: InteractionEvent,
     target: InteractionTarget<T>,
     element: INodeComponent<T>,
-    peek? : boolean
+    peek?: boolean
   ) => false | InterActionInfo<T>;
-  getCurrentInteractionState : () => {
-      state: InteractionState,
-      target: InteractionTarget<T> | undefined,
-      element: INodeComponent<T> | undefined,
+  getCurrentInteractionState: () => {
+    state: InteractionState;
+    target: InteractionTarget<T> | undefined;
+    element: INodeComponent<T> | undefined;
   };
-  setCurrentDropTarget : (dropTarget: INodeComponent<T>) => void;
-  clearDropTarget : (dropTarget: INodeComponent<T>) => void;
+  setCurrentDropTarget: (dropTarget: INodeComponent<T>) => void;
+  clearDropTarget: (dropTarget: INodeComponent<T>) => void;
   getCurrentDropTarget: () => INodeComponent<T> | undefined;
 }
 
-export const createInteractionStateMachine = <T>() : InteractionStateMachine<T> => { 
-
+export const createInteractionStateMachine = <
+  T
+>(): InteractionStateMachine<T> => {
   let interactionState = InteractionState.Idle;
   let interactionTarget: InteractionTarget<T> | undefined = undefined;
   let currentElement: INodeComponent<T> | undefined = undefined;
@@ -217,4 +217,4 @@ export const createInteractionStateMachine = <T>() : InteractionStateMachine<T> 
     clearDropTarget,
     getCurrentDropTarget,
   };
-}
+};

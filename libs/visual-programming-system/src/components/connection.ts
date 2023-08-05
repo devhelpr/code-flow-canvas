@@ -1,4 +1,4 @@
-import { transformToCamera } from '../camera';
+import { transformCameraSpaceToWorldSpace } from '../camera';
 import { paddingRect, totalPaddingRect } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
@@ -75,7 +75,7 @@ export class Connection<T> {
 
   pathHiddenElement: IElementNode<T> | null = null;
   isQuadratic = false;
-  parentNode?: INodeComponent<T>;
+  containerNode?: INodeComponent<T>;
 
   constructor(
     canvasElement: DOMElementNode,
@@ -95,7 +95,7 @@ export class Connection<T> {
     onCalculateControlPoints = onCalculateCubicBezierControlPoints,
     canvasUpdated?: () => void,
     id?: string,
-    parentNode?: INodeComponent<T>
+    containerNode?: INodeComponent<T>
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -111,7 +111,7 @@ export class Connection<T> {
     this.pathHiddenElement = pathHiddenElement;
     this.canvasElement = canvasElement;
     this.interactionStateMachine = interactionStateMachine;
-    this.parentNode = parentNode;
+    this.containerNode = containerNode;
 
     this.points = {
       beginX: startX,
@@ -314,24 +314,21 @@ export class Connection<T> {
 
       const bbox = this.getBBoxPath();
 
-      const { x, y } = transformToCamera(e.clientX, e.clientY);
-      const rectCamera = transformToCamera(elementRect.x, elementRect.y);
-      let parentCameraX = 0;
-      let parentCameraY = 0;
-      if (this.parentNode) {
-        parentCameraX = this.parentNode.x - paddingRect; //+ 40; // TODO : explain this 40 values???
-        parentCameraY = this.parentNode.y - paddingRect; //+ 40;
+      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+      const rect = transformCameraSpaceToWorldSpace(
+        elementRect.x,
+        elementRect.y
+      );
+      let parentX = 0;
+      let parentY = 0;
+      if (this.containerNode) {
+        parentX = this.containerNode.x - paddingRect;
+        parentY = this.containerNode.y - paddingRect;
       }
 
       const interactionInfoResult = pointerDown<T>(
-        x -
-          rectCamera.x -
-          (this.pathPoints.beginX - bbox.x - paddingRect) +
-          parentCameraX,
-        y -
-          rectCamera.y -
-          (this.pathPoints.beginY - bbox.y - paddingRect) +
-          parentCameraY,
+        x - rect.x - (this.pathPoints.beginX - bbox.x - paddingRect) + parentX,
+        y - rect.y - (this.pathPoints.beginY - bbox.y - paddingRect) + parentY,
         this.nodeComponent,
         this.canvasElement,
         this.interactionStateMachine

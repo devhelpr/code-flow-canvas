@@ -1,7 +1,8 @@
-import { setCamera, transformToCamera } from '../camera';
+import { setCamera, transformCameraSpaceToWorldSpace } from '../camera';
 import { QuadraticBezierConnection } from '../components/quadratic-bezier-connection';
 import { CubicBezierConnection } from '../components/qubic-bezier-connection';
 import { Rect } from '../components/rect';
+import { RectThumb } from '../components/rect-thumb';
 import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
@@ -166,7 +167,10 @@ export const createCanvasApp = <T>(
           if (interactionState.target?.id === canvas.id) {
             setCameraPosition(event.clientX, event.clientY);
           } else {
-            const { x, y } = transformToCamera(event.clientX, event.clientY);
+            const { x, y } = transformCameraSpaceToWorldSpace(
+              event.clientX,
+              event.clientY
+            );
 
             currentState.target.pointerMove &&
               currentState.target.pointerMove<T>(
@@ -212,7 +216,7 @@ export const createCanvasApp = <T>(
             const canvasRect = (
               canvas.domElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
-            const { x, y } = transformToCamera(
+            const { x, y } = transformCameraSpaceToWorldSpace(
               event.clientX, //- canvasRect.x,
               event.clientY //- canvasRect.y
             );
@@ -288,7 +292,7 @@ export const createCanvasApp = <T>(
             const canvasRect = (
               canvas.domElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
-            const { x, y } = transformToCamera(
+            const { x, y } = transformCameraSpaceToWorldSpace(
               event.clientX - canvasRect.x,
               event.clientY - canvasRect.y
             );
@@ -559,7 +563,7 @@ export const createCanvasApp = <T>(
       disableManualResize?: boolean,
       id?: string,
       nodeInfo?: T,
-      parentNode?: INodeComponent<T>,
+      containerNode?: INodeComponent<T>,
       isStaticPosition?: boolean
     ) => {
       const rectInstance = new Rect<T>(
@@ -580,7 +584,56 @@ export const createCanvasApp = <T>(
         disableManualResize,
         onCanvasUpdated,
         id,
-        parentNode,
+        containerNode,
+        isStaticPosition
+      );
+      if (!rectInstance || !rectInstance.nodeComponent) {
+        throw new Error('rectInstance is undefined');
+      }
+      rectInstance.nodeComponent.nodeInfo = nodeInfo;
+      if (onCanvasUpdated) {
+        onCanvasUpdated();
+      }
+      return rectInstance;
+    },
+    createRectThumb: (
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      text?: string,
+      thumbs?: IThumb[],
+      markup?: string | INodeComponent<T>,
+      layoutProperties?: {
+        classNames?: string;
+      },
+      hasStaticWidthHeight?: boolean,
+      disableInteraction?: boolean,
+      disableManualResize?: boolean,
+      id?: string,
+      nodeInfo?: T,
+      containerNode?: INodeComponent<T>,
+      isStaticPosition?: boolean
+    ) => {
+      const rectInstance = new RectThumb<T>(
+        canvas as unknown as INodeComponent<T>,
+        interactionStateMachine,
+        pathHiddenElement,
+        elements,
+        x,
+        y,
+        width,
+        height,
+        text,
+        thumbs,
+        markup,
+        layoutProperties,
+        hasStaticWidthHeight,
+        disableInteraction,
+        disableManualResize,
+        onCanvasUpdated,
+        id,
+        containerNode,
         isStaticPosition
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
@@ -604,7 +657,7 @@ export const createCanvasApp = <T>(
       isControlled?: boolean,
       isDashed = false,
       id?: string,
-      parentNode?: INodeComponent<T>
+      containerNode?: INodeComponent<T>
     ) => {
       const curve = new CubicBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
@@ -623,7 +676,7 @@ export const createCanvasApp = <T>(
         isDashed,
         onCanvasUpdated,
         id,
-        parentNode
+        containerNode
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -640,7 +693,7 @@ export const createCanvasApp = <T>(
       isControlled?: boolean,
       isDashed = false,
       id?: string,
-      parentNode?: INodeComponent<T>
+      containerNode?: INodeComponent<T>
     ) => {
       const curve = new QuadraticBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
@@ -657,7 +710,7 @@ export const createCanvasApp = <T>(
         isDashed,
         onCanvasUpdated,
         id,
-        parentNode
+        containerNode
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();

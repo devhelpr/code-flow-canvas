@@ -24,7 +24,7 @@ import { getShowObject } from '../nodes/show-object';
 import { getSum } from '../nodes/sum';
 import { NodeInfo } from '../types/node-info';
 import { getCanvasNode } from '../nodes/canvas-node';
-import { e } from 'vitest/dist/index-5aad25c1';
+import { getState } from '../nodes/state';
 
 export interface NavbarComponentsProps {
   selectNodeType: HTMLSelectElement;
@@ -101,6 +101,9 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
           } else if (nodeType === 'canvas-node') {
             const canvasNode = getCanvasNode(props.canvasUpdated);
             canvasNode.createVisualNode(props.canvasApp, startX, startY);
+          } else if (nodeType === 'state') {
+            const state = getState(props.canvasUpdated);
+            state.createVisualNode(props.canvasApp, startX, startY);
           }
           return false;
         }}

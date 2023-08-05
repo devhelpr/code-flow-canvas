@@ -1,4 +1,4 @@
-import { transformToCamera } from '../camera';
+import { transformCameraSpaceToWorldSpace } from '../camera';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -62,8 +62,14 @@ export const createNodeElement = <T>(
             nodeComponent.domElement as unknown as HTMLElement | SVGElement
           ).getBoundingClientRect();
 
-          const { x, y } = transformToCamera(e.clientX, e.clientY);
-          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            e.clientX,
+            e.clientY
+          );
+          const rectCamera = transformCameraSpaceToWorldSpace(
+            elementRect.x,
+            elementRect.y
+          );
 
           const helper = pointerDown(
             x - rectCamera.x,

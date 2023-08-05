@@ -160,6 +160,13 @@ export const thumbInitialPosition = <T>(
     };
   }
 
+  if (thumbType === ThumbType.Center) {
+    return {
+      x: '50%',
+      y: '50%',
+    };
+  }
+
   throw new Error('Thumb type not supported');
 };
 
@@ -276,6 +283,27 @@ export const thumbPosition = <T>(
           thumbType,
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
+          index
+        ) + thumbOffsetY,
+    };
+  }
+
+  if (thumbType === ThumbType.Center) {
+    return {
+      x:
+        calculateConnectorX(
+          thumbType,
+          (rectNode?.width ?? 0) / 2,
+          (rectNode?.height ?? 0) / 2,
+          index
+        ) +
+        thumbOffsetX +
+        thumbRadius,
+      y:
+        calculateConnectorY(
+          thumbType,
+          (rectNode?.width ?? 0) / 2,
+          (rectNode?.height ?? 0) / 2,
           index
         ) + thumbOffsetY,
     };

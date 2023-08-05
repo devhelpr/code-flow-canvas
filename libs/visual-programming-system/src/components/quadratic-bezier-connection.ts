@@ -37,7 +37,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     isDashed = false,
     canvasUpdated?: () => void,
     id?: string,
-    parentNode?: INodeComponent<T>
+    containerNode?: INodeComponent<T>
   ) {
     super(
       canvas.domElement,
@@ -57,7 +57,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       undefined,
       canvasUpdated,
       id,
-      parentNode
+      containerNode
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');

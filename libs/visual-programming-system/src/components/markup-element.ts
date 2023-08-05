@@ -7,7 +7,7 @@ import {
 import { IPointerDownResult } from '../interfaces/pointers';
 import { pointerDown } from './events/pointer-events';
 import { createNodeComponent } from '../utils/create-node-component';
-import { transformToCamera } from '../camera';
+import { transformCameraSpaceToWorldSpace } from '../camera';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
 import { InteractionStateMachine } from '../interaction-state-machine';
 
@@ -51,8 +51,14 @@ export const createMarkupElement = <T>(
             | SVGElement;
           const elementRect = domElement.getBoundingClientRect();
 
-          const { x, y } = transformToCamera(e.clientX, e.clientY);
-          const rectCamera = transformToCamera(elementRect.x, elementRect.y);
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            e.clientX,
+            e.clientY
+          );
+          const rectCamera = transformCameraSpaceToWorldSpace(
+            elementRect.x,
+            elementRect.y
+          );
 
           const helper = pointerDown(
             x - rectCamera.x,
