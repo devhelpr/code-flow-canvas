@@ -18,25 +18,17 @@ import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
-import { onCalculateControlPoints as onCalculateCubicBezierControlPoints } from './utils/calculate-control-points';
-
-// TODO : make the "50" a constant or incoming parameter
-function getPoint(x: number, y: number) {
-  const pt = new DOMPoint();
-  pt.x = x; // + thumbTransformX;
-  pt.y = y; // + thumbTransformY;
-
-  return {
-    x: pt.x,
-    y: pt.y,
-  };
-}
+import {
+  onCalculateControlPoints as onCalculateCubicBezierControlPoints,
+  onGetConnectionToThumbOffset,
+} from './utils/calculate-control-points';
 
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
   points = {
     beginX: 0,
     beginY: 0,
+
     cx1: 0,
     cy1: 0,
     cx2: 0,
@@ -47,17 +39,7 @@ export class Connection<T> {
   orgPoints = {
     beginX: 0,
     beginY: 0,
-    cx1: 0,
-    cy1: 0,
-    cx2: 0,
-    cy2: 0,
-    endX: 0,
-    endY: 0,
-  };
 
-  pathPoints = {
-    beginX: 0,
-    beginY: 0,
     cx1: 0,
     cy1: 0,
     cx2: 0,
@@ -116,28 +98,13 @@ export class Connection<T> {
     this.points = {
       beginX: startX,
       beginY: startY,
+
       cx1: controlPoint1X,
       cy1: controlPoint1Y,
       cx2: controlPoint2X,
       cy2: controlPoint2Y,
       endX: endX,
       endY: endY,
-    };
-
-    const begin = getPoint(this.points.beginX, this.points.beginY);
-    const cPoint1 = getPoint(this.points.cx1, this.points.cy1);
-    const cPoint2 = getPoint(this.points.cx2, this.points.cy2);
-    const end = getPoint(this.points.endX, this.points.endY);
-
-    this.pathPoints = {
-      beginX: begin.x,
-      beginY: begin.y,
-      cx1: cPoint1.x,
-      cy1: cPoint1.y,
-      cx2: cPoint2.x,
-      cy2: cPoint2.y,
-      endX: end.x,
-      endY: end.y,
     };
 
     this.svgParent = createNSElement(
@@ -177,12 +144,12 @@ export class Connection<T> {
 
     if (isQuadratic) {
       this.nodeComponent.controlPoints = [
-        { x: this.pathPoints.cx1, y: this.pathPoints.cy1 },
+        { x: this.points.cx1, y: this.points.cy1 },
       ];
     } else {
       this.nodeComponent.controlPoints = [
-        { x: this.pathPoints.cx1, y: this.pathPoints.cy1 },
-        { x: this.pathPoints.cx2, y: this.pathPoints.cy2 },
+        { x: this.points.cx1, y: this.points.cy1 },
+        { x: this.points.cx2, y: this.points.cy2 },
       ];
     }
     const bbox = this.getBBoxPath();
@@ -192,6 +159,19 @@ export class Connection<T> {
     svgParentElement.style.height = `${bbox.height}px`;
     svgParentElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
+    const { offsetX: startOffsetX, offsetY: startOffsetY } =
+      onGetConnectionToThumbOffset(
+        ControlAndEndPointNodeType.start,
+        this.nodeComponent?.startNodeThumb?.thumbType ??
+          ThumbType.StartConnectorCenter
+      );
+    const { offsetX: endOffsetX, offsetY: endOffsetY } =
+      onGetConnectionToThumbOffset(
+        ControlAndEndPointNodeType.end,
+        this.nodeComponent?.endNodeThumb?.thumbType ??
+          ThumbType.EndConnectorCenter
+      );
+
     const dashedStroke = isDashed
       ? {
           'stroke-dasharray': '10,10',
@@ -199,18 +179,18 @@ export class Connection<T> {
       : undefined;
 
     const path = isQuadratic
-      ? `M${this.pathPoints.beginX - bbox.x} ${
-          this.pathPoints.beginY - bbox.y
-        } Q${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
-          this.pathPoints.endX - bbox.x
-        } ${this.pathPoints.endY - bbox.y}`
-      : `M${this.pathPoints.beginX - bbox.x} ${
-          this.pathPoints.beginY - bbox.y
-        } C${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
-          this.pathPoints.cx2 - bbox.x
-        } ${this.pathPoints.cy2 - bbox.y} ${this.pathPoints.endX - bbox.x} ${
-          this.pathPoints.endY - bbox.y
-        }`;
+      ? `M${this.points.beginX - bbox.x + startOffsetX} ${
+          this.points.beginY - bbox.y + startOffsetY
+        } Q${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y} ${
+          this.points.endX - bbox.x + endOffsetX
+        } ${this.points.endY - bbox.y + endOffsetY}`
+      : `M${this.points.beginX - bbox.x + startOffsetX} ${
+          this.points.beginY - bbox.y + startOffsetY
+        } C${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y} ${
+          this.points.cx2 - bbox.x
+        } ${this.points.cy2 - bbox.y} ${
+          this.points.endX - bbox.x + endOffsetX
+        } ${this.points.endY - bbox.y + endOffsetY}`;
 
     this.pathTransparentElement = createNSElement(
       'path',
@@ -247,19 +227,6 @@ export class Connection<T> {
     elements.set(this.nodeComponent.id, this.nodeComponent);
     this.nodeComponent.elements.set(this.pathElement.id, this.pathElement);
 
-    // this.nodeComponent.domElement.addEventListener(
-    //   'click',
-    //   () => {
-    //     console.log('CLICKED ON CONNECTION', this.nodeComponent?.id);
-    //     if (!this.nodeComponent) {
-    //       return;
-    //     }
-
-    //     setSelectNode(this.nodeComponent.id);
-    //   },
-    //   true
-    // );
-
     this.nodeComponent.update = this.onUpdate;
 
     this.nodeComponent.updateEnd = () => {
@@ -274,16 +241,29 @@ export class Connection<T> {
     this.nodeComponent.endY = 0;
   }
 
-  getBBoxPath() {
+  getBBoxPath(
+    startOffsetX: number,
+    startOffsetY: number,
+    endOffsetX: number,
+    endOffsetY: number
+  ) {
     if (this.isQuadratic && this.pathHiddenElement) {
-      (this.pathHiddenElement.domElement as any).setAttribute(
+      (this.pathHiddenElement.domElement as HTMLElement).setAttribute(
         'd',
-        `M${this.pathPoints.beginX} ${this.pathPoints.beginY} Q${this.pathPoints.cx1} ${this.pathPoints.cy1} ${this.pathPoints.endX} ${this.pathPoints.endY}`
+        `M${this.points.beginX + startOffsetX} ${
+          this.points.beginY + startOffsetY
+        } Q${this.points.cx1} ${this.points.cy1} ${
+          this.points.endX + endOffsetX
+        } ${this.points.endY + endOffsetY}`
       );
     } else {
-      (this.pathHiddenElement?.domElement as any).setAttribute(
+      (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
         'd',
-        `M${this.pathPoints.beginX} ${this.pathPoints.beginY} C${this.pathPoints.cx1} ${this.pathPoints.cy1} ${this.pathPoints.cx2} ${this.pathPoints.cy2}  ${this.pathPoints.endX} ${this.pathPoints.endY}`
+        `M${this.points.beginX + startOffsetX} ${
+          this.points.beginY + startOffsetY
+        } C${this.points.cx1} ${this.points.cy1} ${this.points.cx2} ${
+          this.points.cy2
+        }  ${this.points.endX + endOffsetX} ${this.points.endY + endOffsetY}`
       );
     }
     const bbox = (
@@ -312,13 +292,31 @@ export class Connection<T> {
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
-      const bbox = this.getBBoxPath();
+      const { offsetX: startOffsetX, offsetY: startOffsetY } =
+        onGetConnectionToThumbOffset(
+          ControlAndEndPointNodeType.start,
+          this.nodeComponent?.startNodeThumb?.thumbType ??
+            ThumbType.StartConnectorCenter
+        );
+      const { offsetX: endOffsetX, offsetY: endOffsetY } =
+        onGetConnectionToThumbOffset(
+          ControlAndEndPointNodeType.end,
+          this.nodeComponent?.endNodeThumb?.thumbType ??
+            ThumbType.EndConnectorCenter
+        );
+      const bbox = this.getBBoxPath(
+        startOffsetX,
+        startOffsetY,
+        endOffsetX,
+        endOffsetY
+      );
 
       const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
       const rect = transformCameraSpaceToWorldSpace(
         elementRect.x,
         elementRect.y
       );
+
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
@@ -327,8 +325,8 @@ export class Connection<T> {
       }
 
       const interactionInfoResult = pointerDown<T>(
-        x - rect.x - (this.pathPoints.beginX - bbox.x - paddingRect) + parentX,
-        y - rect.y - (this.pathPoints.beginY - bbox.y - paddingRect) + parentY,
+        x - rect.x - (this.points.beginX - bbox.x - paddingRect) + parentX,
+        y - rect.y - (this.points.beginY - bbox.y - paddingRect) + parentY,
         this.nodeComponent,
         this.canvasElement,
         this.interactionStateMachine
@@ -397,6 +395,7 @@ export class Connection<T> {
 
         this.points.beginX = start.x;
         this.points.beginY = start.y;
+
         this.points.cx1 = start.cx;
         this.points.cy1 = start.cy;
         skipChecks = true;
@@ -417,6 +416,7 @@ export class Connection<T> {
         );
         this.points.endX = end.x;
         this.points.endY = end.y;
+
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
         skipChecks = true;
@@ -458,6 +458,7 @@ export class Connection<T> {
         );
         this.points.beginX = start.x;
         this.points.beginY = start.y;
+
         this.points.cx1 = start.cx;
         this.points.cy1 = start.cy;
       } else if (connection.endNode && initiator.id === connection.endNode.id) {
@@ -473,6 +474,7 @@ export class Connection<T> {
         );
         this.points.endX = end.x;
         this.points.endY = end.y;
+
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
       } else {
@@ -607,11 +609,6 @@ export class Connection<T> {
       }
     }
 
-    const begin = getPoint(this.points.beginX, this.points.beginY);
-    const cPoint1 = getPoint(this.points.cx1, this.points.cy1);
-    const cPoint2 = getPoint(this.points.cx2, this.points.cy2);
-    const end = getPoint(this.points.endX, this.points.endY);
-
     if (
       this.nodeComponent &&
       initiator &&
@@ -635,16 +632,6 @@ export class Connection<T> {
         );
       }
     }
-    this.pathPoints = {
-      beginX: begin.x,
-      beginY: begin.y,
-      cx1: cPoint1.x,
-      cy1: cPoint1.y,
-      cx2: cPoint2.x,
-      cy2: cPoint2.y,
-      endX: end.x,
-      endY: end.y,
-    };
 
     if (this.nodeComponent && !this.nodeComponent.controlPoints) {
       if (this.isQuadratic) {
@@ -671,26 +658,46 @@ export class Connection<T> {
       }
     }
 
-    const bbox = this.getBBoxPath();
+    const { offsetX: startOffsetX, offsetY: startOffsetY } =
+      onGetConnectionToThumbOffset(
+        ControlAndEndPointNodeType.start,
+        this.nodeComponent?.startNodeThumb?.thumbType ??
+          ThumbType.StartConnectorCenter
+      );
+    const { offsetX: endOffsetX, offsetY: endOffsetY } =
+      onGetConnectionToThumbOffset(
+        ControlAndEndPointNodeType.end,
+        this.nodeComponent?.endNodeThumb?.thumbType ??
+          ThumbType.EndConnectorCenter
+      );
+
+    const bbox = this.getBBoxPath(
+      startOffsetX,
+      startOffsetY,
+      endOffsetX,
+      endOffsetY
+    );
     if (this.isQuadratic) {
-      const path = `M${this.pathPoints.beginX - bbox.x} ${
-        this.pathPoints.beginY - bbox.y
-      } Q${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y}  ${
-        this.pathPoints.endX - bbox.x
-      } ${this.pathPoints.endY - bbox.y}`;
+      const path = `M${this.points.beginX - bbox.x} ${
+        this.points.beginY - bbox.y
+      } Q${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y}  ${
+        this.points.endX - bbox.x
+      } ${this.points.endY - bbox.y}`;
+
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
       (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
         'd',
         path
       );
     } else {
-      const path = `M${this.pathPoints.beginX - bbox.x} ${
-        this.pathPoints.beginY - bbox.y
-      } C${this.pathPoints.cx1 - bbox.x} ${this.pathPoints.cy1 - bbox.y} ${
-        this.pathPoints.cx2 - bbox.x
-      } ${this.pathPoints.cy2 - bbox.y}  ${this.pathPoints.endX - bbox.x} ${
-        this.pathPoints.endY - bbox.y
-      }`;
+      const path = `M${this.points.beginX - bbox.x + startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      } C${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y} ${
+        this.points.cx2 - bbox.x
+      } ${this.points.cy2 - bbox.y}  ${
+        this.points.endX - bbox.x + endOffsetX
+      } ${this.points.endY - bbox.y + endOffsetY}`;
+
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
       (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
         'd',

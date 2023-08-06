@@ -19,6 +19,8 @@ import { createASTNodeElement, createElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
 import { ThumbNode } from './thumb';
 import {
+  calculateConnectorX,
+  calculateConnectorY,
   thumbInitialPosition,
   thumbOffsetX,
   thumbOffsetY,
@@ -755,16 +757,46 @@ export class Rect<T> {
         const endNode = (initiator as unknown as IConnectionNodeComponent<T>)
           .endNode;
 
+        /*
+            regarding below "magic numbers"...
+            for 2 connected expression-nodes this works
+            for others not
+            when a connection of 2 nodes gets clicked.. the start node gets moved...
+            .. expression nodes have a width of 200px
+
+
+          given:
+          - x,y coordinates of rect-nodes are top-left
+        
+          possible solutions
+          - use the connection coordinates (x,y,endX,endY)
+          => do negative transform from startThumb/endThumb to rect-node
+            .. works almost 
+            .. still a weird 30 offset
+            .. and if-condition are not correct
+            .. thumb-type Center is better.. but when clicking on the nodes.. it's not correct
+          */
         if (startThumb && startNode && startNode.id === target.id) {
-          const tx = startThumb.x;
-          const ty = startThumb.y;
-          this.points.beginX = x - tx - 150;
+          const tx = calculateConnectorX(
+            startThumb?.thumbType ?? ThumbType.TopLeft,
+            startNode?.width ?? 0,
+            startNode?.height ?? 0,
+            startThumb?.thumbIndex ?? 0
+          );
+          const ty = calculateConnectorY(
+            startThumb?.thumbType ?? ThumbType.TopLeft,
+            startNode?.width ?? 0,
+            startNode?.height ?? 0,
+            startThumb?.thumbIndex ?? 0
+          );
+
+          this.points.beginX = x - tx; // - 30; // - (startNode?.width ?? 0) + 20 + 50; // where does "150" come from?
           this.points.beginY = y - ty;
         }
         if (endThumb && endNode && endNode.id === target.id) {
           const tx = endThumb.x;
           const ty = endThumb.y;
-          this.points.beginX = x - tx - 20 + 50;
+          this.points.beginX = x - tx; // + 30; // where do "20" and "50" come from?
           this.points.beginY = y - ty;
         }
 

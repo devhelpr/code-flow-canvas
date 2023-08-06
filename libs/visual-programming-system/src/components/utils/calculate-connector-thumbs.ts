@@ -35,6 +35,9 @@ export const calculateConnectorX = (
   if (thumbType === ThumbType.StartConnectorBottom) {
     return width / 2;
   }
+  if (thumbType === ThumbType.Center) {
+    return width / 2;
+  }
   return 0;
 };
 
@@ -46,7 +49,8 @@ export const calculateConnectorY = (
 ) => {
   if (
     thumbType === ThumbType.StartConnectorCenter ||
-    thumbType === ThumbType.EndConnectorCenter
+    thumbType === ThumbType.EndConnectorCenter ||
+    thumbType === ThumbType.Center
   ) {
     return height / 2;
   }
@@ -112,14 +116,13 @@ export const thumbInitialPosition = <T>(
     return {
       x: '0%',
       y: `${
-        thumbRadius +
+        //thumbRadius +
         calculateConnectorY(
           thumbType,
           rectNode.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        (offsetY ?? 0)
+        ) + (offsetY ?? 0)
       }px`,
     };
   }
@@ -141,14 +144,13 @@ export const thumbInitialPosition = <T>(
     return {
       x: '100%',
       y: `${
-        thumbRadius +
+        //thumbRadius +
         calculateConnectorY(
           thumbType,
           rectNode.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        (offsetY ?? 0)
+        ) + (offsetY ?? 0)
       }px`,
     };
   }
@@ -208,8 +210,8 @@ export const thumbPosition = <T>(
           rectNode?.height ?? 0,
           index
         ) +
-        thumbOffsetY -
-        thumbRadius +
+        thumbOffsetY + // -
+        //thumbRadius +
         (offsetY ?? 0),
     };
   }
@@ -225,9 +227,8 @@ export const thumbPosition = <T>(
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        thumbOffsetX -
-        thumbRadius,
+        ) + thumbOffsetX, // -
+      //thumbRadius,
       y:
         calculateConnectorY(
           thumbType,
@@ -258,9 +259,8 @@ export const thumbPosition = <T>(
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        thumbOffsetY +
-        thumbRadius,
+        ) + thumbOffsetY, // +
+      //thumbRadius,
     };
   }
 
@@ -275,9 +275,8 @@ export const thumbPosition = <T>(
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        thumbOffsetX +
-        thumbRadius,
+        ) + thumbOffsetX, // +
+      //thumbRadius,
       y:
         calculateConnectorY(
           thumbType,
@@ -296,16 +295,17 @@ export const thumbPosition = <T>(
           (rectNode?.width ?? 0) / 2,
           (rectNode?.height ?? 0) / 2,
           index
-        ) +
-        thumbOffsetX +
-        thumbRadius,
+        ) + thumbOffsetX,
+      // ) +
+      // thumbOffsetX +
+      // thumbRadius,
       y:
         calculateConnectorY(
           thumbType,
           (rectNode?.width ?? 0) / 2,
           (rectNode?.height ?? 0) / 2,
           index
-        ) + thumbOffsetY,
+        ) + thumbOffsetY, // + thumbOffsetY,
     };
   }
 
