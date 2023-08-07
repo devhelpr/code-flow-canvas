@@ -148,7 +148,6 @@ export const onQuadraticCalculateControlPoints = <T>(
         rectNode.y,
         thumbOffsetY
       );
-      //y = y - connectionToThumbDistance * 3;
       const { distance, thumbFactor } = getFactor(
         x,
         y,
@@ -167,9 +166,6 @@ export const onQuadraticCalculateControlPoints = <T>(
         nodeType,
       };
     }
-
-    //x = x + connectionToThumbDistance * 3;
-
     const { distance, thumbFactor } = getFactor(
       x,
       y,
@@ -210,7 +206,6 @@ export const onQuadraticCalculateControlPoints = <T>(
       (thumbOffsetY ?? 0);
 
     if (thumbType === ThumbType.EndConnectorTop) {
-      //y = y - connectionToThumbDistance * 3;
       const { distance, thumbFactor } = getFactor(
         x,
         y,

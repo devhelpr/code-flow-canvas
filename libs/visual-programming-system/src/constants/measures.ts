@@ -8,5 +8,5 @@ export const totalPaddingRect = paddingRect * 2;
 export const thumbFontSizeClass = 'text-[18px]';
 export const thumbTextBaseSizeClass = 'text-base-[22px]';
 export const thumbInnerCircleSizeClasses = 'w-[24px] h-[24px]'; // (thumbRadius*2)-2x3 .. 3px = border size of thumb circle
-export const connectionToThumbDistance = 10;
+export const connectionToThumbDistance = 6;
 export const controlPointCurvingDistance = 50;

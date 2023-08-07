@@ -1,9 +1,6 @@
-import { thumbRadius, totalPaddingRect } from '../../constants/measures';
+import { thumbRadius } from '../../constants/measures';
 import { INodeComponent } from '../../interfaces/element';
 import { ThumbType } from '../../types/thumb-type';
-
-export const thumbOffsetX = 0; // -thumbWidth / 2 + thumbRadius;
-export const thumbOffsetY = 0; //-thumbHeight / 2 + thumbRadius;
 
 export const calculateConnectorX = (
   thumbType: ThumbType,
@@ -18,10 +15,10 @@ export const calculateConnectorX = (
     return width;
   }
 
-  if (
-    thumbType === ThumbType.EndConnectorCenter ||
-    thumbType === ThumbType.EndConnectorLeft
-  ) {
+  if (thumbType === ThumbType.EndConnectorCenter) {
+    return 0;
+  }
+  if (thumbType === ThumbType.EndConnectorLeft) {
     return 0;
   }
 
@@ -59,7 +56,7 @@ export const calculateConnectorY = (
     thumbType === ThumbType.StartConnectorRight ||
     thumbType === ThumbType.EndConnectorLeft
   ) {
-    return 30 * (index ?? 0);
+    return 30 * (index ?? 0) + thumbRadius;
   }
 
   if (thumbType === ThumbType.EndConnectorTop) {
@@ -76,104 +73,6 @@ export const calculateConnectorY = (
   return 0;
 };
 
-// export const thumbInitialPosition = <T>(
-//   rectNode: INodeComponent<T>,
-//   thumbType: ThumbType,
-//   index?: number,
-//   offsetY?: number
-// ) => {
-//   if (thumbType === ThumbType.TopLeft) {
-//     return { x: '0%', y: '0%' };
-//   }
-//   if (thumbType === ThumbType.TopRight) {
-//     return { x: '100%', y: '0%' };
-//   }
-//   if (thumbType === ThumbType.BottomLeft) {
-//     return { x: '0%', y: '100%' };
-//   }
-//   if (thumbType === ThumbType.BottomRight) {
-//     return {
-//       x: '100%',
-//       y: '100%',
-//     };
-//   }
-
-//   if (thumbType === ThumbType.EndConnectorTop) {
-//     return {
-//       x: '50%',
-//       y: '0%',
-//     };
-//   }
-
-//   if (thumbType === ThumbType.EndConnectorCenter) {
-//     return {
-//       x: '0%',
-//       y: '50%',
-//     };
-//   }
-
-//   if (thumbType === ThumbType.EndConnectorLeft) {
-//     return {
-//       x: '0%',
-//       y: `${
-//         thumbRadius +
-//         calculateConnectorY(
-//           thumbType,
-//           rectNode.width ?? 0,
-//           rectNode?.height ?? 0,
-//           index
-//         ) +
-//         (offsetY ?? 0)
-//       }px`,
-//     };
-//   }
-
-//   if (thumbType === ThumbType.StartConnectorTop) {
-//     return {
-//       x: '50%',
-//       y: '0%',
-//     };
-//   }
-//   if (thumbType === ThumbType.StartConnectorBottom) {
-//     return {
-//       x: '50%',
-//       y: '100%',
-//     };
-//   }
-
-//   if (thumbType === ThumbType.StartConnectorRight) {
-//     return {
-//       x: '100%',
-//       y: `${
-//         thumbRadius +
-//         calculateConnectorY(
-//           thumbType,
-//           rectNode.width ?? 0,
-//           rectNode?.height ?? 0,
-//           index
-//         ) +
-//         (offsetY ?? 0)
-//       }px`,
-//     };
-//   }
-
-//   if (thumbType === ThumbType.StartConnectorCenter) {
-//     return {
-//       x: '100%',
-//       y: '50%',
-//     };
-//   }
-
-//   if (thumbType === ThumbType.Center) {
-//     return {
-//       x: '50%',
-//       y: '50%',
-//     };
-//   }
-
-//   throw new Error('Thumb type not supported');
-// };
-
 export const thumbPosition = <T>(
   rectNode: INodeComponent<T>,
   thumbType: ThumbType,
@@ -181,83 +80,70 @@ export const thumbPosition = <T>(
   offsetY?: number
 ) => {
   if (thumbType === ThumbType.TopLeft) {
-    return { x: thumbOffsetX, y: thumbOffsetY };
+    return { x: 0, y: 0 };
   }
   if (thumbType === ThumbType.TopRight) {
-    return { x: thumbOffsetX + (rectNode?.width ?? 0), y: thumbOffsetY };
+    return { x: rectNode?.width ?? 0, y: 0 };
   }
   if (thumbType === ThumbType.BottomLeft) {
-    return { x: thumbOffsetX, y: thumbOffsetY + (rectNode?.height ?? 0) };
+    return { x: 0, y: rectNode?.height ?? 0 };
   }
   if (thumbType === ThumbType.BottomRight) {
     return {
-      x: thumbOffsetX + (rectNode?.width ?? 0),
-      y: thumbOffsetY + (rectNode?.height ?? 0),
+      x: rectNode?.width ?? 0,
+      y: rectNode?.height ?? 0,
     };
   }
 
   if (thumbType === ThumbType.EndConnectorTop) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
       y:
         calculateConnectorY(
           thumbType,
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        thumbOffsetY + // -
-        //thumbRadius +
-        (offsetY ?? 0),
+        ) + (offsetY ?? 0),
     };
   }
 
   if (thumbType === ThumbType.EndConnectorLeft) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX, // -
-      //thumbRadius,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
       y:
         calculateConnectorY(
           thumbType,
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        thumbOffsetY +
-        thumbRadius +
-        (offsetY ?? 0),
+        ) + (offsetY ?? 0),
     };
   } else if (thumbType === ThumbType.EndConnectorCenter) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX, // -
-      //thumbRadius,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
       y:
         calculateConnectorY(
           thumbType,
           rectNode?.width ?? 0,
           rectNode?.height ?? 0,
           index
-        ) +
-        thumbOffsetY +
-        (offsetY ?? 0),
+        ) + (offsetY ?? 0),
     };
   }
 
@@ -266,82 +152,67 @@ export const thumbPosition = <T>(
     thumbType === ThumbType.StartConnectorBottom
   ) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetY, // +
-      //thumbRadius,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   }
 
   if (thumbType === ThumbType.StartConnectorRight) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) +
-        thumbOffsetY +
-        thumbRadius,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   } else if (thumbType === ThumbType.StartConnectorCenter) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX, // +
-      //thumbRadius,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetY,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   }
 
   if (thumbType === ThumbType.Center) {
     return {
-      x:
-        calculateConnectorX(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetX,
-      // ) +
-      // thumbOffsetX +
-      // thumbRadius,
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + thumbOffsetY, // + thumbOffsetY,
+      x: calculateConnectorX(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   }
 

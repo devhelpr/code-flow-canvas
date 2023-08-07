@@ -21,9 +21,6 @@ import { ThumbNode } from './thumb';
 import {
   calculateConnectorX,
   calculateConnectorY,
-  //thumbInitialPosition,
-  thumbOffsetX,
-  thumbOffsetY,
   thumbPosition,
 } from './utils/calculate-connector-thumbs';
 import { getPoint } from './utils/get-point';
@@ -96,8 +93,6 @@ export class Rect<T> {
       heightHelper,
       pathHiddenElement,
       text,
-      thumbOffsetX,
-      thumbOffsetY,
       (thumbType: ThumbType, index?: number, offsetY?: number) => {
         return thumbPosition<T>(this.rectNode!, thumbType, index, offsetY);
       },
@@ -478,8 +473,7 @@ export class Rect<T> {
     height: number,
     pathHiddenElement: IElementNode<T>,
     text?: string,
-    thumbOffsetX?: number,
-    thumbOffsetY?: number,
+
     getThumbPosition?: (
       thumbType: ThumbType,
       index?: number,
