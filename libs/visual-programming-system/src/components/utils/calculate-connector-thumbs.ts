@@ -1,4 +1,4 @@
-import { thumbRadius } from '../../constants/measures';
+import { thumbRadius, totalPaddingRect } from '../../constants/measures';
 import { INodeComponent } from '../../interfaces/element';
 import { ThumbType } from '../../types/thumb-type';
 
@@ -76,101 +76,103 @@ export const calculateConnectorY = (
   return 0;
 };
 
-export const thumbInitialPosition = <T>(
-  rectNode: INodeComponent<T>,
-  thumbType: ThumbType,
-  index?: number,
-  offsetY?: number
-) => {
-  if (thumbType === ThumbType.TopLeft) {
-    return { x: '0%', y: '0%' };
-  }
-  if (thumbType === ThumbType.TopRight) {
-    return { x: '100%', y: '0%' };
-  }
-  if (thumbType === ThumbType.BottomLeft) {
-    return { x: '0%', y: '100%' };
-  }
-  if (thumbType === ThumbType.BottomRight) {
-    return {
-      x: '100%',
-      y: '100%',
-    };
-  }
+// export const thumbInitialPosition = <T>(
+//   rectNode: INodeComponent<T>,
+//   thumbType: ThumbType,
+//   index?: number,
+//   offsetY?: number
+// ) => {
+//   if (thumbType === ThumbType.TopLeft) {
+//     return { x: '0%', y: '0%' };
+//   }
+//   if (thumbType === ThumbType.TopRight) {
+//     return { x: '100%', y: '0%' };
+//   }
+//   if (thumbType === ThumbType.BottomLeft) {
+//     return { x: '0%', y: '100%' };
+//   }
+//   if (thumbType === ThumbType.BottomRight) {
+//     return {
+//       x: '100%',
+//       y: '100%',
+//     };
+//   }
 
-  if (thumbType === ThumbType.EndConnectorTop) {
-    return {
-      x: '50%',
-      y: '0%',
-    };
-  }
+//   if (thumbType === ThumbType.EndConnectorTop) {
+//     return {
+//       x: '50%',
+//       y: '0%',
+//     };
+//   }
 
-  if (thumbType === ThumbType.EndConnectorCenter) {
-    return {
-      x: '0%',
-      y: '50%',
-    };
-  }
+//   if (thumbType === ThumbType.EndConnectorCenter) {
+//     return {
+//       x: '0%',
+//       y: '50%',
+//     };
+//   }
 
-  if (thumbType === ThumbType.EndConnectorLeft) {
-    return {
-      x: '0%',
-      y: `${
-        //thumbRadius +
-        calculateConnectorY(
-          thumbType,
-          rectNode.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + (offsetY ?? 0)
-      }px`,
-    };
-  }
+//   if (thumbType === ThumbType.EndConnectorLeft) {
+//     return {
+//       x: '0%',
+//       y: `${
+//         thumbRadius +
+//         calculateConnectorY(
+//           thumbType,
+//           rectNode.width ?? 0,
+//           rectNode?.height ?? 0,
+//           index
+//         ) +
+//         (offsetY ?? 0)
+//       }px`,
+//     };
+//   }
 
-  if (thumbType === ThumbType.StartConnectorTop) {
-    return {
-      x: '50%',
-      y: '0%',
-    };
-  }
-  if (thumbType === ThumbType.StartConnectorBottom) {
-    return {
-      x: '50%',
-      y: '100%',
-    };
-  }
+//   if (thumbType === ThumbType.StartConnectorTop) {
+//     return {
+//       x: '50%',
+//       y: '0%',
+//     };
+//   }
+//   if (thumbType === ThumbType.StartConnectorBottom) {
+//     return {
+//       x: '50%',
+//       y: '100%',
+//     };
+//   }
 
-  if (thumbType === ThumbType.StartConnectorRight) {
-    return {
-      x: '100%',
-      y: `${
-        //thumbRadius +
-        calculateConnectorY(
-          thumbType,
-          rectNode.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + (offsetY ?? 0)
-      }px`,
-    };
-  }
+//   if (thumbType === ThumbType.StartConnectorRight) {
+//     return {
+//       x: '100%',
+//       y: `${
+//         thumbRadius +
+//         calculateConnectorY(
+//           thumbType,
+//           rectNode.width ?? 0,
+//           rectNode?.height ?? 0,
+//           index
+//         ) +
+//         (offsetY ?? 0)
+//       }px`,
+//     };
+//   }
 
-  if (thumbType === ThumbType.StartConnectorCenter) {
-    return {
-      x: '100%',
-      y: '50%',
-    };
-  }
+//   if (thumbType === ThumbType.StartConnectorCenter) {
+//     return {
+//       x: '100%',
+//       y: '50%',
+//     };
+//   }
 
-  if (thumbType === ThumbType.Center) {
-    return {
-      x: '50%',
-      y: '50%',
-    };
-  }
+//   if (thumbType === ThumbType.Center) {
+//     return {
+//       x: '50%',
+//       y: '50%',
+//     };
+//   }
 
-  throw new Error('Thumb type not supported');
-};
+//   throw new Error('Thumb type not supported');
+// };
 
 export const thumbPosition = <T>(
   rectNode: INodeComponent<T>,
@@ -216,10 +218,28 @@ export const thumbPosition = <T>(
     };
   }
 
-  if (
-    thumbType === ThumbType.EndConnectorLeft ||
-    thumbType === ThumbType.EndConnectorCenter
-  ) {
+  if (thumbType === ThumbType.EndConnectorLeft) {
+    return {
+      x:
+        calculateConnectorX(
+          thumbType,
+          rectNode?.width ?? 0,
+          rectNode?.height ?? 0,
+          index
+        ) + thumbOffsetX, // -
+      //thumbRadius,
+      y:
+        calculateConnectorY(
+          thumbType,
+          rectNode?.width ?? 0,
+          rectNode?.height ?? 0,
+          index
+        ) +
+        thumbOffsetY +
+        thumbRadius +
+        (offsetY ?? 0),
+    };
+  } else if (thumbType === ThumbType.EndConnectorCenter) {
     return {
       x:
         calculateConnectorX(
@@ -264,10 +284,26 @@ export const thumbPosition = <T>(
     };
   }
 
-  if (
-    thumbType === ThumbType.StartConnectorRight ||
-    thumbType === ThumbType.StartConnectorCenter
-  ) {
+  if (thumbType === ThumbType.StartConnectorRight) {
+    return {
+      x:
+        calculateConnectorX(
+          thumbType,
+          rectNode?.width ?? 0,
+          rectNode?.height ?? 0,
+          index
+        ) + thumbOffsetX,
+      y:
+        calculateConnectorY(
+          thumbType,
+          rectNode?.width ?? 0,
+          rectNode?.height ?? 0,
+          index
+        ) +
+        thumbOffsetY +
+        thumbRadius,
+    };
+  } else if (thumbType === ThumbType.StartConnectorCenter) {
     return {
       x:
         calculateConnectorX(

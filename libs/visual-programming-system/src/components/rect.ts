@@ -21,7 +21,7 @@ import { ThumbNode } from './thumb';
 import {
   calculateConnectorX,
   calculateConnectorY,
-  thumbInitialPosition,
+  //thumbInitialPosition,
   thumbOffsetX,
   thumbOffsetY,
   thumbPosition,
@@ -167,12 +167,13 @@ export class Rect<T> {
         if (!this.rectNode) {
           return;
         }
-        const { x, y } = thumbInitialPosition(
+        const { x, y } = thumbPosition(
           this.rectNode,
           thumb.thumbType,
           thumb.thumbIndex ?? 0,
           thumb.offsetY ?? 0
         );
+        console.log('thumb', x, y);
 
         const thumbNode = new ThumbNode<T>(
           this.rectNode.domElement,
@@ -636,8 +637,8 @@ export class Rect<T> {
         let parentX = 0;
         let parentY = 0;
         if (this.containerNode) {
-          parentX = this.containerNode.x - paddingRect;
-          parentY = this.containerNode.y - paddingRect;
+          parentX = this.containerNode.x;
+          parentY = this.containerNode.y;
         }
 
         const interactionInfoResult = pointerDown(
@@ -662,10 +663,10 @@ export class Rect<T> {
     height: number;
   }) {
     return {
-      x: pathPoints.beginX - paddingRect,
-      y: pathPoints.beginY - paddingRect,
-      width: pathPoints.width + totalPaddingRect,
-      height: pathPoints.height + totalPaddingRect,
+      x: pathPoints.beginX,
+      y: pathPoints.beginY,
+      width: pathPoints.width,
+      height: pathPoints.height,
     };
   }
 
@@ -778,13 +779,13 @@ export class Rect<T> {
           */
         if (startThumb && startNode && startNode.id === target.id) {
           const tx = calculateConnectorX(
-            startThumb?.thumbType ?? ThumbType.TopLeft,
+            startThumb?.thumbType ?? ThumbType.None,
             startNode?.width ?? 0,
             startNode?.height ?? 0,
             startThumb?.thumbIndex ?? 0
           );
           const ty = calculateConnectorY(
-            startThumb?.thumbType ?? ThumbType.TopLeft,
+            startThumb?.thumbType ?? ThumbType.None,
             startNode?.width ?? 0,
             startNode?.height ?? 0,
             startThumb?.thumbIndex ?? 0
@@ -794,8 +795,18 @@ export class Rect<T> {
           this.points.beginY = y - ty;
         }
         if (endThumb && endNode && endNode.id === target.id) {
-          const tx = endThumb.x;
-          const ty = endThumb.y;
+          const tx = calculateConnectorX(
+            endThumb?.thumbType ?? ThumbType.None,
+            endNode?.width ?? 0,
+            endNode?.height ?? 0,
+            endThumb?.thumbIndex ?? 0
+          );
+          const ty = calculateConnectorY(
+            endThumb?.thumbType ?? ThumbType.None,
+            endNode?.width ?? 0,
+            endNode?.height ?? 0,
+            endThumb?.thumbIndex ?? 0
+          );
           this.points.beginX = x - tx; // + 30; // where do "20" and "50" come from?
           this.points.beginY = y - ty;
         }

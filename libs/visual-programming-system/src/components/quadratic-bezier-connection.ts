@@ -18,6 +18,7 @@ import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
 import { ThumbNode } from './thumb';
+import { onQuadraticCalculateControlPoints } from './utils/calculate-quadratic-control-points';
 
 export class QuadraticBezierConnection<T> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
@@ -54,7 +55,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       pathHiddenElement,
       true,
       isDashed,
-      undefined,
+      onQuadraticCalculateControlPoints,
       canvasUpdated,
       id,
       containerNode

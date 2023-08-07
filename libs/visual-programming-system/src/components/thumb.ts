@@ -109,10 +109,10 @@ export class ThumbNode<T> {
           width: `${width ?? thumbWidth}px`,
           height: `${height ?? thumbHeight}px`,
           top: relativePositioned
-            ? `calc(${initialY} - ${(height ?? thumbHeight) / 2}px)`
+            ? `calc(${initialY}px - ${(height ?? thumbHeight) / 2}px)`
             : `-${thumbHalfHeight}px`,
           left: relativePositioned
-            ? `calc(${initialX} - ${(width ?? thumbWidth) / 2}px)`
+            ? `calc(${initialX}px - ${(width ?? thumbWidth) / 2}px)`
             : `-${thumbHalfWidth}px`,
         },
         width: width ?? thumbWidth,
@@ -389,11 +389,16 @@ export class ThumbNode<T> {
         const selectedNode = this.canvasElements?.get(
           selectedNodeId
         ) as unknown as INodeComponent<T>;
+        const connectionNode =
+          this.nodeComponent.thumbLinkedToNode?.nodeType === NodeType.Shape
+            ? this.nodeComponent.thumbLinkedToNode?.connections.find(
+                (c) => c.id === selectedNodeId
+              )
+            : undefined;
         if (
-          this.nodeComponent.thumbLinkedToNode &&
+          connectionNode &&
           selectedNode &&
           selectedNode.nodeType === NodeType.Connection &&
-          this.nodeComponent.thumbLinkedToNode.id === selectedNode.id &&
           this.canvas
         ) {
           const { x, y } = transformCameraSpaceToWorldSpace(

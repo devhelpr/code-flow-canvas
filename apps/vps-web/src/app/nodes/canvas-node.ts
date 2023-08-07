@@ -127,13 +127,13 @@ export const getCanvasNode = (updated?: () => void) => {
 
         const inputInstance = canvasAppInstance.createRect(
           -11,
-          thumbRadius - 0.5, //thumbRadius + 10 + 9.5,
+          2.5 + thumbRadius / 2, //thumbRadius + 10 + 9.5,
           1,
           1,
           undefined,
           [
             {
-              thumbType: ThumbType.StartConnectorCenter,
+              thumbType: ThumbType.StartConnectorRight,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
               //hidden: true,
@@ -142,7 +142,7 @@ export const getCanvasNode = (updated?: () => void) => {
               label: '#',
             },
             {
-              thumbType: ThumbType.EndConnectorCenter,
+              thumbType: ThumbType.EndConnectorLeft,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.end,
               thumbConstraint: 'value',
@@ -167,13 +167,13 @@ export const getCanvasNode = (updated?: () => void) => {
 
         const outputInstance = canvasAppInstance.createRect(
           630,
-          thumbRadius - 0.5, //thumbRadius + 10 + 9.5,
+          2.5 + thumbRadius / 2, //thumbRadius + 10 + 9.5,
           1,
           1,
           undefined,
           [
             {
-              thumbType: ThumbType.StartConnectorCenter,
+              thumbType: ThumbType.StartConnectorRight,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
               hidden: true,
@@ -182,7 +182,7 @@ export const getCanvasNode = (updated?: () => void) => {
               label: '#',
             },
             {
-              thumbType: ThumbType.EndConnectorCenter,
+              thumbType: ThumbType.EndConnectorLeft,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.end,
               thumbConstraint: 'value',

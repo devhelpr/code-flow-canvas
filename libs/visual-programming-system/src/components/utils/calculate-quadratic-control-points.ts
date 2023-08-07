@@ -34,7 +34,7 @@ const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   return { distance, thumbFactor };
 };
 
-export const onCalculateControlPoints = <T>(
+export const onQuadraticCalculateControlPoints = <T>(
   rectNode: IRectNodeComponent<T>,
   nodeType: ControlAndEndPointNodeType,
   thumbType: ThumbType,
@@ -48,7 +48,7 @@ export const onCalculateControlPoints = <T>(
     (connectedNode?.x ?? 0) +
     (connectedNode
       ? calculateConnectorX(
-          connectedNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
+          connectedNodeThumb?.thumbType ?? ThumbType.None,
           connectedNode.width ?? 0,
           connectedNode.height ?? 0,
           connectedNodeThumb?.thumbIndex
@@ -58,7 +58,7 @@ export const onCalculateControlPoints = <T>(
     (connectedNode?.y ?? 0) +
     (connectedNode
       ? calculateConnectorY(
-          connectedNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
+          connectedNodeThumb?.thumbType ?? ThumbType.None,
           connectedNode.width ?? 0,
           connectedNode.height ?? 0,
           connectedNodeThumb?.thumbIndex
@@ -121,15 +121,23 @@ export const onCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.Center) {
-      // x += (rectNode.width ?? 0) / 2;
-      // y += (rectNode.height ?? 0) / 2;
+      const { distance, thumbFactor } = getFactor(
+        x,
+        y,
+        connectedNodeX ?? 0,
+        connectedNodeY ?? 0
+      );
+      const centerX = ((connectedNodeX ?? 0) + x) / 2;
+      const centerY = ((connectedNodeY ?? 0) + y) / 2;
+
+      const cx = centerX + (35 * -((connectedNodeY ?? 0) - y)) / distance;
+      const cy = centerY + (35 * ((connectedNodeX ?? 0) - x)) / distance;
+
       return {
-        cpx: x,
-        cpy: y,
         x: x,
         y: y,
-        cx: x,
-        cy: y,
+        cx: cx,
+        cy: cy,
         nodeType,
       };
     } else if (thumbType === ThumbType.StartConnectorRight) {
@@ -220,11 +228,22 @@ export const onCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.Center) {
+      const { distance, thumbFactor } = getFactor(
+        x,
+        y,
+        connectedNodeX ?? 0,
+        connectedNodeY ?? 0
+      );
+      const centerX = ((connectedNodeX ?? 0) + x) / 2;
+      const centerY = ((connectedNodeY ?? 0) + y) / 2;
+
+      const cx = centerX + (1 * -((connectedNodeY ?? 0) - y) * 1) / distance;
+      const cy = centerY + (1 * ((connectedNodeX ?? 0) - x) * 1) / distance;
       return {
         x: x,
         y: y,
-        cx: x,
-        cy: y,
+        cx: cx,
+        cy: cy,
         nodeType,
       };
     }
@@ -249,56 +268,4 @@ export const onCalculateControlPoints = <T>(
   }
 
   throw new Error('Not supported');
-};
-
-export const onGetConnectionToThumbOffset = (
-  nodeType: ControlAndEndPointNodeType,
-  thumbType: ThumbType
-) => {
-  if (nodeType === ControlAndEndPointNodeType.start) {
-    if (thumbType === ThumbType.StartConnectorBottom) {
-      return {
-        offsetX: 0,
-        offsetY: connectionToThumbDistance * 3,
-      };
-    } else if (thumbType === ThumbType.StartConnectorTop) {
-      return {
-        offsetX: 0,
-        offsetY: -connectionToThumbDistance * 3,
-      };
-    } else if (thumbType === ThumbType.Center) {
-      return {
-        offsetX: 0,
-        offsetY: 0,
-      };
-    }
-
-    return {
-      offsetX: connectionToThumbDistance * 3,
-      offsetY: 0,
-    };
-  }
-  if (nodeType === ControlAndEndPointNodeType.end) {
-    if (thumbType === ThumbType.EndConnectorTop) {
-      return {
-        offsetX: 0,
-        offsetY: -connectionToThumbDistance * 3,
-      };
-    } else if (thumbType === ThumbType.Center) {
-      return {
-        offsetX: 0,
-        offsetY: 0,
-      };
-    }
-
-    return {
-      offsetX: -connectionToThumbDistance * 3,
-      offsetY: 0,
-    };
-  }
-
-  return {
-    offsetX: 0,
-    offsetY: 0,
-  };
 };

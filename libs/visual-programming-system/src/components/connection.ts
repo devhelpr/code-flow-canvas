@@ -1,5 +1,9 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
-import { paddingRect, totalPaddingRect } from '../constants/measures';
+import {
+  paddingRect,
+  thumbRadius,
+  totalPaddingRect,
+} from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
@@ -152,25 +156,28 @@ export class Connection<T> {
         { x: this.points.cx2, y: this.points.cy2 },
       ];
     }
-    const bbox = this.getBBoxPath();
+
+    const { offsetX: startOffsetX, offsetY: startOffsetY } =
+      onGetConnectionToThumbOffset(
+        ControlAndEndPointNodeType.start,
+        this.nodeComponent?.startNodeThumb?.thumbType ?? ThumbType.None
+      );
+    const { offsetX: endOffsetX, offsetY: endOffsetY } =
+      onGetConnectionToThumbOffset(
+        ControlAndEndPointNodeType.end,
+        this.nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
+      );
+    const bbox = this.getBBoxPath(
+      startOffsetX,
+      startOffsetY,
+      endOffsetX,
+      endOffsetY
+    );
     const svgParentElement = this.svgParent
       .domElement as unknown as HTMLElement;
     svgParentElement.style.width = `${bbox.width}px`;
     svgParentElement.style.height = `${bbox.height}px`;
     svgParentElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
-
-    const { offsetX: startOffsetX, offsetY: startOffsetY } =
-      onGetConnectionToThumbOffset(
-        ControlAndEndPointNodeType.start,
-        this.nodeComponent?.startNodeThumb?.thumbType ??
-          ThumbType.StartConnectorCenter
-      );
-    const { offsetX: endOffsetX, offsetY: endOffsetY } =
-      onGetConnectionToThumbOffset(
-        ControlAndEndPointNodeType.end,
-        this.nodeComponent?.endNodeThumb?.thumbType ??
-          ThumbType.EndConnectorCenter
-      );
 
     const dashedStroke = isDashed
       ? {
@@ -295,14 +302,12 @@ export class Connection<T> {
       const { offsetX: startOffsetX, offsetY: startOffsetY } =
         onGetConnectionToThumbOffset(
           ControlAndEndPointNodeType.start,
-          this.nodeComponent?.startNodeThumb?.thumbType ??
-            ThumbType.StartConnectorCenter
+          this.nodeComponent?.startNodeThumb?.thumbType ?? ThumbType.None
         );
       const { offsetX: endOffsetX, offsetY: endOffsetY } =
         onGetConnectionToThumbOffset(
           ControlAndEndPointNodeType.end,
-          this.nodeComponent?.endNodeThumb?.thumbType ??
-            ThumbType.EndConnectorCenter
+          this.nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
         );
       const bbox = this.getBBoxPath(
         startOffsetX,
@@ -384,8 +389,7 @@ export class Connection<T> {
         const start = this.onCalculateControlPoints(
           this.nodeComponent?.startNode,
           ControlAndEndPointNodeType.start,
-          this.nodeComponent.startNodeThumb?.thumbType ??
-            ThumbType.StartConnectorCenter,
+          this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
           this.nodeComponent.startNodeThumb?.thumbIndex,
           this.nodeComponent.endNode,
           this.nodeComponent.startNodeThumb?.thumbOffsetY ?? 0,
@@ -406,8 +410,7 @@ export class Connection<T> {
         const end = this.onCalculateControlPoints(
           this.nodeComponent?.endNode,
           ControlAndEndPointNodeType.end,
-          this.nodeComponent.endNodeThumb?.thumbType ??
-            ThumbType.EndConnectorCenter,
+          this.nodeComponent.endNodeThumb?.thumbType ?? ThumbType.None,
           this.nodeComponent.endNodeThumb?.thumbIndex,
           this.nodeComponent.startNode,
           this.nodeComponent.endNodeThumb?.thumbOffsetY ?? 0,
@@ -538,19 +541,30 @@ export class Connection<T> {
         );
       }
       if (this.nodeComponent?.controlPointNodes?.length) {
+        const { offsetX: startOffsetX, offsetY: startOffsetY } =
+          onGetConnectionToThumbOffset(
+            ControlAndEndPointNodeType.start,
+            this.nodeComponent?.startNodeThumb?.thumbType ?? ThumbType.None
+          );
+        const { offsetX: endOffsetX, offsetY: endOffsetY } =
+          onGetConnectionToThumbOffset(
+            ControlAndEndPointNodeType.end,
+            this.nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
+          );
+
         this.nodeComponent.controlPointNodes[0].setVisibility?.(
           !(this.nodeComponent?.startNode || this.nodeComponent?.endNode)
         );
         this.nodeComponent.connectionStartNodeThumb?.update?.(
           this.nodeComponent?.connectionStartNodeThumb,
-          this.points.beginX,
-          this.points.beginY,
+          this.points.beginX + startOffsetX,
+          this.points.beginY + startOffsetY,
           this.nodeComponent
         );
         this.nodeComponent.connectionEndNodeThumb?.update?.(
           this.nodeComponent?.connectionEndNodeThumb,
-          this.points.endX,
-          this.points.endY,
+          this.points.endX + endOffsetX,
+          this.points.endY + endOffsetY,
           this.nodeComponent
         );
         this.nodeComponent.controlPointNodes[0].update?.(
@@ -578,6 +592,16 @@ export class Connection<T> {
 
       // Neem de x en y van de controller-thumb over...
       if (initiator && x !== undefined && y !== undefined) {
+        const { offsetX: startOffsetX, offsetY: startOffsetY } =
+          onGetConnectionToThumbOffset(
+            ControlAndEndPointNodeType.start,
+            this.nodeComponent?.startNodeThumb?.thumbType ?? ThumbType.None
+          );
+        const { offsetX: endOffsetX, offsetY: endOffsetY } =
+          onGetConnectionToThumbOffset(
+            ControlAndEndPointNodeType.end,
+            this.nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
+          );
         if (
           initiator.connectionControllerType === ConnectionControllerType.c1
         ) {
@@ -591,16 +615,16 @@ export class Connection<T> {
         } else if (
           initiator.connectionControllerType === ConnectionControllerType.end
         ) {
-          this.points.endX = x;
-          this.points.endY = y;
+          this.points.endX = x - endOffsetX;
+          this.points.endY = y - endOffsetY;
 
           this.points.cx2 = this.points.endX - 150;
           this.points.cy2 = this.points.endY;
         } else if (
           initiator.connectionControllerType === ConnectionControllerType.begin
         ) {
-          this.points.beginX = x;
-          this.points.beginY = y;
+          this.points.beginX = x - startOffsetX;
+          this.points.beginY = y - startOffsetY;
         } else {
           return false;
         }
@@ -661,14 +685,12 @@ export class Connection<T> {
     const { offsetX: startOffsetX, offsetY: startOffsetY } =
       onGetConnectionToThumbOffset(
         ControlAndEndPointNodeType.start,
-        this.nodeComponent?.startNodeThumb?.thumbType ??
-          ThumbType.StartConnectorCenter
+        this.nodeComponent?.startNodeThumb?.thumbType ?? ThumbType.None
       );
     const { offsetX: endOffsetX, offsetY: endOffsetY } =
       onGetConnectionToThumbOffset(
         ControlAndEndPointNodeType.end,
-        this.nodeComponent?.endNodeThumb?.thumbType ??
-          ThumbType.EndConnectorCenter
+        this.nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
       );
 
     const bbox = this.getBBoxPath(
@@ -678,11 +700,11 @@ export class Connection<T> {
       endOffsetY
     );
     if (this.isQuadratic) {
-      const path = `M${this.points.beginX - bbox.x} ${
-        this.points.beginY - bbox.y
+      const path = `M${this.points.beginX - bbox.x + startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
       } Q${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y}  ${
-        this.points.endX - bbox.x
-      } ${this.points.endY - bbox.y}`;
+        this.points.endX - bbox.x + endOffsetX
+      } ${this.points.endY - bbox.y + endOffsetY}`;
 
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
       (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
@@ -708,15 +730,15 @@ export class Connection<T> {
     if (updateThumbs && this.nodeComponent) {
       this.nodeComponent.connectionStartNodeThumb?.update?.(
         this.nodeComponent.connectionStartNodeThumb,
-        this.points.beginX,
-        this.points.beginY,
+        this.points.beginX + startOffsetX,
+        this.points.beginY + startOffsetY,
         this.nodeComponent
       );
 
       this.nodeComponent.connectionEndNodeThumb?.update?.(
         this.nodeComponent.connectionEndNodeThumb,
-        this.points.endX,
-        this.points.endY,
+        this.points.endX + endOffsetX,
+        this.points.endY + endOffsetY,
         this.nodeComponent
       );
 

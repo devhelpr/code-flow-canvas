@@ -36,8 +36,8 @@ export const getPointOnConnection = <T>(
     connection.startNodeThumb
   );
 
-  const tx = 40;
-  const ty = 40;
+  const tx = -15;
+  const ty = -15;
 
   const bezierCurvePoints =
     connection.lineType === LineType.BezierCubic
