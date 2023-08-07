@@ -392,7 +392,6 @@ export class Connection<T> {
           this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
           this.nodeComponent.startNodeThumb?.thumbIndex,
           this.nodeComponent.endNode,
-          this.nodeComponent.startNodeThumb?.thumbOffsetY ?? 0,
           this.nodeComponent.startNodeThumb?.thumbControlPointDistance,
           this.nodeComponent.endNodeThumb
         );
@@ -413,7 +412,6 @@ export class Connection<T> {
           this.nodeComponent.endNodeThumb?.thumbType ?? ThumbType.None,
           this.nodeComponent.endNodeThumb?.thumbIndex,
           this.nodeComponent.startNode,
-          this.nodeComponent.endNodeThumb?.thumbOffsetY ?? 0,
           this.nodeComponent.endNodeThumb?.thumbControlPointDistance,
           this.nodeComponent.startNodeThumb
         );
@@ -455,7 +453,6 @@ export class Connection<T> {
             ThumbType.StartConnectorCenter,
           connection.startNodeThumb?.thumbIndex,
           connection.endNode,
-          connection.startNodeThumb?.thumbOffsetY ?? 0,
           connection.startNodeThumb?.thumbControlPointDistance,
           connection.endNodeThumb
         );
@@ -471,7 +468,6 @@ export class Connection<T> {
           connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
           connection.endNodeThumb?.thumbIndex,
           connection.startNode,
-          connection.endNodeThumb?.thumbOffsetY ?? 0,
           connection.endNodeThumb?.thumbControlPointDistance,
           connection.startNodeThumb
         );

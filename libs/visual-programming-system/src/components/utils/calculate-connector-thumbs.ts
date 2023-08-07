@@ -76,8 +76,7 @@ export const calculateConnectorY = (
 export const thumbPosition = <T>(
   rectNode: INodeComponent<T>,
   thumbType: ThumbType,
-  index?: number,
-  offsetY?: number
+  index?: number
 ) => {
   if (thumbType === ThumbType.TopLeft) {
     return { x: 0, y: 0 };
@@ -103,13 +102,12 @@ export const thumbPosition = <T>(
         rectNode?.height ?? 0,
         index
       ),
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + (offsetY ?? 0),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   }
 
@@ -121,13 +119,12 @@ export const thumbPosition = <T>(
         rectNode?.height ?? 0,
         index
       ),
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + (offsetY ?? 0),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   } else if (thumbType === ThumbType.EndConnectorCenter) {
     return {
@@ -137,13 +134,12 @@ export const thumbPosition = <T>(
         rectNode?.height ?? 0,
         index
       ),
-      y:
-        calculateConnectorY(
-          thumbType,
-          rectNode?.width ?? 0,
-          rectNode?.height ?? 0,
-          index
-        ) + (offsetY ?? 0),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index
+      ),
     };
   }
 

@@ -60,7 +60,7 @@ export const getState = (updated?: () => void) => {
             label: '#',
             thumbConstraint: 'action',
             name: 'state',
-            //hidden: true,
+            hidden: true,
           },
         ],
         jsxComponentWrapper,

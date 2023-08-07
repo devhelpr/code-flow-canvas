@@ -81,7 +81,6 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
     thumbType: ThumbType,
     index?: number,
     connectedNode?: IRectNodeComponent<T>,
-    thumbOffsetY?: number,
     controlPointDistance?: number,
     connectedNodeThumb?: IThumbNodeComponent<T>
   ) => IControlAndEndPoint;
@@ -89,7 +88,6 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
 
 export interface IThumbNodeComponent<T> extends INodeComponent<T> {
   thumbIndex?: number;
-  thumbOffsetY?: number;
   thumbType?: ThumbType;
   thumbName: string;
   thumbLinkedToNode?: IRectNodeComponent<T>;
@@ -141,7 +139,6 @@ export type IThumb = {
   connectionType: ThumbConnectionType;
   pathName?: string;
   color?: string;
-  offsetY?: number;
   controlPointDistance?: number;
   hidden?: boolean;
   label?: string;

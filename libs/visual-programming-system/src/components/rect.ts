@@ -93,8 +93,8 @@ export class Rect<T> {
       heightHelper,
       pathHiddenElement,
       text,
-      (thumbType: ThumbType, index?: number, offsetY?: number) => {
-        return thumbPosition<T>(this.rectNode!, thumbType, index, offsetY);
+      (thumbType: ThumbType, index?: number) => {
+        return thumbPosition<T>(this.rectNode!, thumbType, index);
       },
       markup,
       layoutProperties,
@@ -120,11 +120,11 @@ export class Rect<T> {
     this.rectNode.update = this.onUpdate(
       this.rectNode,
       this.rectInfo.astElement,
-      (thumbType: ThumbType, index?: number, offsetY?: number) => {
+      (thumbType: ThumbType, index?: number) => {
         if (!this.rectNode) {
           throw new Error('this.rectNode is undefined');
         }
-        return thumbPosition<T>(this.rectNode, thumbType, index, offsetY);
+        return thumbPosition<T>(this.rectNode, thumbType, index);
       }
     );
 
@@ -164,8 +164,7 @@ export class Rect<T> {
         const { x, y } = thumbPosition(
           this.rectNode,
           thumb.thumbType,
-          thumb.thumbIndex ?? 0,
-          thumb.offsetY ?? 0
+          thumb.thumbIndex ?? 0
         );
         console.log('thumb', x, y);
 
@@ -211,7 +210,6 @@ export class Rect<T> {
         thumbNode.nodeComponent.isControlled = true;
         thumbNode.nodeComponent.isConnectPoint = true;
         thumbNode.nodeComponent.thumbConnectionType = thumb.connectionType;
-        thumbNode.nodeComponent.thumbOffsetY = thumb.offsetY ?? 0;
         thumbNode.nodeComponent.thumbControlPointDistance =
           thumb.controlPointDistance;
         thumbNode.nodeComponent.thumbLinkedToNode = this.rectNode;
@@ -263,10 +261,10 @@ export class Rect<T> {
     const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
     const { scale } = getCamera();
-    this.rectNode.width = astElementSize.width / scale; //- 20;
-    this.rectNode.height = astElementSize.height / scale; //- 20;
-    this.points.width = astElementSize.width / scale; //- 20;
-    this.points.height = astElementSize.height / scale; //- 20;
+    this.rectNode.width = astElementSize.width / scale;
+    this.rectNode.height = astElementSize.height / scale;
+    this.points.width = astElementSize.width / scale;
+    this.points.height = astElementSize.height / scale;
 
     rectContainerDOMElement.style.width = `${this.rectNode.width}px`;
     rectContainerDOMElement.style.height = `${this.rectNode.height}px`;
@@ -702,8 +700,7 @@ export class Rect<T> {
               if (connector && connector.update && connector.thumbType) {
                 const position = getThumbPosition(
                   connector.thumbType,
-                  connector.thumbIndex ?? 0,
-                  connector.thumbOffsetY ?? 0
+                  connector.thumbIndex ?? 0
                 );
                 connector.update(connector, position.x, position.y, initiator);
               }

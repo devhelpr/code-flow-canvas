@@ -20,7 +20,6 @@ export const getPointOnConnection = <T>(
     connection.startNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
     connection.startNodeThumb?.thumbIndex,
     end,
-    connection.startNodeThumb?.thumbOffsetY ?? 0,
     connection.startNodeThumb?.thumbControlPointDistance,
     connection.endNodeThumb
   );
@@ -31,7 +30,6 @@ export const getPointOnConnection = <T>(
     connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
     connection.endNodeThumb?.thumbIndex,
     start,
-    connection.endNodeThumb?.thumbOffsetY ?? 0,
     connection.endNodeThumb?.thumbControlPointDistance,
     connection.startNodeThumb
   );

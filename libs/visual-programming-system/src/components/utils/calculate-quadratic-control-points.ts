@@ -40,7 +40,6 @@ export const onQuadraticCalculateControlPoints = <T>(
   thumbType: ThumbType,
   index?: number,
   connectedNode?: IRectNodeComponent<T>,
-  thumbOffsetY?: number,
   controlPointDistance?: number,
   connectedNodeThumb?: IThumbNodeComponent<T>
 ) => {
@@ -81,8 +80,7 @@ export const onQuadraticCalculateControlPoints = <T>(
         rectNode.width ?? 0,
         rectNode.height ?? 0,
         index
-      ) +
-      (thumbOffsetY ?? 0);
+      );
 
     if (thumbType === ThumbType.StartConnectorBottom) {
       //y = y + connectionToThumbDistance * 3;
@@ -141,13 +139,6 @@ export const onQuadraticCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.StartConnectorRight) {
-      console.log(
-        'connectedNodeY',
-        connectedNodeY,
-        y,
-        rectNode.y,
-        thumbOffsetY
-      );
       const { distance, thumbFactor } = getFactor(
         x,
         y,
@@ -202,8 +193,7 @@ export const onQuadraticCalculateControlPoints = <T>(
         rectNode.width ?? 0,
         rectNode.height ?? 0,
         index
-      ) +
-      (thumbOffsetY ?? 0);
+      );
 
     if (thumbType === ThumbType.EndConnectorTop) {
       const { distance, thumbFactor } = getFactor(
