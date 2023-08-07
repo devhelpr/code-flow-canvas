@@ -328,8 +328,8 @@ export const thumbPosition = <T>(
       x:
         calculateConnectorX(
           thumbType,
-          (rectNode?.width ?? 0) / 2,
-          (rectNode?.height ?? 0) / 2,
+          rectNode?.width ?? 0,
+          rectNode?.height ?? 0,
           index
         ) + thumbOffsetX,
       // ) +
@@ -338,8 +338,8 @@ export const thumbPosition = <T>(
       y:
         calculateConnectorY(
           thumbType,
-          (rectNode?.width ?? 0) / 2,
-          (rectNode?.height ?? 0) / 2,
+          rectNode?.width ?? 0,
+          rectNode?.height ?? 0,
           index
         ) + thumbOffsetY, // + thumbOffsetY,
     };

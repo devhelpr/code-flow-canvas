@@ -151,11 +151,10 @@ export class Rect<T> {
 
       const { scale } = getCamera();
       this.rectNode.width = astElementSize.width / scale;
-      this.rectNode.height = astElementSize.height / scale - 20;
+      this.rectNode.height = astElementSize.height / scale; // - 20;
       this.points.width = astElementSize.width / scale;
-      this.points.height = astElementSize.height / scale - 20;
+      this.points.height = astElementSize.height / scale; // - 20;
     }
-    this.rectNode.update(this.rectNode, startX, startY, this.rectNode);
 
     widthHelper = this.rectNode.width ?? 0;
     heightHelper = this.rectNode.height ?? 0;
@@ -236,6 +235,8 @@ export class Rect<T> {
     }
     this.rectNode.thumbConnectors = thumbConnectors;
 
+    this.rectNode.update(this.rectNode, startX, startY, this.rectNode);
+
     this.rectNode.onClick = () => {
       if (!this.rectNode) {
         return;
@@ -267,10 +268,10 @@ export class Rect<T> {
     const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
     const { scale } = getCamera();
-    this.rectNode.width = astElementSize.width / scale - 20;
-    this.rectNode.height = astElementSize.height / scale - 20;
-    this.points.width = astElementSize.width / scale - 20;
-    this.points.height = astElementSize.height / scale - 20;
+    this.rectNode.width = astElementSize.width / scale; //- 20;
+    this.rectNode.height = astElementSize.height / scale; //- 20;
+    this.points.width = astElementSize.width / scale; //- 20;
+    this.points.height = astElementSize.height / scale; //- 20;
 
     rectContainerDOMElement.style.width = `${this.rectNode.width}px`;
     rectContainerDOMElement.style.height = `${this.rectNode.height}px`;

@@ -36,7 +36,7 @@ export const getState = (updated?: () => void) => {
         'div',
         {
           class:
-            'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded',
+            'flex text-center items-center justify-center w-[100px] h-[100px] overflow-hidden bg-slate-500 rounded',
           style: {
             'clip-path': 'circle(50%)',
           },
@@ -48,7 +48,7 @@ export const getState = (updated?: () => void) => {
       const rect = canvasApp.createRectThumb(
         x,
         y,
-        200,
+        100,
         100,
         undefined,
         [
@@ -60,7 +60,7 @@ export const getState = (updated?: () => void) => {
             label: '#',
             thumbConstraint: 'action',
             name: 'state',
-            hidden: true,
+            //hidden: true,
           },
         ],
         jsxComponentWrapper,

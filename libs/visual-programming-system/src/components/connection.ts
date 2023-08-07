@@ -218,7 +218,7 @@ export class Connection<T> {
         class: 'pointer-events-none',
         d: path,
         stroke: 'white',
-        'marker-start': 'url(#arrowbegin)',
+        //'marker-start': 'url(#arrowbegin)',
         'marker-end': 'url(#arrow)',
         'stroke-width': 3,
         ...dashedStroke,

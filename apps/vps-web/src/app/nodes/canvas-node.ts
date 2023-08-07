@@ -126,8 +126,8 @@ export const getCanvasNode = (updated?: () => void) => {
         );
 
         const inputInstance = canvasAppInstance.createRect(
-          -11,
-          2.5 + thumbRadius / 2, //thumbRadius + 10 + 9.5,
+          -1,
+          0,
           1,
           1,
           undefined,
@@ -166,8 +166,8 @@ export const getCanvasNode = (updated?: () => void) => {
         input = inputInstance.nodeComponent;
 
         const outputInstance = canvasAppInstance.createRect(
-          630,
-          2.5 + thumbRadius / 2, //thumbRadius + 10 + 9.5,
+          600,
+          0,
           1,
           1,
           undefined,
