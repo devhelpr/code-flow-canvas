@@ -22,6 +22,7 @@ import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
+import { splitQuadraticBezierCurve } from './utils/bezier-math';
 import {
   onCalculateControlPoints as onCalculateCubicBezierControlPoints,
   onGetConnectionToThumbOffset,
@@ -255,13 +256,28 @@ export class Connection<T> {
     endOffsetY: number
   ) {
     if (this.isQuadratic && this.pathHiddenElement) {
+      const x1 = this.points.beginX + startOffsetX;
+      const y1 = this.points.beginY + startOffsetY;
+      const cx = this.points.cx1;
+      const cy = this.points.cy1;
+      const x2 = this.points.endX + endOffsetX;
+      const y2 = this.points.endY + endOffsetY;
+
+      const split1 = splitQuadraticBezierCurve(x1, y1, cx, cy, x2, y2, 0.15);
+      const curves = splitQuadraticBezierCurve(
+        split1.curve2.x1,
+        split1.curve2.y1,
+        split1.curve2.c1x,
+        split1.curve2.c1y,
+        split1.curve2.x2,
+        split1.curve2.y2,
+        0.85
+      );
+      const path = `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
+
       (this.pathHiddenElement.domElement as HTMLElement).setAttribute(
         'd',
-        `M${this.points.beginX + startOffsetX} ${
-          this.points.beginY + startOffsetY
-        } Q${this.points.cx1} ${this.points.cy1} ${
-          this.points.endX + endOffsetX
-        } ${this.points.endY + endOffsetY}`
+        path
       );
     } else {
       (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
@@ -696,11 +712,24 @@ export class Connection<T> {
       endOffsetY
     );
     if (this.isQuadratic) {
-      const path = `M${this.points.beginX - bbox.x + startOffsetX} ${
-        this.points.beginY - bbox.y + startOffsetY
-      } Q${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y}  ${
-        this.points.endX - bbox.x + endOffsetX
-      } ${this.points.endY - bbox.y + endOffsetY}`;
+      const x1 = this.points.beginX - bbox.x + startOffsetX;
+      const y1 = this.points.beginY - bbox.y + startOffsetY;
+      const cx = this.points.cx1 - bbox.x;
+      const cy = this.points.cy1 - bbox.y;
+      const x2 = this.points.endX - bbox.x + endOffsetX;
+      const y2 = this.points.endY - bbox.y + endOffsetY;
+
+      const split1 = splitQuadraticBezierCurve(x1, y1, cx, cy, x2, y2, 0.15);
+      const curves = splitQuadraticBezierCurve(
+        split1.curve2.x1,
+        split1.curve2.y1,
+        split1.curve2.c1x,
+        split1.curve2.c1y,
+        split1.curve2.x2,
+        split1.curve2.y2,
+        0.85
+      );
+      const path = `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
 
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
       (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
