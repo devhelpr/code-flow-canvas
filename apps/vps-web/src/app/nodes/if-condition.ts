@@ -119,7 +119,7 @@ export const getIfCondition = (updated?: () => void) => {
         'div',
         {
           class:
-            'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded',
+            'flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
           style: {
             'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
           },
@@ -158,8 +158,8 @@ export const getIfCondition = (updated?: () => void) => {
       const rect = canvasApp.createRect(
         x,
         y,
-        200,
-        100,
+        150,
+        150,
         undefined,
         [
           {
