@@ -43,9 +43,19 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
         onclick={(event: Event) => {
           event.preventDefault();
           const nodeType = props.selectNodeType.value;
-
-          const startX = Math.floor(Math.random() * 250);
-          const startY = Math.floor(Math.random() * 500);
+          let halfWidth = 0;
+          let halfHeight = 0;
+          if (props.canvasApp?.rootElement) {
+            const box = props.canvasApp?.rootElement.getBoundingClientRect();
+            halfWidth = box.width / 2;
+            halfHeight = box.height / 2;
+          }
+          const startPos = props.canvasApp?.transformCameraSpaceToWorldSpace(
+            halfWidth,
+            halfHeight
+          );
+          const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
+          const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
           if (nodeType === 'expression') {
             const expression = getExpression(props.canvasUpdated);

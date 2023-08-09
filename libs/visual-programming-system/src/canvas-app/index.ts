@@ -437,6 +437,7 @@ export const createCanvasApp = <T>(
   return {
     elements,
     canvas,
+    rootElement,
     setOnCanvasUpdated: (onCanvasUpdatedHandler: () => void) => {
       onCanvasUpdated = onCanvasUpdatedHandler;
     },
@@ -470,6 +471,9 @@ export const createCanvasApp = <T>(
         ',' +
         scaleCamera +
         ') ';
+    },
+    transformCameraSpaceToWorldSpace: (x: number, y: number) => {
+      return transformCameraSpaceToWorldSpace(x, y);
     },
     centerCamera: () => {
       console.log('centerCamera');
