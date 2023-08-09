@@ -273,6 +273,16 @@ export class Connection<T> {
         split1.curve2.y2,
         0.85
       );
+      // const curves = {
+      //   curve1: {
+      //     x1,
+      //     y1,
+      //     c1x: cx,
+      //     c1y: cy,
+      //     x2: x2,
+      //     y2: y2,
+      //   },
+      // };
       const path = `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
 
       (this.pathHiddenElement.domElement as HTMLElement).setAttribute(
@@ -407,7 +417,13 @@ export class Connection<T> {
           ControlAndEndPointNodeType.start,
           this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
           this.nodeComponent.startNodeThumb?.thumbIndex,
-          this.nodeComponent.endNode,
+          this.nodeComponent.endNode ??
+            ({
+              x: this.points.endX,
+              y: this.points.endY,
+              width: 0,
+              height: 0,
+            } as IRectNodeComponent<T>),
           this.nodeComponent.startNodeThumb?.thumbControlPointDistance,
           this.nodeComponent.endNodeThumb
         );
@@ -441,6 +457,31 @@ export class Connection<T> {
       } else {
         this.points.cx2 = this.points.endX - 150;
         this.points.cy2 = this.points.endY;
+
+        if (this.nodeComponent?.startNode) {
+          const start = this.onCalculateControlPoints(
+            this.nodeComponent?.startNode,
+            ControlAndEndPointNodeType.start,
+            this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
+            this.nodeComponent.startNodeThumb?.thumbIndex,
+            this.nodeComponent.endNode ??
+              ({
+                x: this.points.endX,
+                y: this.points.endY,
+                width: 0,
+                height: 0,
+              } as IRectNodeComponent<T>),
+            this.nodeComponent.startNodeThumb?.thumbControlPointDistance,
+            this.nodeComponent.endNodeThumb
+          );
+
+          this.points.beginX = start.x;
+          this.points.beginY = start.y;
+
+          this.points.cx1 = start.cx;
+          this.points.cy1 = start.cy;
+        }
+
         skipChecks = true;
 
         updateThumbs = true;
@@ -468,7 +509,13 @@ export class Connection<T> {
           connection.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
           connection.startNodeThumb?.thumbIndex,
-          connection.endNode,
+          connection.endNode ??
+            ({
+              x: this.points.endX,
+              y: this.points.endY,
+              width: 0,
+              height: 0,
+            } as IRectNodeComponent<T>),
           connection.startNodeThumb?.thumbControlPointDistance,
           connection.endNodeThumb
         );
@@ -604,6 +651,30 @@ export class Connection<T> {
 
       // Neem de x en y van de controller-thumb over...
       if (initiator && x !== undefined && y !== undefined) {
+        if (this.nodeComponent?.startNode) {
+          const start = this.onCalculateControlPoints(
+            this.nodeComponent?.startNode,
+            ControlAndEndPointNodeType.start,
+            this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
+            this.nodeComponent.startNodeThumb?.thumbIndex,
+            this.nodeComponent.endNode ??
+              ({
+                x: this.points.endX,
+                y: this.points.endY,
+                width: 0,
+                height: 0,
+              } as IRectNodeComponent<T>),
+            this.nodeComponent.startNodeThumb?.thumbControlPointDistance,
+            this.nodeComponent.endNodeThumb
+          );
+
+          this.points.beginX = start.x;
+          this.points.beginY = start.y;
+
+          this.points.cx1 = start.cx;
+          this.points.cy1 = start.cy;
+        }
+
         const { offsetX: startOffsetX, offsetY: startOffsetY } =
           onGetConnectionToThumbOffset(
             ControlAndEndPointNodeType.start,
@@ -729,6 +800,16 @@ export class Connection<T> {
         split1.curve2.y2,
         0.85
       );
+      // const curves = {
+      //   curve1: {
+      //     x1,
+      //     y1,
+      //     c1x: cx,
+      //     c1y: cy,
+      //     x2: x2,
+      //     y2: y2,
+      //   },
+      // };
       const path = `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
 
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);

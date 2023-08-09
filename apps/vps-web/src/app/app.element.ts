@@ -60,6 +60,7 @@ import { getShowObject } from './nodes/show-object';
 import { menubarClasses, navBarButton } from './consts/classes';
 import { getCanvasNode } from './nodes/canvas-node';
 import { getState } from './nodes/state';
+import { getAction } from './nodes/action';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -392,6 +393,14 @@ export class AppElement extends HTMLElement {
               ) {
                 const stateNode = getState();
                 stateNode.createVisualNode(canvasApp, node.x, node.y, node.id);
+              }
+
+              if (
+                node.nodeType === NodeType.Shape &&
+                node.nodeInfo?.type === 'action'
+              ) {
+                const actionNode = getAction();
+                actionNode.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
               if (
@@ -1204,6 +1213,12 @@ export class AppElement extends HTMLElement {
         selectNodeType.domElement as HTMLSelectElement,
         'state',
         'state'
+      );
+
+      createOption(
+        selectNodeType.domElement as HTMLSelectElement,
+        'action',
+        'action'
       );
     }
 
