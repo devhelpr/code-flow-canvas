@@ -93,7 +93,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded max-w-[240px]`,
+          class: `bg-slate-500 p-4 rounded max-w-[240px] text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -107,7 +107,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorRight,
+            thumbType: ThumbType.StartConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             label: '#',
@@ -116,7 +116,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
             name: 'output',
           },
           {
-            thumbType: ThumbType.EndConnectorLeft,
+            thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             label: '[]',
