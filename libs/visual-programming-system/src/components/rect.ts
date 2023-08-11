@@ -26,7 +26,12 @@ import {
 import { getPoint } from './utils/get-point';
 import { setPosition } from './utils/set-position';
 import { NodeType } from '../types/node-type';
-import { paddingRect, totalPaddingRect } from '../constants/measures';
+import {
+  paddingRect,
+  thumbHeight,
+  thumbWidth,
+  totalPaddingRect,
+} from '../constants/measures';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -138,6 +143,8 @@ export class Rect<T> {
     this.rectNode.y = startY;
     this.rectNode.width = width;
     this.rectNode.height = height;
+    this.oldWidth = width;
+    this.oldHeight = height;
 
     if (!hasStaticWidthHeight) {
       const astElementSize = (
@@ -447,20 +454,45 @@ export class Rect<T> {
     }
     return false;
   }
-
-  onEndThumbConnectorElementupdate(
+  oldWidth = -1;
+  oldHeight = -1;
+  onEndThumbConnectorElementupdate = (
     target?: INodeComponent<T>,
     x?: number,
     y?: number,
     initiator?: INodeComponent<T>
-  ) {
+  ) => {
     if (!target || x === undefined || y === undefined || !initiator) {
       return false;
     }
+    if (
+      this.oldWidth === -1 ||
+      this.oldHeight === -1 ||
+      this.oldWidth !== this.nodeComponent?.width ||
+      this.oldHeight !== this.nodeComponent?.height
+    ) {
+      this.oldWidth = this.nodeComponent?.width ?? -1;
+      this.oldHeight = this.nodeComponent?.height ?? -1;
+      this.nodeComponent?.thumbConnectors?.forEach((thumbConnector) => {
+        if (thumbConnector.domElement && this.nodeComponent) {
+          const { x, y } = thumbPosition(
+            this.nodeComponent,
+            thumbConnector.thumbType ?? ThumbType.None,
+            thumbConnector.thumbIndex ?? 0
+          );
 
+          (
+            thumbConnector.domElement as HTMLElement
+          ).style.left = `calc(${x}px - ${thumbWidth / 2}px)`;
+          (
+            thumbConnector.domElement as HTMLElement
+          ).style.top = `calc(${y}px - ${thumbHeight / 2}px)`;
+        }
+      });
+    }
     setPosition(target, x, y, initiator?.nodeType !== NodeType.Shape, false);
     return true;
-  }
+  };
 
   protected createRectElement = (
     canvasElement: DOMElementNode,

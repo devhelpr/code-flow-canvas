@@ -35,7 +35,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   };
 
   const setValue = (values: any[]) => {
-    if (htmlNode && htmlNode.domElement) {
+    if (values.length > 0 && htmlNode && htmlNode.domElement) {
       (htmlNode.domElement as HTMLElement).textContent = '';
 
       while (htmlNode.domElement.firstChild) {
@@ -45,32 +45,41 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           );
         }
       }
-    }
-    values.forEach((value) => {
-      const inputElement = createElement(
-        'div',
-        {
-          class:
-            'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
-        },
-        undefined,
-        value.toString()
-      ) as unknown as INodeComponent<NodeInfo>;
 
-      // if (htmlNode.domElement.firstChild) {
-      //   htmlNode.domElement.insertBefore(
-      //     inputElement.domElement as unknown as HTMLElement,
-      //     htmlNode.domElement.firstChild
-      //   );
-      // } else {
-      if (htmlNode) {
-        htmlNode.domElement.appendChild(
-          inputElement.domElement as unknown as HTMLElement
-        );
+      values.forEach((value) => {
+        const inputElement = createElement(
+          'div',
+          {
+            class:
+              'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
+          },
+          undefined,
+          value.toString()
+        ) as unknown as INodeComponent<NodeInfo>;
+
+        // if (htmlNode.domElement.firstChild) {
+        //   htmlNode.domElement.insertBefore(
+        //     inputElement.domElement as unknown as HTMLElement,
+        //     htmlNode.domElement.firstChild
+        //   );
+        // } else {
+        if (htmlNode) {
+          htmlNode.domElement.appendChild(
+            inputElement.domElement as unknown as HTMLElement
+          );
+        }
+      });
+      //}
+    } else if (values.length === 0 && htmlNode && htmlNode.domElement) {
+      while (htmlNode.domElement.firstChild) {
+        if (htmlNode.domElement) {
+          htmlNode.domElement.removeChild(
+            (htmlNode.domElement as HTMLElement).lastChild as Node
+          );
+        }
       }
-    });
-    //}
-
+      (htmlNode.domElement as HTMLElement).textContent = 'Array';
+    }
     if (rect) {
       rect.resize(240);
     }
