@@ -1,4 +1,4 @@
-import { thumbRadius } from '../../constants/measures';
+import { thumbHeight, thumbRadius } from '../../constants/measures';
 import { INodeComponent } from '../../interfaces/element';
 import { ThumbType } from '../../types/thumb-type';
 
@@ -56,7 +56,7 @@ export const calculateConnectorY = (
     thumbType === ThumbType.StartConnectorRight ||
     thumbType === ThumbType.EndConnectorLeft
   ) {
-    return 30 * (index ?? 0) + thumbRadius;
+    return thumbHeight * (index ?? 0) + thumbRadius * 2;
   }
 
   if (thumbType === ThumbType.EndConnectorTop) {
