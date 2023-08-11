@@ -420,13 +420,21 @@ export class ThumbNode<T> {
 
       if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
         const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
-        const curve = this.nodeComponent.thumbLinkedToNode.connections[0];
-        const connectionThumb =
-          this.nodeComponent.thumbConnectionType === 'start'
-            ? curve.connectionStartNodeThumb
-            : curve.connectionEndNodeThumb;
-        if (connectionThumb) {
-          this.initiateDraggingConnection(connectionThumb, x, y);
+        const connections =
+          this.nodeComponent.thumbLinkedToNode?.connections.filter(
+            (c) => c.startNodeThumb?.id === this.nodeComponent?.id
+          );
+        if (connections && connections.length > 0) {
+          const curve = connections[0];
+
+          //this.nodeComponent.thumbLinkedToNode.connections[0];
+          const connectionThumb =
+            this.nodeComponent.thumbConnectionType === 'start'
+              ? curve.connectionStartNodeThumb
+              : curve.connectionEndNodeThumb;
+          if (connectionThumb) {
+            this.initiateDraggingConnection(connectionThumb, x, y);
+          }
         }
 
         return;
