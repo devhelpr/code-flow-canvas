@@ -11,6 +11,7 @@ export type NodeTask<T> = {
   family: string;
   category?: string;
   isContainer?: boolean;
+  isContained?: boolean;
   childNodeTasks?: string[];
   createVisualNode: (
     canvasApp: canvasAppReturnType,

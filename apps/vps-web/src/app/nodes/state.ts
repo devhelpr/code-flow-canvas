@@ -37,6 +37,7 @@ export const getState: NodeTaskFactory<NodeInfo> = (
     name: 'state',
     family: 'flow-canvas',
     category: 'state-machine',
+    isContained: true,
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,

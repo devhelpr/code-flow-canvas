@@ -1065,6 +1065,13 @@ export class AppElement extends HTMLElement {
     if (selectNodeType?.domElement) {
       const nodeTasks = getNodeFactoryNames();
       nodeTasks.forEach((nodeTask) => {
+        const factory = getNodeTaskFactory(nodeTask);
+        if (factory) {
+          const node = factory(canvasUpdated);
+          if (node.isContained) {
+            return;
+          }
+        }
         createOption(
           selectNodeType.domElement as HTMLSelectElement,
           nodeTask,
