@@ -57,7 +57,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-      htmlNode.domElement.textContent = sum.toString();
+      htmlNode.domElement.textContent = `Sum: ${sum.toString()}`;
 
       if (rect) {
         rect.resize(240);
