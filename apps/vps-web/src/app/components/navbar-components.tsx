@@ -80,34 +80,34 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
             }
             expression.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'if') {
-            const ifCondition = getIfCondition();
+            const ifCondition = getIfCondition(props.canvasUpdated);
             ifCondition.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'show-input') {
-            const showInput = getShowInput();
+            const showInput = getShowInput(props.canvasUpdated);
             showInput.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'fetch') {
-            const fetch = getFetch();
+            const fetch = getFetch(props.canvasUpdated);
             fetch.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'show-object') {
-            const showObject = getShowObject();
+            const showObject = getShowObject(props.canvasUpdated);
             showObject.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'array') {
-            const array = getArray();
+            const array = getArray(props.canvasUpdated);
             array.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'sum') {
-            const showObject = getSum();
+            const showObject = getSum(props.canvasUpdated);
             showObject.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'map') {
-            const map = getMap<NodeInfo>(
+            const map = getMap(
               props.animatePath,
               props.animatePathFromThumb
-            );
+            )(props.canvasUpdated);
             map.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'filter') {
-            const filter = getFilter<NodeInfo>(
+            const filter = getFilter(
               props.animatePath,
               props.animatePathFromThumb
-            );
+            )(props.canvasUpdated);
             filter.createVisualNode(props.canvasApp, startX, startY);
           } else if (nodeType === 'canvas-node') {
             const canvasNode = getCanvasNode(props.canvasUpdated);

@@ -1,14 +1,18 @@
 import {
   createElement,
   INodeComponent,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
 
-export const getShowInput = () => {
+export const getShowInput: NodeTaskFactory<NodeInfo> = (
+  _updated: () => void
+): NodeTask<NodeInfo> => {
   let inputValues: any[] = [];
-  let node: INodeComponent<NodeInfo>;
+  let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
@@ -43,11 +47,15 @@ export const getShowInput = () => {
     };
   };
   return {
+    name: 'show-input',
+    family: 'flow-canvas',
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(
         'div',
@@ -78,7 +86,6 @@ export const getShowInput = () => {
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
             name: 'output',
@@ -87,7 +94,6 @@ export const getShowInput = () => {
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
             name: 'input',
@@ -114,6 +120,7 @@ export const getShowInput = () => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      return node;
     },
   };
 };

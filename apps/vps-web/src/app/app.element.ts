@@ -302,8 +302,8 @@ export class AppElement extends HTMLElement {
                   canvasApp,
                   node.x,
                   node.y,
-                  node.nodeInfo?.formValues?.Expression ?? undefined,
-                  node.id
+                  node.id,
+                  node.nodeInfo?.formValues?.Expression ?? undefined
                 );
               }
 
@@ -311,13 +311,12 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'if'
               ) {
-                const ifCondition = getIfCondition();
+                const ifCondition = getIfCondition(canvasUpdated);
                 ifCondition.createVisualNode(
                   canvasApp,
                   node.x,
                   node.y,
                   node.id,
-                  node.nodeInfo?.formValues?.Mode ?? '',
                   node.nodeInfo?.formValues?.expression ?? ''
                 );
               }
@@ -326,7 +325,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'array'
               ) {
-                const array = getArray();
+                const array = getArray(canvasUpdated);
                 array.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -334,7 +333,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'sum'
               ) {
-                const sum = getSum();
+                const sum = getSum(canvasUpdated);
                 sum.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -342,7 +341,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'show-input'
               ) {
-                const showInput = getShowInput();
+                const showInput = getShowInput(canvasUpdated);
                 showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -350,7 +349,10 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'map'
               ) {
-                const map = getMap<NodeInfo>(animatePath, animatePathFromThumb);
+                const map = getMap(
+                  animatePath,
+                  animatePathFromThumb
+                )(canvasUpdated);
                 map.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -358,10 +360,10 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'filter'
               ) {
-                const filter = getFilter<NodeInfo>(
+                const filter = getFilter(
                   animatePath,
                   animatePathFromThumb
-                );
+                )(canvasUpdated);
                 filter.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -383,7 +385,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'show-object'
               ) {
-                const expression = getShowObject();
+                const expression = getShowObject(canvasUpdated);
                 expression.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -391,7 +393,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'state'
               ) {
-                const stateNode = getState();
+                const stateNode = getState(canvasUpdated);
                 stateNode.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -399,7 +401,7 @@ export class AppElement extends HTMLElement {
                 node.nodeType === NodeType.Shape &&
                 node.nodeInfo?.type === 'action'
               ) {
-                const actionNode = getAction();
+                const actionNode = getAction(canvasUpdated);
                 actionNode.createVisualNode(canvasApp, node.x, node.y, node.id);
               }
 
@@ -427,14 +429,14 @@ export class AppElement extends HTMLElement {
                         canvasVisualNode.nodeInfo.canvasAppInstance,
                         element.x,
                         element.y,
-                        element.nodeInfo?.formValues?.Expression ?? undefined,
                         element.id,
+                        element.nodeInfo?.formValues?.Expression ?? undefined,
                         canvasVisualNode
                       );
                     }
                   });
 
-                  const info = canvasNode.getInfo();
+                  const info = canvasNode.getConnectionInfo?.();
 
                   const elementList = Array.from(
                     (canvasVisualNode.nodeInfo.canvasAppInstance
@@ -452,7 +454,7 @@ export class AppElement extends HTMLElement {
 
                       // undefined_input undefined_output
                       if (node.startNodeId === 'undefined_input') {
-                        start = info.input;
+                        start = info?.inputs[0];
                       } else if (node.startNodeId) {
                         const startElement = elementList.find((e) => {
                           const element = e[1] as IElementNode<NodeInfo>;
@@ -465,7 +467,7 @@ export class AppElement extends HTMLElement {
                       }
 
                       if (node.endNodeId === 'undefined_output') {
-                        end = info.output;
+                        end = info?.outputs[0];
                       } else if (node.endNodeId) {
                         const endElement = elementList.find((e) => {
                           const element = e[1] as IElementNode<NodeInfo>;

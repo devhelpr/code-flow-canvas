@@ -1,13 +1,17 @@
 import {
   createElement,
   INodeComponent,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
 
-export const getSum = () => {
-  let node: INodeComponent<NodeInfo>;
+export const getSum: NodeTaskFactory<NodeInfo> = (
+  _updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let currentSum = 0;
@@ -63,11 +67,15 @@ export const getSum = () => {
     };
   };
   return {
+    name: 'sum',
+    family: 'flow-canvas',
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(
         'div',
@@ -98,7 +106,6 @@ export const getSum = () => {
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            offsetY: 20,
             label: '#',
             color: 'white',
             thumbConstraint: 'value',
@@ -108,7 +115,6 @@ export const getSum = () => {
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            offsetY: 20,
             label: '[]',
             thumbConstraint: 'array',
             name: 'input',
@@ -144,6 +150,7 @@ export const getSum = () => {
           }
         }
       };
+      return node;
     },
   };
 };

@@ -12,10 +12,12 @@ import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import { l } from 'vitest/dist/index-5aad25c1';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
 
-export const getCanvasNode = (updated?: () => void) => {
-  let node: INodeComponent<NodeInfo>;
+export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
+  updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
@@ -40,14 +42,22 @@ export const getCanvasNode = (updated?: () => void) => {
   };
 
   return {
-    getInfo: () => {
-      return { input, output };
+    name: 'canvas-node',
+    family: 'flow-canvas',
+    isContainer: true,
+    getConnectionInfo: () => {
+      if (!input || !output) {
+        return { inputs: [], outputs: [] };
+      }
+      return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(
         'div',

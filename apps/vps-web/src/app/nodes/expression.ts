@@ -1,20 +1,23 @@
 import {
   createElement,
   INodeComponent,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import {
-  compileExpression,
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
 
-export const getExpression = (updated?: () => void) => {
-  let node: INodeComponent<NodeInfo>;
+export const getExpression: NodeTaskFactory<NodeInfo> = (
+  updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
 
   let currentValue = 0;
@@ -67,22 +70,25 @@ export const getExpression = (updated?: () => void) => {
   };
 
   return {
-    createVisualNode: (
+    name: 'expression',
+    family: 'flow-canvas',
+    isContainer: false,
+    createVisualNode: <NodeInfo>(
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      expression?: string,
       id?: string,
+      initalValue?: string,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
-      console.log('createVisualNode createNamedSignal', expression, id);
+      console.log('createVisualNode createNamedSignal', initalValue, id);
       //createNamedSignal(id + '_' + 'Expression', expression ?? '');
 
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: 'Expression',
-          value: expression ?? '',
+          value: initalValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -147,7 +153,7 @@ export const getExpression = (updated?: () => void) => {
         {
           type: 'expression',
           formValues: {
-            Expression: expression ?? '',
+            Expression: initalValue ?? '',
           },
         },
         containerNode
@@ -176,6 +182,7 @@ export const getExpression = (updated?: () => void) => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      return node;
     },
   };
 };

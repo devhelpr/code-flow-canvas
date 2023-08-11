@@ -1,20 +1,20 @@
 import {
   createElement,
   INodeComponent,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import {
-  compileExpression,
-  compileExpressionAsInfo,
-  runExpression,
-} from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
-export const getFetch = (updated?: () => void) => {
-  let node: INodeComponent<NodeInfo>;
+import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+
+export const getFetch: NodeTaskFactory<NodeInfo> = (
+  updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
 
   let currentValue = 0;
@@ -81,21 +81,25 @@ export const getFetch = (updated?: () => void) => {
   };
 
   return {
+    name: 'fetch',
+    family: 'flow-canvas',
+    category: 'connectivity',
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
       id?: string,
-      url?: string
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
-      console.log('createVisualNode createNamedSignal', url, id);
+      console.log('createVisualNode createNamedSignal', initalValue, id);
       //createNamedSignal(id + '_' + 'Expression', expression ?? '');
 
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: 'url',
-          value: url ?? '',
+          value: initalValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -160,7 +164,7 @@ export const getFetch = (updated?: () => void) => {
         {
           type: 'fetch',
           formValues: {
-            url: url ?? '',
+            url: initalValue ?? '',
           },
         }
       );
@@ -189,6 +193,7 @@ export const getFetch = (updated?: () => void) => {
       node = rect.nodeComponent;
       node.nodeInfo.computeAsync = computeAsync;
       node.nodeInfo.initializeCompute = initializeCompute;
+      return node;
     },
   };
 };

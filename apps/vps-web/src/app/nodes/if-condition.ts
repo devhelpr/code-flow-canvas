@@ -5,6 +5,7 @@ import {
 import {
   createElement,
   INodeComponent,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
   trackNamedSignal,
@@ -12,9 +13,12 @@ import {
 import { FormFieldType } from '../components/form-component';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
 
-export const getIfCondition = (updated?: () => void) => {
-  let node: INodeComponent<NodeInfo>;
+export const getIfCondition: NodeTaskFactory<NodeInfo> = (
+  updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
 
   let currentValue = 0;
   const initializeCompute = () => {
@@ -70,19 +74,22 @@ export const getIfCondition = (updated?: () => void) => {
     };
   };
   return {
+    name: 'if-condition',
+    family: 'flow-canvas',
+    category: 'flow-control',
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
       id?: string,
-      mode?: string,
-      expression?: string
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
       const formElements = [
         {
           fieldType: FormFieldType.Select,
           fieldName: 'Mode',
-          value: mode ?? '',
+          value: 'expression',
           options: [
             { value: 'random', label: 'Random' },
             { value: 'expression', label: 'Expression' },
@@ -101,7 +108,7 @@ export const getIfCondition = (updated?: () => void) => {
         {
           fieldType: FormFieldType.Text,
           fieldName: 'expression',
-          value: expression ?? '',
+          value: initalValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -125,7 +132,7 @@ export const getIfCondition = (updated?: () => void) => {
           },
         },
         undefined,
-        mode === 'random' ? 'random' : expression ?? 'expression'
+        initalValue ?? 'expression'
         // FormComponent({
         //   id: 'test',
         //   formElements: [],
@@ -138,8 +145,8 @@ export const getIfCondition = (updated?: () => void) => {
 
       console.log('trackNamedSignal register if-condition', id);
 
-      let currentMode = mode;
-      let currentValue = expression ?? '';
+      let currentMode = 'expression';
+      let currentValue = initalValue ?? '';
 
       trackNamedSignal(`${id}_Mode`, (value) => {
         console.log('trackNamedSignal if-condition', id, value);
@@ -204,8 +211,8 @@ export const getIfCondition = (updated?: () => void) => {
           formElements: [],
           type: 'if',
           formValues: {
-            Mode: mode ?? 'random',
-            expression: expression ?? '',
+            Mode: 'expression',
+            expression: initalValue ?? '',
           },
         }
       );
@@ -219,6 +226,7 @@ export const getIfCondition = (updated?: () => void) => {
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.formElements = formElements;
+      return node;
     },
   };
 };

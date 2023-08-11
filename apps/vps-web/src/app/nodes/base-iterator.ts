@@ -13,6 +13,7 @@ import {
   runNodeFromThumb,
   RunNodeResult,
 } from '../simple-flow-engine/simple-flow-engine';
+import { NodeTask } from '../node-type-registry';
 
 export const SubOutputActionType = {
   pushToResult: 'pushToResult',
@@ -92,8 +93,8 @@ export const getBaseIterator = <T>(
     singleStep?: boolean
   ) => void,
   isConditionalSubflow?: boolean
-) => {
-  let node: INodeComponent<NodeInfo>;
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
@@ -309,11 +310,15 @@ export const getBaseIterator = <T>(
     });
   };
   return {
+    name: nodeTypeName,
+    family: 'flow-canvas',
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(
         'div',
@@ -344,7 +349,7 @@ export const getBaseIterator = <T>(
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            offsetY: 20,
+
             name: 'output',
             label: '[]',
             thumbConstraint: 'array',
@@ -353,7 +358,7 @@ export const getBaseIterator = <T>(
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 1,
             connectionType: ThumbConnectionType.start,
-            offsetY: 40,
+
             color: 'white',
             pathName: 'test',
             name: 'iteration',
@@ -365,7 +370,7 @@ export const getBaseIterator = <T>(
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            offsetY: 20,
+
             name: 'input',
             label: '[]',
             thumbConstraint: 'array',
@@ -726,6 +731,7 @@ export const getBaseIterator = <T>(
       node = rect.nodeComponent;
       node.nodeInfo.computeAsync = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      return node;
     },
   };
 };

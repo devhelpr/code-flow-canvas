@@ -4,6 +4,8 @@ import {
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { getBaseIterator, SubOutputActionType } from './base-iterator';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import { NodeInfo } from '../types/node-info';
 
 export type AnimatePathFunction = <T>(
   node: IRectNodeComponent<T>,
@@ -53,32 +55,38 @@ export type AnimatePathFromThumbFunction = <T>(
   singleStep?: boolean
 ) => void;
 
-export const getMap = <T>(
-  animatePath: AnimatePathFunction,
-  animatePathFromThumb: AnimatePathFromThumbFunction
-) => {
-  return getBaseIterator(
-    'map',
-    'Map',
-    (input) => SubOutputActionType.pushToResult,
-    animatePath,
-    animatePathFromThumb
-  );
-};
+export const getMap =
+  (
+    animatePath: AnimatePathFunction,
+    animatePathFromThumb: AnimatePathFromThumbFunction
+  ) =>
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_updated: () => void): NodeTask<NodeInfo> => {
+    return getBaseIterator(
+      'map',
+      'Map',
+      (input) => SubOutputActionType.pushToResult,
+      animatePath,
+      animatePathFromThumb
+    );
+  };
 
-export const getFilter = <T>(
-  animatePath: AnimatePathFunction,
-  animatePathFromThumb: AnimatePathFromThumbFunction
-) => {
-  return getBaseIterator(
-    'filter',
-    'Filter',
-    (input) =>
-      Boolean(input) === true
-        ? SubOutputActionType.keepInput
-        : SubOutputActionType.filterFromResult,
-    animatePath,
-    animatePathFromThumb,
-    true
-  );
-};
+export const getFilter =
+  (
+    animatePath: AnimatePathFunction,
+    animatePathFromThumb: AnimatePathFromThumbFunction
+  ) =>
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_updated: () => void): NodeTask<NodeInfo> => {
+    return getBaseIterator(
+      'filter',
+      'Filter',
+      (input) =>
+        Boolean(input) === true
+          ? SubOutputActionType.keepInput
+          : SubOutputActionType.filterFromResult,
+      animatePath,
+      animatePathFromThumb,
+      true
+    );
+  };

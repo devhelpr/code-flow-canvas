@@ -1,14 +1,18 @@
 import {
   createElement,
   INodeComponent,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeTask, NodeTaskFactory } from '../node-type-registry';
 
-export const getAction = (updated?: () => void) => {
-  let node: INodeComponent<NodeInfo>;
+export const getAction: NodeTaskFactory<NodeInfo> = (
+  updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
 
   let currentValue = 0;
   const initializeCompute = () => {
@@ -26,11 +30,16 @@ export const getAction = (updated?: () => void) => {
     };
   };
   return {
+    name: 'action',
+    family: 'flow-canvas',
+    category: 'state-machine',
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValue?: string,
+      containerNode?: INodeComponent<NodeInfo>
     ) => {
       const jsxComponentWrapper = createElement(
         'div',
@@ -82,6 +91,7 @@ export const getAction = (updated?: () => void) => {
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      return node;
     },
   };
 };
