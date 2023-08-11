@@ -1062,23 +1062,49 @@ export class AppElement extends HTMLElement {
       menubarElement.domElement,
       ''
     );
-    if (selectNodeType?.domElement) {
-      const nodeTasks = getNodeFactoryNames();
-      nodeTasks.forEach((nodeTask) => {
-        const factory = getNodeTaskFactory(nodeTask);
-        if (factory) {
-          const node = factory(canvasUpdated);
-          if (node.isContained) {
-            return;
+    const setupTasksInDropdown = () => {
+      if (selectNodeType?.domElement) {
+        (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
+        const nodeTasks = getNodeFactoryNames();
+        nodeTasks.forEach((nodeTask) => {
+          const factory = getNodeTaskFactory(nodeTask);
+          if (factory) {
+            const node = factory(canvasUpdated);
+            if (node.isContained) {
+              return;
+            }
           }
-        }
-        createOption(
-          selectNodeType.domElement as HTMLSelectElement,
-          nodeTask,
-          nodeTask
-        );
-      });
-    }
+          createOption(
+            selectNodeType.domElement as HTMLSelectElement,
+            nodeTask,
+            nodeTask
+          );
+        });
+      }
+    };
+    const setupTasksForContainerTaskInDropdown = (
+      allowedNodeTasks: string[]
+    ) => {
+      if (selectNodeType?.domElement) {
+        (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
+        const nodeTasks = getNodeFactoryNames();
+        nodeTasks.forEach((nodeTask) => {
+          const factory = getNodeTaskFactory(nodeTask);
+          if (factory) {
+            const node = factory(canvasUpdated);
+            if (allowedNodeTasks.indexOf(node.name) < 0) {
+              return;
+            }
+          }
+          createOption(
+            selectNodeType.domElement as HTMLSelectElement,
+            nodeTask,
+            nodeTask
+          );
+        });
+      }
+    };
+    setupTasksInDropdown();
 
     menubarElement.domElement.appendChild(
       NavbarComponents({
@@ -1608,6 +1634,15 @@ export class AppElement extends HTMLElement {
         const nodeInfo: any = node?.nodeInfo ?? {};
         console.log('nodeInfo', nodeInfo);
 
+        const factory = getNodeTaskFactory(nodeInfo.type);
+        if (factory) {
+          const nodeTask = factory(() => undefined);
+          if ((nodeTask.childNodeTasks || []).length > 0) {
+            setupTasksForContainerTaskInDropdown(nodeTask.childNodeTasks ?? []);
+          } else {
+            setupTasksInDropdown();
+          }
+        }
         // const [currentValue, setCurrentValue] = createNamedSignal(
         //   nodeElementId,
         //   (nodeInfo.formValues ?? {})['Expression'] ?? ''
@@ -1764,6 +1799,7 @@ export class AppElement extends HTMLElement {
         (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
           'hidden'
         );
+        setupTasksInDropdown();
       }
 
       currentNodeElementId = nodeElementId;

@@ -68,7 +68,7 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
               const node = props.canvasApp?.elements?.get(
                 nodeElementId
               ) as INodeComponent<NodeInfo>;
-              if (node && node.nodeInfo.taskTyp === 'canvas-node') {
+              if (node && node.nodeInfo.taskType === 'canvas-node') {
                 expression.createVisualNode(
                   node.nodeInfo.canvasAppInstance,
                   50,
@@ -90,7 +90,7 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
               startY
             );
             if (node) {
-              node.nodeInfo.taskTyp = nodeType;
+              node.nodeInfo.taskType = nodeType;
             }
           }
 

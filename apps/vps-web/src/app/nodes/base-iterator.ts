@@ -387,7 +387,7 @@ export const getBaseIterator = <T>(
         {
           FormElements: [],
           type: nodeTypeName,
-          taskTyp: nodeTypeName,
+          taskType: nodeTypeName,
         }
       );
       // rect.nodeComponent.nodeInfo = {};

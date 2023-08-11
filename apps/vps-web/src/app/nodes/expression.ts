@@ -47,7 +47,15 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       ).bind(compiledExpressionInfo.bindings);
       result = runExpression(
         expressionFunction,
-        { input: input, currentValue: currentValue, index: loopIndex ?? 0 },
+        {
+          input: input,
+          currentValue: currentValue,
+          value: currentValue,
+          current: currentValue,
+          last: currentValue,
+          index: loopIndex ?? 0,
+          random: Math.round(Math.random() * 100),
+        },
         true,
         compiledExpressionInfo.payloadProperties
       );

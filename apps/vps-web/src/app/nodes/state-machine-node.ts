@@ -18,7 +18,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
+export const createStateMachine: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -46,10 +46,10 @@ export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
   };
 
   return {
-    name: 'canvas-node',
+    name: 'state-machine',
     family: 'flow-canvas',
     isContainer: true,
-    childNodeTasks: ['expression'],
+    childNodeTasks: ['state', 'action'],
     getConnectionInfo: () => {
       if (!input || !output) {
         return { inputs: [], outputs: [] };
@@ -118,8 +118,8 @@ export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
         id,
         {
           FormElements: [],
-          type: 'canvas-node',
-          taskType: 'canvas-node',
+          type: 'state-machine',
+          taskType: 'state-machine',
         }
       );
       // rect.nodeComponent.nodeInfo = {};

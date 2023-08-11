@@ -7,11 +7,13 @@ import { getIfCondition } from '../nodes/if-condition';
 import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
+  getFilter,
   getMap,
 } from '../nodes/map';
 import { getShowInput } from '../nodes/show-input';
 import { getShowObject } from '../nodes/show-object';
 import { getState } from '../nodes/state';
+import { createStateMachine } from '../nodes/state-machine-node';
 import { getSum } from '../nodes/sum';
 import { NodeInfo } from '../types/node-info';
 import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
@@ -33,7 +35,7 @@ export const setupCanvasNodeTaskRegistry = (
   animatePathFromThumb: AnimatePathFromThumbFunction
 ) => {
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
-  registerNodeFactory('filter', getMap(animatePath, animatePathFromThumb));
+  registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));
   registerNodeFactory('expression', getExpression);
   registerNodeFactory('if-condition', getIfCondition);
   registerNodeFactory('array', getArray);
@@ -44,6 +46,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('action', getAction);
   registerNodeFactory('fetch', getFetch);
   registerNodeFactory('canvas-node', getCanvasNode);
+  registerNodeFactory('state-machine', createStateMachine);
 };
 
 export const getNodeTaskFactory = (name: string) => {
