@@ -61,6 +61,11 @@ import { menubarClasses, navBarButton } from './consts/classes';
 import { getCanvasNode } from './nodes/canvas-node';
 import { getState } from './nodes/state';
 import { getAction } from './nodes/action';
+import {
+  getNodeFactoryNames,
+  getNodeTaskFactory,
+  setupCanvasNodeTaskRegistry,
+} from './node-type-registry/canvas-node-task-registry';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -280,6 +285,7 @@ export class AppElement extends HTMLElement {
       );
     };
 
+    setupCanvasNodeTaskRegistry(animatePath, animatePathFromThumb);
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
@@ -293,251 +299,278 @@ export class AppElement extends HTMLElement {
             console.log('flow', flow);
             const nodesList = flow.flows.flow.nodes;
             nodesList.forEach((node) => {
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'expression'
-              ) {
-                const expression = getExpression(canvasUpdated);
-                expression.createVisualNode(
-                  canvasApp,
-                  node.x,
-                  node.y,
-                  node.id,
-                  node.nodeInfo?.formValues?.Expression ?? undefined
-                );
-              }
+              if (node.nodeType === NodeType.Shape) {
+                //node.nodeInfo?.type
+                const factory = getNodeTaskFactory(node.nodeInfo?.type);
+                if (factory) {
+                  const nodeTask = factory(canvasUpdated);
+                  if (nodeTask) {
+                    if (nodeTask.isContainer) {
+                      //const canvasNode = getCanvasNode(canvasUpdated);
+                      const canvasVisualNode = nodeTask.createVisualNode(
+                        canvasApp,
+                        node.x,
+                        node.y,
+                        node.id
+                      );
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'if'
-              ) {
-                const ifCondition = getIfCondition(canvasUpdated);
-                ifCondition.createVisualNode(
-                  canvasApp,
-                  node.x,
-                  node.y,
-                  node.id,
-                  node.nodeInfo?.formValues?.expression ?? ''
-                );
-              }
+                      if (node.elements) {
+                        node.elements.forEach((element) => {
+                          if (
+                            element.nodeType === NodeType.Shape &&
+                            element.nodeInfo?.type === 'expression' &&
+                            canvasVisualNode.nodeInfo
+                          ) {
+                            const expression = getExpression(canvasUpdated);
+                            expression.createVisualNode(
+                              canvasVisualNode.nodeInfo.canvasAppInstance,
+                              element.x,
+                              element.y,
+                              element.id,
+                              element.nodeInfo?.formValues?.Expression ??
+                                undefined,
+                              canvasVisualNode
+                            );
+                          }
+                        });
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'array'
-              ) {
-                const array = getArray(canvasUpdated);
-                array.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
+                        const info = nodeTask.getConnectionInfo?.();
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'sum'
-              ) {
-                const sum = getSum(canvasUpdated);
-                sum.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
+                        const elementList = Array.from(
+                          (canvasVisualNode.nodeInfo.canvasAppInstance
+                            .elements as ElementNodeMap<NodeInfo>) ?? []
+                        );
+                        node.elements.forEach((node) => {
+                          if (
+                            node.nodeType === NodeType.Connection &&
+                            canvasVisualNode.nodeInfo
+                          ) {
+                            let start:
+                              | IRectNodeComponent<NodeInfo>
+                              | undefined = undefined;
+                            let end: IRectNodeComponent<NodeInfo> | undefined =
+                              undefined;
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'show-input'
-              ) {
-                const showInput = getShowInput(canvasUpdated);
-                showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
+                            // undefined_input undefined_output
+                            if (node.startNodeId === 'undefined_input') {
+                              start = info?.inputs[0];
+                            } else if (node.startNodeId) {
+                              const startElement = elementList.find((e) => {
+                                const element = e[1] as IElementNode<NodeInfo>;
+                                return element.id === node.startNodeId;
+                              });
+                              if (startElement) {
+                                start =
+                                  startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                              }
+                            }
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'map'
-              ) {
-                const map = getMap(
-                  animatePath,
-                  animatePathFromThumb
-                )(canvasUpdated);
-                map.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
+                            if (node.endNodeId === 'undefined_output') {
+                              end = info?.outputs[0];
+                            } else if (node.endNodeId) {
+                              const endElement = elementList.find((e) => {
+                                const element = e[1] as IElementNode<NodeInfo>;
+                                return element.id === node.endNodeId;
+                              });
+                              if (endElement) {
+                                end =
+                                  endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                              }
+                            }
+                            let c1x = 0;
+                            let c1y = 0;
+                            let c2x = 0;
+                            let c2y = 0;
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'filter'
-              ) {
-                const filter = getFilter(
-                  animatePath,
-                  animatePathFromThumb
-                )(canvasUpdated);
-                filter.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
+                            if (
+                              node.controlPoints &&
+                              node.controlPoints.length > 0
+                            ) {
+                              c1x = node.controlPoints[0].x ?? 0;
+                              c1y = node.controlPoints[0].y ?? 0;
+                              c2x = node.controlPoints[1].x ?? 0;
+                              c2y = node.controlPoints[1].y ?? 0;
+                            }
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'fetch'
-              ) {
-                const expression = getFetch(canvasUpdated);
-                expression.createVisualNode(
-                  canvasApp,
-                  node.x,
-                  node.y,
-                  node.id,
-                  node.nodeInfo?.formValues?.url ?? undefined
-                );
-              }
+                            const curve =
+                              canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
+                                start?.x ?? node.x ?? 0,
+                                start?.y ?? node.y ?? 0,
+                                end?.x ?? node.endX ?? 0,
+                                end?.y ?? node.endY ?? 0,
+                                c1x,
+                                c1y,
+                                c2x,
+                                c2y,
+                                false,
+                                undefined,
+                                node.id,
+                                canvasVisualNode
+                              );
+                            if (!curve.nodeComponent) {
+                              return;
+                            }
+                            curve.nodeComponent.isControlled = true;
+                            curve.nodeComponent.nodeInfo = {};
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'show-object'
-              ) {
-                const expression = getShowObject(canvasUpdated);
-                expression.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
+                            if (start && curve.nodeComponent) {
+                              curve.nodeComponent.startNode = start;
+                              curve.nodeComponent.startNodeThumb =
+                                this.getThumbNodeByName(
+                                  node.startThumbName ?? '',
+                                  start
+                                );
+                            }
 
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'state'
-              ) {
-                const stateNode = getState(canvasUpdated);
-                stateNode.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
-
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'action'
-              ) {
-                const actionNode = getAction(canvasUpdated);
-                actionNode.createVisualNode(canvasApp, node.x, node.y, node.id);
-              }
-
-              if (
-                node.nodeType === NodeType.Shape &&
-                node.nodeInfo?.type === 'canvas-node'
-              ) {
-                const canvasNode = getCanvasNode(canvasUpdated);
-                const canvasVisualNode = canvasNode.createVisualNode(
-                  canvasApp,
-                  node.x,
-                  node.y,
-                  node.id
-                );
-
-                if (node.elements) {
-                  node.elements.forEach((element) => {
-                    if (
-                      element.nodeType === NodeType.Shape &&
-                      element.nodeInfo?.type === 'expression' &&
-                      canvasVisualNode.nodeInfo
-                    ) {
-                      const expression = getExpression(canvasUpdated);
-                      expression.createVisualNode(
-                        canvasVisualNode.nodeInfo.canvasAppInstance,
-                        element.x,
-                        element.y,
-                        element.id,
-                        element.nodeInfo?.formValues?.Expression ?? undefined,
-                        canvasVisualNode
+                            if (end && curve.nodeComponent) {
+                              curve.nodeComponent.endNode = end;
+                              curve.nodeComponent.endNodeThumb =
+                                this.getThumbNodeByName(
+                                  node.endThumbName ?? '',
+                                  end
+                                );
+                            }
+                            if (start) {
+                              start.connections?.push(curve.nodeComponent);
+                            }
+                            if (end) {
+                              end.connections?.push(curve.nodeComponent);
+                            }
+                            if (curve.nodeComponent.update) {
+                              curve.nodeComponent.update();
+                            }
+                          }
+                        });
+                      }
+                    } else {
+                      nodeTask.createVisualNode(
+                        canvasApp,
+                        node.x,
+                        node.y,
+                        node.id,
+                        node.nodeInfo?.formValues?.Expression ?? undefined
                       );
                     }
-                  });
-
-                  const info = canvasNode.getConnectionInfo?.();
-
-                  const elementList = Array.from(
-                    (canvasVisualNode.nodeInfo.canvasAppInstance
-                      .elements as ElementNodeMap<NodeInfo>) ?? []
-                  );
-                  node.elements.forEach((node) => {
-                    if (
-                      node.nodeType === NodeType.Connection &&
-                      canvasVisualNode.nodeInfo
-                    ) {
-                      let start: IRectNodeComponent<NodeInfo> | undefined =
-                        undefined;
-                      let end: IRectNodeComponent<NodeInfo> | undefined =
-                        undefined;
-
-                      // undefined_input undefined_output
-                      if (node.startNodeId === 'undefined_input') {
-                        start = info?.inputs[0];
-                      } else if (node.startNodeId) {
-                        const startElement = elementList.find((e) => {
-                          const element = e[1] as IElementNode<NodeInfo>;
-                          return element.id === node.startNodeId;
-                        });
-                        if (startElement) {
-                          start =
-                            startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                        }
-                      }
-
-                      if (node.endNodeId === 'undefined_output') {
-                        end = info?.outputs[0];
-                      } else if (node.endNodeId) {
-                        const endElement = elementList.find((e) => {
-                          const element = e[1] as IElementNode<NodeInfo>;
-                          return element.id === node.endNodeId;
-                        });
-                        if (endElement) {
-                          end =
-                            endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                        }
-                      }
-                      let c1x = 0;
-                      let c1y = 0;
-                      let c2x = 0;
-                      let c2y = 0;
-
-                      if (node.controlPoints && node.controlPoints.length > 0) {
-                        c1x = node.controlPoints[0].x ?? 0;
-                        c1y = node.controlPoints[0].y ?? 0;
-                        c2x = node.controlPoints[1].x ?? 0;
-                        c2y = node.controlPoints[1].y ?? 0;
-                      }
-
-                      const curve =
-                        canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
-                          start?.x ?? node.x ?? 0,
-                          start?.y ?? node.y ?? 0,
-                          end?.x ?? node.endX ?? 0,
-                          end?.y ?? node.endY ?? 0,
-                          c1x,
-                          c1y,
-                          c2x,
-                          c2y,
-                          false,
-                          undefined,
-                          node.id,
-                          canvasVisualNode
-                        );
-                      if (!curve.nodeComponent) {
-                        return;
-                      }
-                      curve.nodeComponent.isControlled = true;
-                      curve.nodeComponent.nodeInfo = {};
-
-                      if (start && curve.nodeComponent) {
-                        curve.nodeComponent.startNode = start;
-                        curve.nodeComponent.startNodeThumb =
-                          this.getThumbNodeByName(
-                            node.startThumbName ?? '',
-                            start
-                          );
-                      }
-
-                      if (end && curve.nodeComponent) {
-                        curve.nodeComponent.endNode = end;
-                        curve.nodeComponent.endNodeThumb =
-                          this.getThumbNodeByName(node.endThumbName ?? '', end);
-                      }
-                      if (start) {
-                        start.connections?.push(curve.nodeComponent);
-                      }
-                      if (end) {
-                        end.connections?.push(curve.nodeComponent);
-                      }
-                      if (curve.nodeComponent.update) {
-                        curve.nodeComponent.update();
-                      }
-                    }
-                  });
+                  }
                 }
               }
+              // } else if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'expression'
+              // ) {
+              //   const expression = getExpression(canvasUpdated);
+              //   expression.createVisualNode(
+              //     canvasApp,
+              //     node.x,
+              //     node.y,
+              //     node.id,
+              //     node.nodeInfo?.formValues?.Expression ?? undefined
+              //   );
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'if'
+              // ) {
+              //   const ifCondition = getIfCondition(canvasUpdated);
+              //   ifCondition.createVisualNode(
+              //     canvasApp,
+              //     node.x,
+              //     node.y,
+              //     node.id,
+              //     node.nodeInfo?.formValues?.expression ?? ''
+              //   );
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'array'
+              // ) {
+              //   const array = getArray(canvasUpdated);
+              //   array.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'sum'
+              // ) {
+              //   const sum = getSum(canvasUpdated);
+              //   sum.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'show-input'
+              // ) {
+              //   const showInput = getShowInput(canvasUpdated);
+              //   showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'map'
+              // ) {
+              //   const map = getMap(
+              //     animatePath,
+              //     animatePathFromThumb
+              //   )(canvasUpdated);
+              //   map.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'filter'
+              // ) {
+              //   const filter = getFilter(
+              //     animatePath,
+              //     animatePathFromThumb
+              //   )(canvasUpdated);
+              //   filter.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'fetch'
+              // ) {
+              //   const expression = getFetch(canvasUpdated);
+              //   expression.createVisualNode(
+              //     canvasApp,
+              //     node.x,
+              //     node.y,
+              //     node.id,
+              //     node.nodeInfo?.formValues?.url ?? undefined
+              //   );
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'show-object'
+              // ) {
+              //   const expression = getShowObject(canvasUpdated);
+              //   expression.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'state'
+              // ) {
+              //   const stateNode = getState(canvasUpdated);
+              //   stateNode.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'action'
+              // ) {
+              //   const actionNode = getAction(canvasUpdated);
+              //   actionNode.createVisualNode(canvasApp, node.x, node.y, node.id);
+              // }
+
+              // if (
+              //   node.nodeType === NodeType.Shape &&
+              //   node.nodeInfo?.type === 'canvas-node'
+              // ) {
+              // }
             });
 
             const elementList = Array.from(canvasApp?.elements ?? []);
@@ -1158,70 +1191,14 @@ export class AppElement extends HTMLElement {
       ''
     );
     if (selectNodeType?.domElement) {
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'expression',
-        'expression'
-      );
-      createOption(selectNodeType.domElement as HTMLSelectElement, 'if', 'if');
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'fetch',
-        'fetch'
-      );
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'show-input',
-        'show-input'
-      );
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'show-object',
-        'show-object'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'array',
-        'array'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'sum',
-        'sum'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'map',
-        'map'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'filter',
-        'filter'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'canvas-node',
-        'canvas-node'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'state',
-        'state'
-      );
-
-      createOption(
-        selectNodeType.domElement as HTMLSelectElement,
-        'action',
-        'action'
-      );
+      const nodeTasks = getNodeFactoryNames();
+      nodeTasks.forEach((nodeTask) => {
+        createOption(
+          selectNodeType.domElement as HTMLSelectElement,
+          nodeTask,
+          nodeTask
+        );
+      });
     }
 
     menubarElement.domElement.appendChild(

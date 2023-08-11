@@ -26,6 +26,7 @@ import { NodeInfo } from '../types/node-info';
 import { getCanvasNode } from '../nodes/canvas-node';
 import { getState } from '../nodes/state';
 import { getAction } from '../nodes/action';
+import { getNodeTaskFactory } from '../node-type-registry/canvas-node-task-registry';
 
 export interface NavbarComponentsProps {
   selectNodeType: HTMLSelectElement;
@@ -58,8 +59,10 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
           const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
           const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
-          if (nodeType === 'expression') {
-            const expression = getExpression(props.canvasUpdated);
+          const factory = getNodeTaskFactory(nodeType);
+
+          if (factory && nodeType === 'expression') {
+            const expression = factory(props.canvasUpdated);
             const nodeElementId = getSelectedNode();
             if (nodeElementId) {
               const node = props.canvasApp?.elements?.get(
@@ -79,46 +82,58 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
               }
             }
             expression.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'if') {
-            const ifCondition = getIfCondition(props.canvasUpdated);
-            ifCondition.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'show-input') {
-            const showInput = getShowInput(props.canvasUpdated);
-            showInput.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'fetch') {
-            const fetch = getFetch(props.canvasUpdated);
-            fetch.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'show-object') {
-            const showObject = getShowObject(props.canvasUpdated);
-            showObject.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'array') {
-            const array = getArray(props.canvasUpdated);
-            array.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'sum') {
-            const showObject = getSum(props.canvasUpdated);
-            showObject.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'map') {
-            const map = getMap(
-              props.animatePath,
-              props.animatePathFromThumb
-            )(props.canvasUpdated);
-            map.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'filter') {
-            const filter = getFilter(
-              props.animatePath,
-              props.animatePathFromThumb
-            )(props.canvasUpdated);
-            filter.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'canvas-node') {
-            const canvasNode = getCanvasNode(props.canvasUpdated);
-            canvasNode.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'state') {
-            const state = getState(props.canvasUpdated);
-            state.createVisualNode(props.canvasApp, startX, startY);
-          } else if (nodeType === 'action') {
-            const action = getAction(props.canvasUpdated);
-            action.createVisualNode(props.canvasApp, startX, startY);
+          } else if (factory) {
+            const nodeTask = factory(props.canvasUpdated);
+            const node = nodeTask.createVisualNode(
+              props.canvasApp,
+              startX,
+              startY
+            );
+            if (node) {
+              node.nodeInfo.taskTyp = nodeType;
+            }
           }
+
+          // else if (nodeType === 'if') {
+          //   const ifCondition = getIfCondition(props.canvasUpdated);
+          //   ifCondition.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'show-input') {
+          //   const showInput = getShowInput(props.canvasUpdated);
+          //   showInput.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'fetch') {
+          //   const fetch = getFetch(props.canvasUpdated);
+          //   fetch.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'show-object') {
+          //   const showObject = getShowObject(props.canvasUpdated);
+          //   showObject.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'array') {
+          //   const array = getArray(props.canvasUpdated);
+          //   array.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'sum') {
+          //   const showObject = getSum(props.canvasUpdated);
+          //   showObject.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'map') {
+          //   const map = getMap(
+          //     props.animatePath,
+          //     props.animatePathFromThumb
+          //   )(props.canvasUpdated);
+          //   map.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'filter') {
+          //   const filter = getFilter(
+          //     props.animatePath,
+          //     props.animatePathFromThumb
+          //   )(props.canvasUpdated);
+          //   filter.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'canvas-node') {
+          //   const canvasNode = getCanvasNode(props.canvasUpdated);
+          //   canvasNode.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'state') {
+          //   const state = getState(props.canvasUpdated);
+          //   state.createVisualNode(props.canvasApp, startX, startY);
+          // } else if (nodeType === 'action') {
+          //   const action = getAction(props.canvasUpdated);
+          //   action.createVisualNode(props.canvasApp, startX, startY);
+          // }
           return false;
         }}
       >
