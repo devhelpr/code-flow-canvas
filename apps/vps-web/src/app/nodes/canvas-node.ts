@@ -16,7 +16,7 @@ import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-type-registry';
+} from '../node-task-registry';
 
 export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void

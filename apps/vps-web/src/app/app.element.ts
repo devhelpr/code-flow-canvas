@@ -37,17 +37,12 @@ import { FormComponent } from './components/form-component';
 import { run, RunNodeResult } from './simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from './types/node-info';
 import { getExpression } from './nodes/expression';
-import { getIfCondition } from './nodes/if-condition';
-import { getShowInput } from './nodes/show-input';
-import { getSum } from './nodes/sum';
-import { getFilter, getMap } from './nodes/map';
 import {
   setSpeedMeter,
   timers,
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
 } from './follow-path/animate-path';
-import { getArray } from './nodes/array';
 import {
   createIndexedDBStorageProvider,
   FlowrunnerIndexedDbStorageProvider,
@@ -55,17 +50,12 @@ import {
 import { getPointOnConnection } from './follow-path/point-on-connection';
 import { AppComponents } from './components/app-components';
 import { NavbarComponents } from './components/navbar-components';
-import { getFetch } from './nodes/fetch';
-import { getShowObject } from './nodes/show-object';
 import { menubarClasses, navBarButton } from './consts/classes';
-import { getCanvasNode } from './nodes/canvas-node';
-import { getState } from './nodes/state';
-import { getAction } from './nodes/action';
 import {
   getNodeFactoryNames,
   getNodeTaskFactory,
   setupCanvasNodeTaskRegistry,
-} from './node-type-registry/canvas-node-task-registry';
+} from './node-task-registry/canvas-node-task-registry';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -453,123 +443,6 @@ export class AppElement extends HTMLElement {
                   }
                 }
               }
-              // } else if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'expression'
-              // ) {
-              //   const expression = getExpression(canvasUpdated);
-              //   expression.createVisualNode(
-              //     canvasApp,
-              //     node.x,
-              //     node.y,
-              //     node.id,
-              //     node.nodeInfo?.formValues?.Expression ?? undefined
-              //   );
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'if'
-              // ) {
-              //   const ifCondition = getIfCondition(canvasUpdated);
-              //   ifCondition.createVisualNode(
-              //     canvasApp,
-              //     node.x,
-              //     node.y,
-              //     node.id,
-              //     node.nodeInfo?.formValues?.expression ?? ''
-              //   );
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'array'
-              // ) {
-              //   const array = getArray(canvasUpdated);
-              //   array.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'sum'
-              // ) {
-              //   const sum = getSum(canvasUpdated);
-              //   sum.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'show-input'
-              // ) {
-              //   const showInput = getShowInput(canvasUpdated);
-              //   showInput.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'map'
-              // ) {
-              //   const map = getMap(
-              //     animatePath,
-              //     animatePathFromThumb
-              //   )(canvasUpdated);
-              //   map.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'filter'
-              // ) {
-              //   const filter = getFilter(
-              //     animatePath,
-              //     animatePathFromThumb
-              //   )(canvasUpdated);
-              //   filter.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'fetch'
-              // ) {
-              //   const expression = getFetch(canvasUpdated);
-              //   expression.createVisualNode(
-              //     canvasApp,
-              //     node.x,
-              //     node.y,
-              //     node.id,
-              //     node.nodeInfo?.formValues?.url ?? undefined
-              //   );
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'show-object'
-              // ) {
-              //   const expression = getShowObject(canvasUpdated);
-              //   expression.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'state'
-              // ) {
-              //   const stateNode = getState(canvasUpdated);
-              //   stateNode.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'action'
-              // ) {
-              //   const actionNode = getAction(canvasUpdated);
-              //   actionNode.createVisualNode(canvasApp, node.x, node.y, node.id);
-              // }
-
-              // if (
-              //   node.nodeType === NodeType.Shape &&
-              //   node.nodeInfo?.type === 'canvas-node'
-              // ) {
-              // }
             });
 
             const elementList = Array.from(canvasApp?.elements ?? []);

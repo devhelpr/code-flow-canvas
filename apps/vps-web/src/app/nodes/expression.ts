@@ -16,7 +16,7 @@ import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-type-registry';
+} from '../node-task-registry';
 
 export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -37,7 +37,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
-      const expression = node.nodeInfo.formValues?.['Expression'] ?? '';
+      const expression = node.nodeInfo.formValues?.['expression'] ?? '';
       const compiledExpressionInfo = compileExpressionAsInfo(expression);
       const expressionFunction = (
         new Function(
@@ -85,17 +85,17 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
-      const initialValue = initalValues?.['Expression'] ?? '';
+      const initialValue = initalValues?.['expression'] ?? '';
 
       const formElements = [
         {
           fieldType: FormFieldType.Text,
-          fieldName: 'Expression',
+          fieldName: 'expression',
           value: initialValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
-              Expression: value,
+              expression: value,
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {
@@ -156,7 +156,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         {
           type: 'expression',
           formValues: {
-            Expression: initialValue ?? '',
+            expression: initialValue ?? '',
           },
         },
         containerNode

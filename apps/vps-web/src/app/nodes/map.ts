@@ -4,7 +4,7 @@ import {
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { getBaseIterator, SubOutputActionType } from './base-iterator';
-import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import { NodeTask, NodeTaskFactory } from '../node-task-registry';
 import { NodeInfo } from '../types/node-info';
 
 export type AnimatePathFunction = <T>(

@@ -13,7 +13,7 @@ import {
   runNodeFromThumb,
   RunNodeResult,
 } from '../simple-flow-engine/simple-flow-engine';
-import { InitialValues, NodeTask } from '../node-type-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 
 export const SubOutputActionType = {
   pushToResult: 'pushToResult',

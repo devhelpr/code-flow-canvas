@@ -26,7 +26,7 @@ import { NodeInfo } from '../types/node-info';
 import { getCanvasNode } from '../nodes/canvas-node';
 import { getState } from '../nodes/state';
 import { getAction } from '../nodes/action';
-import { getNodeTaskFactory } from '../node-type-registry/canvas-node-task-registry';
+import { getNodeTaskFactory } from '../node-task-registry/canvas-node-task-registry';
 
 export interface NavbarComponentsProps {
   selectNodeType: HTMLSelectElement;

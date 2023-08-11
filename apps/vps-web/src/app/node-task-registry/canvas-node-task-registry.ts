@@ -14,7 +14,7 @@ import { getShowObject } from '../nodes/show-object';
 import { getState } from '../nodes/state';
 import { getSum } from '../nodes/sum';
 import { NodeInfo } from '../types/node-info';
-import { NodeTaskFactory, NodeTypeRegistry } from './node-type-registry';
+import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
