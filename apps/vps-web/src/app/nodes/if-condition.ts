@@ -13,7 +13,11 @@ import {
 import { FormFieldType } from '../components/form-component';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-type-registry';
 
 export const getIfCondition: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -82,9 +86,15 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: string,
+      initialValues?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
+      const initialExpressionValue = initialValues?.['expression'] ?? '';
+      console.log(
+        'initialExpressionValue',
+        initialExpressionValue,
+        initialValues
+      );
       const formElements = [
         {
           fieldType: FormFieldType.Select,
@@ -108,7 +118,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         {
           fieldType: FormFieldType.Text,
           fieldName: 'expression',
-          value: initalValue ?? '',
+          value: initialExpressionValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -132,7 +142,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
           },
         },
         undefined,
-        initalValue ?? 'expression'
+        initialExpressionValue ?? 'expression'
         // FormComponent({
         //   id: 'test',
         //   formElements: [],
@@ -146,7 +156,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       console.log('trackNamedSignal register if-condition', id);
 
       let currentMode = 'expression';
-      let currentValue = initalValue ?? '';
+      let currentValue = initialExpressionValue ?? '';
 
       trackNamedSignal(`${id}_Mode`, (value) => {
         console.log('trackNamedSignal if-condition', id, value);
@@ -209,10 +219,10 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         id,
         {
           formElements: [],
-          type: 'if',
+          type: 'if-condition',
           formValues: {
             Mode: 'expression',
-            expression: initalValue ?? '',
+            expression: initialExpressionValue ?? '',
           },
         }
       );

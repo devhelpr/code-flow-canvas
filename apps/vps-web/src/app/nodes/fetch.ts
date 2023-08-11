@@ -9,7 +9,11 @@ import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-type-registry';
 
 export const getFetch: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -89,17 +93,18 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: string,
+      initalValues?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
-      console.log('createVisualNode createNamedSignal', initalValue, id);
+      const url = initalValues?.['url'] ?? '';
+      console.log('createVisualNode createNamedSignal', url, id);
       //createNamedSignal(id + '_' + 'Expression', expression ?? '');
 
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: 'url',
-          value: initalValue ?? '',
+          value: url ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -164,7 +169,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         {
           type: 'fetch',
           formValues: {
-            url: initalValue ?? '',
+            url: url ?? '',
           },
         }
       );

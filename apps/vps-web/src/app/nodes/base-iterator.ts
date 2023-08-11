@@ -13,7 +13,7 @@ import {
   runNodeFromThumb,
   RunNodeResult,
 } from '../simple-flow-engine/simple-flow-engine';
-import { NodeTask } from '../node-type-registry';
+import { InitialValues, NodeTask } from '../node-type-registry';
 
 export const SubOutputActionType = {
   pushToResult: 'pushToResult',
@@ -317,7 +317,7 @@ export const getBaseIterator = <T>(
       x: number,
       y: number,
       id?: string,
-      initalValue?: string,
+      initalValue?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(

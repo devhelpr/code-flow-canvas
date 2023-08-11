@@ -12,7 +12,11 @@ import {
   runExpression,
 } from '@devhelpr/expression-compiler';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-type-registry';
 
 export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -78,17 +82,16 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: string,
+      initalValues?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
-      console.log('createVisualNode createNamedSignal', initalValue, id);
-      //createNamedSignal(id + '_' + 'Expression', expression ?? '');
+      const initialValue = initalValues?.['Expression'] ?? '';
 
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: 'Expression',
-          value: initalValue ?? '',
+          value: initialValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -153,7 +156,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         {
           type: 'expression',
           formValues: {
-            Expression: initalValue ?? '',
+            Expression: initialValue ?? '',
           },
         },
         containerNode

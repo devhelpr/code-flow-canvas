@@ -4,6 +4,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType } from '../types/node-info';
 
+export type InitialValues = Record<string, any>;
 export type NodeTaskFactory<T> = (onUpdatedCanvas: () => void) => NodeTask<T>;
 export type NodeTask<T> = {
   name: string;
@@ -16,7 +17,7 @@ export type NodeTask<T> = {
     x: number,
     y: number,
     id?: string,
-    initalValue?: string,
+    initalValues?: InitialValues,
     containerNode?: INodeComponent<T>
   ) => IRectNodeComponent<T>;
   getConnectionInfo?: () => {

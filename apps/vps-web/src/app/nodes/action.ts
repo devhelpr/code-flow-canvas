@@ -7,7 +7,11 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-type-registry';
 
 export const getAction: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -38,7 +42,7 @@ export const getAction: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: string,
+      initalValue?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
       const jsxComponentWrapper = createElement(

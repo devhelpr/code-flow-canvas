@@ -327,8 +327,7 @@ export class AppElement extends HTMLElement {
                               element.x,
                               element.y,
                               element.id,
-                              element.nodeInfo?.formValues?.Expression ??
-                                undefined,
+                              element.nodeInfo?.formValues ?? undefined,
                               canvasVisualNode
                             );
                           }
@@ -448,7 +447,7 @@ export class AppElement extends HTMLElement {
                         node.x,
                         node.y,
                         node.id,
-                        node.nodeInfo?.formValues?.Expression ?? undefined
+                        node.nodeInfo?.formValues ?? undefined
                       );
                     }
                   }

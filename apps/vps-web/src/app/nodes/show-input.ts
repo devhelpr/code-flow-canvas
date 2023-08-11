@@ -6,7 +6,11 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import { NodeTask, NodeTaskFactory } from '../node-type-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-type-registry';
 
 export const getShowInput: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
@@ -54,7 +58,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: string,
+      initalValues?: InitialValues,
       containerNode?: INodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(
