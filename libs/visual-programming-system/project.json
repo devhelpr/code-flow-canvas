@@ -22,15 +22,15 @@
       "dependsOn": ["build"]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/visual-programming-system/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/vite:test",
-      "outputs": ["coverage/libs/visual-programming-system"],
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/libs/visual-programming-system"],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/libs/visual-programming-system"

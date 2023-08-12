@@ -22,15 +22,15 @@
       "dependsOn": ["build"]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/jsx-runtime/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/vite:test",
-      "outputs": ["coverage/libs/jsx-runtime"],
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/libs/jsx-runtime"],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/libs/jsx-runtime"

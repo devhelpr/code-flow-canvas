@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
-import jsxCompiler from './/vite/vite-plugin-jsx-compiler';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
+import jsxCompiler from './vite/vite-plugin-jsx-compiler';
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
   server: {
@@ -9,14 +9,9 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [
-    viteTsConfigPaths({
-      root: '../../',
-    }),
-    jsxCompiler(),
-  ],
+  plugins: [nxViteTsPaths(), jsxCompiler()],
   esbuild: {
-    sourcemap: false
+    sourcemap: false,
   },
 
   // Uncomment this if you are using workers.
