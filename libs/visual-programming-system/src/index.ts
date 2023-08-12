@@ -10,5 +10,6 @@ export * from './canvas-app';
 export * from './utils/bezier';
 export * from './spatial-partitioning';
 export * from './constants/measures';
+export * from './components/utils/calculate-control-points';
 //export * from './jsx/jsx-pragma';
 //export * from './jsx-runtime';

@@ -5,6 +5,8 @@ import {
   IConnectionNodeComponent,
   IRectNodeComponent,
   LineType,
+  onGetConnectionToThumbOffset,
+  paddingRect,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
@@ -14,6 +16,16 @@ export const getPointOnConnection = <T>(
   start: IRectNodeComponent<T>,
   end: IRectNodeComponent<T>
 ) => {
+  const { offsetX: startOffsetX, offsetY: startOffsetY } =
+    onGetConnectionToThumbOffset(
+      ControlAndEndPointNodeType.start,
+      connection.startNodeThumb?.thumbType ?? ThumbType.None
+    );
+  const { offsetX: endOffsetX, offsetY: endOffsetY } =
+    onGetConnectionToThumbOffset(
+      ControlAndEndPointNodeType.end,
+      connection.endNodeThumb?.thumbType ?? ThumbType.None
+    );
   const startHelper = connection.onCalculateControlPoints(
     start,
     ControlAndEndPointNodeType.start,
@@ -34,14 +46,17 @@ export const getPointOnConnection = <T>(
     connection.startNodeThumb
   );
 
-  const tx = -15;
-  const ty = -15;
+  const tx = -paddingRect;
+  const ty = -paddingRect;
 
   const bezierCurvePoints =
     connection.lineType === LineType.BezierCubic
       ? getPointOnCubicBezierCurve(
           Math.min(percentage, 1),
-          { x: startHelper.x + tx, y: startHelper.y + ty },
+          {
+            x: startHelper.x + tx + startOffsetX,
+            y: startHelper.y + ty + startOffsetY,
+          },
           {
             x: startHelper.cx + tx,
             y: startHelper.cy + ty,
@@ -50,16 +65,19 @@ export const getPointOnConnection = <T>(
             x: endHelper.cx + tx,
             y: endHelper.cy + ty,
           },
-          { x: endHelper.x + tx, y: endHelper.y + ty }
+          { x: endHelper.x + tx + endOffsetX, y: endHelper.y + ty + endOffsetY }
         )
       : getPointOnQuadraticBezierCurve(
           Math.min(percentage, 1),
-          { x: startHelper.x + tx, y: startHelper.y + ty },
+          {
+            x: startHelper.x + tx + startOffsetX,
+            y: startHelper.y + ty + startOffsetY,
+          },
           {
             x: startHelper.cx + tx,
             y: startHelper.cy + ty,
           },
-          { x: endHelper.x + tx, y: endHelper.y + ty }
+          { x: endHelper.x + tx + endOffsetX, y: endHelper.y + ty + endOffsetY }
         );
 
   return bezierCurvePoints;
