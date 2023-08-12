@@ -89,7 +89,8 @@ export const getState: NodeTaskFactory<NodeInfo> = (
           formElements: [],
           type: 'state',
           formValues: {},
-        }
+        },
+        containerNode
       );
 
       if (!rect.nodeComponent) {

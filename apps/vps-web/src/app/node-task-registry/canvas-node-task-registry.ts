@@ -50,5 +50,5 @@ export const setupCanvasNodeTaskRegistry = (
 };
 
 export const getNodeTaskFactory = (name: string) => {
-  return canvasNodeTaskRegistry[name];
+  return canvasNodeTaskRegistry[name] ?? false;
 };

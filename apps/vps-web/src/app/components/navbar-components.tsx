@@ -5,7 +5,6 @@ import {
   INodeComponent,
   IRectNodeComponent,
   NodeType,
-  createElementMap,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
@@ -14,18 +13,8 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
-import { getArray } from '../nodes/array';
-import { getExpression } from '../nodes/expression';
-import { getFetch } from '../nodes/fetch';
-import { getIfCondition } from '../nodes/if-condition';
-import { getFilter, getMap } from '../nodes/map';
-import { getShowInput } from '../nodes/show-input';
-import { getShowObject } from '../nodes/show-object';
-import { getSum } from '../nodes/sum';
+
 import { NodeInfo } from '../types/node-info';
-import { getCanvasNode } from '../nodes/canvas-node';
-import { getState } from '../nodes/state';
-import { getAction } from '../nodes/action';
 import { getNodeTaskFactory } from '../node-task-registry/canvas-node-task-registry';
 
 export interface NavbarComponentsProps {
@@ -61,29 +50,44 @@ export const NavbarComponents = (props: NavbarComponentsProps) => (
 
           const factory = getNodeTaskFactory(nodeType);
 
-          if (factory && nodeType === 'expression') {
-            const expression = factory(props.canvasUpdated);
+          if (factory) {
+            const nodeTask = factory(props.canvasUpdated);
+
             const nodeElementId = getSelectedNode();
             if (nodeElementId) {
               const node = props.canvasApp?.elements?.get(
                 nodeElementId
               ) as INodeComponent<NodeInfo>;
-              if (node && node.nodeInfo.taskType === 'canvas-node') {
-                expression.createVisualNode(
-                  node.nodeInfo.canvasAppInstance,
-                  50,
-                  50,
-                  undefined,
-                  undefined,
-                  node
-                );
 
-                return;
+              const selectedNodeTaskFactory = getNodeTaskFactory(
+                node.nodeInfo.taskType
+              );
+              if (node && selectedNodeTaskFactory) {
+                const selectedNodeTask = selectedNodeTaskFactory(
+                  props.canvasUpdated
+                );
+                if (
+                  selectedNodeTask.isContainer &&
+                  (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
+                ) {
+                  nodeTask.createVisualNode(
+                    node.nodeInfo.canvasAppInstance,
+                    50,
+                    50,
+                    undefined,
+                    undefined,
+                    node
+                  );
+
+                  return;
+                } else if (selectedNodeTask.isContainer) {
+                  return;
+                }
               }
             }
-            expression.createVisualNode(props.canvasApp, startX, startY);
-          } else if (factory) {
-            const nodeTask = factory(props.canvasUpdated);
+            //factory.createVisualNode(props.canvasApp, startX, startY);
+            //} else if (factory) {
+            //const nodeTask = factory(props.canvasUpdated);
             const node = nodeTask.createVisualNode(
               props.canvasApp,
               startX,

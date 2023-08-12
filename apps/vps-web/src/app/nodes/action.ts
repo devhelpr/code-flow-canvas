@@ -87,7 +87,8 @@ export const getAction: NodeTaskFactory<NodeInfo> = (
           formElements: [],
           type: 'action',
           formValues: {},
-        }
+        },
+        containerNode
       );
 
       if (!rect.nodeComponent) {

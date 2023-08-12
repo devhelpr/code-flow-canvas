@@ -296,7 +296,6 @@ export class AppElement extends HTMLElement {
                   const nodeTask = factory(canvasUpdated);
                   if (nodeTask) {
                     if (nodeTask.isContainer) {
-                      //const canvasNode = getCanvasNode(canvasUpdated);
                       const canvasVisualNode = nodeTask.createVisualNode(
                         canvasApp,
                         node.x,
@@ -304,22 +303,30 @@ export class AppElement extends HTMLElement {
                         node.id
                       );
 
-                      if (node.elements) {
+                      if (node.elements && canvasVisualNode.nodeInfo) {
                         node.elements.forEach((element) => {
                           if (
                             element.nodeType === NodeType.Shape &&
-                            element.nodeInfo?.type === 'expression' &&
-                            canvasVisualNode.nodeInfo
+                            element.nodeInfo?.type &&
+                            (nodeTask.childNodeTasks ?? []).indexOf(
+                              element.nodeInfo?.type
+                            ) > -1
                           ) {
-                            const expression = getExpression(canvasUpdated);
-                            expression.createVisualNode(
-                              canvasVisualNode.nodeInfo.canvasAppInstance,
-                              element.x,
-                              element.y,
-                              element.id,
-                              element.nodeInfo?.formValues ?? undefined,
-                              canvasVisualNode
+                            const factory = getNodeTaskFactory(
+                              element.nodeInfo?.type
                             );
+                            if (factory) {
+                              const childNodeTask = factory(canvasUpdated);
+
+                              childNodeTask.createVisualNode(
+                                canvasVisualNode.nodeInfo.canvasAppInstance,
+                                element.x,
+                                element.y,
+                                element.id,
+                                element.nodeInfo?.formValues ?? undefined,
+                                canvasVisualNode
+                              );
+                            }
                           }
                         });
 
