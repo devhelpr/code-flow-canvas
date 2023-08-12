@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "compilerOptions": {   
-    "jsx": "preserve",
-    "jsxFactory": "createJSXElement",
-    "jsxFragmentFactory": "Fragment",
+    // "jsx": "preserve",
+    // "jsxFactory": "createJSXElement",
+    // "jsxFragmentFactory": "Fragment",
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -22,7 +22,7 @@
     "types": ["vite/client", "vitest"],
     
   },
-  "include": ["src", "../../libs/visual-programming-system/src/camera"],
+  "include": ["src"],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -9,17 +9,11 @@ import {
   createEffect,
   getSelectedNode,
   setSelectNode,
-  getVisbility,
-  setVisibility,
   setupMarkupElement,
   createElementMap,
   createCanvasApp,
   CanvasAppInstance,
   ThumbType,
-  ThumbConnectionType,
-  getPointOnCubicBezierCurve,
-  ControlAndEndPointNodeType,
-  CurveType,
   IRectNodeComponent,
   IConnectionNodeComponent,
   IThumbNodeComponent,
@@ -37,7 +31,6 @@ import { FormComponent } from './components/form-component';
 
 import { run, RunNodeResult } from './simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from './types/node-info';
-import { getExpression } from './nodes/expression';
 import {
   setSpeedMeter,
   timers,
@@ -1127,16 +1120,17 @@ export class AppElement extends HTMLElement {
     };
     setupTasksInDropdown();
 
-    menubarElement.domElement.appendChild(
-      NavbarComponents({
-        selectNodeType: selectNodeType.domElement as HTMLSelectElement,
-        animatePath: animatePath,
-        animatePathFromThumb: animatePathFromThumb,
-        canvasUpdated: canvasUpdated,
-        canvasApp: this.canvasApp,
-        removeElement: this.removeElement,
-      }) as unknown as HTMLElement
-    );
+    //menubarElement.domElement.appendChild(
+    NavbarComponents({
+      selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+      animatePath: animatePath,
+      animatePathFromThumb: animatePathFromThumb,
+      canvasUpdated: canvasUpdated,
+      canvasApp: this.canvasApp,
+      removeElement: this.removeElement,
+      rootElement: menubarElement.domElement as HTMLElement,
+    }) as unknown as HTMLElement;
+    //);
 
     // createElement(
     //   'button',
@@ -1600,11 +1594,12 @@ export class AppElement extends HTMLElement {
         showProgressOnPathExecution(progressOoPathExecution, pathExecution);
       }
     };
-    rootElement.appendChild(
-      AppComponents({
-        setExecutionPath,
-      }) as unknown as HTMLElement
-    );
+    //rootElement.appendChild(
+    AppComponents({
+      setExecutionPath,
+      rootElement: rootElement,
+    }) as unknown as HTMLElement;
+    //);
     // let raf = -1;
     // let inputTimeout = -1;
 
@@ -1669,7 +1664,16 @@ export class AppElement extends HTMLElement {
         //   (nodeInfo.formValues ?? {})['Expression'] ?? ''
         // );
 
+        const formElementInstance = createElement(
+          'div',
+          {},
+          sidebarContainer.domElement,
+          undefined
+        );
+        formElement = formElementInstance as INodeComponent<NodeInfo>;
+
         const form = FormComponent({
+          rootElement: formElement.domElement as HTMLElement,
           id: nodeElementId,
           onSave: (values: any) => {
             console.log('onSave', values);
@@ -1772,14 +1776,6 @@ export class AppElement extends HTMLElement {
           //   }, 100) as unknown as number;
           // },
         }) as unknown as HTMLElement;
-
-        const formElementInstance = createElement(
-          'div',
-          {},
-          sidebarContainer.domElement,
-          form
-        );
-        formElement = formElementInstance as INodeComponent<NodeInfo>;
 
         (
           sidebarContainer.domElement as unknown as HTMLElement
