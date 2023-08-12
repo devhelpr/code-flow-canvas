@@ -27,6 +27,7 @@ import {
   updateNamedSignal,
   NodeType,
   ElementNodeMap,
+  LineType,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -389,20 +390,33 @@ export class AppElement extends HTMLElement {
                             }
 
                             const curve =
-                              canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
-                                start?.x ?? node.x ?? 0,
-                                start?.y ?? node.y ?? 0,
-                                end?.x ?? node.endX ?? 0,
-                                end?.y ?? node.endY ?? 0,
-                                c1x,
-                                c1y,
-                                c2x,
-                                c2y,
-                                false,
-                                undefined,
-                                node.id,
-                                canvasVisualNode
-                              );
+                              node.lineType === LineType.BezierCubic
+                                ? canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
+                                    start?.x ?? node.x ?? 0,
+                                    start?.y ?? node.y ?? 0,
+                                    end?.x ?? node.endX ?? 0,
+                                    end?.y ?? node.endY ?? 0,
+                                    c1x,
+                                    c1y,
+                                    c2x,
+                                    c2y,
+                                    false,
+                                    undefined,
+                                    node.id,
+                                    canvasVisualNode
+                                  )
+                                : canvasVisualNode.nodeInfo.canvasAppInstance.createQuadraticBezier(
+                                    start?.x ?? node.x ?? 0,
+                                    start?.y ?? node.y ?? 0,
+                                    end?.x ?? node.endX ?? 0,
+                                    end?.y ?? node.endY ?? 0,
+                                    c1x,
+                                    c1y,
+                                    false,
+                                    undefined,
+                                    node.id,
+                                    canvasVisualNode
+                                  );
                             if (!curve.nodeComponent) {
                               return;
                             }
