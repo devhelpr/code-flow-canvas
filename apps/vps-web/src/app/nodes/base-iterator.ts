@@ -7,6 +7,7 @@ import {
   CanvasAppInstance,
   IThumbNodeComponent,
   IRectNodeComponent,
+  thumbHalfWidth,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import {
@@ -121,12 +122,13 @@ export const getBaseIterator = <T>(
     }
     return;
   };
-  const compute = (
+
+  const computePromise = (
     input: string | any[],
     pathExecution?: RunNodeResult<T>[]
   ) => {
     const mapResults: any[] = [];
-    return new Promise((resolve, reject) => {
+    return (resolve: any, reject: any) => {
       let mapLoop = 0;
       let values: any[] = [];
       values = input as unknown as any[];
@@ -307,8 +309,16 @@ export const getBaseIterator = <T>(
           true
         );
       }
-    });
+    };
   };
+
+  const computeAsync = (
+    input: string | any[],
+    pathExecution?: RunNodeResult<T>[]
+  ) => {
+    return new Promise(computePromise(input, pathExecution));
+  };
+
   return {
     name: nodeTypeName,
     family: 'flow-canvas',
@@ -405,7 +415,7 @@ export const getBaseIterator = <T>(
         );
 
         const input = mapCanvasApp.createRect(
-          0 - 25 - 2,
+          0 - thumbHalfWidth / 2,
           20 - 25 + 18,
           1,
           1,
@@ -434,7 +444,7 @@ export const getBaseIterator = <T>(
         inputNode = input.nodeComponent;
 
         const output = mapCanvasApp.createRect(
-          300 + 25 - 5,
+          300 - thumbHalfWidth,
           20 - 25 + 18,
           1,
           1,
@@ -463,7 +473,7 @@ export const getBaseIterator = <T>(
         outputNode = output.nodeComponent;
 
         const subOutput = mapCanvasApp.createRect(
-          300 + 25 - 5,
+          300 - thumbHalfWidth,
           70 - 25 + 18,
           1,
           1,
@@ -506,39 +516,11 @@ export const getBaseIterator = <T>(
           nodeTitle
         ) as unknown as INodeComponent<NodeInfo>;
 
-        // const start = mapCanvasApp.createRect(
-        //   75,
-        //   25,
-        //   50,
-        //   50,
-        //   undefined,
-        //   undefined,
-        //   [
-        //     {
-        //       thumbType: ThumbType.StartConnectorTop,
-        //       thumbIndex: 0,
-        //       connectionType: ThumbConnectionType.start,
-        //     },
-        //     {
-        //       thumbType: ThumbType.EndConnectorCenter,
-        //       thumbIndex: 0,
-        //       connectionType: ThumbConnectionType.end,
-        //       controlPointDistance: 0,
-        //     },
-        //   ],
-        //   jsxComponentWrapper,
-        //   {
-        //     classNames: `bg-slate-800 text-white p-4 rounded flex flex-row items-center justify-center`,
-        //   },
-        //   true,
-        //   true
-        // );
-
         const jsxCircleComponentWrapper = createElement(
           'div',
           {
             class:
-              'flex text-center items-center justify-center w-[50px] h-[50px] overflow-hidden bg-slate-400 rounded',
+              'flex text-center items-center justify-center w-[100px] h-[100px] overflow-hidden bg-slate-400 rounded',
             style: {
               'clip-path': 'circle(50%)',
             },
@@ -549,10 +531,10 @@ export const getBaseIterator = <T>(
         textNode = jsxCircleComponentWrapper.domElement as HTMLElement;
 
         const end = mapCanvasApp.createRect(
-          130,
-          80,
-          40,
-          40,
+          100,
+          50,
+          100,
+          100,
           undefined,
           [
             {
@@ -583,45 +565,6 @@ export const getBaseIterator = <T>(
           true
         );
         testNode = end.nodeComponent;
-
-        // connect start to end
-        // const connnection = mapCanvasApp.createCubicBezier(
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0,
-        //   0
-        // );
-
-        // connnection.nodeComponent.isControlled = true;
-        // connnection.nodeComponent.nodeInfo = {};
-
-        // if (start && connnection.nodeComponent) {
-
-        //   connnection.nodeComponent.startNode = start.nodeComponent;
-        //   connnection.nodeComponent.startNodeThumb = getThumbNode(
-        //     ThumbType.StartConnectorTop,
-        //     start.nodeComponent
-        //   );
-        // }
-
-        // if (end && connnection.nodeComponent) {
-        //   connnection.nodeComponent.endNode = end.nodeComponent;
-        //   connnection.nodeComponent.endNodeThumb = getThumbNode(
-        //     ThumbType.EndConnectorCenter,
-        //     end.nodeComponent
-        //   );
-        // }
-        // if (connnection.nodeComponent.update) {
-        //   connnection.nodeComponent.update();
-        // }
-        // start.nodeComponent.connections?.push(connnection.nodeComponent);
-        // end.nodeComponent.connections?.push(connnection.nodeComponent);
-
-        // connnect node connector to start
 
         const connnection2 = mapCanvasApp.createCubicBezier();
 
@@ -683,7 +626,9 @@ export const getBaseIterator = <T>(
         }
 
         // connnect node connector to end
-        const connnection4 = mapCanvasApp.createQuadraticBezier(
+        const connnection4 = mapCanvasApp.createCubicBezier(
+          0,
+          0,
           0,
           0,
           0,
@@ -729,7 +674,7 @@ export const getBaseIterator = <T>(
       }
 
       node = rect.nodeComponent;
-      node.nodeInfo.computeAsync = compute;
+      node.nodeInfo.computeAsync = computeAsync;
       node.nodeInfo.initializeCompute = initializeCompute;
       return node;
     },

@@ -174,7 +174,8 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         {
           type: 'array',
           formElements: [],
-        }
+        },
+        containerNode
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');

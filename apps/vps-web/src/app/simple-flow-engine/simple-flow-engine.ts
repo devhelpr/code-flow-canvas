@@ -58,7 +58,7 @@ export const runNode = <T>(
     'run start',
     node.id,
     node,
-    formInfo?.formValues?.['Expression'] ?? ''
+    formInfo?.formValues?.['expression'] ?? ''
   );
   let result: any = false;
   let followPath: string | undefined = undefined;

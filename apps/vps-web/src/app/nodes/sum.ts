@@ -135,7 +135,8 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
         {
           type: 'sum',
           formElements: [],
-        }
+        },
+        containerNode
       );
 
       if (!rect.nodeComponent) {

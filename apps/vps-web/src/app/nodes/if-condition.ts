@@ -224,7 +224,8 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
             Mode: 'expression',
             expression: initialExpressionValue ?? '',
           },
-        }
+        },
+        containerNode
       );
 
       //createNamedSignal(`if${rect.nodeComponent.id}`, '');

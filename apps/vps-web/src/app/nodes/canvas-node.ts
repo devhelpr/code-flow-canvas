@@ -6,9 +6,7 @@ import {
   ThumbType,
   createCanvasApp,
   IRectNodeComponent,
-  thumbRadius,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
@@ -18,6 +16,10 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
+export interface ComputeResult {
+  result: string | any[];
+  followPath?: string;
+}
 export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -29,27 +31,35 @@ export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
 
-  let currentValue = 0;
   const initializeCompute = () => {
-    currentValue = 0;
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+
+  const computePromise = <T>(
+    input: string | any[],
+    pathExecution?: RunNodeResult<T>[]
   ) => {
-    return {
-      result: input,
-      followPath: undefined,
+    return (
+      resolve: (result: ComputeResult) => void,
+      _reject: (error: string) => void
+    ) => {
+      resolve({ result: input });
     };
+  };
+  const computeAsync = (
+    input: string,
+    pathExecution?: RunNodeResult<NodeInfo>[]
+  ) => {
+    return new Promise<ComputeResult>(
+      computePromise<NodeInfo>(input, pathExecution)
+    );
   };
 
   return {
     name: 'canvas-node',
     family: 'flow-canvas',
     isContainer: true,
-    childNodeTasks: ['expression'],
+    childNodeTasks: ['expression', 'array', 'sum', 'fetch', 'if-condition'],
     getConnectionInfo: () => {
       if (!input || !output) {
         return { inputs: [], outputs: [] };
@@ -227,7 +237,7 @@ export const getCanvasNode: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
+      node.nodeInfo.computeAsync = computeAsync;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.canvasAppInstance = canvasAppInstance;
 

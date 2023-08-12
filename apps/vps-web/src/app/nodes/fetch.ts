@@ -171,7 +171,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           formValues: {
             url: url ?? '',
           },
-        }
+        },
+        containerNode
       );
 
       if (!rect.nodeComponent) {
