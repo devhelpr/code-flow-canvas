@@ -45,7 +45,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('state', getState);
   registerNodeFactory('action', getAction);
   registerNodeFactory('fetch', getFetch);
-  registerNodeFactory('canvas-node', getCanvasNode);
+  registerNodeFactory('canvas-node', getCanvasNode(animatePath));
   registerNodeFactory('state-machine', createStateMachine);
 };
 

@@ -44,14 +44,19 @@ export const runNode = <T>(
         }>,
     onStopped?: (input: string | any[]) => void,
     input?: string | any[],
-    followPathByName?: string
+    followPathByName?: string,
+    animatedNodes?: undefined,
+    offsetX?: number,
+    offsetY?: number
   ) => void,
   onStopped?: (
     input: string | any[],
     pathExecution?: RunNodeResult<T>[]
   ) => void,
   input?: string,
-  pathExecution?: RunNodeResult<T>[]
+  pathExecution?: RunNodeResult<T>[],
+  offsetX?: number,
+  offsetY?: number
 ) => {
   const formInfo = node.nodeInfo as unknown as any;
   console.log(
@@ -63,7 +68,7 @@ export const runNode = <T>(
   let result: any = false;
   let followPath: string | undefined = undefined;
   let previousOutput: any = undefined;
-  if (formInfo?.compute) {
+  if (formInfo && formInfo?.compute) {
     const computeResult = formInfo.compute(input ?? '', pathExecution);
     result = computeResult.result;
     followPath = computeResult.followPath;
@@ -94,7 +99,7 @@ export const runNode = <T>(
         let previousOutput: any = undefined;
         const formInfo = node.nodeInfo as unknown as any;
 
-        if (formInfo.computeAsync) {
+        if (formInfo && formInfo.computeAsync) {
           return new Promise((resolve, reject) => {
             formInfo
               .computeAsync(input, pathExecution)
@@ -125,7 +130,7 @@ export const runNode = <T>(
                 reject(error);
               });
           });
-        } else if (formInfo.compute) {
+        } else if (formInfo && formInfo.compute) {
           const computeResult = formInfo.compute(input, pathExecution);
           result = computeResult.result;
           followPath = computeResult.followPath;
@@ -167,7 +172,10 @@ export const runNode = <T>(
         }
       },
       result,
-      followPath
+      followPath,
+      undefined,
+      offsetX,
+      offsetY
     );
   } else {
     console.log('expression result', result);
@@ -191,12 +199,18 @@ export const run = <T>(
         }>,
     onStopped?: (input: string | any[]) => void,
     input?: string | any[],
-    followPathByName?: string
+    followPathByName?: string,
+    animatedNodes?: undefined,
+    offsetX?: number,
+    offsetY?: number
   ) => void,
   onFinishRun?: (
     input: string | any[],
     pathExecution?: RunNodeResult<T>[]
-  ) => void
+  ) => void,
+  input?: string,
+  offsetX?: number,
+  offsetY?: number
 ) => {
   /*
 	TODO : simple flow engine to run the nodes
@@ -229,8 +243,10 @@ export const run = <T>(
             onFinishRun(input, pathExecution);
           }
         },
-        undefined,
-        []
+        input,
+        [],
+        offsetX,
+        offsetY
       );
     }
   });
@@ -275,7 +291,7 @@ export const runNodeFromThumb = <T>(
       let previousOutput: any = undefined;
       const formInfo = node.nodeInfo as unknown as any;
 
-      if (formInfo.computeAsync) {
+      if (formInfo && formInfo.computeAsync) {
         return new Promise((resolve, reject) => {
           formInfo
             .computeAsync(input, pathExecution, loopIndex)
@@ -308,7 +324,7 @@ export const runNodeFromThumb = <T>(
               reject();
             });
         });
-      } else if (formInfo.compute) {
+      } else if (formInfo && formInfo.compute) {
         const computeResult = formInfo.compute(input, pathExecution, loopIndex);
         result = computeResult.result;
         followPath = computeResult.followPath;
