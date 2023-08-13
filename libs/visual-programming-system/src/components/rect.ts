@@ -724,7 +724,15 @@ export class Rect<T> {
           initiator.containerNode &&
           initiator.containerNode.id === target.id
         ) {
-          //
+          // a node within this container was updated
+          if ((initiator.width ?? 0) + initiator.x > this.points.width) {
+            this.points.width = (initiator.width ?? 0) + initiator.x;
+          }
+          if ((initiator.height ?? 0) + initiator.y > this.points.height) {
+            this.points.height = (initiator.height ?? 0) + initiator.y;
+          }
+          // TODO : update inner thumbs which are rectNodes
+          // TODO : update x,y positions if initiator is dragged to the left or above top
         }
         this.points.beginX = x;
         this.points.beginY = y;
