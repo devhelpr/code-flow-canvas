@@ -89,7 +89,7 @@ export const getCanvasNode =
         y: number,
         id?: string,
         initalValue?: InitialValues,
-        containerNode?: INodeComponent<NodeInfo>
+        containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         htmlNode = createElement(
           'div',

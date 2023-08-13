@@ -9,7 +9,7 @@ import {
   InteractionState,
   createInteractionStateMachine,
 } from '../interaction-state-machine';
-import { INodeComponent, IThumb } from '../interfaces';
+import { INodeComponent, IRectNodeComponent, IThumb } from '../interfaces';
 import { setSelectNode } from '../reactivity';
 import { NodeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
@@ -567,7 +567,7 @@ export const createCanvasApp = <T>(
       disableManualResize?: boolean,
       id?: string,
       nodeInfo?: T,
-      containerNode?: INodeComponent<T>,
+      containerNode?: IRectNodeComponent<T>,
       isStaticPosition?: boolean
     ) => {
       const rectInstance = new Rect<T>(
@@ -616,7 +616,7 @@ export const createCanvasApp = <T>(
       disableManualResize?: boolean,
       id?: string,
       nodeInfo?: T,
-      containerNode?: INodeComponent<T>,
+      containerNode?: IRectNodeComponent<T>,
       isStaticPosition?: boolean
     ) => {
       const rectInstance = new RectThumb<T>(

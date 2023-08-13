@@ -91,7 +91,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: INodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       const initialValue = initalValues?.['expression'] ?? '';
 

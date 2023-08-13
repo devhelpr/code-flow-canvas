@@ -94,7 +94,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: INodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       const url = initalValues?.['url'] ?? '';
       console.log('createVisualNode createNamedSignal', url, id);
@@ -124,15 +124,18 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           class: `bg-slate-500 p-4 rounded`,
         },
         undefined,
-        FormComponent({
-          id: id ?? '',
-          formElements,
-          hasSubmitButton: false,
-          onSave: (formValues) => {
-            console.log('onSave', formValues);
-          },
-        }) as unknown as HTMLElement
+        undefined
       ) as unknown as INodeComponent<NodeInfo>;
+
+      FormComponent({
+        rootElement: jsxComponentWrapper.domElement as HTMLElement,
+        id: id ?? '',
+        formElements,
+        hasSubmitButton: false,
+        onSave: (formValues) => {
+          console.log('onSave', formValues);
+        },
+      }) as unknown as HTMLElement;
 
       const rect = canvasApp.createRect(
         x,

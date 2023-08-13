@@ -19,7 +19,7 @@ export type NodeTask<T> = {
     y: number,
     id?: string,
     initalValues?: InitialValues,
-    containerNode?: INodeComponent<T>
+    containerNode?: IRectNodeComponent<T>
   ) => IRectNodeComponent<T>;
   getConnectionInfo?: () => {
     inputs: IRectNodeComponent<T>[];

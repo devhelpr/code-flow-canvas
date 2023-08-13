@@ -44,7 +44,7 @@ export const getState: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: INodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       const jsxComponentWrapper = createElement(
         'div',

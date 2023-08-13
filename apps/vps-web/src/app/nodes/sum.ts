@@ -79,7 +79,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: INodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(
         'div',

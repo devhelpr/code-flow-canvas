@@ -75,7 +75,7 @@ export class Rect<T> {
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
     id?: string,
-    containerNode?: INodeComponent<T>,
+    containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean
   ) {
     this.canvas = canvas;
@@ -143,6 +143,7 @@ export class Rect<T> {
     this.rectNode.y = startY;
     this.rectNode.width = width;
     this.rectNode.height = height;
+    this.rectNode.containerNode = containerNode;
     this.oldWidth = width;
     this.oldHeight = height;
 
@@ -719,6 +720,12 @@ export class Rect<T> {
         target.nodeType === NodeType.Shape &&
         initiator.nodeType === NodeType.Shape
       ) {
+        if (
+          initiator.containerNode &&
+          initiator.containerNode.id === target.id
+        ) {
+          //
+        }
         this.points.beginX = x;
         this.points.beginY = y;
         if (rectContainerElement) {
@@ -927,6 +934,15 @@ export class Rect<T> {
             }
           }
         });
+
+        if (this.containerNode && this.containerNode.update) {
+          this.containerNode.update(
+            this.containerNode,
+            this.containerNode.x,
+            this.containerNode.y,
+            this.rectNode
+          );
+        }
       }
 
       return true;

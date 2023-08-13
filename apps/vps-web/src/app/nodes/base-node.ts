@@ -1,4 +1,7 @@
-import { INodeComponent } from '@devhelpr/visual-programming-system';
+import {
+  INodeComponent,
+  IRectNodeComponent,
+} from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { canvasAppReturnType } from '../types/node-info';
 
@@ -18,6 +21,6 @@ export abstract class BaseNode<T, X> {
     y: number,
     id?: string,
     initialValue?: string,
-    containerNode?: INodeComponent<T>
+    containerNode?: IRectNodeComponent<T>
   ) => void;
 }

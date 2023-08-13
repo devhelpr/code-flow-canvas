@@ -31,6 +31,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
   isConnectPoint?: boolean;
 
   thumbConnectors?: IThumbNodeComponent<T>[];
+  containerNode?: IRectNodeComponent<T>;
   update?: (
     target?: INodeComponent<T>,
     x?: number,

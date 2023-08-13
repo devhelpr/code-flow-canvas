@@ -39,7 +39,7 @@ export class RectThumb<T> extends Rect<T> {
     disableManualResize?: boolean,
     canvasUpdated?: () => void,
     id?: string,
-    containerNode?: INodeComponent<T>,
+    containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean
   ) {
     super(

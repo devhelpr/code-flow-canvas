@@ -87,7 +87,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initialValues?: InitialValues,
-      containerNode?: INodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       const initialExpressionValue = initialValues?.['expression'] ?? '';
       console.log(
