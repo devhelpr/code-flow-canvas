@@ -1,17 +1,10 @@
 import {
   CanvasAppInstance,
-  ControlAndEndPointNodeType,
   createElement,
-  CurveType,
-  getPointOnCubicBezierCurve,
-  getPointOnQuadraticBezierCurve,
   IConnectionNodeComponent,
   IElementNode,
-  INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
-  LineType,
-  ThumbType,
 } from '@devhelpr/visual-programming-system';
 import {
   getNodeConnectionPairById,

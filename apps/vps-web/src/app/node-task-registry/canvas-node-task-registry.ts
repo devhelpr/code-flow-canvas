@@ -1,15 +1,14 @@
+import {
+  AnimatePathFunction,
+  AnimatePathFromThumbFunction,
+} from '../follow-path/animate-path';
 import { getAction } from '../nodes/action';
 import { getArray } from '../nodes/array';
 import { getCanvasNode } from '../nodes/canvas-node';
 import { getExpression } from '../nodes/expression';
 import { getFetch } from '../nodes/fetch';
 import { getIfCondition } from '../nodes/if-condition';
-import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
-  getFilter,
-  getMap,
-} from '../nodes/map';
+import { getFilter, getMap } from '../nodes/map';
 import { getShowInput } from '../nodes/show-input';
 import { getShowObject } from '../nodes/show-object';
 import { getState } from '../nodes/state';
@@ -31,8 +30,8 @@ export const getNodeFactoryNames = () => {
 };
 
 export const setupCanvasNodeTaskRegistry = (
-  animatePath: AnimatePathFunction,
-  animatePathFromThumb: AnimatePathFromThumbFunction
+  animatePath: AnimatePathFunction<NodeInfo>,
+  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
 ) => {
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
   registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));

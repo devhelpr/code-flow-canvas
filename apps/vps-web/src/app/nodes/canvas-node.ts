@@ -16,7 +16,7 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { AnimatePathFunction } from './map';
+import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export interface ComputeResult {
   result: string | any[];
@@ -24,7 +24,7 @@ export interface ComputeResult {
   followPath?: string;
 }
 export const getCanvasNode =
-  (animatePath: AnimatePathFunction) =>
+  (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
