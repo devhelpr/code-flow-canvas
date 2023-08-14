@@ -151,7 +151,7 @@ export class NavbarComponent extends Component<Props> {
               50,
               undefined,
               undefined,
-              node
+              node as IRectNodeComponent<NodeInfo>
             );
 
             return;

@@ -162,7 +162,8 @@ export const getCanvasNode =
             htmlNode.domElement as HTMLElement,
             false,
             true,
-            ''
+            '',
+            canvasApp.interactionStateMachine
           );
 
           const inputInstance = canvasAppInstance.createRect(

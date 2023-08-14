@@ -7,6 +7,7 @@ import { CLICK_MOVEMENT_THRESHOLD } from '../constants';
 import {
   InteractionEvent,
   InteractionState,
+  InteractionStateMachine,
   createInteractionStateMachine,
 } from '../interaction-state-machine';
 import { INodeComponent, IRectNodeComponent, IThumb } from '../interfaces';
@@ -18,9 +19,11 @@ export const createCanvasApp = <T>(
   rootElement: HTMLElement,
   disableInteraction?: boolean,
   disableZoom?: boolean,
-  backgroundColor?: string
+  backgroundColor?: string,
+  interactionStateMachineInstance?: InteractionStateMachine<T>
 ) => {
-  const interactionStateMachine = createInteractionStateMachine<T>();
+  const interactionStateMachine =
+    interactionStateMachineInstance ?? createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
   let scaleCamera = 1;
   let xCamera = 0;
@@ -93,6 +96,7 @@ export const createCanvasApp = <T>(
         return;
       }
     }
+
     isClicking = true;
     isMoving = false;
     wasMoved = false;
@@ -438,6 +442,7 @@ export const createCanvasApp = <T>(
     elements,
     canvas,
     rootElement,
+    interactionStateMachine,
     setOnCanvasUpdated: (onCanvasUpdatedHandler: () => void) => {
       onCanvasUpdated = onCanvasUpdatedHandler;
     },

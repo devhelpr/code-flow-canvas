@@ -23,7 +23,6 @@ import {
   calculateConnectorY,
   thumbPosition,
 } from './utils/calculate-connector-thumbs';
-import { getPoint } from './utils/get-point';
 import { setPosition } from './utils/set-position';
 import { NodeType } from '../types/node-type';
 import { thumbHeight, thumbWidth } from '../constants/measures';
@@ -532,11 +531,10 @@ export class Rect<T> {
       width: width,
       height: height,
     };
-    const begin = getPoint(this.points.beginX, this.points.beginY);
 
     const pathPoints = {
-      beginX: begin.x,
-      beginY: begin.y,
+      beginX: this.points.beginX,
+      beginY: this.points.beginY,
       width: this.points.width,
       height: this.points.height,
     };
@@ -592,7 +590,7 @@ export class Rect<T> {
     if (astElement && hasPointerEvents) {
       astElement.domElement.addEventListener(
         'pointerdown',
-        this.astElementOnPointerDown(pathPoints)
+        this.astElementOnPointerDown
       );
     }
 
@@ -618,63 +616,57 @@ export class Rect<T> {
     return false;
   };
 
-  private astElementOnPointerDown =
-    (pathPoints: {
-      beginX: number;
-      beginY: number;
-      width: number;
-      height: number;
-    }) =>
-    (event: PointerEvent) => {
-      if (
-        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-          (event.target as HTMLElement)?.tagName
-        ) >= 0
-      )
-        return;
+  private astElementOnPointerDown = (event: PointerEvent) => {
+    if (
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0
+    )
+      return;
 
-      event.stopPropagation();
+    event.stopPropagation();
 
-      if (this.onPointerDown(event)) {
-        return;
+    if (this.onPointerDown(event)) {
+      return;
+    }
+
+    if (this.nodeComponent && this.canvas) {
+      const elementRect = (
+        this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
+      ).getBoundingClientRect();
+
+      const { x, y } = transformCameraSpaceToWorldSpace(
+        event.clientX,
+        event.clientY
+      );
+      const rect = transformCameraSpaceToWorldSpace(
+        elementRect.x,
+        elementRect.y
+      );
+      const bbox = this.getBBoxPath(this.points);
+
+      let parentX = 0;
+      let parentY = 0;
+      if (this.containerNode) {
+        parentX = this.containerNode.x;
+        parentY = this.containerNode.y;
       }
 
-      if (this.nodeComponent && this.canvas) {
-        const elementRect = (
-          this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
-        ).getBoundingClientRect();
+      const interactionInfoResult = pointerDown(
+        x - rect.x + parentX - (this.points.beginX - bbox.x),
+        y - rect.y + parentY - (this.points.beginY - bbox.y),
+        this.nodeComponent,
+        this.canvas.domElement,
+        this.interactionStateMachine
+      );
 
-        const { x, y } = transformCameraSpaceToWorldSpace(
-          event.clientX,
-          event.clientY
+      if (interactionInfoResult) {
+        (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
+          this.nodeComponent.domElement
         );
-        const rect = transformCameraSpaceToWorldSpace(
-          elementRect.x,
-          elementRect.y
-        );
-        const bbox = this.getBBoxPath(pathPoints);
-
-        let parentX = 0;
-        let parentY = 0;
-        if (this.containerNode) {
-          parentX = this.containerNode.x;
-          parentY = this.containerNode.y;
-        }
-
-        const interactionInfoResult = pointerDown(
-          x - rect.x + parentX - (pathPoints.beginX - bbox.x),
-          y - rect.y + parentY - (pathPoints.beginY - bbox.y),
-          this.nodeComponent,
-          this.canvas.domElement,
-          this.interactionStateMachine
-        );
-        if (interactionInfoResult) {
-          (
-            this.canvas?.domElement as unknown as HTMLElement | SVGElement
-          ).append(this.nodeComponent.domElement);
-        }
       }
-    };
+    }
+  };
 
   protected getBBoxPath(pathPoints: {
     beginX: number;
@@ -714,22 +706,63 @@ export class Rect<T> {
         target.nodeType === NodeType.Shape &&
         initiator.nodeType === NodeType.Shape
       ) {
+        this.points.beginX = x;
+        this.points.beginY = y;
+
         if (
           initiator.containerNode &&
           initiator.containerNode.id === target.id
         ) {
           // a node within this container was updated
-          if ((initiator.width ?? 0) + initiator.x > this.points.width) {
+          if (
+            initiator.x > 0 &&
+            (initiator.width ?? 0) + initiator.x > this.points.width
+          ) {
             this.points.width = (initiator.width ?? 0) + initiator.x;
           }
-          if ((initiator.height ?? 0) + initiator.y > this.points.height) {
+          if (
+            initiator.y > 0 &&
+            (initiator.height ?? 0) + initiator.y > this.points.height
+          ) {
             this.points.height = (initiator.height ?? 0) + initiator.y;
           }
+          let updateInitiator = false;
+          let newX = initiator.x;
+          let newY = initiator.y;
+          if (initiator.x < 0) {
+            this.points.beginX = this.points.beginX + initiator.x;
+            this.points.width = this.points.width - initiator.x;
+
+            updateInitiator = true;
+            newX = 0;
+          }
+          if (initiator.y < 0) {
+            this.points.beginY = this.points.beginY + initiator.y;
+            this.points.height = this.points.height - initiator.y;
+            updateInitiator = true;
+            newY = 0;
+          }
+          if (updateInitiator && initiator.update) {
+            const state =
+              this.interactionStateMachine.getCurrentInteractionState();
+            if (state && state.target && state.target.interactionInfo) {
+              if (newX === 0) {
+                state.target.interactionInfo.xOffsetWithinElementOnFirstClick +=
+                  initiator.x;
+              }
+              if (newY === 0) {
+                state.target.interactionInfo.yOffsetWithinElementOnFirstClick +=
+                  initiator.y;
+              }
+            }
+
+            initiator.update(initiator, newX, newY, this.nodeComponent);
+          }
           // TODO : update inner thumbs which are rectNodes
-          // TODO : update x,y positions if initiator is dragged to the left or above top
+          // TODO : update all other child rectNodes and connections
+          // TODO : store container width and height
         }
-        this.points.beginX = x;
-        this.points.beginY = y;
+
         this.nodeComponent.x = this.points.beginX;
         this.nodeComponent.y = this.points.beginY;
 
@@ -747,11 +780,9 @@ export class Rect<T> {
           );
         }
 
-        const begin = getPoint(this.points.beginX, this.points.beginY);
-
         const pathPoints = {
-          beginX: begin.x,
-          beginY: begin.y,
+          beginX: this.points.beginX,
+          beginY: this.points.beginY,
           width: this.points.width,
           height: this.points.height,
         };
@@ -846,11 +877,9 @@ export class Rect<T> {
           this.nodeComponent.y = this.points.beginY;
         }
 
-        const begin = getPoint(this.points.beginX, this.points.beginY);
-
         const pathPoints = {
-          beginX: begin.x,
-          beginY: begin.y,
+          beginX: this.points.beginX,
+          beginY: this.points.beginY,
           width: this.points.width,
           height: this.points.height,
         };
@@ -921,7 +950,12 @@ export class Rect<T> {
           }
         });
 
-        if (this.containerNode && this.containerNode.update) {
+        if (
+          this.containerNode &&
+          this.containerNode.update &&
+          initiator &&
+          initiator.id !== this.containerNode.id
+        ) {
           this.containerNode.update(
             this.containerNode,
             this.containerNode.x,
