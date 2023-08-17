@@ -89,7 +89,9 @@ export const getCanvasNode =
         y: number,
         id?: string,
         initalValue?: InitialValues,
-        containerNode?: IRectNodeComponent<NodeInfo>
+        containerNode?: IRectNodeComponent<NodeInfo>,
+        width?: number,
+        height?: number
       ) => {
         htmlNode = createElement(
           'div',
@@ -112,8 +114,8 @@ export const getCanvasNode =
         rect = canvasApp.createRect(
           x,
           y,
-          600,
-          400,
+          width ?? 600,
+          height ?? 400,
           undefined,
           [
             {
@@ -265,6 +267,17 @@ export const getCanvasNode =
           }
           canvasAppInstance.setOnCanvasUpdated(() => {
             updated?.();
+          });
+
+          rect.addUpdateEventListener((target, x, y, initiator) => {
+            if (target) {
+              outputInstance.nodeComponent?.update?.(
+                outputInstance.nodeComponent,
+                target?.width,
+                0,
+                rect?.nodeComponent
+              );
+            }
           });
 
           (canvasAppInstance.canvas.domElement as HTMLElement).classList.add(

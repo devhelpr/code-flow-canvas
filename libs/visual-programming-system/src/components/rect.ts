@@ -40,7 +40,12 @@ export class Rect<T> {
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
   protected containerNode?: INodeComponent<T>;
-
+  protected updateEventListeners: ((
+    target?: INodeComponent<T>,
+    x?: number,
+    y?: number,
+    initiator?: INodeComponent<T>
+  ) => void)[] = [];
   protected points = {
     beginX: 0,
     beginY: 0,
@@ -282,6 +287,17 @@ export class Rect<T> {
       );
     }
   }
+
+  public addUpdateEventListener = (
+    onUpdate: (
+      target?: INodeComponent<T>,
+      x?: number,
+      y?: number,
+      initiator?: INodeComponent<T>
+    ) => void
+  ) => {
+    this.updateEventListeners.push(onUpdate);
+  };
 
   protected onReceiveDraggedConnection =
     (rectNode: IRectNodeComponent<T>) =>
@@ -964,6 +980,10 @@ export class Rect<T> {
           );
         }
       }
+
+      this.updateEventListeners.forEach((onUpdate) => {
+        onUpdate(this.nodeComponent, x, y, initiator);
+      });
 
       return true;
     };

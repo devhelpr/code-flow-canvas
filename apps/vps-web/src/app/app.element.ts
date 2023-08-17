@@ -294,7 +294,11 @@ export class AppElement extends HTMLElement {
                         canvasApp,
                         node.x,
                         node.y,
-                        node.id
+                        node.id,
+                        undefined,
+                        undefined,
+                        node.width,
+                        node.height
                       );
 
                       if (node.elements && canvasVisualNode.nodeInfo) {
