@@ -170,7 +170,7 @@ export class ThumbNode<T> {
     if (!this.circleElement) throw new Error('circleElement is undefined');
 
     let additionalInnerCirlceClasses = '';
-    if (connectionType === ThumbConnectionType.start) {
+    if (connectionType === ThumbConnectionType.end) {
       additionalInnerCirlceClasses = `flex items-center justify-center`;
     }
 
@@ -218,7 +218,7 @@ export class ThumbNode<T> {
       ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
       text-center
       top-[-1px] text-black `;
-      if (connectionType === ThumbConnectionType.start) {
+      if (connectionType === ThumbConnectionType.end) {
         innerLabelClasses = `pointer-events-none relative text-[14px] flex items-center justify-center
          ${thumbTextBaseSizeClass}
         text-center
