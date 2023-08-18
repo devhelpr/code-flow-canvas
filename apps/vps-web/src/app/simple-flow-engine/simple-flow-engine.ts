@@ -55,7 +55,6 @@ const sendData = <T>(
     undefined,
     true
   );
-  console.log('sendData', data, node, dataNodesConnectionPairs);
   if (dataNodesConnectionPairs) {
     dataNodesConnectionPairs.forEach((connectionInfo) => {
       if (connectionInfo.end) {
@@ -117,15 +116,7 @@ export const runNode = <T>(
 ) => {
   const payload = getVariablePayload<T>(node, canvasApp);
 
-  console.log('payload', payload);
   const formInfo = node.nodeInfo as unknown as any;
-  console.log(
-    'run start',
-    node.id,
-    node,
-    formInfo?.formValues?.['expression'] ?? '',
-    payload
-  );
   let result: any = false;
   let followPath: string | undefined = undefined;
   let previousOutput: any = undefined;
@@ -168,13 +159,11 @@ export const runNode = <T>(
       node,
       'white',
       (nodeId: string, node: IRectNodeComponent<T>, input: string | any[]) => {
-        console.log('Next nodeId', nodeId, node, input);
         let result: any = false;
         let previousOutput: any = undefined;
         const formInfo = node.nodeInfo as unknown as any;
 
         const payload = getVariablePayload<T>(node, canvasApp);
-        console.log('payload2', payload);
         if (formInfo && formInfo.computeAsync) {
           return new Promise((resolve, reject) => {
             formInfo
@@ -233,7 +222,6 @@ export const runNode = <T>(
           result = false;
           followPath = undefined;
         }
-        console.log('expression result', result);
         if (result === undefined) {
           return {
             result: false,
@@ -331,7 +319,7 @@ export const run = <T>(
       return false;
     });
     if (
-      !(nodeComponent.nodeInfo as any).isVariable &&
+      !(nodeComponent.nodeInfo as any)?.isVariable &&
       nodeComponent.nodeType !== NodeType.Connection &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0)
     ) {
@@ -387,7 +375,6 @@ export const runNodeFromThumb = <T>(
     nodeThumb,
     'white',
     (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
-      console.log('Next nodeId', nodeId, node, input);
       let result: any = false;
       let previousOutput: any = undefined;
       const formInfo = node.nodeInfo as unknown as any;

@@ -212,6 +212,17 @@ export const animatePathForNodeConnectionPairs = <T>(
       input?.toString() ??
       (start.nodeInfo as unknown as any)?.formValues?.Expression ??
       '';
+
+    // dirty hack to prevent reusing cached node on next iteration if nodeConnectionPairs.length > 1
+    if (animatedNodes?.node1) {
+      animatedNodes.node1 = undefined;
+    }
+    if (animatedNodes?.node2) {
+      animatedNodes.node2 = undefined;
+    }
+    if (animatedNodes?.node3) {
+      animatedNodes.node3 = undefined;
+    }
     const domCircle = testCircle.domElement as HTMLElement;
     const domMessage = message.domElement as HTMLElement;
     if (!animatedNodes?.node1) {
