@@ -4,6 +4,7 @@ import {
 } from '../follow-path/animate-path';
 import { getAction } from '../nodes/action';
 import { getArray } from '../nodes/array';
+import { getButton } from '../nodes/button';
 import { getCanvasNode } from '../nodes/canvas-node';
 import { getExpression } from '../nodes/expression';
 import { getFetch } from '../nodes/fetch';
@@ -48,6 +49,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('canvas-node', getCanvasNode(animatePath));
   registerNodeFactory('state-machine', createStateMachine);
   registerNodeFactory('variable', getVariable);
+  registerNodeFactory('button', getButton(animatePath));
 };
 
 export const getNodeTaskFactory = (name: string) => {
