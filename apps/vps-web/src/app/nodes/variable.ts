@@ -24,6 +24,9 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
+    if (htmlNode) {
+      (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
+    }
     return;
   };
   const compute = (
