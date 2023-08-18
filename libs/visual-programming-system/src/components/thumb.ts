@@ -50,6 +50,7 @@ export class ThumbNode<T> {
     elements: ElementNodeMap<T>,
     thumbName: string,
     thumbType: ThumbType,
+    connectionType?: ThumbConnectionType,
     color?: string,
     xInitial?: string | number,
     yInitial?: string | number,
@@ -167,10 +168,16 @@ export class ThumbNode<T> {
     );
 
     if (!this.circleElement) throw new Error('circleElement is undefined');
+
+    let additionalInnerCirlceClasses = '';
+    if (connectionType === ThumbConnectionType.start) {
+      additionalInnerCirlceClasses = `flex items-center justify-center`;
+    }
+
     const innerCircle = createElement(
       'div',
       {
-        class: `absolute top-[3px] left-[3px]`, //top-[3px] left-[3px
+        class: `absolute top-[3px] left-[3px] ${additionalInnerCirlceClasses}`, //top-[3px] left-[3px
         style: {
           width: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
           height: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
@@ -186,13 +193,45 @@ export class ThumbNode<T> {
       this.circleElement.domElement
     );
     if (label) {
+      /*
+
+    when is output (start):
+
+     parent: 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+
+    innerCircle:
+      background: black;
+      clip-path: circle(50% at 50% 50%);
+      color: white;
+  
+      margin-top: 1px;
+      width: 16px;
+      height: 16px;
+      position: relative;
+    */
+      let clipPath = '';
+      let innerLabelClasses = `pointer-events-none absolute ${thumbFontSizeClass} flex items-center justify-center
+      ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
+      text-center
+      top-[-1px] text-black `;
+      if (connectionType === ThumbConnectionType.start) {
+        innerLabelClasses = `pointer-events-none relative text-[14px] flex items-center justify-center
+         ${thumbTextBaseSizeClass}
+        text-center
+        text-white bg-black h-[20px] w-[20px]`;
+        clipPath = 'circle(50% at 50% 50%)';
+      }
       createElement(
         'div', //'circle',
         {
-          class: `pointer-events-none absolute ${thumbFontSizeClass} flex items-center justify-center
-        ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
-        text-center
-        top-[-1px] text-black `,
+          class: innerLabelClasses,
+          style: {
+            'clip-path': clipPath,
+          },
         },
         innerCircle.domElement,
         label

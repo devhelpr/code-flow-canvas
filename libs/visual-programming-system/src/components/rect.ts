@@ -182,6 +182,7 @@ export class Rect<T> {
               ? 'output'
               : 'input'),
           thumb.thumbType,
+          thumb.connectionType,
           thumb.color ?? '#008080',
           x,
           y,
