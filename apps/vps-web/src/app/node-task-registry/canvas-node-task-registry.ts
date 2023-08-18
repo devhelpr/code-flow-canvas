@@ -12,6 +12,7 @@ import { getIfCondition } from '../nodes/if-condition';
 import { getFilter, getMap } from '../nodes/map';
 import { getShowInput } from '../nodes/show-input';
 import { getShowObject } from '../nodes/show-object';
+import { getShowValue } from '../nodes/show-value';
 import { getState } from '../nodes/state';
 import { createStateMachine } from '../nodes/state-machine-node';
 import { getSum } from '../nodes/sum';
@@ -42,6 +43,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('array', getArray);
   registerNodeFactory('show-object', getShowObject);
   registerNodeFactory('show-input', getShowInput);
+  registerNodeFactory('show-value', getShowValue);
   registerNodeFactory('sum', getSum);
   registerNodeFactory('state', getState);
   registerNodeFactory('action', getAction);
