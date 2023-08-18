@@ -28,7 +28,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
     if (htmlNode) {
       htmlNode.domElement.textContent = '-';
       if (rect) {
-        rect.resize(240);
+        rect.resize(120);
       }
     }
     return;
@@ -42,7 +42,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
 
       htmlNode.domElement.textContent = input.toString();
       if (rect) {
-        rect.resize(240);
+        rect.resize(120);
       }
     }
     return {
@@ -73,7 +73,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded max-w-[240px]`,
+          class: `bg-slate-500 p-4 rounded max-w-[120px]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -82,7 +82,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       rect = canvasApp.createRect(
         x,
         y,
-        240,
+        120,
         100,
         undefined,
         [
