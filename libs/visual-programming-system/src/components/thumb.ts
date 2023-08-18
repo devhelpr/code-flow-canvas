@@ -222,7 +222,7 @@ export class ThumbNode<T> {
         innerLabelClasses = `pointer-events-none relative text-[14px] flex items-center justify-center
          ${thumbTextBaseSizeClass}
         text-center
-        text-white bg-black h-[20px] w-[20px]`;
+        text-white bg-black h-[20px] w-[20px] pb-[1.5px]`;
         clipPath = 'circle(50% at 50% 50%)';
       }
       createElement(
