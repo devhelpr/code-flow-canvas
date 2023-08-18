@@ -180,11 +180,12 @@ export class Connection<T> {
     svgParentElement.style.height = `${bbox.height}px`;
     svgParentElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
 
-    const dashedStroke = isDashed
-      ? {
-          'stroke-dasharray': '10,10',
-        }
-      : undefined;
+    const dashedStroke =
+      isDashed || this.nodeComponent.isData
+        ? {
+            'stroke-dasharray': '10,10',
+          }
+        : undefined;
 
     const path = isQuadratic
       ? `M${this.points.beginX - bbox.x + startOffsetX} ${
@@ -404,6 +405,13 @@ export class Connection<T> {
     if (!target && x === undefined && y === undefined && !initiator) {
       // eslint-disable-next-line no-console
       // update all in this condition...
+    }
+
+    if (this.nodeComponent && this.nodeComponent.isData) {
+      (this.nodeComponent.domElement as SVGPathElement).setAttribute(
+        'stroke-dasharray',
+        '5,5'
+      );
     }
 
     let skipChecks = false;
