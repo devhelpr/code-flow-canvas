@@ -504,6 +504,10 @@ export class ThumbNode<T> {
           curve.nodeComponent.startNodeThumb = this.nodeComponent;
           this.parentRectNode.connections?.push(curve.nodeComponent);
 
+          if (curve.nodeComponent.startNodeThumb.isDataPort) {
+            curve.nodeComponent.isData = true;
+          }
+
           if (curve.nodeComponent.update) {
             curve.nodeComponent.update();
           }

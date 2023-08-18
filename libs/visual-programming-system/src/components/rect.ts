@@ -219,6 +219,7 @@ export class Rect<T> {
           thumb.controlPointDistance;
         thumbNode.nodeComponent.thumbLinkedToNode = this.nodeComponent;
         thumbNode.nodeComponent.thumbConstraint = thumb.thumbConstraint;
+        thumbNode.nodeComponent.isDataPort = thumb.isDataPort;
 
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =

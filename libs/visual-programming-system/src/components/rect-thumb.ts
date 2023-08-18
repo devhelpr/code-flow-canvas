@@ -141,6 +141,10 @@ export class RectThumb<T> extends Rect<T> {
           this.nodeComponent.thumbConnectors?.[0];
         this.nodeComponent.connections?.push(curve.nodeComponent);
 
+        if (curve.nodeComponent.startNodeThumb.isDataPort) {
+          curve.nodeComponent.isData = true;
+        }
+
         if (curve.nodeComponent.update) {
           curve.nodeComponent.update();
         }

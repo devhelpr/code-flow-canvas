@@ -76,6 +76,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   controlPointNodes?: IThumbNodeComponent<T>[];
   startNodeThumb?: IThumbNodeComponent<T>;
   endNodeThumb?: IThumbNodeComponent<T>;
+  isData?: boolean;
   onCalculateControlPoints: (
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
@@ -98,6 +99,7 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
 
   thumbConstraint?: string;
   thumbLabel?: string;
+  isDataPort?: boolean;
 }
 
 export const ControlAndEndPointNodeType = {
@@ -145,4 +147,5 @@ export type IThumb = {
   label?: string;
   thumbConstraint?: string;
   thumbShape?: 'circle' | 'diamond';
+  isDataPort?: boolean;
 };

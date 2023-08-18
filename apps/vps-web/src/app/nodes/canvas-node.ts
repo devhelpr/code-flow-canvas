@@ -44,10 +44,15 @@ export const getCanvasNode =
     ) => {
       return (
         resolve: (result: ComputeResult) => void,
-        _reject: (error: string) => void
+        reject: (error: string) => void
       ) => {
+        if (!canvasAppInstance) {
+          reject('canvasAppInstance is not defined');
+          return;
+        }
         run<NodeInfo>(
           canvasAppInstance?.elements as ElementNodeMap<NodeInfo>,
+          canvasAppInstance,
           animatePath,
           (input, pathExecution) => {
             resolve({ result: input, output: input });

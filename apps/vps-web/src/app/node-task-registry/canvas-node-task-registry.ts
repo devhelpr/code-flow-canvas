@@ -14,6 +14,7 @@ import { getShowObject } from '../nodes/show-object';
 import { getState } from '../nodes/state';
 import { createStateMachine } from '../nodes/state-machine-node';
 import { getSum } from '../nodes/sum';
+import { getVariable } from '../nodes/variable';
 import { NodeInfo } from '../types/node-info';
 import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
 
@@ -46,6 +47,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('fetch', getFetch);
   registerNodeFactory('canvas-node', getCanvasNode(animatePath));
   registerNodeFactory('state-machine', createStateMachine);
+  registerNodeFactory('variable', getVariable);
 };
 
 export const getNodeTaskFactory = (name: string) => {

@@ -540,6 +540,9 @@ export class AppElement extends HTMLElement {
                     node.startThumbName ?? '',
                     start
                   );
+                  if (curve.nodeComponent.startNodeThumb?.isDataPort) {
+                    curve.nodeComponent.isData = true;
+                  }
                 }
 
                 if (end && curve.nodeComponent) {
@@ -548,6 +551,9 @@ export class AppElement extends HTMLElement {
                     node.endThumbName ?? '',
                     end
                   );
+                  if (curve.nodeComponent.endNodeThumb?.isDataPort) {
+                    curve.nodeComponent.isData = true;
+                  }
                 }
                 if (start) {
                   start.connections?.push(curve.nodeComponent);
@@ -1012,6 +1018,7 @@ export class AppElement extends HTMLElement {
           if (this.canvasApp?.elements) {
             run<NodeInfo>(
               this.canvasApp?.elements,
+              this.canvasApp,
               animatePath,
               (input, pathExecution) => {
                 if (pathExecution) {

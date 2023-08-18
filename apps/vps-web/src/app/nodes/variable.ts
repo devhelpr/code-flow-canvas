@@ -5,12 +5,8 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
+import { FormComponent } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import {
-  compileExpressionAsInfo,
-  runExpression,
-} from '@devhelpr/expression-compiler';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
@@ -18,11 +14,12 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getExpression: NodeTaskFactory<NodeInfo> = (
+export const getVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
+  let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
 
   let currentValue = 0;
   const initializeCompute = () => {
@@ -32,39 +29,20 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
+    loopIndex?: number
   ) => {
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
-      const expression = node.nodeInfo.formValues?.['expression'] ?? '';
-      const compiledExpressionInfo = compileExpressionAsInfo(expression);
-      const expressionFunction = (
-        new Function(
-          'payload',
-          `${compiledExpressionInfo.script}`
-        ) as unknown as (payload?: any) => any
-      ).bind(compiledExpressionInfo.bindings);
-      result = runExpression(
-        expressionFunction,
-        {
-          input: input,
-          currentValue: currentValue,
-          value: currentValue,
-          current: currentValue,
-          last: currentValue,
-          index: loopIndex ?? 0,
-          random: Math.round(Math.random() * 100),
-          ...payload,
-        },
-        true,
-        compiledExpressionInfo.payloadProperties
-      );
-
-      if (expression !== '' && (isNaN(result) || result === undefined)) {
-        throw new Error("Expression couldn't be run");
+      currentValue = parseFloat(input) ?? 0;
+      if (isNaN(currentValue)) {
+        currentValue = 0;
       }
+      if (htmlNode) {
+        (htmlNode.domElement as unknown as HTMLElement).textContent =
+          currentValue.toString();
+      }
+      result = currentValue;
     } catch (error) {
       result = undefined;
       (errorNode.domElement as unknown as HTMLElement).classList.remove(
@@ -72,19 +50,20 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       );
       (errorNode.domElement as unknown as HTMLElement).textContent =
         error?.toString() ?? 'Error';
-      console.log('expression error', error);
+      console.log('variable error', error);
     }
-    if (result) {
-      currentValue = result;
-    }
+
     return {
       result,
       followPath: undefined,
     };
   };
 
+  const getData = () => {
+    return currentValue;
+  };
   return {
-    name: 'expression',
+    name: 'variable',
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: <NodeInfo>(
@@ -95,67 +74,31 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
-      const initialValue = initalValues?.['expression'] ?? '';
-
-      const formElements = [
-        {
-          fieldType: FormFieldType.Text,
-          fieldName: 'expression',
-          value: initialValue ?? '',
-          onChange: (value: string) => {
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              expression: value,
-            };
-            console.log('onChange', node.nodeInfo);
-            if (updated) {
-              updated();
-            }
-          },
-        },
-      ];
-
-      const jsxComponentWrapper = createElement(
+      htmlNode = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded`,
+          class: '',
         },
-        undefined
+        undefined,
+        '-'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      FormComponent({
-        rootElement: jsxComponentWrapper.domElement as HTMLElement,
-        id: id ?? '',
-        formElements,
-        hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
+      const componentWrapper = createElement(
+        'div',
+        {
+          class: `bg-slate-500 p-4 rounded text-center`,
         },
-      }) as unknown as HTMLElement;
+        undefined,
+        htmlNode.domElement as unknown as HTMLElement
+      ) as unknown as INodeComponent<NodeInfo>;
 
       const rect = canvasApp.createRect(
         x,
         y,
-        200,
+        100,
         100,
         undefined,
         [
-          {
-            thumbType: ThumbType.StartConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            color: 'white',
-            label: '#',
-            thumbConstraint: 'value',
-          },
-          {
-            thumbType: ThumbType.EndConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            color: 'white',
-            label: '#',
-            thumbConstraint: 'value',
-          },
           {
             thumbType: ThumbType.StartConnectorBottom,
             thumbIndex: 0,
@@ -164,7 +107,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             label: '#',
             thumbConstraint: 'value',
             isDataPort: true,
-            name: 'data-output',
           },
           {
             thumbType: ThumbType.EndConnectorTop,
@@ -174,10 +116,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             label: '#',
             thumbConstraint: 'value',
             isDataPort: true,
-            name: 'data-input',
           },
         ],
-        jsxComponentWrapper,
+        componentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
@@ -186,17 +127,15 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         undefined,
         id,
         {
-          type: 'expression',
-          formValues: {
-            expression: initialValue ?? '',
-          },
+          type: 'variable',
+          formValues: {},
         },
         containerNode
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.nodeComponent.nodeInfo.formElements = formElements;
+      rect.nodeComponent.nodeInfo.formElements = [];
       errorNode = createElement(
         'div',
         {
@@ -213,9 +152,11 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         'error'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
+      node.nodeInfo.isVariable = true;
       node.nodeInfo.compute = compute;
+      node.nodeInfo.sendData = compute;
+      node.nodeInfo.getData = getData;
       node.nodeInfo.initializeCompute = initializeCompute;
       return node;
     },

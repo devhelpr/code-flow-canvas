@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   ElementNodeMap,
   IConnectionNodeComponent,
   INodeComponent,
@@ -7,10 +8,65 @@ import {
   NodeType,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
+import {
+  getNodeConnectionPairById,
+  getNodeConnectionPairByIdWhereNodeIsEndpoint,
+} from '../follow-path/get-node-connection-pairs';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
 });
+
+const getVariablePayload = <T>(
+  node: IRectNodeComponent<T>,
+  canvasApp: CanvasAppInstance
+) => {
+  const dataNodesConnectionPairs =
+    getNodeConnectionPairByIdWhereNodeIsEndpoint<T>(
+      canvasApp,
+      node,
+      undefined,
+      undefined,
+      true
+    );
+  const payload: Record<string, unknown> = {};
+  if (dataNodesConnectionPairs) {
+    dataNodesConnectionPairs.forEach((connectionInfo) => {
+      if (connectionInfo.start) {
+        const nodeInfo = connectionInfo.start.nodeInfo as unknown as any;
+        if (nodeInfo && nodeInfo.getData) {
+          payload['variable'] = nodeInfo.getData() ?? 0;
+        }
+      }
+    });
+  }
+  return payload;
+};
+
+const sendData = <T>(
+  node: IRectNodeComponent<T>,
+  canvasApp: CanvasAppInstance,
+  data: string
+) => {
+  const dataNodesConnectionPairs = getNodeConnectionPairById<T>(
+    canvasApp,
+    node,
+    undefined,
+    undefined,
+    true
+  );
+  console.log('sendData', data, node, dataNodesConnectionPairs);
+  if (dataNodesConnectionPairs) {
+    dataNodesConnectionPairs.forEach((connectionInfo) => {
+      if (connectionInfo.end) {
+        const nodeInfo = connectionInfo.end.nodeInfo as unknown as any;
+        if (nodeInfo && nodeInfo.sendData) {
+          nodeInfo.sendData(data);
+        }
+      }
+    });
+  }
+};
 
 export interface RunNodeResult<T> {
   input: string | any[];
@@ -28,6 +84,7 @@ export interface RunNodeResult<T> {
 
 export const runNode = <T>(
   node: IRectNodeComponent<T>,
+  canvasApp: CanvasAppInstance,
   animatePath: (
     node: IRectNodeComponent<T>,
     color: string,
@@ -58,18 +115,29 @@ export const runNode = <T>(
   offsetX?: number,
   offsetY?: number
 ) => {
+  const payload = getVariablePayload<T>(node, canvasApp);
+
+  console.log('payload', payload);
   const formInfo = node.nodeInfo as unknown as any;
   console.log(
     'run start',
     node.id,
     node,
-    formInfo?.formValues?.['expression'] ?? ''
+    formInfo?.formValues?.['expression'] ?? '',
+    payload
   );
   let result: any = false;
   let followPath: string | undefined = undefined;
   let previousOutput: any = undefined;
   if (formInfo && formInfo?.compute) {
-    const computeResult = formInfo.compute(input ?? '', pathExecution);
+    const computeResult = formInfo.compute(
+      input ?? '',
+      pathExecution,
+      undefined,
+      payload
+    );
+
+    sendData(node, canvasApp, computeResult.result);
     result = computeResult.result;
     followPath = computeResult.followPath;
     previousOutput = computeResult.previousOutput;
@@ -99,12 +167,15 @@ export const runNode = <T>(
         let previousOutput: any = undefined;
         const formInfo = node.nodeInfo as unknown as any;
 
+        const payload = getVariablePayload<T>(node, canvasApp);
+        console.log('payload2', payload);
         if (formInfo && formInfo.computeAsync) {
           return new Promise((resolve, reject) => {
             formInfo
-              .computeAsync(input, pathExecution)
+              .computeAsync(input, pathExecution, undefined, payload)
               .then((computeResult: any) => {
                 result = computeResult.result;
+                sendData(node, canvasApp, result);
                 followPath = computeResult.followPath;
 
                 if (pathExecution) {
@@ -131,8 +202,14 @@ export const runNode = <T>(
               });
           });
         } else if (formInfo && formInfo.compute) {
-          const computeResult = formInfo.compute(input, pathExecution);
+          const computeResult = formInfo.compute(
+            input,
+            pathExecution,
+            undefined,
+            payload
+          );
           result = computeResult.result;
+          sendData(node, canvasApp, result);
           followPath = computeResult.followPath;
           previousOutput = computeResult.previousOutput;
         } else {
@@ -183,6 +260,7 @@ export const runNode = <T>(
 };
 export const run = <T>(
   nodes: ElementNodeMap<T>,
+  canvasApp: CanvasAppInstance,
   animatePath: (
     node: IRectNodeComponent<T>,
     color: string,
@@ -228,15 +306,21 @@ export const run = <T>(
   nodes.forEach((node) => {
     const nodeComponent = node as unknown as IRectNodeComponent<T>;
     const connectionsFromEndNode = nodeList.filter((e) => {
-      const element = e[1] as IConnectionNodeComponent<T>;
-      return element.endNode?.id === node.id;
+      const eNode = e[1] as INodeComponent<T>;
+      if (eNode.nodeType === NodeType.Connection) {
+        const element = e[1] as IConnectionNodeComponent<T>;
+        return element.endNode?.id === node.id && !element.isData;
+      }
+      return false;
     });
     if (
+      !(nodeComponent.nodeInfo as any).isVariable &&
       nodeComponent.nodeType !== NodeType.Connection &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0)
     ) {
       runNode<T>(
         nodeComponent,
+        canvasApp,
         animatePath,
         (input: string | any[], pathExecution?: RunNodeResult<T>[]) => {
           if (onFinishRun) {
