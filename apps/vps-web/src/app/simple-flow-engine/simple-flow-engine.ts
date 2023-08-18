@@ -141,6 +141,12 @@ export const runNode = <T>(
     result = computeResult.result;
     followPath = computeResult.followPath;
     previousOutput = computeResult.previousOutput;
+    if (computeResult.stop) {
+      if (onStopped) {
+        onStopped('');
+      }
+      return;
+    }
   } else {
     result = false;
     followPath = undefined;
@@ -212,6 +218,17 @@ export const runNode = <T>(
           sendData(node, canvasApp, result);
           followPath = computeResult.followPath;
           previousOutput = computeResult.previousOutput;
+
+          if (computeResult.stop) {
+            if (onStopped) {
+              onStopped('');
+            }
+            return {
+              result: false,
+              stop: true,
+              output: result,
+            };
+          }
         } else {
           result = false;
           followPath = undefined;

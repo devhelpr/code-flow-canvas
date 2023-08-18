@@ -39,7 +39,10 @@ export const getButton =
           result: currentValue,
         };
       }
-      return false;
+      return {
+        result: false,
+        stop: true,
+      };
     };
 
     return {
