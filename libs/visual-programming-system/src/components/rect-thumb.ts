@@ -40,7 +40,8 @@ export class RectThumb<T> extends Rect<T> {
     canvasUpdated?: () => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
-    isStaticPosition?: boolean
+    isStaticPosition?: boolean,
+    isCircle?: boolean
   ) {
     super(
       canvas,
@@ -66,6 +67,7 @@ export class RectThumb<T> extends Rect<T> {
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');
     }
+    this.nodeComponent.isCircle = isCircle;
 
     this.nodeComponent.domElement?.addEventListener(
       'pointerup',
@@ -165,6 +167,11 @@ export class RectThumb<T> extends Rect<T> {
     if (!this.canvas) {
       return;
     }
+    console.log(
+      'RECT-THUMB initiateDraggingConnection',
+      this.nodeComponent,
+      connectionThumb
+    );
     const elementRect = (
       connectionThumb.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
@@ -207,7 +214,11 @@ export class RectThumb<T> extends Rect<T> {
     if (!this.nodeComponent) {
       return;
     }
-    console.log('svg pointerover', this.nodeComponent.id, this.nodeComponent);
+    // console.log(
+    //   'RECT-THUMB svg pointerover',
+    //   this.nodeComponent.id,
+    //   this.nodeComponent
+    // );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       'cursor-pointer'
     );
@@ -219,10 +230,18 @@ export class RectThumb<T> extends Rect<T> {
     );
 
     let canReceiveDrop = false;
-    if (this.nodeComponent.onCanReceiveDroppedComponent) {
+    if (
+      this.nodeComponent.onCanReceiveDroppedComponent //&&
+      //(event as PointerEvent).shiftKey
+    ) {
       const state = this.interactionStateMachine.getCurrentInteractionState();
-      if (state && state.element) {
+      if (
+        state &&
+        state.element &&
+        state.element.nodeType === NodeType.ConnectionController
+      ) {
         canReceiveDrop = true;
+        console.log('RECT-THUMB pointer-over state', state);
 
         // this.nodeComponent.onCanReceiveDroppedComponent(
         //   this.nodeComponent,
@@ -242,7 +261,7 @@ export class RectThumb<T> extends Rect<T> {
             this.nodeComponent.domElement as unknown as SVGElement
           ).classList.add('cursor-not-allowed');
           console.log(
-            'svg cant register drop target for current dragging element'
+            'RECT-THUMB svg cant register drop target for current dragging element'
           );
           return;
         } else {
@@ -250,7 +269,10 @@ export class RectThumb<T> extends Rect<T> {
             this.nodeComponent.domElement as unknown as SVGElement
           ).style.filter = 'invert(1)';
 
-          console.log('svg register drop target', this.nodeComponent.id);
+          console.log(
+            'RECT-THUMB svg register drop target',
+            this.nodeComponent.id
+          );
           this.interactionStateMachine.setCurrentDropTarget(this.nodeComponent);
         }
       }
@@ -265,7 +287,7 @@ export class RectThumb<T> extends Rect<T> {
     const state = this.interactionStateMachine.getCurrentInteractionState();
     if (dropTarget && state) {
       console.log(
-        'DROPPED ON RECT THUMB',
+        'RECT-THUMB DROPPED ON RECT THUMB',
         dropTarget.id,
         state.element,
         this.nodeComponent.id,
@@ -299,7 +321,7 @@ export class RectThumb<T> extends Rect<T> {
       return;
     }
 
-    console.log('svg unregister drop target', this.nodeComponent.id);
+    console.log('RECT-THUMB svg unregister drop target', this.nodeComponent.id);
     this.interactionStateMachine.clearDropTarget(this.nodeComponent);
 
     (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
@@ -321,7 +343,7 @@ export class RectThumb<T> extends Rect<T> {
         return;
       }
       console.log(
-        'DROPPED ON RIGHT THUMB',
+        'RECT-THUMB DROPPED ON RIGHT THUMB',
         thumbNode,
         component.id,
         component.parent,

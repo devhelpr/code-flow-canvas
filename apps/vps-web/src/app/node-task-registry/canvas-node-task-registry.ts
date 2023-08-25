@@ -3,16 +3,21 @@ import {
   AnimatePathFromThumbFunction,
 } from '../follow-path/animate-path';
 import { getAction } from '../nodes/action';
+import { getAnnotation } from '../nodes/annotation';
 import { getArray } from '../nodes/array';
 import { getButton } from '../nodes/button';
 import { getCanvasNode } from '../nodes/canvas-node';
+import { getCheckbox } from '../nodes/checkbox';
 import { getExpression } from '../nodes/expression';
+import { getExpressionExecute } from '../nodes/expression-execute';
+import { getExpressionPart } from '../nodes/expression-part';
 import { getFetch } from '../nodes/fetch';
 import { getIfCondition } from '../nodes/if-condition';
 import { getFilter, getMap } from '../nodes/map';
 import { getShowInput } from '../nodes/show-input';
 import { getShowObject } from '../nodes/show-object';
 import { getShowValue } from '../nodes/show-value';
+import { getSlider } from '../nodes/slider';
 import { getState } from '../nodes/state';
 import { createStateMachine } from '../nodes/state-machine-node';
 import { getSum } from '../nodes/sum';
@@ -39,6 +44,8 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
   registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));
   registerNodeFactory('expression', getExpression);
+  registerNodeFactory('expression-part', getExpressionPart);
+  registerNodeFactory('expression-execute', getExpressionExecute);
   registerNodeFactory('if-condition', getIfCondition);
   registerNodeFactory('array', getArray);
   registerNodeFactory('show-object', getShowObject);
@@ -52,6 +59,9 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('state-machine', createStateMachine);
   registerNodeFactory('variable', getVariable);
   registerNodeFactory('button', getButton(animatePath));
+  registerNodeFactory('slider', getSlider(animatePath));
+  registerNodeFactory('checkbox', getCheckbox(animatePath));
+  registerNodeFactory('annotation', getAnnotation(animatePath));
 };
 
 export const getNodeTaskFactory = (name: string) => {

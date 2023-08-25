@@ -837,25 +837,6 @@ export class Rect<T> {
         const endNode = (initiator as unknown as IConnectionNodeComponent<T>)
           .endNode;
 
-        /*
-            regarding below "magic numbers"...
-            for 2 connected expression-nodes this works
-            for others not
-            when a connection of 2 nodes gets clicked.. the start node gets moved...
-            .. expression nodes have a width of 200px
-
-
-          given:
-          - x,y coordinates of rect-nodes are top-left
-        
-          possible solutions
-          - use the connection coordinates (x,y,endX,endY)
-          => do negative transform from startThumb/endThumb to rect-node
-            .. works almost 
-            .. still a weird 30 offset
-            .. and if-condition are not correct
-            .. thumb-type Center is better.. but when clicking on the nodes.. it's not correct
-          */
         if (startThumb && startNode && startNode.id === target.id) {
           const tx = calculateConnectorX(
             startThumb?.thumbType ?? ThumbType.None,
@@ -870,7 +851,7 @@ export class Rect<T> {
             startThumb?.thumbIndex ?? 0
           );
 
-          this.points.beginX = x - tx; // - 30; // - (startNode?.width ?? 0) + 20 + 50; // where does "150" come from?
+          this.points.beginX = x - tx;
           this.points.beginY = y - ty;
         }
         if (endThumb && endNode && endNode.id === target.id) {
@@ -886,7 +867,7 @@ export class Rect<T> {
             endNode?.height ?? 0,
             endThumb?.thumbIndex ?? 0
           );
-          this.points.beginX = x - tx; // + 30; // where do "20" and "50" come from?
+          this.points.beginX = x - tx;
           this.points.beginY = y - ty;
         }
 

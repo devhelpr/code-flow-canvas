@@ -978,8 +978,6 @@ export class AppElement extends HTMLElement {
           };
         }
 
-        console.log('obj', obj, parent);
-
         let elements: any = undefined;
         if (obj.nodeInfo && obj.nodeInfo.canvasAppInstance) {
           elements = serializeElementsMap(

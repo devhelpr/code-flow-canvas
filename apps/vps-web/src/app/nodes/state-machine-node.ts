@@ -39,6 +39,7 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number
   ) => {
+    console.log('state-machine compute', canvasAppInstance?.elements);
     return {
       result: input,
       followPath: undefined,
@@ -62,7 +63,9 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValue?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
       htmlNode = createElement(
         'div',
@@ -85,8 +88,8 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
       rect = canvasApp.createRect(
         x,
         y,
-        600,
-        400,
+        width ?? 600,
+        height ?? 400,
         undefined,
         [
           {
@@ -135,7 +138,8 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
           htmlNode.domElement as HTMLElement,
           false,
           true,
-          ''
+          '',
+          canvasApp.interactionStateMachine
         );
 
         const inputInstance = canvasAppInstance.createRect(
@@ -219,6 +223,17 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
 
         canvasAppInstance.setOnCanvasUpdated(() => {
           updated?.();
+        });
+
+        rect.addUpdateEventListener((target, x, y, initiator) => {
+          if (target) {
+            outputInstance.nodeComponent?.update?.(
+              outputInstance.nodeComponent,
+              target?.width,
+              0,
+              rect?.nodeComponent
+            );
+          }
         });
 
         (canvasAppInstance.canvas.domElement as HTMLElement).classList.add(

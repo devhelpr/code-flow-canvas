@@ -22,11 +22,20 @@ import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
-import { splitQuadraticBezierCurve } from './utils/bezier-math';
+import {
+  calculateQuadraticBezierLineIntersections,
+  splitQuadraticBezierCurve,
+} from './utils/bezier-math';
 import {
   onCalculateControlPoints as onCalculateCubicBezierControlPoints,
   onGetConnectionToThumbOffset,
 } from './utils/calculate-control-points';
+import {
+  Vector,
+  intersectionCircleLine,
+  normalizeVector,
+  perpendicularVector,
+} from './utils/vector-math';
 
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
@@ -250,12 +259,12 @@ export class Connection<T> {
     this.nodeComponent.endY = 0;
   }
 
-  getBBoxPath(
+  getBBoxPath = (
     startOffsetX: number,
     startOffsetY: number,
     endOffsetX: number,
     endOffsetY: number
-  ) {
+  ) => {
     if (this.isQuadratic && this.pathHiddenElement) {
       const x1 = this.points.beginX + startOffsetX;
       const y1 = this.points.beginY + startOffsetY;
@@ -264,27 +273,17 @@ export class Connection<T> {
       const x2 = this.points.endX + endOffsetX;
       const y2 = this.points.endY + endOffsetY;
 
-      const split1 = splitQuadraticBezierCurve(x1, y1, cx, cy, x2, y2, 0.15);
-      const curves = splitQuadraticBezierCurve(
-        split1.curve2.x1,
-        split1.curve2.y1,
-        split1.curve2.c1x,
-        split1.curve2.c1y,
-        split1.curve2.x2,
-        split1.curve2.y2,
-        0.85
+      const path = this.getQuadraticBezierPath(
+        { x: 0, y: 0 },
+        startOffsetX,
+        startOffsetY,
+        x1,
+        y1,
+        cx,
+        cy,
+        x2,
+        y2
       );
-      // const curves = {
-      //   curve1: {
-      //     x1,
-      //     y1,
-      //     c1x: cx,
-      //     c1y: cy,
-      //     x2: x2,
-      //     y2: y2,
-      //   },
-      // };
-      const path = `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
 
       (this.pathHiddenElement.domElement as HTMLElement).setAttribute(
         'd',
@@ -310,7 +309,7 @@ export class Connection<T> {
       width: bbox.width + totalPaddingRect,
       height: bbox.height + totalPaddingRect,
     };
-  }
+  };
 
   interactionInfo: false | IPointerDownResult = false;
 
@@ -395,6 +394,246 @@ export class Connection<T> {
     }
   };
 
+  getQuadraticBezierPath = (
+    bbox: { x: number; y: number },
+    startOffsetX: number,
+    startOffsetY: number,
+    x1: number,
+    y1: number,
+    cx: number,
+    cy: number,
+    x2: number,
+    y2: number
+  ) => {
+    const isCircleStart = this.nodeComponent?.startNode?.isCircle ?? false;
+    const isCircleEnd = this.nodeComponent?.endNode?.isCircle ?? false;
+
+    const perpendicularVectorFactor = 20;
+    const spacingAABB = 20;
+    const circleSpacingFactor = 4;
+    let t = 0;
+    let intersections: Vector[] = [];
+    if (isCircleStart) {
+      intersections = intersectionCircleLine(
+        {
+          center: { x: x1, y: y1 },
+          radius: thumbRadius * circleSpacingFactor,
+        },
+        { p1: { x: x1, y: y1 }, p2: { x: cx, y: cy } }
+      );
+
+      if (intersections.length > 0) {
+        const xi = intersections[0].x;
+        const yi = intersections[0].y;
+
+        const normalVector = normalizeVector({ x: cx - x1, y: cy - y1 });
+        const pVector = perpendicularVector(normalVector);
+        const pi1x = xi - pVector.x * perpendicularVectorFactor;
+        const pi1y = yi - pVector.y * perpendicularVectorFactor;
+        const pi2x = xi + pVector.x * perpendicularVectorFactor;
+        const pi2y = yi + pVector.y * perpendicularVectorFactor;
+
+        const interseccionsStart = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: pi1x, y: pi1y },
+          { x: pi2x, y: pi2y }
+        );
+
+        if (interseccionsStart[0]?.t !== undefined) {
+          t = interseccionsStart[0]?.t;
+        } else {
+          console.log('interseccionsStart UNDEFINED');
+        }
+      }
+    } else {
+      if (this.nodeComponent?.startNode) {
+        const xleft =
+          this.nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
+        const yleft =
+          this.nodeComponent.startNode.y - bbox.y + startOffsetY - spacingAABB;
+        const width =
+          (this.nodeComponent.startNode.width ?? 0) + spacingAABB * 2;
+        const height =
+          (this.nodeComponent.startNode.height ?? 0) + spacingAABB * 2;
+
+        const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft, y: yleft },
+          { x: xleft, y: yleft + height }
+        );
+
+        const AABBTopIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft, y: yleft },
+          { x: xleft + width, y: yleft }
+        );
+
+        const AABBRightIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft + width, y: yleft },
+          { x: xleft + width, y: yleft + height }
+        );
+
+        const AABBBottomIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft, y: yleft + height },
+          { x: xleft + width, y: yleft + height }
+        );
+
+        if (AABBLeftIntersect.length > 0) {
+          t = AABBLeftIntersect[0]?.t;
+        }
+        if (AABBTopIntersect.length > 0) {
+          t = AABBTopIntersect[0]?.t;
+        }
+        if (AABBRightIntersect.length > 0) {
+          t = AABBRightIntersect[0]?.t;
+        }
+        if (AABBBottomIntersect.length > 0) {
+          t = AABBBottomIntersect[0]?.t;
+        }
+      }
+    }
+
+    const split1 = splitQuadraticBezierCurve(x1, y1, cx, cy, x2, y2, t ?? 0);
+
+    let tEnd = 1;
+    if (isCircleEnd) {
+      intersections = intersectionCircleLine(
+        {
+          center: { x: x2, y: y2 },
+          radius: thumbRadius * circleSpacingFactor + 10,
+        },
+        { p1: { x: x2, y: y2 }, p2: { x: cx, y: cy } }
+      );
+
+      if (intersections.length > 0) {
+        const xi = intersections[0].x;
+        const yi = intersections[0].y;
+
+        const normalVector = normalizeVector({ x: cx - x2, y: cy - y2 });
+        const pVector = perpendicularVector(normalVector);
+        const pi1x = xi - pVector.x * perpendicularVectorFactor;
+        const pi1y = yi - pVector.y * perpendicularVectorFactor;
+        const pi2x = xi + pVector.x * perpendicularVectorFactor;
+        const pi2y = yi + pVector.y * perpendicularVectorFactor;
+
+        const intersectionsEnd = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: pi1x, y: pi1y },
+          { x: pi2x, y: pi2y },
+          true
+        );
+
+        if (intersectionsEnd[0]?.t !== undefined) {
+          tEnd = intersectionsEnd[0]?.t;
+        } else {
+          console.log(
+            'interseccionsEnd UNDEFINED',
+            intersectionsEnd,
+            x1,
+            y1,
+            cx,
+            cy,
+            x2,
+            y2,
+            pi1x,
+            pi1y,
+            pi2x,
+            pi2y
+          );
+        }
+      }
+    } else {
+      // do 4x calculateQuadraticBezierLineIntersections for each of AABB sides
+      // and take the point closest to the center point of AABB??
+      // lets start with the first found...
+      if (this.nodeComponent?.endNode) {
+        const xleft =
+          this.nodeComponent.endNode.x -
+          bbox.x +
+          startOffsetX -
+          spacingAABB * 2;
+        const yleft =
+          this.nodeComponent.endNode.y -
+          bbox.y +
+          startOffsetY -
+          spacingAABB * 2;
+        const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 4;
+        const height =
+          (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 4;
+
+        const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft, y: yleft },
+          { x: xleft, y: yleft + height }
+        );
+
+        const AABBTopIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft, y: yleft },
+          { x: xleft + width, y: yleft }
+        );
+
+        const AABBRightIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft + width, y: yleft },
+          { x: xleft + width, y: yleft + height }
+        );
+
+        const AABBBottomIntersect = calculateQuadraticBezierLineIntersections(
+          { x: x1, y: y1 },
+          { x: cx, y: cy },
+          { x: x2, y: y2 },
+          { x: xleft, y: yleft + height },
+          { x: xleft + width, y: yleft + height }
+        );
+
+        if (AABBLeftIntersect.length > 0) {
+          tEnd = AABBLeftIntersect[0]?.t;
+        }
+        if (AABBTopIntersect.length > 0) {
+          tEnd = AABBTopIntersect[0]?.t;
+        }
+        if (AABBRightIntersect.length > 0) {
+          tEnd = AABBRightIntersect[0]?.t;
+        }
+        if (AABBBottomIntersect.length > 0) {
+          tEnd = AABBBottomIntersect[0]?.t;
+        }
+      }
+    }
+
+    const curves = splitQuadraticBezierCurve(
+      split1.curve2.x1,
+      split1.curve2.y1,
+      split1.curve2.c1x,
+      split1.curve2.c1y,
+      split1.curve2.x2,
+      split1.curve2.y2,
+      tEnd ?? 1
+    );
+
+    return `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
+  };
   onUpdate = (
     target?: INodeComponent<T>,
     x?: number,
@@ -797,28 +1036,17 @@ export class Connection<T> {
       const cy = this.points.cy1 - bbox.y;
       const x2 = this.points.endX - bbox.x + endOffsetX;
       const y2 = this.points.endY - bbox.y + endOffsetY;
-
-      const split1 = splitQuadraticBezierCurve(x1, y1, cx, cy, x2, y2, 0.15);
-      const curves = splitQuadraticBezierCurve(
-        split1.curve2.x1,
-        split1.curve2.y1,
-        split1.curve2.c1x,
-        split1.curve2.c1y,
-        split1.curve2.x2,
-        split1.curve2.y2,
-        0.85
+      const path = this.getQuadraticBezierPath(
+        bbox,
+        startOffsetX,
+        startOffsetY,
+        x1,
+        y1,
+        cx,
+        cy,
+        x2,
+        y2
       );
-      // const curves = {
-      //   curve1: {
-      //     x1,
-      //     y1,
-      //     c1x: cx,
-      //     c1y: cy,
-      //     x2: x2,
-      //     y2: y2,
-      //   },
-      // };
-      const path = `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
 
       (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
       (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(

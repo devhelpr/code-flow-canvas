@@ -29,8 +29,10 @@ const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   //   thumbFactor = Math.abs((x2 ?? 0) - x1) / 50;
   // }
 
-  const distance = calculate2DDistance(x1, y1, x2, y2) * factor;
-
+  let distance = calculate2DDistance(x1, y1, x2, y2) * factor;
+  if (distance === 0) {
+    distance = 0.01;
+  }
   return { distance, thumbFactor };
 };
 

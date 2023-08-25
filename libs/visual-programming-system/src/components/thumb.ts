@@ -374,6 +374,7 @@ export class ThumbNode<T> {
     if (!this.canvas) {
       return;
     }
+    console.log('THUMB initiateDraggingConnection', this.nodeComponent);
     const elementRect = (
       connectionThumb.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
