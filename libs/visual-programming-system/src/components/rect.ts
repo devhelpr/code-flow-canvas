@@ -247,7 +247,11 @@ export class Rect<T> {
         return;
       }
       console.log('CLICKED ON RECT', this.nodeComponent.id);
-      setSelectNode(this.nodeComponent.id);
+      setSelectNode({
+        id: this.nodeComponent.id,
+        containerNode: this.nodeComponent
+          .containerNode as unknown as INodeComponent<unknown>,
+      });
     };
     this.nodeComponent.connections = [];
   }

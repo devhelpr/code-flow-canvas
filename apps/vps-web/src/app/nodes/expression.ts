@@ -74,7 +74,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         error?.toString() ?? 'Error';
       console.log('expression error', error);
     }
-    if (result) {
+    if (result !== undefined) {
       currentValue = result;
     }
     return {

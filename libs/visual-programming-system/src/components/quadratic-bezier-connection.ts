@@ -6,6 +6,7 @@ import {
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
+  IRectNodeComponent,
   IThumbNodeComponent,
 } from '../interfaces/element';
 import {
@@ -38,7 +39,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     isDashed = false,
     canvasUpdated?: () => void,
     id?: string,
-    containerNode?: INodeComponent<T>
+    containerNode?: IRectNodeComponent<T>
   ) {
     super(
       canvas.domElement,
@@ -70,7 +71,11 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         return;
       }
       console.log('connection click', this.nodeComponent.id);
-      setSelectNode(this.nodeComponent.id);
+      setSelectNode({
+        id: this.nodeComponent.id,
+        containerNode: this.nodeComponent
+          .containerNode as unknown as INodeComponent<unknown>,
+      });
     };
 
     function setPosition(

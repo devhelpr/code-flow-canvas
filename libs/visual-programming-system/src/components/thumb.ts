@@ -42,7 +42,7 @@ export class ThumbNode<T> {
   canvasUpdated?: () => void;
   circleElement: IElementNode<T> | undefined;
   interactionInfo: IPointerDownResult;
-  containerNode?: INodeComponent<T>;
+  containerNode?: IRectNodeComponent<T>;
 
   constructor(
     canvasElement: DOMElementNode,
@@ -72,7 +72,7 @@ export class ThumbNode<T> {
     label?: string,
     thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
-    containerNode?: INodeComponent<T>
+    containerNode?: IRectNodeComponent<T>
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.disableInteraction = disableInteraction ?? false;
@@ -193,36 +193,22 @@ export class ThumbNode<T> {
       this.circleElement.domElement
     );
     if (label) {
-      /*
-
-    when is output (start):
-
-     parent: 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-
-    innerCircle:
-      background: black;
-      clip-path: circle(50% at 50% 50%);
-      color: white;
-  
-      margin-top: 1px;
-      width: 16px;
-      height: 16px;
-      position: relative;
-    */
       let clipPath = '';
       let innerLabelClasses = `pointer-events-none absolute ${thumbFontSizeClass} flex items-center justify-center
-      ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
-      text-center
-      top-[-1px] text-black `;
-      if (connectionType === ThumbConnectionType.end) {
+        ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
+        text-center
+        top-[-1px] text-black `;
+
+      if (
+        (connectionType === ThumbConnectionType.end && !this.containerNode) ||
+        (this.containerNode && connectionType === ThumbConnectionType.start)
+      ) {
         innerLabelClasses = `pointer-events-none relative text-[14px] flex items-center justify-center
          ${thumbTextBaseSizeClass}
         text-center
-        text-white bg-black h-[20px] w-[20px] pb-[1.5px]`;
+        text-white bg-black h-[20px] w-[20px] pb-[1.5px] ${
+          this.containerNode ? 'top-[2px] left-[1.5px]' : ''
+        }`;
         clipPath = 'circle(50% at 50% 50%)';
       }
       createElement(
@@ -427,12 +413,12 @@ export class ThumbNode<T> {
       const selectedNodeId = getSelectedNode();
       if (selectedNodeId) {
         const selectedNode = this.canvasElements?.get(
-          selectedNodeId
+          selectedNodeId.id
         ) as unknown as INodeComponent<T>;
         const connectionNode =
           this.nodeComponent.thumbLinkedToNode?.nodeType === NodeType.Shape
             ? this.nodeComponent.thumbLinkedToNode?.connections.find(
-                (c) => c.id === selectedNodeId
+                (c) => c.id === selectedNodeId.id
               )
             : undefined;
         if (

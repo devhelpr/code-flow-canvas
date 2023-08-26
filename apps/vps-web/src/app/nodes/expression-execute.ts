@@ -23,7 +23,7 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
-
+  let jsxComponentWrapper: INodeComponent<NodeInfo>;
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -73,8 +73,11 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
         error?.toString() ?? 'Error';
       console.log('expression error', error);
     }
-    if (result) {
+    if (result !== undefined) {
       currentValue = result;
+      if (jsxComponentWrapper) {
+        jsxComponentWrapper.domElement.textContent = `${currentValue}`;
+      }
     }
     return {
       result,
@@ -96,10 +99,10 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
     ) => {
       const initialValue = initalValues?.['expression'] ?? '';
 
-      const jsxComponentWrapper = createElement(
+      jsxComponentWrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded h-[60px]`,
+          class: `bg-slate-500 p-4 rounded h-[60px] text-center`,
           style: {
             'clip-path': 'circle(50%)',
           },

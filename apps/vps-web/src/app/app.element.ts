@@ -83,7 +83,10 @@ export class AppElement extends HTMLElement {
 
   currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
 
-  removeElement = (element: IElementNode<NodeInfo>) => {
+  removeElement = (
+    element: IElementNode<NodeInfo>,
+    canvasAppInstance?: CanvasAppInstance
+  ) => {
     element.domElement.remove();
     const node = element as unknown as INodeComponent<NodeInfo>;
     if (node && node.delete) {
@@ -1638,14 +1641,14 @@ export class AppElement extends HTMLElement {
     createEffect(() => {
       const nodeElementId = getSelectedNode();
       console.log('selected nodeElement', nodeElementId);
-      if (nodeElementId === currentNodeElementId) {
+      if (nodeElementId?.id === currentNodeElementId) {
         //return;
       }
 
       removeFormElement();
       if (nodeElementId) {
-        selectedNode.domElement.textContent = `${nodeElementId}`;
-        const node = this.canvasApp?.elements?.get(nodeElementId);
+        selectedNode.domElement.textContent = `${nodeElementId.id}`;
+        const node = this.canvasApp?.elements?.get(nodeElementId.id);
 
         if (!node) {
           return;
@@ -1683,11 +1686,11 @@ export class AppElement extends HTMLElement {
 
         const form = FormComponent({
           rootElement: formElement.domElement as HTMLElement,
-          id: nodeElementId,
+          id: nodeElementId.id,
           onSave: (values: any) => {
             console.log('onSave', values);
 
-            const node = this.canvasApp?.elements?.get(nodeElementId);
+            const node = this.canvasApp?.elements?.get(nodeElementId.id);
             if (node) {
               if ((node.nodeInfo as any).formElements) {
                 (node.nodeInfo as any).formValues = values;
@@ -1828,7 +1831,7 @@ export class AppElement extends HTMLElement {
         setupTasksInDropdown();
       }
 
-      currentNodeElementId = nodeElementId;
+      currentNodeElementId = nodeElementId?.id;
     });
 
     // createMarkupElement(

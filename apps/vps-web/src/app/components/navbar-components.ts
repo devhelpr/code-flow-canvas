@@ -40,7 +40,10 @@ export interface Props {
   animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>;
   canvasUpdated: () => void;
   canvasApp: CanvasAppInstance;
-  removeElement: (element: IElementNode<NodeInfo>) => void;
+  removeElement: (
+    element: IElementNode<NodeInfo>,
+    canvasAppInstance?: CanvasAppInstance
+  ) => void;
 }
 
 export class NavbarComponent extends Component<Props> {
@@ -131,7 +134,7 @@ export class NavbarComponent extends Component<Props> {
       const nodeElementId = getSelectedNode();
       if (nodeElementId) {
         const node = this.props.canvasApp?.elements?.get(
-          nodeElementId
+          nodeElementId.id
         ) as INodeComponent<NodeInfo>;
 
         const selectedNodeTaskFactory = getNodeTaskFactory(
@@ -186,9 +189,16 @@ export class NavbarComponent extends Component<Props> {
     event.preventDefault();
     const nodeElementId = getSelectedNode();
     if (nodeElementId) {
-      const node = this.props.canvasApp?.elements?.get(
-        nodeElementId
-      ) as INodeComponent<NodeInfo>;
+      const node = nodeElementId.containerNode
+        ? ((
+            nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+          ).nodeInfo.canvasAppInstance.elements?.get(
+            nodeElementId.id
+          ) as INodeComponent<NodeInfo>)
+        : (this.props.canvasApp?.elements?.get(
+            nodeElementId.id
+          ) as INodeComponent<NodeInfo>);
+
       if (node) {
         if (node.nodeType === NodeType.Connection) {
           // Remove the connection from the start and end nodes
@@ -230,9 +240,20 @@ export class NavbarComponent extends Component<Props> {
           return;
         }
 
-        this.props.removeElement(node);
-        this.props.canvasApp?.elements?.delete(nodeElementId);
-
+        if (nodeElementId.containerNode) {
+          (
+            nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+          ).nodeInfo.canvasAppInstance.elements?.delete(nodeElementId.id);
+          this.props.removeElement(
+            node,
+            (
+              nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+            ).nodeInfo.canvasAppInstance
+          );
+        } else {
+          this.props.removeElement(node);
+          this.props.canvasApp?.elements?.delete(nodeElementId.id);
+        }
         setSelectNode(undefined);
         this.props.canvasUpdated();
       }

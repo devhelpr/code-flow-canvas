@@ -91,7 +91,7 @@ export class Connection<T> {
     onCalculateControlPoints = onCalculateCubicBezierControlPoints,
     canvasUpdated?: () => void,
     id?: string,
-    containerNode?: INodeComponent<T>
+    containerNode?: IRectNodeComponent<T>
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -150,6 +150,7 @@ export class Connection<T> {
     this.nodeComponent.nodeType = NodeType.Connection;
     this.nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
     this.nodeComponent.controlPointNodes = [];
+    this.nodeComponent.containerNode = containerNode;
     this.nodeComponent.delete = () => {
       if (this.svgParent) {
         this.svgParent.domElement.remove();
@@ -317,7 +318,11 @@ export class Connection<T> {
     console.log('CONNECTION POINTER DOWN', this.nodeComponent?.isControlled);
     if (this.nodeComponent) {
       e.stopPropagation();
-      setSelectNode(this.nodeComponent.id);
+      setSelectNode({
+        id: this.nodeComponent.id,
+        containerNode: this.nodeComponent
+          .containerNode as unknown as INodeComponent<unknown>,
+      });
 
       this.orgPoints = { ...this.points };
 
@@ -351,8 +356,8 @@ export class Connection<T> {
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
-        parentX = this.containerNode.x - paddingRect;
-        parentY = this.containerNode.y - paddingRect;
+        parentX = this.containerNode.x; //- paddingRect;
+        parentY = this.containerNode.y; //- paddingRect;
       }
 
       const interactionInfoResult = pointerDown<T>(

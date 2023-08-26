@@ -668,7 +668,7 @@ export const createCanvasApp = <T>(
       isControlled?: boolean,
       isDashed = false,
       id?: string,
-      containerNode?: INodeComponent<T>
+      containerNode?: IRectNodeComponent<T>
     ) => {
       const curve = new CubicBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
@@ -704,7 +704,7 @@ export const createCanvasApp = <T>(
       isControlled?: boolean,
       isDashed = false,
       id?: string,
-      containerNode?: INodeComponent<T>
+      containerNode?: IRectNodeComponent<T>
     ) => {
       const curve = new QuadraticBezierConnection<T>(
         canvas as unknown as INodeComponent<T>,
