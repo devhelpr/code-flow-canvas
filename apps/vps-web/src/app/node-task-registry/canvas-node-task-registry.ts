@@ -2,7 +2,7 @@ import {
   AnimatePathFunction,
   AnimatePathFromThumbFunction,
 } from '../follow-path/animate-path';
-import { getAction } from '../nodes/action';
+import { getStateTransition } from '../nodes/state-transition';
 import { getAnnotation } from '../nodes/annotation';
 import { getArray } from '../nodes/array';
 import { getButton } from '../nodes/button';
@@ -19,7 +19,7 @@ import { getShowObject } from '../nodes/show-object';
 import { getShowValue } from '../nodes/show-value';
 import { getSlider } from '../nodes/slider';
 import { getState } from '../nodes/state';
-import { createStateMachine } from '../nodes/state-machine-node';
+import { createStateMachineNode } from '../nodes/state-machine-node';
 import { getSum } from '../nodes/sum';
 import { getVariable } from '../nodes/variable';
 import { NodeInfo } from '../types/node-info';
@@ -53,10 +53,10 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('show-value', getShowValue);
   registerNodeFactory('sum', getSum);
   registerNodeFactory('state', getState);
-  registerNodeFactory('action', getAction);
+  registerNodeFactory('state-transition', getStateTransition);
   registerNodeFactory('fetch', getFetch);
   registerNodeFactory('canvas-node', getCanvasNode(animatePath));
-  registerNodeFactory('state-machine', createStateMachine);
+  registerNodeFactory('state-machine', createStateMachineNode);
   registerNodeFactory('variable', getVariable);
   registerNodeFactory('button', getButton(animatePath));
   registerNodeFactory('slider', getSlider(animatePath));

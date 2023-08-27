@@ -39,7 +39,8 @@ export class Component<T> extends BaseComponent {
         | Text
       )[]),
     ];
-    this.element?.replaceChildren?.(...this.renderList);
+    const element = this.childContainerElement ?? this.element;
+    element?.replaceChildren?.(...this.renderList);
   }
 
   propsHandler = {

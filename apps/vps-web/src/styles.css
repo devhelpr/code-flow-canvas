@@ -14,3 +14,17 @@
 .pointer-events-all {
 	pointer-events: all;
 }
+
+.state-active .inner-node {
+	@apply border-sky-800;
+	border-width: 8px;
+	border-style: solid;
+
+}
+.state-active .shape-circle {
+	border-radius: 50%;
+}
+
+.state-active .shape-rect {
+	border-radius: 4px;
+}

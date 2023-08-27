@@ -1,5 +1,6 @@
 import {
   createElement,
+  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -16,11 +17,13 @@ import {
   RunNodeResult,
 } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
+import { FormFieldType } from '../components/form-component';
 
 export const getButton =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let button: IElementNode<NodeInfo>;
     let currentValue = 0;
     let triggerButton = false;
     const initializeCompute = () => {
@@ -57,7 +60,27 @@ export const getButton =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const initialValue = initalValues?.['expression'] ?? '';
+        const initialValue = initalValues?.['caption'] ?? '';
+
+        const formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'caption',
+            value: initialValue ?? '',
+            onChange: (value: string) => {
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                caption: value,
+              };
+              button.domElement.textContent =
+                node.nodeInfo.formValues['caption'] ?? 'Button';
+              console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+        ];
 
         const componentWrapper = createElement(
           'div',
@@ -67,7 +90,7 @@ export const getButton =
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
-        const button = createElement(
+        button = createElement(
           'button',
           {
             class: `bg-sky-600 hover:bg-sky-500 w-full p-2 text-center block text-white font-bold rounded`,
@@ -88,7 +111,7 @@ export const getButton =
           },
           componentWrapper.domElement
         );
-        button.domElement.textContent = 'CLICK';
+        button.domElement.textContent = initialValue ?? 'Button';
         const rect = canvasApp.createRect(
           x,
           y,
@@ -124,7 +147,7 @@ export const getButton =
           {
             type: 'button',
             formValues: {
-              expression: initialValue ?? '',
+              caption: initialValue ?? '',
             },
           },
           containerNode
@@ -132,7 +155,7 @@ export const getButton =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = [];
+        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
         node.nodeInfo.compute = compute;

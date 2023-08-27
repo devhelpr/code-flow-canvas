@@ -63,6 +63,7 @@ export class FormsComponent extends Component<Props> {
 
   div: HTMLDivElement | null = null;
   form: HTMLFormElement | null = null;
+  buttonElement: HTMLElement | null = null;
 
   constructor(parent: BaseComponent | null, props: Props) {
     super(parent, props);
@@ -70,6 +71,11 @@ export class FormsComponent extends Component<Props> {
       `<div class="w-full p-2">
         <form>
           <children></children>
+          ${
+            props.hasSubmitButton === true
+              ? ' <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>'
+              : ''
+          }
         </form>
       </div>`
     );
@@ -88,10 +94,17 @@ export class FormsComponent extends Component<Props> {
         this.element.remove();
         this.div = this.element as HTMLDivElement;
         this.form = this.div.firstChild as HTMLFormElement;
+        this.childContainerElement = this.form;
         // this.renderList.push(
         // );
         this.childRoot = this.form.firstChild as HTMLElement;
+        if (this.props.hasSubmitButton === true) {
+          this.buttonElement = this.form.lastChild as HTMLElement;
+        }
         this.renderList.push(this.childRoot);
+        if (this.buttonElement) {
+          this.renderList.push(this.buttonElement);
+        }
         this.createFormElements();
         this.rootElement.append(this.element);
         this.form.addEventListener('submit', this.onSubmit);
@@ -173,7 +186,9 @@ export class FormsComponent extends Component<Props> {
       const childElements = this.doRenderChildren
         ? this.getRenderableChildren()
         : [];
-
+      if (this.buttonElement) {
+        childElements.push(this.buttonElement);
+      }
       this.renderElements(childElements);
     }
   }

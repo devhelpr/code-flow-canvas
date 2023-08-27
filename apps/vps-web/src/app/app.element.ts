@@ -570,6 +570,7 @@ export class AppElement extends HTMLElement {
               }
             });
             canvasApp.centerCamera();
+            initializeNodes();
             this.restoring = false;
           })
           .catch((error) => {
@@ -682,6 +683,18 @@ export class AppElement extends HTMLElement {
       'Clear canvas'
     );
 
+    const initializeNodes = () => {
+      this.canvasApp?.elements.forEach((node) => {
+        const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
+        if (nodeComponent.nodeType !== NodeType.Connection) {
+          if (nodeComponent.nodeInfo.initializeCompute) {
+            nodeComponent.nodeInfo.initializeCompute();
+          }
+        }
+      });
+      this.pathExecutions = [];
+      this.currentPathUnderInspection = undefined;
+    };
     createElement(
       'button',
       {
@@ -689,16 +702,7 @@ export class AppElement extends HTMLElement {
         click: (event) => {
           event.preventDefault();
           event.stopPropagation();
-          this.canvasApp?.elements.forEach((node) => {
-            const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
-            if (nodeComponent.nodeType !== NodeType.Connection) {
-              if (nodeComponent.nodeInfo.initializeCompute) {
-                nodeComponent.nodeInfo.initializeCompute();
-              }
-            }
-          });
-          this.pathExecutions = [];
-          this.currentPathUnderInspection = undefined;
+          initializeNodes();
           return false;
         },
       },
@@ -1037,7 +1041,7 @@ export class AppElement extends HTMLElement {
       'run'
     );
 
-    let speedMeter = 1;
+    let speedMeter = 100;
     createElement(
       'input',
       {
@@ -1046,6 +1050,7 @@ export class AppElement extends HTMLElement {
         name: 'speed',
         min: '0.1',
         max: '100',
+        value: '100',
         change: (event) => {
           speedMeter = parseInt((event.target as HTMLInputElement).value);
           setSpeedMeter(speedMeter);
@@ -1648,7 +1653,12 @@ export class AppElement extends HTMLElement {
       removeFormElement();
       if (nodeElementId) {
         selectedNode.domElement.textContent = `${nodeElementId.id}`;
-        const node = this.canvasApp?.elements?.get(nodeElementId.id);
+        const node = (
+          nodeElementId?.containerNode
+            ? (nodeElementId?.containerNode.nodeInfo as any)?.canvasAppInstance
+                ?.elements
+            : this.canvasApp?.elements
+        )?.get(nodeElementId.id);
 
         if (!node) {
           return;
@@ -1687,21 +1697,27 @@ export class AppElement extends HTMLElement {
         const form = FormComponent({
           rootElement: formElement.domElement as HTMLElement,
           id: nodeElementId.id,
+          hasSubmitButton: true,
           onSave: (values: any) => {
             console.log('onSave', values);
 
-            const node = this.canvasApp?.elements?.get(nodeElementId.id);
+            const node = (
+              nodeElementId?.containerNode
+                ? (nodeElementId?.containerNode.nodeInfo as any)
+                    ?.canvasAppInstance?.elements
+                : this.canvasApp?.elements
+            )?.get(nodeElementId.id);
             if (node) {
               if ((node.nodeInfo as any).formElements) {
                 (node.nodeInfo as any).formValues = values;
                 Object.entries(values).forEach(([key, value]) => {
                   console.log(
                     'updateNamedSignal',
-                    nodeElementId + '_' + key,
+                    nodeElementId.id + '_' + key,
                     value
                   );
                   updateNamedSignal(
-                    nodeElementId + '_' + key,
+                    nodeElementId.id + '_' + key,
                     value as unknown as string
                   );
                 });

@@ -13,7 +13,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getAction: NodeTaskFactory<NodeInfo> = (
+export const getStateTransition: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -34,10 +34,10 @@ export const getAction: NodeTaskFactory<NodeInfo> = (
     };
   };
   return {
-    name: 'action',
+    name: 'state-transition',
     family: 'flow-canvas',
     category: 'state-machine',
-    //isContained: true,
+    isContained: true,
     createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
@@ -49,12 +49,14 @@ export const getAction: NodeTaskFactory<NodeInfo> = (
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class:
-            'flex text-center items-center justify-center w-[200px] h-[100px] overflow-hidden bg-slate-500 rounded',
+          class: `flex text-center items-center justify-center w-[200px] h-[100px] overflow-hidden bg-slate-500 rounded
+            inner-node
+            shape-rect
+            `,
           style: {},
         },
         undefined,
-        'action'
+        'transition'
       ) as unknown as INodeComponent<NodeInfo>;
 
       const rect = canvasApp.createRectThumb(
@@ -70,7 +72,7 @@ export const getAction: NodeTaskFactory<NodeInfo> = (
             connectionType: ThumbConnectionType.startOrEnd,
             color: 'white',
             label: '#',
-            thumbConstraint: 'action',
+            thumbConstraint: 'transition',
             name: 'state',
             hidden: true,
           },
@@ -85,7 +87,7 @@ export const getAction: NodeTaskFactory<NodeInfo> = (
         id,
         {
           formElements: [],
-          type: 'action',
+          type: 'state-transition',
           formValues: {},
         },
         containerNode

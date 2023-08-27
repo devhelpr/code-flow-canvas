@@ -98,7 +98,7 @@ export type FollowPathFunction = <T>(
 ) => void;
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
-let speedMeter = 0;
+let speedMeter = 100;
 export const setSpeedMeter = (speed: number) => {
   speedMeter = speed;
 };

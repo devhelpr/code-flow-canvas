@@ -1,6 +1,7 @@
 export class BaseComponent {
   element: HTMLElement | null = null;
   rootElement: HTMLElement | null = null;
+  childContainerElement: HTMLElement | null = null;
   template: HTMLTemplateElement | null = null;
   isMounted = false;
   doRender = true;

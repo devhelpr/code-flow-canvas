@@ -17,8 +17,93 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { stat } from 'fs';
 
-export const createStateMachine: NodeTaskFactory<NodeInfo> = (
+export interface Transition {
+  name: string;
+  from: string;
+  to: string;
+  nodeComponent: IRectNodeComponent<NodeInfo>;
+}
+export interface State {
+  name: string;
+  transitions: Transition[];
+  isFinal: boolean;
+  nodeComponent: IRectNodeComponent<NodeInfo>;
+}
+
+interface StateMachine {
+  states: State[];
+  initialState: State | undefined;
+  currentState?: State;
+}
+
+const createStateMachine = (
+  canvasAppInstance: CanvasAppInstance
+): StateMachine => {
+  let initialState: State | undefined = undefined;
+  const states: State[] = [];
+  const nodeList = Array.from(canvasAppInstance?.elements);
+  const stateNodes = nodeList
+    .filter(
+      (n) =>
+        (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type === 'state'
+    )
+    .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
+  const transitions = nodeList
+    .filter(
+      (n) =>
+        (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type ===
+        'state-transition'
+    )
+    .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
+  stateNodes.forEach((stateNode) => {
+    const state: State = {
+      name: stateNode.id ?? '',
+      transitions: [],
+      isFinal: false,
+      nodeComponent: stateNode as unknown as IRectNodeComponent<NodeInfo>,
+    };
+    stateNode.connections?.forEach((connection) => {
+      if (connection.startNode && connection.startNode.id === stateNode.id) {
+        if (
+          connection.endNode &&
+          connection.endNode.nodeInfo?.type === 'state-transition'
+        ) {
+          // TODO : get connections from endNode to next state
+          // TODO : support for max limit connections on thumbs (transition should have max 1 output and 1 input)
+          const nextStates = connection.endNode.connections?.filter(
+            (c) =>
+              c.startNode &&
+              c.startNode?.id === connection.endNode?.id &&
+              c.endNode &&
+              c.endNode?.nodeInfo?.type === 'state'
+          );
+          if (
+            connection.endNode &&
+            nextStates &&
+            nextStates.length >= 1 &&
+            nextStates[0].endNode
+          ) {
+            const transition: Transition = {
+              name: connection.endNode.id,
+              from: stateNode.id,
+              to: nextStates[0].endNode.id,
+              nodeComponent:
+                connection.endNode as unknown as IRectNodeComponent<NodeInfo>,
+            };
+            state.transitions.push(transition);
+          }
+        }
+      }
+    });
+    states.push(state);
+    initialState = states[0] ?? undefined;
+  });
+  return { states, initialState, currentState: initialState };
+};
+
+export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -28,10 +113,22 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
   let canvasAppInstance: CanvasAppInstance | undefined = undefined;
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
+  let stateMachine: StateMachine | undefined = undefined;
 
   let currentValue = 0;
   const initializeCompute = () => {
+    stateMachine = undefined;
     currentValue = 0;
+
+    if (canvasAppInstance?.elements && !stateMachine) {
+      stateMachine = undefined;
+      stateMachine = createStateMachine(canvasAppInstance);
+      if (stateMachine && stateMachine.currentState) {
+        (
+          stateMachine.currentState.nodeComponent.domElement as HTMLElement
+        )?.classList.add('state-active');
+      }
+    }
     return;
   };
   const compute = (
@@ -39,7 +136,34 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number
   ) => {
-    console.log('state-machine compute', canvasAppInstance?.elements);
+    if (!stateMachine && canvasAppInstance) {
+      stateMachine = createStateMachine(canvasAppInstance);
+      if (stateMachine && stateMachine.currentState) {
+        (
+          stateMachine.currentState.nodeComponent.domElement as HTMLElement
+        )?.classList.add('state-active');
+      }
+    }
+    if (stateMachine) {
+      if (stateMachine.currentState) {
+        if (stateMachine.currentState.transitions.length > 0) {
+          (
+            stateMachine.currentState.nodeComponent.domElement as HTMLElement
+          )?.classList.remove('state-active');
+          const nextStateName = stateMachine.currentState.transitions[0].to;
+          console.log('nextStateName', nextStateName);
+          const nextState = stateMachine.states.find(
+            (s) => s.name === nextStateName
+          );
+          if (nextState) {
+            stateMachine.currentState = nextState;
+            (
+              stateMachine.currentState.nodeComponent.domElement as HTMLElement
+            )?.classList.add('state-active');
+          }
+        }
+      }
+    }
     return {
       result: input,
       followPath: undefined,
@@ -50,7 +174,7 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
     name: 'state-machine',
     family: 'flow-canvas',
     isContainer: true,
-    childNodeTasks: ['state', 'action'],
+    childNodeTasks: ['state', 'state-transition'],
     getConnectionInfo: () => {
       if (!input || !output) {
         return { inputs: [], outputs: [] };
@@ -223,6 +347,7 @@ export const createStateMachine: NodeTaskFactory<NodeInfo> = (
 
         canvasAppInstance.setOnCanvasUpdated(() => {
           updated?.();
+          stateMachine = undefined;
         });
 
         rect.addUpdateEventListener((target, x, y, initiator) => {
