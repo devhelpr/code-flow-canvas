@@ -12,11 +12,13 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { FormFieldType } from '../components/form-component';
 
 export const getStateTransition: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
+  let nodeComponent: INodeComponent<NodeInfo>;
 
   let currentValue = 0;
   const initializeCompute = () => {
@@ -43,10 +45,30 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: InitialValues,
+      initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
-      const jsxComponentWrapper = createElement(
+      const initialValue = initalValues?.['caption'] ?? 'Transition';
+      const formElements = [
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'caption',
+          value: initialValue ?? '',
+          onChange: (value: string) => {
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              caption: value,
+            };
+            nodeComponent.domElement.textContent =
+              node.nodeInfo.formValues['caption'] ?? 'Transition';
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+      ];
+      nodeComponent = createElement(
         'div',
         {
           class: `flex text-center items-center justify-center w-[200px] h-[100px] overflow-hidden bg-slate-500 rounded
@@ -58,6 +80,7 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
         undefined,
         'transition'
       ) as unknown as INodeComponent<NodeInfo>;
+      nodeComponent.domElement.textContent = initialValue ?? 'state';
 
       const rect = canvasApp.createRectThumb(
         x,
@@ -77,7 +100,7 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
             hidden: true,
           },
         ],
-        jsxComponentWrapper,
+        nodeComponent,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
@@ -88,7 +111,9 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
         {
           formElements: [],
           type: 'state-transition',
-          formValues: {},
+          formValues: {
+            caption: initialValue ?? '',
+          },
         },
         containerNode
       );
@@ -97,6 +122,7 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
       node = rect.nodeComponent;
+      rect.nodeComponent.nodeInfo.formElements = formElements;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
       return node;

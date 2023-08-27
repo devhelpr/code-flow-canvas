@@ -51,7 +51,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           'div',
           {
             class:
-              'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
+              'inner-node inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
           },
           undefined,
           value.toString()

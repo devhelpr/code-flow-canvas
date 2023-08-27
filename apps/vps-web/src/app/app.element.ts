@@ -22,6 +22,7 @@ import {
   NodeType,
   ElementNodeMap,
   LineType,
+  SelectedNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -1548,7 +1549,7 @@ export class AppElement extends HTMLElement {
       ''
     );
 
-    const selectedNode = createElement(
+    const selectedNodeLabel = createElement(
       'div',
       {
         id: 'selectedNode',
@@ -1631,7 +1632,7 @@ export class AppElement extends HTMLElement {
     // );
 
     let formElement: INodeComponent<NodeInfo> | undefined = undefined;
-    let currentNodeElementId: string | undefined = undefined;
+    let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
     const removeFormElement = () => {
       if (formElement) {
@@ -1644,32 +1645,51 @@ export class AppElement extends HTMLElement {
     };
 
     createEffect(() => {
-      const nodeElementId = getSelectedNode();
-      console.log('selected nodeElement', nodeElementId);
-      if (nodeElementId?.id === currentNodeElementId) {
-        //return;
+      const selectedNodeInfo = getSelectedNode();
+      console.log('selected nodeElement', selectedNodeInfo);
+      if (
+        currentSelectedNode &&
+        (!selectedNodeInfo || selectedNodeInfo.id !== currentSelectedNode.id)
+      ) {
+        const node = (
+          currentSelectedNode?.containerNode
+            ? (currentSelectedNode?.containerNode.nodeInfo as any)
+                ?.canvasAppInstance?.elements
+            : this.canvasApp?.elements
+        )?.get(currentSelectedNode.id);
+        if (node) {
+          node.domElement.classList.remove('selected');
+        }
       }
 
       removeFormElement();
-      if (nodeElementId) {
-        selectedNode.domElement.textContent = `${nodeElementId.id}`;
+      if (selectedNodeInfo) {
+        selectedNodeLabel.domElement.textContent = `${selectedNodeInfo.id}`;
         const node = (
-          nodeElementId?.containerNode
-            ? (nodeElementId?.containerNode.nodeInfo as any)?.canvasAppInstance
-                ?.elements
+          selectedNodeInfo?.containerNode
+            ? (selectedNodeInfo?.containerNode.nodeInfo as any)
+                ?.canvasAppInstance?.elements
             : this.canvasApp?.elements
-        )?.get(nodeElementId.id);
+        )?.get(selectedNodeInfo.id);
 
         if (!node) {
           return;
         }
+        node.domElement.classList.add('selected');
+
+        const nodeInfo: any = node?.nodeInfo ?? {};
         if (
-          node &&
-          (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
+          (node &&
+            (node as INodeComponent<NodeInfo>).nodeType ===
+              NodeType.Connection) ||
+          ((nodeInfo as any)?.formElements ?? []).length === 0
         ) {
+          (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
+            'hidden'
+          );
           return;
         }
-        const nodeInfo: any = node?.nodeInfo ?? {};
+
         console.log('nodeInfo', nodeInfo);
 
         const factory = getNodeTaskFactory(nodeInfo.type);
@@ -1694,30 +1714,30 @@ export class AppElement extends HTMLElement {
         );
         formElement = formElementInstance as INodeComponent<NodeInfo>;
 
-        const form = FormComponent({
+        FormComponent({
           rootElement: formElement.domElement as HTMLElement,
-          id: nodeElementId.id,
+          id: selectedNodeInfo.id,
           hasSubmitButton: true,
           onSave: (values: any) => {
             console.log('onSave', values);
 
             const node = (
-              nodeElementId?.containerNode
-                ? (nodeElementId?.containerNode.nodeInfo as any)
+              selectedNodeInfo?.containerNode
+                ? (selectedNodeInfo?.containerNode.nodeInfo as any)
                     ?.canvasAppInstance?.elements
                 : this.canvasApp?.elements
-            )?.get(nodeElementId.id);
+            )?.get(selectedNodeInfo.id);
             if (node) {
               if ((node.nodeInfo as any).formElements) {
                 (node.nodeInfo as any).formValues = values;
                 Object.entries(values).forEach(([key, value]) => {
                   console.log(
                     'updateNamedSignal',
-                    nodeElementId.id + '_' + key,
+                    selectedNodeInfo.id + '_' + key,
                     value
                   );
                   updateNamedSignal(
-                    nodeElementId.id + '_' + key,
+                    selectedNodeInfo.id + '_' + key,
                     value as unknown as string
                   );
                 });
@@ -1728,9 +1748,9 @@ export class AppElement extends HTMLElement {
             //setCurrentValue(values['Expression']);
 
             removeFormElement();
-            currentNodeElementId = undefined;
+            currentSelectedNode = undefined;
 
-            selectedNode.domElement.textContent = '';
+            selectedNodeLabel.domElement.textContent = '';
             (
               sidebarContainer.domElement as unknown as HTMLElement
             ).classList.add('hidden');
@@ -1812,13 +1832,19 @@ export class AppElement extends HTMLElement {
         const sidebar = sidebarContainer.domElement as unknown as HTMLElement;
         const nodeComponent = node as INodeComponent<NodeInfo>;
 
+        let parentX = 0;
+        let parentY = 0;
+        if (node.containerNode) {
+          parentX = node.containerNode.x;
+          parentY = node.containerNode.y;
+        }
         const camera = this.canvasApp?.getCamera();
 
         const xCamera = camera?.x ?? 0;
         const yCamera = camera?.y ?? 0;
         const scaleCamera = camera?.scale ?? 1;
-        const xNode = nodeComponent.x ?? 0;
-        const yNode = nodeComponent.y ?? 0;
+        const xNode = parentX + nodeComponent.x ?? 0;
+        const yNode = parentY + nodeComponent.y ?? 0;
         const widthNode = nodeComponent.width ?? 0;
         const heightNode = nodeComponent.height ?? 0;
 
@@ -1840,14 +1866,14 @@ export class AppElement extends HTMLElement {
           yCamera + yNode * scaleCamera + 40 * scaleCamera
         }px`;
       } else {
-        selectedNode.domElement.textContent = '';
+        selectedNodeLabel.domElement.textContent = '';
         (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
           'hidden'
         );
         setupTasksInDropdown();
       }
 
-      currentNodeElementId = nodeElementId?.id;
+      currentSelectedNode = selectedNodeInfo;
     });
 
     // createMarkupElement(

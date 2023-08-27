@@ -62,7 +62,7 @@ export const getSlider =
         const componentWrapper = createElement(
           'div',
           {
-            class: `bg-sky-900 p-4 rounded`,
+            class: `inner-node bg-sky-900 p-4 rounded`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;

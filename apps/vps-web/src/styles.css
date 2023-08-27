@@ -15,16 +15,25 @@
 	pointer-events: all;
 }
 
-.state-active .inner-node {
+.state-active > .inner-node {
 	@apply border-sky-800;
 	border-width: 8px;
 	border-style: solid;
 
 }
-.state-active .shape-circle {
+.state-active > .shape-circle {
 	border-radius: 50%;
 }
 
-.state-active .shape-rect {
+.state-active > .shape-rect {
 	border-radius: 4px;
+}
+
+.selected > .inner-node {
+	@apply outline-indigo-300 outline-offset-[-4px] outline-dashed outline-4;
+	
+}
+
+.selected >.shape-circle {
+	border-radius: 50%;
 }

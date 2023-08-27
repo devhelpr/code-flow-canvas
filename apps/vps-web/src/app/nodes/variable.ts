@@ -89,7 +89,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       const componentWrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded text-center`,
+          class: `inner-node bg-slate-500 p-4 rounded text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement

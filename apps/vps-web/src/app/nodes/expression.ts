@@ -115,16 +115,16 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
-      const jsxComponentWrapper = createElement(
+      const componentWrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded`,
+          class: `inner-node bg-slate-500 p-4 rounded`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
 
       FormComponent({
-        rootElement: jsxComponentWrapper.domElement as HTMLElement,
+        rootElement: componentWrapper.domElement as HTMLElement,
         id: id ?? '',
         formElements,
         hasSubmitButton: false,
@@ -177,7 +177,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           //   name: 'data-input',
           // },
         ],
-        jsxComponentWrapper,
+        componentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },

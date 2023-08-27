@@ -121,7 +121,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded`,
+          class: `inner-node bg-slate-500 p-4 rounded`,
         },
         undefined,
         undefined

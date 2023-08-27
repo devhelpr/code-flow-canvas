@@ -102,7 +102,7 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
       jsxComponentWrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded h-[60px] text-center`,
+          class: `inner-node shape-circle bg-slate-500 p-4 rounded h-[60px] text-center`,
           style: {
             'clip-path': 'circle(50%)',
           },

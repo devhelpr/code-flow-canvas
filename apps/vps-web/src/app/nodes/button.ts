@@ -60,20 +60,20 @@ export const getButton =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const initialValue = initalValues?.['caption'] ?? '';
+        const initialValue = initalValues?.['caption'] || 'Button';
 
         const formElements = [
           {
             fieldType: FormFieldType.Text,
             fieldName: 'caption',
-            value: initialValue ?? '',
+            value: initialValue,
             onChange: (value: string) => {
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 caption: value,
               };
               button.domElement.textContent =
-                node.nodeInfo.formValues['caption'] ?? 'Button';
+                node.nodeInfo.formValues['caption'] || 'Button';
               console.log('onChange', node.nodeInfo);
               if (updated) {
                 updated();
@@ -85,7 +85,7 @@ export const getButton =
         const componentWrapper = createElement(
           'div',
           {
-            class: `bg-sky-900 p-4 rounded`,
+            class: `inner-node bg-sky-900 p-4 rounded`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
@@ -147,7 +147,7 @@ export const getButton =
           {
             type: 'button',
             formValues: {
-              caption: initialValue ?? '',
+              caption: initialValue || 'Button',
             },
           },
           containerNode

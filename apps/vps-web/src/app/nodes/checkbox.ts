@@ -60,7 +60,7 @@ export const getCheckbox =
         const componentWrapper = createElement(
           'div',
           {
-            class: `bg-sky-900 py-4 px-8 rounded text-center`,
+            class: `inner-node bg-sky-900 py-4 px-8 rounded text-center`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;

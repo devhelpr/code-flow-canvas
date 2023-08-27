@@ -93,7 +93,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded max-w-[240px] text-center`,
+          class: `inner-node bg-slate-500 p-4 rounded max-w-[240px] text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
