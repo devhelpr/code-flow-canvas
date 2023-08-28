@@ -1573,7 +1573,7 @@ export class AppElement extends HTMLElement {
       'div',
       {
         id: 'textAreaContainer',
-        class: 'absolute w-1/4 h-[300px] z-50 p-2 bg-slate-400 hidden',
+        class: 'absolute w-1/4 h-[300px] z-50 p-2 bg-slate-600 hidden',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
       rootElement

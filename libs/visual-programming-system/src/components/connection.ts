@@ -413,16 +413,19 @@ export class Connection<T> {
     const isCircleStart = this.nodeComponent?.startNode?.isCircle ?? false;
     const isCircleEnd = this.nodeComponent?.endNode?.isCircle ?? false;
 
-    const perpendicularVectorFactor = 20;
+    const perpendicularVectorFactor = 1000;
     const spacingAABB = 10;
     const circleSpacingFactor = 4;
+    const circlePadding = 10;
     let t = 0;
     let intersections: Vector[] = [];
     if (isCircleStart) {
+      const circleRadius =
+        (this.nodeComponent?.startNode?.width ?? 100) / 2 + circlePadding;
       intersections = intersectionCircleLine(
         {
           center: { x: x1, y: y1 },
-          radius: thumbRadius * circleSpacingFactor,
+          radius: circleRadius, //thumbRadius * circleSpacingFactor,
         },
         { p1: { x: x1, y: y1 }, p2: { x: cx, y: cy } }
       );
@@ -514,10 +517,13 @@ export class Connection<T> {
 
     let tEnd = 1;
     if (isCircleEnd) {
+      const circleRadius =
+        (this.nodeComponent?.endNode?.width ?? 100) / 2 + circlePadding;
+
       intersections = intersectionCircleLine(
         {
           center: { x: x2, y: y2 },
-          radius: thumbRadius * circleSpacingFactor + 20,
+          radius: circleRadius, // thumbRadius * circleSpacingFactor + 20,
         },
         { p1: { x: x2, y: y2 }, p2: { x: cx, y: cy } }
       );
@@ -639,6 +645,7 @@ export class Connection<T> {
 
     return `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
   };
+
   onUpdate = (
     target?: INodeComponent<T>,
     x?: number,
