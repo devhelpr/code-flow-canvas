@@ -39,7 +39,8 @@ interface StateMachine {
 }
 
 const createStateMachine = (
-  canvasAppInstance: CanvasAppInstance
+  canvasAppInstance: CanvasAppInstance,
+  visitedStates: string[] = []
 ): StateMachine => {
   let initialState: State | undefined = undefined;
   const states: State[] = [];
@@ -93,11 +94,19 @@ const createStateMachine = (
                 connection.endNode as unknown as IRectNodeComponent<NodeInfo>,
             };
             state.transitions.push(transition);
+            if (visitedStates.indexOf(nextStates[0].endNode.id) < 0) {
+              const { states: statesList } = createStateMachine(
+                canvasAppInstance,
+                [...visitedStates, nextStates[0].endNode.id]
+              );
+              states.push(...statesList);
+            }
           }
         }
       }
     });
     states.push(state);
+
     initialState = states[0] ?? undefined;
   });
   return { states, initialState, currentState: initialState };
