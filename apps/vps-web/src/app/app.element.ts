@@ -1679,10 +1679,8 @@ export class AppElement extends HTMLElement {
 
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
-          (node &&
-            (node as INodeComponent<NodeInfo>).nodeType ===
-              NodeType.Connection) ||
-          ((nodeInfo as any)?.formElements ?? []).length === 0
+          node &&
+          (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
         ) {
           (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
             'hidden'
@@ -1700,6 +1698,13 @@ export class AppElement extends HTMLElement {
           } else {
             setupTasksInDropdown();
           }
+        }
+
+        if (((nodeInfo as any)?.formElements ?? []).length === 0) {
+          (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
+            'hidden'
+          );
+          return;
         }
         // const [currentValue, setCurrentValue] = createNamedSignal(
         //   nodeElementId,
