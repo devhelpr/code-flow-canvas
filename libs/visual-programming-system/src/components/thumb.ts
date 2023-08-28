@@ -246,6 +246,9 @@ export class ThumbNode<T> {
       ).style.display = `${visible ? 'block' : 'none'}`;
 
       if (visible && !disableInteraction) {
+        console.log(
+          'THUMB SET VISIBILITY  (BEFORE remove pointer-events-none)'
+        );
         const circleDomElement = this.circleElement
           ?.domElement as unknown as SVGElement;
         circleDomElement.classList.remove('pointer-events-none');
@@ -279,7 +282,19 @@ export class ThumbNode<T> {
     if (!this.nodeComponent) {
       return;
     }
-    console.log('svg pointerover', this.nodeComponent.id, this.nodeComponent);
+
+    // TODO: Fix this scenaerio:
+    // - hover over rect-thumb..
+    // - when the below log appears...
+    // - start dragging and chance is big that connection is being dragged away
+    // ... which is NOT allowed
+    console.log(
+      'THUMB svg pointerover',
+      this.nodeComponent.id,
+      this.nodeComponent,
+      this.nodeComponent.isConnectPoint
+    );
+
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       'cursor-pointer'
     );
@@ -411,6 +426,35 @@ export class ThumbNode<T> {
     }
 
     if (this.nodeComponent) {
+      if (this.nodeComponent.parent) {
+        if (
+          this.nodeComponent.connectionControllerType ===
+          ConnectionControllerType.end
+        ) {
+          if (this.nodeComponent.parent.nodeType === NodeType.Connection) {
+            const connection = this.nodeComponent
+              .parent as unknown as IConnectionNodeComponent<T>;
+            if (connection.endNode?.isThumb) {
+              console.log("Can't drag from 'end' rect-thumb");
+              return;
+            }
+          }
+        }
+        if (
+          this.nodeComponent.connectionControllerType ===
+          ConnectionControllerType.begin
+        ) {
+          if (this.nodeComponent.parent.nodeType === NodeType.Connection) {
+            const connection = this.nodeComponent
+              .parent as unknown as IConnectionNodeComponent<T>;
+            if (connection.startNode?.isThumb) {
+              console.log("Can't drag from 'end' rect-thumb");
+              return;
+            }
+          }
+        }
+      }
+
       if (this.nodeComponent.thumbType === ThumbType.Center) {
         //e.stopPropagation();
         console.log('THUMB CENTER STOPPED PROPAGATION');
@@ -655,7 +699,10 @@ export class ThumbNode<T> {
       const circleDomElement = this.circleElement?.domElement as unknown as
         | HTMLElement
         | SVGElement;
-      console.log('onPointerUp circleDomElement', circleDomElement);
+      console.log(
+        'THUMB onPointerUp circleDomElement (BEFORE remove pointer-events-none)',
+        circleDomElement
+      );
       circleDomElement.classList.add('pointer-events-auto');
       circleDomElement.classList.remove('pointer-events-none');
     }
@@ -752,12 +799,15 @@ export class ThumbNode<T> {
     }
 
     console.log(
-      'svg pointerup nodecomponent',
+      'THUMB svg pointerup nodecomponent (BEFORE remove pointer-events-none)',
       this.nodeComponent.id,
       this.nodeComponent,
       dropTarget
     );
     this.interactionStateMachine.clearDropTarget(this.nodeComponent);
+
+    // TODO : DO THIS ONLY IF NOT CONNECTED TO A RECT THUMB !?
+    //  ... looks like this happens AFTER the fix and not BEFORE !??
 
     const circleDomElement = this.circleElement?.domElement as unknown as
       | HTMLElement

@@ -39,7 +39,7 @@ export class Rect<T> {
   protected canvasUpdated?: () => void;
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
-  protected containerNode?: INodeComponent<T>;
+  protected containerNode?: IRectNodeComponent<T>;
   protected updateEventListeners: ((
     target?: INodeComponent<T>,
     x?: number,
@@ -442,7 +442,13 @@ export class Rect<T> {
         (component.parent as unknown as IConnectionNodeComponent<T>)
           .startNodeThumb?.thumbConstraint
       ) {
-        return false;
+        if (
+          thumbNode.thumbConstraint &&
+          (component.parent as unknown as IConnectionNodeComponent<T>)
+            .startNodeThumb?.thumbConstraint
+        ) {
+          return false;
+        }
       }
       return true;
     } else if (
@@ -460,6 +466,7 @@ export class Rect<T> {
         (component.parent as unknown as IConnectionNodeComponent<T>)
           .endNodeThumb?.thumbConstraint
       );
+
       if (
         (component.parent as unknown as IConnectionNodeComponent<T>)
           .endNodeThumb?.thumbConstraint !== undefined &&
@@ -467,7 +474,13 @@ export class Rect<T> {
           (component.parent as unknown as IConnectionNodeComponent<T>)
             .endNodeThumb?.thumbConstraint
       ) {
-        return false;
+        if (
+          thumbNode.thumbConstraint &&
+          (component.parent as unknown as IConnectionNodeComponent<T>)
+            .endNodeThumb?.thumbConstraint
+        ) {
+          return false;
+        }
       }
       return true;
     }

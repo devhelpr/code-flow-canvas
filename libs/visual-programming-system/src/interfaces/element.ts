@@ -63,6 +63,7 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
   connections: IConnectionNodeComponent<T>[];
   isStaticPosition?: boolean;
   isCircle?: boolean;
+  isThumb?: boolean;
 }
 
 export interface IConnectionNodeComponent<T> extends INodeComponent<T> {

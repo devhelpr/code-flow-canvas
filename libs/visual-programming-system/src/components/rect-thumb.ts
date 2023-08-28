@@ -68,6 +68,7 @@ export class RectThumb<T> extends Rect<T> {
       throw new Error('nodeComponent not created');
     }
     this.nodeComponent.isCircle = isCircle;
+    this.nodeComponent.isThumb = true;
 
     this.nodeComponent.domElement?.addEventListener(
       'pointerup',
