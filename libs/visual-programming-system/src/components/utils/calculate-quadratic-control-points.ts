@@ -129,9 +129,9 @@ export const onQuadraticCalculateControlPoints = <T>(
       );
       const centerX = ((connectedNodeX ?? 0) + x) / 2;
       const centerY = ((connectedNodeY ?? 0) + y) / 2;
-
-      const cx = centerX + (-35 * -((connectedNodeY ?? 0) - y)) / distance;
-      const cy = centerY + (-35 * ((connectedNodeX ?? 0) - x)) / distance;
+      const factor = -Math.min(distance * Math.sqrt(2) * 0.5, 50);
+      const cx = centerX + (factor * -((connectedNodeY ?? 0) - y)) / distance;
+      const cy = centerY + (factor * ((connectedNodeX ?? 0) - x)) / distance;
 
       return {
         x: x,

@@ -400,18 +400,27 @@ export class ThumbNode<T> {
   };
 
   onPointerDown = (e: PointerEvent) => {
+    console.log(
+      'Thumb onPointerDown',
+      e.target,
+      this.nodeComponent?.id,
+      this.nodeComponent
+    );
     if (this.disableInteraction) {
       return;
     }
 
     if (this.nodeComponent) {
       if (this.nodeComponent.thumbType === ThumbType.Center) {
+        //e.stopPropagation();
+        console.log('THUMB CENTER STOPPED PROPAGATION');
         return;
       }
 
       e.stopPropagation();
       const selectedNodeId = getSelectedNode();
       if (selectedNodeId) {
+        console.log('thumb 1');
         const selectedNode = this.canvasElements?.get(
           selectedNodeId.id
         ) as unknown as INodeComponent<T>;
@@ -446,6 +455,7 @@ export class ThumbNode<T> {
 
       if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
         const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+        console.log('thumb 2', x, y);
         const connections =
           this.nodeComponent.thumbLinkedToNode?.connections.filter(
             (c) => c.startNodeThumb?.id === this.nodeComponent?.id
@@ -547,19 +557,42 @@ export class ThumbNode<T> {
       if (this.nodeComponent.isControlled) {
         return;
       }
+
       const elementRect = (
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
       const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+
+      let parentX = 0;
+      let parentY = 0;
+      if (this.nodeComponent?.parent?.containerNode) {
+        parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
+        parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+      }
+      console.log(
+        'thumb 3',
+        x,
+        y,
+        this.nodeComponent?.nodeType,
+        this.nodeComponent?.thumbType,
+        this.nodeComponent?.thumbConnectionType,
+        'parent',
+        this.nodeComponent?.parent,
+        'containers',
+        this.containerNode,
+        this.nodeComponent?.parent?.containerNode
+      );
+
+      // TODO : check if wihtin container... then use container x/y as parentX/Y....
       const rectCamera = transformCameraSpaceToWorldSpace(
         elementRect.x,
         elementRect.y
       );
 
       const interactionInfoResult = pointerDown(
-        x - rectCamera.x,
-        y - rectCamera.y,
+        x - rectCamera.x + parentX,
+        y - rectCamera.y + parentY,
         this.nodeComponent,
         this.canvasElement,
         this.interactionStateMachine
@@ -701,6 +734,7 @@ export class ThumbNode<T> {
           this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.end
         ) {
+          console.log('HERE');
           if (this.nodeComponent?.parent) {
             const connection = this.nodeComponent
               .parent as unknown as IConnectionNodeComponent<T>;

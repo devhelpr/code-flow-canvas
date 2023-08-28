@@ -110,7 +110,7 @@ export const getCanvasNode =
         const wrapper = createElement(
           'div',
           {
-            class: `bg-slate-300 rounded`,
+            class: `bg-slate-400 rounded`,
           },
           undefined,
           htmlNode.domElement as unknown as HTMLElement

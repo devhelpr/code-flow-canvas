@@ -77,6 +77,7 @@ export const createCanvasApp = <T>(
   };
 
   rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
+    console.log('pointerdown canvas', event.target, canvas.domElement);
     if (disableInteraction) {
       return;
     }

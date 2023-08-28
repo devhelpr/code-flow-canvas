@@ -639,6 +639,12 @@ export class Rect<T> {
   };
 
   private astElementOnPointerDown = (event: PointerEvent) => {
+    console.log(
+      'astElementOnPointerDown',
+      event.target,
+      this.nodeComponent?.id,
+      this.nodeComponent?.nodeInfo
+    );
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName

@@ -414,7 +414,7 @@ export class Connection<T> {
     const isCircleEnd = this.nodeComponent?.endNode?.isCircle ?? false;
 
     const perpendicularVectorFactor = 20;
-    const spacingAABB = 20;
+    const spacingAABB = 10;
     const circleSpacingFactor = 4;
     let t = 0;
     let intersections: Vector[] = [];
@@ -517,7 +517,7 @@ export class Connection<T> {
       intersections = intersectionCircleLine(
         {
           center: { x: x2, y: y2 },
-          radius: thumbRadius * circleSpacingFactor + 10,
+          radius: thumbRadius * circleSpacingFactor + 20,
         },
         { p1: { x: x2, y: y2 }, p2: { x: cx, y: cy } }
       );

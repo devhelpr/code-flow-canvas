@@ -49,6 +49,8 @@ export const pointerDown = <T>(
     console.log(
       'update pointerDown',
       element.id,
+      element?.nodeType,
+      element?.parent?.nodeType,
       x,
       y,
       xOffsetWithinElementOnFirstClick,
