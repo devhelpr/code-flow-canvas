@@ -71,7 +71,7 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
       nodeComponent = createElement(
         'div',
         {
-          class: `flex text-center items-center justify-center w-[200px] h-[100px] overflow-hidden bg-slate-500 rounded
+          class: `flex text-center items-center justify-center w-[100px] h-[50px] overflow-hidden bg-slate-500 rounded
             inner-node
             shape-rect
             `,
@@ -85,8 +85,8 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
       const rect = canvasApp.createRectThumb(
         x,
         y,
-        200,
         100,
+        50,
         undefined,
         [
           {
