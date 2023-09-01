@@ -522,10 +522,16 @@ export class Connection<T> {
 
       intersections = intersectionCircleLine(
         {
-          center: { x: x2, y: y2 },
-          radius: circleRadius, // thumbRadius * circleSpacingFactor + 20,
+          center: {
+            x: x2,
+            y: y2,
+          },
+          radius: circleRadius + 10, // thumbRadius * circleSpacingFactor + 20,
         },
-        { p1: { x: x2, y: y2 }, p2: { x: cx, y: cy } }
+        {
+          p1: { x: x2, y: y2 },
+          p2: { x: cx, y: cy },
+        }
       );
 
       if (intersections.length > 0) {

@@ -15,7 +15,7 @@ import {
 export const getShowInput: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<NodeInfo> => {
-  let inputValues: any[] = [];
+  let inputValues: any;
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -24,7 +24,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
 
   const initializeCompute = () => {
     hasInitialValue = true;
-    inputValues = [];
+    inputValues = '';
     if (htmlNode) {
       htmlNode.domElement.textContent = 'Input';
       if (rect) {
@@ -34,7 +34,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string | any[]) => {
-    inputValues = Array.isArray(input) ? input : [input];
+    inputValues = input;
     if (htmlNode) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -46,7 +46,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       }
     }
     return {
-      result: [...inputValues],
+      result: inputValues || '',
       followPath: undefined,
     };
   };
@@ -90,17 +90,19 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            label: '[]',
-            thumbConstraint: 'array',
+            label: ' ',
+            //thumbConstraint: '',
             name: 'output',
+            color: 'white',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            label: '[]',
-            thumbConstraint: 'array',
+            label: ' ',
+            //thumbConstraint: 'array',
             name: 'input',
+            color: 'white',
           },
         ],
         wrapper,

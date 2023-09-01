@@ -39,8 +39,11 @@ export const getButton =
       if (triggerButton) {
         triggerButton = false;
         return {
-          result: currentValue,
+          result: node.nodeInfo.formValues['caption'] || 'Button',
         };
+        // return {
+        //   result: currentValue,
+        // };
       }
       return {
         result: false,

@@ -26,6 +26,7 @@ export interface Transition {
   nodeComponent: IRectNodeComponent<NodeInfo>;
 }
 export interface State {
+  id: string;
   name: string;
   transitions: Transition[];
   isFinal: boolean;
@@ -60,7 +61,8 @@ const createStateMachine = (
     .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
   stateNodes.forEach((stateNode) => {
     const state: State = {
-      name: stateNode.id ?? '',
+      name: stateNode.nodeInfo?.formValues?.caption ?? '',
+      id: stateNode.id ?? '',
       transitions: [],
       isFinal: false,
       nodeComponent: stateNode as unknown as IRectNodeComponent<NodeInfo>,
@@ -87,7 +89,7 @@ const createStateMachine = (
             nextStates[0].endNode
           ) {
             const transition: Transition = {
-              name: connection.endNode.id,
+              name: connection.endNode.nodeInfo?.formValues?.caption ?? '',
               from: stateNode.id,
               to: nextStates[0].endNode.id,
               nodeComponent:
@@ -155,26 +157,43 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     }
     if (stateMachine) {
       if (stateMachine.currentState) {
+        console.log(
+          'stateMachine.currentState',
+          stateMachine.currentState,
+          input
+        );
         if (stateMachine.currentState.transitions.length > 0) {
-          (
-            stateMachine.currentState.nodeComponent.domElement as HTMLElement
-          )?.classList.remove('state-active');
-          const nextStateName = stateMachine.currentState.transitions[0].to;
-          console.log('nextStateName', nextStateName);
-          const nextState = stateMachine.states.find(
-            (s) => s.name === nextStateName
+          const transition = stateMachine.currentState.transitions.find(
+            (transition) => transition.name === input
           );
-          if (nextState) {
-            stateMachine.currentState = nextState;
+          if (transition) {
             (
               stateMachine.currentState.nodeComponent.domElement as HTMLElement
-            )?.classList.add('state-active');
+            )?.classList.remove('state-active');
+            const nextStateId = transition.to;
+            console.log('nextStateName', nextStateId);
+            const nextState = stateMachine.states.find(
+              (s) => s.id === nextStateId
+            );
+            if (nextState) {
+              stateMachine.currentState = nextState;
+              (
+                stateMachine.currentState.nodeComponent
+                  .domElement as HTMLElement
+              )?.classList.add('state-active');
+
+              return {
+                result: nextState.name,
+                followPath: undefined,
+              };
+            }
           }
         }
       }
     }
     return {
-      result: input,
+      result: undefined,
+      stop: true,
       followPath: undefined,
     };
   };

@@ -685,6 +685,11 @@ export class AppElement extends HTMLElement {
     );
 
     const initializeNodes = () => {
+      const elements = rootElement.querySelectorAll('.state-active');
+      elements.forEach((element) => {
+        element.classList.remove('state-active');
+      });
+
       this.canvasApp?.elements.forEach((node) => {
         const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
         if (nodeComponent.nodeType !== NodeType.Connection) {
@@ -1646,7 +1651,7 @@ export class AppElement extends HTMLElement {
 
     createEffect(() => {
       const selectedNodeInfo = getSelectedNode();
-      console.log('selected nodeElement', selectedNodeInfo);
+      console.log('selected nodeElement...', selectedNodeInfo);
       if (
         currentSelectedNode &&
         (!selectedNodeInfo || selectedNodeInfo.id !== currentSelectedNode.id)
