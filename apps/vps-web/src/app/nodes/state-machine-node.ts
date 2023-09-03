@@ -231,7 +231,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-400 rounded`,
+          class: `bg-slate-400 rounded opacity-90`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -261,11 +261,12 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
             label: '#',
             thumbConstraint: 'value',
             color: 'white',
+            maxConnections: -1,
           },
         ],
         wrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          //classNames: `p-4 rounded`,
         },
         true,
         undefined,

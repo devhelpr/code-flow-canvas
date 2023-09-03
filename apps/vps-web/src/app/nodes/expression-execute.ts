@@ -132,6 +132,7 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             label: '~',
             thumbConstraint: 'expression-chain',
+            maxConnections: -1,
           },
         ],
         jsxComponentWrapper,

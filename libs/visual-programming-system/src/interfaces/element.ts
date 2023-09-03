@@ -102,6 +102,7 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
   thumbConstraint?: string;
   thumbLabel?: string;
   isDataPort?: boolean;
+  maxConnections?: number;
 }
 
 export const ControlAndEndPointNodeType = {
@@ -150,4 +151,5 @@ export type IThumb = {
   thumbConstraint?: string;
   thumbShape?: 'circle' | 'diamond';
   isDataPort?: boolean;
+  maxConnections?: number;
 };

@@ -221,6 +221,7 @@ export class Rect<T> {
         thumbNode.nodeComponent.thumbLinkedToNode = this.nodeComponent;
         thumbNode.nodeComponent.thumbConstraint = thumb.thumbConstraint;
         thumbNode.nodeComponent.isDataPort = thumb.isDataPort;
+        thumbNode.nodeComponent.maxConnections = thumb.maxConnections;
 
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
@@ -422,6 +423,20 @@ export class Rect<T> {
     // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
 
+    // thumbNode is the thumb that is being dropped on
+    console.log('thumbNode', thumbNode);
+    if (
+      (thumbNode.maxConnections !== undefined &&
+        thumbNode.maxConnections !== -1 &&
+        ((thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>)
+          ?.connections?.length ?? 0) >= thumbNode.maxConnections) ||
+      (thumbNode.maxConnections === undefined &&
+        ((thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>)
+          ?.connections?.length ?? 0) >= 1)
+    ) {
+      return false;
+    }
+
     if (
       component &&
       component.parent &&
@@ -437,6 +452,7 @@ export class Rect<T> {
         (component.parent as unknown as IConnectionNodeComponent<T>)
           .startNodeThumb?.thumbConstraint
       );
+
       if (
         thumbNode.thumbConstraint !==
         (component.parent as unknown as IConnectionNodeComponent<T>)

@@ -356,8 +356,8 @@ export class Connection<T> {
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
-        parentX = this.containerNode.x; //- paddingRect;
-        parentY = this.containerNode.y; //- paddingRect;
+        parentX = this.containerNode.x;
+        parentY = this.containerNode.y;
       }
 
       const interactionInfoResult = pointerDown<T>(
