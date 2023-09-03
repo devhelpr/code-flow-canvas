@@ -11,7 +11,8 @@ export const getNodeConnectionPairById = <T>(
   node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean,
-  onlyDataConnections?: boolean
+  onlyDataConnections?: boolean,
+  followThumb?: string
 ) => {
   const connectionPairs: {
     start: IRectNodeComponent<T>;
@@ -33,6 +34,13 @@ export const getNodeConnectionPairById = <T>(
           if (
             (connectionNode.isData && !onlyDataConnections) ||
             (!connectionNode.isData && onlyDataConnections)
+          ) {
+            return;
+          }
+
+          if (
+            followThumb &&
+            connectionNode.startNodeThumb?.thumbName !== followThumb
           ) {
             return;
           }

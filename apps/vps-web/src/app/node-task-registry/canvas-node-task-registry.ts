@@ -24,6 +24,7 @@ import { getSum } from '../nodes/sum';
 import { getVariable } from '../nodes/variable';
 import { NodeInfo } from '../types/node-info';
 import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
+import { getSequential } from '../nodes/sequential';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -62,6 +63,10 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('slider', getSlider(animatePath));
   registerNodeFactory('checkbox', getCheckbox(animatePath));
   registerNodeFactory('annotation', getAnnotation(animatePath));
+  registerNodeFactory(
+    'sequential',
+    getSequential(animatePath, animatePathFromThumb)
+  );
 };
 
 export const getNodeTaskFactory = (name: string) => {

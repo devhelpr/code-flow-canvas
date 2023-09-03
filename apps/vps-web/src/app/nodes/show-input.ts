@@ -40,13 +40,13 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         hasInitialValue = false;
       }
 
-      htmlNode.domElement.textContent = inputValues.toString();
+      htmlNode.domElement.textContent = (inputValues || '-').toString();
       if (rect) {
         rect.resize(240);
       }
     }
     return {
-      result: inputValues || '',
+      result: input || '',
       followPath: undefined,
     };
   };
@@ -64,7 +64,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: 'break-words',
+          class: 'break-words text-center',
         },
         undefined,
         'Input'
@@ -73,7 +73,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded max-w-[240px]`,
+          class: `inner-node bg-slate-500 p-4 rounded max-w-[120px]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -82,7 +82,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       rect = canvasApp.createRect(
         x,
         y,
-        200,
+        120,
         100,
         undefined,
         [

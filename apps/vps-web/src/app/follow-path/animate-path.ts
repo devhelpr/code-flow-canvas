@@ -25,6 +25,7 @@ export type AnimatePathFunction<T> = (
         result: boolean;
         output: string | any[];
         followPathByName?: string;
+        followThumb?: string;
       }>,
   onStopped?: (input: string | any[]) => void,
   input?: string | any[],
@@ -37,7 +38,8 @@ export type AnimatePathFunction<T> = (
   offsetX?: number,
   offsetY?: number,
   followPathToEndThumb?: boolean,
-  singleStep?: boolean
+  singleStep?: boolean,
+  followThumb?: string
 ) => void;
 
 export type AnimatePathFromThumbFunction<T> = (
@@ -77,11 +79,17 @@ export type FollowPathFunction = <T>(
     node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
-    | { result: boolean; output: string | any[]; followPathByName?: string }
+    | {
+        result: boolean;
+        output: string | any[];
+        followPathByName?: string;
+        followThumb?: string;
+      }
     | Promise<{
         result: boolean;
         output: string | any[];
         followPathByName?: string;
+        followThumb?: string;
       }>,
   onStopped?: (input: string | any[]) => void,
   input?: string | any[],
@@ -94,7 +102,8 @@ export type FollowPathFunction = <T>(
   offsetX?: number,
   offsetY?: number,
   followPathToEndThumb?: boolean,
-  singleStep?: boolean
+  singleStep?: boolean,
+  followThumb?: string
 ) => void;
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
@@ -123,11 +132,17 @@ export const animatePathForNodeConnectionPairs = <T>(
     node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
-    | { result: boolean; output: string | any[]; followPathByName?: string }
+    | {
+        result: boolean;
+        output: string | any[];
+        followPathByName?: string;
+        followPath?: string;
+      }
     | Promise<{
         result: boolean;
         output: string | any[];
         followPathByName?: string;
+        followPath?: string;
       }>,
   onStopped?: (input: string | any[]) => void,
   input?: string | any[],
@@ -281,7 +296,10 @@ export const animatePathForNodeConnectionPairs = <T>(
                 followPathByName: undefined,
               };
 
-            if ((onNextOrPromise as unknown as Promise<unknown>).then) {
+            if (
+              Array.isArray(onNextOrPromise) ||
+              (onNextOrPromise as unknown as Promise<unknown>).then
+            ) {
               canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
 
@@ -291,40 +309,45 @@ export const animatePathForNodeConnectionPairs = <T>(
               (message as unknown as undefined) = undefined;
               (messageText as unknown as undefined) = undefined;
             }
+            //
+            const resolver = (result: any) => {
+              //const result =
+              console.log('animatePath onNextNode result', input, result);
+              if (!result.stop && result.result !== undefined) {
+                animatePath<T>(
+                  canvasApp,
+                  end,
+                  color,
+                  onNextNode,
+                  onStopped,
+                  result.output,
+                  result.followPathByName,
+                  { node1: testCircle, node2: message, node3: messageText },
+                  offsetX,
+                  offsetY,
+                  undefined,
+                  undefined,
+                  result.followThumb
+                );
+              } else {
+                canvasApp?.elements.delete(testCircle.id);
+                testCircle?.domElement?.remove();
+
+                canvasApp?.elements.delete(message.id);
+                message?.domElement?.remove();
+                if (onStopped) {
+                  console.log(
+                    'animatePath onStopped1',
+                    nodeConnectionPairs,
+                    input
+                  );
+                  onStopped(input ?? '');
+                }
+              }
+            };
 
             Promise.resolve(onNextOrPromise)
-              .then((result: any) => {
-                //const result =
-                console.log('animatePath onNextNode result', input, result);
-                if (!result.stop && result.result !== undefined) {
-                  animatePath<T>(
-                    canvasApp,
-                    end,
-                    color,
-                    onNextNode,
-                    onStopped,
-                    result.output,
-                    result.followPathByName,
-                    { node1: testCircle, node2: message, node3: messageText },
-                    offsetX,
-                    offsetY
-                  );
-                } else {
-                  canvasApp?.elements.delete(testCircle.id);
-                  testCircle?.domElement?.remove();
-
-                  canvasApp?.elements.delete(message.id);
-                  message?.domElement?.remove();
-                  if (onStopped) {
-                    console.log(
-                      'animatePath onStopped1',
-                      nodeConnectionPairs,
-                      input
-                    );
-                    onStopped(input ?? '');
-                  }
-                }
-              })
+              .then(resolver)
               .catch((err) => {
                 console.log('animatePath onNextNode error', err);
               });
@@ -393,11 +416,17 @@ export const animatePath: FollowPathFunction = <T>(
     node: IRectNodeComponent<T>,
     input: string | any[]
   ) =>
-    | { result: boolean; output: string | any[]; followPathByName?: string }
+    | {
+        result: boolean;
+        output: string | any[];
+        followPathByName?: string;
+        followThumb?: string;
+      }
     | Promise<{
         result: boolean;
         output: string | any[];
         followPathByName?: string;
+        followThumb?: string;
       }>,
   onStopped?: (input: string | any[]) => void,
   input?: string | any[],
@@ -410,13 +439,16 @@ export const animatePath: FollowPathFunction = <T>(
   offsetX?: number,
   offsetY?: number,
   followPathToEndThumb?: boolean,
-  singleStep?: boolean
+  singleStep?: boolean,
+  followThumb?: string
 ) => {
   const nodeConnectionPairs = getNodeConnectionPairById<T>(
     canvasApp,
     node,
     followPathByName,
-    followPathToEndThumb
+    followPathToEndThumb,
+    undefined,
+    followThumb
   );
 
   animatePathForNodeConnectionPairs(

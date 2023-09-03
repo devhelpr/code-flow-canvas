@@ -189,11 +189,17 @@ export class AppElement extends HTMLElement {
         node: IRectNodeComponent<NodeInfo>,
         input: string | any[]
       ) =>
-        | { result: boolean; output: string | any[]; followPathByName?: string }
+        | {
+            result: boolean;
+            output: string | any[];
+            followPathByName?: string;
+            followPath?: string;
+          }
         | Promise<{
             result: boolean;
             output: string | any[];
             followPathByName?: string;
+            followPath?: string;
           }>,
       onStopped?: (input: string | any[]) => void,
       input?: string | any[],
@@ -206,7 +212,8 @@ export class AppElement extends HTMLElement {
       offsetX?: number,
       offsetY?: number,
       followPathToEndThumb?: boolean,
-      singleStep?: boolean
+      singleStep?: boolean,
+      followThumb?: string
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -223,7 +230,8 @@ export class AppElement extends HTMLElement {
         offsetX,
         offsetY,
         followPathToEndThumb,
-        singleStep
+        singleStep,
+        followThumb
       );
     };
 

@@ -97,13 +97,17 @@ export const runNode = <T>(
           result: boolean;
           output: string | any[];
           followPathByName?: string;
+          followThumb?: string;
         }>,
     onStopped?: (input: string | any[]) => void,
     input?: string | any[],
     followPathByName?: string,
     animatedNodes?: undefined,
     offsetX?: number,
-    offsetY?: number
+    offsetY?: number,
+    _followPathToEndThumb?: boolean,
+    _singleStep?: boolean,
+    followThumb?: string
   ) => void,
   onStopped?: (
     input: string | any[],
@@ -165,32 +169,50 @@ export const runNode = <T>(
 
         const payload = getVariablePayload<T>(node, canvasApp);
         if (formInfo && formInfo.computeAsync) {
-          return new Promise((resolve, reject) => {
-            formInfo
-              .computeAsync(input, pathExecution, undefined, payload)
-              .then((computeResult: any) => {
-                result = computeResult.result;
-                sendData(node, canvasApp, result);
-                followPath = computeResult.followPath;
+          const promise = formInfo.computeAsync(
+            input,
+            pathExecution,
+            undefined,
+            payload
+          );
 
-                if (pathExecution) {
-                  pathExecution.push({
-                    input: input ?? '',
-                    previousOutput: computeResult.previousOutput,
+          return new Promise((resolve, reject) => {
+            promise
+              .then((computeResult: any) => {
+                if (computeResult.stop) {
+                  if (onStopped) {
+                    onStopped('');
+                  }
+                  return {
+                    result: false,
+                    stop: true,
+                    output: result,
+                  };
+                } else {
+                  result = computeResult.result;
+                  sendData(node, canvasApp, result);
+                  followPath = computeResult.followPath;
+
+                  if (pathExecution) {
+                    pathExecution.push({
+                      input: input ?? '',
+                      previousOutput: computeResult.previousOutput,
+                      output: computeResult.output ?? input,
+                      result: result,
+                      nodeId: node.id,
+                      path: followPath ?? '',
+                      node: node,
+                      nodeType: (node.nodeInfo as any)?.type ?? '',
+                    });
+                  }
+
+                  resolve({
+                    result: true,
                     output: computeResult.output ?? input,
-                    result: result,
-                    nodeId: node.id,
-                    path: followPath ?? '',
-                    node: node,
-                    nodeType: (node.nodeInfo as any)?.type ?? '',
+                    followPathByName: followPath,
+                    followThumb: computeResult.followThumb,
                   });
                 }
-
-                resolve({
-                  result: true,
-                  output: computeResult.output ?? input,
-                  followPathByName: followPath,
-                });
               })
               .catch((error: any) => {
                 reject(error);
@@ -274,18 +296,27 @@ export const run = <T>(
       node: IRectNodeComponent<T>,
       input: string | any[]
     ) =>
-      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | {
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+          followPath?: string;
+        }
       | Promise<{
           result: boolean;
           output: string | any[];
           followPathByName?: string;
+          followPath?: string;
         }>,
     onStopped?: (input: string | any[]) => void,
     input?: string | any[],
     followPathByName?: string,
     animatedNodes?: undefined,
     offsetX?: number,
-    offsetY?: number
+    offsetY?: number,
+    _followPathToEndThumb?: boolean,
+    _singleStep?: boolean,
+    followThumb?: string
   ) => void,
   onFinishRun?: (
     input: string | any[],
