@@ -71,11 +71,14 @@ export const getState: NodeTaskFactory<NodeInfo> = (
       nodeComponent = createElement(
         'div',
         {
-          class: `flex text-center items-center justify-center w-[100px] h-[100px] overflow-hidden bg-slate-500 rounded 
+          class: `flex text-center items-center justify-center
+              w-[100px] h-[50px] overflow-hidden
+              bg-sky-600 text-white
+              rounded-lg 
               inner-node
-              shape-circle`,
+              shape-rect`,
           style: {
-            'clip-path': 'circle(50%)',
+            // 'clip-path': 'circle(50%)',
           },
         },
         undefined,
@@ -87,7 +90,7 @@ export const getState: NodeTaskFactory<NodeInfo> = (
         x,
         y,
         100,
-        100,
+        50,
         undefined,
         [
           {
@@ -118,7 +121,7 @@ export const getState: NodeTaskFactory<NodeInfo> = (
         },
         containerNode,
         undefined,
-        true
+        false
       );
 
       if (!rect.nodeComponent) {

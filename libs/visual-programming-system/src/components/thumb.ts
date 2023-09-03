@@ -174,6 +174,9 @@ export class ThumbNode<T> {
       additionalInnerCirlceClasses = `flex items-center justify-center`;
     }
 
+    if (disableInteraction) {
+      additionalInnerCirlceClasses += ' pointer-events-none';
+    }
     const innerCircle = createElement(
       'div',
       {
@@ -274,6 +277,16 @@ export class ThumbNode<T> {
       | SVGElement;
     this.nodeComponent.getThumbCircleElement = () => circleDomElement;
   }
+
+  setDisableInteraction = () => {
+    if (!this.disableInteraction) {
+      this.disableInteraction = true;
+      const circleDomElement = this.circleElement
+        ?.domElement as unknown as SVGElement;
+      circleDomElement.classList.remove('pointer-events-auto');
+      circleDomElement.classList.add('pointer-events-none');
+    }
+  };
 
   onPointerOver = (_e: PointerEvent) => {
     if (this.disableInteraction) {
@@ -419,7 +432,7 @@ export class ThumbNode<T> {
       'Thumb onPointerDown',
       e.target,
       this.nodeComponent?.id,
-      this.nodeComponent
+      (this.nodeComponent?.domElement as any).classList
     );
     if (this.disableInteraction) {
       return;

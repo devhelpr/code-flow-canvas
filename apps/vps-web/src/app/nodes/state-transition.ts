@@ -71,7 +71,9 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
       nodeComponent = createElement(
         'div',
         {
-          class: `flex text-center items-center justify-center w-[100px] h-[50px] overflow-hidden bg-slate-500 rounded
+          class: `flex text-center items-center justify-center
+            w-[100px] h-[50px] overflow-hidden
+            bg-orange-300 rounded text-black
             inner-node
             shape-rect
             `,

@@ -171,7 +171,6 @@ export class Rect<T> {
           thumb.thumbType,
           thumb.thumbIndex ?? 0
         );
-        console.log('thumb', x, y);
 
         const thumbNode = new ThumbNode<T>(
           this.nodeComponent.domElement,

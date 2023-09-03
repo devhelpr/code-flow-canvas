@@ -118,7 +118,15 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       undefined,
       undefined,
       undefined,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      false // disableInteraction
     );
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode.nodeComponent is undefined');
@@ -133,6 +141,9 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     ) => {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
+      }
+      if (this.nodeComponent?.startNode) {
+        startPointNode.setDisableInteraction();
       }
 
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
@@ -172,6 +183,9 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         return false;
       }
 
+      if (this.nodeComponent?.endNode) {
+        endPointNode.setDisableInteraction();
+      }
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
