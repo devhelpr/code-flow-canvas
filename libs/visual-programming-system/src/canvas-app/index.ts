@@ -228,8 +228,10 @@ export const createCanvasApp = <T>(
               currentState.target,
               currentState.element
             );
-
-            setSelectNode(undefined);
+            console.log('pointerup canvas', isMoving, wasMoved);
+            if (!wasMoved) {
+              setSelectNode(undefined);
+            }
           } else {
             const canvasRect = (
               canvas.domElement as unknown as HTMLElement | SVGElement
@@ -404,7 +406,12 @@ export const createCanvasApp = <T>(
     }
 
     rootElement.addEventListener('click', (event: MouseEvent) => {
-      console.log('click canvas', event.target);
+      console.log(
+        'click canvas (click event)',
+        wasMoved,
+        isMoving,
+        event.target
+      );
       if (disableInteraction) {
         return false;
       }
@@ -416,7 +423,8 @@ export const createCanvasApp = <T>(
         ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(tagName) < 0
       ) {
         if (
-          event.target === rootElement ||
+          // isClicking
+          (!wasMoved && event.target === rootElement) ||
           event.target === canvas.domElement
         ) {
           console.log('rootElement click', event.target, tagName);

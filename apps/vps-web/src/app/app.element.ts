@@ -725,6 +725,7 @@ export class AppElement extends HTMLElement {
     });
 
     canvasApp.setOnCanvasClick((x, y) => {
+      console.log('OnCanvasClick');
       setSelectNode(undefined);
 
       // canvasApp.createRect(
@@ -1517,7 +1518,7 @@ export class AppElement extends HTMLElement {
       'div',
       {
         class:
-          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 flex items-center z-10', //top-[60px]',
+          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 flex items-center z-[1050]', //top-[60px]',
         name: 'path-track-bg',
       },
       rootElement,
