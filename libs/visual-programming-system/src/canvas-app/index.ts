@@ -1,4 +1,9 @@
-import { setCamera, transformCameraSpaceToWorldSpace } from '../camera';
+import {
+  Camera,
+  getCamera,
+  setCamera,
+  transformCameraSpaceToWorldSpace,
+} from '../camera';
 import { QuadraticBezierConnection } from '../components/quadratic-bezier-connection';
 import { CubicBezierConnection } from '../components/qubic-bezier-connection';
 import { Rect } from '../components/rect';
@@ -40,6 +45,7 @@ export const createCanvasApp = <T>(
   let startClientDragY = 0;
   let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
   let onCanvasUpdated: (() => void) | undefined = undefined;
+  let onCameraChanged: ((camera: Camera) => void) | undefined = undefined;
 
   const canvas = createElement<T>(
     'div',
@@ -61,6 +67,9 @@ export const createCanvasApp = <T>(
       yCamera = startDragY + diffY;
 
       setCamera(xCamera, yCamera, scaleCamera);
+      if (onCameraChanged) {
+        onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
+      }
 
       (canvas.domElement as unknown as HTMLElement).style.transform =
         'translate(' +
@@ -186,6 +195,10 @@ export const createCanvasApp = <T>(
                 currentState.target.interactionInfo,
                 interactionStateMachine
               );
+
+            if (onCameraChanged) {
+              onCameraChanged(getCamera());
+            }
           }
         }
       }
@@ -370,6 +383,9 @@ export const createCanvasApp = <T>(
           yCamera = newPos.y;
 
           setCamera(xCamera, yCamera, scaleCamera);
+          if (onCameraChanged) {
+            onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
+          }
 
           (canvas.domElement as unknown as HTMLElement).style.transform =
             'translate(' +
@@ -452,6 +468,15 @@ export const createCanvasApp = <T>(
     ) => {
       onClickCanvas = onClickCanvasHandler;
     },
+    setOnCameraChanged: (
+      onCameraChangedHandler: (camera: {
+        x: number;
+        y: number;
+        scale: number;
+      }) => void
+    ) => {
+      onCameraChanged = onCameraChangedHandler;
+    },
     getCamera: () => {
       return {
         x: xCamera,
@@ -465,6 +490,9 @@ export const createCanvasApp = <T>(
       scaleCamera = scale;
 
       setCamera(xCamera, yCamera, scaleCamera);
+      if (onCameraChanged) {
+        onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
+      }
 
       (canvas.domElement as unknown as HTMLElement).style.transform =
         'translate(' +
@@ -544,6 +572,9 @@ export const createCanvasApp = <T>(
       }
 
       setCamera(xCamera, yCamera, scaleCamera);
+      if (onCameraChanged) {
+        onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
+      }
 
       (canvas.domElement as unknown as HTMLElement).style.transform =
         'translate(' +

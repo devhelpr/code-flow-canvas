@@ -23,6 +23,8 @@ import {
   ElementNodeMap,
   LineType,
   SelectedNodeInfo,
+  createNSElement,
+  Camera,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -83,6 +85,10 @@ export class AppElement extends HTMLElement {
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
   currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
+
+  editPopupContainer: IElementNode<NodeInfo> | undefined = undefined;
+  editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
+  editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
 
   removeElement = (
     element: IElementNode<NodeInfo>,
@@ -158,6 +164,103 @@ export class AppElement extends HTMLElement {
     }
   };
 
+  onCameraChanged = (camera: Camera) => {
+    const selectedNodeInfo = getSelectedNode();
+
+    if (selectedNodeInfo) {
+      const node = (
+        selectedNodeInfo?.containerNode
+          ? (selectedNodeInfo?.containerNode.nodeInfo as any)?.canvasAppInstance
+              ?.elements
+          : this.canvasApp?.elements
+      )?.get(selectedNodeInfo.id);
+
+      if (!node) {
+        return;
+      }
+      const nodeInfo: any = node?.nodeInfo ?? {};
+      if (
+        node &&
+        (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
+      ) {
+        return;
+      }
+
+      if (((nodeInfo as any)?.formElements ?? []).length === 0) {
+        return;
+      }
+
+      this.positionPopup(node);
+    }
+  };
+
+  positionPopup = (node: IRectNodeComponent<NodeInfo>) => {
+    (
+      this.editPopupContainer?.domElement as unknown as HTMLElement
+    ).classList.remove('hidden');
+    (
+      this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    ).classList.remove('hidden');
+
+    const sidebar = this.editPopupContainer
+      ?.domElement as unknown as HTMLElement;
+    const nodeComponent = node as INodeComponent<NodeInfo>;
+
+    let parentX = 0;
+    let parentY = 0;
+    if (node.containerNode) {
+      parentX = node.containerNode.x;
+      parentY = node.containerNode.y;
+    }
+    const camera = this.canvasApp?.getCamera();
+
+    const xCamera = camera?.x ?? 0;
+    const yCamera = camera?.y ?? 0;
+    const scaleCamera = camera?.scale ?? 1;
+    const xNode = parentX + nodeComponent.x ?? 0;
+    const yNode = parentY + nodeComponent.y ?? 0;
+    const widthNode = nodeComponent.width ?? 0;
+    const heightNode = nodeComponent.height ?? 0;
+
+    console.log(
+      'selectedNode',
+      xCamera,
+      yCamera,
+      scaleCamera,
+      xNode,
+      yNode,
+      widthNode,
+      heightNode
+    );
+
+    sidebar.style.left = `${
+      xCamera + xNode * scaleCamera + widthNode * scaleCamera + 100
+    }px`;
+    sidebar.style.top = `${yCamera + yNode * scaleCamera}px`;
+
+    const lineContainer = this.editPopupLineContainer
+      ?.domElement as unknown as HTMLElement;
+
+    lineContainer.style.left = `${
+      xCamera + xNode * scaleCamera + (widthNode / 2) * scaleCamera
+    }px`;
+
+    const lineY =
+      yCamera + yNode * scaleCamera + (heightNode / 2) * scaleCamera;
+    lineContainer.style.top = `${lineY - heightNode * scaleCamera}px`;
+    lineContainer.style.width = `${100 + (widthNode / 2) * scaleCamera}px`;
+    lineContainer.style.height = `${
+      300 + 2 * heightNode * scaleCamera //yCamera + yNode * scaleCamera + 40 * scaleCamera
+    }px`;
+
+    (this.editPopupLinePath?.domElement as SVGPathElement).setAttribute(
+      'd',
+      `M0 ${heightNode * scaleCamera} L${100 + (widthNode / 2) * scaleCamera} ${
+        40 + (heightNode / 2) * scaleCamera //yCamera + yNode * scaleCamera
+      }`
+    );
+  };
+
   constructor() {
     super();
 
@@ -180,6 +283,7 @@ export class AppElement extends HTMLElement {
     const canvasApp = createCanvasApp<NodeInfo>(rootElement);
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
+    canvasApp.setOnCameraChanged(this.onCameraChanged);
 
     const animatePath = (
       node: IRectNodeComponent<NodeInfo>,
@@ -1582,14 +1686,41 @@ export class AppElement extends HTMLElement {
     //   rootElement
     // );
 
-    const sidebarContainer = createElement(
+    this.editPopupContainer = createElement(
       'div',
       {
         id: 'textAreaContainer',
-        class: 'absolute w-1/4 h-[300px] z-50 p-2 bg-slate-600 hidden',
+        class:
+          'absolute w-1/4 h-[300px] z-[1010] p-2 bg-slate-600 border-white border hidden',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
       },
       rootElement
+    );
+    this.editPopupLineContainer = createNSElement(
+      'svg',
+      {
+        width: 0,
+        height: 0,
+        class: 'absolute top-0 left-0 pointer-events-none z-[1000] hidden',
+        style: {
+          width: '200px',
+          height: '200px',
+        },
+      },
+      rootElement
+    );
+    this.editPopupLinePath = createNSElement(
+      'path',
+      {
+        d: 'M0 0 L200 200',
+        stroke: 'white',
+        'stroke-width': '2px',
+        fill: 'transparent',
+        style: {
+          //filter: 'drop-shadow(5px 5px 3px rgb(255 255 255 / 1))',
+        },
+      },
+      this.editPopupLineContainer.domElement
     );
 
     const setExecutionPath = (value: number) => {
@@ -1650,7 +1781,7 @@ export class AppElement extends HTMLElement {
     const removeFormElement = () => {
       if (formElement) {
         canvasApp?.deleteElementFromNode(
-          sidebarContainer as INodeComponent<NodeInfo>,
+          this.editPopupContainer as INodeComponent<NodeInfo>,
           formElement
         );
         formElement = undefined;
@@ -1695,9 +1826,13 @@ export class AppElement extends HTMLElement {
           node &&
           (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
         ) {
-          (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
-            'hidden'
-          );
+          (
+            this.editPopupContainer?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
+          (
+            this.editPopupLineContainer?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
+
           return;
         }
 
@@ -1714,9 +1849,12 @@ export class AppElement extends HTMLElement {
         }
 
         if (((nodeInfo as any)?.formElements ?? []).length === 0) {
-          (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
-            'hidden'
-          );
+          (
+            this.editPopupContainer?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
+          (
+            this.editPopupLineContainer?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
           return;
         }
         // const [currentValue, setCurrentValue] = createNamedSignal(
@@ -1727,7 +1865,7 @@ export class AppElement extends HTMLElement {
         const formElementInstance = createElement(
           'div',
           {},
-          sidebarContainer.domElement,
+          this.editPopupContainer?.domElement,
           undefined
         );
         formElement = formElementInstance as INodeComponent<NodeInfo>;
@@ -1770,7 +1908,10 @@ export class AppElement extends HTMLElement {
 
             selectedNodeLabel.domElement.textContent = '';
             (
-              sidebarContainer.domElement as unknown as HTMLElement
+              this.editPopupContainer?.domElement as unknown as HTMLElement
+            ).classList.add('hidden');
+            (
+              this.editPopupLineContainer?.domElement as unknown as HTMLElement
             ).classList.add('hidden');
           },
           formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
@@ -1843,51 +1984,15 @@ export class AppElement extends HTMLElement {
           // },
         }) as unknown as HTMLElement;
 
-        (
-          sidebarContainer.domElement as unknown as HTMLElement
-        ).classList.remove('hidden');
-
-        const sidebar = sidebarContainer.domElement as unknown as HTMLElement;
-        const nodeComponent = node as INodeComponent<NodeInfo>;
-
-        let parentX = 0;
-        let parentY = 0;
-        if (node.containerNode) {
-          parentX = node.containerNode.x;
-          parentY = node.containerNode.y;
-        }
-        const camera = this.canvasApp?.getCamera();
-
-        const xCamera = camera?.x ?? 0;
-        const yCamera = camera?.y ?? 0;
-        const scaleCamera = camera?.scale ?? 1;
-        const xNode = parentX + nodeComponent.x ?? 0;
-        const yNode = parentY + nodeComponent.y ?? 0;
-        const widthNode = nodeComponent.width ?? 0;
-        const heightNode = nodeComponent.height ?? 0;
-
-        console.log(
-          'selectedNode',
-          xCamera,
-          yCamera,
-          scaleCamera,
-          xNode,
-          yNode,
-          widthNode,
-          heightNode
-        );
-
-        sidebar.style.left = `${
-          xCamera + xNode * scaleCamera + (widthNode + 100) * scaleCamera
-        }px`;
-        sidebar.style.top = `${
-          yCamera + yNode * scaleCamera + 40 * scaleCamera
-        }px`;
+        this.positionPopup(node);
       } else {
         selectedNodeLabel.domElement.textContent = '';
-        (sidebarContainer.domElement as unknown as HTMLElement).classList.add(
-          'hidden'
-        );
+        (
+          this.editPopupContainer?.domElement as unknown as HTMLElement
+        ).classList.add('hidden');
+        (
+          this.editPopupLineContainer?.domElement as unknown as HTMLElement
+        ).classList.add('hidden');
         setupTasksInDropdown();
       }
 
