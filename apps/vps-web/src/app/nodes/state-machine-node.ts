@@ -231,7 +231,11 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `bg-slate-400 rounded opacity-90`,
+          class: ` rounded opacity-90 ${
+            containerNode
+              ? 'bg-slate-500 border border-white sepia-0'
+              : 'bg-slate-400'
+          }`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -276,7 +280,8 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           FormElements: [],
           type: 'state-machine',
           taskType: 'state-machine',
-        }
+        },
+        containerNode
       );
       // rect.nodeComponent.nodeInfo = {};
       // rect.nodeComponent.nodeInfo.formElements = [];

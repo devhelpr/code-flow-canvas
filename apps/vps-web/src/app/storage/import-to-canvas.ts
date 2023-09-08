@@ -1,6 +1,7 @@
 import {
   ElementNodeMap,
   Flow,
+  FlowNode,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -13,12 +14,13 @@ import { NodeInfo } from '../types/node-info';
 import { getNodeTaskFactory } from '../node-task-registry';
 
 export const importToCanvas = (
-  flow: Flow<NodeInfo>,
+  nodesList: FlowNode<NodeInfo>[],
   canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
-  canvasUpdated: () => void
+  canvasUpdated: () => void,
+  containerNode?: IRectNodeComponent<NodeInfo>
 ) => {
-  console.log('flow', flow);
-  const nodesList = flow.flows.flow.nodes;
+  //   console.log('flow', flow);
+  //   const nodesList = flow.flows.flow.nodes;
   nodesList.forEach((node) => {
     if (node.nodeType === NodeType.Shape) {
       //node.nodeInfo?.type
@@ -33,7 +35,7 @@ export const importToCanvas = (
               node.y,
               node.id,
               undefined,
-              undefined,
+              containerNode,
               node.width,
               node.height
             );
@@ -51,7 +53,7 @@ export const importToCanvas = (
                   if (factory) {
                     const childNodeTask = factory(canvasUpdated);
 
-                    childNodeTask.createVisualNode(
+                    const child = childNodeTask.createVisualNode(
                       canvasVisualNode.nodeInfo.canvasAppInstance,
                       element.x,
                       element.y,
@@ -59,6 +61,20 @@ export const importToCanvas = (
                       element.nodeInfo?.formValues ?? undefined,
                       canvasVisualNode
                     );
+
+                    // TODO if childNodeTask.isContainer .. call importToCanvas again...
+                    if (
+                      childNodeTask.isContainer &&
+                      Array.isArray(element.elements)
+                    ) {
+                      // element.elements
+                      importToCanvas(
+                        element.elements as unknown as FlowNode<NodeInfo>[],
+                        child.nodeInfo.canvasAppInstance,
+                        canvasUpdated,
+                        child
+                      );
+                    }
                   }
                 }
               });

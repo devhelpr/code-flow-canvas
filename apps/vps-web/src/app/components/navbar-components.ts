@@ -138,11 +138,26 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
     if (factory) {
       const nodeTask = factory(this.props.canvasUpdated);
 
-      const nodeElementId = getSelectedNode();
-      if (nodeElementId) {
-        const node = this.props.canvasApp?.elements?.get(
-          nodeElementId.id
+      const selectedNodeInfo = getSelectedNode();
+      if (selectedNodeInfo) {
+        let node = this.props.canvasApp?.elements?.get(
+          selectedNodeInfo.id
         ) as INodeComponent<NodeInfo>;
+
+        if (!node) {
+          console.log('node not found in canvas'); // is the selected node in a container?
+          //selectedNodeInfo.containerNode ...
+          const canvasAppInstance = (
+            selectedNodeInfo.containerNode?.nodeInfo as any
+          )?.canvasAppInstance;
+          node = canvasAppInstance?.elements?.get(
+            selectedNodeInfo.id
+          ) as INodeComponent<NodeInfo>;
+          if (!node) {
+            console.log('node not found in direct container');
+            return;
+          }
+        }
 
         const selectedNodeTaskFactory = getNodeTaskFactory(
           node.nodeInfo.taskType
@@ -297,7 +312,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
             console.log('IMPORT DATA', data);
             this.props.clearCanvas();
             importToCanvas(
-              data,
+              data.flows.flow.nodes,
               this.props.canvasApp,
               this.props.canvasUpdated
             );

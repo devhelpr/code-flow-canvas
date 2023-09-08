@@ -152,7 +152,8 @@ export const getCanvasNode =
             FormElements: [],
             type: 'canvas-node',
             taskType: 'canvas-node',
-          }
+          },
+          containerNode
         );
         // rect.nodeComponent.nodeInfo = {};
         // rect.nodeComponent.nodeInfo.formElements = [];

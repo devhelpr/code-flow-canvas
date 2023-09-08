@@ -110,6 +110,10 @@ export class Rect<T> {
     this.nodeComponent.isStaticPosition = isStaticPosition ?? false;
     this.nodeComponent.containerNode = containerNode;
     this.nodeComponent.getParentedCoordinates = () => {
+      console.log(
+        'getParentedCoordinates',
+        !!this.nodeComponent?.containerNode
+      );
       let parentX = 0;
       let parentY = 0;
       if (
@@ -120,6 +124,7 @@ export class Rect<T> {
           this.nodeComponent.containerNode.getParentedCoordinates();
         parentX = x;
         parentY = y;
+        console.log('parentX', parentX, 'parentY', parentY);
       }
       return {
         x: parentX + (this.nodeComponent?.x ?? 0),
