@@ -201,7 +201,8 @@ export const importToCanvas = (
               node.x,
               node.y,
               node.id,
-              node.nodeInfo?.formValues ?? undefined
+              node.nodeInfo?.formValues ?? undefined,
+              containerNode
             );
           }
         }
@@ -258,7 +259,8 @@ export const importToCanvas = (
               c2y,
               false,
               undefined,
-              node.id
+              node.id,
+              containerNode
             )
           : canvasApp.createQuadraticBezier(
               start?.x ?? node.x ?? 0,
@@ -269,7 +271,8 @@ export const importToCanvas = (
               c1y,
               false,
               undefined,
-              node.id
+              node.id,
+              containerNode
             );
 
       if (!curve.nodeComponent) {
