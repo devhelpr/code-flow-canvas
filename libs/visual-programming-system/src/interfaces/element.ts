@@ -32,6 +32,7 @@ export interface INodeComponent<T> extends IElementNode<T> {
 
   thumbConnectors?: IThumbNodeComponent<T>[];
   containerNode?: IRectNodeComponent<T>;
+  getParentedCoordinates?: () => { x: number; y: number };
   update?: (
     target?: INodeComponent<T>,
     x?: number,

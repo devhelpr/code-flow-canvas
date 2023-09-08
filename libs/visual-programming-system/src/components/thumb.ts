@@ -401,8 +401,17 @@ export class ThumbNode<T> {
     let parentX = 0;
     let parentY = 0;
     if (this.containerNode) {
-      parentX = this.containerNode.x - paddingRect;
-      parentY = this.containerNode.y - paddingRect;
+      if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+        const parentCoordinates =
+          this.containerNode?.getParentedCoordinates() ?? {
+            x: 0,
+            y: 0,
+          };
+        // parentX = this.containerNode.x - paddingRect;
+        // parentY = this.containerNode.y - paddingRect;
+        parentX = parentCoordinates.x - paddingRect;
+        parentY = parentCoordinates.y - paddingRect;
+      }
     }
 
     const interactionInfoResult = pointerDown(
@@ -542,9 +551,22 @@ export class ThumbNode<T> {
         let parentX = 0;
         let parentY = 0;
         if (this.containerNode) {
-          parentX = this.containerNode.x - paddingRect;
-          parentY = this.containerNode.y - paddingRect;
+          if (
+            this.containerNode &&
+            this.containerNode?.getParentedCoordinates
+          ) {
+            const parentCoordinates =
+              this.containerNode?.getParentedCoordinates() ?? {
+                x: 0,
+                y: 0,
+              };
+            // parentX = this.containerNode.x - paddingRect;
+            // parentY = this.containerNode.y - paddingRect;
+            parentX = parentCoordinates.x - paddingRect;
+            parentY = parentCoordinates.y - paddingRect;
+          }
         }
+
         let { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
         const xorg = x;
         const yorg = y;
@@ -624,8 +646,22 @@ export class ThumbNode<T> {
       let parentX = 0;
       let parentY = 0;
       if (this.nodeComponent?.parent?.containerNode) {
-        parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
-        parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+        if (this.nodeComponent?.parent?.containerNode) {
+          if (
+            this.nodeComponent?.parent?.containerNode &&
+            this.nodeComponent?.parent?.containerNode?.getParentedCoordinates
+          ) {
+            const parentCoordinates =
+              this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
+                x: 0,
+                y: 0,
+              };
+            // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
+            // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+            parentX = parentCoordinates.x;
+            parentY = parentCoordinates.y;
+          }
+        }
       }
       console.log(
         'thumb 3',

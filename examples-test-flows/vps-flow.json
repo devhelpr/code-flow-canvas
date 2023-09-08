@@ -1,0 +1,995 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "8756076f-6f04-4eaf-9eea-4b8c59eb764b",
+          "x": 494.93955796776083,
+          "y": 359.88674741892737,
+          "width": 200.00003051757812,
+          "height": 120,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression-part",
+            "formValues": {
+              "expression": "+3"
+            }
+          }
+        },
+        {
+          "id": "9e04ec90-859a-456f-a8da-fd68383b671d",
+          "x": 886.7296845019553,
+          "y": 534.1719131065574,
+          "width": 60,
+          "height": 60,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression-execute",
+            "formValues": {
+              "expression": ""
+            }
+          }
+        },
+        {
+          "id": "562a583e-2ecc-4100-b9eb-9910dc0f2ce8",
+          "x": 130.24418655701072,
+          "y": 432.1201237538026,
+          "width": 200.00001525878906,
+          "height": 72,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "increment"
+            }
+          }
+        },
+        {
+          "id": "85039c59-8d60-4556-9d54-55d7103435af",
+          "x": 493.3556138743104,
+          "y": 572.2529420642693,
+          "width": 199.99996948242188,
+          "height": 120,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression-part",
+            "formValues": {
+              "expression": "-1"
+            }
+          }
+        },
+        {
+          "id": "ba68419b-8110-40e8-951f-aef37a491ec8",
+          "x": 126.09131164901403,
+          "y": 587.5378991556944,
+          "width": 200,
+          "height": 72,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "decrement"
+            }
+          }
+        },
+        {
+          "id": "f1e70920-626a-4e08-af23-adbd61f1eb1a",
+          "x": 137.89944851057786,
+          "y": 808.1346326293029,
+          "width": 200,
+          "height": 72,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "multiply"
+            }
+          }
+        },
+        {
+          "id": "085e7890-b09b-46d9-aa9c-48a0951529bf",
+          "x": 519.4821631910891,
+          "y": 771.1918229794411,
+          "width": 200,
+          "height": 120,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression-part",
+            "formValues": {
+              "expression": "*2"
+            }
+          }
+        },
+        {
+          "id": "f930b31a-ccb7-450e-90d6-becb95765c39",
+          "x": -4099.690600899574,
+          "y": 430.9874102937022,
+          "width": 200,
+          "height": 72,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "test1"
+            }
+          }
+        },
+        {
+          "id": "9f98bb38-f82c-4766-878c-b01dd61b9f04",
+          "x": -1788.174476987531,
+          "y": 1090.9770829570944,
+          "width": 979.6095840042494,
+          "height": 401.2200146975424,
+          "nodeType": "Shape",
+          "elements": [
+            {
+              "id": "9f98bb38-f82c-4766-878c-b01dd61b9f04_input",
+              "x": 0,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "9f98bb38-f82c-4766-878c-b01dd61b9f04_output",
+              "x": 979.6095840042494,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "f41f292f-5359-4281-8ac3-c2061c6e9c3d",
+              "x": 29.67693158733391,
+              "y": 133.63579021060127,
+              "width": 200,
+              "height": 120,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "expression",
+                "formValues": {
+                  "expression": ""
+                }
+              }
+            },
+            {
+              "id": "f37aee5e-5362-4785-bfbd-fa311b7d35ad",
+              "x": 355.4929824037872,
+              "y": 131.15273257820104,
+              "width": 200,
+              "height": 120,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "expression",
+                "formValues": {
+                  "expression": ""
+                }
+              }
+            },
+            {
+              "id": "89c76606-c59c-4d43-b38c-c4dec3449eb7",
+              "x": 646.5204426968653,
+              "y": 125.0350339061099,
+              "width": 200.00006103515625,
+              "height": 120,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "expression",
+                "formValues": {
+                  "expression": ""
+                }
+              }
+            },
+            {
+              "id": "3e0fa717-0f06-463b-a023-58dc674821a7",
+              "x": 229.6769315873339,
+              "y": 193.63579021060127,
+              "endX": 355.4929824037872,
+              "endY": 191.15273257820104,
+              "startNodeId": "f41f292f-5359-4281-8ac3-c2061c6e9c3d",
+              "endNodeId": "f37aee5e-5362-4785-bfbd-fa311b7d35ad",
+              "startThumbName": "output",
+              "endThumbName": "input",
+              "lineType": "BezierCubic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "e51bb60a-8902-4e19-b099-ab2f7de32e28",
+              "x": 555.4929824037872,
+              "y": 191.15273257820104,
+              "endX": 646.5204426968653,
+              "endY": 185.0350339061099,
+              "startNodeId": "f37aee5e-5362-4785-bfbd-fa311b7d35ad",
+              "endNodeId": "89c76606-c59c-4d43-b38c-c4dec3449eb7",
+              "startThumbName": "output",
+              "endThumbName": "input",
+              "lineType": "BezierCubic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            }
+          ],
+          "nodeInfo": {
+            "FormElements": [],
+            "type": "canvas-node",
+            "taskType": "canvas-node"
+          }
+        },
+        {
+          "id": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98",
+          "x": -3721.1398772150856,
+          "y": 450.11185089998594,
+          "width": 1065.9210423857976,
+          "height": 685.6691680499398,
+          "nodeType": "Shape",
+          "elements": [
+            {
+              "id": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98_input",
+              "x": 0,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98_output",
+              "x": 1065.9210423857976,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "17fc77db-2602-4d2c-93e3-ceb6a1393249",
+              "x": 307.59201523606816,
+              "y": 25.245961913114115,
+              "width": 100,
+              "height": 49.999969482421875,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State1"
+                }
+              }
+            },
+            {
+              "id": "bca04b76-bf59-4bf4-84a3-9d609802e45c",
+              "x": 502.7850788007636,
+              "y": 245.50714363423793,
+              "width": 99.999755859375,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State2"
+                }
+              }
+            },
+            {
+              "id": "57f004d5-0a76-4bf1-96d9-8bca574cae34",
+              "x": 427.20736813635176,
+              "y": 159.97355121598292,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state-transition",
+                "formValues": {
+                  "caption": "test1"
+                }
+              }
+            },
+            {
+              "id": "1af06f9a-f3c0-4fcc-a925-436cb1ca4c69",
+              "x": 305.852613928168,
+              "y": 157.94143710563378,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state-transition",
+                "formValues": {
+                  "caption": "test2"
+                }
+              }
+            },
+            {
+              "id": "a66c3165-38ba-4ae3-99b3-3ba73ea7808e",
+              "x": 132.50125320160532,
+              "y": 248.39472644125766,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State3"
+                }
+              }
+            },
+            {
+              "id": "0b66cd6f-7413-409f-82b2-d427bc0a5959",
+              "x": 186.55275355573576,
+              "y": 160.30199837411595,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state-transition",
+                "formValues": {
+                  "caption": "test3"
+                }
+              }
+            },
+            {
+              "id": "26b74e9f-186f-47ef-8eb1-b4cc66421d5d",
+              "x": 684.4610296415708,
+              "y": 504.05855344202814,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state-transition",
+                "formValues": {
+                  "caption": "test4"
+                }
+              }
+            },
+            {
+              "id": "75036dce-feb9-4498-8e92-3bb6b2b8e58f",
+              "x": 500.97858115944473,
+              "y": 330.26242006993607,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State4"
+                }
+              }
+            },
+            {
+              "id": "fa80b721-c75f-4c2a-aa8b-1aca4119732d",
+              "x": -3672.1398523167613,
+              "y": 500.11185065427566,
+              "width": 601,
+              "height": 400,
+              "nodeType": "Shape",
+              "elements": [
+                {
+                  "id": "fa80b721-c75f-4c2a-aa8b-1aca4119732d_input",
+                  "x": 0,
+                  "y": 0,
+                  "width": 1,
+                  "height": 1,
+                  "nodeType": "Shape",
+                  "nodeInfo": {}
+                },
+                {
+                  "id": "fa80b721-c75f-4c2a-aa8b-1aca4119732d_output",
+                  "x": 600,
+                  "y": 0,
+                  "width": 1,
+                  "height": 1,
+                  "nodeType": "Shape",
+                  "nodeInfo": {}
+                }
+              ],
+              "nodeInfo": {
+                "FormElements": [],
+                "type": "state-machine",
+                "taskType": "state-machine"
+              }
+            },
+            {
+              "id": "215960c7-a36e-45a8-9e4e-80bbe8526224",
+              "x": 357.59201523606816,
+              "y": 50.24594665432505,
+              "endX": 477.20736813635176,
+              "endY": 184.97355121598292,
+              "startNodeId": "17fc77db-2602-4d2c-93e3-ceb6a1393249",
+              "endNodeId": "57f004d5-0a76-4bf1-96d9-8bca574cae34",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "10b5acaf-b36f-4a29-b125-13bd50243905",
+              "x": 477.20736813635176,
+              "y": 184.97355121598292,
+              "endX": 552.7849567304511,
+              "endY": 270.50714363423793,
+              "startNodeId": "57f004d5-0a76-4bf1-96d9-8bca574cae34",
+              "endNodeId": "bca04b76-bf59-4bf4-84a3-9d609802e45c",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "0fc67e27-a8a3-4c13-8bd4-61558ecacd96",
+              "x": 552.7849567304511,
+              "y": 270.50714363423793,
+              "endX": 355.852613928168,
+              "endY": 182.94143710563378,
+              "startNodeId": "bca04b76-bf59-4bf4-84a3-9d609802e45c",
+              "endNodeId": "1af06f9a-f3c0-4fcc-a925-436cb1ca4c69",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "24733528-5e1c-47ea-ba33-c34b2f8a594b",
+              "x": 355.852613928168,
+              "y": 182.94143710563378,
+              "endX": 182.50125320160532,
+              "endY": 273.39472644125766,
+              "startNodeId": "1af06f9a-f3c0-4fcc-a925-436cb1ca4c69",
+              "endNodeId": "a66c3165-38ba-4ae3-99b3-3ba73ea7808e",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "379b8538-563d-4fa0-8cd6-aaab1815c03b",
+              "x": 182.50125320160532,
+              "y": 273.39472644125766,
+              "endX": 236.55275355573576,
+              "endY": 185.30199837411595,
+              "startNodeId": "a66c3165-38ba-4ae3-99b3-3ba73ea7808e",
+              "endNodeId": "0b66cd6f-7413-409f-82b2-d427bc0a5959",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "bde782cc-5ca9-4f36-90db-1170f701395b",
+              "x": 236.55275355573576,
+              "y": 185.30199837411595,
+              "endX": 357.59201523606816,
+              "endY": 50.24594665432505,
+              "startNodeId": "0b66cd6f-7413-409f-82b2-d427bc0a5959",
+              "endNodeId": "17fc77db-2602-4d2c-93e3-ceb6a1393249",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "61597be9-8133-45ea-b5eb-b567f209d26f",
+              "x": 552.7849567304511,
+              "y": 270.50714363423793,
+              "endX": 734.4610296415708,
+              "endY": 529.0585534420281,
+              "startNodeId": "bca04b76-bf59-4bf4-84a3-9d609802e45c",
+              "endNodeId": "26b74e9f-186f-47ef-8eb1-b4cc66421d5d",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "f054746c-62b7-40a2-b93b-e5ae7127ba5b",
+              "x": 734.4610296415708,
+              "y": 529.0585534420281,
+              "endX": 550.9785811594447,
+              "endY": 355.26242006993607,
+              "startNodeId": "26b74e9f-186f-47ef-8eb1-b4cc66421d5d",
+              "endNodeId": "75036dce-feb9-4498-8e92-3bb6b2b8e58f",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "759aa965-77fe-4afc-88e8-7615757f80c9",
+              "x": 550.9785811594447,
+              "y": 355.26242006993607,
+              "endX": 355.852613928168,
+              "endY": 182.94143710563378,
+              "startNodeId": "75036dce-feb9-4498-8e92-3bb6b2b8e58f",
+              "endNodeId": "1af06f9a-f3c0-4fcc-a925-436cb1ca4c69",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            }
+          ],
+          "nodeInfo": {
+            "FormElements": [],
+            "type": "state-machine",
+            "taskType": "state-machine"
+          }
+        },
+        {
+          "id": "f509932e-9e6a-468e-bb35-7fee4dd84afe",
+          "x": -4091.7081006272806,
+          "y": 766.6826717788265,
+          "width": 200,
+          "height": 72,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "test3"
+            }
+          }
+        },
+        {
+          "id": "3f37a9b8-be8c-4224-949a-c35136f35302",
+          "x": -4090.773510332508,
+          "y": 599.357042440954,
+          "width": 200,
+          "height": 72,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "test2"
+            }
+          }
+        },
+        {
+          "id": "5f1fc3cb-fd03-4b02-9a39-38eb397b5dde",
+          "x": -2552.755092048378,
+          "y": 505.7001930738562,
+          "width": 120.00012313193413,
+          "height": 56.000022030380066,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input"
+          }
+        },
+        {
+          "id": "dc32e27a-eb1d-4d45-a2de-d856bd443c5d",
+          "x": -2271.6258314067927,
+          "y": 480.657291445363,
+          "width": 110,
+          "height": 110,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "sequential",
+            "formValues": {}
+          }
+        },
+        {
+          "id": "22702e5d-e435-4567-b7a5-84bf2754aff4",
+          "x": -2002.0587753353075,
+          "y": 460.0327125694721,
+          "width": 119.99991054479895,
+          "height": 56.000022030380066,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input"
+          }
+        },
+        {
+          "id": "f42caa4d-a7f1-49d4-8343-d71d316f10a8",
+          "x": -2011.1351392155073,
+          "y": 603.6450661180719,
+          "width": 119.99991054479895,
+          "height": 55.99996888359627,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input"
+          }
+        },
+        {
+          "id": "7459ac98-b5c5-42b6-bcea-33509344234f",
+          "x": -1689.161044998777,
+          "y": 570.5704781622028,
+          "width": 200,
+          "height": 120,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "value + 1"
+            }
+          }
+        },
+        {
+          "id": "8b8d3905-527f-4d09-8eb5-3db2a1e0c33d",
+          "x": -1324.60184374013,
+          "y": 600.7337699603562,
+          "width": 240.00024626386826,
+          "height": 56.000022030380066,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "array"
+          }
+        },
+        {
+          "id": "d4584952-aa09-416e-abdb-2d5cfa03d63e",
+          "x": -4116.015418260239,
+          "y": 958.8214801082735,
+          "width": 200,
+          "height": 72.00006103515625,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "button",
+            "formValues": {
+              "caption": "test4"
+            }
+          }
+        },
+        {
+          "id": "88fda4fe-dfa6-4cff-a63b-cc92bd4fae00",
+          "x": -2737.3402629433335,
+          "y": 1244.7168111761655,
+          "width": 710,
+          "height": 400,
+          "nodeType": "Shape",
+          "elements": [
+            {
+              "id": "88fda4fe-dfa6-4cff-a63b-cc92bd4fae00_input",
+              "x": 0,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "88fda4fe-dfa6-4cff-a63b-cc92bd4fae00_output",
+              "x": 710,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "8ed20c00-90f6-4a07-9582-679b15ebbdf8",
+              "x": 222.75495783399128,
+              "y": 67.4074240936302,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State"
+                }
+              }
+            },
+            {
+              "id": "2965eca8-e7ab-46c5-a189-2c85139b5666",
+              "x": 350.4175993886047,
+              "y": 141.89871444145342,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State"
+                }
+              }
+            },
+            {
+              "id": "ec86bbe3-c94a-4cf7-9c6c-d44973b69875",
+              "x": 201.18023838555155,
+              "y": 225.44601389651166,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "State"
+                }
+              }
+            },
+            {
+              "id": "dd4c4de1-32ac-4e64-8e2e-11bf8accd64c",
+              "x": 272.7549578339913,
+              "y": 92.4074240936302,
+              "endX": 400.4175993886047,
+              "endY": 166.89871444145342,
+              "startNodeId": "8ed20c00-90f6-4a07-9582-679b15ebbdf8",
+              "endNodeId": "2965eca8-e7ab-46c5-a189-2c85139b5666",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            },
+            {
+              "id": "e43cef65-947b-491c-a713-7fd80f5fc4e0",
+              "x": 251.18023838555155,
+              "y": 250.44601389651166,
+              "endX": 272.7549578339913,
+              "endY": 92.4074240936302,
+              "startNodeId": "ec86bbe3-c94a-4cf7-9c6c-d44973b69875",
+              "endNodeId": "8ed20c00-90f6-4a07-9582-679b15ebbdf8",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "nodeInfo": {}
+            }
+          ],
+          "nodeInfo": {
+            "FormElements": [],
+            "type": "state-machine",
+            "taskType": "state-machine"
+          }
+        },
+        {
+          "id": "6ffeb9ce-c627-4e6d-9a93-791e836d988e",
+          "x": -954.5445813827731,
+          "y": 600.3787857606761,
+          "width": 240.00024626386826,
+          "height": 55.99996888359627,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "sum"
+          }
+        },
+        {
+          "id": "0d2bff3a-22c1-4b96-aa27-31f1f58b8268",
+          "x": 694.939588485339,
+          "y": 419.88674741892737,
+          "endX": 886.7296845019553,
+          "endY": 564.1719131065574,
+          "startNodeId": "8756076f-6f04-4eaf-9eea-4b8c59eb764b",
+          "endNodeId": "9e04ec90-859a-456f-a8da-fd68383b671d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "5414021a-80ea-4207-9895-f91c3970a3ba",
+          "x": 330.2442018157998,
+          "y": 468.1201237538026,
+          "endX": 494.93955796776083,
+          "endY": 419.88674741892737,
+          "startNodeId": "562a583e-2ecc-4100-b9eb-9910dc0f2ce8",
+          "endNodeId": "8756076f-6f04-4eaf-9eea-4b8c59eb764b",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "6433ef5f-65ec-4101-a213-324849c914be",
+          "x": 326.091311649014,
+          "y": 623.5378991556944,
+          "endX": 493.3556138743104,
+          "endY": 632.2529420642693,
+          "startNodeId": "ba68419b-8110-40e8-951f-aef37a491ec8",
+          "endNodeId": "85039c59-8d60-4556-9d54-55d7103435af",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "69f1cafe-71e1-4dad-987d-70c1d78d8916",
+          "x": 693.3555833567323,
+          "y": 632.2529420642693,
+          "endX": 886.7296845019553,
+          "endY": 564.1719131065574,
+          "startNodeId": "85039c59-8d60-4556-9d54-55d7103435af",
+          "endNodeId": "9e04ec90-859a-456f-a8da-fd68383b671d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "6193d6d2-0ccc-4558-acac-a1bcb4959509",
+          "x": 337.8994485105778,
+          "y": 844.1346326293029,
+          "endX": 519.4821631910891,
+          "endY": 831.1918229794411,
+          "startNodeId": "f1e70920-626a-4e08-af23-adbd61f1eb1a",
+          "endNodeId": "085e7890-b09b-46d9-aa9c-48a0951529bf",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "3960104b-cf18-4e85-a632-0bd45c27316e",
+          "x": 719.4821631910891,
+          "y": 831.1918229794411,
+          "endX": 886.7296845019553,
+          "endY": 564.1719131065574,
+          "startNodeId": "085e7890-b09b-46d9-aa9c-48a0951529bf",
+          "endNodeId": "9e04ec90-859a-456f-a8da-fd68383b671d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "9b32053a-7c7e-4571-9ceb-4b86ab6cc7c7",
+          "x": -3899.690600899574,
+          "y": 466.9874102937022,
+          "endX": -3721.1398772150856,
+          "endY": 480.11185089998594,
+          "startNodeId": "f930b31a-ccb7-450e-90d6-becb95765c39",
+          "endNodeId": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "5ff83041-c2a1-4a89-b05f-39369aa220c1",
+          "x": -3890.773510332508,
+          "y": 635.357042440954,
+          "endX": -3721.1398772150856,
+          "endY": 480.11185089998594,
+          "startNodeId": "3f37a9b8-be8c-4224-949a-c35136f35302",
+          "endNodeId": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "954dd61a-0aa8-459a-835d-990655936d03",
+          "x": -3891.7081006272806,
+          "y": 802.6826717788265,
+          "endX": -3721.1398772150856,
+          "endY": 480.11185089998594,
+          "startNodeId": "f509932e-9e6a-468e-bb35-7fee4dd84afe",
+          "endNodeId": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "9fb462cd-4dbc-41f5-993a-0cbc2b56dc6d",
+          "x": -2655.218834829288,
+          "y": 480.11185089998594,
+          "endX": -2552.755092048378,
+          "endY": 535.7001930738562,
+          "startNodeId": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98",
+          "endNodeId": "5f1fc3cb-fd03-4b02-9a39-38eb397b5dde",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "ad30e982-ebc4-40b7-965e-2da646df92b4",
+          "x": -2432.755092048378,
+          "y": 535.7001930738562,
+          "endX": -2271.6258314067927,
+          "endY": 535.657291445363,
+          "startNodeId": "5f1fc3cb-fd03-4b02-9a39-38eb397b5dde",
+          "endNodeId": "dc32e27a-eb1d-4d45-a2de-d856bd443c5d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "cb0a1b3d-4134-498d-ad1d-7acc146d4072",
+          "x": -2161.6258314067927,
+          "y": 510.657291445363,
+          "endX": -2002.0587753353075,
+          "endY": 490.0327125694721,
+          "startNodeId": "dc32e27a-eb1d-4d45-a2de-d856bd443c5d",
+          "endNodeId": "22702e5d-e435-4567-b7a5-84bf2754aff4",
+          "startThumbName": "output1",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "a643f555-e1cf-4c45-bea0-f990805c9b50",
+          "x": -2161.6258314067927,
+          "y": 560.657291445363,
+          "endX": -2011.1351392155073,
+          "endY": 633.6450661180719,
+          "startNodeId": "dc32e27a-eb1d-4d45-a2de-d856bd443c5d",
+          "endNodeId": "f42caa4d-a7f1-49d4-8343-d71d316f10a8",
+          "startThumbName": "output2",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "8a9fc14a-dbfa-4257-9731-23166acfc870",
+          "x": -1891.1351392155073,
+          "y": 633.6450661180719,
+          "endX": -1689.161044998777,
+          "endY": 630.5704781622028,
+          "startNodeId": "f42caa4d-a7f1-49d4-8343-d71d316f10a8",
+          "endNodeId": "7459ac98-b5c5-42b6-bcea-33509344234f",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "cece481e-0068-4057-9c2e-1ea461f46eff",
+          "x": -1489.161044998777,
+          "y": 630.5704781622028,
+          "endX": -1324.60184374013,
+          "endY": 630.7337699603562,
+          "startNodeId": "7459ac98-b5c5-42b6-bcea-33509344234f",
+          "endNodeId": "8b8d3905-527f-4d09-8eb5-3db2a1e0c33d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "70d0fe90-787e-4069-8a4b-a6b86d35837f",
+          "x": -3916.015418260239,
+          "y": 994.8215106258516,
+          "endX": -3721.1398772150856,
+          "endY": 480.11185089998594,
+          "startNodeId": "d4584952-aa09-416e-abdb-2d5cfa03d63e",
+          "endNodeId": "e83e72e2-b1c5-4507-8dd9-03373f6d5a98",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "709b15df-96c4-46cd-9cd8-9706c3be0512",
+          "x": -1124.60184374013,
+          "y": 630.7337699603562,
+          "endX": -954.5445813827731,
+          "endY": 628.3787857606761,
+          "startNodeId": "8b8d3905-527f-4d09-8eb5-3db2a1e0c33d",
+          "endNodeId": "6ffeb9ce-c627-4e6d-9a93-791e836d988e",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        }
+      ]
+    }
+  }
+}

@@ -356,8 +356,17 @@ export class Connection<T> {
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
-        parentX = this.containerNode.x;
-        parentY = this.containerNode.y;
+        if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+          const parentCoordinates =
+            this.containerNode?.getParentedCoordinates() ?? {
+              x: 0,
+              y: 0,
+            };
+          // parentX = this.containerNode.x ;
+          // parentY = this.containerNode.y;
+          parentX = parentCoordinates.x;
+          parentY = parentCoordinates.y;
+        }
       }
 
       const interactionInfoResult = pointerDown<T>(

@@ -109,6 +109,23 @@ export class Rect<T> {
     this.nodeComponent = this.rectInfo.nodeComponent;
     this.nodeComponent.isStaticPosition = isStaticPosition ?? false;
     this.nodeComponent.containerNode = containerNode;
+    this.nodeComponent.getParentedCoordinates = () => {
+      let parentX = 0;
+      let parentY = 0;
+      if (
+        this.nodeComponent?.containerNode &&
+        this.nodeComponent?.containerNode.getParentedCoordinates
+      ) {
+        const { x, y } =
+          this.nodeComponent.containerNode.getParentedCoordinates();
+        parentX = x;
+        parentY = y;
+      }
+      return {
+        x: parentX + (this.nodeComponent?.x ?? 0),
+        y: parentY + (this.nodeComponent?.y ?? 0),
+      };
+    };
 
     // this.nodeComponent.domElement?.addEventListener('pointerup', this.onPointerUp);
     // this.nodeComponent.domElement?.addEventListener(
@@ -704,8 +721,17 @@ export class Rect<T> {
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
-        parentX = this.containerNode.x;
-        parentY = this.containerNode.y;
+        if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+          const parentCoordinates =
+            this.containerNode?.getParentedCoordinates() ?? {
+              x: 0,
+              y: 0,
+            };
+          // parentX = this.containerNode.x;
+          // parentY = this.containerNode.y;
+          parentX = parentCoordinates.x;
+          parentY = parentCoordinates.y;
+        }
       }
 
       const interactionInfoResult = pointerDown(

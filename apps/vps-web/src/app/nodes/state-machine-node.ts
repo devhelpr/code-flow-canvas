@@ -202,7 +202,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     name: 'state-machine',
     family: 'flow-canvas',
     isContainer: true,
-    childNodeTasks: ['state', 'state-transition'],
+    childNodeTasks: ['state', 'state-transition', 'state-machine'],
     getConnectionInfo: () => {
       if (!input || !output) {
         return { inputs: [], outputs: [] };

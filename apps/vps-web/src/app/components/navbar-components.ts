@@ -22,10 +22,20 @@ import {
   createElementFromTemplate,
   createTemplate,
 } from '@devhelpr/dom-components';
+import {
+  serializeElementsMap,
+  exportFlowToJson,
+} from '../storage/serialize-canvas';
+import { downloadJSON } from '../utils/create-download-link';
+import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
+import { importToCanvas } from '../storage/import-to-canvas';
 
 export interface NavbarComponentsProps {
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
+  storageProvider: FlowrunnerIndexedDbStorageProvider;
+  initializeNodes: () => void;
+  clearCanvas: () => void;
   animatePath: AnimatePathFunction<NodeInfo>;
   animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>;
   canvasUpdated: () => void;
@@ -33,21 +43,8 @@ export interface NavbarComponentsProps {
   removeElement: (element: IElementNode<NodeInfo>) => void;
 }
 
-export interface Props {
-  rootElement: HTMLElement;
-  selectNodeType: HTMLSelectElement;
-  animatePath: AnimatePathFunction<NodeInfo>;
-  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>;
-  canvasUpdated: () => void;
-  canvasApp: CanvasAppInstance;
-  removeElement: (
-    element: IElementNode<NodeInfo>,
-    canvasAppInstance?: CanvasAppInstance
-  ) => void;
-}
-
-export class NavbarComponent extends Component<Props> {
-  oldProps: Props | null = null;
+export class NavbarComponent extends Component<NavbarComponentsProps> {
+  oldProps: NavbarComponentsProps | null = null;
 
   previousDoRenderChildren: boolean | null = null;
   doRenderChildren: boolean | null = true;
@@ -55,14 +52,18 @@ export class NavbarComponent extends Component<Props> {
   addNodeButton: HTMLButtonElement | null = null;
   centerButton: HTMLButtonElement | null = null;
   deleteButton: HTMLButtonElement | null = null;
+  exportButton: HTMLButtonElement | null = null;
+  importButton: HTMLButtonElement | null = null;
 
-  constructor(parent: BaseComponent | null, props: Props) {
+  constructor(parent: BaseComponent | null, props: NavbarComponentsProps) {
     super(parent, props);
     this.template = createTemplate(
       `<div>
         <button class="${navBarButton} bg-blue-500 hover:bg-blue-700">Add Node</button>
         <button class="${navBarButton}">Center</button>
         <button class="${navBarButton}">Delete</button>
+        <button class="${navBarButton}">Export</button>
+        <button class="${navBarButton}">Import</button>
         <children></children>
       </div>`
     );
@@ -83,15 +84,21 @@ export class NavbarComponent extends Component<Props> {
         this.centerButton = this.addNodeButton
           ?.nextSibling as HTMLButtonElement;
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
+        this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
+        this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
+        this.exportButton.addEventListener('click', this.onClickExport);
+        this.importButton.addEventListener('click', this.onClickImport);
 
         this.renderList.push(
           this.addNodeButton,
           this.centerButton,
-          this.deleteButton
+          this.deleteButton,
+          this.exportButton,
+          this.importButton
         );
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
@@ -245,10 +252,10 @@ export class NavbarComponent extends Component<Props> {
             nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
           ).nodeInfo.canvasAppInstance.elements?.delete(nodeElementId.id);
           this.props.removeElement(
-            node,
-            (
-              nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-            ).nodeInfo.canvasAppInstance
+            node
+            // (
+            //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+            // ).nodeInfo.canvasAppInstance
           );
         } else {
           this.props.removeElement(node);
@@ -258,6 +265,50 @@ export class NavbarComponent extends Component<Props> {
         this.props.canvasUpdated();
       }
     }
+    return false;
+  };
+
+  onClickExport = (event: Event) => {
+    event.preventDefault();
+    const data = serializeElementsMap(this.props.canvasApp.elements);
+    console.log('EXPORT DATA', exportFlowToJson('1234', data));
+    downloadJSON(exportFlowToJson('1234', data), 'vps-flow.json');
+    return false;
+  };
+
+  onClickImport = (event: Event) => {
+    event.preventDefault();
+    const input = document.createElement('input') as HTMLInputElement & {
+      files: FileList;
+    };
+
+    input.type = 'file';
+    input.setAttribute('accept', 'application/JSON');
+    input.onchange = () => {
+      const files = Array.from(input.files);
+      if (files && files.length > 0) {
+        // const file = URL.createObjectURL(files[0]);
+        // console.log(file);
+
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+          if (event && event.target && event.target.result) {
+            const data = JSON.parse(event.target.result.toString());
+            console.log('IMPORT DATA', data);
+            this.props.clearCanvas();
+            importToCanvas(
+              data,
+              this.props.canvasApp,
+              this.props.canvasUpdated
+            );
+            this.props.canvasApp.centerCamera();
+            this.props.initializeNodes();
+          }
+        });
+        reader.readAsBinaryString(files[0]);
+      }
+    };
+    input.click();
     return false;
   };
 
@@ -283,6 +334,9 @@ export class NavbarComponent extends Component<Props> {
 
 export const NavbarComponents = (props: NavbarComponentsProps) => {
   new NavbarComponent(null, {
+    initializeNodes: props.initializeNodes,
+    storageProvider: props.storageProvider,
+    clearCanvas: props.clearCanvas,
     rootElement: props.rootElement,
     selectNodeType: props.selectNodeType,
     animatePath: props.animatePath,

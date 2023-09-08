@@ -53,6 +53,8 @@ import {
   getNodeTaskFactory,
   setupCanvasNodeTaskRegistry,
 } from './node-task-registry/canvas-node-task-registry';
+import { serializeElementsMap } from './storage/serialize-canvas';
+import { importToCanvas } from './storage/import-to-canvas';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -90,10 +92,7 @@ export class AppElement extends HTMLElement {
   editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
 
-  removeElement = (
-    element: IElementNode<NodeInfo>,
-    canvasAppInstance?: CanvasAppInstance
-  ) => {
+  removeElement = (element: IElementNode<NodeInfo>) => {
     element.domElement.remove();
     const node = element as unknown as INodeComponent<NodeInfo>;
     if (node && node.delete) {
@@ -146,24 +145,6 @@ export class AppElement extends HTMLElement {
     }
   };
 
-  getThumbNode = (thumbType: ThumbType, node: INodeComponent<NodeInfo>) => {
-    if (node.thumbConnectors) {
-      const thumbNode = node.thumbConnectors.find((thumbNode) => {
-        return thumbNode.thumbType === thumbType;
-      });
-      return thumbNode;
-    }
-  };
-
-  getThumbNodeByName = (name: string, node: INodeComponent<NodeInfo>) => {
-    if (node.thumbConnectors) {
-      const thumbNode = node.thumbConnectors.find((thumbNode) => {
-        return thumbNode.thumbName === name;
-      });
-      return thumbNode;
-    }
-  };
-
   onCameraChanged = (camera: Camera) => {
     const selectedNodeInfo = getSelectedNode();
 
@@ -209,8 +190,17 @@ export class AppElement extends HTMLElement {
     let parentX = 0;
     let parentY = 0;
     if (node.containerNode) {
-      parentX = node.containerNode.x;
-      parentY = node.containerNode.y;
+      if (node.containerNode && node.containerNode?.getParentedCoordinates) {
+        const parentCoordinates =
+          node.containerNode?.getParentedCoordinates() ?? {
+            x: 0,
+            y: 0,
+          };
+        // parentX = node.containerNode.x;
+        // parentY = node.containerNode.y;
+        parentX = parentCoordinates.x;
+        parentY = parentCoordinates.y;
+      }
     }
     const camera = this.canvasApp?.getCamera();
 
@@ -392,296 +382,26 @@ export class AppElement extends HTMLElement {
         this.restoring = true;
         this.storageProvider = storageProvider;
 
+        if (this.storageProvider && this.canvasApp) {
+          NavbarComponents({
+            clearCanvas: this.clearCanvas,
+            initializeNodes: initializeNodes,
+            storageProvider: this.storageProvider,
+            selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+            animatePath: animatePath,
+            animatePathFromThumb: animatePathFromThumb,
+            canvasUpdated: canvasUpdated,
+            canvasApp: this.canvasApp,
+            removeElement: this.removeElement,
+            rootElement: menubarElement.domElement as HTMLElement,
+          }) as unknown as HTMLElement;
+        }
+
         this.clearCanvas();
         storageProvider
           .getFlow('1234')
           .then((flow) => {
-            console.log('flow', flow);
-            const nodesList = flow.flows.flow.nodes;
-            nodesList.forEach((node) => {
-              if (node.nodeType === NodeType.Shape) {
-                //node.nodeInfo?.type
-                const factory = getNodeTaskFactory(node.nodeInfo?.type);
-                if (factory) {
-                  const nodeTask = factory(canvasUpdated);
-                  if (nodeTask) {
-                    if (nodeTask.isContainer) {
-                      const canvasVisualNode = nodeTask.createVisualNode(
-                        canvasApp,
-                        node.x,
-                        node.y,
-                        node.id,
-                        undefined,
-                        undefined,
-                        node.width,
-                        node.height
-                      );
-
-                      if (node.elements && canvasVisualNode.nodeInfo) {
-                        node.elements.forEach((element) => {
-                          if (
-                            element.nodeType === NodeType.Shape &&
-                            element.nodeInfo?.type &&
-                            (nodeTask.childNodeTasks ?? []).indexOf(
-                              element.nodeInfo?.type
-                            ) > -1
-                          ) {
-                            const factory = getNodeTaskFactory(
-                              element.nodeInfo?.type
-                            );
-                            if (factory) {
-                              const childNodeTask = factory(canvasUpdated);
-
-                              childNodeTask.createVisualNode(
-                                canvasVisualNode.nodeInfo.canvasAppInstance,
-                                element.x,
-                                element.y,
-                                element.id,
-                                element.nodeInfo?.formValues ?? undefined,
-                                canvasVisualNode
-                              );
-                            }
-                          }
-                        });
-
-                        const info = nodeTask.getConnectionInfo?.();
-
-                        const elementList = Array.from(
-                          (canvasVisualNode.nodeInfo.canvasAppInstance
-                            .elements as ElementNodeMap<NodeInfo>) ?? []
-                        );
-                        node.elements.forEach((node) => {
-                          if (
-                            node.nodeType === NodeType.Connection &&
-                            canvasVisualNode.nodeInfo
-                          ) {
-                            let start:
-                              | IRectNodeComponent<NodeInfo>
-                              | undefined = undefined;
-                            let end: IRectNodeComponent<NodeInfo> | undefined =
-                              undefined;
-
-                            // undefined_input undefined_output
-                            if (node.startNodeId === 'undefined_input') {
-                              start = info?.inputs[0];
-                            } else if (node.startNodeId) {
-                              const startElement = elementList.find((e) => {
-                                const element = e[1] as IElementNode<NodeInfo>;
-                                return element.id === node.startNodeId;
-                              });
-                              if (startElement) {
-                                start =
-                                  startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                              }
-                            }
-
-                            if (node.endNodeId === 'undefined_output') {
-                              end = info?.outputs[0];
-                            } else if (node.endNodeId) {
-                              const endElement = elementList.find((e) => {
-                                const element = e[1] as IElementNode<NodeInfo>;
-                                return element.id === node.endNodeId;
-                              });
-                              if (endElement) {
-                                end =
-                                  endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                              }
-                            }
-                            let c1x = 0;
-                            let c1y = 0;
-                            let c2x = 0;
-                            let c2y = 0;
-
-                            if (
-                              node.controlPoints &&
-                              node.controlPoints.length > 0
-                            ) {
-                              c1x = node.controlPoints[0].x ?? 0;
-                              c1y = node.controlPoints[0].y ?? 0;
-                              c2x = node.controlPoints[1].x ?? 0;
-                              c2y = node.controlPoints[1].y ?? 0;
-                            }
-
-                            const curve =
-                              node.lineType === LineType.BezierCubic
-                                ? canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
-                                    start?.x ?? node.x ?? 0,
-                                    start?.y ?? node.y ?? 0,
-                                    end?.x ?? node.endX ?? 0,
-                                    end?.y ?? node.endY ?? 0,
-                                    c1x,
-                                    c1y,
-                                    c2x,
-                                    c2y,
-                                    false,
-                                    undefined,
-                                    node.id,
-                                    canvasVisualNode
-                                  )
-                                : canvasVisualNode.nodeInfo.canvasAppInstance.createQuadraticBezier(
-                                    start?.x ?? node.x ?? 0,
-                                    start?.y ?? node.y ?? 0,
-                                    end?.x ?? node.endX ?? 0,
-                                    end?.y ?? node.endY ?? 0,
-                                    c1x,
-                                    c1y,
-                                    false,
-                                    undefined,
-                                    node.id,
-                                    canvasVisualNode
-                                  );
-                            if (!curve.nodeComponent) {
-                              return;
-                            }
-                            curve.nodeComponent.isControlled = true;
-                            curve.nodeComponent.nodeInfo = {};
-
-                            if (start && curve.nodeComponent) {
-                              curve.nodeComponent.startNode = start;
-                              curve.nodeComponent.startNodeThumb =
-                                this.getThumbNodeByName(
-                                  node.startThumbName ?? '',
-                                  start
-                                );
-                            }
-
-                            if (end && curve.nodeComponent) {
-                              curve.nodeComponent.endNode = end;
-                              curve.nodeComponent.endNodeThumb =
-                                this.getThumbNodeByName(
-                                  node.endThumbName ?? '',
-                                  end
-                                );
-                            }
-                            if (start) {
-                              start.connections?.push(curve.nodeComponent);
-                            }
-                            if (end) {
-                              end.connections?.push(curve.nodeComponent);
-                            }
-                            if (curve.nodeComponent.update) {
-                              curve.nodeComponent.update();
-                            }
-                          }
-                        });
-                      }
-                    } else {
-                      nodeTask.createVisualNode(
-                        canvasApp,
-                        node.x,
-                        node.y,
-                        node.id,
-                        node.nodeInfo?.formValues ?? undefined
-                      );
-                    }
-                  }
-                }
-              }
-            });
-
-            const elementList = Array.from(canvasApp?.elements ?? []);
-
-            nodesList.forEach((node) => {
-              if (node.nodeType === NodeType.Connection) {
-                let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
-                let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
-                if (node.startNodeId) {
-                  const startElement = elementList.find((e) => {
-                    const element = e[1] as IElementNode<NodeInfo>;
-                    return element.id === node.startNodeId;
-                  });
-                  if (startElement) {
-                    start =
-                      startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                  }
-                }
-                if (node.endNodeId) {
-                  const endElement = elementList.find((e) => {
-                    const element = e[1] as IElementNode<NodeInfo>;
-                    return element.id === node.endNodeId;
-                  });
-                  if (endElement) {
-                    end =
-                      endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
-                  }
-                }
-                let c1x = 0;
-                let c1y = 0;
-                let c2x = 0;
-                let c2y = 0;
-
-                if (node.controlPoints && node.controlPoints.length > 0) {
-                  c1x = node.controlPoints[0].x ?? 0;
-                  c1y = node.controlPoints[0].y ?? 0;
-                  c2x = node.controlPoints[1].x ?? 0;
-                  c2y = node.controlPoints[1].y ?? 0;
-                }
-
-                const curve =
-                  node.lineType === 'BezierCubic'
-                    ? canvasApp.createCubicBezier(
-                        start?.x ?? node.x ?? 0,
-                        start?.y ?? node.y ?? 0,
-                        end?.x ?? node.endX ?? 0,
-                        end?.y ?? node.endY ?? 0,
-                        c1x,
-                        c1y,
-                        c2x,
-                        c2y,
-                        false,
-                        undefined,
-                        node.id
-                      )
-                    : canvasApp.createQuadraticBezier(
-                        start?.x ?? node.x ?? 0,
-                        start?.y ?? node.y ?? 0,
-                        end?.x ?? node.endX ?? 0,
-                        end?.y ?? node.endY ?? 0,
-                        c1x,
-                        c1y,
-                        false,
-                        undefined,
-                        node.id
-                      );
-
-                if (!curve.nodeComponent) {
-                  return;
-                }
-                curve.nodeComponent.isControlled = true;
-                curve.nodeComponent.nodeInfo = {};
-
-                if (start && curve.nodeComponent) {
-                  curve.nodeComponent.startNode = start;
-                  curve.nodeComponent.startNodeThumb = this.getThumbNodeByName(
-                    node.startThumbName ?? '',
-                    start
-                  );
-                  if (curve.nodeComponent.startNodeThumb?.isDataPort) {
-                    curve.nodeComponent.isData = true;
-                  }
-                }
-
-                if (end && curve.nodeComponent) {
-                  curve.nodeComponent.endNode = end;
-                  curve.nodeComponent.endNodeThumb = this.getThumbNodeByName(
-                    node.endThumbName ?? '',
-                    end
-                  );
-                  if (curve.nodeComponent.endNodeThumb?.isDataPort) {
-                    curve.nodeComponent.isData = true;
-                  }
-                }
-                if (start) {
-                  start.connections?.push(curve.nodeComponent);
-                }
-                if (end) {
-                  end.connections?.push(curve.nodeComponent);
-                }
-                if (curve.nodeComponent.update) {
-                  curve.nodeComponent.update();
-                }
-              }
-            });
+            importToCanvas(flow, canvasApp, canvasUpdated);
             canvasApp.centerCamera();
             initializeNodes();
             this.restoring = false;
@@ -1065,68 +785,6 @@ export class AppElement extends HTMLElement {
     //   'Add rect'
     // );
 
-    const cleanupNodeInfoForSerializing = (nodeInfo: NodeInfo) => {
-      const nodeInfoCopy: any = {};
-      for (const key in nodeInfo) {
-        if (
-          typeof nodeInfo[key] !== 'function' &&
-          key !== 'formElements' &&
-          key !== 'canvasAppInstance'
-        ) {
-          nodeInfoCopy[key] = nodeInfo[key];
-        }
-      }
-      return nodeInfoCopy;
-    };
-
-    const serializeElementsMap = (
-      elements: ElementNodeMap<NodeInfo>,
-      parent?: any
-    ) => {
-      const nodesList = Array.from(elements, function (entry) {
-        const obj = entry[1] as INodeComponent<NodeInfo>;
-        if (obj.nodeType === NodeType.Connection) {
-          const connection =
-            obj as unknown as IConnectionNodeComponent<NodeInfo>;
-          return {
-            id: connection.id,
-            x: connection.x,
-            y: connection.y,
-            endX: connection.endX,
-            endY: connection.endY,
-            startNodeId: connection.startNode?.id,
-            endNodeId: connection.endNode?.id,
-            startThumbName: connection.startNodeThumb?.thumbName,
-            endThumbName: connection.endNodeThumb?.thumbName,
-            lineType: connection.lineType,
-            nodeType: obj.nodeType,
-            nodeInfo: cleanupNodeInfoForSerializing(connection.nodeInfo),
-          };
-        }
-
-        let elements: any = undefined;
-        if (obj.nodeInfo && obj.nodeInfo.canvasAppInstance) {
-          elements = serializeElementsMap(
-            obj.nodeInfo.canvasAppInstance.elements,
-            obj
-          );
-
-          console.log('SUB ELEMENTS FOUND ', elements);
-        }
-        return {
-          id: obj.id,
-          x: obj.x,
-          y: obj.y,
-          width: obj.width,
-          height: obj.height,
-          nodeType: obj.nodeType,
-          elements,
-          nodeInfo: cleanupNodeInfoForSerializing(obj.nodeInfo),
-        };
-      });
-      return nodesList;
-    };
-
     const serializeFlow = () => {
       return serializeElementsMap(canvasApp.elements);
     };
@@ -1255,18 +913,6 @@ export class AppElement extends HTMLElement {
       }
     };
     setupTasksInDropdown();
-
-    //menubarElement.domElement.appendChild(
-    NavbarComponents({
-      selectNodeType: selectNodeType.domElement as HTMLSelectElement,
-      animatePath: animatePath,
-      animatePathFromThumb: animatePathFromThumb,
-      canvasUpdated: canvasUpdated,
-      canvasApp: this.canvasApp,
-      removeElement: this.removeElement,
-      rootElement: menubarElement.domElement as HTMLElement,
-    }) as unknown as HTMLElement;
-    //);
 
     // createElement(
     //   'button',

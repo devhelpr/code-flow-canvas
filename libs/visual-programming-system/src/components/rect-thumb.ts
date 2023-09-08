@@ -97,8 +97,17 @@ export class RectThumb<T> extends Rect<T> {
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
-        parentX = this.containerNode.x - paddingRect;
-        parentY = this.containerNode.y - paddingRect;
+        if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+          const parentCoordinates =
+            this.containerNode?.getParentedCoordinates() ?? {
+              x: 0,
+              y: 0,
+            };
+          // parentX = this.containerNode.x - paddingRect;
+          // parentY = this.containerNode.y - paddingRect;
+          parentX = parentCoordinates.x - paddingRect;
+          parentY = parentCoordinates.y - paddingRect;
+        }
       }
       let { x, y } = transformCameraSpaceToWorldSpace(
         event.clientX,
@@ -185,8 +194,17 @@ export class RectThumb<T> extends Rect<T> {
     let parentX = 0;
     let parentY = 0;
     if (this.containerNode) {
-      parentX = this.containerNode.x - paddingRect;
-      parentY = this.containerNode.y - paddingRect;
+      if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+        const parentCoordinates =
+          this.containerNode?.getParentedCoordinates() ?? {
+            x: 0,
+            y: 0,
+          };
+        // parentX = this.containerNode.x - paddingRect;
+        // parentY = this.containerNode.y - paddingRect;
+        parentX = parentCoordinates.x - paddingRect;
+        parentY = parentCoordinates.y - paddingRect;
+      }
     }
 
     const interactionInfoResult = pointerDown(
