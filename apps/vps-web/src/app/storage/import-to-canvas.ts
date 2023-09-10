@@ -63,8 +63,8 @@ export const importToCanvas = (
                       element.id,
                       element.nodeInfo?.formValues ?? undefined,
                       canvasVisualNode,
-                      undefined,
-                      undefined,
+                      element.width,
+                      element.height,
                       nestedLevel ? nestedLevel + 1 : 0
                     );
 

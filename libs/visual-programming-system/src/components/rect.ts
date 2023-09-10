@@ -800,7 +800,7 @@ export class Rect<T> {
           initiator.containerNode &&
           initiator.containerNode.id === target.id
         ) {
-          // a node within this container was updated
+          // a node within this container was updated (resize!)
           if (
             initiator.x > 0 &&
             (initiator.width ?? 0) + initiator.x > this.points.width
