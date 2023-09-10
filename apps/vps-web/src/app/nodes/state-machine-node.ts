@@ -217,7 +217,8 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       initalValue?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>,
       width?: number,
-      height?: number
+      height?: number,
+      nestedLevel?: number
     ) => {
       htmlNode = createElement(
         'div',
@@ -228,13 +229,15 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         ''
       ) as unknown as INodeComponent<NodeInfo>;
 
+      let background = 'bg-slate-500';
+      if ((nestedLevel ?? 0) % 2 === 0) {
+        background = 'bg-slate-600';
+      }
       const wrapper = createElement(
         'div',
         {
-          class: ` rounded opacity-90 ${
-            containerNode
-              ? 'bg-slate-500 border border-white sepia-0'
-              : 'bg-slate-400'
+          class: ` rounded ${
+            containerNode ? background + ' border border-white' : 'bg-slate-400'
           }`,
         },
         undefined,
@@ -291,6 +294,19 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
 
+      rect.nodeComponent.nestedLevel = nestedLevel ?? 0;
+
+      if ((nestedLevel ?? 0) > 0) {
+        createElement(
+          'div',
+          {
+            class: `bg-black text-white absolute top-0 left-0 w-full px-4 py-2 z-[1050]`,
+          },
+          rect.nodeComponent.domElement as unknown as HTMLElement,
+          `State Machine ${nestedLevel ?? 0}`
+        ) as unknown as INodeComponent<NodeInfo>;
+      }
+
       if (htmlNode.domElement) {
         canvasAppInstance = createCanvasApp<NodeInfo>(
           htmlNode.domElement as HTMLElement,
@@ -328,7 +344,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           ],
           '',
           {
-            classNames: `pointer-events-auto`,
+            classNames: `pointer-events-auto z-[1150]`,
           },
           true,
           false,
@@ -367,7 +383,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           ],
           '',
           {
-            classNames: `pointer-events-auto`,
+            classNames: `pointer-events-auto z-[1150]`,
           },
           true,
           false,

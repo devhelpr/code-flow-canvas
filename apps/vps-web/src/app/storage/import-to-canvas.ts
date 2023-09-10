@@ -17,8 +17,10 @@ export const importToCanvas = (
   nodesList: FlowNode<NodeInfo>[],
   canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
   canvasUpdated: () => void,
-  containerNode?: IRectNodeComponent<NodeInfo>
+  containerNode?: IRectNodeComponent<NodeInfo>,
+  nestedLevel?: number
 ) => {
+  console.log('importToCanvas', nestedLevel);
   //   console.log('flow', flow);
   //   const nodesList = flow.flows.flow.nodes;
   nodesList.forEach((node) => {
@@ -37,7 +39,8 @@ export const importToCanvas = (
               undefined,
               containerNode,
               node.width,
-              node.height
+              node.height,
+              nestedLevel ?? 0
             );
 
             if (node.elements && canvasVisualNode.nodeInfo) {
@@ -59,7 +62,10 @@ export const importToCanvas = (
                       element.y,
                       element.id,
                       element.nodeInfo?.formValues ?? undefined,
-                      canvasVisualNode
+                      canvasVisualNode,
+                      undefined,
+                      undefined,
+                      nestedLevel ? nestedLevel + 1 : 0
                     );
 
                     // TODO if childNodeTask.isContainer .. call importToCanvas again...
@@ -72,7 +78,8 @@ export const importToCanvas = (
                         element.elements as unknown as FlowNode<NodeInfo>[],
                         child.nodeInfo.canvasAppInstance,
                         canvasUpdated,
-                        child
+                        child,
+                        nestedLevel ? nestedLevel + 2 : 1
                       );
                     }
                   }
@@ -202,7 +209,10 @@ export const importToCanvas = (
               node.y,
               node.id,
               node.nodeInfo?.formValues ?? undefined,
-              containerNode
+              containerNode,
+              undefined,
+              undefined,
+              nestedLevel
             );
           }
         }

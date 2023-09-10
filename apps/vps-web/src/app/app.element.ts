@@ -401,7 +401,13 @@ export class AppElement extends HTMLElement {
         storageProvider
           .getFlow('1234')
           .then((flow) => {
-            importToCanvas(flow.flows.flow.nodes, canvasApp, canvasUpdated);
+            importToCanvas(
+              flow.flows.flow.nodes,
+              canvasApp,
+              canvasUpdated,
+              undefined,
+              0
+            );
             canvasApp.centerCamera();
             initializeNodes();
             this.restoring = false;

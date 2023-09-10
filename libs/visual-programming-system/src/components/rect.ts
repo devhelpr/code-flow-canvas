@@ -209,7 +209,7 @@ export class Rect<T> {
           y,
           undefined,
           NodeType.Connector,
-          `top-0 left-0 origin-center ${
+          `top-0 left-0 origin-center z-[1150]  ${thumb.class ?? ''} ${
             thumb.hidden ? 'invisible pointer-events-none' : ''
           }`,
           undefined,

@@ -21,7 +21,8 @@ export type NodeTask<T> = {
     initalValues?: InitialValues,
     containerNode?: IRectNodeComponent<T>,
     width?: number,
-    height?: number
+    height?: number,
+    nestedLevel?: number
   ) => IRectNodeComponent<T>;
   getConnectionInfo?: () => {
     inputs: IRectNodeComponent<T>[];

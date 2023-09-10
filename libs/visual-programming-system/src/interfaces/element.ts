@@ -32,6 +32,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
 
   thumbConnectors?: IThumbNodeComponent<T>[];
   containerNode?: IRectNodeComponent<T>;
+  nestedLevel?: number;
+
   getParentedCoordinates?: () => { x: number; y: number };
   update?: (
     target?: INodeComponent<T>,
@@ -153,4 +155,5 @@ export type IThumb = {
   thumbShape?: 'circle' | 'diamond';
   isDataPort?: boolean;
   maxConnections?: number;
+  class?: string;
 };

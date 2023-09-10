@@ -176,7 +176,10 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
               50,
               undefined,
               undefined,
-              node as IRectNodeComponent<NodeInfo>
+              node as IRectNodeComponent<NodeInfo>,
+              undefined,
+              undefined,
+              (node.nestedLevel ?? 0) + 1
             );
 
             return;
@@ -314,7 +317,9 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
             importToCanvas(
               data.flows.flow.nodes,
               this.props.canvasApp,
-              this.props.canvasUpdated
+              this.props.canvasUpdated,
+              undefined,
+              0
             );
             this.props.canvasApp.centerCamera();
             this.props.initializeNodes();
