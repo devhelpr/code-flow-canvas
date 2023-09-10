@@ -36,7 +36,7 @@ export const importToCanvas = (
               node.x,
               node.y,
               node.id,
-              undefined,
+              node.nodeInfo?.formValues ?? undefined,
               containerNode,
               node.width,
               node.height,
@@ -65,7 +65,7 @@ export const importToCanvas = (
                       canvasVisualNode,
                       element.width,
                       element.height,
-                      nestedLevel ? nestedLevel + 1 : 0
+                      nestedLevel ? nestedLevel + 1 : 1
                     );
 
                     // TODO if childNodeTask.isContainer .. call importToCanvas again...
@@ -79,7 +79,7 @@ export const importToCanvas = (
                         child.nodeInfo.canvasAppInstance,
                         canvasUpdated,
                         child,
-                        nestedLevel ? nestedLevel + 2 : 1
+                        nestedLevel ? nestedLevel + 2 : 2
                       );
                     }
                   }

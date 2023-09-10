@@ -17,7 +17,6 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { stat } from 'fs';
 
 export interface Transition {
   name: string;
@@ -125,6 +124,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let stateMachine: StateMachine | undefined = undefined;
+  let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
   let currentValue = 0;
   const initializeCompute = () => {
@@ -214,12 +214,36 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: InitialValues,
+      initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>,
       width?: number,
       height?: number,
       nestedLevel?: number
     ) => {
+      const initialValue = initalValues?.['caption'] ?? 'State';
+      const formElements = [
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'caption',
+          value: initialValue ?? '',
+          onChange: (value: string) => {
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              caption: value,
+            };
+            if (captionNodeComponent) {
+              captionNodeComponent.domElement.textContent =
+                node.nodeInfo.formValues['caption'] ?? 'State';
+            }
+
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+      ];
+
       htmlNode = createElement(
         'div',
         {
@@ -280,9 +304,12 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         undefined,
         id,
         {
-          FormElements: [],
+          formElements: nestedLevel === 0 ? [] : formElements,
           type: 'state-machine',
           taskType: 'state-machine',
+          formValues: {
+            caption: initialValue ?? '',
+          },
         },
         containerNode
       );
@@ -297,13 +324,13 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       rect.nodeComponent.nestedLevel = nestedLevel ?? 0;
 
       if ((nestedLevel ?? 0) > 0) {
-        createElement(
+        captionNodeComponent = createElement(
           'div',
           {
             class: `bg-black text-white absolute top-0 left-0 w-full px-4 py-2 z-[1050]`,
           },
           rect.nodeComponent.domElement as unknown as HTMLElement,
-          `State Machine ${nestedLevel ?? 0}`
+          `${initialValue} (${nestedLevel ?? 0})`
         ) as unknown as INodeComponent<NodeInfo>;
       }
 
@@ -417,6 +444,9 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
+      if (nestedLevel ?? 0 > 0) {
+        rect.nodeComponent.nodeInfo.formElements = formElements;
+      }
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.canvasAppInstance = canvasAppInstance;
