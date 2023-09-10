@@ -17,103 +17,9 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { StateMachine, createStateMachine } from './state-machine-node';
 
-export interface Transition {
-  name: string;
-  from: string;
-  to: string;
-  nodeComponent: IRectNodeComponent<NodeInfo>;
-}
-export interface State {
-  id: string;
-  name: string;
-  transitions: Transition[];
-  isFinal: boolean;
-  nodeComponent: IRectNodeComponent<NodeInfo>;
-}
-
-export interface StateMachine {
-  states: State[];
-  initialState: State | undefined;
-  currentState?: State;
-}
-
-export const createStateMachine = (
-  canvasAppInstance: CanvasAppInstance,
-  visitedStates: string[] = []
-): StateMachine => {
-  let initialState: State | undefined = undefined;
-  const states: State[] = [];
-  const nodeList = Array.from(canvasAppInstance?.elements);
-  const stateNodes = nodeList
-    .filter(
-      (n) =>
-        (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type === 'state'
-    )
-    .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
-  const transitions = nodeList
-    .filter(
-      (n) =>
-        (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type ===
-        'state-transition'
-    )
-    .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
-  stateNodes.forEach((stateNode) => {
-    const state: State = {
-      name: stateNode.nodeInfo?.formValues?.caption ?? '',
-      id: stateNode.id ?? '',
-      transitions: [],
-      isFinal: false,
-      nodeComponent: stateNode as unknown as IRectNodeComponent<NodeInfo>,
-    };
-    stateNode.connections?.forEach((connection) => {
-      if (connection.startNode && connection.startNode.id === stateNode.id) {
-        if (
-          connection.endNode &&
-          connection.endNode.nodeInfo?.type === 'state-transition'
-        ) {
-          // TODO : get connections from endNode to next state
-          // TODO : support for max limit connections on thumbs (transition should have max 1 output and 1 input)
-          const nextStates = connection.endNode.connections?.filter(
-            (c) =>
-              c.startNode &&
-              c.startNode?.id === connection.endNode?.id &&
-              c.endNode &&
-              c.endNode?.nodeInfo?.type === 'state'
-          );
-          if (
-            connection.endNode &&
-            nextStates &&
-            nextStates.length >= 1 &&
-            nextStates[0].endNode
-          ) {
-            const transition: Transition = {
-              name: connection.endNode.nodeInfo?.formValues?.caption ?? '',
-              from: stateNode.id,
-              to: nextStates[0].endNode.id,
-              nodeComponent:
-                connection.endNode as unknown as IRectNodeComponent<NodeInfo>,
-            };
-            state.transitions.push(transition);
-            if (visitedStates.indexOf(nextStates[0].endNode.id) < 0) {
-              const { states: statesList } = createStateMachine(
-                canvasAppInstance,
-                [...visitedStates, nextStates[0].endNode.id]
-              );
-              states.push(...statesList);
-            }
-          }
-        }
-      }
-    });
-    states.push(state);
-
-    initialState = states[0] ?? undefined;
-  });
-  return { states, initialState, currentState: initialState };
-};
-
-export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
+export const createStateCompound: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -121,8 +27,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
   let canvasAppInstance: CanvasAppInstance | undefined = undefined;
-  let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
-  let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
+
   let stateMachine: StateMachine | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
@@ -199,20 +104,16 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   };
 
   return {
-    name: 'state-machine',
+    name: 'state-compound',
     family: 'flow-canvas',
     isContainer: true,
-    childNodeTasks: [
-      'state',
-      'state-transition',
-      'state-machine',
-      'state-compound',
-    ],
+    childNodeTasks: ['state', 'state-transition', 'state-compound'],
     getConnectionInfo: () => {
-      if (!input || !output) {
-        return { inputs: [], outputs: [] };
-      }
-      return { inputs: [input], outputs: [output] };
+      return { inputs: [], outputs: [] };
+      // if (!input || !output) {
+      //   return { inputs: [], outputs: [] };
+      // }
+      // return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
       canvasApp: canvasAppReturnType,
@@ -273,7 +174,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         htmlNode.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
-      rect = canvasApp.createRect(
+      rect = canvasApp.createRectThumb(
         x,
         y,
         width ?? 600,
@@ -281,23 +182,14 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorRight,
+            thumbType: ThumbType.Center,
             thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            name: 'output',
-            label: nestedLevel ?? 0 > 0 ? ' ' : '#',
-            thumbConstraint: nestedLevel ?? 0 > 0 ? 'transition' : 'value',
+            connectionType: ThumbConnectionType.startOrEnd,
             color: 'white',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            name: 'input',
-            label: nestedLevel ?? 0 > 0 ? ' ' : '#',
-            thumbConstraint: nestedLevel ?? 0 > 0 ? 'transition' : 'value',
-            color: 'white',
-            maxConnections: -1,
+            label: '#',
+            thumbConstraint: 'transition',
+            name: 'state',
+            hidden: true,
           },
         ],
         wrapper,
@@ -310,8 +202,8 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         id,
         {
           formElements: nestedLevel === 0 ? [] : formElements,
-          type: 'state-machine',
-          taskType: 'state-machine',
+          type: 'state-compound',
+          taskType: 'state-compound',
           formValues: {
             caption: initialValue ?? '',
           },
@@ -348,85 +240,6 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           canvasApp.interactionStateMachine
         );
 
-        const inputInstance = canvasAppInstance.createRect(
-          -1,
-          0,
-          1,
-          1,
-          undefined,
-          [
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              //hidden: true,
-              thumbConstraint: 'value',
-              color: 'white',
-              label: '#',
-            },
-            {
-              thumbType: ThumbType.EndConnectorLeft,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              thumbConstraint: 'value',
-              color: 'white',
-              label: '#',
-              hidden: true,
-            },
-          ],
-          '',
-          {
-            classNames: `pointer-events-auto z-[1150]`,
-          },
-          true,
-          false,
-          undefined,
-          id + '_input',
-          undefined,
-          rect.nodeComponent,
-          true
-        );
-        input = inputInstance.nodeComponent;
-
-        const outputInstance = canvasAppInstance.createRect(
-          600,
-          0,
-          1,
-          1,
-          undefined,
-          [
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              hidden: true,
-              thumbConstraint: 'value',
-              color: 'white',
-              label: '#',
-            },
-            {
-              thumbType: ThumbType.EndConnectorLeft,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              thumbConstraint: 'value',
-              color: 'white',
-              label: '#',
-            },
-          ],
-          '',
-          {
-            classNames: `pointer-events-auto z-[1150]`,
-          },
-          true,
-          false,
-          undefined,
-          id + '_output',
-          undefined,
-          rect.nodeComponent,
-          true
-        );
-        output = outputInstance.nodeComponent;
-
         canvasAppInstance.setOnCanvasUpdated(() => {
           updated?.();
           stateMachine = undefined;
@@ -434,12 +247,12 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
 
         rect.addUpdateEventListener((target, x, y, initiator) => {
           if (target) {
-            outputInstance.nodeComponent?.update?.(
-              outputInstance.nodeComponent,
-              target?.width,
-              0,
-              rect?.nodeComponent
-            );
+            // outputInstance.nodeComponent?.update?.(
+            //   outputInstance.nodeComponent,
+            //   target?.width,
+            //   0,
+            //   rect?.nodeComponent
+            // );
           }
         });
 
