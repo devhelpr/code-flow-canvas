@@ -1460,6 +1460,9 @@ export class AppElement extends HTMLElement {
         if (node) {
           node.domElement.classList.remove('selected');
         }
+        document.querySelectorAll('.selected').forEach((element) => {
+          element.classList.remove('selected');
+        });
       }
 
       removeFormElement();
