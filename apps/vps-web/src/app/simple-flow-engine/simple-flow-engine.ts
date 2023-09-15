@@ -81,9 +81,10 @@ export interface RunNodeResult<T> {
   connection?: IConnectionNodeComponent<T>;
 }
 
-export const runNode = <T>(
+const triggerExecution = <T>(
   node: IRectNodeComponent<T>,
   canvasApp: CanvasAppInstance,
+  result: any,
   animatePath: (
     node: IRectNodeComponent<T>,
     color: string,
@@ -109,43 +110,16 @@ export const runNode = <T>(
     _singleStep?: boolean,
     followThumb?: string
   ) => void,
-  onStopped?: (
-    input: string | any[],
-    pathExecution?: RunNodeResult<T>[]
-  ) => void,
-  input?: string,
+  onStopped:
+    | undefined
+    | ((input: string | any[], pathExecution?: RunNodeResult<T>[]) => void),
+  followPath: string | undefined,
   pathExecution?: RunNodeResult<T>[],
+  input?: string,
+  previousOutput?: any,
   offsetX?: number,
   offsetY?: number
 ) => {
-  const payload = getVariablePayload<T>(node, canvasApp);
-
-  const formInfo = node.nodeInfo as unknown as any;
-  let result: any = false;
-  let followPath: string | undefined = undefined;
-  let previousOutput: any = undefined;
-  if (formInfo && formInfo?.compute) {
-    const computeResult = formInfo.compute(
-      input ?? '',
-      pathExecution,
-      undefined,
-      payload
-    );
-
-    sendData(node, canvasApp, computeResult.result);
-    result = computeResult.result;
-    followPath = computeResult.followPath;
-    previousOutput = computeResult.previousOutput;
-    if (computeResult.stop) {
-      if (onStopped) {
-        onStopped('');
-      }
-      return;
-    }
-  } else {
-    result = false;
-    followPath = undefined;
-  }
   if (result !== undefined) {
     if (pathExecution) {
       pathExecution.push({
@@ -283,6 +257,114 @@ export const runNode = <T>(
     );
   } else {
     console.log('expression result', result);
+  }
+};
+export const runNode = <T>(
+  node: IRectNodeComponent<T>,
+  canvasApp: CanvasAppInstance,
+  animatePath: (
+    node: IRectNodeComponent<T>,
+    color: string,
+    onNextNode?: (
+      nodeId: string,
+      node: IRectNodeComponent<T>,
+      input: string | any[]
+    ) =>
+      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | Promise<{
+          result: boolean;
+          output: string | any[];
+          followPathByName?: string;
+          followThumb?: string;
+        }>,
+    onStopped?: (input: string | any[]) => void,
+    input?: string | any[],
+    followPathByName?: string,
+    animatedNodes?: undefined,
+    offsetX?: number,
+    offsetY?: number,
+    _followPathToEndThumb?: boolean,
+    _singleStep?: boolean,
+    followThumb?: string
+  ) => void,
+  onStopped?: (
+    input: string | any[],
+    pathExecution?: RunNodeResult<T>[]
+  ) => void,
+  input?: string,
+  pathExecution?: RunNodeResult<T>[],
+  offsetX?: number,
+  offsetY?: number
+) => {
+  const payload = getVariablePayload<T>(node, canvasApp);
+
+  const formInfo = node.nodeInfo as unknown as any;
+  let result: any = false;
+  let followPath: string | undefined = undefined;
+  let previousOutput: any = undefined;
+
+  if (formInfo && formInfo?.computeAsync) {
+    formInfo
+      .computeAsync(input ?? '', pathExecution, undefined, payload)
+      .then((computeResult: any) => {
+        sendData(node, canvasApp, computeResult.result);
+        result = computeResult.result;
+        followPath = computeResult.followPath;
+        previousOutput = computeResult.previousOutput;
+        if (computeResult.stop) {
+          if (onStopped) {
+            onStopped('');
+          }
+          return;
+        }
+        triggerExecution(
+          node,
+          canvasApp,
+          result,
+          animatePath,
+          onStopped,
+          followPath,
+          pathExecution,
+          input,
+          previousOutput,
+          offsetX,
+          offsetY
+        );
+      });
+  } else if (formInfo && formInfo?.compute) {
+    const computeResult = formInfo.compute(
+      input ?? '',
+      pathExecution,
+      undefined,
+      payload
+    );
+
+    sendData(node, canvasApp, computeResult.result);
+    result = computeResult.result;
+    followPath = computeResult.followPath;
+    previousOutput = computeResult.previousOutput;
+    if (computeResult.stop) {
+      if (onStopped) {
+        onStopped('');
+      }
+      return;
+    }
+    triggerExecution(
+      node,
+      canvasApp,
+      result,
+      animatePath,
+      onStopped,
+      followPath,
+      pathExecution,
+      input,
+      previousOutput,
+      offsetX,
+      offsetY
+    );
+  } else {
+    result = false;
+    followPath = undefined;
   }
 };
 export const run = <T>(

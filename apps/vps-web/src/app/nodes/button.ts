@@ -102,11 +102,15 @@ export const getButton =
               event.stopPropagation();
               triggerButton = true;
               runNode<NodeInfo>(
-                node,
-                canvasApp,
+                containerNode ?? node,
+                containerNode
+                  ? (containerNode.nodeInfo as any)?.canvasAppInstance
+                  : canvasApp,
                 animatePath,
                 undefined,
-                currentValue.toString(),
+                containerNode
+                  ? node.nodeInfo.formValues['caption'] || 'Button'
+                  : currentValue.toString(),
                 []
               );
               return false;
@@ -121,24 +125,27 @@ export const getButton =
           200,
           100,
           undefined,
-          [
-            {
-              thumbType: ThumbType.StartConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: '',
-              //thumbConstraint: 'value',
-            },
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              color: 'white',
-              label: ' ',
-              //thumbConstraint: 'value',
-            },
-          ],
+
+          containerNode
+            ? []
+            : [
+                {
+                  thumbType: ThumbType.StartConnectorCenter,
+                  thumbIndex: 0,
+                  connectionType: ThumbConnectionType.start,
+                  color: 'white',
+                  label: '',
+                  //thumbConstraint: 'value',
+                },
+                {
+                  thumbType: ThumbType.EndConnectorCenter,
+                  thumbIndex: 0,
+                  connectionType: ThumbConnectionType.end,
+                  color: 'white',
+                  label: ' ',
+                  //thumbConstraint: 'value',
+                },
+              ],
           componentWrapper,
           {
             classNames: `bg-sky-900 p-4 rounded`,

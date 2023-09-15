@@ -1711,3 +1711,14 @@ setCount(3);
   setCount(getCount() + 1);
 }, 1000);
 */
+
+(function () {
+  const hello = 'world';
+  // the below doesn't work .. "new Function" doesn't allow access to the local scope
+  //const test = new Function('payload', 'return hello;');
+  //console.log(test({ test: 1 }));
+  eval('console.log(hello);');
+
+  const test = new Function('hello', 'return hello;');
+  console.log(test('hello world'));
+})();

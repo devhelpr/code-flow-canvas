@@ -27,6 +27,7 @@ import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
 import { getSequential } from '../nodes/sequential';
 import { createStateCompound } from '../nodes/state-compound';
 import { getStyledNode } from '../nodes/styled-node';
+import { getLayoutNode } from '../nodes/layout-node';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -59,6 +60,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('state-transition', getStateTransition);
   registerNodeFactory('fetch', getFetch);
   registerNodeFactory('canvas-node', getCanvasNode(animatePath));
+  registerNodeFactory('layout-node', getLayoutNode(animatePath));
   registerNodeFactory('state-machine', createStateMachineNode);
   registerNodeFactory('state-compound', createStateCompound);
   registerNodeFactory('variable', getVariable);
