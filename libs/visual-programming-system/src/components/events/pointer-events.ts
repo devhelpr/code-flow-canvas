@@ -3,7 +3,11 @@ import {
   InteractionEvent,
   InteractionStateMachine,
 } from '../../interaction-state-machine';
-import { DOMElementNode, INodeComponent } from '../../interfaces/element';
+import {
+  DOMElementNode,
+  IElementNode,
+  INodeComponent,
+} from '../../interfaces/element';
 import { IPointerDownResult } from '../../interfaces/pointers';
 import { NodeType } from '../../types';
 
@@ -11,7 +15,7 @@ export const pointerDown = <T>(
   x: number,
   y: number,
   element: INodeComponent<T>,
-  canvasElement: DOMElementNode,
+  canvasNode: IElementNode<T>,
   interactionStateMachine: InteractionStateMachine<T>
 ): IPointerDownResult | false => {
   let xOffsetWithinElementOnFirstClick = 0;
@@ -32,7 +36,9 @@ export const pointerDown = <T>(
           yOffsetWithinElementOnFirstClick: y,
         },
       },
-      element
+      element,
+      undefined,
+      canvasNode
     )
   ) {
     xOffsetWithinElementOnFirstClick = x;
@@ -41,7 +47,7 @@ export const pointerDown = <T>(
       element?.nodeType !== NodeType.Connection &&
       element?.nodeType !== NodeType.Shape
     ) {
-      (canvasElement as unknown as HTMLElement | SVGElement).append(
+      (canvasNode?.domElement as unknown as HTMLElement | SVGElement).append(
         element.domElement
       );
     }
@@ -73,7 +79,7 @@ export const pointerMove = <T>(
   x: number,
   y: number,
   element: INodeComponent<T>,
-  _canvasElement: DOMElementNode,
+  _canvasElement: IElementNode<T>,
   interactionInfo: IPointerDownResult,
   interactionStateMachine: InteractionStateMachine<T>
 ) => {
@@ -115,7 +121,7 @@ export const pointerUp = <T>(
   x: number,
   y: number,
   element: INodeComponent<T>,
-  _canvasElement: DOMElementNode,
+  _canvasElement: IElementNode<T>,
   interactionInfo: IPointerDownResult,
   interactionStateMachine: InteractionStateMachine<T>
 ) => {

@@ -66,6 +66,7 @@ export class Connection<T> {
   pathElement: IElementNode<T> | undefined = undefined;
   pathTransparentElement: IElementNode<T> | undefined = undefined;
   svgParent: IElementNode<T> | undefined = undefined;
+  canvas: IElementNode<T> | undefined;
   canvasElement: DOMElementNode;
   interactionStateMachine: InteractionStateMachine<T>;
 
@@ -74,7 +75,7 @@ export class Connection<T> {
   containerNode?: INodeComponent<T>;
 
   constructor(
-    canvasElement: DOMElementNode,
+    canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -105,7 +106,8 @@ export class Connection<T> {
     this.onCalculateControlPoints = onCalculateControlPoints;
     this.isQuadratic = isQuadratic;
     this.pathHiddenElement = pathHiddenElement;
-    this.canvasElement = canvasElement;
+    this.canvas = canvas;
+    this.canvasElement = canvas.domElement;
     this.interactionStateMachine = interactionStateMachine;
     this.containerNode = containerNode;
 
@@ -128,9 +130,9 @@ export class Connection<T> {
         height: 0,
         class: 'absolute top-0 left-0 pointer-events-none', //pointer-events-bounding-box',
       },
-      canvasElement
+      this.canvasElement
     );
-    (canvasElement as unknown as HTMLElement).prepend(
+    (this.canvasElement as unknown as HTMLElement).prepend(
       this.svgParent.domElement
     );
 
@@ -373,7 +375,7 @@ export class Connection<T> {
         x - rect.x - (this.points.beginX - bbox.x - paddingRect) + parentX,
         y - rect.y - (this.points.beginY - bbox.y - paddingRect) + parentY,
         this.nodeComponent,
-        this.canvasElement,
+        this.canvas as IElementNode<T>,
         this.interactionStateMachine
       );
       this.interactionInfo = interactionInfoResult;
@@ -600,7 +602,7 @@ export class Connection<T> {
         const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 4;
         const height =
           (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 4;
-
+        console.log('AABB to end', width, height);
         const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
           { x: x1, y: y1 },
           { x: cx, y: cy },

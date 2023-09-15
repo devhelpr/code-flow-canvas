@@ -36,15 +36,15 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
     stateMachine = undefined;
     currentValue = 0;
 
-    if (canvasAppInstance?.elements && !stateMachine) {
-      stateMachine = undefined;
-      stateMachine = createStateMachine(canvasAppInstance);
-      if (stateMachine && stateMachine.currentState) {
-        (
-          stateMachine.currentState.nodeComponent.domElement as HTMLElement
-        )?.classList.add('state-active');
-      }
-    }
+    // if (canvasAppInstance?.elements && !stateMachine) {
+    //   stateMachine = undefined;
+    //   stateMachine = createStateMachine(canvasAppInstance);
+    //   if (stateMachine && stateMachine.currentState) {
+    //     (
+    //       stateMachine.currentState.nodeComponent.domElement as HTMLElement
+    //     )?.classList.add('state-active');
+    //   }
+    // }
     return;
   };
   const compute = (
@@ -52,50 +52,50 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number
   ) => {
-    if (!stateMachine && canvasAppInstance) {
-      stateMachine = createStateMachine(canvasAppInstance);
-      if (stateMachine && stateMachine.currentState) {
-        (
-          stateMachine.currentState.nodeComponent.domElement as HTMLElement
-        )?.classList.add('state-active');
-      }
-    }
-    if (stateMachine) {
-      if (stateMachine.currentState) {
-        console.log(
-          'stateMachine.currentState',
-          stateMachine.currentState,
-          input
-        );
-        if (stateMachine.currentState.transitions.length > 0) {
-          const transition = stateMachine.currentState.transitions.find(
-            (transition) => transition.name === input
-          );
-          if (transition) {
-            (
-              stateMachine.currentState.nodeComponent.domElement as HTMLElement
-            )?.classList.remove('state-active');
-            const nextStateId = transition.to;
-            console.log('nextStateName', nextStateId);
-            const nextState = stateMachine.states.find(
-              (s) => s.id === nextStateId
-            );
-            if (nextState) {
-              stateMachine.currentState = nextState;
-              (
-                stateMachine.currentState.nodeComponent
-                  .domElement as HTMLElement
-              )?.classList.add('state-active');
+    // if (!stateMachine && canvasAppInstance) {
+    //   stateMachine = createStateMachine(canvasAppInstance);
+    //   if (stateMachine && stateMachine.currentState) {
+    //     (
+    //       stateMachine.currentState.nodeComponent.domElement as HTMLElement
+    //     )?.classList.add('state-active');
+    //   }
+    // }
+    // if (stateMachine) {
+    //   if (stateMachine.currentState) {
+    //     console.log(
+    //       'stateMachine.currentState',
+    //       stateMachine.currentState,
+    //       input
+    //     );
+    //     if (stateMachine.currentState.transitions.length > 0) {
+    //       const transition = stateMachine.currentState.transitions.find(
+    //         (transition) => transition.name === input
+    //       );
+    //       if (transition) {
+    //         (
+    //           stateMachine.currentState.nodeComponent.domElement as HTMLElement
+    //         )?.classList.remove('state-active');
+    //         const nextStateId = transition.to;
+    //         console.log('nextStateName', nextStateId);
+    //         const nextState = stateMachine.states.find(
+    //           (s) => s.id === nextStateId
+    //         );
+    //         if (nextState) {
+    //           stateMachine.currentState = nextState;
+    //           (
+    //             stateMachine.currentState.nodeComponent
+    //               .domElement as HTMLElement
+    //           )?.classList.add('state-active');
 
-              return {
-                result: nextState.name,
-                followPath: undefined,
-              };
-            }
-          }
-        }
-      }
-    }
+    //           return {
+    //             result: nextState.name,
+    //             followPath: undefined,
+    //           };
+    //         }
+    //       }
+    //     }
+    //   }
+    //}
     return {
       result: undefined,
       stop: true,
@@ -106,7 +106,9 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'state-compound',
     family: 'flow-canvas',
+    category: 'state-machine',
     isContainer: true,
+    isContained: true,
     childNodeTasks: ['state', 'state-transition', 'state-compound'],
     getConnectionInfo: () => {
       return { inputs: [], outputs: [] };
@@ -166,8 +168,8 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: ` rounded ${
-            containerNode ? background + ' border border-white' : 'bg-slate-400'
+          class: ` rounded inner-node ${
+            containerNode ? background : 'bg-slate-400'
           }`,
         },
         undefined,

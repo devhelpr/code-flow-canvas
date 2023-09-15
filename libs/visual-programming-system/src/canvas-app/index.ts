@@ -191,7 +191,7 @@ export const createCanvasApp = <T>(
                 x,
                 y,
                 currentState.element,
-                canvas.domElement,
+                canvas,
                 currentState.target.interactionInfo,
                 interactionStateMachine
               );
@@ -246,7 +246,7 @@ export const createCanvasApp = <T>(
                 x,
                 y,
                 currentState.element,
-                canvas.domElement,
+                canvas,
                 currentState.target.interactionInfo,
                 interactionStateMachine
               );
@@ -294,6 +294,9 @@ export const createCanvasApp = <T>(
       wasMoved = false;
 
       const currentState = interactionStateMachine.getCurrentInteractionState();
+      if (currentState.canvasNode?.id !== canvas.id) {
+        return;
+      }
       if (
         currentState.state === InteractionState.Moving &&
         currentState.element &&
@@ -308,6 +311,11 @@ export const createCanvasApp = <T>(
         if (interactionState) {
           if (currentState.target?.id === canvas.id) {
             //
+          } else if (
+            currentState.element?.parent?.containerNode?.domElement ===
+            event.target
+          ) {
+            //
           } else {
             const canvasRect = (
               canvas.domElement as unknown as HTMLElement | SVGElement
@@ -316,13 +324,22 @@ export const createCanvasApp = <T>(
               event.clientX - canvasRect.x,
               event.clientY - canvasRect.y
             );
+            console.log(
+              'POINTER LEAVE CANVAS',
+              event,
+              currentState.target,
+              currentState.element,
+              'Ids',
+              currentState.element?.parent?.containerNode?.id,
+              currentState.target?.id
+            );
 
             currentState.target.pointerUp &&
               currentState.target.pointerUp<T>(
                 x,
                 y,
                 currentState.element,
-                canvas.domElement,
+                canvas,
                 currentState.target.interactionInfo,
                 interactionStateMachine
               );

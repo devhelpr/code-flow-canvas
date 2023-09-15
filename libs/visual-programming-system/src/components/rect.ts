@@ -33,7 +33,7 @@ export class Rect<T> {
 
   protected rectInfo: ReturnType<typeof this.createRectElement>;
 
-  protected canvas: INodeComponent<T> | undefined;
+  protected canvas: IElementNode<T> | undefined;
   protected canvasElements?: ElementNodeMap<T>;
   protected pathHiddenElement?: IElementNode<T>;
   protected canvasUpdated?: () => void;
@@ -54,7 +54,7 @@ export class Rect<T> {
   };
 
   constructor(
-    canvas: INodeComponent<T>,
+    canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
     pathHiddenElement: IElementNode<T>,
     elements: ElementNodeMap<T>,
@@ -743,7 +743,7 @@ export class Rect<T> {
         x - rect.x + parentX - (this.points.beginX - bbox.x),
         y - rect.y + parentY - (this.points.beginY - bbox.y),
         this.nodeComponent,
-        this.canvas.domElement,
+        this.canvas,
         this.interactionStateMachine
       );
 

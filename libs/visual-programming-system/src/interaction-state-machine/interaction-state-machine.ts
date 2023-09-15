@@ -1,4 +1,8 @@
-import { DOMElementNode, INodeComponent } from '../interfaces/element';
+import {
+  DOMElementNode,
+  IElementNode,
+  INodeComponent,
+} from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 
 export enum InteractionState {
@@ -27,14 +31,14 @@ export interface InteractionTarget<T> {
     x: number,
     y: number,
     element: INodeComponent<T>,
-    canvasElement: DOMElementNode,
+    canvasNode: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>
   ) => IPointerDownResult | false;
   pointerMove?: <T>(
     x: number,
     y: number,
     element: INodeComponent<T>,
-    canvasElement: DOMElementNode,
+    canvasNode: IElementNode<T>,
     interactionInfo: IPointerDownResult,
     interactionStateMachine: InteractionStateMachine<T>
   ) => void;
@@ -42,7 +46,7 @@ export interface InteractionTarget<T> {
     x: number,
     y: number,
     element: INodeComponent<T>,
-    canvasElement: DOMElementNode,
+    canvasNode: IElementNode<T>,
     interactionInfo: IPointerDownResult,
     interactionStateMachine: InteractionStateMachine<T>
   ) => void;
@@ -59,6 +63,7 @@ interface InterActionInfo<T> {
   isClicking?: boolean;
   isMoving?: boolean;
   timeSinceStart: number;
+  canvasNode?: IElementNode<T>;
 }
 
 export interface InteractionStateMachine<T> {
@@ -66,12 +71,14 @@ export interface InteractionStateMachine<T> {
     event: InteractionEvent,
     target: InteractionTarget<T>,
     element: INodeComponent<T>,
-    peek?: boolean
+    peek?: boolean,
+    canvasNode?: IElementNode<T>
   ) => false | InterActionInfo<T>;
   getCurrentInteractionState: () => {
     state: InteractionState;
     target: InteractionTarget<T> | undefined;
     element: INodeComponent<T> | undefined;
+    canvasNode?: IElementNode<T>;
   };
   setCurrentDropTarget: (dropTarget: INodeComponent<T>) => void;
   clearDropTarget: (dropTarget: INodeComponent<T>) => void;
@@ -84,6 +91,7 @@ export const createInteractionStateMachine = <
   let interactionState = InteractionState.Idle;
   let interactionTarget: InteractionTarget<T> | undefined = undefined;
   let currentElement: INodeComponent<T> | undefined = undefined;
+  let currentCanvasNode: IElementNode<T> | undefined = undefined;
 
   let isClicking = false;
   let isMoving = false;
@@ -94,6 +102,7 @@ export const createInteractionStateMachine = <
       state: interactionState,
       target: interactionTarget,
       element: currentElement,
+      canvasNode: currentCanvasNode,
     };
   };
 
@@ -101,7 +110,8 @@ export const createInteractionStateMachine = <
     event: InteractionEvent,
     target: InteractionTarget<T>,
     element: INodeComponent<T>,
-    peek = false
+    peek = false,
+    canvasNode?: IElementNode<T>
   ): false | InterActionInfo<T> => {
     // console.log(
     //   'interactionEventState',
@@ -116,11 +126,13 @@ export const createInteractionStateMachine = <
         interactionState = InteractionState.Moving;
         interactionTarget = target;
         currentElement = element;
+        currentCanvasNode = canvasNode;
         isClicking = true;
         startTime = Date.now();
         return {
           state: interactionState,
           target: interactionTarget,
+          canvasNode: currentCanvasNode,
           isNewState: true,
           isClicking,
           isMoving,
@@ -141,6 +153,7 @@ export const createInteractionStateMachine = <
         return {
           state: interactionState,
           target: interactionTarget,
+          canvasNode: currentCanvasNode,
           isNewState: false,
           isClicking,
           isMoving,
@@ -152,6 +165,7 @@ export const createInteractionStateMachine = <
           return {
             state: interactionState,
             target: interactionTarget,
+            canvasNode: currentCanvasNode,
             isNewState: false,
             isClicking,
             isMoving,
@@ -161,6 +175,7 @@ export const createInteractionStateMachine = <
           interactionState = InteractionState.Idle;
           interactionTarget = undefined;
           currentElement = undefined;
+          currentCanvasNode = undefined;
           const oldIsClicking = isClicking;
           const oldIsMoving = isMoving;
           isClicking = false;
@@ -168,6 +183,7 @@ export const createInteractionStateMachine = <
           return {
             state: interactionState,
             target: interactionTarget,
+            canvasNode: currentCanvasNode,
             isNewState: true,
             isClicking: oldIsClicking,
             isMoving: oldIsMoving,
@@ -179,11 +195,13 @@ export const createInteractionStateMachine = <
         interactionState = InteractionState.Idle;
         interactionTarget = undefined;
         currentElement = undefined;
+        currentCanvasNode = undefined;
         isClicking = false;
         isMoving = false;
         return {
           state: interactionState,
           target: interactionTarget,
+          canvasNode: currentCanvasNode,
           isNewState: true,
           isClicking,
           isMoving,

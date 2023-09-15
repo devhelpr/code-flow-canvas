@@ -30,6 +30,7 @@ export interface State {
   transitions: Transition[];
   isFinal: boolean;
   nodeComponent: IRectNodeComponent<NodeInfo>;
+  stateMachine?: StateMachine;
 }
 
 export interface StateMachine {
@@ -40,7 +41,7 @@ export interface StateMachine {
 
 export const createStateMachine = (
   canvasAppInstance: CanvasAppInstance,
-  visitedStates: string[] = []
+  isCompound = false
 ): StateMachine => {
   let initialState: State | undefined = undefined;
   const states: State[] = [];
@@ -48,16 +49,13 @@ export const createStateMachine = (
   const stateNodes = nodeList
     .filter(
       (n) =>
-        (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type === 'state'
-    )
-    .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
-  const transitions = nodeList
-    .filter(
-      (n) =>
         (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type ===
-        'state-transition'
+          'state' ||
+        (n[1] as unknown as INodeComponent<NodeInfo>).nodeInfo?.type ===
+          'state-compound'
     )
     .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
+
   stateNodes.forEach((stateNode) => {
     const state: State = {
       name: stateNode.nodeInfo?.formValues?.caption ?? '',
@@ -66,6 +64,18 @@ export const createStateMachine = (
       isFinal: false,
       nodeComponent: stateNode as unknown as IRectNodeComponent<NodeInfo>,
     };
+
+    (stateNode.domElement as HTMLElement)?.classList.remove('state-active');
+
+    if (stateNode.nodeInfo?.type === 'state-compound') {
+      const compoundState = createStateMachine(
+        stateNode.nodeInfo.canvasAppInstance,
+        true
+      );
+      stateNode.nodeInfo.stateMachine = compoundState;
+      state.stateMachine = compoundState;
+    }
+
     stateNode.connections?.forEach((connection) => {
       if (connection.startNode && connection.startNode.id === stateNode.id) {
         if (
@@ -79,38 +89,95 @@ export const createStateMachine = (
               c.startNode &&
               c.startNode?.id === connection.endNode?.id &&
               c.endNode &&
-              c.endNode?.nodeInfo?.type === 'state'
+              (c.endNode?.nodeInfo?.type === 'state' ||
+                c.endNode?.nodeInfo?.type === 'state-compound')
           );
-          if (
-            connection.endNode &&
-            nextStates &&
-            nextStates.length >= 1 &&
-            nextStates[0].endNode
-          ) {
-            const transition: Transition = {
-              name: connection.endNode.nodeInfo?.formValues?.caption ?? '',
-              from: stateNode.id,
-              to: nextStates[0].endNode.id,
-              nodeComponent:
-                connection.endNode as unknown as IRectNodeComponent<NodeInfo>,
-            };
-            state.transitions.push(transition);
-            if (visitedStates.indexOf(nextStates[0].endNode.id) < 0) {
-              const { states: statesList } = createStateMachine(
-                canvasAppInstance,
-                [...visitedStates, nextStates[0].endNode.id]
-              );
-              states.push(...statesList);
-            }
+          if (connection.endNode && nextStates && nextStates.length >= 1) {
+            nextStates.forEach((nextState) => {
+              if (connection.endNode && nextState && nextState.endNode) {
+                const transition: Transition = {
+                  name: connection.endNode.nodeInfo?.formValues?.caption ?? '',
+                  from: stateNode.id,
+                  to: nextState.endNode.id,
+                  nodeComponent:
+                    connection.endNode as unknown as IRectNodeComponent<NodeInfo>,
+                };
+                state.transitions.push(transition);
+              }
+            });
           }
         }
       }
     });
     states.push(state);
 
-    initialState = states[0] ?? undefined;
+    initialState = isCompound ? undefined : states[0] ?? undefined;
   });
   return { states, initialState, currentState: initialState };
+};
+
+export const resetStateMachine = (stateMachine: StateMachine) => {
+  if (stateMachine.currentState) {
+    (
+      stateMachine.currentState.nodeComponent.domElement as HTMLElement
+    )?.classList.remove('state-active');
+    if (stateMachine.currentState.stateMachine) {
+      resetStateMachine(stateMachine.currentState.stateMachine);
+    }
+  }
+};
+
+export const initStateMachine = (stateMachine: StateMachine) => {
+  if (!stateMachine.currentState) {
+    stateMachine.initialState = stateMachine.states[0];
+    stateMachine.currentState = stateMachine.initialState;
+  }
+  (
+    stateMachine.currentState.nodeComponent.domElement as HTMLElement
+  )?.classList.add('state-active');
+};
+
+export const transitionToState = (
+  stateMachine: StateMachine,
+  transitionName: string
+) => {
+  if (stateMachine.currentState) {
+    console.log(
+      'stateMachine.currentState',
+      stateMachine.currentState,
+      transitionName
+    );
+    if (stateMachine.currentState.transitions.length > 0) {
+      const transition = stateMachine.currentState.transitions.find(
+        (transition) => transition.name === transitionName
+      );
+      if (transition) {
+        resetStateMachine(stateMachine);
+        const nextStateId = transition.to;
+        console.log('nextStateName', nextStateId);
+        const nextState = stateMachine.states.find((s) => s.id === nextStateId);
+        if (nextState) {
+          stateMachine.currentState = nextState;
+          (
+            stateMachine.currentState.nodeComponent.domElement as HTMLElement
+          )?.classList.add('state-active');
+          if (nextState.stateMachine) {
+            initStateMachine(nextState.stateMachine);
+          }
+          return nextState;
+        }
+      } else {
+        if (stateMachine.currentState.stateMachine) {
+          transitionToState(
+            stateMachine.currentState.stateMachine,
+            transitionName
+          );
+        }
+      }
+    }
+  }
+
+  return false;
 };
 
 export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
@@ -127,6 +194,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
   let currentValue = 0;
+
   const initializeCompute = () => {
     stateMachine = undefined;
     currentValue = 0;
@@ -134,6 +202,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     if (canvasAppInstance?.elements && !stateMachine) {
       stateMachine = undefined;
       stateMachine = createStateMachine(canvasAppInstance);
+      console.log('stateMachine', stateMachine);
       if (stateMachine && stateMachine.currentState) {
         (
           stateMachine.currentState.nodeComponent.domElement as HTMLElement
@@ -149,6 +218,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   ) => {
     if (!stateMachine && canvasAppInstance) {
       stateMachine = createStateMachine(canvasAppInstance);
+      console.log('stateMachine', stateMachine);
       if (stateMachine && stateMachine.currentState) {
         (
           stateMachine.currentState.nodeComponent.domElement as HTMLElement
@@ -156,39 +226,12 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       }
     }
     if (stateMachine) {
-      if (stateMachine.currentState) {
-        console.log(
-          'stateMachine.currentState',
-          stateMachine.currentState,
-          input
-        );
-        if (stateMachine.currentState.transitions.length > 0) {
-          const transition = stateMachine.currentState.transitions.find(
-            (transition) => transition.name === input
-          );
-          if (transition) {
-            (
-              stateMachine.currentState.nodeComponent.domElement as HTMLElement
-            )?.classList.remove('state-active');
-            const nextStateId = transition.to;
-            console.log('nextStateName', nextStateId);
-            const nextState = stateMachine.states.find(
-              (s) => s.id === nextStateId
-            );
-            if (nextState) {
-              stateMachine.currentState = nextState;
-              (
-                stateMachine.currentState.nodeComponent
-                  .domElement as HTMLElement
-              )?.classList.add('state-active');
-
-              return {
-                result: nextState.name,
-                followPath: undefined,
-              };
-            }
-          }
-        }
+      const nextState = transitionToState(stateMachine, input);
+      if (nextState) {
+        return {
+          result: nextState.name,
+          followPath: undefined,
+        };
       }
     }
     return {
@@ -202,12 +245,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     name: 'state-machine',
     family: 'flow-canvas',
     isContainer: true,
-    childNodeTasks: [
-      'state',
-      'state-transition',
-      'state-machine',
-      'state-compound',
-    ],
+    childNodeTasks: ['state', 'state-transition', 'state-compound'],
     getConnectionInfo: () => {
       if (!input || !output) {
         return { inputs: [], outputs: [] };

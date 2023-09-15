@@ -34,7 +34,7 @@ export class ThumbNode<T> {
   nodeComponent?: IThumbNodeComponent<T>;
   interactionStateMachine: InteractionStateMachine<T>;
   disableInteraction = false;
-  canvas: INodeComponent<T> | undefined;
+  canvas: IElementNode<T> | undefined;
   parentRectNode?: IRectNodeComponent<T>;
   canvasElement: DOMElementNode;
   canvasElements?: ElementNodeMap<T>;
@@ -64,7 +64,7 @@ export class ThumbNode<T> {
     borderColor?: string,
     index?: number,
     relativePositioned?: boolean,
-    canvas?: INodeComponent<T>,
+    canvas?: IElementNode<T>,
     canvasElements?: ElementNodeMap<T>,
     parentRectNode?: IRectNodeComponent<T>,
     pathHiddenElement?: IElementNode<T>,
@@ -418,7 +418,7 @@ export class ThumbNode<T> {
       x - rectCamera.x + parentX,
       y - rectCamera.y + parentY,
       connectionThumb,
-      this.canvas.domElement,
+      this.canvas,
       this.interactionStateMachine
     );
     if (interactionInfoResult && connectionThumb.initPointerDown) {
@@ -687,7 +687,7 @@ export class ThumbNode<T> {
         x - rectCamera.x + parentX,
         y - rectCamera.y + parentY,
         this.nodeComponent,
-        this.canvasElement,
+        this.canvas as IElementNode<T>,
         this.interactionStateMachine
       );
 
@@ -716,7 +716,7 @@ export class ThumbNode<T> {
         x,
         y,
         this.nodeComponent,
-        this.canvasElement,
+        this.canvas as IElementNode<T>,
         this.interactionInfo,
         this.interactionStateMachine
       );
@@ -741,7 +741,7 @@ export class ThumbNode<T> {
         x,
         y,
         this.nodeComponent,
-        this.canvasElement,
+        this.canvas as IElementNode<T>,
         this.interactionInfo,
         this.interactionStateMachine
       );
@@ -796,8 +796,8 @@ export class ThumbNode<T> {
 
             connection.update?.(
               connection,
-              connection.startNode?.x ?? 0,
-              connection.startNode?.y ?? 0,
+              connection.endNode?.x ?? 0,
+              connection.endNode?.y ?? 0,
               rectNode
             );
           }

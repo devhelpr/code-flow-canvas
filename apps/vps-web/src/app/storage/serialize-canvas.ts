@@ -13,7 +13,8 @@ export const cleanupNodeInfoForSerializing = (nodeInfo: NodeInfo) => {
     if (
       typeof nodeInfo[key] !== 'function' &&
       key !== 'formElements' &&
-      key !== 'canvasAppInstance'
+      key !== 'canvasAppInstance' &&
+      key !== 'stateMachine'
     ) {
       nodeInfoCopy[key] = nodeInfo[key];
     }

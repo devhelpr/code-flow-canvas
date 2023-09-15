@@ -211,7 +211,10 @@ export class RectThumb<T> extends Rect<T> {
       x - rectCamera.x + parentX,
       y - rectCamera.y + parentY,
       connectionThumb,
-      this.canvas.domElement,
+      this.containerNode
+        ? (this.containerNode.nodeInfo as any)?.canvasAppInstance?.canvas
+            ?.domElement
+        : this.canvas.domElement,
       this.interactionStateMachine
     );
     if (interactionInfoResult && connectionThumb.initPointerDown) {
@@ -293,6 +296,8 @@ export class RectThumb<T> extends Rect<T> {
             this.nodeComponent.id
           );
           this.interactionStateMachine.setCurrentDropTarget(this.nodeComponent);
+          //event.preventDefault();
+          event.stopPropagation();
         }
       }
     }

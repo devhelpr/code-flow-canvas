@@ -38,7 +38,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
     containerNode?: IRectNodeComponent<T>
   ) {
     super(
-      canvas.domElement,
+      canvas,
       interactionStateMachine,
       elements,
       startX,
