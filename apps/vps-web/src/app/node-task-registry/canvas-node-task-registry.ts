@@ -26,6 +26,7 @@ import { NodeInfo } from '../types/node-info';
 import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
 import { getSequential } from '../nodes/sequential';
 import { createStateCompound } from '../nodes/state-compound';
+import { getStyledNode } from '../nodes/styled-node';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -64,6 +65,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('button', getButton(animatePath));
   registerNodeFactory('slider', getSlider(animatePath));
   registerNodeFactory('checkbox', getCheckbox(animatePath));
+  registerNodeFactory('styled-node', getStyledNode(animatePath));
   registerNodeFactory('annotation', getAnnotation(animatePath));
   registerNodeFactory(
     'sequential',

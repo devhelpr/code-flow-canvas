@@ -1,3 +1,26 @@
+// export interface TextAreaFieldProps {
+//   fieldName: string;
+//   value: string;
+//   onChange?: (value: string) => void;
+// }
+
+// export const TextAreaField = (props: TextAreaFieldProps) => (
+//   <textarea
+//     id={props.fieldName}
+//     type="text"
+//     class="block w-full h-[200px] p-1"
+//     name={props.fieldName}
+//     oninput={(event: InputEvent) => {
+//       const input = event.target as HTMLInputElement;
+//       if (props.onChange) {
+//         props.onChange(input.value);
+//       }
+//     }}
+//   >
+//     {props.value}
+//   </textarea>
+// );
+
 import {
   Component,
   BaseComponent,
@@ -6,37 +29,30 @@ import {
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 
-export interface InputFieldProps {
+export interface TextAreaFieldProps {
   formId: string;
   fieldName: string;
   value: string;
   onChange?: (value: string) => void;
 }
 
-// export interface InputFieldChildProps {
-//   value: string;
-//   formId: string;
-//   fieldName: string;
-//   onChange?: (value: string) => void;
-// }
-
-export class InputFieldChildComponent extends Component<InputFieldProps> {
-  oldProps: InputFieldProps | null = null;
-  input: HTMLInputElement | null = null;
+export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
+  oldProps: TextAreaFieldProps | null = null;
+  textarea: HTMLTextAreaElement | null = null;
   label: HTMLLabelElement | null = null;
   doRenderChildren = false;
   initialRender = false;
-  constructor(parent: BaseComponent | null, props: InputFieldProps) {
+  constructor(parent: BaseComponent | null, props: TextAreaFieldProps) {
     super(parent, props);
     this.template = createTemplate(
       `<div class="w-full mb-2">
         <label for="${props.fieldName}" class="block mb-2">${props.fieldName}</label>
-        <input class="block w-full p-1"
+        <textarea class="block w-full p-1" 
+          rows="10"
           name="${props.fieldName}"
           autocomplete="off"
           id="${props.fieldName}"
-          value="${props.value}"
-          type="text"></input>
+          type="text">${props.value}</textarea>
         </div>`
     );
 
@@ -55,9 +71,9 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
       if (this.element) {
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
-        this.input = this.label.nextSibling as HTMLInputElement;
-        this.renderList.push(this.label, this.input);
-        this.input.addEventListener('input', this.onInput);
+        this.textarea = this.label.nextSibling as HTMLTextAreaElement;
+        this.renderList.push(this.label, this.textarea);
+        this.textarea.addEventListener('input', this.onInput);
 
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
@@ -68,8 +84,8 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
               this.props.fieldName,
               value
             );
-            if (this.input) {
-              this.input.value = value;
+            if (this.textarea) {
+              this.textarea.value = value;
             }
           }
         );
@@ -96,22 +112,22 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
   render() {
     super.render();
     if (!this.element) return;
-    if (!this.input) return;
+    if (!this.textarea) return;
 
     this.oldProps = this.props;
 
-    if (this.input) {
+    if (this.textarea) {
       //this.h1.textContent = atom1.getValue() || this.props.value;
     }
 
     if (this.initialRender) {
       this.initialRender = false;
-      this.renderElements([this.input]);
+      this.renderElements([this.textarea]);
     }
   }
 }
 
-export const InputField = (props: InputFieldProps) => {
+export const InputField = (props: TextAreaFieldProps) => {
   //let inputRef: HTMLInputElement | null = null;
   // trackNamedSignal(`${props.formId}_${props.fieldName}`, (value) => {
   //   console.log('trackNamedSignal', props.formId, props.fieldName, value);

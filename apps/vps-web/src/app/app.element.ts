@@ -1344,8 +1344,11 @@ export class AppElement extends HTMLElement {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-1/4 h-[300px] z-[1010] p-2 bg-slate-600 border-white border hidden',
+          'absolute w-1/4 h-[300px] z-[1010] p-2 bg-slate-600 border-white border hidden overflow-auto',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
+        wheel: (event) => {
+          event.stopPropagation();
+        },
       },
       rootElement
     );

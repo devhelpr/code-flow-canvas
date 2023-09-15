@@ -9,6 +9,7 @@ import {
   createTemplate,
 } from '@devhelpr/dom-components';
 import { InputFieldChildComponent } from './form-fields/input';
+import { TextAreaFieldComponent } from './form-fields/textarea';
 
 export const FormFieldType = {
   Text: 'Text',
@@ -142,8 +143,16 @@ export class FormsComponent extends Component<Props> {
   createFormElements() {
     this.components = [];
     this.props.formElements.forEach((formControl) => {
-      if (formControl.fieldType === 'Text') {
+      if (formControl.fieldType === FormFieldType.Text) {
         const formControlComponent = new InputFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          value: formControl.value,
+          onChange: (value) => this.onChange(formControl, value),
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.TextArea) {
+        const formControlComponent = new TextAreaFieldComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           value: formControl.value,
