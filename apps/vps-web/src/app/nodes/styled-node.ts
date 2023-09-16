@@ -144,6 +144,12 @@ export const getStyledNode =
         node = rect.nodeComponent;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        Object.assign(
+          (divNode.domElement as HTMLElement).style,
+          JSON.parse(initialValue || defaultStyling)
+        );
+
         return node;
       },
     };

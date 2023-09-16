@@ -104,6 +104,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     }
     const startPointNode = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent.elements,
       'start',
@@ -119,7 +120,6 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       undefined,
       undefined,
       true,
-      undefined,
       undefined,
       undefined,
       undefined,
@@ -152,6 +152,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
 
     const endPointNode = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent.elements,
       'end',
@@ -191,6 +192,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     };
     const controlPoint1Node = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent.elements,
       'controlpoint',

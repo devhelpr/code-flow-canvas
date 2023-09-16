@@ -82,7 +82,9 @@ export const getTimer =
                 interval,
                 node.nodeInfo.formValues['timer'] || initialTimer.toString()
               );
-              clearInterval(interval);
+              if (interval) {
+                clearInterval(interval);
+              }
               interval = setInterval(
                 timer,
                 parseInt(
@@ -115,7 +117,7 @@ export const getTimer =
         const timerInSeconds = initialValue || initialTimer.toString();
         divElement.domElement.textContent = timerInSeconds;
         console.log('timerInSeconds', node, timerInSeconds);
-        let interval = setInterval(timer, parseInt(timerInSeconds));
+        let interval: any = setInterval(timer, parseInt(timerInSeconds));
         const rect = canvasApp.createRect(
           x,
           y,
@@ -129,23 +131,14 @@ export const getTimer =
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
               color: 'white',
-              label: '',
-              //thumbConstraint: 'value',
-            },
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              color: 'white',
               label: ' ',
-              //thumbConstraint: 'value',
             },
           ],
           componentWrapper,
           {
-            classNames: `bg-sky-900 p-4 rounded`,
+            classNames: `bg-sky-900 py-4 px-2 rounded`,
           },
-          true,
+          false,
           undefined,
           undefined,
           id,
@@ -165,6 +158,12 @@ export const getTimer =
         node = rect.nodeComponent;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.delete = () => {
+          if (interval) {
+            clearInterval(interval);
+          }
+          interval = undefined;
+        };
         return node;
       },
     };

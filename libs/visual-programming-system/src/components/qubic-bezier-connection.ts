@@ -102,6 +102,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
     }
     const startPointNode = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent?.elements,
       'start',
@@ -139,6 +140,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
 
     const endPointNode = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent.elements,
       'end',
@@ -177,6 +179,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
 
     const controlPoint1Node = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent.elements,
       'controlpoint1',
@@ -208,6 +211,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
     };
     const controlPoint2Node = new ThumbNode<T>(
       canvas.domElement,
+      canvas,
       interactionStateMachine,
       this.nodeComponent.elements,
       'controlpoint2',

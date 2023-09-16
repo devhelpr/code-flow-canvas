@@ -93,6 +93,9 @@ export class AppElement extends HTMLElement {
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
 
   removeElement = (element: IElementNode<NodeInfo>) => {
+    if (element.nodeInfo?.delete) {
+      element.nodeInfo.delete();
+    }
     element.domElement.remove();
     const node = element as unknown as INodeComponent<NodeInfo>;
     if (node && node.delete) {

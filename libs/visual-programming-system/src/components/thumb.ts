@@ -46,6 +46,7 @@ export class ThumbNode<T> {
 
   constructor(
     canvasElement: DOMElementNode,
+    canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
     elements: ElementNodeMap<T>,
     thumbName: string,
@@ -64,7 +65,7 @@ export class ThumbNode<T> {
     borderColor?: string,
     index?: number,
     relativePositioned?: boolean,
-    canvas?: IElementNode<T>,
+
     canvasElements?: ElementNodeMap<T>,
     parentRectNode?: IRectNodeComponent<T>,
     pathHiddenElement?: IElementNode<T>,
@@ -119,7 +120,7 @@ export class ThumbNode<T> {
         width: width ?? thumbWidth,
         height: height ?? thumbHeight,
       },
-      canvasElement
+      this.canvasElement
     ) as IThumbNodeComponent<T>;
 
     if (!this.nodeComponent) {

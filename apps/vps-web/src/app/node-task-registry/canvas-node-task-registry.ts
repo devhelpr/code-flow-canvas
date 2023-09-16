@@ -29,6 +29,7 @@ import { createStateCompound } from '../nodes/state-compound';
 import { getStyledNode } from '../nodes/styled-node';
 import { getLayoutNode } from '../nodes/layout-node';
 import { getTimer } from '../nodes/timer';
+import { getValue } from '../nodes/value';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -51,6 +52,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('expression', getExpression);
   registerNodeFactory('expression-part', getExpressionPart);
   registerNodeFactory('expression-execute', getExpressionExecute);
+  registerNodeFactory('value', getValue);
   registerNodeFactory('if-condition', getIfCondition);
   registerNodeFactory('array', getArray);
   registerNodeFactory('show-object', getShowObject);

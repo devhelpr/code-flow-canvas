@@ -196,6 +196,7 @@ export class Rect<T> {
 
         const thumbNode = new ThumbNode<T>(
           this.nodeComponent.domElement,
+          canvas,
           this.interactionStateMachine,
           this.nodeComponent.elements,
           thumb.name ??
@@ -219,7 +220,7 @@ export class Rect<T> {
           undefined,
           thumb.thumbIndex ?? 0,
           true,
-          canvas,
+
           elements,
           this.nodeComponent,
           pathHiddenElement,
@@ -444,16 +445,27 @@ export class Rect<T> {
     // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
 
+    let connectionCount = 0;
+    const connections = (
+      thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>
+    )?.connections;
+    if (thumbNode.thumbConnectionType === ThumbConnectionType.start) {
+      connectionCount = connections?.filter((connection) => {
+        connection.startNode?.id === thumbNode.thumbLinkedToNode?.id;
+      }).length;
+    } else {
+      connectionCount = connections?.filter((connection) => {
+        connection.endNode?.id === thumbNode.thumbLinkedToNode?.id;
+      }).length;
+    }
+
     // thumbNode is the thumb that is being dropped on
     console.log('thumbNode', thumbNode);
     if (
       (thumbNode.maxConnections !== undefined &&
         thumbNode.maxConnections !== -1 &&
-        ((thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>)
-          ?.connections?.length ?? 0) >= thumbNode.maxConnections) ||
-      (thumbNode.maxConnections === undefined &&
-        ((thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>)
-          ?.connections?.length ?? 0) >= 1)
+        connectionCount >= thumbNode.maxConnections) ||
+      (thumbNode.maxConnections === undefined && connectionCount >= 1)
     ) {
       return false;
     }
