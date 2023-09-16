@@ -7,57 +7,43 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  runNode,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
+import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/form-component';
 
-export const getTimer =
+export const getNodeTrigger =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
-    let interval: any = undefined;
     let canvasAppInstance: canvasAppReturnType | undefined = undefined;
-    const initialTimer = 1000;
     const initializeCompute = () => {
       return;
     };
     const compute = (input: string) => {
-      if (input === 'TIMER') {
-        return {
-          result: true,
-        };
-      }
-      const timer = () => {
-        if (canvasAppInstance && node) {
+      const nodeName = node.nodeInfo.formValues['node'] || '';
+      if (canvasAppInstance && nodeName) {
+        let triggerNode: IElementNode<NodeInfo> | undefined = undefined;
+        for (const element of canvasAppInstance.elements.values()) {
+          if (element.nodeInfo.type === 'node-trigger-target') {
+            if (element.nodeInfo.formValues['node'] === nodeName) {
+              triggerNode = element;
+              break;
+            }
+          }
+        }
+        if (triggerNode) {
           runNode<NodeInfo>(
-            node,
+            triggerNode as IRectNodeComponent<NodeInfo>,
             canvasAppInstance,
             animatePath,
             undefined,
-            'TIMER',
+            'TRIGGER',
             []
           );
         }
-      };
-
-      if (interval) {
-        clearTimeout(interval);
       }
-
-      interval = setTimeout(
-        timer,
-        parseInt(node.nodeInfo.formValues['timer'] || initialTimer.toString())
-      );
-
       return {
         result: false,
         stop: true,
@@ -65,7 +51,7 @@ export const getTimer =
     };
 
     return {
-      name: 'timer',
+      name: 'node-trigger',
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: <NodeInfo>(
@@ -77,21 +63,20 @@ export const getTimer =
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         canvasAppInstance = canvasApp;
-        console.log('initalValues timer', initalValues);
-        const initialValue = initalValues?.['timer'] || initialTimer.toString();
+        const initialValue = initalValues?.['node'] || '';
 
         const formElements = [
           {
             fieldType: FormFieldType.Text,
-            fieldName: 'timer',
+            fieldName: 'node',
             value: initialValue,
             onChange: (value: string) => {
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
-                timer: value,
+                node: value,
               };
               divElement.domElement.textContent =
-                node.nodeInfo.formValues['timer'] || initialTimer.toString();
+                node.nodeInfo.formValues['node'] || '';
 
               if (updated) {
                 updated();
@@ -116,8 +101,7 @@ export const getTimer =
           componentWrapper.domElement
         );
 
-        const timerInSeconds = initialValue || initialTimer.toString();
-        divElement.domElement.textContent = timerInSeconds;
+        divElement.domElement.textContent = initialValue || '';
 
         const rect = canvasApp.createRect(
           x,
@@ -127,13 +111,6 @@ export const getTimer =
           undefined,
 
           [
-            {
-              thumbType: ThumbType.StartConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: ' ',
-            },
             {
               thumbType: ThumbType.EndConnectorCenter,
               thumbIndex: 0,
@@ -151,9 +128,9 @@ export const getTimer =
           undefined,
           id,
           {
-            type: 'timer',
+            type: 'node-trigger',
             formValues: {
-              timer: initialValue || initialTimer.toString(),
+              node: initialValue || '',
             },
           },
           containerNode
@@ -166,12 +143,7 @@ export const getTimer =
         node = rect.nodeComponent;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
-        node.nodeInfo.delete = () => {
-          if (interval) {
-            clearTimeout(interval);
-          }
-          interval = undefined;
-        };
+
         return node;
       },
     };

@@ -33,6 +33,8 @@ import { getValue } from '../nodes/value';
 import { getSplitByCase } from '../nodes/split-by-case';
 import { getGate } from '../nodes/gate';
 import { setVariable } from '../nodes/set-variable';
+import { getNodeTrigger } from '../nodes/node-trigger';
+import { getNodeTriggerTarget } from '../nodes/node-trigger-target';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -78,6 +80,9 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('checkbox', getCheckbox(animatePath));
   registerNodeFactory('styled-node', getStyledNode(animatePath));
   registerNodeFactory('annotation', getAnnotation(animatePath));
+
+  registerNodeFactory('node-trigger', getNodeTrigger(animatePath));
+  registerNodeFactory('node-trigger-target', getNodeTriggerTarget(animatePath));
 
   registerNodeFactory(
     'sequential',
