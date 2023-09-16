@@ -20,6 +20,24 @@ export const getStyledNode =
     const defaultStyling = `{
       display:"block"
     }`;
+
+    const setStyling = () => {
+      const styling = JSON.parse(
+        node.nodeInfo.formValues['styling'] || defaultStyling
+      );
+      const classes = styling['class'] || '';
+      const classList = classes.split(' ').filter(Boolean);
+      if (classList && classList.length > 0) {
+        (divNode.domElement as HTMLElement).className = '';
+        (divNode.domElement as HTMLElement).classList.add(...classList);
+      }
+      if (styling['class']) {
+        delete styling['class'];
+      }
+      (divNode.domElement as HTMLElement).removeAttribute('style');
+      Object.assign((divNode.domElement as HTMLElement).style, styling);
+    };
+
     const initializeCompute = () => {
       currentValue = 0;
       return;
@@ -30,10 +48,7 @@ export const getStyledNode =
       } catch {
         currentValue = 0;
       }
-      Object.assign(
-        (divNode.domElement as HTMLElement).style,
-        JSON.parse(node.nodeInfo.formValues['styling'] || defaultStyling)
-      );
+      setStyling();
 
       return {
         result: input,
@@ -68,12 +83,7 @@ export const getStyledNode =
               };
               console.log('onChange', node.nodeInfo);
               if (updated) {
-                Object.assign(
-                  (divNode.domElement as HTMLElement).style,
-                  JSON.parse(
-                    node.nodeInfo.formValues['styling'] || defaultStyling
-                  )
-                );
+                setStyling();
                 updated();
               }
             },
@@ -131,7 +141,7 @@ export const getStyledNode =
           {
             type: 'styled-node',
             formValues: {
-              styling: initialValue || '{display:"block"}',
+              styling: initialValue || defaultStyling,
             },
           },
           containerNode
@@ -144,11 +154,10 @@ export const getStyledNode =
         node = rect.nodeComponent;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
-
-        Object.assign(
-          (divNode.domElement as HTMLElement).style,
-          JSON.parse(initialValue || defaultStyling)
-        );
+        node.nodeInfo.formValues = {
+          styling: initialValue || defaultStyling,
+        };
+        setStyling();
 
         return node;
       },

@@ -1723,8 +1723,10 @@ setCount(3);
   // the below doesn't work .. "new Function" doesn't allow access to the local scope
   //const test = new Function('payload', 'return hello;');
   //console.log(test({ test: 1 }));
-  eval('console.log(hello);');
-
+  function xyz() {
+    eval('console.log(hello);');
+  }
+  xyz();
   const test = new Function('hello', 'return hello;');
   console.log(test('hello world'));
 })();
