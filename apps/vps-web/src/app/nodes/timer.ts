@@ -37,6 +37,9 @@ export const getTimer =
         };
       }
       const timer = () => {
+        divElement.domElement.textContent =
+          node.nodeInfo.formValues['timer'] || initialTimer.toString();
+        (divElement.domElement as HTMLElement).classList.remove('loader');
         if (canvasAppInstance && node) {
           runNode<NodeInfo>(
             node,
@@ -53,6 +56,8 @@ export const getTimer =
         clearTimeout(interval);
       }
 
+      divElement.domElement.textContent = '';
+      (divElement.domElement as HTMLElement).classList.add('loader');
       interval = setTimeout(
         timer,
         parseInt(node.nodeInfo.formValues['timer'] || initialTimer.toString())
@@ -103,7 +108,7 @@ export const getTimer =
         const componentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-sky-900 p-4 rounded`,
+            class: `inner-node bg-sky-900 p-4 rounded text-center`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
