@@ -66,16 +66,6 @@ export const getSequential =
           0
         );
       });
-      // return [
-      //   Promise.resolve({
-      //     result: input,
-      //     followPath: 'output1',
-      //   }),
-      //   Promise.resolve({
-      //     result: input,
-      //     followPath: 'output2',
-      //   }),
-      // ];
     };
 
     return {

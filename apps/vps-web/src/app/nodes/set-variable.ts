@@ -14,59 +14,34 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getVariable: NodeTaskFactory<NodeInfo> = (
+export const setVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-  let variableName = '';
-  let currentValue = 0;
+  let canvasAppInstance: canvasAppReturnType | undefined = undefined;
   const initializeCompute = () => {
-    currentValue = 0;
-    if (htmlNode) {
-      (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
-    }
     return;
   };
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+    loopIndex?: number,
+    payload?: any
   ) => {
-    let result: any = false;
-    try {
-      currentValue = parseFloat(input) ?? 0;
-      if (isNaN(currentValue)) {
-        currentValue = 0;
+    if (canvasAppInstance) {
+      const variableName = node.nodeInfo.formValues?.['variableName'] ?? '';
+      if (variableName) {
+        canvasAppInstance.setVariable(variableName, input);
       }
-      if (htmlNode) {
-        (htmlNode.domElement as unknown as HTMLElement).textContent =
-          currentValue.toString();
-      }
-      result = currentValue;
-    } catch (error) {
-      result = undefined;
     }
-
     return {
-      result,
+      result: input,
       followPath: undefined,
     };
   };
 
-  const getData = () => {
-    return currentValue;
-  };
-  const setData = (data: any) => {
-    currentValue = data;
-    if (htmlNode) {
-      (htmlNode.domElement as unknown as HTMLElement).textContent =
-        currentValue.toString();
-    }
-  };
-
   return {
-    name: 'variable',
+    name: 'set-variable',
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: <NodeInfo>(
@@ -77,27 +52,19 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
-      variableName = initalValues?.['variableName'] ?? '';
-      canvasApp.registerVariable(variableName, {
-        getData,
-        setData,
-      });
+      canvasAppInstance = canvasApp;
+      const initialValue = initalValues?.['variableName'] ?? '';
+
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: 'variableName',
-          value: initalValues?.['variableName'] ?? '',
+          value: initialValue ?? '',
           onChange: (value: string) => {
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               variableName: value,
             };
-            canvasApp.unregisterVariable(variableName);
-            variableName = value;
-            canvasApp.registerVariable(variableName, {
-              getData,
-              setData,
-            });
             console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
@@ -106,31 +73,46 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
-      htmlNode = createElement(
-        'div',
-        {
-          class: '',
-        },
-        undefined,
-        '-'
-      ) as unknown as INodeComponent<NodeInfo>;
-
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded text-center`,
+          class: `inner-node bg-slate-500 p-4 rounded`,
         },
-        undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        undefined
       ) as unknown as INodeComponent<NodeInfo>;
+
+      FormComponent({
+        rootElement: componentWrapper.domElement as HTMLElement,
+        id: id ?? '',
+        formElements,
+        hasSubmitButton: false,
+        onSave: (formValues) => {
+          console.log('onSave', formValues);
+        },
+      }) as unknown as HTMLElement;
 
       const rect = canvasApp.createRect(
         x,
         y,
-        100,
+        200,
         100,
         undefined,
-        [],
+        [
+          {
+            thumbType: ThumbType.StartConnectorCenter,
+            thumbIndex: 0,
+            connectionType: ThumbConnectionType.start,
+            color: 'white',
+            label: ' ',
+          },
+          {
+            thumbType: ThumbType.EndConnectorCenter,
+            thumbIndex: 0,
+            connectionType: ThumbConnectionType.end,
+            color: 'white',
+            label: ' ',
+          },
+        ],
         componentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
@@ -140,9 +122,9 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         undefined,
         id,
         {
-          type: 'variable',
+          type: 'set-variable',
           formValues: {
-            variableName: variableName,
+            variableName: initialValue ?? '',
           },
         },
         containerNode
@@ -153,10 +135,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       rect.nodeComponent.nodeInfo.formElements = formElements;
 
       node = rect.nodeComponent;
-      node.nodeInfo.isVariable = true;
       node.nodeInfo.compute = compute;
-      node.nodeInfo.sendData = compute;
-      node.nodeInfo.getData = getData;
       node.nodeInfo.initializeCompute = initializeCompute;
       return node;
     },

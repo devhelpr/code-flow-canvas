@@ -32,7 +32,9 @@ export type FormField = (
     }
 ) & {
   fieldName: string;
+  label?: string;
   value: string;
+  isRow?: boolean;
   onChange?: (value: string) => void;
 };
 
@@ -147,7 +149,9 @@ export class FormsComponent extends Component<Props> {
         const formControlComponent = new InputFieldChildComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
+          label: formControl.label,
           value: formControl.value,
+          isRow: formControl.isRow,
           onChange: (value) => this.onChange(formControl, value),
         });
         this.components.push(formControlComponent);

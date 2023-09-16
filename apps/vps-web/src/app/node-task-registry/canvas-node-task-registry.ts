@@ -30,6 +30,9 @@ import { getStyledNode } from '../nodes/styled-node';
 import { getLayoutNode } from '../nodes/layout-node';
 import { getTimer } from '../nodes/timer';
 import { getValue } from '../nodes/value';
+import { getSplitByCase } from '../nodes/split-by-case';
+import { getGate } from '../nodes/gate';
+import { setVariable } from '../nodes/set-variable';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -53,6 +56,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('expression-part', getExpressionPart);
   registerNodeFactory('expression-execute', getExpressionExecute);
   registerNodeFactory('value', getValue);
+  registerNodeFactory('gate', getGate);
   registerNodeFactory('if-condition', getIfCondition);
   registerNodeFactory('array', getArray);
   registerNodeFactory('show-object', getShowObject);
@@ -67,15 +71,22 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('state-machine', createStateMachineNode);
   registerNodeFactory('state-compound', createStateCompound);
   registerNodeFactory('variable', getVariable);
+  registerNodeFactory('set-variable', setVariable);
   registerNodeFactory('button', getButton(animatePath));
   registerNodeFactory('timer', getTimer(animatePath));
   registerNodeFactory('slider', getSlider(animatePath));
   registerNodeFactory('checkbox', getCheckbox(animatePath));
   registerNodeFactory('styled-node', getStyledNode(animatePath));
   registerNodeFactory('annotation', getAnnotation(animatePath));
+
   registerNodeFactory(
     'sequential',
     getSequential(animatePath, animatePathFromThumb)
+  );
+
+  registerNodeFactory(
+    'split-by-case',
+    getSplitByCase(animatePath, animatePathFromThumb)
   );
 };
 

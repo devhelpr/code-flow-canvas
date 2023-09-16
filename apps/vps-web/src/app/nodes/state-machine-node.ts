@@ -140,11 +140,12 @@ export const initStateMachine = (stateMachine: StateMachine) => {
 export const transitionToState = (
   stateMachine: StateMachine,
   transitionName: string
-) => {
+): State | false => {
   if (stateMachine.currentState) {
     console.log(
-      'stateMachine.currentState',
+      'transitionToState, currentState:',
       stateMachine.currentState,
+      'transition:',
       transitionName
     );
     if (stateMachine.currentState.transitions.length > 0) {
@@ -168,7 +169,7 @@ export const transitionToState = (
         }
       } else {
         if (stateMachine.currentState.stateMachine) {
-          transitionToState(
+          return transitionToState(
             stateMachine.currentState.stateMachine,
             transitionName
           );
@@ -227,6 +228,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     }
     if (stateMachine) {
       const nextState = transitionToState(stateMachine, input);
+      console.log('NEXTSTATE trigger', nextState);
       if (nextState) {
         return {
           result: nextState.name,

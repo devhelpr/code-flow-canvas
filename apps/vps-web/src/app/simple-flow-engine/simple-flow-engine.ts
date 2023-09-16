@@ -530,6 +530,16 @@ export const runNodeFromThumb = <T>(
         result = computeResult.result;
         followPath = computeResult.followPath;
         previousOutput = computeResult.previousOutput;
+        if (computeResult.stop) {
+          if (onStopped) {
+            onStopped('');
+          }
+          return {
+            result: false,
+            stop: true,
+            output: result,
+          };
+        }
       } else {
         result = false;
         followPath = undefined;

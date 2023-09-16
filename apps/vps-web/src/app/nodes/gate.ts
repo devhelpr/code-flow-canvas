@@ -19,7 +19,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getIfCondition: NodeTaskFactory<NodeInfo> = (
+export const getGate: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -60,7 +60,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         if (expression !== '' && (isNaN(result) || result === undefined)) {
           throw new Error("Expression couldn't be run");
         }
-        console.log('IFCondition result', result, input, expression);
+        console.log('Gate result', result, input, expression);
       } catch (error) {
         result = undefined;
         // (errorNode.domElement as unknown as HTMLElement).classList.remove(
@@ -75,16 +75,16 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       }
       return {
         result: input,
-        followPath: result ? 'success' : 'failure',
+        stop: !result,
       };
     }
     return {
       result: input,
-      followPath: Math.random() < 0.5 ? 'success' : 'failure',
+      stop: Math.random() < 0.5,
     };
   };
   return {
-    name: 'if-condition',
+    name: 'gate',
     family: 'flow-canvas',
     category: 'flow-control',
     createVisualNode: (
@@ -144,7 +144,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
           class:
             'inner-node flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
           style: {
-            'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
+            'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
           },
         },
         undefined,
@@ -159,20 +159,20 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         //}) as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
-      console.log('trackNamedSignal register if-condition', id);
+      console.log('trackNamedSignal register gate', id);
 
       let currentMode = 'expression';
       let currentValue = initialExpressionValue ?? '';
 
       trackNamedSignal(`${id}_Mode`, (value) => {
-        console.log('trackNamedSignal if-condition', id, value);
+        console.log('trackNamedSignal gate', id, value);
         currentMode = value;
         jsxComponentWrapper.domElement.textContent =
           currentMode === 'random' ? 'random' : currentValue ?? 'expression';
       });
 
       trackNamedSignal(`${id}_expression`, (value) => {
-        console.log('trackNamedSignal if-condition', id, value);
+        console.log('trackNamedSignal gaten', id, value);
         currentValue = value;
         jsxComponentWrapper.domElement.textContent =
           currentMode === 'random' ? 'random' : currentValue ?? 'expression';
@@ -186,32 +186,21 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorTop,
+            thumbType: ThumbType.StartConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            pathName: 'success',
             color: 'rgba(95,204,37,1)',
-            label: '#',
-            thumbConstraint: 'value',
+            label: ' ',
+            //thumbConstraint: 'value',
             name: 'success',
-          },
-          {
-            thumbType: ThumbType.StartConnectorBottom,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            pathName: 'failure',
-            color: 'rgba(204,37,37,1)',
-            label: '#',
-            thumbConstraint: 'value',
-            name: 'failure',
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
-            label: '#',
-            thumbConstraint: 'value',
+            label: ' ',
+            //thumbConstraint: 'value',
             name: 'input',
           },
         ],
@@ -225,7 +214,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         id,
         {
           formElements: [],
-          type: 'if-condition',
+          type: 'gate',
           formValues: {
             Mode: 'expression',
             expression: initialExpressionValue ?? '',

@@ -10,21 +10,22 @@ import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/form-component';
+import { replaceValues } from '../utils/replace-values';
 
 export const getStyledNode =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divNode: IElementNode<NodeInfo>;
-    let currentValue = 0;
+
     const defaultStyling = `{
       display:"block"
     }`;
 
-    const setStyling = () => {
-      const styling = JSON.parse(
-        node.nodeInfo.formValues['styling'] || defaultStyling
-      );
+    const setStyling = (value: string) => {
+      let stylingString = node.nodeInfo.formValues['styling'] || defaultStyling;
+      stylingString = replaceValues(stylingString, { value: value }, true);
+      const styling = JSON.parse(stylingString);
       const classes = styling['class'] || '';
       const classList = classes.split(' ').filter(Boolean);
       if (classList && classList.length > 0) {
@@ -39,20 +40,13 @@ export const getStyledNode =
     };
 
     const initializeCompute = () => {
-      currentValue = 0;
       return;
     };
     const compute = (input: string) => {
-      try {
-        currentValue = parseFloat(input) || 0;
-      } catch {
-        currentValue = 0;
-      }
-      setStyling();
+      setStyling(input);
 
       return {
         result: input,
-        stop: true,
       };
     };
 
@@ -83,7 +77,7 @@ export const getStyledNode =
               };
               console.log('onChange', node.nodeInfo);
               if (updated) {
-                setStyling();
+                setStyling('');
                 updated();
               }
             },
@@ -157,7 +151,7 @@ export const getStyledNode =
         node.nodeInfo.formValues = {
           styling: initialValue || defaultStyling,
         };
-        setStyling();
+        setStyling('');
 
         return node;
       },

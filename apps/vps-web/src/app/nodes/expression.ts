@@ -23,7 +23,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
-
+  let canvasAppInstance: canvasAppReturnType | undefined = undefined;
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -46,9 +46,12 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           `${compiledExpressionInfo.script}`
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
+      const variables = canvasAppInstance?.getVariables() ?? {};
+      console.log('expression canvas variables', variables);
       result = runExpression(
         expressionFunction,
         {
+          ...variables,
           input: input,
           currentValue: currentValue,
           value: currentValue,
@@ -95,6 +98,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      canvasAppInstance = canvasApp;
       const initialValue = initalValues?.['expression'] ?? '';
 
       const formElements = [

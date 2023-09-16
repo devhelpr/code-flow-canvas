@@ -30,6 +30,13 @@ export const createCanvasApp = <T>(
   const interactionStateMachine =
     interactionStateMachineInstance ?? createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
+  const variables: Record<
+    string,
+    {
+      getData: () => any;
+      setData: (data: any) => void;
+    }
+  > = {};
   let scaleCamera = 1;
   let xCamera = 0;
   let yCamera = 0;
@@ -797,6 +804,42 @@ export const createCanvasApp = <T>(
           onCanvasUpdated();
         }
       }
+    },
+    registerVariable: (
+      variableName: string,
+      variable: {
+        getData: () => any;
+        setData: (data: any) => void;
+      }
+    ) => {
+      if (variableName) {
+        variables[variableName] = variable;
+      }
+    },
+    unregisterVariable: (variableName: string) => {
+      if (variableName && variables[variableName]) {
+        delete variables[variableName];
+      }
+    },
+    getVariable: (variableName: string) => {
+      if (variableName && variables[variableName]) {
+        return variables[variableName].getData();
+      }
+      return false;
+    },
+    setVariable: (variableName: string, data: any) => {
+      if (variableName && variables[variableName]) {
+        variables[variableName].setData(data);
+      }
+    },
+    getVariables: () => {
+      const result: Record<string, any> = {};
+      Object.entries(variables).forEach(([key, value]) => {
+        if (key) {
+          result[key] = value.getData();
+        }
+      });
+      return result;
     },
   };
 };

@@ -38,7 +38,8 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
-      const expression = `value ${input ?? ''}`;
+      const expression =
+        input.at(0) === '=' ? `${input.substring(1)}` : `value ${input ?? ''}`;
       const compiledExpressionInfo = compileExpressionAsInfo(expression);
       const expressionFunction = (
         new Function(
