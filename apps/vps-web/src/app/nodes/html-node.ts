@@ -1,52 +1,53 @@
 import {
   createElement,
+  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
-import {
-  compileExpressionAsInfo,
-  runExpression,
-} from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import { replaceValues } from '../utils/replace-values';
+import { InitialValues, NodeTask } from '../node-task-registry';
+import { FormFieldType } from '../components/form-component';
+import { replaceExpressionScript } from '../utils/replace-expression-script';
 
-export const getValue: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
-): NodeTask<NodeInfo> => {
+export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
+  let divNode: IElementNode<NodeInfo>;
+  let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
+    undefined;
+  let variables: Record<string, string> = {};
+
+  const defaultHTML = ``;
+
+  const setHTML = (value: string) => {
+    const splitted = value.split(':');
+    if (splitted.length === 2) {
+      variables[splitted[0]] = splitted[1] || '';
+    }
+    let htmlString = node.nodeInfo.formValues['html'] || defaultHTML;
+    htmlString = replaceExpressionScript(htmlString, variables, true);
+
+    (divNode.domElement as HTMLElement).innerHTML = htmlString;
+    if (rect) {
+      rect.resize();
+    }
+  };
 
   const initializeCompute = () => {
+    variables = {};
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
-    const result = replaceValues(node.nodeInfo.formValues?.['value'] ?? '', {
-      value: input,
-      currentValue: input,
-      index: loopIndex ?? 0,
-      payload: payload,
-    });
+  const compute = (input: string) => {
+    setHTML(input);
+
     return {
-      result,
-      followPath: undefined,
+      result: input,
     };
   };
 
   return {
-    name: 'value',
+    name: 'html-node',
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: <NodeInfo>(
@@ -57,20 +58,22 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
-      const initialValue = initalValues?.['value'] ?? '';
+      const initialValue = initalValues?.['html'] || defaultHTML;
 
       const formElements = [
         {
-          fieldType: FormFieldType.Text,
-          fieldName: 'value',
-          value: initialValue ?? '',
+          fieldType: FormFieldType.TextArea,
+          fieldName: 'html',
+          value: initialValue,
           onChange: (value: string) => {
+            console.log('html-node onchange', value);
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
-              value: value,
+              html: value,
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {
+              setHTML('');
               updated();
             }
           },
@@ -80,22 +83,13 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded`,
+          class: `inner-node bg-sky-900 rounded min-h-[100px]`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
 
-      FormComponent({
-        rootElement: componentWrapper.domElement as HTMLElement,
-        id: id ?? '',
-        formElements,
-        hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
-        },
-      }) as unknown as HTMLElement;
-
-      const rect = canvasApp.createRect(
+      divNode = createElement('div', {}, componentWrapper.domElement);
+      rect = canvasApp.createRect(
         x,
         y,
         200,
@@ -107,8 +101,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             color: 'white',
-            label: ' ',
-            //thumbConstraint: 'value',
+            label: '',
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
@@ -116,21 +109,20 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            //thumbConstraint: 'value',
           },
         ],
         componentWrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: `bg-sky-900 p-4 rounded`,
         },
-        undefined,
+        false,
         undefined,
         undefined,
         id,
         {
-          type: 'value',
+          type: 'html-node',
           formValues: {
-            value: initialValue ?? '',
+            html: initialValue || defaultHTML,
           },
         },
         containerNode
@@ -143,6 +135,11 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
       node = rect.nodeComponent;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
+      node.nodeInfo.formValues = {
+        html: initialValue || defaultHTML,
+      };
+      setHTML('');
+
       return node;
     },
   };

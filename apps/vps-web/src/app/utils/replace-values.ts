@@ -7,9 +7,7 @@ export const replaceValues = (
   const matches = resultContent.match(/{.+?}/g);
   if (matches) {
     matches.map((match) => {
-      const matchValue = match.slice(1, -1);
-      const splittedValues = matchValue.split(':');
-      const variableName = splittedValues[0];
+      const variableName = match.slice(1, -1);
       let value = payload[variableName];
       if (!!keepUnknownFields && value === undefined) {
         value = match;

@@ -35,6 +35,7 @@ import { getGate } from '../nodes/gate';
 import { setVariable } from '../nodes/set-variable';
 import { getNodeTrigger } from '../nodes/node-trigger';
 import { getNodeTriggerTarget } from '../nodes/node-trigger-target';
+import { getHtmlNode } from '../nodes/html-node';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -79,6 +80,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('slider', getSlider(animatePath));
   registerNodeFactory('checkbox', getCheckbox(animatePath));
   registerNodeFactory('styled-node', getStyledNode(animatePath));
+  registerNodeFactory('html-node', getHtmlNode);
   registerNodeFactory('annotation', getAnnotation(animatePath));
 
   registerNodeFactory('node-trigger', getNodeTrigger(animatePath));
