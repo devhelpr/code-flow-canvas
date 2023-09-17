@@ -91,6 +91,7 @@ export class AppElement extends HTMLElement {
   editPopupContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
+  editPopupEditingNodeIndicator: IElementNode<NodeInfo> | undefined = undefined;
 
   removeElement = (element: IElementNode<NodeInfo>) => {
     if (element.nodeInfo?.delete) {
@@ -245,6 +246,15 @@ export class AppElement extends HTMLElement {
     lineContainer.style.height = `${
       300 + 2 * heightNode * scaleCamera //yCamera + yNode * scaleCamera + 40 * scaleCamera
     }px`;
+
+    const indicatorElement = this.editPopupEditingNodeIndicator
+      ?.domElement as unknown as HTMLElement;
+    indicatorElement.style.left = `${
+      xCamera + xNode * scaleCamera + (widthNode / 2) * scaleCamera
+    }px`;
+    indicatorElement.style.top = `${lineY}px`;
+    indicatorElement.classList.remove('hidden');
+    indicatorElement.classList.add('editing-node-indicator');
 
     (this.editPopupLinePath?.domElement as SVGPathElement).setAttribute(
       'd',
@@ -1382,6 +1392,14 @@ export class AppElement extends HTMLElement {
       this.editPopupLineContainer.domElement
     );
 
+    this.editPopupEditingNodeIndicator = createElement(
+      'div',
+      {
+        class: 'absolute z-[1010]',
+      },
+      rootElement
+    );
+
     const setExecutionPath = (value: number) => {
       const index = Math.round(
         ((this.pathExecutions.length - 1) * value) / 100
@@ -1655,6 +1673,11 @@ export class AppElement extends HTMLElement {
         (
           this.editPopupLineContainer?.domElement as unknown as HTMLElement
         ).classList.add('hidden');
+
+        const indicatorElement = this.editPopupEditingNodeIndicator
+          ?.domElement as unknown as HTMLElement;
+        indicatorElement.classList.add('hidden');
+        indicatorElement.classList.remove('editing-node-indicator');
         setupTasksInDropdown();
       }
 
