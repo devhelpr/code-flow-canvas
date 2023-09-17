@@ -1357,7 +1357,7 @@ export class AppElement extends HTMLElement {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-1/4 h-[300px] z-[1010] p-2 bg-slate-600 border-white border hidden overflow-auto',
+          'absolute w-1/4 h-[300px] z-[1010] p-2 bg-slate-600 border-white hidden overflow-auto',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
         wheel: (event) => {
           event.stopPropagation();
@@ -1370,7 +1370,8 @@ export class AppElement extends HTMLElement {
       {
         width: 0,
         height: 0,
-        class: 'absolute top-0 left-0 pointer-events-none z-[1000] hidden',
+        class:
+          'absolute top-0 left-0 pointer-events-none z-[1000] hidden opacity-75',
         style: {
           width: '200px',
           height: '200px',

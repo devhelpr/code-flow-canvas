@@ -6,6 +6,13 @@ export const menubarClasses =
 /*
   default tailwind classes
 
+  transition
+
+  text-white
+  text-black
+
+  font-bold
+
   bg-slate-50
   bg-slate-100
   bg-slate-200
