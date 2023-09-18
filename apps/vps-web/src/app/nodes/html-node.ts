@@ -1,4 +1,5 @@
 import {
+  createASTNodeElement,
   createElement,
   IElementNode,
   INodeComponent,
@@ -9,7 +10,15 @@ import {
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
-import { replaceExpressionScript } from '../utils/replace-expression-script';
+import {
+  createStructuredExpressionsMarkup,
+  replaceExpressionScript,
+} from '../utils/replace-expression-script';
+import {
+  compileMarkup,
+  IASTTreeNode,
+  IASTTreeProperty,
+} from '@devhelpr/markup-compiler';
 
 export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -17,25 +26,153 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
-
+  let astElement: IElementNode<NodeInfo> | undefined = undefined;
+  let structuredMarkup:
+    | {
+        expressions: Record<string, object>;
+        markup: string;
+      }
+    | undefined = undefined;
   const defaultHTML = ``;
-
+  const parseBody = (
+    body: IASTTreeNode,
+    expressions: Record<string, object>
+  ) => {
+    body.body?.forEach((childASTNode) => {
+      if (childASTNode.type === 'Markup') {
+        parseBody(childASTNode, expressions);
+      } else if (childASTNode.type === 'TEXT') {
+        const matches = (childASTNode.value ?? '')
+          .toString()
+          .match(/\[[\s\S]+?\]/gm);
+        if (matches) {
+          matches.map((match) => {
+            const expressionId = match.slice(1, -1);
+            const expression = expressions[expressionId] as any;
+            if (expression) {
+              expression.value = childASTNode.value ?? '';
+              expression.isTextNode = true;
+              expression.textNode = childASTNode;
+            }
+          });
+        }
+      }
+    });
+    body.properties?.forEach((propertyKeyValue) => {
+      const matches = propertyKeyValue.value.toString().match(/\[[\s\S]+?\]/gm);
+      if (matches) {
+        matches.map((match) => {
+          const expressionId = match.slice(1, -1);
+          const expression = expressions[expressionId] as any;
+          if (expression) {
+            expression.value = propertyKeyValue.value;
+            expression.isProperty = true;
+            expression.propertyNode = propertyKeyValue;
+          }
+        });
+      }
+    });
+  };
   const setHTML = (value: string) => {
-    const splitted = value.split(':');
-    if (splitted.length === 2) {
-      variables[splitted[0]] = splitted[1] || '';
-    }
-    let htmlString = node.nodeInfo.formValues['html'] || defaultHTML;
-    htmlString = replaceExpressionScript(htmlString, variables, true);
+    try {
+      const splitted = value.split(':');
+      if (splitted.length === 2) {
+        variables[splitted[0]] = splitted[1] || '';
+      }
+      if (!astElement) {
+        const htmlString = node.nodeInfo.formValues['html'] || defaultHTML;
+        structuredMarkup = createStructuredExpressionsMarkup(htmlString);
+        console.log('structuredMarkup', structuredMarkup);
+        const compiledMarkup = compileMarkup(structuredMarkup.markup);
+        // htmlString = replaceExpressionScript(htmlString, variables, true);
 
-    (divNode.domElement as HTMLElement).innerHTML = htmlString;
-    if (rect) {
-      rect.resize();
+        // (divNode.domElement as HTMLElement).innerHTML = htmlString;
+        if (compiledMarkup) {
+          (divNode.domElement as HTMLElement).innerHTML = '';
+          astElement = createASTNodeElement(
+            compiledMarkup.body,
+            divNode.domElement,
+            divNode.elements,
+            structuredMarkup.expressions
+          );
+        }
+      }
+      if (astElement && structuredMarkup) {
+        Object.entries(structuredMarkup.expressions).forEach((entry) => {
+          console.log('entry', entry);
+          const info = entry[1] as {
+            expressionFunction: (payload?: object) => any;
+            value: string;
+            isProperty: boolean;
+            propertyName: string;
+            isTextNode: boolean;
+            element: IElementNode<NodeInfo>;
+          };
+
+          const matches = (info.value ?? '').toString().match(/\[[\s\S]+?\]/gm);
+          if (matches) {
+            let resultContent = info.value;
+            matches.map((match) => {
+              const result = info.expressionFunction(variables);
+              console.log('result', result, match);
+              if (result !== false && result !== undefined) {
+                //resultContent.replace(match, result);
+
+                if (match.substring(0, 1) == '[') {
+                  resultContent = resultContent.replace(match, result);
+                } else {
+                  const allOccurancesOfMatchRegex = new RegExp(match, 'gm');
+                  resultContent = resultContent.replace(
+                    allOccurancesOfMatchRegex,
+                    result
+                  );
+                }
+              } else {
+                if (match.substring(0, 1) == '[') {
+                  resultContent = resultContent.replace(match, '');
+                } else {
+                  const allOccurancesOfMatchRegex = new RegExp(match, 'gm');
+                  resultContent = resultContent.replace(
+                    allOccurancesOfMatchRegex,
+                    ''
+                  );
+                }
+              }
+            });
+            if (info.isProperty) {
+              console.log(
+                'info.propertyName',
+                info.propertyName,
+                resultContent
+              );
+              if (info.propertyName === 'class') {
+                (info.element.domElement as HTMLElement).className =
+                  resultContent;
+              } else {
+                (info.element.domElement as HTMLElement).setAttribute(
+                  info.propertyName,
+                  resultContent
+                );
+              }
+            } else if (info.isTextNode) {
+              (info.element.domElement as HTMLElement).textContent =
+                resultContent;
+            }
+          }
+        });
+
+        if (rect) {
+          rect.resize();
+        }
+      }
+    } catch (error) {
+      console.error('setHTML error', error);
     }
   };
 
   const initializeCompute = () => {
     variables = {};
+    astElement = undefined;
     return;
   };
   const compute = (input: string) => {

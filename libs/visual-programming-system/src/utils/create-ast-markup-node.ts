@@ -13,7 +13,8 @@ import { createElement } from './create-element';
 export const createASTNodeElement = <T>(
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
-  elements: ElementNodeMap<T>
+  elements: ElementNodeMap<T>,
+  expressions?: Record<string, object>
 ) => {
   let element: IElementNode<T> | undefined = undefined;
   const elementProperties: any = {};
@@ -32,6 +33,40 @@ export const createASTNodeElement = <T>(
     text
   );
 
+  const matches = text.toString().match(/\[[\s\S]+?\]/gm);
+  if (matches && expressions && element) {
+    matches.map((match) => {
+      const expressionId = match.slice(1, -1);
+      const expression = expressions[expressionId] as any;
+      if (expression && element) {
+        expression.value = text;
+        expression.isTextNode = true;
+        expression.element = element;
+        element.domElement.textContent = '';
+      }
+    });
+  }
+
+  astNode.properties?.forEach((propertyKeyValue) => {
+    const matches = propertyKeyValue.value.toString().match(/\[[\s\S]+?\]/gm);
+    if (matches && expressions) {
+      matches.map((match) => {
+        const expressionId = match.slice(1, -1);
+        const expression = expressions[expressionId] as any;
+        if (expression) {
+          expression.value = propertyKeyValue.value;
+          expression.isProperty = true;
+          expression.propertyName = propertyKeyValue.propertyName;
+          expression.element = element;
+          (element!.domElement as HTMLElement).setAttribute(
+            propertyKeyValue.propertyName,
+            ''
+          );
+        }
+      });
+    }
+  });
+
   if (element) {
     (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
     elements.set(element.id, element);
@@ -40,7 +75,8 @@ export const createASTNodeElement = <T>(
       createASTNodeElement(
         childASTNode,
         element!.domElement,
-        element!.elements
+        element!.elements,
+        expressions
       );
     });
   }
