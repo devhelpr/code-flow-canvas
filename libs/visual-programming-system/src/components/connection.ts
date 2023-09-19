@@ -711,6 +711,9 @@ export class Connection<T> {
         this.points.cy1 = start.cy;
         skipChecks = true;
         updateThumbs = true;
+      } else {
+        this.points.cx1 = this.points.beginX + 150;
+        this.points.cy1 = this.points.beginY;
       }
 
       if (this.nodeComponent?.endNode) {
@@ -977,13 +980,20 @@ export class Connection<T> {
           this.points.endX = x - endOffsetX;
           this.points.endY = y - endOffsetY;
 
-          this.points.cx2 = this.points.endX - 150;
-          this.points.cy2 = this.points.endY;
+          if (!this.nodeComponent?.endNode) {
+            this.points.cx2 = this.points.endX - 150;
+            this.points.cy2 = this.points.endY;
+          }
         } else if (
           initiator.connectionControllerType === ConnectionControllerType.begin
         ) {
           this.points.beginX = x - startOffsetX;
           this.points.beginY = y - startOffsetY;
+
+          if (!this.nodeComponent?.startNode) {
+            this.points.cx1 = this.points.beginX + 150;
+            this.points.cy1 = this.points.beginY;
+          }
         } else {
           return false;
         }
