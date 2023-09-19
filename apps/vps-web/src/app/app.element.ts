@@ -1396,7 +1396,7 @@ export class AppElement extends HTMLElement {
     this.editPopupEditingNodeIndicator = createElement(
       'div',
       {
-        class: 'absolute z-[1010]',
+        class: 'absolute z-[1010] pointer-events-none',
       },
       rootElement
     );
@@ -1514,6 +1514,16 @@ export class AppElement extends HTMLElement {
             this.editPopupLineContainer?.domElement as unknown as HTMLElement
           ).classList.add('hidden');
 
+          (
+            this.editPopupEditingNodeIndicator
+              ?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
+
+          (
+            this.editPopupEditingNodeIndicator
+              ?.domElement as unknown as HTMLElement
+          ).classList.remove('editing-node-indicator');
+
           return;
         }
 
@@ -1536,6 +1546,16 @@ export class AppElement extends HTMLElement {
           (
             this.editPopupLineContainer?.domElement as unknown as HTMLElement
           ).classList.add('hidden');
+          (
+            this.editPopupEditingNodeIndicator
+              ?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
+
+          (
+            this.editPopupEditingNodeIndicator
+              ?.domElement as unknown as HTMLElement
+          ).classList.remove('editing-node-indicator');
+
           return;
         }
         // const [currentValue, setCurrentValue] = createNamedSignal(
@@ -1594,6 +1614,16 @@ export class AppElement extends HTMLElement {
             (
               this.editPopupLineContainer?.domElement as unknown as HTMLElement
             ).classList.add('hidden');
+
+            (
+              this.editPopupEditingNodeIndicator
+                ?.domElement as unknown as HTMLElement
+            ).classList.add('hidden');
+
+            (
+              this.editPopupEditingNodeIndicator
+                ?.domElement as unknown as HTMLElement
+            ).classList.remove('editing-node-indicator');
           },
           formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
             (item: any) => {
@@ -1674,11 +1704,16 @@ export class AppElement extends HTMLElement {
         (
           this.editPopupLineContainer?.domElement as unknown as HTMLElement
         ).classList.add('hidden');
+        (
+          this.editPopupEditingNodeIndicator
+            ?.domElement as unknown as HTMLElement
+        ).classList.add('hidden');
 
-        const indicatorElement = this.editPopupEditingNodeIndicator
-          ?.domElement as unknown as HTMLElement;
-        indicatorElement.classList.add('hidden');
-        indicatorElement.classList.remove('editing-node-indicator');
+        (
+          this.editPopupEditingNodeIndicator
+            ?.domElement as unknown as HTMLElement
+        ).classList.remove('editing-node-indicator');
+
         setupTasksInDropdown();
       }
 
