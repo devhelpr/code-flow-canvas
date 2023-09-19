@@ -429,7 +429,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         input = inputInstance.nodeComponent;
 
         const outputInstance = canvasAppInstance.createRect(
-          600,
+          width ?? 600,
           0,
           1,
           1,
@@ -473,6 +473,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         });
 
         rect.addUpdateEventListener((target, x, y, initiator) => {
+          console.log('rect update', target, x, y, initiator);
           if (target) {
             outputInstance.nodeComponent?.update?.(
               outputInstance.nodeComponent,

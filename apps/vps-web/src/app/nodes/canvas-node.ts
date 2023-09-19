@@ -223,7 +223,7 @@ export const getCanvasNode =
           }
 
           const outputInstance = canvasAppInstance.createRect(
-            600,
+            width ?? 600,
             0,
             1,
             1,
