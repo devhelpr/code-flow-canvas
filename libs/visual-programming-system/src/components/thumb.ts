@@ -378,6 +378,14 @@ export class ThumbNode<T> {
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
         'cursor-pointer'
       );
+    } else {
+      if (this.nodeComponent && this.nodeComponent.getThumbCircleElement) {
+        console.log('RESET THUMB CIRCLE ELEMENT on pointer leave');
+        const circleDomElement = this.nodeComponent.getThumbCircleElement();
+
+        circleDomElement.classList.add('pointer-events-auto');
+        circleDomElement.classList.remove('pointer-events-none');
+      }
     }
   };
 
