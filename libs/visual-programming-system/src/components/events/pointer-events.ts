@@ -43,11 +43,9 @@ export const pointerDown = <T>(
   ) {
     xOffsetWithinElementOnFirstClick = x;
     yOffsetWithinElementOnFirstClick = y;
-    if (
-      element?.nodeType !== NodeType.Connection &&
-      element?.nodeType !== NodeType.Shape
-    ) {
-      (canvasNode?.domElement as unknown as HTMLElement | SVGElement).append(
+    if (element?.nodeType === NodeType.Shape) {
+      // .. this is a hack to make sure that the element is always on top
+      (canvasNode?.domElement as unknown as HTMLElement | SVGElement)?.append(
         element.domElement
       );
     }

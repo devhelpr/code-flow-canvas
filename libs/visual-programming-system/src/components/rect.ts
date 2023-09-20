@@ -444,7 +444,12 @@ export class Rect<T> {
   ) {
     // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
     // (not to be confused with the resize handlers)
-
+    console.log(
+      'onCanReceiveDroppedComponent',
+      thumbNode,
+      component,
+      receivingThumbNode
+    );
     let connectionCount = 0;
     const connections = (
       thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>
@@ -467,6 +472,7 @@ export class Rect<T> {
         connectionCount >= thumbNode.maxConnections) ||
       (thumbNode.maxConnections === undefined && connectionCount >= 1)
     ) {
+      console.log('onCanReceiveDroppedComponent FALSE1');
       return false;
     }
 
@@ -496,6 +502,7 @@ export class Rect<T> {
           (component.parent as unknown as IConnectionNodeComponent<T>)
             .startNodeThumb?.thumbConstraint
         ) {
+          console.log('onCanReceiveDroppedComponent FALSE2');
           return false;
         }
       }
@@ -528,11 +535,13 @@ export class Rect<T> {
           (component.parent as unknown as IConnectionNodeComponent<T>)
             .endNodeThumb?.thumbConstraint
         ) {
+          console.log('onCanReceiveDroppedComponent FALSE3');
           return false;
         }
       }
       return true;
     }
+    console.log('onCanReceiveDroppedComponent FALSE4');
     return false;
   }
   oldWidth = -1;

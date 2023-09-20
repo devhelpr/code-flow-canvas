@@ -94,9 +94,7 @@ export class ThumbNode<T> {
       xInitial !== undefined ? xInitial : Math.floor(Math.random() * 1024);
     const initialY =
       yInitial !== undefined ? yInitial : Math.floor(Math.random() * 500);
-    //console.log('createSVGElement', initialX, initialY, connectionControllerType);
-    // const nodeComponent: INodeComponent<T> = createSVGNodeComponent(
-    //   'svg',
+
     this.nodeComponent = createElement(
       'div',
       {
@@ -133,12 +131,13 @@ export class ThumbNode<T> {
 
     (this.nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
       this.nodeComponent.id;
+
     this.circleElement = createElement(
       'div',
       {
         class: `${
           disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
-        }  origin-center`, // rounded-full border-[3px]
+        }  origin-center`,
         style: {
           width: `${(radius ?? thumbRadius) * 2}px`,
           height: `${(radius ?? thumbRadius) * 2}px`,
@@ -250,9 +249,9 @@ export class ThumbNode<T> {
       ).style.display = `${visible ? 'block' : 'none'}`;
 
       if (visible && !disableInteraction) {
-        console.log(
-          'THUMB SET VISIBILITY  (BEFORE remove pointer-events-none)'
-        );
+        // console.log(
+        //   'THUMB SET VISIBILITY  (BEFORE remove pointer-events-none)'
+        // );
         const circleDomElement = this.circleElement
           ?.domElement as unknown as SVGElement;
         circleDomElement.classList.remove('pointer-events-none');
@@ -297,17 +296,18 @@ export class ThumbNode<T> {
       return;
     }
 
+    console.log(
+      'THUMB svg pointerover',
+      this.nodeComponent?.id,
+      this.nodeComponent,
+      this.nodeComponent?.isConnectPoint
+    );
+
     // TODO: Fix this scenaerio:
     // - hover over rect-thumb..
     // - when the below log appears...
     // - start dragging and chance is big that connection is being dragged away
     // ... which is NOT allowed
-    console.log(
-      'THUMB svg pointerover',
-      this.nodeComponent.id,
-      this.nodeComponent,
-      this.nodeComponent.isConnectPoint
-    );
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       'cursor-pointer'
@@ -378,14 +378,13 @@ export class ThumbNode<T> {
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
         'cursor-pointer'
       );
-    } else {
-      if (this.nodeComponent && this.nodeComponent.getThumbCircleElement) {
-        console.log('RESET THUMB CIRCLE ELEMENT on pointer leave');
-        const circleDomElement = this.nodeComponent.getThumbCircleElement();
+    }
+    if (this.nodeComponent && this.nodeComponent.getThumbCircleElement) {
+      console.log('RESET THUMB CIRCLE ELEMENT on pointer leave');
+      const circleDomElement = this.nodeComponent.getThumbCircleElement();
 
-        circleDomElement.classList.add('pointer-events-auto');
-        circleDomElement.classList.remove('pointer-events-none');
-      }
+      circleDomElement.classList.add('pointer-events-auto');
+      circleDomElement.classList.remove('pointer-events-none');
     }
   };
 
@@ -487,8 +486,6 @@ export class ThumbNode<T> {
       }
 
       if (this.nodeComponent.thumbType === ThumbType.Center) {
-        //e.stopPropagation();
-        console.log('THUMB CENTER STOPPED PROPAGATION');
         return;
       }
 

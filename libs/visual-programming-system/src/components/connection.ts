@@ -379,34 +379,6 @@ export class Connection<T> {
         this.interactionStateMachine
       );
       this.interactionInfo = interactionInfoResult;
-      if (interactionInfoResult && this.svgParent) {
-        (this.canvasElement as unknown as HTMLElement | SVGElement).append(
-          this.svgParent.domElement
-        );
-
-        (this.canvasElement as unknown as HTMLElement | SVGElement).append(
-          this.nodeComponent.connectionStartNodeThumb?.domElement as Node
-        );
-
-        (this.canvasElement as unknown as HTMLElement | SVGElement).append(
-          this.nodeComponent.connectionEndNodeThumb?.domElement as Node
-        );
-
-        if (this.nodeComponent.controlPointNodes) {
-          if (this.isQuadratic) {
-            (this.canvasElement as unknown as HTMLElement | SVGElement).append(
-              this.nodeComponent.controlPointNodes[0].domElement as Node
-            );
-          } else {
-            (this.canvasElement as unknown as HTMLElement | SVGElement).append(
-              this.nodeComponent.controlPointNodes[0].domElement as Node
-            );
-            (this.canvasElement as unknown as HTMLElement | SVGElement).append(
-              this.nodeComponent.controlPointNodes[1].domElement as Node
-            );
-          }
-        }
-      }
     }
   };
 
@@ -878,7 +850,7 @@ export class Connection<T> {
           'pointer-events-none'
         );
       }
-      if (this.nodeComponent?.controlPointNodes?.length) {
+      if (this.nodeComponent?.controlPoints?.length) {
         const { offsetX: startOffsetX, offsetY: startOffsetY } =
           onGetConnectionToThumbOffset(
             ControlAndEndPointNodeType.start,
@@ -890,9 +862,6 @@ export class Connection<T> {
             this.nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
           );
 
-        this.nodeComponent.controlPointNodes[0].setVisibility?.(
-          !(this.nodeComponent?.startNode || this.nodeComponent?.endNode)
-        );
         this.nodeComponent.connectionStartNodeThumb?.update?.(
           this.nodeComponent?.connectionStartNodeThumb,
           this.points.beginX + startOffsetX,
@@ -905,23 +874,6 @@ export class Connection<T> {
           this.points.endY + endOffsetY,
           this.nodeComponent
         );
-        this.nodeComponent.controlPointNodes[0].update?.(
-          this.nodeComponent.controlPointNodes[0],
-          this.points.cx1,
-          this.points.cy1,
-          this.nodeComponent
-        );
-        if (!this.isQuadratic) {
-          this.nodeComponent.controlPointNodes[1].setVisibility?.(
-            !(this.nodeComponent?.startNode || this.nodeComponent?.endNode)
-          );
-          this.nodeComponent.controlPointNodes[1].update?.(
-            this.nodeComponent.controlPointNodes[1],
-            this.points.cx2,
-            this.points.cy2,
-            this.nodeComponent
-          );
-        }
       }
     } else if (!skipChecks) {
       if (initiator && !initiator.connectionControllerType) {
@@ -1123,33 +1075,10 @@ export class Connection<T> {
         this.nodeComponent
       );
 
-      if (this.nodeComponent?.controlPointNodes?.length) {
-        this.nodeComponent.controlPointNodes?.[0].setVisibility?.(false);
-        this.nodeComponent.controlPointNodes?.[0].update?.(
-          this.nodeComponent.controlPointNodes?.[0],
-          this.points.cx1,
-          this.points.cy1,
-          this.nodeComponent
-        );
-      }
-
-      if (!this.isQuadratic) {
-        if (this.nodeComponent?.controlPointNodes?.length) {
-          this.nodeComponent.controlPointNodes?.[1].setVisibility?.(false);
-        }
-        this.nodeComponent.controlPointNodes?.[1].update?.(
-          this.nodeComponent.controlPointNodes?.[1],
-          this.points.cx1,
-          this.points.cy1,
-          this.nodeComponent
-        );
-      }
       this.nodeComponent.x = this.points.beginX;
       this.nodeComponent.y = this.points.beginY;
       this.nodeComponent.endX = this.points.endX;
       this.nodeComponent.endY = this.points.endY;
-
-      //console.log('connection update', nodeComponent);
     }
     if (this.svgParent) {
       const svgParentElement = this.svgParent

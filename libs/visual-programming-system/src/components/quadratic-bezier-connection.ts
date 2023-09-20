@@ -149,6 +149,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
+    this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
 
     const endPointNode = new ThumbNode<T>(
       canvas.domElement,
@@ -190,49 +191,14 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
-    const controlPoint1Node = new ThumbNode<T>(
-      canvas.domElement,
-      canvas,
-      interactionStateMachine,
-      this.nodeComponent.elements,
-      'controlpoint',
-      ThumbType.ControlPoint,
-      undefined,
-      '#00ff00',
-      controlPoint1X,
-      controlPoint1Y,
-      ConnectionControllerType.c1,
-      NodeType.ConnectionController
-    );
-    if (!controlPoint1Node.nodeComponent) {
-      throw new Error('controlPoint1Node.nodeComponent is undefined');
-    }
-    controlPoint1Node.nodeComponent.isControlled = isControlled;
-    controlPoint1Node.nodeComponent.parent = this.nodeComponent;
-    controlPoint1Node.nodeComponent.update = (
-      target?: INodeComponent<T>,
-      x?: number,
-      y?: number,
-      initiator?: INodeComponent<T>
-    ) => {
-      if (!target || x === undefined || y === undefined || !initiator) {
-        return false;
-      }
-      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
-      return true;
-    };
-    this.nodeComponent.controlPointNodes?.push(controlPoint1Node.nodeComponent);
+    this.svgParent?.domElement.after(endPointNode.nodeComponent.domElement);
+
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
 
     createEffect(() => {
-      //const selectedNode = getSelectedNode();
       const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
-      //console.log('connection visibility', visibility, connection.id);
       if (!startPointNode.nodeComponent || !endPointNode.nodeComponent) {
-        return;
-      }
-      if (!controlPoint1Node.nodeComponent) {
         return;
       }
       (
@@ -240,9 +206,6 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       ).style.display = visibility ? 'block' : 'none';
       (
         endPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-      (
-        controlPoint1Node.nodeComponent.domElement as unknown as SVGElement
       ).style.display = visibility ? 'block' : 'none';
     });
 
