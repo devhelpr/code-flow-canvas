@@ -1,13 +1,8 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
-import {
-  paddingRect,
-  thumbRadius,
-  totalPaddingRect,
-} from '../constants/measures';
+import { paddingRect, totalPaddingRect } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
-  CurveType,
   DOMElementNode,
   ElementNodeMap,
   IConnectionNodeComponent,
@@ -23,19 +18,9 @@ import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
 import {
-  calculateQuadraticBezierLineIntersections,
-  splitQuadraticBezierCurve,
-} from './utils/bezier-math';
-import {
   onCalculateControlPoints as onCalculateCubicBezierControlPoints,
   onGetConnectionToThumbOffset,
 } from './utils/calculate-control-points';
-import {
-  Vector,
-  intersectionCircleLine,
-  normalizeVector,
-  perpendicularVector,
-} from './utils/vector-math';
 
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
