@@ -32,7 +32,12 @@ import flowData from '../example-data/tiltest.json';
 
 import { FormComponent } from './components/form-component';
 
-import { run, RunNodeResult } from './simple-flow-engine/simple-flow-engine';
+import {
+  increaseRunIndex,
+  resetRunIndex,
+  run,
+  RunNodeResult,
+} from './simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from './types/node-info';
 import {
   setSpeedMeter,
@@ -552,6 +557,7 @@ export class AppElement extends HTMLElement {
       });
       this.pathExecutions = [];
       this.currentPathUnderInspection = undefined;
+      resetRunIndex();
     };
     createElement(
       'button',
@@ -826,6 +832,7 @@ export class AppElement extends HTMLElement {
                   (pathRange.domElement as HTMLInputElement).value = '0';
                   this.pathExecutions.push(pathExecution);
                   console.log('run finished', input, pathExecution);
+                  increaseRunIndex();
                 }
               }
             );

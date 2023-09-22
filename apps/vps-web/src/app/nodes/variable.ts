@@ -1,5 +1,6 @@
 import {
   createElement,
+  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -17,15 +18,25 @@ import {
 export const getVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
+  let canvasAppInstance: canvasAppReturnType;
   let node: IRectNodeComponent<NodeInfo>;
-  let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+  let htmlNode: IElementNode<NodeInfo> | undefined = undefined;
+  let tagNode: IElementNode<NodeInfo> | undefined = undefined;
   let variableName = '';
   let currentValue = 0;
   const initializeCompute = () => {
-    currentValue = 0;
-    if (htmlNode) {
-      (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
+    currentValue = parseFloat(node?.nodeInfo.formValues?.['initialValue']) ?? 0;
+    if (isNaN(currentValue)) {
+      currentValue = 0;
+      if (htmlNode) {
+        (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
+      }
+    } else if (htmlNode) {
+      (htmlNode.domElement as unknown as HTMLElement).textContent =
+        currentValue.toString();
     }
+    canvasAppInstance?.setVariable(variableName, currentValue);
+
     return;
   };
   const compute = (
@@ -77,8 +88,10 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      canvasAppInstance = canvasApp;
       variableName = initalValues?.['variableName'] ?? '';
       canvasApp.registerVariable(variableName, {
+        id: id ?? '',
         getData,
         setData,
       });
@@ -92,13 +105,30 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               variableName: value,
             };
-            canvasApp.unregisterVariable(variableName);
+            canvasApp.unregisterVariable(variableName, id ?? '');
             variableName = value;
+            (tagNode?.domElement as HTMLElement).textContent = variableName;
             canvasApp.registerVariable(variableName, {
+              id: id ?? '',
               getData,
               setData,
             });
             console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'initialValue',
+          value: initalValues?.['initialValue'] ?? '',
+          onChange: (value: string) => {
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              initialValue: value,
+            };
+            initializeCompute();
             if (updated) {
               updated();
             }
@@ -118,7 +148,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded text-center`,
+          class: `inner-node bg-slate-600 text-white p-4 rounded text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -133,7 +163,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         [],
         componentWrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: `p-4 rounded`,
         },
         undefined,
         undefined,
@@ -143,6 +173,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
           type: 'variable',
           formValues: {
             variableName: variableName,
+            initialValue: initalValues?.['initialValue'] ?? '',
           },
         },
         containerNode
@@ -151,6 +182,16 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
       rect.nodeComponent.nodeInfo.formElements = formElements;
+
+      tagNode = createElement(
+        'div',
+        {
+          class:
+            'absolute top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1',
+        },
+        rect.nodeComponent.domElement as unknown as HTMLElement,
+        variableName
+      ) as unknown as INodeComponent<NodeInfo>;
 
       node = rect.nodeComponent;
       node.nodeInfo.isVariable = true;

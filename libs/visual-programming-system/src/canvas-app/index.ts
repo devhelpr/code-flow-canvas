@@ -33,6 +33,7 @@ export const createCanvasApp = <T>(
   const variables: Record<
     string,
     {
+      id: string;
       getData: () => any;
       setData: (data: any) => void;
     }
@@ -808,16 +809,22 @@ export const createCanvasApp = <T>(
     registerVariable: (
       variableName: string,
       variable: {
+        id: string;
         getData: () => any;
         setData: (data: any) => void;
       }
     ) => {
-      if (variableName) {
+      if (variableName && variable.id) {
         variables[variableName] = variable;
       }
     },
-    unregisterVariable: (variableName: string) => {
-      if (variableName && variables[variableName]) {
+    unregisterVariable: (variableName: string, id: string) => {
+      if (
+        id &&
+        variableName &&
+        variables[variableName] &&
+        variables[variableName].id === id
+      ) {
         delete variables[variableName];
       }
     },

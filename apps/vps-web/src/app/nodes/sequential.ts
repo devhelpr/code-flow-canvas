@@ -48,14 +48,14 @@ export const getSequential =
         runNodeFromThumb(
           node.thumbConnectors[0],
           animatePathFromThumb,
-          (input: string | any[]) => {
+          (inputFromFirstRun: string | any[]) => {
             if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
               reject();
               return;
             }
 
             resolve({
-              result: true,
+              result: input,
               output: input,
               followThumb: 'output2',
             });

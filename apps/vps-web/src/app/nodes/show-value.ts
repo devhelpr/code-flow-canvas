@@ -15,7 +15,6 @@ import {
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let inputValues = {};
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -24,7 +23,6 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
 
   const initializeCompute = () => {
     hasInitialValue = true;
-    inputValues = {};
     if (htmlNode) {
       htmlNode.domElement.textContent = '-';
       if (rect) {
@@ -34,7 +32,6 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string | any[]) => {
-    inputValues = input;
     if (htmlNode) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -46,7 +43,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       }
     }
     return {
-      result: { ...inputValues },
+      result: input,
       followPath: undefined,
     };
   };

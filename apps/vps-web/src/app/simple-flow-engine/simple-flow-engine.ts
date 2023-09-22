@@ -146,7 +146,7 @@ const triggerExecution = <T>(
           const promise = formInfo.computeAsync(
             input,
             pathExecution,
-            undefined,
+            runIndex,
             payload
           );
 
@@ -196,7 +196,7 @@ const triggerExecution = <T>(
           const computeResult = formInfo.compute(
             input,
             pathExecution,
-            undefined,
+            runIndex,
             payload
           );
           result = computeResult.result;
@@ -259,6 +259,15 @@ const triggerExecution = <T>(
     console.log('expression result', result);
   }
 };
+
+let runIndex = 0;
+export const resetRunIndex = () => {
+  runIndex = 0;
+};
+export const increaseRunIndex = () => {
+  runIndex++;
+};
+
 export const runNode = <T>(
   node: IRectNodeComponent<T>,
   canvasApp: CanvasAppInstance,
@@ -305,7 +314,7 @@ export const runNode = <T>(
 
   if (formInfo && formInfo?.computeAsync) {
     formInfo
-      .computeAsync(input ?? '', pathExecution, undefined, payload)
+      .computeAsync(input ?? '', pathExecution, runIndex, payload)
       .then((computeResult: any) => {
         sendData(node, canvasApp, computeResult.result);
         result = computeResult.result;
@@ -335,7 +344,7 @@ export const runNode = <T>(
     const computeResult = formInfo.compute(
       input ?? '',
       pathExecution,
-      undefined,
+      runIndex,
       payload
     );
 
@@ -495,7 +504,7 @@ export const runNodeFromThumb = <T>(
       if (formInfo && formInfo.computeAsync) {
         return new Promise((resolve, reject) => {
           formInfo
-            .computeAsync(input, pathExecution, loopIndex)
+            .computeAsync(input, pathExecution, runIndex)
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
@@ -526,7 +535,7 @@ export const runNodeFromThumb = <T>(
             });
         });
       } else if (formInfo && formInfo.compute) {
-        const computeResult = formInfo.compute(input, pathExecution, loopIndex);
+        const computeResult = formInfo.compute(input, pathExecution, runIndex);
         result = computeResult.result;
         followPath = computeResult.followPath;
         previousOutput = computeResult.previousOutput;

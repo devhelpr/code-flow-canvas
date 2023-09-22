@@ -46,12 +46,13 @@ export const getSplitByCase =
           reject();
           return;
         }
+        const inputAsString = input.toString();
         const case1 = node.nodeInfo.formValues?.['case1'] ?? '';
         const case2 = node.nodeInfo.formValues?.['case2'] ?? '';
         const case3 = node.nodeInfo.formValues?.['case3'] ?? '';
         console.log(
           'input',
-          input,
+          inputAsString,
           'case1',
           case1,
           'case2',
@@ -61,13 +62,15 @@ export const getSplitByCase =
         );
 
         let thumbNode: IThumbNodeComponent<NodeInfo> | undefined = undefined;
-        if (input !== 'true' && input !== '') {
-          if (typeof input === 'string') {
-            if (case1 && input === case1) {
+        if (input !== 'true') {
+          if (typeof inputAsString === 'string') {
+            if (case1 && inputAsString === case1) {
               thumbNode = node.thumbConnectors[0];
-            } else if (case2 && input === case2) {
+            } else if (case2 && inputAsString === case2) {
               thumbNode = node.thumbConnectors[1];
-            } else if (case3 && input === case3) {
+            } else if (case3 && inputAsString === case3) {
+              thumbNode = node.thumbConnectors[2];
+            } else if (!case3) {
               thumbNode = node.thumbConnectors[2];
             }
           }
