@@ -434,7 +434,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 4;
         const height =
           (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 4;
-        console.log('AABB to end', width, height);
+
         const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
           { x: x1, y: y1 },
           { x: cx, y: cy },
