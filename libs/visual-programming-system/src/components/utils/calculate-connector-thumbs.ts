@@ -77,6 +77,7 @@ export const calculateConnectorY = <T>(
         }
       }
     }
+
     return (
       formFieldOffsetY + thumbHeight * (offsetIndex ?? 0) + thumbRadius * 2
     );

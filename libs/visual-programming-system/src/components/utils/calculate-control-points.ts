@@ -60,7 +60,9 @@ export const onCalculateControlPoints = <T>(
           connectedNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
           connectedNode.width ?? 0,
           connectedNode.height ?? 0,
-          connectedNodeThumb?.thumbIndex,
+          nodeType === ControlAndEndPointNodeType.start
+            ? rectNodeThumb?.thumbIndex
+            : connectedNodeThumb?.thumbIndex,
           connectedNodeThumb
         )
       : 0);
@@ -184,7 +186,7 @@ export const onCalculateControlPoints = <T>(
         rectNode.width ?? 0,
         rectNode.height ?? 0,
         index,
-        connectedNodeThumb
+        rectNodeThumb
       );
 
     if (thumbType === ThumbType.EndConnectorTop) {
