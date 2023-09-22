@@ -558,6 +558,7 @@ export class AppElement extends HTMLElement {
       this.pathExecutions = [];
       this.currentPathUnderInspection = undefined;
       resetRunIndex();
+      (runButton.domElement as HTMLButtonElement).disabled = false;
     };
     createElement(
       'button',
@@ -814,12 +815,13 @@ export class AppElement extends HTMLElement {
       return serializeElementsMap(canvasApp.elements);
     };
 
-    createElement(
+    const runButton = createElement(
       'button',
       {
-        class: `${navBarButton} relative ',//top-[60px]`,
+        class: `${navBarButton} relative`,
         click: (event) => {
           event.preventDefault();
+          (runButton.domElement as HTMLButtonElement).disabled = true;
           this.clearPathExecution();
           this.currentPathUnderInspection = undefined;
           if (this.canvasApp?.elements) {
@@ -833,6 +835,7 @@ export class AppElement extends HTMLElement {
                   this.pathExecutions.push(pathExecution);
                 }
                 console.log('run finished', input, pathExecution);
+                (runButton.domElement as HTMLButtonElement).disabled = false;
                 increaseRunIndex();
               }
             );
