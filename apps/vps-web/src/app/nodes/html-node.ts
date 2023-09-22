@@ -33,7 +33,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         markup: string;
       }
     | undefined = undefined;
-  const defaultHTML = ``;
+  const defaultHTML = `<div>HTML</div>`;
   const parseBody = (
     body: IASTTreeNode,
     expressions: Record<string, object>
@@ -161,7 +161,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           }
         });
 
-        if (rect) {
+        if (rect && value) {
           rect.resize();
         }
       }
@@ -210,6 +210,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {
+              astElement = undefined;
               setHTML('');
               updated();
             }

@@ -1479,6 +1479,11 @@ export class AppElement extends HTMLElement {
     createEffect(() => {
       const selectedNodeInfo = getSelectedNode();
       console.log('selected nodeElement...', selectedNodeInfo);
+
+      document.querySelectorAll('.selected').forEach((element) => {
+        element.classList.remove('selected');
+      });
+
       if (
         currentSelectedNode &&
         (!selectedNodeInfo || selectedNodeInfo.id !== currentSelectedNode.id)
@@ -1492,9 +1497,6 @@ export class AppElement extends HTMLElement {
         if (node) {
           node.domElement.classList.remove('selected');
         }
-        document.querySelectorAll('.selected').forEach((element) => {
-          element.classList.remove('selected');
-        });
       }
 
       removeFormElement();

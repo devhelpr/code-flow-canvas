@@ -6,6 +6,13 @@ export const menubarClasses =
 /*
   default tailwind classes
 
+  flex
+  flex-row
+  flex-columns
+  items-end
+  items-start
+  items-center
+
   transition
   duration-0	
 duration-75
@@ -21,6 +28,9 @@ duration-1000
   text-black
 
   font-bold
+
+  bg-white
+  bg-black
 
   bg-slate-50
   bg-slate-100
