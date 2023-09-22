@@ -38,7 +38,7 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
         <input class="block w-full p-1"
           name="${props.fieldName}"
           autocomplete="off"
-          id="${props.fieldName}"
+          id="${props.formId}_${props.fieldName}"
           value="${props.value}"
           type="text"></input>
         </div>`

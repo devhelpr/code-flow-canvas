@@ -664,6 +664,7 @@ export class Connection<T> {
           this.nodeComponent?.startNode,
           ControlAndEndPointNodeType.start,
           this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
+          this.nodeComponent.startNodeThumb,
           this.nodeComponent.startNodeThumb?.thumbIndex,
           this.nodeComponent.endNode ??
             ({
@@ -693,6 +694,7 @@ export class Connection<T> {
           this.nodeComponent?.endNode,
           ControlAndEndPointNodeType.end,
           this.nodeComponent.endNodeThumb?.thumbType ?? ThumbType.None,
+          this.nodeComponent.endNodeThumb,
           this.nodeComponent.endNodeThumb?.thumbIndex,
           this.nodeComponent.startNode,
           this.nodeComponent.endNodeThumb?.thumbControlPointDistance,
@@ -714,6 +716,7 @@ export class Connection<T> {
             this.nodeComponent?.startNode,
             ControlAndEndPointNodeType.start,
             this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
+            this.nodeComponent.startNodeThumb,
             this.nodeComponent.startNodeThumb?.thumbIndex,
             this.nodeComponent.endNode ??
               ({
@@ -759,6 +762,7 @@ export class Connection<T> {
           ControlAndEndPointNodeType.start,
           connection.startNodeThumb?.thumbType ??
             ThumbType.StartConnectorCenter,
+          connection.startNodeThumb,
           connection.startNodeThumb?.thumbIndex,
           connection.endNode ??
             ({
@@ -780,6 +784,7 @@ export class Connection<T> {
           initiator as unknown as IRectNodeComponent<T>,
           ControlAndEndPointNodeType.end,
           connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
+          connection.endNodeThumb,
           connection.endNodeThumb?.thumbIndex,
           connection.startNode,
           connection.endNodeThumb?.thumbControlPointDistance,
@@ -887,6 +892,7 @@ export class Connection<T> {
             this.nodeComponent?.startNode,
             ControlAndEndPointNodeType.start,
             this.nodeComponent.startNodeThumb?.thumbType ?? ThumbType.None,
+            this.nodeComponent.startNodeThumb,
             this.nodeComponent.startNodeThumb?.thumbIndex,
             this.nodeComponent.endNode ??
               ({

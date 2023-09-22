@@ -40,6 +40,7 @@ export const onQuadraticCalculateControlPoints = <T>(
   rectNode: IRectNodeComponent<T>,
   nodeType: ControlAndEndPointNodeType,
   thumbType: ThumbType,
+  rectNodeThumb?: IThumbNodeComponent<T>,
   index?: number,
   connectedNode?: IRectNodeComponent<T>,
   controlPointDistance?: number,
@@ -62,7 +63,8 @@ export const onQuadraticCalculateControlPoints = <T>(
           connectedNodeThumb?.thumbType ?? ThumbType.None,
           connectedNode.width ?? 0,
           connectedNode.height ?? 0,
-          connectedNodeThumb?.thumbIndex
+          connectedNodeThumb?.thumbIndex,
+          connectedNodeThumb
         )
       : 0);
 
@@ -81,7 +83,8 @@ export const onQuadraticCalculateControlPoints = <T>(
         thumbType,
         rectNode.width ?? 0,
         rectNode.height ?? 0,
-        index
+        index,
+        rectNodeThumb
       );
 
     if (thumbType === ThumbType.StartConnectorBottom) {
@@ -194,7 +197,8 @@ export const onQuadraticCalculateControlPoints = <T>(
         thumbType,
         rectNode.width ?? 0,
         rectNode.height ?? 0,
-        index
+        index,
+        connectedNodeThumb
       );
 
     if (thumbType === ThumbType.EndConnectorTop) {

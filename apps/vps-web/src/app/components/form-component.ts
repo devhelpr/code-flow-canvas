@@ -70,6 +70,9 @@ export class FormsComponent extends Component<Props> {
 
   constructor(parent: BaseComponent | null, props: Props) {
     super(parent, props);
+
+    // WARNING ! Don't make the parents positioned relative or absolute... this will break the positioning of the thumbs when connected to form elements!!!
+    // offsetTop is used.. and that is relative to the first positioned parent.. which is the node, not the form...
     this.template = createTemplate(
       `<div class="w-full p-2">
         <form>
@@ -97,6 +100,7 @@ export class FormsComponent extends Component<Props> {
         this.element.remove();
         this.div = this.element as HTMLDivElement;
         this.form = this.div.firstChild as HTMLFormElement;
+        this.form.setAttribute('id', this.props.id);
         this.childContainerElement = this.form;
         // this.renderList.push(
         // );

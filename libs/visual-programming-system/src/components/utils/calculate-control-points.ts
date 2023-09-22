@@ -37,6 +37,7 @@ export const onCalculateControlPoints = <T>(
   rectNode: IRectNodeComponent<T>,
   nodeType: ControlAndEndPointNodeType,
   thumbType: ThumbType,
+  rectNodeThumb?: IThumbNodeComponent<T>,
   index?: number,
   connectedNode?: IRectNodeComponent<T>,
   controlPointDistance?: number,
@@ -59,7 +60,8 @@ export const onCalculateControlPoints = <T>(
           connectedNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
           connectedNode.width ?? 0,
           connectedNode.height ?? 0,
-          connectedNodeThumb?.thumbIndex
+          connectedNodeThumb?.thumbIndex,
+          connectedNodeThumb
         )
       : 0);
 
@@ -78,7 +80,8 @@ export const onCalculateControlPoints = <T>(
         thumbType,
         rectNode.width ?? 0,
         rectNode.height ?? 0,
-        index
+        index,
+        rectNodeThumb
       );
 
     if (thumbType === ThumbType.StartConnectorBottom) {
@@ -180,7 +183,8 @@ export const onCalculateControlPoints = <T>(
         thumbType,
         rectNode.width ?? 0,
         rectNode.height ?? 0,
-        index
+        index,
+        connectedNodeThumb
       );
 
     if (thumbType === ThumbType.EndConnectorTop) {

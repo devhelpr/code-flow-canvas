@@ -86,6 +86,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
     thumbType: ThumbType,
+    rectNodeThumb?: IThumbNodeComponent<T>,
     index?: number,
     connectedNode?: IRectNodeComponent<T>,
     controlPointDistance?: number,
@@ -106,6 +107,9 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
   thumbLabel?: string;
   isDataPort?: boolean;
   maxConnections?: number;
+
+  thumbFormId?: string;
+  thumbFormFieldName?: string;
 }
 
 export const ControlAndEndPointNodeType = {
@@ -156,4 +160,6 @@ export type IThumb = {
   isDataPort?: boolean;
   maxConnections?: number;
   class?: string;
+  formId?: string;
+  formFieldName?: string;
 };

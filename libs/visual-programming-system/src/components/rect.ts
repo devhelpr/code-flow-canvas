@@ -96,8 +96,13 @@ export class Rect<T> {
       heightHelper,
       pathHiddenElement,
       text,
-      (thumbType: ThumbType, index?: number) => {
-        return thumbPosition<T>(this.nodeComponent!, thumbType, index);
+      (
+        thumbType: ThumbType,
+        index?: number,
+        offsetY?: number,
+        thumb?: IThumbNodeComponent<T>
+      ) => {
+        return thumbPosition<T>(this.nodeComponent!, thumbType, index, thumb);
       },
       markup,
       layoutProperties,
@@ -145,11 +150,16 @@ export class Rect<T> {
 
     this.nodeComponent.update = this.onUpdate(
       this.rectInfo.astElement,
-      (thumbType: ThumbType, index?: number) => {
+      (
+        thumbType: ThumbType,
+        index?: number,
+        offsetY?: number,
+        thumb?: IThumbNodeComponent<T>
+      ) => {
         if (!this.nodeComponent) {
           throw new Error('this.nodeComponent is undefined');
         }
-        return thumbPosition<T>(this.nodeComponent, thumbType, index);
+        return thumbPosition<T>(this.nodeComponent, thumbType, index, thumb);
       }
     );
 
@@ -244,6 +254,8 @@ export class Rect<T> {
         thumbNode.nodeComponent.thumbConstraint = thumb.thumbConstraint;
         thumbNode.nodeComponent.isDataPort = thumb.isDataPort;
         thumbNode.nodeComponent.maxConnections = thumb.maxConnections;
+        thumbNode.nodeComponent.thumbFormId = thumb.formId;
+        thumbNode.nodeComponent.thumbFormFieldName = thumb.formFieldName;
 
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
@@ -568,7 +580,8 @@ export class Rect<T> {
           const { x, y } = thumbPosition(
             this.nodeComponent,
             thumbConnector.thumbType ?? ThumbType.None,
-            thumbConnector.thumbIndex ?? 0
+            thumbConnector.thumbIndex ?? 0,
+            thumbConnector
           );
 
           (
@@ -597,7 +610,8 @@ export class Rect<T> {
     getThumbPosition?: (
       thumbType: ThumbType,
       index?: number,
-      offsetY?: number
+      offsetY?: number,
+      thumb?: IThumbNodeComponent<T>
     ) => { x: number; y: number },
     markup?: string | INodeComponent<T>,
     layoutProperties?: {
@@ -796,7 +810,8 @@ export class Rect<T> {
       getThumbPosition?: (
         thumbType: ThumbType,
         index?: number,
-        offsetY?: number
+        offsetY?: number,
+        thumb?: IThumbNodeComponent<T>
       ) => { x: number; y: number }
     ) =>
     (
@@ -880,7 +895,9 @@ export class Rect<T> {
               if (connector && connector.update && connector.thumbType) {
                 const position = getThumbPosition(
                   connector.thumbType,
-                  connector.thumbIndex ?? 0
+                  connector.thumbIndex ?? 0,
+                  undefined,
+                  connector
                 );
                 connector.update(connector, position.x, position.y, initiator);
               }
@@ -938,7 +955,8 @@ export class Rect<T> {
             startThumb?.thumbType ?? ThumbType.None,
             startNode?.width ?? 0,
             startNode?.height ?? 0,
-            startThumb?.thumbIndex ?? 0
+            startThumb?.thumbIndex ?? 0,
+            startThumb
           );
 
           this.points.beginX = x - tx;
@@ -955,7 +973,8 @@ export class Rect<T> {
             endThumb?.thumbType ?? ThumbType.None,
             endNode?.width ?? 0,
             endNode?.height ?? 0,
-            endThumb?.thumbIndex ?? 0
+            endThumb?.thumbIndex ?? 0,
+            endThumb
           );
           this.points.beginX = x - tx;
           this.points.beginY = y - ty;

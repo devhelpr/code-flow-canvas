@@ -195,6 +195,8 @@ export const getSplitByCase =
               color: 'white',
               label: ' ',
               name: 'output1',
+              formId: id,
+              formFieldName: 'case1',
             },
             {
               thumbType: ThumbType.StartConnectorRight,
@@ -203,6 +205,8 @@ export const getSplitByCase =
               color: 'white',
               label: ' ',
               name: 'output2',
+              formId: id,
+              formFieldName: 'case2',
             },
             {
               thumbType: ThumbType.StartConnectorRight,
@@ -211,6 +215,8 @@ export const getSplitByCase =
               color: 'white',
               label: ' ',
               name: 'output3',
+              formId: id,
+              formFieldName: 'case3',
             },
             {
               thumbType: ThumbType.EndConnectorCenter,

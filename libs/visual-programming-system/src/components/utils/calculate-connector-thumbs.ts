@@ -1,5 +1,9 @@
-import { thumbHeight, thumbRadius } from '../../constants/measures';
-import { INodeComponent } from '../../interfaces/element';
+import {
+  paddingRect,
+  thumbHeight,
+  thumbRadius,
+} from '../../constants/measures';
+import { INodeComponent, IThumbNodeComponent } from '../../interfaces/element';
 import { ThumbType } from '../../types/thumb-type';
 
 export const calculateConnectorX = (
@@ -38,11 +42,12 @@ export const calculateConnectorX = (
   return 0;
 };
 
-export const calculateConnectorY = (
+export const calculateConnectorY = <T>(
   thumbType: ThumbType,
   width: number,
   height: number,
-  index?: number
+  index?: number,
+  thumb?: IThumbNodeComponent<T>
 ) => {
   if (
     thumbType === ThumbType.StartConnectorCenter ||
@@ -56,7 +61,25 @@ export const calculateConnectorY = (
     thumbType === ThumbType.StartConnectorRight ||
     thumbType === ThumbType.EndConnectorLeft
   ) {
-    return thumbHeight * (index ?? 0) + thumbRadius * 2;
+    let formFieldOffsetY = 0;
+    let offsetIndex = index;
+    if (thumb) {
+      const element = thumb.thumbLinkedToNode?.domElement as HTMLElement;
+      if (element) {
+        const formField = element.querySelector(
+          `[id="${thumb.thumbFormId}_${thumb.thumbFormFieldName}"]`
+        ) as HTMLElement;
+
+        if (formField) {
+          offsetIndex = 0;
+          formFieldOffsetY = formField.offsetTop ?? 0;
+          formFieldOffsetY -= paddingRect;
+        }
+      }
+    }
+    return (
+      formFieldOffsetY + thumbHeight * (offsetIndex ?? 0) + thumbRadius * 2
+    );
   }
 
   if (thumbType === ThumbType.EndConnectorTop) {
@@ -76,7 +99,8 @@ export const calculateConnectorY = (
 export const thumbPosition = <T>(
   rectNode: INodeComponent<T>,
   thumbType: ThumbType,
-  index?: number
+  index?: number,
+  thumb?: IThumbNodeComponent<T>
 ) => {
   if (thumbType === ThumbType.TopLeft) {
     return { x: 0, y: 0 };
@@ -171,11 +195,12 @@ export const thumbPosition = <T>(
         rectNode?.height ?? 0,
         index
       ),
-      y: calculateConnectorY(
+      y: calculateConnectorY<T>(
         thumbType,
         rectNode?.width ?? 0,
         rectNode?.height ?? 0,
-        index
+        index,
+        thumb
       ),
     };
   } else if (thumbType === ThumbType.StartConnectorCenter) {
