@@ -831,9 +831,9 @@ export class AppElement extends HTMLElement {
                 if (pathExecution) {
                   (pathRange.domElement as HTMLInputElement).value = '0';
                   this.pathExecutions.push(pathExecution);
-                  console.log('run finished', input, pathExecution);
-                  increaseRunIndex();
                 }
+                console.log('run finished', input, pathExecution);
+                increaseRunIndex();
               }
             );
           }
