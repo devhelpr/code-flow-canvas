@@ -46,7 +46,7 @@ export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
     super(parent, props);
     this.template = createTemplate(
       `<div class="w-full mb-2">
-        <label for="${props.fieldName}" class="block mb-2">${props.fieldName}</label>
+        <label for="${props.fieldName}" class="block mb-2 text-white">${props.fieldName}</label>
         <textarea class="block w-full p-1" 
           rows="10"
           name="${props.fieldName}"

@@ -32,7 +32,7 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
     super(parent, props);
     this.template = createTemplate(
       `<div class="w-full mb-2 ${props.isRow ? 'flex' : ''}">
-        <label for="${props.fieldName}" class="block mb-2 ${
+        <label for="${props.fieldName}" class="block mb-2 text-white ${
         props.isRow ? 'mr-2' : ''
       }">${props.label ?? props.fieldName}</label>
         <input class="block w-full p-1"

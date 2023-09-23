@@ -1,0 +1,26 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "0be1739a-4987-428f-91c7-19387c08df0f",
+          "x": 777.4770857386721,
+          "y": 151.6765327090434,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "html-node",
+            "formValues": {
+              "html": "<div class=\"flex flex-rows items-end\">\n<div class=\"bg-white\" style=\"width:20px;height:100px;margin-right:2px;\"></div>\n<div class=\"bg-white\" style=\"width:20px;height:50px;margin-right:2px;\"></div>\n<div class=\"bg-white\" style=\"width:20px;height:80px;margin-right:2px;\"></div>\n</div>"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

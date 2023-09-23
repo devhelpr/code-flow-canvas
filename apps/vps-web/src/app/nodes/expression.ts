@@ -47,7 +47,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
       const variables = canvasAppInstance?.getVariables() ?? {};
-      console.log('expression canvas variables', variables);
+      console.log('expression canvas variables', variables, input);
       result = runExpression(
         expressionFunction,
         {
@@ -58,10 +58,11 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           current: currentValue,
           last: currentValue,
           index: loopIndex ?? 0,
+          runIteration: loopIndex ?? 0,
           random: Math.round(Math.random() * 100),
           ...payload,
         },
-        true,
+        false, // when True ... this fails when expression contains array indexes...
         compiledExpressionInfo.payloadProperties
       );
 
@@ -157,8 +158,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
-            label: '#',
-            thumbConstraint: 'value',
+            label: ' ',
+            //thumbConstraint: 'value',
           },
           // {
           //   thumbType: ThumbType.StartConnectorBottom,

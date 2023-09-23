@@ -1,5 +1,6 @@
 import {
   createElement,
+  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -11,10 +12,14 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { FormFieldType } from '../components/form-component';
 
 export const getArray: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  updated: () => void
 ): NodeTask<NodeInfo> => {
+  let canvasAppInstance: canvasAppReturnType;
+  let tagNode: IElementNode<NodeInfo> | undefined = undefined;
+  let variableName = '';
   let inputValues: any[] = [];
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -94,6 +99,10 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         hasInitialValue = false;
       }
       setValue(inputValues);
+      const variableName = node.nodeInfo.formValues?.['variableName'] ?? '';
+      if (variableName) {
+        canvasAppInstance.setVariable(variableName, inputValues);
+      }
 
       // htmlNode.domElement.appendChild(
       //   inputElement.domElement as unknown as HTMLElement
@@ -109,6 +118,14 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       previousOutput,
     };
   };
+
+  const getData = () => {
+    return inputValues;
+  };
+  const setData = (data: any) => {
+    //currentValue = data;
+  };
+
   return {
     name: 'array',
     family: 'flow-canvas',
@@ -117,9 +134,42 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValue?: InitialValues,
+      initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      canvasAppInstance = canvasApp;
+      variableName = initalValues?.['variableName'] ?? '';
+      canvasApp.registerVariable(variableName, {
+        id: id ?? '',
+        getData,
+        setData,
+      });
+      const formElements = [
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'variableName',
+          value: initalValues?.['variableName'] ?? '',
+          onChange: (value: string) => {
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              variableName: value,
+            };
+            canvasApp.unregisterVariable(variableName, id ?? '');
+            variableName = value;
+            (tagNode?.domElement as HTMLElement).textContent = variableName;
+            canvasApp.registerVariable(variableName, {
+              id: id ?? '',
+              getData,
+              setData,
+            });
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+      ];
+
       htmlNode = createElement(
         'div',
         {
@@ -173,7 +223,9 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         id,
         {
           type: 'array',
-          formElements: [],
+          formValues: {
+            variableName: variableName,
+          },
         },
         containerNode
       );
@@ -181,7 +233,18 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
 
+      tagNode = createElement(
+        'div',
+        {
+          class:
+            'absolute top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1',
+        },
+        rect.nodeComponent.domElement as unknown as HTMLElement,
+        variableName
+      ) as unknown as INodeComponent<NodeInfo>;
+
       node = rect.nodeComponent;
+      node.nodeInfo.formElements = formElements;
       node.nodeInfo.compute = compute;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.setValue = setValue;
