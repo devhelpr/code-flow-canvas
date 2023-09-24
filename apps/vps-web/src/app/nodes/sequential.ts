@@ -54,11 +54,31 @@ export const getSequential =
               return;
             }
 
+            runNodeFromThumb(
+              node.thumbConnectors[1],
+              animatePathFromThumb,
+              (inputFromSecondRun: string | any[]) => {
+                resolve({
+                  result: input,
+                  stop: true,
+                });
+              },
+              input,
+              pathExecution,
+              node,
+              0
+            );
+
             resolve({
               result: input,
-              output: input,
-              followThumb: 'output2',
+              stop: true,
             });
+
+            // resolve({
+            //   result: input,
+            //   output: input,
+            //   followThumb: 'output2',
+            // });
           },
           input,
           pathExecution,

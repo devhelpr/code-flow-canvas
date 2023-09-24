@@ -474,9 +474,15 @@ export const runNodeFromThumb = <T>(
       node: INodeComponent<T>,
       input: string | any[]
     ) =>
-      | { result: boolean; output: string | any[]; followPathByName?: string }
+      | {
+          result: boolean;
+          stop?: boolean;
+          output: string | any[];
+          followPathByName?: string;
+        }
       | Promise<{
           result: boolean;
+          stop?: boolean;
           output: string | any[];
           followPathByName?: string;
         }>,
@@ -509,25 +515,36 @@ export const runNodeFromThumb = <T>(
               result = computeResult.result;
               followPath = computeResult.followPath;
 
-              if (pathExecution) {
-                pathExecution.push({
-                  input: input ?? '',
-                  scopeNode,
-                  output: computeResult.output ?? input,
-                  previousOutput: computeResult.previousOutput,
-                  result: result,
-                  nodeId: node.id,
-                  path: followPath ?? '',
-                  node: node as unknown as IRectNodeComponent<T>,
-                  nodeType: (node.nodeInfo as any)?.type ?? '',
+              if (computeResult.stop) {
+                if (onStopped) {
+                  onStopped('');
+                }
+                resolve({
+                  result: false,
+                  stop: true,
+                  output: result,
+                });
+              } else {
+                if (pathExecution) {
+                  pathExecution.push({
+                    input: input ?? '',
+                    scopeNode,
+                    output: computeResult.output ?? input,
+                    previousOutput: computeResult.previousOutput,
+                    result: result,
+                    nodeId: node.id,
+                    path: followPath ?? '',
+                    node: node as unknown as IRectNodeComponent<T>,
+                    nodeType: (node.nodeInfo as any)?.type ?? '',
+                  });
+                }
+
+                resolve({
+                  result: true,
+                  output: result ?? input,
+                  followPathByName: followPath,
                 });
               }
-
-              resolve({
-                result: true,
-                output: result ?? input,
-                followPathByName: followPath,
-              });
             })
             .catch((e: any) => {
               console.log('runNodeFromThumb error', e);
