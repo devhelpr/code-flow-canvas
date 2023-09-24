@@ -93,6 +93,7 @@ export class AppElement extends HTMLElement {
 
   currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
 
+  formElement: INodeComponent<NodeInfo> | undefined = undefined;
   editPopupContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
@@ -179,7 +180,10 @@ export class AppElement extends HTMLElement {
       if (((nodeInfo as any)?.formElements ?? []).length === 0) {
         return;
       }
-
+      if (!this.formElement) {
+        return;
+      }
+      console.log('before positionPopup2', selectedNodeInfo);
       this.positionPopup(node);
     }
   };
@@ -1463,16 +1467,15 @@ export class AppElement extends HTMLElement {
     //   sidebarContainer.domElement
     // );
 
-    let formElement: INodeComponent<NodeInfo> | undefined = undefined;
     let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
     const removeFormElement = () => {
-      if (formElement) {
+      if (this.formElement) {
         canvasApp?.deleteElementFromNode(
           this.editPopupContainer as INodeComponent<NodeInfo>,
-          formElement
+          this.formElement
         );
-        formElement = undefined;
+        this.formElement = undefined;
       }
     };
 
@@ -1480,7 +1483,7 @@ export class AppElement extends HTMLElement {
       const selectedNodeInfo = getSelectedNode();
       console.log('selected nodeElement...', selectedNodeInfo);
 
-      document.querySelectorAll('.selected').forEach((element) => {
+      rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
       });
 
@@ -1581,14 +1584,18 @@ export class AppElement extends HTMLElement {
           this.editPopupContainer?.domElement,
           undefined
         );
-        formElement = formElementInstance as INodeComponent<NodeInfo>;
+        this.formElement = formElementInstance as INodeComponent<NodeInfo>;
 
         FormComponent({
-          rootElement: formElement.domElement as HTMLElement,
+          rootElement: this.formElement.domElement as HTMLElement,
           id: selectedNodeInfo.id,
           hasSubmitButton: true,
           onSave: (values: any) => {
             console.log('onSave', values);
+
+            rootElement.querySelectorAll('.selected').forEach((element) => {
+              element.classList.remove('selected');
+            });
 
             const node = (
               selectedNodeInfo?.containerNode
@@ -1706,7 +1713,7 @@ export class AppElement extends HTMLElement {
           //   }, 100) as unknown as number;
           // },
         }) as unknown as HTMLElement;
-
+        console.log('before positionPopup1');
         this.positionPopup(node);
       } else {
         selectedNodeLabel.domElement.textContent = '';
@@ -1727,6 +1734,9 @@ export class AppElement extends HTMLElement {
         ).classList.remove('editing-node-indicator');
 
         setupTasksInDropdown();
+        if (getSelectedNode()) {
+          setSelectNode(undefined);
+        }
       }
 
       currentSelectedNode = selectedNodeInfo;
