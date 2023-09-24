@@ -26,6 +26,17 @@ export const createASTNodeElement = <T>(
     const compiledExpression = compileExpression(astNode.value || '');
     text = runExpression(compiledExpression, {});
   }
+  let dontFollowChildren = false;
+  if (astNode.tagName === 'script') {
+    dontFollowChildren = true;
+    text = `(function () {
+      try {
+        ${astNode.body?.[0].value ?? ''}
+      } catch (error) {
+        console.log('Error in script', error);
+      };
+    })();`;
+  }
   element = createElement(
     astNode.tagName ?? 'div',
     elementProperties,
@@ -70,15 +81,16 @@ export const createASTNodeElement = <T>(
   if (element) {
     (element.domElement as unknown as HTMLElement | SVGElement).id = element.id;
     elements.set(element.id, element);
-
-    astNode.body?.forEach((childASTNode) => {
-      createASTNodeElement(
-        childASTNode,
-        element!.domElement,
-        element!.elements,
-        expressions
-      );
-    });
+    if (!dontFollowChildren) {
+      astNode.body?.forEach((childASTNode) => {
+        createASTNodeElement(
+          childASTNode,
+          element!.domElement,
+          element!.elements,
+          expressions
+        );
+      });
+    }
   }
   return element;
 };

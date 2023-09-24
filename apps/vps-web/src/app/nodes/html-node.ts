@@ -84,7 +84,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       if (!astElement) {
         const htmlString = node.nodeInfo.formValues['html'] || defaultHTML;
         structuredMarkup = createStructuredExpressionsMarkup(htmlString);
-        console.log('structuredMarkup', structuredMarkup);
+        //console.log('structuredMarkup', structuredMarkup);
         const compiledMarkup = compileMarkup(structuredMarkup.markup);
         // htmlString = replaceExpressionScript(htmlString, variables, true);
 
@@ -97,6 +97,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             divNode.elements,
             structuredMarkup.expressions
           );
+          //console.log('compiledMarkup', compiledMarkup);
         }
       }
       if (astElement && structuredMarkup) {
