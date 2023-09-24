@@ -78,6 +78,23 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   const getData = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+    (componentWrapper.domElement as unknown as HTMLElement).classList.add(
+      'border-orange-200'
+    );
+    timeout = setTimeout(() => {
+      (componentWrapper?.domElement as unknown as HTMLElement).classList.remove(
+        'border-orange-200'
+      );
+
+      (componentWrapper?.domElement as unknown as HTMLElement).classList.remove(
+        'border-green-200'
+      );
+    }, 250);
+
     return currentValue;
   };
   const setData = (data: any) => {
@@ -97,6 +114,9 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         (
           componentWrapper?.domElement as unknown as HTMLElement
         ).classList.remove('border-green-200');
+        (
+          componentWrapper?.domElement as unknown as HTMLElement
+        ).classList.remove('border-orange-200');
       }, 250);
     }
   };
@@ -173,7 +193,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       componentWrapper = createElement(
         'div',
         {
-          class: `border border-solid border-transparent transition duration-500 ease-in-out inner-node bg-slate-600 text-white p-4 rounded text-center`,
+          class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node bg-slate-600 text-white p-4 rounded text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement

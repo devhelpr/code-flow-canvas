@@ -1,3 +1,4 @@
+/* eslint-disable prefer-rest-params */
 import {
   createElement,
   IElementNode,
@@ -19,6 +20,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let canvasAppInstance: canvasAppReturnType;
   let tagNode: IElementNode<NodeInfo> | undefined = undefined;
+  let wrapper: IRectNodeComponent<NodeInfo>;
   let variableName = '';
   let inputValues: any[] = [];
   let node: IRectNodeComponent<NodeInfo>;
@@ -27,9 +29,50 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
 
+  // TODO : refactor this ...
+  const setArrayProxy = () => {
+    const arrayChangeHandler = {
+      get: function (target: Array<any>, property: string | symbol) {
+        if (property === 'at') {
+          return function (_el: any) {
+            let index = arguments[0] as number;
+            if (index < 0) {
+              index = target.length + index;
+            }
+            const arrayElement = (
+              wrapper?.domElement as HTMLElement
+            ).querySelector(`.array [data-index="${index}"]`);
+            if (arrayElement) {
+              arrayElement.classList.add('border-orange-500');
+              setTimeout(() => {
+                arrayElement?.classList.remove('border-orange-500');
+              }, 250);
+            }
+            return Array.prototype[property].apply(
+              target,
+              arguments as unknown as [index: number]
+            );
+          };
+        }
+        return target[property as unknown as any];
+      },
+      set: function (
+        target: Array<any>,
+        property: string | symbol,
+        value: any,
+        _receiver: unknown
+      ) {
+        target[property as unknown as any] = value;
+        return true;
+      },
+    };
+    inputValues = new Proxy(inputValues, arrayChangeHandler);
+  };
+
   const initializeCompute = () => {
     hasInitialValue = true;
     inputValues = [];
+    setArrayProxy();
     if (htmlNode) {
       htmlNode.domElement.textContent = 'Array';
       if (rect) {
@@ -51,12 +94,13 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         }
       }
 
-      values.forEach((value) => {
+      values.forEach((value, index) => {
         const inputElement = createElement(
           'div',
           {
-            class:
-              'inner-node inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
+            'data-index': index,
+            class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out 
+              inner-node inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white`,
           },
           undefined,
           value.toString()
@@ -104,13 +148,15 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         canvasAppInstance.setVariable(variableName, inputValues);
       }
 
-      // htmlNode.domElement.appendChild(
-      //   inputElement.domElement as unknown as HTMLElement
-      // );
-
-      // if (rect) {
-      //   rect.resize(240);
-      // }
+      const arrayElement = (wrapper?.domElement as HTMLElement).querySelector(
+        `.array [data-index="${inputValues.length - 1}"]`
+      );
+      if (arrayElement) {
+        arrayElement.classList.add('border-yellow-300');
+        setTimeout(() => {
+          arrayElement?.classList.remove('border-yellow-300');
+        }, 250);
+      }
     }
     return {
       result: [...inputValues],
@@ -173,20 +219,20 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: '',
+          class: 'array',
         },
         undefined,
         'Array'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      const wrapper = createElement(
+      wrapper = createElement(
         'div',
         {
           class: `bg-slate-500 p-4 rounded max-w-[240px]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
-      ) as unknown as INodeComponent<NodeInfo>;
+      ) as unknown as IRectNodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(
         x,

@@ -46,22 +46,37 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           `${compiledExpressionInfo.script}`
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
-      const variables = canvasAppInstance?.getVariables() ?? {};
-      console.log('expression canvas variables', variables, input);
+      //const variables = canvasAppInstance?.getVariables() ?? {};
+      //console.log('expression canvas variables', variables, input);
+      const payloadForExpression = {
+        //...variables,
+        input: input,
+        currentValue: currentValue,
+        value: currentValue,
+        current: currentValue,
+        last: currentValue,
+        index: loopIndex ?? 0,
+        runIteration: loopIndex ?? 0,
+        random: Math.round(Math.random() * 100),
+        ...payload,
+      };
+      canvasAppInstance?.getVariableNames().forEach((variableName) => {
+        Object.defineProperties(payloadForExpression, {
+          [variableName]: {
+            get: () => {
+              console.log('get', variableName);
+              return canvasAppInstance?.getVariable(variableName);
+            },
+            set: (value) => {
+              canvasAppInstance?.setVariable(variableName, value);
+            },
+          },
+        });
+      });
+
       result = runExpression(
         expressionFunction,
-        {
-          ...variables,
-          input: input,
-          currentValue: currentValue,
-          value: currentValue,
-          current: currentValue,
-          last: currentValue,
-          index: loopIndex ?? 0,
-          runIteration: loopIndex ?? 0,
-          random: Math.round(Math.random() * 100),
-          ...payload,
-        },
+        payloadForExpression,
         false, // when True ... this fails when expression contains array indexes...
         compiledExpressionInfo.payloadProperties
       );
