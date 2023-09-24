@@ -20,12 +20,15 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let canvasAppInstance: canvasAppReturnType;
   let node: IRectNodeComponent<NodeInfo>;
+  let componentWrapper: IRectNodeComponent<NodeInfo>;
   let htmlNode: IElementNode<NodeInfo> | undefined = undefined;
   let tagNode: IElementNode<NodeInfo> | undefined = undefined;
   let variableName = '';
   let currentValue = 0;
+  let timeout: any = undefined;
   const initializeCompute = () => {
     currentValue = parseFloat(node?.nodeInfo.formValues?.['initialValue']) ?? 0;
+
     if (isNaN(currentValue)) {
       currentValue = 0;
       if (htmlNode) {
@@ -36,6 +39,15 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         currentValue.toString();
     }
     canvasAppInstance?.setVariable(variableName, currentValue);
+
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+
+    (componentWrapper.domElement as unknown as HTMLElement).classList.remove(
+      'border-green-200'
+    );
 
     return;
   };
@@ -73,6 +85,19 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
     if (htmlNode) {
       (htmlNode.domElement as unknown as HTMLElement).textContent =
         currentValue.toString();
+
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = undefined;
+      }
+      (componentWrapper.domElement as unknown as HTMLElement).classList.add(
+        'border-green-200'
+      );
+      timeout = setTimeout(() => {
+        (
+          componentWrapper?.domElement as unknown as HTMLElement
+        ).classList.remove('border-green-200');
+      }, 250);
     }
   };
 
@@ -145,14 +170,14 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
         '-'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      const componentWrapper = createElement(
+      componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-600 text-white p-4 rounded text-center`,
+          class: `border border-solid border-transparent transition duration-500 ease-in-out inner-node bg-slate-600 text-white p-4 rounded text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
-      ) as unknown as INodeComponent<NodeInfo>;
+      ) as unknown as IRectNodeComponent<NodeInfo>;
 
       const rect = canvasApp.createRect(
         x,
@@ -199,6 +224,16 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       node.nodeInfo.sendData = compute;
       node.nodeInfo.getData = getData;
       node.nodeInfo.initializeCompute = initializeCompute;
+      node.nodeInfo.delete = () => {
+        canvasApp.unregisterVariable(variableName, id ?? '');
+        (
+          componentWrapper?.domElement as unknown as HTMLElement
+        ).classList.remove('border-green-200');
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = undefined;
+        }
+      };
       return node;
     },
   };
