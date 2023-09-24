@@ -33,7 +33,9 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         markup: string;
       }
     | undefined = undefined;
-  const defaultHTML = `<div>HTML</div>`;
+  const defaultHTML = `<div class="bg-sky-800 text-white 
+    flex items-center justify-center
+    min-w-[200px] min-h-[200px]">Click to edit HTML</div>`;
   const parseBody = (
     body: IASTTreeNode,
     expressions: Record<string, object>
@@ -161,7 +163,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           }
         });
 
-        if (rect && value) {
+        if (rect) {
           rect.resize();
         }
       }
@@ -221,7 +223,10 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-sky-900 rounded min-h-[100px]`,
+          class: `inner-node rounded min-h-[100px] overflow-hidden`,
+          style: {
+            'clip-path': 'polygon(100% 0, 100% 100%, 0% 100%, 0 0%',
+          },
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
