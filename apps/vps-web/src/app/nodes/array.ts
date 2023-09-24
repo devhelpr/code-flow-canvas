@@ -43,9 +43,15 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
               wrapper?.domElement as HTMLElement
             ).querySelector(`.array [data-index="${index}"]`);
             if (arrayElement) {
-              arrayElement.classList.add('border-orange-500');
+              arrayElement.classList.remove('duration-300');
+              arrayElement.classList.add('duration-0');
+              arrayElement.classList.add('outline-red-400');
               setTimeout(() => {
-                arrayElement?.classList.remove('border-orange-500');
+                arrayElement.classList.remove('duration-0');
+                arrayElement.classList.add('duration-300');
+              }, 10);
+              setTimeout(() => {
+                arrayElement?.classList.remove('outline-red-400');
               }, 250);
             }
             return Array.prototype[property].apply(
@@ -99,7 +105,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           'div',
           {
             'data-index': index,
-            class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out 
+            class: `outline-[4px] outline outline-transparent transition-[outline] duration-300 ease-in-out 
               inner-node inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white`,
           },
           undefined,
@@ -152,9 +158,9 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         `.array [data-index="${inputValues.length - 1}"]`
       );
       if (arrayElement) {
-        arrayElement.classList.add('border-yellow-300');
+        arrayElement.classList.add('outline-yellow-300');
         setTimeout(() => {
-          arrayElement?.classList.remove('border-yellow-300');
+          arrayElement?.classList.remove('outline-yellow-300');
         }, 250);
       }
     }
