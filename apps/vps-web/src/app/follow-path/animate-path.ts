@@ -300,10 +300,10 @@ export const animatePathForNodeConnectionPairs = <T>(
               Array.isArray(onNextOrPromise) ||
               (onNextOrPromise as unknown as Promise<unknown>).then
             ) {
-              canvasApp?.elements.delete(testCircle.id);
+              testCircle && canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
 
-              canvasApp?.elements.delete(message.id);
+              message && canvasApp?.elements.delete(message.id);
               message?.domElement?.remove();
               (testCircle as unknown as undefined) = undefined;
               (message as unknown as undefined) = undefined;
@@ -330,10 +330,10 @@ export const animatePathForNodeConnectionPairs = <T>(
                   result.followThumb
                 );
               } else {
-                canvasApp?.elements.delete(testCircle.id);
+                testCircle && canvasApp?.elements.delete(testCircle.id);
                 testCircle?.domElement?.remove();
 
-                canvasApp?.elements.delete(message.id);
+                message && canvasApp?.elements.delete(message.id);
                 message?.domElement?.remove();
                 if (onStopped) {
                   console.log(
@@ -352,7 +352,7 @@ export const animatePathForNodeConnectionPairs = <T>(
                 console.log('animatePath onNextNode error', err);
               });
           } else {
-            canvasApp?.elements.delete(testCircle.id);
+            testCircle && canvasApp?.elements.delete(testCircle.id);
             testCircle?.domElement?.remove();
 
             canvasApp?.elements.delete(message.id);
@@ -377,7 +377,7 @@ export const animatePathForNodeConnectionPairs = <T>(
         if (start) {
           onNextNode && onNextNode(start.id, start, input ?? '');
         }
-        canvasApp?.elements.delete(testCircle.id);
+        testCircle && canvasApp?.elements.delete(testCircle.id);
         testCircle?.domElement?.remove();
 
         canvasApp?.elements.delete(message.id);
