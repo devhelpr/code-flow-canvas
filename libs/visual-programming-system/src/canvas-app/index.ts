@@ -848,6 +848,9 @@ export const createCanvasApp = <T>(
       });
       return result;
     },
+    getVariableNames: () => {
+      return Object.keys(variables);
+    },
   };
 };
 
