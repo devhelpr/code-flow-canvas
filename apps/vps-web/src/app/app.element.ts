@@ -63,7 +63,7 @@ import { importToCanvas } from './storage/import-to-canvas';
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <style>${styles}</style>
+  <style>${styles}</style>  
   <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
@@ -98,6 +98,8 @@ export class AppElement extends HTMLElement {
   editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
   editPopupEditingNodeIndicator: IElementNode<NodeInfo> | undefined = undefined;
+
+  rootElement: HTMLElement | undefined = undefined;
 
   removeElement = (element: IElementNode<NodeInfo>) => {
     if (element.nodeInfo?.delete) {
@@ -235,42 +237,72 @@ export class AppElement extends HTMLElement {
       widthNode,
       heightNode
     );
+    const rootClientRect = this.rootElement?.getBoundingClientRect();
+    console.log('rootClientRect', rootClientRect);
+    let x = xCamera + xNode * scaleCamera + widthNode * scaleCamera + 100;
+    if (x < 10) {
+      x = 10;
+    }
+    if (x + 400 - 10 > (rootClientRect?.width ?? 0)) {
+      x = (rootClientRect?.width ?? 0) - 400 - 10;
+    }
+    let y = yCamera + yNode * scaleCamera;
+    if (y < 50) {
+      y = 50;
+    }
+    if (y + 360 > (rootClientRect?.height ?? 0) - 80) {
+      y = (rootClientRect?.height ?? 0) - 360 - 80;
+    }
 
-    sidebar.style.left = `${
-      xCamera + xNode * scaleCamera + widthNode * scaleCamera + 100
-    }px`;
-    sidebar.style.top = `${yCamera + yNode * scaleCamera}px`;
+    sidebar.style.left = `${x}px`;
+    sidebar.style.top = `${y}px`;
 
+    // TODO : calculate line position from center of selected node
+    //        to left side of sidebar
+
+    //
     const lineContainer = this.editPopupLineContainer
       ?.domElement as unknown as HTMLElement;
 
-    lineContainer.style.left = `${
-      xCamera + xNode * scaleCamera + (widthNode / 2) * scaleCamera
-    }px`;
+    const xLine = xCamera + xNode * scaleCamera + (widthNode / 2) * scaleCamera;
+    lineContainer.style.left = `${xLine}px`;
 
-    const lineY =
+    const centerNodeY =
       yCamera + yNode * scaleCamera + (heightNode / 2) * scaleCamera;
-    lineContainer.style.top = `${lineY - heightNode * scaleCamera}px`;
-    lineContainer.style.width = `${100 + (widthNode / 2) * scaleCamera}px`;
-    lineContainer.style.height = `${
-      300 + 2 * heightNode * scaleCamera //yCamera + yNode * scaleCamera + 40 * scaleCamera
-    }px`;
+    const yLine = centerNodeY - heightNode * scaleCamera;
+
+    lineContainer.style.top = `${y < yLine ? y : yLine}px`;
+    lineContainer.style.width = `${x - xLine < 0 ? xLine - x : x - xLine}px`;
+    //lineContainer.style.height = `${y - yLine < 0 ? yLine - y : y - yLine}px`;
+    lineContainer.style.height = `${1000}px`; // heightNode * scaleCamera
+
+    // lineContainer.style.width = `${100 + (widthNode / 2) * scaleCamera}px`;
+    // lineContainer.style.height = `${300 + 2 * heightNode * scaleCamera}px`;
 
     const indicatorElement = this.editPopupEditingNodeIndicator
       ?.domElement as unknown as HTMLElement;
     indicatorElement.style.left = `${
       xCamera + xNode * scaleCamera + (widthNode / 2) * scaleCamera
     }px`;
-    indicatorElement.style.top = `${lineY}px`;
+    indicatorElement.style.top = `${centerNodeY}px`;
     indicatorElement.classList.remove('hidden');
     indicatorElement.classList.add('editing-node-indicator');
 
     (this.editPopupLinePath?.domElement as SVGPathElement).setAttribute(
       'd',
-      `M0 ${heightNode * scaleCamera} L${100 + (widthNode / 2) * scaleCamera} ${
-        40 + (heightNode / 2) * scaleCamera //yCamera + yNode * scaleCamera
+      `M0 ${(y < yLine ? yLine - y : 0) + heightNode * scaleCamera} 
+       L${x - xLine < 0 ? xLine - x : x - xLine} ${
+        (heightNode / 4) * scaleCamera + (yLine < y ? y - yLine : 0)
       }`
     );
+    /*
+
+      `M0 ${heightNode * scaleCamera} 
+       L${100 + (widthNode / 2) * scaleCamera} ${
+        40 + (heightNode / 2) * scaleCamera
+      }`
+
+    */
   };
 
   constructor() {
@@ -286,13 +318,13 @@ export class AppElement extends HTMLElement {
     }
     const shadowRoot = this.attachShadow({ mode: 'open' });
     shadowRoot.appendChild(template.content.cloneNode(true));
-    const rootElement = shadowRoot.querySelector('div#root') as HTMLElement;
-    if (!rootElement) {
+    this.rootElement = shadowRoot.querySelector('div#root') as HTMLElement;
+    if (!this.rootElement) {
       return;
     }
     const bezierCurve: any = undefined;
 
-    const canvasApp = createCanvasApp<NodeInfo>(rootElement);
+    const canvasApp = createCanvasApp<NodeInfo>(this.rootElement);
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
     canvasApp.setOnCameraChanged(this.onCameraChanged);
@@ -507,8 +539,12 @@ export class AppElement extends HTMLElement {
       {
         class: menubarClasses,
       },
-      rootElement
+      this.rootElement
     );
+    // const helperScriptElement = createElement('div', {}, rootElement);
+    // (helperScriptElement.domElement as HTMLElement).innerHTML = `
+
+    // `;
     // createElement(
     //   'button',
     //   {
@@ -546,7 +582,10 @@ export class AppElement extends HTMLElement {
     );
 
     const initializeNodes = () => {
-      const elements = rootElement.querySelectorAll('.state-active');
+      if (!this.rootElement) {
+        return;
+      }
+      const elements = this.rootElement.querySelectorAll('.state-active');
       elements.forEach((element) => {
         element.classList.remove('state-active');
       });
@@ -1200,7 +1239,7 @@ export class AppElement extends HTMLElement {
           'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 flex items-center z-[1050]', //top-[60px]',
         name: 'path-track-bg',
       },
-      rootElement,
+      this.rootElement,
       ''
     );
 
@@ -1319,9 +1358,13 @@ export class AppElement extends HTMLElement {
         max: '100000',
         value: 1,
         input: (event) => {
-          if (this.currentPathUnderInspection === undefined) {
+          if (
+            this.currentPathUnderInspection === undefined &&
+            this.rootElement
+          ) {
             // inspect latest path execution when no path is being inspected
-            const executionPathElement = rootElement.querySelector(
+
+            const executionPathElement = this.rootElement.querySelector(
               '#execution-path'
             ) as HTMLInputElement;
             if (executionPathElement) {
@@ -1371,13 +1414,13 @@ export class AppElement extends HTMLElement {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-1/4 h-[300px] z-[1010] p-2 bg-slate-600 border-white hidden overflow-auto',
+          'absolute w-[400px] h-[360px] z-[1020] p-2 bg-slate-600 border-white hidden overflow-auto',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
         wheel: (event) => {
           event.stopPropagation();
         },
       },
-      rootElement
+      this.rootElement
     );
     this.editPopupLineContainer = createNSElement(
       'svg',
@@ -1391,7 +1434,7 @@ export class AppElement extends HTMLElement {
           height: '200px',
         },
       },
-      rootElement
+      this.rootElement
     );
     this.editPopupLinePath = createNSElement(
       'path',
@@ -1412,7 +1455,7 @@ export class AppElement extends HTMLElement {
       {
         class: 'absolute z-[1010] pointer-events-none',
       },
-      rootElement
+      this.rootElement
     );
 
     const setExecutionPath = (value: number) => {
@@ -1451,7 +1494,7 @@ export class AppElement extends HTMLElement {
     //rootElement.appendChild(
     AppComponents({
       setExecutionPath,
-      rootElement: rootElement,
+      rootElement: this.rootElement,
     }) as unknown as HTMLElement;
     //);
     // let raf = -1;
@@ -1482,8 +1525,10 @@ export class AppElement extends HTMLElement {
     createEffect(() => {
       const selectedNodeInfo = getSelectedNode();
       console.log('selected nodeElement...', selectedNodeInfo);
-
-      rootElement.querySelectorAll('.selected').forEach((element) => {
+      if (!this.rootElement) {
+        return;
+      }
+      this.rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
       });
 
@@ -1593,9 +1638,11 @@ export class AppElement extends HTMLElement {
           onSave: (values: any) => {
             console.log('onSave', values);
 
-            rootElement.querySelectorAll('.selected').forEach((element) => {
-              element.classList.remove('selected');
-            });
+            this.rootElement
+              ?.querySelectorAll('.selected')
+              .forEach((element) => {
+                element.classList.remove('selected');
+              });
 
             const node = (
               selectedNodeInfo?.containerNode
@@ -1770,7 +1817,7 @@ export class AppElement extends HTMLElement {
       }  
       return Test();  
     `,
-      rootElement
+      this.rootElement
     );
 
     // const element = TestApp({
