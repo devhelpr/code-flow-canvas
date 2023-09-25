@@ -45,13 +45,13 @@ export const createASTNodeElement = <T>(
     }`;
   }
   element = createElement(
-    astNode.tagName ?? 'div',
+    astNode.tagName || 'div',
     elementProperties,
     parentElement,
     text
   );
 
-  const matches = text.toString().match(/\[[\s\S]+?\]/gm);
+  const matches = (text || '').toString().match(/\[[\s\S]+?\]/gm);
   if (matches && expressions && element) {
     matches.map((match) => {
       const expressionId = match.slice(1, -1);
