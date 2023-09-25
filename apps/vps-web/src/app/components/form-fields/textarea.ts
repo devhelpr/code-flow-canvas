@@ -52,7 +52,7 @@ export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
           name="${props.fieldName}"
           autocomplete="off"
           id="${props.formId}_${props.fieldName}"
-          type="text">${props.value}</textarea>
+          type="text"></textarea>
         </div>`
     );
 
@@ -74,7 +74,7 @@ export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
         this.textarea = this.label.nextSibling as HTMLTextAreaElement;
         this.renderList.push(this.label, this.textarea);
         this.textarea.addEventListener('input', this.onInput);
-
+        this.textarea.value = this.props.value;
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
           (value) => {

@@ -95,9 +95,10 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             compiledMarkup.body,
             divNode.domElement,
             divNode.elements,
-            structuredMarkup.expressions
+            structuredMarkup.expressions,
+            node?.id
           );
-          //console.log('compiledMarkup', compiledMarkup);
+          console.log('compiledMarkup', compiledMarkup);
         }
       }
       if (astElement && structuredMarkup) {
@@ -169,7 +170,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         }
       }
     } catch (error) {
-      console.error('setHTML error', error);
+      console.log('setHTML error', error);
     }
   };
 
@@ -224,6 +225,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       const componentWrapper = createElement(
         'div',
         {
+          id: id ?? '',
           class: `inner-node rounded min-h-[100px] overflow-hidden`,
           style: {
             'clip-path': 'polygon(100% 0, 100% 100%, 0% 100%, 0 0%',

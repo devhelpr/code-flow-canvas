@@ -14,7 +14,8 @@ export const createASTNodeElement = <T>(
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
   elements: ElementNodeMap<T>,
-  expressions?: Record<string, object>
+  expressions?: Record<string, object>,
+  scopeId?: string
 ) => {
   let element: IElementNode<T> | undefined = undefined;
   const elementProperties: any = {};
@@ -36,6 +37,12 @@ export const createASTNodeElement = <T>(
         console.log('Error in script', error);
       };
     })();`;
+  } else if (astNode.tagName === 'style' && scopeId) {
+    // TODO : uncomment when @scope is supported in more major browsers
+    // dontFollowChildren = true;
+    // text = `@scope ([id="${scopeId}"]) {
+    //     ${astNode.body?.[0].value ?? ''}
+    // }`;
   }
   element = createElement(
     astNode.tagName ?? 'div',
@@ -87,7 +94,8 @@ export const createASTNodeElement = <T>(
           childASTNode,
           element!.domElement,
           element!.elements,
-          expressions
+          expressions,
+          scopeId
         );
       });
     }
