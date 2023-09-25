@@ -250,8 +250,8 @@ export class AppElement extends HTMLElement {
     if (y < 50) {
       y = 50;
     }
-    if (y + 360 > (rootClientRect?.height ?? 0) - 80) {
-      y = (rootClientRect?.height ?? 0) - 360 - 80;
+    if (y + 380 > (rootClientRect?.height ?? 0) - 80) {
+      y = (rootClientRect?.height ?? 0) - 380 - 80;
     }
 
     sidebar.style.left = `${x}px`;
@@ -292,7 +292,7 @@ export class AppElement extends HTMLElement {
       'd',
       `M0 ${(y < yLine ? yLine - y : 0) + heightNode * scaleCamera} 
        L${x - xLine < 0 ? xLine - x : x - xLine} ${
-        (heightNode / 4) * scaleCamera + (yLine < y ? y - yLine : 0)
+        heightNode / 4 + (yLine < y ? y - yLine : 0)
       }`
     );
     /*
@@ -1414,7 +1414,7 @@ export class AppElement extends HTMLElement {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-[400px] h-[360px] z-[1020] p-2 bg-slate-600 border-white hidden overflow-auto',
+          'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-500 hidden overflow-auto',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
         wheel: (event) => {
           event.stopPropagation();
