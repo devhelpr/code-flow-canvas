@@ -39,10 +39,10 @@ export const createASTNodeElement = <T>(
     })();`;
   } else if (astNode.tagName === 'style' && scopeId) {
     // TODO : uncomment when @scope is supported in more major browsers
-    // dontFollowChildren = true;
-    // text = `@scope ([id="${scopeId}"]) {
-    //     ${astNode.body?.[0].value ?? ''}
-    // }`;
+    dontFollowChildren = true;
+    text = `@scope ([id="${scopeId}"]) {
+        ${astNode.body?.[0].value ?? ''}
+    }`;
   }
   element = createElement(
     astNode.tagName ?? 'div',
