@@ -97,6 +97,7 @@ export class AppElement extends HTMLElement {
   editPopupContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
+  editPopupLineEndPath: IElementNode<NodeInfo> | undefined = undefined;
   editPopupEditingNodeIndicator: IElementNode<NodeInfo> | undefined = undefined;
 
   rootElement: HTMLElement | undefined = undefined;
@@ -291,9 +292,20 @@ export class AppElement extends HTMLElement {
     (this.editPopupLinePath?.domElement as SVGPathElement).setAttribute(
       'd',
       `M0 ${(y < yLine ? yLine - y : 0) + heightNode * scaleCamera} 
-       L${x - xLine < 0 ? xLine - x : x - xLine} ${
-        heightNode / 4 + (yLine < y ? y - yLine : 0)
+       L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
+        (yLine < y ? y - yLine : 0) + 170
       }`
+    );
+
+    (this.editPopupLineEndPath?.domElement as SVGPathElement).setAttribute(
+      'd',
+      `M${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
+        (yLine < y ? y - yLine : 0) + 170 - 5
+      }
+      L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
+        (yLine < y ? y - yLine : 0) + 170 + 5
+      }
+        `
     );
     /*
 
@@ -1414,7 +1426,7 @@ export class AppElement extends HTMLElement {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-500 hidden overflow-auto',
+          'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-600 hidden overflow-auto',
         //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
         wheel: (event) => {
           event.stopPropagation();
@@ -1432,6 +1444,7 @@ export class AppElement extends HTMLElement {
         style: {
           width: '200px',
           height: '200px',
+          filter: 'drop-shadow(rgba(0, 0, 0, 0.4) 3px 1px 2px)',
         },
       },
       this.rootElement
@@ -1440,6 +1453,19 @@ export class AppElement extends HTMLElement {
       'path',
       {
         d: 'M0 0 L200 200',
+        stroke: 'white',
+        'stroke-width': '3px',
+        fill: 'transparent',
+        style: {
+          //filter: 'drop-shadow(5px 5px 3px rgb(255 255 255 / 1))',
+        },
+      },
+      this.editPopupLineContainer.domElement
+    );
+    this.editPopupLineEndPath = createNSElement(
+      'path',
+      {
+        d: 'M0 0 L0 0',
         stroke: 'white',
         'stroke-width': '2px',
         fill: 'transparent',
@@ -1454,6 +1480,9 @@ export class AppElement extends HTMLElement {
       'div',
       {
         class: 'absolute z-[1010] pointer-events-none',
+        style: {
+          filter: 'drop-shadow(rgba(0, 0, 0, 0.4) 3px 1px 2px)',
+        },
       },
       this.rootElement
     );

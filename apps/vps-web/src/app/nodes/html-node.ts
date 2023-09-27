@@ -77,9 +77,11 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   };
   const setHTML = (value: string) => {
     try {
-      const splitted = value.split(':');
+      const splitted = (value ?? '').toString().split(':');
       if (splitted.length === 2) {
         variables[splitted[0]] = splitted[1] || '';
+      } else {
+        variables['value'] = value;
       }
       if (!astElement) {
         const htmlString = node.nodeInfo.formValues['html'] || defaultHTML;
