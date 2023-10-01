@@ -119,9 +119,10 @@ export const getForEach =
         const jsxComponentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded-xl`,
+            class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center`,
           },
-          undefined
+          undefined,
+          'foreach'
         ) as unknown as INodeComponent<NodeInfo>;
 
         const rect = canvasApp.createRect(
