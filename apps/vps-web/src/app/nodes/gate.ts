@@ -166,9 +166,11 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
         'div',
         {
           class:
-            'inner-node flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
+            'inner-node p-3 pl-10 flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
           style: {
             'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
+            // 'shape-inside:': 'polygon(0 50%, 100% 0, 100% 100%)', // no-browser-support yet...
+            // 'shape-padding': '10px',
           },
         },
         undefined,

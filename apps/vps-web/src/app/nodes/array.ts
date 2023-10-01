@@ -51,12 +51,14 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
               arrayElement.classList.remove('duration-300');
               arrayElement.classList.add('duration-0');
               arrayElement.classList.add('outline-red-400');
+              arrayElement.classList.remove('outline-transparent');
               setTimeout(() => {
                 arrayElement.classList.remove('duration-0');
                 arrayElement.classList.add('duration-300');
               }, 10);
               setTimeout(() => {
                 arrayElement?.classList.remove('outline-red-400');
+                arrayElement.classList.add('outline-transparent');
               }, 250);
             }
             return Array.prototype[property].apply(
@@ -74,6 +76,32 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         _receiver: unknown
       ) {
         target[property as unknown as any] = value;
+        const helper = parseInt(property.toString());
+        if (!isNaN(helper)) {
+          let index = helper as number;
+          if (index < 0) {
+            index = target.length + index;
+          }
+          const arrayElement = (
+            wrapper?.domElement as HTMLElement
+          ).querySelector(`.array [data-index="${index}"]`);
+          if (arrayElement) {
+            arrayElement.textContent = value;
+            arrayElement.classList.remove('duration-300');
+            arrayElement.classList.add('duration-0');
+            arrayElement.classList.add('outline-purple-400');
+            arrayElement.classList.remove('outline-transparent');
+            setTimeout(() => {
+              arrayElement.classList.remove('duration-0');
+              arrayElement.classList.add('duration-300');
+            }, 10);
+            setTimeout(() => {
+              arrayElement?.classList.remove('outline-purple-400');
+              arrayElement.classList.add('outline-transparent');
+            }, 250);
+          }
+        }
+
         return true;
       },
     };
@@ -146,37 +174,47 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   };
 
   const processCommand = (input: string, loopIndex: number) => {
-    const match = input.match(/([\w]+)\(([^()]*)\)/);
-    if (match) {
-      const command = match[1];
-      const args = match[2];
+    return new Promise<boolean>((resolve, reject) => {
+      const match = input.match(/([\w]+)\(([^()]*)\)/);
+      if (match) {
+        const command = match[1];
+        const args = match[2];
 
-      if (command === 'trigger') {
-        return false;
-      } else if (command === 'push') {
-        pushValueToArray(runCommandParameterExpression(args, loopIndex));
-      } else if (command === 'swap') {
-        const [index1, index2] = args
-          .split(',')
-          .map((x) => runCommandParameterExpression(x, loopIndex));
-        console.log('swap', index1, index2);
-        try {
-          const temp = inputValues[index1];
-          const temp2 = inputValues[index2];
-          if (temp !== undefined && temp2 !== undefined) {
-            inputValues[index1] = temp2;
-            inputValues[index2] = temp;
+        if (command === 'trigger') {
+          resolve(false);
+          return;
+        } else if (command === 'push') {
+          pushValueToArray(runCommandParameterExpression(args, loopIndex));
+        } else if (command === 'swap') {
+          const [index1, index2] = args
+            .split(',')
+            .map((x) => runCommandParameterExpression(x, loopIndex));
+          console.log('swap', index1, index2);
+          try {
+            const temp = inputValues.at(index1);
+            const temp2 = inputValues.at(index2);
+            setTimeout(() => {
+              if (temp !== undefined && temp2 !== undefined) {
+                inputValues[index1] = temp2;
+                inputValues[index2] = temp;
+              }
+              setTimeout(() => {
+                setValue(inputValues);
+                resolve(true);
+              }, 250);
+            }, 300);
+            return;
+          } catch (e) {
+            console.log('error swapping indexes', e);
           }
-          setValue(inputValues);
-        } catch (e) {
-          console.log('error swapping indexes', e);
+        } else {
+          console.log('unknown command', command, args);
         }
-      } else {
-        console.log('unknown command', command, args);
       }
-    }
-    return true;
-    console.log('processCommand', input, match);
+
+      console.log('processCommand', input, match);
+      resolve(true);
+    });
   };
 
   const runCommandParameterExpression = (
@@ -250,30 +288,40 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       }
     }
   };
-  const compute = (
+  const computeAsync = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
   ) => {
-    if (isCommmand(input)) {
-      if (processCommand(input, loopIndex ?? 0)) {
-        return {
-          stop: true,
-        };
+    return new Promise((resolve, reject) => {
+      if (isCommmand(input)) {
+        processCommand(input, loopIndex ?? 0).then((result) => {
+          if (result) {
+            resolve({
+              stop: true,
+            });
+          } else {
+            const output = [...inputValues];
+            resolve({
+              result: output,
+              output,
+              followPath: undefined,
+            });
+          }
+        });
+      } else {
+        const previousOutput = [...inputValues];
+        pushValueToArray(input);
+        const output = [...inputValues];
+        resolve({
+          result: output,
+          output,
+          followPath: undefined,
+          previousOutput,
+        });
       }
-      return {
-        result: [...inputValues],
-        followPath: undefined,
-      };
-    }
-    const previousOutput = [...inputValues];
-    pushValueToArray(input);
-    return {
-      result: [...inputValues],
-      followPath: undefined,
-      previousOutput,
-    };
+    });
   };
 
   const getData = () => {
@@ -402,7 +450,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
 
       node = rect.nodeComponent;
       node.nodeInfo.formElements = formElements;
-      node.nodeInfo.compute = compute;
+      node.nodeInfo.computeAsync = computeAsync;
       node.nodeInfo.initializeCompute = initializeCompute;
       node.nodeInfo.setValue = setValue;
       return node;
