@@ -23,7 +23,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-
+  let canvasAppInstance: canvasAppReturnType | undefined = undefined;
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -32,56 +32,79 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+    loopIndex?: number,
+    payload?: any
   ) => {
-    if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
-      let result: any = false;
-      try {
-        const expression = node.nodeInfo.formValues?.['expression'] ?? '';
-        const compiledExpressionInfo = compileExpressionAsInfo(expression);
-        const expressionFunction = (
-          new Function(
-            'payload',
-            `${compiledExpressionInfo.script}`
-          ) as unknown as (payload?: any) => any
-        ).bind(compiledExpressionInfo.bindings);
-        result = runExpression(
-          expressionFunction,
-          {
-            input: input,
-            value: input,
-            currentValue: input,
-            index: loopIndex ?? 0,
-          },
-          true,
-          compiledExpressionInfo.payloadProperties
-        );
+    console.log('Gate compute', loopIndex);
+    //if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
+    let result: any = false;
+    try {
+      const expression = node.nodeInfo.formValues?.['expression'] ?? '';
+      const compiledExpressionInfo = compileExpressionAsInfo(expression);
+      const expressionFunction = (
+        new Function(
+          'payload',
+          `${compiledExpressionInfo.script}`
+        ) as unknown as (payload?: any) => any
+      ).bind(compiledExpressionInfo.bindings);
 
-        if (expression !== '' && (isNaN(result) || result === undefined)) {
-          throw new Error("Expression couldn't be run");
-        }
-        console.log('Gate result', result, input, expression);
-      } catch (error) {
-        result = undefined;
-        // (errorNode.domElement as unknown as HTMLElement).classList.remove(
-        //   'hidden'
-        // );
-        // (errorNode.domElement as unknown as HTMLElement).textContent =
-        //   error?.toString() ?? 'Error';
-        console.log('expression error', error);
-      }
-      if (result) {
-        currentValue = result;
-      }
-      return {
-        result: input,
-        stop: !result,
+      const payloadForExpression = {
+        input: input,
+        currentValue: input,
+        value: input,
+        current: input,
+        last: currentValue,
+        index: loopIndex ?? 0,
+        runIteration: loopIndex ?? 0,
+        random: Math.round(Math.random() * 100),
+        ...payload,
       };
+      canvasAppInstance?.getVariableNames().forEach((variableName) => {
+        Object.defineProperties(payloadForExpression, {
+          [variableName]: {
+            get: () => {
+              console.log('get', variableName);
+              return canvasAppInstance?.getVariable(variableName);
+            },
+            set: (value) => {
+              canvasAppInstance?.setVariable(variableName, value);
+            },
+          },
+        });
+      });
+
+      result = runExpression(
+        expressionFunction,
+        payloadForExpression,
+        false, // when True ... this fails when expression contains array indexes...
+        compiledExpressionInfo.payloadProperties
+      );
+
+      if (expression !== '' && (isNaN(result) || result === undefined)) {
+        throw new Error("Expression couldn't be run");
+      }
+      console.log('Gate result', result, input, expression);
+    } catch (error) {
+      result = undefined;
+      // (errorNode.domElement as unknown as HTMLElement).classList.remove(
+      //   'hidden'
+      // );
+      // (errorNode.domElement as unknown as HTMLElement).textContent =
+      //   error?.toString() ?? 'Error';
+      console.log('expression error', error);
+    }
+    if (result) {
+      currentValue = result;
     }
     return {
       result: input,
-      stop: Math.random() < 0.5,
+      stop: !result,
     };
+    //}
+    // return {
+    //   result: input,
+    //   stop: Math.random() < 0.5,
+    // };
   };
   return {
     name: 'gate',
@@ -95,6 +118,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
       initialValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      canvasAppInstance = canvasApp;
       const initialExpressionValue = initialValues?.['expression'] ?? '';
       console.log(
         'initialExpressionValue',

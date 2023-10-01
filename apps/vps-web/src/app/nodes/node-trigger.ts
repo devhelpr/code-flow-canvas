@@ -88,7 +88,7 @@ export const getNodeTrigger =
         const componentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-sky-900 p-4 rounded`,
+            class: `inner-node bg-sky-900 p-4 rounded flex flex-row justify-center items-center`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;

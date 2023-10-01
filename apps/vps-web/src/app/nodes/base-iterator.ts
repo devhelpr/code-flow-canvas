@@ -178,7 +178,7 @@ export const getBaseIterator = <T>(
 
                 if (testThumb) {
                   const thumb = testThumb;
-                  const mapStep = (value: string) => {
+                  const mapStep = (value: string, index: number) => {
                     animatePathFromThumb(
                       thumb,
                       'white',
@@ -237,7 +237,7 @@ export const getBaseIterator = <T>(
                                   }`;
                                 }
 
-                                mapStep(values.at(mapLoop));
+                                mapStep(values.at(mapLoop), mapLoop);
                               } else {
                                 if (textNode) {
                                   textNode.textContent = nodeTitle;
@@ -280,7 +280,7 @@ export const getBaseIterator = <T>(
                             input,
                             pathExecution,
                             connection.startNode,
-                            mapLoop
+                            index
                           );
                         }
                       },
@@ -293,7 +293,7 @@ export const getBaseIterator = <T>(
                       true
                     );
                   };
-                  mapStep(takeValue ?? '');
+                  mapStep(takeValue ?? '', 0);
                 }
               }
             } else {
@@ -562,7 +562,11 @@ export const getBaseIterator = <T>(
             classNames: `bg-slate-800 text-white p-4 rounded flex flex-row items-center justify-center`,
           },
           true,
-          true
+          true,
+          undefined,
+          undefined,
+          undefined
+          //containerNode here
         );
         testNode = end.nodeComponent;
 

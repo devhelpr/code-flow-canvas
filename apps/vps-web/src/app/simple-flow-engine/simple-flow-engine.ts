@@ -303,7 +303,8 @@ export const runNode = <T>(
   input?: string,
   pathExecution?: RunNodeResult<T>[],
   offsetX?: number,
-  offsetY?: number
+  offsetY?: number,
+  loopIndex?: number
 ) => {
   const payload = getVariablePayload<T>(node, canvasApp);
 
@@ -314,7 +315,12 @@ export const runNode = <T>(
 
   if (formInfo && formInfo?.computeAsync) {
     formInfo
-      .computeAsync(input ?? '', pathExecution, runIndex, payload)
+      .computeAsync(
+        input ?? '',
+        pathExecution,
+        loopIndex === undefined ? runIndex : loopIndex,
+        payload
+      )
       .then((computeResult: any) => {
         sendData(node, canvasApp, computeResult.result);
         result = computeResult.result;
@@ -344,7 +350,7 @@ export const runNode = <T>(
     const computeResult = formInfo.compute(
       input ?? '',
       pathExecution,
-      runIndex,
+      loopIndex === undefined ? runIndex : loopIndex,
       payload
     );
 
@@ -506,19 +512,16 @@ export const runNodeFromThumb = <T>(
       let result: any = false;
       let previousOutput: any = undefined;
       const formInfo = node.nodeInfo as unknown as any;
-
+      console.log('runNodeFromThumb', loopIndex, node);
       if (formInfo && formInfo.computeAsync) {
         return new Promise((resolve, reject) => {
           formInfo
-            .computeAsync(input, pathExecution, runIndex)
+            .computeAsync(input, pathExecution, loopIndex)
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
 
               if (computeResult.stop) {
-                if (onStopped) {
-                  onStopped('');
-                }
                 resolve({
                   result: false,
                   stop: true,
@@ -552,14 +555,11 @@ export const runNodeFromThumb = <T>(
             });
         });
       } else if (formInfo && formInfo.compute) {
-        const computeResult = formInfo.compute(input, pathExecution, runIndex);
+        const computeResult = formInfo.compute(input, pathExecution, loopIndex);
         result = computeResult.result;
         followPath = computeResult.followPath;
         previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
-          if (onStopped) {
-            onStopped('');
-          }
           return {
             result: false,
             stop: true,

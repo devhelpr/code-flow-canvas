@@ -36,6 +36,7 @@ import { setVariable } from '../nodes/set-variable';
 import { getNodeTrigger } from '../nodes/node-trigger';
 import { getNodeTriggerTarget } from '../nodes/node-trigger-target';
 import { getHtmlNode } from '../nodes/html-node';
+import { getForEach } from '../nodes/foreach';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -55,6 +56,7 @@ export const setupCanvasNodeTaskRegistry = (
 ) => {
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
   registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));
+  registerNodeFactory('foreach', getForEach(animatePath, animatePathFromThumb));
   registerNodeFactory('expression', getExpression);
   registerNodeFactory('expression-part', getExpressionPart);
   registerNodeFactory('expression-execute', getExpressionExecute);

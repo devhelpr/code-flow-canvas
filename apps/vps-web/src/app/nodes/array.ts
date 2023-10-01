@@ -14,6 +14,11 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
+import {
+  compileExpressionAsInfo,
+  runExpression,
+} from '@devhelpr/expression-compiler';
+import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
 export const getArray: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -140,8 +145,88 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     }
   };
 
-  const compute = (input: string) => {
-    const previousOutput = [...inputValues];
+  const processCommand = (input: string, loopIndex: number) => {
+    const match = input.match(/([\w]+)\(([^()]*)\)/);
+    if (match) {
+      const command = match[1];
+      const args = match[2];
+
+      if (command === 'trigger') {
+        return false;
+      } else if (command === 'push') {
+        pushValueToArray(runCommandParameterExpression(args, loopIndex));
+      } else if (command === 'swap') {
+        const [index1, index2] = args
+          .split(',')
+          .map((x) => runCommandParameterExpression(x, loopIndex));
+        console.log('swap', index1, index2);
+        try {
+          const temp = inputValues[index1];
+          const temp2 = inputValues[index2];
+          if (temp !== undefined && temp2 !== undefined) {
+            inputValues[index1] = temp2;
+            inputValues[index2] = temp;
+          }
+          setValue(inputValues);
+        } catch (e) {
+          console.log('error swapping indexes', e);
+        }
+      } else {
+        console.log('unknown command', command, args);
+      }
+    }
+    return true;
+    console.log('processCommand', input, match);
+  };
+
+  const runCommandParameterExpression = (
+    expression: string,
+    loopIndex: number
+  ) => {
+    const compiledExpressionInfo = compileExpressionAsInfo(expression);
+    const expressionFunction = (
+      new Function(
+        'payload',
+        `${compiledExpressionInfo.script}`
+      ) as unknown as (payload?: any) => any
+    ).bind(compiledExpressionInfo.bindings);
+
+    const payloadForExpression = {
+      index: loopIndex ?? 0,
+      runIteration: loopIndex ?? 0,
+      random: Math.round(Math.random() * 100),
+    };
+    canvasAppInstance?.getVariableNames().forEach((variableName) => {
+      Object.defineProperties(payloadForExpression, {
+        [variableName]: {
+          get: () => {
+            console.log('get', variableName);
+            return canvasAppInstance?.getVariable(variableName);
+          },
+          set: (value) => {
+            canvasAppInstance?.setVariable(variableName, value);
+          },
+        },
+      });
+    });
+
+    return runExpression(
+      expressionFunction,
+      payloadForExpression,
+      false,
+      compiledExpressionInfo.payloadProperties
+    );
+  };
+  const isCommmand = (input: string) => {
+    // detecting function call
+    // [\w]+\(([^\(\)]+)\)
+    return typeof input === 'string' && input.match(/[\w]+\(([^()]*)\)/);
+  };
+
+  const pushValueToArray = (input: string) => {
+    if (input === undefined || input === null) {
+      return;
+    }
     inputValues.push(input);
     if (htmlNode) {
       if (hasInitialValue) {
@@ -164,6 +249,26 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         }, 250);
       }
     }
+  };
+  const compute = (
+    input: string,
+    pathExecution?: RunNodeResult<NodeInfo>[],
+    loopIndex?: number,
+    payload?: any
+  ) => {
+    if (isCommmand(input)) {
+      if (processCommand(input, loopIndex ?? 0)) {
+        return {
+          stop: true,
+        };
+      }
+      return {
+        result: [...inputValues],
+        followPath: undefined,
+      };
+    }
+    const previousOutput = [...inputValues];
+    pushValueToArray(input);
     return {
       result: [...inputValues],
       followPath: undefined,
