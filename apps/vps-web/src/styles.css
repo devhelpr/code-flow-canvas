@@ -123,12 +123,14 @@
 
 .rect-node {
 	cursor: pointer;
+	z-index: 3;
 }
 
 .active-layer2 .rect-node {
 	opacity: 0.25;
 	pointer-events: none;
 	cursor: default;
+	z-index: 2;
 }
 
 .active-layer2 .connection:not(.layer-2) {
@@ -141,7 +143,7 @@
 }
 
 .active-layer2 .connection.layer-2 {
-	z-index: 2;
+	z-index: 3;
 	opacity: 1;
 }
 .active-layer2 .connection.layer-2 .connection-path {
