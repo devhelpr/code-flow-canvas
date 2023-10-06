@@ -331,10 +331,14 @@ export class Connection<T> {
 
     if (this.nodeComponent && this.nodeComponent.layer) {
       const layer = this.nodeComponent.layer ?? 1;
+      const parentDomElement = this.svgParent?.domElement as SVGElement;
       if (layer > 1) {
-        const parentDomElement = this.svgParent?.domElement as SVGElement;
         if (!parentDomElement.classList.contains('layer-2')) {
           parentDomElement.classList.add('layer-2');
+        }
+      } else {
+        if (parentDomElement.classList.contains('layer-2')) {
+          parentDomElement.classList.remove('layer-2');
         }
       }
     }

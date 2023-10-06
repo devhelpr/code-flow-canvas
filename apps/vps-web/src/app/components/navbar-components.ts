@@ -108,7 +108,8 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
           ?.nextSibling as HTMLButtonElement;
         this.placeOnLayer2Button = this.placeOnLayer1Button
           ?.nextSibling as HTMLButtonElement;
-        this.switchLayerButton = this.placeOnLayer2Button;
+        this.switchLayerButton = this.placeOnLayer2Button
+          ?.nextSibling as HTMLButtonElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
