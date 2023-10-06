@@ -37,6 +37,7 @@ import { getNodeTrigger } from '../nodes/node-trigger';
 import { getNodeTriggerTarget } from '../nodes/node-trigger-target';
 import { getHtmlNode } from '../nodes/html-node';
 import { getForEach } from '../nodes/foreach';
+import { getSendCommand } from '../nodes/send-command';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -61,6 +62,9 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('expression-part', getExpressionPart);
   registerNodeFactory('expression-execute', getExpressionExecute);
   registerNodeFactory('value', getValue);
+
+  registerNodeFactory('send-command', getSendCommand);
+
   registerNodeFactory('gate', getGate);
   registerNodeFactory('if-condition', getIfCondition);
   registerNodeFactory('array', getArray);

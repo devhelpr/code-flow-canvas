@@ -89,14 +89,14 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
             arrayElement.textContent = value;
             arrayElement.classList.remove('duration-300');
             arrayElement.classList.add('duration-0');
-            arrayElement.classList.add('outline-purple-400');
+            arrayElement.classList.add('outline-yellow-300');
             arrayElement.classList.remove('outline-transparent');
             setTimeout(() => {
               arrayElement.classList.remove('duration-0');
               arrayElement.classList.add('duration-300');
             }, 10);
             setTimeout(() => {
-              arrayElement?.classList.remove('outline-purple-400');
+              arrayElement?.classList.remove('outline-yellow-300');
               arrayElement.classList.add('outline-transparent');
             }, 250);
           }
@@ -387,7 +387,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       wrapper = createElement(
         'div',
         {
-          class: `bg-slate-500 p-4 rounded max-w-[240px]`,
+          class: `bg-slate-500 p-4 rounded max-w-[240px] min-h-[110px]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -397,7 +397,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         x,
         y,
         200,
-        100,
+        110,
         undefined,
         [
           {
@@ -416,6 +416,15 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
             label: '#',
             thumbConstraint: 'value',
             name: 'input',
+          },
+          {
+            thumbType: ThumbType.EndConnectorLeft,
+            thumbIndex: 1,
+            connectionType: ThumbConnectionType.end,
+            color: 'white',
+            label: 'C',
+            thumbConstraint: 'command',
+            name: 'command',
           },
         ],
         wrapper,
