@@ -73,7 +73,7 @@ export const calculateConnectorY = <T>(
         if (formField) {
           offsetIndex = 0;
           formFieldOffsetY = formField.offsetTop ?? 0;
-          formFieldOffsetY -= paddingRect;
+          formFieldOffsetY -= paddingRect + 3;
         }
       }
     }
