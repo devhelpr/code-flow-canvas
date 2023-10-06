@@ -30,6 +30,7 @@ import {
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
 import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
+import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
 
 export interface NavbarComponentsProps {
   rootAppElement: HTMLElement;
@@ -63,6 +64,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
   deleteButton: HTMLButtonElement | null = null;
   exportButton: HTMLButtonElement | null = null;
   importButton: HTMLButtonElement | null = null;
+  importScriptButton: HTMLButtonElement | null = null;
   placeOnLayer1Button: HTMLButtonElement | null = null;
   placeOnLayer2Button: HTMLButtonElement | null = null;
   switchLayerButton: HTMLButtonElement | null = null;
@@ -78,6 +80,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         <button class="${navBarButton}">Delete</button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
+        <button class="${navBarButton}">Import script</button>
         <button class="${navBarButton}">L1</button>
         <button class="${navBarButton}">L2</button>
         <button class="${navBarButton}">Switch layer</button>
@@ -104,7 +107,9 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
-        this.placeOnLayer1Button = this.importButton
+        this.importScriptButton = this.importButton
+          ?.nextSibling as HTMLButtonElement;
+        this.placeOnLayer1Button = this.importScriptButton
           ?.nextSibling as HTMLButtonElement;
         this.placeOnLayer2Button = this.placeOnLayer1Button
           ?.nextSibling as HTMLButtonElement;
@@ -116,6 +121,10 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         this.deleteButton.addEventListener('click', this.onClickDelete);
         this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
+        this.importScriptButton.addEventListener(
+          'click',
+          this.onClickImportScript
+        );
         this.placeOnLayer1Button.addEventListener(
           'click',
           this.onClickPlaceOnLayer1
@@ -382,6 +391,59 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
       }
     };
     input.click();
+    return false;
+  };
+
+  onClickImportScript = (event: Event) => {
+    event.preventDefault();
+
+    const input = document.createElement('input') as HTMLInputElement & {
+      files: FileList;
+    };
+
+    input.type = 'file';
+    input.setAttribute('accept', '.es');
+    input.onchange = () => {
+      const files = Array.from(input.files);
+      if (files && files.length > 0) {
+        // const file = URL.createObjectURL(files[0]);
+        // console.log(file);
+
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+          if (event && event.target && event.target.result) {
+            const data = event.target.result.toString();
+            const nodeList = convertExpressionScriptToFlow(data);
+            if (nodeList) {
+              const flow = {
+                schemaType: 'flow',
+                schemaVersion: '0.0.1',
+                id: '1234',
+                flows: {
+                  flow: {
+                    flowType: 'flow',
+                    nodes: nodeList,
+                  },
+                },
+              };
+              this.props.clearCanvas();
+              this.props.importToCanvas(
+                flow.flows.flow.nodes,
+                this.props.canvasApp,
+                this.props.canvasUpdated,
+                undefined,
+                0
+              );
+              this.props.canvasApp.centerCamera();
+              this.props.initializeNodes();
+            }
+          }
+        });
+        reader.readAsBinaryString(files[0]);
+      }
+    };
+    input.click();
+
     return false;
   };
 
