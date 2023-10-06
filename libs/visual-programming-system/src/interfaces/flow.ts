@@ -19,6 +19,8 @@ export interface FlowNode<T> {
   width?: number;
   height?: number;
 
+  layer?: number;
+
   endX?: number;
   endY?: number;
 

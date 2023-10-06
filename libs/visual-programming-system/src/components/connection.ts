@@ -110,7 +110,7 @@ export class Connection<T> {
       {
         width: 0,
         height: 0,
-        class: 'absolute top-0 left-0 pointer-events-none', //pointer-events-bounding-box',
+        class: `connection absolute top-0 left-0 pointer-events-none`, //pointer-events-bounding-box',
       },
       this.canvasElement
     );
@@ -183,7 +183,7 @@ export class Connection<T> {
     this.pathTransparentElement = createNSElement(
       'path',
       {
-        class: 'pointer-events-auto cursor-pointer',
+        class: 'connection-path pointer-events-auto cursor-pointer',
         d: path,
         stroke: 'transparent',
         'stroke-width': 50,
@@ -329,6 +329,15 @@ export class Connection<T> {
       // update all in this condition...
     }
 
+    if (this.nodeComponent && this.nodeComponent.layer) {
+      const layer = this.nodeComponent.layer ?? 1;
+      if (layer > 1) {
+        const parentDomElement = this.svgParent?.domElement as SVGElement;
+        if (!parentDomElement.classList.contains('layer-2')) {
+          parentDomElement.classList.add('layer-2');
+        }
+      }
+    }
     if (this.nodeComponent && this.nodeComponent.isData) {
       (this.nodeComponent.domElement as SVGPathElement).setAttribute(
         'stroke-dasharray',

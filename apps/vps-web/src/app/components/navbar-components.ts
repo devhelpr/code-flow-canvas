@@ -1,10 +1,12 @@
 import {
   CanvasAppInstance,
+  FlowNode,
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
   NodeType,
+  createCanvasApp,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
@@ -28,9 +30,9 @@ import {
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
 import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
-import { importToCanvas } from '../storage/import-to-canvas';
 
 export interface NavbarComponentsProps {
+  rootAppElement: HTMLElement;
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
   storageProvider: FlowrunnerIndexedDbStorageProvider;
@@ -41,6 +43,13 @@ export interface NavbarComponentsProps {
   canvasUpdated: () => void;
   canvasApp: CanvasAppInstance;
   removeElement: (element: IElementNode<NodeInfo>) => void;
+  importToCanvas: (
+    nodesList: FlowNode<NodeInfo>[],
+    canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
+    canvasUpdated: () => void,
+    containerNode?: IRectNodeComponent<NodeInfo>,
+    nestedLevel?: number
+  ) => void;
 }
 
 export class NavbarComponent extends Component<NavbarComponentsProps> {
@@ -54,6 +63,11 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
   deleteButton: HTMLButtonElement | null = null;
   exportButton: HTMLButtonElement | null = null;
   importButton: HTMLButtonElement | null = null;
+  placeOnLayer1Button: HTMLButtonElement | null = null;
+  placeOnLayer2Button: HTMLButtonElement | null = null;
+  switchLayerButton: HTMLButtonElement | null = null;
+
+  rootAppElement: HTMLElement | null = null;
 
   constructor(parent: BaseComponent | null, props: NavbarComponentsProps) {
     super(parent, props);
@@ -64,10 +78,14 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         <button class="${navBarButton}">Delete</button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
+        <button class="${navBarButton}">L1</button>
+        <button class="${navBarButton}">L2</button>
+        <button class="${navBarButton}">Switch layer</button>
         <children></children>
       </div>`
     );
     this.rootElement = props.rootElement;
+    this.rootAppElement = props.rootAppElement;
     this.mount();
   }
   mount() {
@@ -86,19 +104,39 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
+        this.placeOnLayer1Button = this.importButton
+          ?.nextSibling as HTMLButtonElement;
+        this.placeOnLayer2Button = this.placeOnLayer1Button
+          ?.nextSibling as HTMLButtonElement;
+        this.switchLayerButton = this.placeOnLayer2Button;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
         this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
+        this.placeOnLayer1Button.addEventListener(
+          'click',
+          this.onClickPlaceOnLayer1
+        );
+        this.placeOnLayer2Button.addEventListener(
+          'click',
+          this.onClickPlaceOnLayer2
+        );
+        this.switchLayerButton.addEventListener(
+          'click',
+          this.onClickSwitchLayer
+        );
 
         this.renderList.push(
           this.addNodeButton,
           this.centerButton,
           this.deleteButton,
           this.exportButton,
-          this.importButton
+          this.importButton,
+          this.placeOnLayer1Button,
+          this.placeOnLayer2Button,
+          this.switchLayerButton
         );
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
@@ -210,8 +248,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
     return false;
   };
 
-  onClickDelete = (event: Event) => {
-    event.preventDefault();
+  getSelectedNodeInfo = () => {
     const nodeElementId = getSelectedNode();
     if (nodeElementId) {
       const node = nodeElementId.containerNode
@@ -225,64 +262,79 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
           ) as INodeComponent<NodeInfo>);
 
       if (node) {
-        if (node.nodeType === NodeType.Connection) {
-          // Remove the connection from the start and end nodes
-          const connection = node as IConnectionNodeComponent<NodeInfo>;
-          if (connection.startNode) {
-            connection.startNode.connections =
-              connection.startNode?.connections?.filter(
-                (c) => c.id !== connection.id
-              );
-          }
-          if (connection.endNode) {
-            connection.endNode.connections =
-              connection.endNode?.connections?.filter(
-                (c) => c.id !== connection.id
-              );
-          }
-        } else if (node.nodeType === NodeType.Shape) {
-          //does the shape have connections? yes.. remove the link between the connection and the node
-          // OR .. remove the connection as well !?
-          const shapeNode = node as IRectNodeComponent<NodeInfo>;
-          if (shapeNode.connections) {
-            shapeNode.connections.forEach((c) => {
-              const connection = this.props.canvasApp?.elements?.get(
-                c.id
-              ) as IConnectionNodeComponent<NodeInfo>;
-              if (connection) {
-                if (connection.startNode?.id === node.id) {
-                  connection.startNode = undefined;
-                  connection.startNodeThumb = undefined;
-                }
-                if (connection.endNode?.id === node.id) {
-                  connection.endNode = undefined;
-                  connection.endNodeThumb = undefined;
-                }
-              }
-            });
-          }
-        } else {
-          return;
-        }
-
-        if (nodeElementId.containerNode) {
-          (
-            nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-          ).nodeInfo.canvasAppInstance.elements?.delete(nodeElementId.id);
-          this.props.removeElement(
-            node
-            // (
-            //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-            // ).nodeInfo.canvasAppInstance
-          );
-        } else {
-          this.props.removeElement(node);
-          this.props.canvasApp?.elements?.delete(nodeElementId.id);
-        }
-        setSelectNode(undefined);
-        this.props.canvasUpdated();
+        return { selectedNodeInfo: nodeElementId, node };
       }
     }
+    return false;
+  };
+
+  onClickDelete = (event: Event) => {
+    event.preventDefault();
+    const nodeInfo = this.getSelectedNodeInfo();
+
+    if (nodeInfo) {
+      const node = nodeInfo.node;
+      if (node.nodeType === NodeType.Connection) {
+        // Remove the connection from the start and end nodes
+        const connection = node as IConnectionNodeComponent<NodeInfo>;
+        if (connection.startNode) {
+          connection.startNode.connections =
+            connection.startNode?.connections?.filter(
+              (c) => c.id !== connection.id
+            );
+        }
+        if (connection.endNode) {
+          connection.endNode.connections =
+            connection.endNode?.connections?.filter(
+              (c) => c.id !== connection.id
+            );
+        }
+      } else if (node.nodeType === NodeType.Shape) {
+        //does the shape have connections? yes.. remove the link between the connection and the node
+        // OR .. remove the connection as well !?
+        const shapeNode = node as IRectNodeComponent<NodeInfo>;
+        if (shapeNode.connections) {
+          shapeNode.connections.forEach((c) => {
+            const connection = this.props.canvasApp?.elements?.get(
+              c.id
+            ) as IConnectionNodeComponent<NodeInfo>;
+            if (connection) {
+              if (connection.startNode?.id === node.id) {
+                connection.startNode = undefined;
+                connection.startNodeThumb = undefined;
+              }
+              if (connection.endNode?.id === node.id) {
+                connection.endNode = undefined;
+                connection.endNodeThumb = undefined;
+              }
+            }
+          });
+        }
+      } else {
+        return;
+      }
+
+      if (nodeInfo.selectedNodeInfo.containerNode) {
+        (
+          nodeInfo.selectedNodeInfo
+            .containerNode as unknown as IRectNodeComponent<NodeInfo>
+        ).nodeInfo.canvasAppInstance.elements?.delete(
+          nodeInfo.selectedNodeInfo.id
+        );
+        this.props.removeElement(
+          node
+          // (
+          //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+          // ).nodeInfo.canvasAppInstance
+        );
+      } else {
+        this.props.removeElement(node);
+        this.props.canvasApp?.elements?.delete(nodeInfo.selectedNodeInfo.id);
+      }
+      setSelectNode(undefined);
+      this.props.canvasUpdated();
+    }
+
     return false;
   };
 
@@ -314,7 +366,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
             const data = JSON.parse(event.target.result.toString());
             console.log('IMPORT DATA', data);
             this.props.clearCanvas();
-            importToCanvas(
+            this.props.importToCanvas(
               data.flows.flow.nodes,
               this.props.canvasApp,
               this.props.canvasUpdated,
@@ -329,6 +381,48 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
       }
     };
     input.click();
+    return false;
+  };
+
+  onClickPlaceOnLayer1 = (event: Event) => {
+    event.preventDefault();
+    const nodeInfo = this.getSelectedNodeInfo();
+
+    if (nodeInfo) {
+      const node = nodeInfo.node;
+      if (node.nodeType === NodeType.Connection) {
+        const connection = node as IConnectionNodeComponent<NodeInfo>;
+        connection.layer = 1;
+        connection.update?.();
+        this.props.canvasUpdated();
+      }
+    }
+    return false;
+  };
+
+  onClickPlaceOnLayer2 = (event: Event) => {
+    event.preventDefault();
+    const nodeInfo = this.getSelectedNodeInfo();
+
+    if (nodeInfo) {
+      const node = nodeInfo.node;
+      if (node.nodeType === NodeType.Connection) {
+        const connection = node as IConnectionNodeComponent<NodeInfo>;
+        connection.layer = 2;
+        connection.update?.();
+        this.props.canvasUpdated();
+      }
+    }
+    return false;
+  };
+
+  onClickSwitchLayer = (event: Event) => {
+    event.preventDefault();
+    if (this.rootAppElement?.classList.contains('active-layer2')) {
+      this.rootAppElement?.classList.remove('active-layer2');
+    } else {
+      this.rootAppElement?.classList.add('active-layer2');
+    }
     return false;
   };
 
@@ -358,11 +452,13 @@ export const NavbarComponents = (props: NavbarComponentsProps) => {
     storageProvider: props.storageProvider,
     clearCanvas: props.clearCanvas,
     rootElement: props.rootElement,
+    rootAppElement: props.rootAppElement,
     selectNodeType: props.selectNodeType,
     animatePath: props.animatePath,
     animatePathFromThumb: props.animatePathFromThumb,
     canvasUpdated: props.canvasUpdated,
     canvasApp: props.canvasApp,
     removeElement: props.removeElement,
+    importToCanvas: props.importToCanvas,
   });
 };

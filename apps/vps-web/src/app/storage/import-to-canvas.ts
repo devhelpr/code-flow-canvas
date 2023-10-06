@@ -172,6 +172,7 @@ export const importToCanvas = (
                   }
                   curve.nodeComponent.isControlled = true;
                   curve.nodeComponent.nodeInfo = {};
+                  curve.nodeComponent.layer = node.layer ?? 1;
 
                   if (start && curve.nodeComponent) {
                     curve.nodeComponent.startNode = start;
@@ -222,7 +223,7 @@ export const importToCanvas = (
 
   const elementList = Array.from(canvasApp?.elements ?? []);
 
-  nodesList.forEach((node) => {
+  nodesList.forEach((node, index) => {
     if (node.nodeType === NodeType.Connection) {
       let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
       let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
@@ -233,6 +234,11 @@ export const importToCanvas = (
         });
         if (startElement) {
           start = startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+        } else {
+          console.log(
+            'import-to-canvas: create connection : no node.startNodeId found',
+            node.startNodeId
+          );
         }
       }
       if (node.endNodeId) {
@@ -242,6 +248,11 @@ export const importToCanvas = (
         });
         if (endElement) {
           end = endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+        } else {
+          console.log(
+            'import-to-canvas: create connection : no node.endNodeId found',
+            node.endNodeId
+          );
         }
       }
       let c1x = 0;
@@ -256,6 +267,13 @@ export const importToCanvas = (
         c2y = node.controlPoints[1].y ?? 0;
       }
 
+      if (!start) {
+        console.log('import-to-canvas: create connection : no start');
+      }
+
+      if (!end) {
+        console.log('import-to-canvas: create connection : no end');
+      }
       const curve =
         node.lineType === 'BezierCubic'
           ? canvasApp.createCubicBezier(
@@ -286,10 +304,12 @@ export const importToCanvas = (
             );
 
       if (!curve.nodeComponent) {
+        console.log('import-to-canvas: no curve.nodeComponent');
         return;
       }
       curve.nodeComponent.isControlled = true;
       curve.nodeComponent.nodeInfo = {};
+      curve.nodeComponent.layer = node.layer ?? 1;
 
       if (start && curve.nodeComponent) {
         curve.nodeComponent.startNode = start;

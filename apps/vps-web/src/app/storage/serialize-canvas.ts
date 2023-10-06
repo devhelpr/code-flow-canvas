@@ -39,6 +39,7 @@ export const serializeElementsMap = (elements: ElementNodeMap<NodeInfo>) => {
         endThumbName: connection.endNodeThumb?.thumbName,
         lineType: connection.lineType,
         nodeType: obj.nodeType,
+        layer: connection.layer ?? 1,
         nodeInfo: cleanupNodeInfoForSerializing(connection.nodeInfo),
       };
     }

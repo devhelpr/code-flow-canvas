@@ -649,7 +649,7 @@ export class Rect<T> {
     const rectContainerElement = createElement(
       'div',
       {
-        class: 'absolute top-0 left-0 select-none ', //will-change-transform
+        class: 'rect-node absolute top-0 left-0 select-none ', //will-change-transform
       },
       canvasElement,
       undefined,

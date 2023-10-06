@@ -25,6 +25,7 @@ import {
   SelectedNodeInfo,
   createNSElement,
   Camera,
+  FlowNode,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -460,6 +461,25 @@ export class AppElement extends HTMLElement {
             canvasApp: this.canvasApp,
             removeElement: this.removeElement,
             rootElement: menubarElement.domElement as HTMLElement,
+            rootAppElement: this.rootElement as HTMLElement,
+            importToCanvas: (
+              nodesList: FlowNode<NodeInfo>[],
+              canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
+              canvasUpdated: () => void,
+              containerNode?: IRectNodeComponent<NodeInfo>,
+              nestedLevel?: number
+            ) => {
+              this.restoring = true;
+              importToCanvas(
+                nodesList,
+                canvasApp,
+                canvasUpdated,
+                containerNode,
+                nestedLevel
+              );
+              this.restoring = false;
+              canvasUpdated();
+            },
           }) as unknown as HTMLElement;
         }
 
@@ -1578,7 +1598,7 @@ export class AppElement extends HTMLElement {
 
       removeFormElement();
       if (selectedNodeInfo) {
-        selectedNodeLabel.domElement.textContent = `${selectedNodeInfo.id}`;
+        selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
         const node = (
           selectedNodeInfo?.containerNode
             ? (selectedNodeInfo?.containerNode.nodeInfo as any)
