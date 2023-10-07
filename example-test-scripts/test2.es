@@ -10,3 +10,5 @@ if (c < 100) {
 } else {
   showValue(c + 100);
 }
+
+showValue(c);

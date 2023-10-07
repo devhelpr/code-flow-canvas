@@ -9,6 +9,15 @@ import {
 import { FlowNode, LineType } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
+/*
+  TODO:
+  - connections list contains nodeid's from which a new node should be connected to
+     ... currently it's a list of nodeid's to which create connections between
+     ... new node's should first create connections to all the previous node in the list 
+         .. and then clear the list and place themselves on the list
+         .. the if-condtion should place both the last nodeids of success and failure flows on the list
+
+*/
 const getValue = (argument: any) => {
   if (argument.type === 'Identifier') {
     return argument.name;
@@ -29,6 +38,7 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
   let lastNodeType = '';
   let startThumbName = '';
   let endThumbName = '';
+  let lastNodeId = '';
 
   const createBinaryExpression = (
     argument: any,
@@ -65,7 +75,6 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           y,
         };
         lastNodeType = 'expression';
-        connections.push(expressionNode.id);
         adjustCoordinates(
           expressionNodeWidth,
           expressionNodeOffset,
@@ -73,6 +82,8 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           false
         );
         nodeList.push(expressionNode);
+        createConnections(expressionNode.id);
+        lastNodeId = expressionNode.id;
       }
       return false;
     }
@@ -99,7 +110,6 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           y,
         };
         lastNodeType = 'expression';
-        connections.push(expressionNode.id);
         adjustCoordinates(
           expressionNodeWidth,
           expressionNodeOffset,
@@ -107,6 +117,8 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           false
         );
         nodeList.push(expressionNode);
+        createConnections(expressionNode.id);
+        lastNodeId = expressionNode.id;
       } else {
         return expression;
       }
@@ -150,7 +162,6 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           y,
         };
         lastNodeType = 'expression';
-        connections.push(expressionNode.id);
         adjustCoordinates(
           expressionNodeWidth,
           expressionNodeOffset,
@@ -158,6 +169,8 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           false
         );
         nodeList.push(expressionNode);
+        createConnections(expressionNode.id);
+        lastNodeId = expressionNode.id;
       } else {
         return expression;
       }
@@ -193,7 +206,6 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           y,
         };
         lastNodeType = 'expression';
-        connections.push(expressionNode.id);
         adjustCoordinates(
           expressionNodeWidth,
           expressionNodeOffset,
@@ -201,6 +213,8 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           false
         );
         nodeList.push(expressionNode);
+        createConnections(expressionNode.id);
+        lastNodeId = expressionNode.id;
       } else if (result) {
         return expression;
       }
@@ -236,7 +250,6 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           y,
         };
         lastNodeType = 'expression';
-        connections.push(expressionNode.id);
         adjustCoordinates(
           expressionNodeWidth,
           expressionNodeOffset,
@@ -244,6 +257,8 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           false
         );
         nodeList.push(expressionNode);
+        createConnections(expressionNode.id);
+        lastNodeId = expressionNode.id;
       } else if (result) {
         return expression;
       }
@@ -251,35 +266,29 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
     return false;
   };
 
-  function createConnections(
-    nodeList: FlowNode<NodeInfo>[],
-    _notusedconnections: string[]
-  ) {
+  function createConnections(nodeId: string) {
     connections.forEach((connectionId, index) => {
-      if (index > 0) {
-        const connectionNode: FlowNode<NodeInfo> = {
-          id: crypto.randomUUID(),
-          nodeType: 'Connection',
-          startNodeId: connections[index - 1],
-          endNodeId: connectionId,
-          lineType: LineType.BezierCubic,
-          x: 0,
-          y: 0,
-        };
-        if (startThumbName) {
-          connectionNode.startThumbName = startThumbName;
-          startThumbName = '';
-        }
-        if (endThumbName) {
-          connectionNode.endThumbName = endThumbName;
-          endThumbName = '';
-        }
-        nodeList.push(connectionNode as FlowNode<NodeInfo>);
+      const connectionNode: FlowNode<NodeInfo> = {
+        id: crypto.randomUUID(),
+        nodeType: 'Connection',
+        startNodeId: connectionId, //connections[index - 1],
+        endNodeId: nodeId,
+        lineType: LineType.BezierCubic,
+        x: 0,
+        y: 0,
+      };
+      if (startThumbName) {
+        connectionNode.startThumbName = startThumbName;
+        startThumbName = '';
       }
+      if (endThumbName) {
+        connectionNode.endThumbName = endThumbName;
+        endThumbName = '';
+      }
+      nodeList.push(connectionNode as FlowNode<NodeInfo>);
     });
-    if (connections.length > 1) {
-      connections = connections.slice(-1); //0, connections.length - 1);
-    }
+    connections = [];
+    connections.push(nodeId);
   }
 
   const adjustCoordinate = (
@@ -322,6 +331,7 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
           x += 200;
           lastNodeType = 'variable';
           nodeList.push(varNode);
+          lastNodeId = varNode.id;
         });
       } else if (statement.type === 'ExpressionStatement') {
         if (lastNodeType === 'variable') {
@@ -373,10 +383,10 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
             x += 200;
 
             lastNodeType = 'show-value';
-            connections.push(showValueNode.id);
             nodeList.push(showValueNode);
+            createConnections(showValueNode.id);
+            lastNodeId = showValueNode.id;
           }
-          createConnections(nodeList, connections);
         }
       } else if (statement.type === 'IfStatement') {
         const ifStatement = statement as IASTIfStatementNode;
@@ -407,21 +417,22 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
             y,
           };
           lastNodeType = 'if-condition';
-          connections.push(ifStatementNode.id);
           nodeList.push(ifStatementNode);
+          lastNodeId = ifStatementNode.id;
           x += 200;
 
-          createConnections(nodeList, connections);
+          createConnections(ifStatementNode.id);
           const oldconnections = [...connections];
           const oldx = x;
           const oldy = y;
+          const newConnections: string[] = [];
           if (ifStatement.consequent?.type === 'BlockStatement') {
             startThumbName = 'success';
             endThumbName = 'input';
             y -= 143;
             const blockStatement = ifStatement.consequent as IASTBlockNode;
             createFlowNodes(blockStatement.body);
-            //createConnections(nodeList, connections);
+            newConnections.push(lastNodeId);
           }
 
           if (ifStatement.alternate?.type === 'BlockStatement') {
@@ -433,8 +444,11 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
             y += 200;
             const blockStatement = ifStatement.alternate as IASTBlockNode;
             createFlowNodes(blockStatement.body);
-            //createConnections(nodeList, connections);
+            newConnections.push(lastNodeId);
           }
+          connections.push(...newConnections);
+          y = oldy;
+          y += 47;
         }
       }
     });
