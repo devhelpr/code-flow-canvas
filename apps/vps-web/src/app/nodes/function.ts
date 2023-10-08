@@ -72,7 +72,8 @@ export const getFunction =
           'span',
           {
             'data-index': index,
-            class: `outline-[4px] inline-block p-0.5 bg-slate-500 border border-slate-600 rounded text-white`,
+            class: `outline-[4px] max-w-[40px] text-ellipsis overflow-hidden inline-block px-0.5 leading-5 bg-slate-500 border border-slate-600 rounded text-white`,
+            title: parameter,
           },
           undefined,
           parameter.toString()
@@ -157,7 +158,7 @@ export const getFunction =
         parametersContainer = createElement(
           'div',
           {
-            class: `absolute -top-[20px] left-0`,
+            class: `absolute -top-3 left-0`,
           },
           componentWrapper.domElement
         );
