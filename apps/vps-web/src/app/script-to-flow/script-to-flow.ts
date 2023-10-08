@@ -35,10 +35,13 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
   const nodeList: FlowNode<NodeInfo>[] = [];
   let x = 0;
   let y = 0;
+  let varX = 0;
+  let varY = 0;
   let lastNodeType = '';
   let startThumbName = '';
   let endThumbName = '';
   let lastNodeId = '';
+  let isTopLevel = true;
 
   const createBinaryExpression = (
     argument: any,
@@ -312,6 +315,10 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
   function createFlowNodes(blocks: IASTNode[]) {
     blocks.forEach((statement) => {
       if (statement.type === 'VariableStatement') {
+        const tempX = x;
+        const tempY = y;
+        x = varX;
+        y = varY;
         const variableStatement = statement as IASTVariableStatementNode;
         variableStatement.declarations.forEach((declaration) => {
           const varNode = {
@@ -329,126 +336,137 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
             y,
           };
           x += 200;
-          lastNodeType = 'variable';
+
+          if (isTopLevel) {
+            lastNodeType = 'variable';
+          }
           nodeList.push(varNode);
-          lastNodeId = varNode.id;
+          //lastNodeId = varNode.id;
         });
-      } else if (statement.type === 'ExpressionStatement') {
-        if (lastNodeType === 'variable') {
+        varX = x;
+        varY = y;
+        x = tempX;
+        y = tempY;
+      } else {
+        if (lastNodeType === 'variable' && isTopLevel) {
           x = 0;
           y += 100;
         }
-        const expressionStatement = statement as IASTExpressionNode;
-        if (expressionStatement.expression.type === 'CallExpression') {
-          const callExpression = expressionStatement.expression as any;
-          callExpression.arguments.forEach((argument: any) => {
-            if (argument.type === 'Identifier') {
-              if (lastNodeType === 'show-value') {
-                y -= 32;
+        isTopLevel = false;
+
+        if (statement.type === 'ExpressionStatement') {
+          const expressionStatement = statement as IASTExpressionNode;
+          if (expressionStatement.expression.type === 'CallExpression') {
+            const callExpression = expressionStatement.expression as any;
+            callExpression.arguments.forEach((argument: any) => {
+              if (argument.type === 'Identifier') {
+                if (lastNodeType === 'show-value') {
+                  y -= 32;
+                }
+                createBinaryExpression(
+                  argument,
+                  x,
+                  y,
+                  nodeList,
+                  connections,
+                  true,
+                  adjustCoordinate
+                );
+              } else if (argument.type === 'BinaryExpression') {
+                if (lastNodeType === 'show-value') {
+                  y -= 32;
+                }
+                createBinaryExpression(
+                  argument,
+                  x,
+                  y,
+                  nodeList,
+                  connections,
+                  true,
+                  adjustCoordinate
+                );
               }
-              createBinaryExpression(
-                argument,
+            });
+            if (callExpression.callee.name === 'showValue') {
+              const showValueNode = {
+                id: crypto.randomUUID(),
+                nodeType: 'Shape',
+                nodeInfo: {
+                  type: 'show-value',
+                },
                 x,
                 y,
-                nodeList,
-                connections,
-                true,
-                adjustCoordinate
-              );
-            } else if (argument.type === 'BinaryExpression') {
-              if (lastNodeType === 'show-value') {
-                y -= 32;
-              }
-              createBinaryExpression(
-                argument,
-                x,
-                y,
-                nodeList,
-                connections,
-                true,
-                adjustCoordinate
-              );
+              };
+              x += 200;
+
+              lastNodeType = 'show-value';
+              nodeList.push(showValueNode);
+              createConnections(showValueNode.id);
+              lastNodeId = showValueNode.id;
             }
-          });
-          if (callExpression.callee.name === 'showValue') {
-            const showValueNode = {
+          }
+        } else if (statement.type === 'IfStatement') {
+          const ifStatement = statement as IASTIfStatementNode;
+          if (ifStatement.test.type === 'BinaryExpression') {
+            const expression = createBinaryExpression(
+              ifStatement.test,
+              x,
+              y,
+              nodeList,
+              connections,
+              false,
+              adjustCoordinate
+            );
+            x += 50;
+            y -= 47;
+            console.log('if-statement expression', expression);
+            const ifStatementNode = {
               id: crypto.randomUUID(),
               nodeType: 'Shape',
               nodeInfo: {
-                type: 'show-value',
+                type: 'if-condition',
+                formValues: {
+                  expression: expression,
+                  Mode: 'expression',
+                },
               },
               x,
               y,
             };
+            lastNodeType = 'if-condition';
+            nodeList.push(ifStatementNode);
+            lastNodeId = ifStatementNode.id;
             x += 200;
 
-            lastNodeType = 'show-value';
-            nodeList.push(showValueNode);
-            createConnections(showValueNode.id);
-            lastNodeId = showValueNode.id;
-          }
-        }
-      } else if (statement.type === 'IfStatement') {
-        const ifStatement = statement as IASTIfStatementNode;
-        if (ifStatement.test.type === 'BinaryExpression') {
-          const expression = createBinaryExpression(
-            ifStatement.test,
-            x,
-            y,
-            nodeList,
-            connections,
-            false,
-            adjustCoordinate
-          );
-          x += 50;
-          y -= 47;
-          console.log('if-statement expression', expression);
-          const ifStatementNode = {
-            id: crypto.randomUUID(),
-            nodeType: 'Shape',
-            nodeInfo: {
-              type: 'if-condition',
-              formValues: {
-                expression: expression,
-                Mode: 'expression',
-              },
-            },
-            x,
-            y,
-          };
-          lastNodeType = 'if-condition';
-          nodeList.push(ifStatementNode);
-          lastNodeId = ifStatementNode.id;
-          x += 200;
+            createConnections(ifStatementNode.id);
+            const oldconnections = [...connections];
+            const oldx = x;
+            const oldy = y;
+            const newConnections: string[] = [];
+            if (ifStatement.consequent?.type === 'BlockStatement') {
+              startThumbName = 'success';
+              endThumbName = 'input';
+              y -= 143;
+              const blockStatement = ifStatement.consequent as IASTBlockNode;
+              createFlowNodes(blockStatement.body);
+              newConnections.push(lastNodeId);
+            }
 
-          createConnections(ifStatementNode.id);
-          const oldconnections = [...connections];
-          const oldx = x;
-          const oldy = y;
-          const newConnections: string[] = [];
-          if (ifStatement.consequent?.type === 'BlockStatement') {
-            startThumbName = 'success';
-            endThumbName = 'input';
-            y -= 143;
-            const blockStatement = ifStatement.consequent as IASTBlockNode;
-            createFlowNodes(blockStatement.body);
-            newConnections.push(lastNodeId);
-          }
-
-          if (ifStatement.alternate?.type === 'BlockStatement') {
-            x = oldx;
+            if (ifStatement.alternate?.type === 'BlockStatement') {
+              x = oldx;
+              y = oldy;
+              connections = oldconnections;
+              startThumbName = 'failure';
+              endThumbName = 'input';
+              y += 200;
+              const blockStatement = ifStatement.alternate as IASTBlockNode;
+              createFlowNodes(blockStatement.body);
+              newConnections.push(lastNodeId);
+            }
+            connections.push(...newConnections);
             y = oldy;
-            connections = oldconnections;
-            startThumbName = 'failure';
-            endThumbName = 'input';
-            y += 200;
-            const blockStatement = ifStatement.alternate as IASTBlockNode;
-            createFlowNodes(blockStatement.body);
-            newConnections.push(lastNodeId);
+            y += 47;
           }
-          connections.push(...newConnections);
-          y = oldy;
-          y += 47;
         }
       }
     });
