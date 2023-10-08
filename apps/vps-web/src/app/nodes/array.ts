@@ -145,12 +145,6 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           value.toString()
         ) as unknown as INodeComponent<NodeInfo>;
 
-        // if (htmlNode.domElement.firstChild) {
-        //   htmlNode.domElement.insertBefore(
-        //     inputElement.domElement as unknown as HTMLElement,
-        //     htmlNode.domElement.firstChild
-        //   );
-        // } else {
         if (htmlNode) {
           htmlNode.domElement.appendChild(
             inputElement.domElement as unknown as HTMLElement

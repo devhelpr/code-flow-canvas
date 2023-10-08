@@ -99,6 +99,14 @@ export const getCallFunction =
                   !isFunctionFound &&
                   element.nodeInfo.formValues?.['node'] === commandName
                 ) {
+                  const payload: Record<string, any> = {};
+                  element.nodeInfo.formValues?.['parameters']
+                    .split(',')
+                    .forEach((parameter: string, index: number) => {
+                      if (parsedArguments[index]) {
+                        payload[parameter] = parsedArguments[index];
+                      }
+                    });
                   isFunctionFound = true;
                   runNode<NodeInfo>(
                     element as IRectNodeComponent<NodeInfo>,
@@ -112,8 +120,7 @@ export const getCallFunction =
                       });
                     },
                     {
-                      a: parsedArguments?.[0] ?? 0,
-                      b: parsedArguments?.[1] ?? 0,
+                      ...payload,
                       trigger: 'TRIGGER',
                     } as unknown as string, // TODO : improve this!
                     []

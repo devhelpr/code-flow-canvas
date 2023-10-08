@@ -16,6 +16,7 @@ export const getFunction =
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
+    let parametersContainer: IElementNode<NodeInfo>;
     const initializeCompute = () => {
       return;
     };
@@ -57,6 +58,32 @@ export const getFunction =
         result: false,
         stop: true,
       };
+    };
+
+    const showParameters = () => {
+      (parametersContainer.domElement as HTMLElement).innerHTML = '';
+
+      const parameters: string[] = (
+        node?.nodeInfo?.formValues?.['parameters'] ?? ''
+      ).split(',');
+
+      parameters.forEach((parameter, index) => {
+        const parameterElement = createElement(
+          'span',
+          {
+            'data-index': index,
+            class: `outline-[4px] inline-block p-0.5 bg-slate-500 border border-slate-600 rounded text-white`,
+          },
+          undefined,
+          parameter.toString()
+        ) as unknown as INodeComponent<NodeInfo>;
+
+        if (parametersContainer) {
+          parametersContainer.domElement.appendChild(
+            parameterElement.domElement as unknown as HTMLElement
+          );
+        }
+      });
     };
 
     return {
@@ -101,6 +128,8 @@ export const getFunction =
                 parameters: value,
               };
 
+              showParameters();
+
               if (updated) {
                 updated();
               }
@@ -125,6 +154,13 @@ export const getFunction =
         );
 
         divElement.domElement.textContent = initialValue || '';
+        parametersContainer = createElement(
+          'div',
+          {
+            class: `absolute -top-[20px] left-0`,
+          },
+          componentWrapper.domElement
+        );
 
         const rect = canvasApp.createRect(
           x,
@@ -167,6 +203,8 @@ export const getFunction =
         node = rect.nodeComponent;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        showParameters();
 
         return node;
       },
