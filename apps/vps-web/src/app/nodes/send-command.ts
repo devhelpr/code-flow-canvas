@@ -17,7 +17,6 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { replaceValues } from '../utils/replace-values';
 
 export const getSendCommand: NodeTaskFactory<NodeInfo> = (
   updated: () => void

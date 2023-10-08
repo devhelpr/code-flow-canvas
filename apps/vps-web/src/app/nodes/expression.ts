@@ -48,9 +48,14 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       ).bind(compiledExpressionInfo.bindings);
       //const variables = canvasAppInstance?.getVariables() ?? {};
       //console.log('expression canvas variables', variables, input);
+      const inputAsString = typeof input === 'object' ? '' : input;
+      let inputAsObject = {};
+      if (typeof input === 'object') {
+        inputAsObject = input;
+      }
       const payloadForExpression = {
         //...variables,
-        input: input,
+        input: inputAsString,
         currentValue: currentValue,
         value: currentValue,
         current: currentValue,
@@ -59,6 +64,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         runIteration: loopIndex ?? 0,
         random: Math.round(Math.random() * 100),
         ...payload,
+        ...inputAsObject,
       };
       canvasAppInstance?.getVariableNames().forEach((variableName) => {
         Object.defineProperties(payloadForExpression, {

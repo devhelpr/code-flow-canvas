@@ -436,6 +436,7 @@ export const run = <T>(
   */
 
   const nodeList = Array.from(nodes);
+  let isRunning = false;
   nodes.forEach((node) => {
     const nodeComponent = node as unknown as IRectNodeComponent<T>;
     const connectionsFromEndNode = nodeList.filter((e) => {
@@ -446,11 +447,15 @@ export const run = <T>(
       }
       return false;
     });
+    const nodeInfo = nodeComponent.nodeInfo as any;
     if (
       !(nodeComponent.nodeInfo as any)?.isVariable &&
       nodeComponent.nodeType !== NodeType.Connection &&
-      (!connectionsFromEndNode || connectionsFromEndNode.length === 0)
+      (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
+      nodeInfo?.type !== 'node-trigger-target' &&
+      nodeInfo?.type !== 'function'
     ) {
+      isRunning = true;
       runNode<T>(
         nodeComponent,
         canvasApp,
@@ -467,6 +472,11 @@ export const run = <T>(
       );
     }
   });
+  if (!isRunning) {
+    if (onFinishRun) {
+      onFinishRun('', []);
+    }
+  }
   return true;
 };
 

@@ -38,6 +38,8 @@ import { getNodeTriggerTarget } from '../nodes/node-trigger-target';
 import { getHtmlNode } from '../nodes/html-node';
 import { getForEach } from '../nodes/foreach';
 import { getSendCommand } from '../nodes/send-command';
+import { getFunction } from '../nodes/function';
+import { getCallFunction } from '../nodes/call-function';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -91,6 +93,9 @@ export const setupCanvasNodeTaskRegistry = (
 
   registerNodeFactory('node-trigger', getNodeTrigger(animatePath));
   registerNodeFactory('node-trigger-target', getNodeTriggerTarget(animatePath));
+
+  registerNodeFactory('call-function', getCallFunction(animatePath));
+  registerNodeFactory('function', getFunction(animatePath));
 
   registerNodeFactory(
     'sequential',
