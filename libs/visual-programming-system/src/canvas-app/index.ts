@@ -4,6 +4,7 @@ import {
   setCamera,
   transformCameraSpaceToWorldSpace,
 } from '../camera';
+import { LineConnection } from '../components/line-connection';
 import { QuadraticBezierConnection } from '../components/quadratic-bezier-connection';
 import { CubicBezierConnection } from '../components/qubic-bezier-connection';
 import { Rect } from '../components/rect';
@@ -792,6 +793,38 @@ export const createCanvasApp = <T>(
         onCanvasUpdated();
       }
       return curve;
+    },
+    createLine: (
+      startX?: number,
+      startY?: number,
+      endX?: number,
+      endY?: number,
+      isControlled?: boolean,
+      isDashed = false,
+      id?: string,
+      containerNode?: IRectNodeComponent<T>
+    ) => {
+      const line = new LineConnection<T>(
+        canvas as unknown as INodeComponent<T>,
+        interactionStateMachine,
+        pathHiddenElement,
+        elements,
+        startX ?? 0,
+        startY ?? 0,
+        endX ?? 0,
+        endY ?? 0,
+        0,
+        0,
+        isControlled,
+        isDashed,
+        onCanvasUpdated,
+        id,
+        containerNode
+      );
+      if (onCanvasUpdated) {
+        onCanvasUpdated();
+      }
+      return line;
     },
     deleteElementFromNode: (
       element: INodeComponent<T>,
