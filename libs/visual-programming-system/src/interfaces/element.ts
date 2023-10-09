@@ -83,6 +83,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   endNodeThumb?: IThumbNodeComponent<T>;
   isData?: boolean;
   layer?: number;
+  isAnnotationConnection?: boolean;
   onCalculateControlPoints: (
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,
