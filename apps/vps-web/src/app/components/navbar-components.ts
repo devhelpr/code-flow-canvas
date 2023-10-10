@@ -68,6 +68,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
   placeOnLayer1Button: HTMLButtonElement | null = null;
   placeOnLayer2Button: HTMLButtonElement | null = null;
   switchLayerButton: HTMLButtonElement | null = null;
+  toggleDependencyConnections: HTMLButtonElement | null = null;
 
   rootAppElement: HTMLElement | null = null;
 
@@ -84,6 +85,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         <button class="${navBarButton}">L1</button>
         <button class="${navBarButton}">L2</button>
         <button class="${navBarButton}">Switch layer</button>
+        <button class="${navBarButton}">Toggle deps</button>
         <children></children>
       </div>`
     );
@@ -115,6 +117,8 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
           ?.nextSibling as HTMLButtonElement;
         this.switchLayerButton = this.placeOnLayer2Button
           ?.nextSibling as HTMLButtonElement;
+        this.toggleDependencyConnections = this.switchLayerButton
+          ?.nextSibling as HTMLButtonElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
@@ -138,6 +142,11 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
           this.onClickSwitchLayer
         );
 
+        this.toggleDependencyConnections.addEventListener(
+          'click',
+          this.onClickToggleDependencyConnections
+        );
+
         this.renderList.push(
           this.addNodeButton,
           this.centerButton,
@@ -146,7 +155,8 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
           this.importButton,
           this.placeOnLayer1Button,
           this.placeOnLayer2Button,
-          this.switchLayerButton
+          this.switchLayerButton,
+          this.toggleDependencyConnections
         );
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
@@ -486,6 +496,12 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
     } else {
       this.rootAppElement?.classList.add('active-layer2');
     }
+    return false;
+  };
+
+  onClickToggleDependencyConnections = (event: Event) => {
+    event.preventDefault();
+    //
     return false;
   };
 
