@@ -123,6 +123,8 @@ export class AppElement extends HTMLElement {
     this.currentPathUnderInspection = undefined;
     this.pathExecutions = [];
 
+    setSelectNode(undefined);
+
     this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
       this.removeElement(element as unknown as IElementNode<NodeInfo>);

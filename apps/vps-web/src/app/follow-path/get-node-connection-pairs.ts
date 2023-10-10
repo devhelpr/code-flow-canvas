@@ -32,6 +32,7 @@ export const getNodeConnectionPairById = <T>(
             return;
           }
           if (
+            connectionNode.isAnnotationConnection ||
             (connectionNode.isData && !onlyDataConnections) ||
             (!connectionNode.isData && onlyDataConnections)
           ) {
@@ -55,9 +56,9 @@ export const getNodeConnectionPairById = <T>(
           if (
             connection &&
             end &&
-            canvasApp?.canvas &&
-            connection.controlPoints &&
-            connection.controlPoints.length >= 1
+            canvasApp?.canvas
+            // connection.controlPoints &&
+            // connection.controlPoints.length >= 1
           ) {
             if (connection.isData && !onlyDataConnections) {
               return;
@@ -130,6 +131,7 @@ export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
             return;
           }
           if (
+            connectionNode.isAnnotationConnection ||
             (connectionNode.isData && !onlyDataConnections) ||
             (!connectionNode.isData && onlyDataConnections)
           ) {
@@ -145,9 +147,9 @@ export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
           if (
             connection &&
             start &&
-            canvasApp?.canvas &&
-            connection.controlPoints &&
-            connection.controlPoints.length >= 1
+            canvasApp?.canvas
+            // connection.controlPoints &&
+            // connection.controlPoints.length >= 1
           ) {
             if (connection.isData && !onlyDataConnections) {
               return;
@@ -221,7 +223,10 @@ export const getNodeConnectionPairsFromThumb = <T>(
           if (connectionNode.startNodeThumb?.id !== nodeThumb.id) {
             return;
           }
-          if (connectionNode.isData && !onlyDataConnections) {
+          if (
+            connectionNode.isAnnotationConnection ||
+            (connectionNode.isData && !onlyDataConnections)
+          ) {
             return;
           }
 
@@ -235,9 +240,9 @@ export const getNodeConnectionPairsFromThumb = <T>(
           if (
             connection &&
             end &&
-            canvasApp?.canvas &&
-            connection.controlPoints &&
-            connection.controlPoints.length >= 1
+            canvasApp?.canvas
+            // connection.controlPoints &&
+            // connection.controlPoints.length >= 1
           ) {
             if (onlyDataConnections && !connection.isData) {
               return;

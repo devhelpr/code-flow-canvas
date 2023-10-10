@@ -40,6 +40,7 @@ import { getForEach } from '../nodes/foreach';
 import { getSendCommand } from '../nodes/send-command';
 import { getFunction } from '../nodes/function';
 import { getCallFunction } from '../nodes/call-function';
+import { getTest } from '../nodes/test';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -106,6 +107,8 @@ export const setupCanvasNodeTaskRegistry = (
     'split-by-case',
     getSplitByCase(animatePath, animatePathFromThumb)
   );
+
+  registerNodeFactory('test', getTest);
 };
 
 export const getNodeTaskFactory = (name: string) => {

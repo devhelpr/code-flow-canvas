@@ -12,3 +12,4 @@ export * from './spatial-partitioning';
 export * from './constants/measures';
 export * from './components/utils/calculate-control-points';
 export * from './utils/thumbs';
+export { getLinePoints } from './components/line-connection';

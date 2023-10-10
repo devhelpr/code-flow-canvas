@@ -224,96 +224,105 @@ export class LineConnection<T> extends Connection<T> {
     x2: number,
     y2: number
   ) {
-    const isCircleStart = this.nodeComponent?.startNode?.isCircle ?? false;
-    const isCircleEnd = this.nodeComponent?.endNode?.isCircle ?? false;
+    // const isCircleStart = this.nodeComponent?.startNode?.isCircle ?? false;
+    // const isCircleEnd = this.nodeComponent?.endNode?.isCircle ?? false;
 
-    const spacingAABB = 10;
-    const circlePadding = 10;
+    // const spacingAABB = 10;
+    // const circlePadding = 10;
 
-    let newX1 = x1;
-    let newY1 = y1;
-    let newX2 = x2;
-    let newY2 = y2;
+    // let newX1 = x1;
+    // let newY1 = y1;
+    // let newX2 = x2;
+    // let newY2 = y2;
 
-    if (isCircleStart) {
-      const circleRadius =
-        (this.nodeComponent?.startNode?.width ?? 100) / 2 + circlePadding;
-      const intersection = intersectionCircleLine(
-        {
-          center: { x: x1, y: y1 },
-          radius: circleRadius,
-        },
-        { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } }
-      );
-      if (intersection.length > 0) {
-        newX1 = intersection[0].x;
-        newY1 = intersection[0].y;
-      }
-    } else if (this.nodeComponent?.startNode) {
-      const xleft =
-        this.nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
-      const yleft =
-        this.nodeComponent.startNode.y - bbox.y + startOffsetY - spacingAABB;
-      const width = (this.nodeComponent.startNode.width ?? 0) + spacingAABB * 2;
-      const height =
-        (this.nodeComponent.startNode.height ?? 0) + spacingAABB * 2;
+    // if (isCircleStart) {
+    //   const circleRadius =
+    //     (this.nodeComponent?.startNode?.width ?? 100) / 2 + circlePadding;
+    //   const intersection = intersectionCircleLine(
+    //     {
+    //       center: { x: x1, y: y1 },
+    //       radius: circleRadius,
+    //     },
+    //     { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } }
+    //   );
+    //   if (intersection.length > 0) {
+    //     newX1 = intersection[0].x;
+    //     newY1 = intersection[0].y;
+    //   }
+    // } else if (this.nodeComponent?.startNode) {
+    //   const xleft =
+    //     this.nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
+    //   const yleft =
+    //     this.nodeComponent.startNode.y - bbox.y + startOffsetY - spacingAABB;
+    //   const width = (this.nodeComponent.startNode.width ?? 0) + spacingAABB * 2;
+    //   const height =
+    //     (this.nodeComponent.startNode.height ?? 0) + spacingAABB * 2;
 
-      const start = pointOnRect(
-        x2,
-        y2,
-        xleft,
-        yleft,
-        xleft + width,
-        yleft + height,
-        false
-      );
-      if (start) {
-        newX1 = start.x;
-        newY1 = start.y;
-      }
-    }
+    //   const start = pointOnRect(
+    //     x2,
+    //     y2,
+    //     xleft,
+    //     yleft,
+    //     xleft + width,
+    //     yleft + height,
+    //     false
+    //   );
+    //   if (start) {
+    //     newX1 = start.x;
+    //     newY1 = start.y;
+    //   }
+    // }
 
-    if (isCircleEnd) {
-      const circleRadius =
-        (this.nodeComponent?.endNode?.width ?? 100) / 2 + circlePadding;
-      const intersection = intersectionCircleLine(
-        {
-          center: { x: x2, y: y2 },
-          radius: circleRadius,
-        },
-        { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } }
-      );
-      if (intersection.length > 0) {
-        newX2 = intersection[0].x;
-        newY2 = intersection[0].y;
-      }
-    } else {
-      if (this.nodeComponent?.endNode) {
-        const xleft =
-          this.nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
-        const yleft =
-          this.nodeComponent.endNode.y - bbox.y + startOffsetY - spacingAABB;
-        const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
-        const height =
-          (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
+    // if (isCircleEnd) {
+    //   const circleRadius =
+    //     (this.nodeComponent?.endNode?.width ?? 100) / 2 + circlePadding;
+    //   const intersection = intersectionCircleLine(
+    //     {
+    //       center: { x: x2, y: y2 },
+    //       radius: circleRadius,
+    //     },
+    //     { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } }
+    //   );
+    //   if (intersection.length > 0) {
+    //     newX2 = intersection[0].x;
+    //     newY2 = intersection[0].y;
+    //   }
+    // } else {
+    //   if (this.nodeComponent?.endNode) {
+    //     const xleft =
+    //       this.nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
+    //     const yleft =
+    //       this.nodeComponent.endNode.y - bbox.y + startOffsetY - spacingAABB;
+    //     const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
+    //     const height =
+    //       (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
 
-        const end = pointOnRect(
-          x1,
-          y1,
-          xleft,
-          yleft,
-          xleft + width,
-          yleft + height,
-          false
-        );
-        if (end) {
-          newX2 = end.x;
-          newY2 = end.y;
-        }
-      }
-    }
-
-    return `M${newX1} ${newY1} ${newX2} ${newY2}`;
+    //     const end = pointOnRect(
+    //       x1,
+    //       y1,
+    //       xleft,
+    //       yleft,
+    //       xleft + width,
+    //       yleft + height,
+    //       false
+    //     );
+    //     if (end) {
+    //       newX2 = end.x;
+    //       newY2 = end.y;
+    //     }
+    //   }
+    // }
+    const { xStart, yStart, xEnd, yEnd } = getLinePoints(
+      this.nodeComponent!,
+      bbox,
+      startOffsetX,
+      startOffsetY,
+      x1,
+      y1,
+      x2,
+      y2
+    );
+    return `M${xStart} ${yStart} ${xEnd} ${yEnd}`;
   }
 
   protected override initializeControlPoints() {
@@ -406,3 +415,108 @@ export class LineConnection<T> extends Connection<T> {
     );
   }
 }
+
+export const getLinePoints = <T>(
+  nodeComponent: IConnectionNodeComponent<T>,
+  bbox: { x: number; y: number },
+  startOffsetX: number,
+  startOffsetY: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) => {
+  const isCircleStart = nodeComponent?.startNode?.isCircle ?? false;
+  const isCircleEnd = nodeComponent?.endNode?.isCircle ?? false;
+
+  const spacingAABB = 10;
+  const circlePadding = 10;
+
+  let newX1 = x1;
+  let newY1 = y1;
+  let newX2 = x2;
+  let newY2 = y2;
+
+  if (isCircleStart) {
+    const circleRadius =
+      (nodeComponent?.startNode?.width ?? 100) / 2 + circlePadding;
+    const intersection = intersectionCircleLine(
+      {
+        center: { x: x1, y: y1 },
+        radius: circleRadius,
+      },
+      { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } }
+    );
+    if (intersection.length > 0) {
+      newX1 = intersection[0].x;
+      newY1 = intersection[0].y;
+    }
+  } else if (nodeComponent?.startNode) {
+    const xleft =
+      nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
+    const yleft =
+      nodeComponent.startNode.y - bbox.y + startOffsetY - spacingAABB;
+    const width = (nodeComponent.startNode.width ?? 0) + spacingAABB * 2;
+    const height = (nodeComponent.startNode.height ?? 0) + spacingAABB * 2;
+
+    const start = pointOnRect(
+      x2,
+      y2,
+      xleft,
+      yleft,
+      xleft + width,
+      yleft + height,
+      false
+    );
+    if (start) {
+      newX1 = start.x;
+      newY1 = start.y;
+    }
+  }
+
+  if (isCircleEnd) {
+    const circleRadius =
+      (nodeComponent?.endNode?.width ?? 100) / 2 + circlePadding;
+    const intersection = intersectionCircleLine(
+      {
+        center: { x: x2, y: y2 },
+        radius: circleRadius,
+      },
+      { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } }
+    );
+    if (intersection.length > 0) {
+      newX2 = intersection[0].x;
+      newY2 = intersection[0].y;
+    }
+  } else {
+    if (nodeComponent?.endNode) {
+      const xleft =
+        nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
+      const yleft =
+        nodeComponent.endNode.y - bbox.y + startOffsetY - spacingAABB;
+      const width = (nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
+      const height = (nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
+
+      const end = pointOnRect(
+        x1,
+        y1,
+        xleft,
+        yleft,
+        xleft + width,
+        yleft + height,
+        false
+      );
+      if (end) {
+        newX2 = end.x;
+        newY2 = end.y;
+      }
+    }
+  }
+
+  return {
+    xStart: newX1,
+    yStart: newY1,
+    xEnd: newX2,
+    yEnd: newY2,
+  };
+};

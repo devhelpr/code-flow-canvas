@@ -1,5 +1,6 @@
 import {
   ControlAndEndPointNodeType,
+  getLinePoints,
   getPointOnCubicBezierCurve,
   getPointOnQuadraticBezierCurve,
   IConnectionNodeComponent,
@@ -16,20 +17,29 @@ export const getPointOnConnection = <T>(
   start: IRectNodeComponent<T>,
   end: IRectNodeComponent<T>
 ) => {
+  const startNodeThumbType =
+    connection.lineType === LineType.Straight
+      ? ThumbType.Center
+      : connection.startNodeThumb?.thumbType ?? ThumbType.None;
+  const endNodeThumbType =
+    connection.lineType === LineType.Straight
+      ? ThumbType.Center
+      : connection.endNodeThumb?.thumbType ?? ThumbType.None;
+
   const { offsetX: startOffsetX, offsetY: startOffsetY } =
     onGetConnectionToThumbOffset(
       ControlAndEndPointNodeType.start,
-      connection.startNodeThumb?.thumbType ?? ThumbType.None
+      startNodeThumbType
     );
   const { offsetX: endOffsetX, offsetY: endOffsetY } =
     onGetConnectionToThumbOffset(
       ControlAndEndPointNodeType.end,
-      connection.endNodeThumb?.thumbType ?? ThumbType.None
+      endNodeThumbType
     );
   const startHelper = connection.onCalculateControlPoints(
     start,
     ControlAndEndPointNodeType.start,
-    connection.startNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
+    startNodeThumbType,
     connection.startNodeThumb,
     connection.startNodeThumb?.thumbIndex,
     end,
@@ -40,7 +50,7 @@ export const getPointOnConnection = <T>(
   const endHelper = connection.onCalculateControlPoints(
     end,
     ControlAndEndPointNodeType.end,
-    connection.endNodeThumb?.thumbType ?? ThumbType.EndConnectorCenter,
+    endNodeThumbType,
     connection.endNodeThumb,
     connection.endNodeThumb?.thumbIndex,
     start,
@@ -51,6 +61,35 @@ export const getPointOnConnection = <T>(
   const tx = -paddingRect;
   const ty = -paddingRect;
 
+  if (connection.lineType === LineType.Straight) {
+    const ratio = Math.min(percentage, 1);
+    const { xStart, yStart, xEnd, yEnd } = getLinePoints(
+      connection,
+      { x: paddingRect, y: paddingRect },
+      startOffsetX,
+      startOffsetY,
+      startHelper.x + tx + startOffsetX,
+      startHelper.y + ty + startOffsetY,
+      endHelper.x + tx + endOffsetX,
+      endHelper.y + ty + endOffsetY
+    );
+    // const xHelper =
+    //   endHelper.x + tx + endOffsetX - (startHelper.x + tx + startOffsetX);
+    // const yHelper =
+    //   endHelper.y + ty + endOffsetY - (startHelper.y + ty + startOffsetY);
+
+    // return {
+    //   x: startHelper.x + tx + startOffsetX + xHelper * ratio,
+    //   y: startHelper.y + ty + startOffsetY + yHelper * ratio,
+    // };
+    const xHelper = xEnd - xStart;
+    const yHelper = yEnd - yStart;
+
+    return {
+      x: xStart + xHelper * ratio,
+      y: yStart + yHelper * ratio,
+    };
+  }
   const bezierCurvePoints =
     connection.lineType === LineType.BezierCubic
       ? getPointOnCubicBezierCurve(
