@@ -38,7 +38,7 @@ export const getTimer =
       }
       const timer = () => {
         divElement.domElement.textContent =
-          node.nodeInfo.formValues['timer'] || initialTimer.toString();
+          node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
         (divElement.domElement as HTMLElement).classList.remove('loader');
         if (canvasAppInstance && node) {
           runNode<NodeInfo>(
@@ -60,7 +60,7 @@ export const getTimer =
       (divElement.domElement as HTMLElement).classList.add('loader');
       interval = setTimeout(
         timer,
-        parseInt(node.nodeInfo.formValues['timer'] || initialTimer.toString())
+        parseInt(node?.nodeInfo?.formValues['timer'] || initialTimer.toString())
       );
 
       return {
@@ -73,7 +73,7 @@ export const getTimer =
       name: 'timer',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -91,6 +91,9 @@ export const getTimer =
             fieldName: 'timer',
             value: initialValue,
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 timer: value,
@@ -166,17 +169,20 @@ export const getTimer =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
-        node.nodeInfo.delete = () => {
-          if (interval) {
-            clearTimeout(interval);
-          }
-          interval = undefined;
-        };
+
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = formElements;
+          node.nodeInfo.compute = compute;
+          node.nodeInfo.initializeCompute = initializeCompute;
+          node.nodeInfo.delete = () => {
+            if (interval) {
+              clearTimeout(interval);
+            }
+            interval = undefined;
+          };
+        }
         return node;
       },
     };

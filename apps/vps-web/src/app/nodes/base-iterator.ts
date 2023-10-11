@@ -8,6 +8,7 @@ import {
   IThumbNodeComponent,
   IRectNodeComponent,
   thumbHalfWidth,
+  IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { canvasAppReturnType, NodeInfo } from '../types/node-info';
 import {
@@ -100,7 +101,7 @@ export const getBaseIterator = <T>(
   let hasInitialValue = true;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
-  let mapCanvasApp: CanvasAppInstance | undefined = undefined;
+  let mapCanvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let inputNode: INodeComponent<NodeInfo> | undefined = undefined;
   let outputNode: INodeComponent<NodeInfo> | undefined = undefined;
   let testNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -138,7 +139,7 @@ export const getBaseIterator = <T>(
 
       if (inputNode) {
         animatePath(
-          inputNode as IRectNodeComponent<NodeInfo>,
+          inputNode as unknown as IRectNodeComponent<T>,
           'white',
           undefined,
           (input: string | any[]) => {
@@ -180,7 +181,7 @@ export const getBaseIterator = <T>(
                   const thumb = testThumb;
                   const mapStep = (value: string, index: number) => {
                     animatePathFromThumb(
-                      thumb,
+                      thumb as unknown as IThumbNodeComponent<T>,
                       'white',
                       undefined,
                       (input: string | any[]) => {
@@ -195,10 +196,13 @@ export const getBaseIterator = <T>(
                           ) {
                             pathExecution.push({
                               nodeId: node.id,
-                              connection: connection,
-                              scopeNode: connection.startNode,
-                              node: connection.startNode,
-                              endNode: connection.endNode,
+                              connection:
+                                connection as unknown as IConnectionNodeComponent<T>,
+                              scopeNode:
+                                connection.startNode as unknown as IRectNodeComponent<T>,
+                              node: connection.startNode as unknown as IRectNodeComponent<T>,
+                              endNode:
+                                connection.endNode as unknown as IRectNodeComponent<T>,
                               path: 'test',
                               result: true,
                               input: value,
@@ -209,7 +213,7 @@ export const getBaseIterator = <T>(
                           }
 
                           runNodeFromThumb(
-                            connection.startNodeThumb,
+                            connection.startNodeThumb as unknown as IThumbNodeComponent<T>,
                             animatePathFromThumb,
                             (input: string | any[]) => {
                               // TODO : fix this type assertion
@@ -248,7 +252,7 @@ export const getBaseIterator = <T>(
                                 }
 
                                 animatePathFromThumb(
-                                  succesThumb,
+                                  succesThumb as unknown as IThumbNodeComponent<T>,
                                   'white',
                                   (
                                     _nodeId: string,
@@ -279,7 +283,7 @@ export const getBaseIterator = <T>(
                             },
                             input,
                             pathExecution,
-                            connection.startNode,
+                            connection.startNode as unknown as IRectNodeComponent<T>,
                             index
                           );
                         }
@@ -395,7 +399,7 @@ export const getBaseIterator = <T>(
         undefined,
         id,
         {
-          FormElements: [],
+          formElements: [],
           type: nodeTypeName,
           taskType: nodeTypeName,
         }
@@ -678,8 +682,15 @@ export const getBaseIterator = <T>(
       }
 
       node = rect.nodeComponent;
-      node.nodeInfo.computeAsync = computeAsync;
-      node.nodeInfo.initializeCompute = initializeCompute;
+      if (node.nodeInfo) {
+        node.nodeInfo.computeAsync = computeAsync as (
+          input: any,
+          pathExecution?: RunNodeResult<NodeInfo>[],
+          loopIndex?: number,
+          payload?: any
+        ) => Promise<any>;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
       return node;
     },
   };

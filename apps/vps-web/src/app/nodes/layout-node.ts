@@ -30,7 +30,7 @@ export const getLayoutNode =
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
     let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
       undefined;
-    let canvasAppInstance: CanvasAppInstance | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
     let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
 
@@ -149,7 +149,7 @@ export const getLayoutNode =
           undefined,
           id,
           {
-            FormElements: [],
+            formElements: [],
             type: 'layout-node',
             taskType: 'layout-node',
           },
@@ -290,10 +290,11 @@ export const getLayoutNode =
         }
 
         node = rect.nodeComponent;
-        node.nodeInfo.computeAsync = computeAsync;
-        node.nodeInfo.initializeCompute = initializeCompute;
-        node.nodeInfo.canvasAppInstance = canvasAppInstance;
-
+        if (node.nodeInfo) {
+          node.nodeInfo.computeAsync = computeAsync;
+          node.nodeInfo.initializeCompute = initializeCompute;
+          node.nodeInfo.canvasAppInstance = canvasAppInstance;
+        }
         return node;
       },
     };

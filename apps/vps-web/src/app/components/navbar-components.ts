@@ -42,7 +42,7 @@ export interface NavbarComponentsProps {
   animatePath: AnimatePathFunction<NodeInfo>;
   animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>;
   canvasUpdated: () => void;
-  canvasApp: CanvasAppInstance;
+  canvasApp: CanvasAppInstance<NodeInfo>;
   removeElement: (element: IElementNode<NodeInfo>) => void;
   importToCanvas: (
     nodesList: FlowNode<NodeInfo>[],
@@ -69,7 +69,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
   placeOnLayer2Button: HTMLButtonElement | null = null;
   switchLayerButton: HTMLButtonElement | null = null;
   toggleDependencyConnections: HTMLButtonElement | null = null;
-
+  showDependencyConnections = false;
   rootAppElement: HTMLElement | null = null;
 
   constructor(parent: BaseComponent | null, props: NavbarComponentsProps) {
@@ -216,7 +216,9 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
             return;
           }
         }
-
+        if (!node.nodeInfo?.taskType) {
+          return;
+        }
         const selectedNodeTaskFactory = getNodeTaskFactory(
           node.nodeInfo.taskType
         );
@@ -229,7 +231,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
             (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
           ) {
             nodeTask.createVisualNode(
-              node.nodeInfo.canvasAppInstance,
+              node.nodeInfo.canvasAppInstance!,
               50,
               50,
               undefined,
@@ -254,7 +256,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         startX,
         startY
       );
-      if (node) {
+      if (node && node.nodeInfo) {
         node.nodeInfo.taskType = nodeType;
       }
     }
@@ -273,8 +275,8 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
     if (nodeElementId) {
       const node = nodeElementId.containerNode
         ? ((
-            nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-          ).nodeInfo.canvasAppInstance.elements?.get(
+            nodeElementId?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+          )?.nodeInfo?.canvasAppInstance?.elements?.get(
             nodeElementId.id
           ) as INodeComponent<NodeInfo>)
         : (this.props.canvasApp?.elements?.get(
@@ -336,9 +338,9 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
 
       if (nodeInfo.selectedNodeInfo.containerNode) {
         (
-          nodeInfo.selectedNodeInfo
-            .containerNode as unknown as IRectNodeComponent<NodeInfo>
-        ).nodeInfo.canvasAppInstance.elements?.delete(
+          nodeInfo?.selectedNodeInfo
+            ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+        )?.nodeInfo?.canvasAppInstance?.elements?.delete(
           nodeInfo.selectedNodeInfo.id
         );
         this.props.removeElement(
@@ -501,7 +503,25 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
 
   onClickToggleDependencyConnections = (event: Event) => {
     event.preventDefault();
-    //
+    /*
+      indien uitzetten ...
+      - loop door alle connections (ook recursief in containers)..
+      - indien het een isAnnotationConnection is ... dan verwijderen
+
+      indien aanzetten:
+      - loop door alle nodes
+      - vraag aan de node of deze dependencies heeft (en geef die ook terug)
+         ... via registry de benodigde functie opvragen bij de node
+           ... of deze functie toevoegen aan de nodeInfo?
+      - ... zo ja, dan benodigde annotation connections toevoegen   
+
+    */
+    this.showDependencyConnections = !this.showDependencyConnections;
+    if (this.showDependencyConnections) {
+      //
+    } else {
+      //
+    }
     return false;
   };
 

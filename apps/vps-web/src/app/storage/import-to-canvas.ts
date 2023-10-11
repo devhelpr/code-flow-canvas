@@ -155,13 +155,13 @@ export const importToCanvas = (
                           node.id,
                           canvasVisualNode
                         )
-                      : canvasVisualNode.nodeInfo.canvasAppInstance.createQuadraticBezier(
+                      : canvasVisualNode.nodeInfo.canvasAppInstance.createLine(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
                           end?.x ?? node.endX ?? 0,
                           end?.y ?? node.endY ?? 0,
-                          c1x,
-                          c1y,
+                          // c1x,
+                          // c1y,
                           false,
                           undefined,
                           node.id,
@@ -290,13 +290,13 @@ export const importToCanvas = (
               node.id,
               containerNode
             )
-          : canvasApp.createQuadraticBezier(
+          : canvasApp.createLine(
               start?.x ?? node.x ?? 0,
               start?.y ?? node.y ?? 0,
               end?.x ?? node.endX ?? 0,
               end?.y ?? node.endY ?? 0,
-              c1x,
-              c1y,
+              // c1x,
+              // c1y,
               false,
               undefined,
               node.id,

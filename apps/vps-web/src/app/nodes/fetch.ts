@@ -35,7 +35,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
       let result: any = false;
       try {
-        const url = node.nodeInfo.formValues?.['url'] ?? '';
+        const url = node?.nodeInfo?.formValues?.['url'] ?? '';
         fetch(url)
           .then((response) => {
             console.log('response', response);
@@ -106,6 +106,9 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           fieldName: 'url',
           value: url ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               url: value,
@@ -181,7 +184,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.nodeComponent.nodeInfo.formElements = formElements;
+
       errorNode = createElement(
         'div',
         {
@@ -200,8 +203,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
 
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
-      node.nodeInfo.computeAsync = computeAsync;
-      node.nodeInfo.initializeCompute = initializeCompute;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.computeAsync = computeAsync;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
       return node;
     },
   };

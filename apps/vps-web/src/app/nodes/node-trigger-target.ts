@@ -41,7 +41,7 @@ export const getNodeTriggerTarget =
       name: 'node-trigger-target',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -57,6 +57,9 @@ export const getNodeTriggerTarget =
             fieldName: 'node',
             value: initialValue,
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 node: value,
@@ -124,12 +127,14 @@ export const getNodeTriggerTarget =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
 
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = formElements;
+          node.nodeInfo.compute = compute;
+          node.nodeInfo.initializeCompute = initializeCompute;
+        }
         return node;
       },
     };

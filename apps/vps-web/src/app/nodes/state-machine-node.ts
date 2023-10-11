@@ -17,34 +17,14 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-
-export interface Transition {
-  name: string;
-  from: string;
-  to: string;
-  nodeComponent: IRectNodeComponent<NodeInfo>;
-}
-export interface State {
-  id: string;
-  name: string;
-  transitions: Transition[];
-  isFinal: boolean;
-  nodeComponent: IRectNodeComponent<NodeInfo>;
-  stateMachine?: StateMachine;
-}
-
-export interface StateMachine {
-  states: State[];
-  initialState: State | undefined;
-  currentState?: State;
-}
+import { StateMachine, State, Transition } from '../state-machine';
 
 export const createStateMachine = (
-  canvasAppInstance: CanvasAppInstance,
+  canvasAppInstance: CanvasAppInstance<NodeInfo>,
   isCompound = false
-): StateMachine => {
-  let initialState: State | undefined = undefined;
-  const states: State[] = [];
+): StateMachine<NodeInfo> => {
+  let initialState: State<NodeInfo> | undefined = undefined;
+  const states: State<NodeInfo>[] = [];
   const nodeList = Array.from(canvasAppInstance?.elements);
   const stateNodes = nodeList
     .filter(
@@ -57,7 +37,7 @@ export const createStateMachine = (
     .map((n) => n[1] as unknown as IRectNodeComponent<NodeInfo>);
 
   stateNodes.forEach((stateNode) => {
-    const state: State = {
+    const state: State<NodeInfo> = {
       name: stateNode.nodeInfo?.formValues?.caption ?? '',
       id: stateNode.id ?? '',
       transitions: [],
@@ -67,6 +47,12 @@ export const createStateMachine = (
 
     (stateNode.domElement as HTMLElement)?.classList.remove('state-active');
 
+    if (
+      !stateNode.nodeInfo?.canvasAppInstance ||
+      !stateNode.nodeInfo?.stateMachine
+    ) {
+      return;
+    }
     if (stateNode.nodeInfo?.type === 'state-compound') {
       const compoundState = createStateMachine(
         stateNode.nodeInfo.canvasAppInstance,
@@ -95,7 +81,7 @@ export const createStateMachine = (
           if (connection.endNode && nextStates && nextStates.length >= 1) {
             nextStates.forEach((nextState) => {
               if (connection.endNode && nextState && nextState.endNode) {
-                const transition: Transition = {
+                const transition: Transition<NodeInfo> = {
                   name: connection.endNode.nodeInfo?.formValues?.caption ?? '',
                   from: stateNode.id,
                   to: nextState.endNode.id,
@@ -116,7 +102,7 @@ export const createStateMachine = (
   return { states, initialState, currentState: initialState };
 };
 
-export const resetStateMachine = (stateMachine: StateMachine) => {
+export const resetStateMachine = (stateMachine: StateMachine<NodeInfo>) => {
   if (stateMachine.currentState) {
     (
       stateMachine.currentState.nodeComponent.domElement as HTMLElement
@@ -127,7 +113,7 @@ export const resetStateMachine = (stateMachine: StateMachine) => {
   }
 };
 
-export const initStateMachine = (stateMachine: StateMachine) => {
+export const initStateMachine = (stateMachine: StateMachine<NodeInfo>) => {
   if (!stateMachine.currentState) {
     stateMachine.initialState = stateMachine.states[0];
     stateMachine.currentState = stateMachine.initialState;
@@ -138,9 +124,9 @@ export const initStateMachine = (stateMachine: StateMachine) => {
 };
 
 export const transitionToState = (
-  stateMachine: StateMachine,
+  stateMachine: StateMachine<NodeInfo>,
   transitionName: string
-): State | false => {
+): State<NodeInfo> | false => {
   if (stateMachine.currentState) {
     console.log(
       'transitionToState, currentState:',
@@ -188,10 +174,10 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: CanvasAppInstance | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
-  let stateMachine: StateMachine | undefined = undefined;
+  let stateMachine: StateMachine<NodeInfo> | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
   let currentValue = 0;
@@ -272,6 +258,9 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           fieldName: 'caption',
           value: initialValue ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               caption: value,
@@ -490,13 +479,15 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
-      if (nestedLevel ?? 0 > 0) {
-        rect.nodeComponent.nodeInfo.formElements = formElements;
-      }
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.canvasAppInstance = canvasAppInstance;
 
+      if (node.nodeInfo) {
+        if (nestedLevel ?? 0 > 0) {
+          node.nodeInfo.formElements = formElements;
+        }
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.canvasAppInstance = canvasAppInstance;
+      }
       return node;
     },
   };

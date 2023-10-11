@@ -34,7 +34,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number
   ) => {
-    if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
+    if (node?.nodeInfo?.formValues?.['Mode'] === 'expression') {
       let result: any = false;
       try {
         const expression = node.nodeInfo.formValues?.['expression'] ?? '';
@@ -111,6 +111,9 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
             { value: 'expression', label: 'Expression' },
           ],
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               Mode: value,
@@ -126,6 +129,9 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
           fieldName: 'expression',
           value: initialExpressionValue ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               expression: value,
@@ -240,9 +246,11 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.formElements = formElements;
+      if (node.nodeInfo) {
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.formElements = formElements;
+      }
       return node;
     },
   };

@@ -36,7 +36,7 @@ export const getButton =
       } catch {
         currentValue = 0;
       }
-      if (triggerButton) {
+      if (triggerButton && node.nodeInfo) {
         triggerButton = false;
         return {
           result: node.nodeInfo.formValues['caption'] || 'Button',
@@ -55,7 +55,7 @@ export const getButton =
       name: 'button',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -71,6 +71,9 @@ export const getButton =
             fieldName: 'caption',
             value: initialValue,
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 caption: value,
@@ -100,6 +103,9 @@ export const getButton =
             click: (event: Event) => {
               event.preventDefault();
               event.stopPropagation();
+              if (!node.nodeInfo) {
+                return;
+              }
               triggerButton = true;
               runNode<NodeInfo>(
                 containerNode ?? node,
@@ -165,11 +171,13 @@ export const getButton =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = formElements;
+          node.nodeInfo.compute = compute;
+          node.nodeInfo.initializeCompute = initializeCompute;
+        }
         return node;
       },
     };

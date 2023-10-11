@@ -23,7 +23,8 @@ export const getStyledNode =
     }`;
 
     const setStyling = (value: string) => {
-      let stylingString = node.nodeInfo.formValues['styling'] || defaultStyling;
+      let stylingString =
+        node?.nodeInfo?.formValues['styling'] || defaultStyling;
       stylingString = replaceValues(stylingString, { value: value }, true);
       const styling = JSON.parse(stylingString);
       const classes = styling['class'] || '';
@@ -54,7 +55,7 @@ export const getStyledNode =
       name: 'styled-node',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -70,7 +71,9 @@ export const getStyledNode =
             fieldName: 'styling',
             value: initialValue,
             onChange: (value: string) => {
-              console.log('styling-node onchange', value);
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 styling: value,
@@ -143,14 +146,16 @@ export const getStyledNode =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
-        node.nodeInfo.formValues = {
-          styling: initialValue || defaultStyling,
-        };
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = formElements;
+          node.nodeInfo.compute = compute;
+          node.nodeInfo.initializeCompute = initializeCompute;
+          node.nodeInfo.formValues = {
+            styling: initialValue || defaultStyling,
+          };
+        }
         setStyling('');
 
         return node;

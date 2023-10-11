@@ -54,6 +54,9 @@ export const getTest: NodeTaskFactory<NodeInfo> = (
           fieldName: 'caption',
           value: initialValue ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               caption: value,
@@ -127,9 +130,11 @@ export const getTest: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
       node = rect.nodeComponent;
-      rect.nodeComponent.nodeInfo.formElements = formElements;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
       return node;
     },
   };

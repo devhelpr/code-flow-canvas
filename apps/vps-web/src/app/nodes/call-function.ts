@@ -78,7 +78,7 @@ export const getCallFunction =
       payload?: any
     ) => {
       return new Promise((resolve, reject) => {
-        const command = node.nodeInfo.formValues?.['functionCall'] ?? '';
+        const command = node?.nodeInfo?.formValues?.['functionCall'] ?? '';
         if (isCommmand(command)) {
           const match = command.match(/([\w]+)\(([^()]*)\)/);
           if (match) {
@@ -141,7 +141,7 @@ export const getCallFunction =
       name: 'call-function',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -158,6 +158,9 @@ export const getCallFunction =
             fieldName: 'functionCall',
             value: initialValue ?? '',
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 functionCall: value,
@@ -230,11 +233,13 @@ export const getCallFunction =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
-        node.nodeInfo.computeAsync = computeAsync;
-        node.nodeInfo.initializeCompute = initializeCompute;
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = formElements;
+          node.nodeInfo.computeAsync = computeAsync;
+          node.nodeInfo.initializeCompute = initializeCompute;
+        }
         return node;
       },
     };

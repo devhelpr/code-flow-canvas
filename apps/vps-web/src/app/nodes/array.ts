@@ -266,7 +266,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         hasInitialValue = false;
       }
       setValue(inputValues);
-      const variableName = node.nodeInfo.formValues?.['variableName'] ?? '';
+      const variableName = node.nodeInfo?.formValues?.['variableName'] ?? '';
       if (variableName) {
         canvasAppInstance.setVariable(variableName, inputValues);
       }
@@ -349,8 +349,11 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           fieldName: 'variableName',
           value: initalValues?.['variableName'] ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
+              ...node.nodeInfo?.formValues,
               variableName: value,
             };
             canvasApp.unregisterVariable(variableName, id ?? '');
@@ -452,10 +455,12 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       ) as unknown as INodeComponent<NodeInfo>;
 
       node = rect.nodeComponent;
-      node.nodeInfo.formElements = formElements;
-      node.nodeInfo.computeAsync = computeAsync;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.setValue = setValue;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.computeAsync = computeAsync;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.setValue = setValue;
+      }
       return node;
     },
   };

@@ -47,9 +47,9 @@ export const getSplitByCase =
           return;
         }
         const inputAsString = input.toString();
-        const case1 = node.nodeInfo.formValues?.['case1'] ?? '';
-        const case2 = node.nodeInfo.formValues?.['case2'] ?? '';
-        const case3 = node.nodeInfo.formValues?.['case3'] ?? '';
+        const case1 = node?.nodeInfo?.formValues?.['case1'] ?? '';
+        const case2 = node?.nodeInfo?.formValues?.['case2'] ?? '';
+        const case3 = node?.nodeInfo?.formValues?.['case3'] ?? '';
         console.log(
           'input',
           inputAsString,
@@ -103,7 +103,7 @@ export const getSplitByCase =
       name: 'split-by-case',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -121,6 +121,9 @@ export const getSplitByCase =
             isRow: true,
             value: initalValues?.['case1'] ?? '',
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 case1: value,
@@ -138,6 +141,9 @@ export const getSplitByCase =
             isRow: true,
             value: initalValues?.['case2'] ?? '',
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 case2: value,
@@ -155,6 +161,9 @@ export const getSplitByCase =
             isRow: true,
             value: initalValues?.['case3'] ?? '',
             onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 case3: value,
@@ -246,11 +255,13 @@ export const getSplitByCase =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = formElements;
 
         node = rect.nodeComponent;
-        node.nodeInfo.computeAsync = computeAsync;
-        node.nodeInfo.initializeCompute = initializeCompute;
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = formElements;
+          node.nodeInfo.computeAsync = computeAsync;
+          node.nodeInfo.initializeCompute = initializeCompute;
+        }
         return node;
       },
     };

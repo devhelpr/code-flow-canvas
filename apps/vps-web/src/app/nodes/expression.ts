@@ -38,7 +38,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
-      const expression = node.nodeInfo.formValues?.['expression'] ?? '';
+      const expression = node?.nodeInfo?.formValues?.['expression'] ?? '';
       const compiledExpressionInfo = compileExpressionAsInfo(expression);
       const expressionFunction = (
         new Function(
@@ -112,7 +112,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     name: 'expression',
     family: 'flow-canvas',
     isContainer: false,
-    createVisualNode: <NodeInfo>(
+    createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
@@ -129,6 +129,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           fieldName: 'expression',
           value: initialValue ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               expression: value,
@@ -222,7 +225,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.nodeComponent.nodeInfo.formElements = formElements;
+
       errorNode = createElement(
         'div',
         {
@@ -241,8 +244,11 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
       return node;
     },
   };

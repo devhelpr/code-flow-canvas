@@ -144,17 +144,19 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.setValue = (value: string) => {
-        if (htmlNode) {
-          htmlNode.domElement.textContent = value.toString();
+      if (node.nodeInfo) {
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.setValue = (value: string) => {
+          if (htmlNode) {
+            htmlNode.domElement.textContent = value.toString();
 
-          if (rect) {
-            rect.resize(240);
+            if (rect) {
+              rect.resize(240);
+            }
           }
-        }
-      };
+        };
+      }
       return node;
     },
   };

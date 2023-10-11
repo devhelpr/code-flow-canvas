@@ -86,7 +86,7 @@ export class AppElement extends HTMLElement {
   restoring = false;
 
   canvas?: IElementNode<NodeInfo> = undefined;
-  canvasApp?: CanvasAppInstance = undefined;
+  canvasApp?: CanvasAppInstance<NodeInfo> = undefined;
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
   pathExecutions: RunNodeResult<NodeInfo>[][] = [];
@@ -627,7 +627,7 @@ export class AppElement extends HTMLElement {
       this.canvasApp?.elements.forEach((node) => {
         const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
         if (nodeComponent.nodeType !== NodeType.Connection) {
-          if (nodeComponent.nodeInfo.initializeCompute) {
+          if (nodeComponent?.nodeInfo?.initializeCompute) {
             nodeComponent.nodeInfo.initializeCompute();
           }
         }

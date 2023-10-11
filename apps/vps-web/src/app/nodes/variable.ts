@@ -27,7 +27,8 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
   let currentValue = 0;
   let timeout: any = undefined;
   const initializeCompute = () => {
-    currentValue = parseFloat(node?.nodeInfo.formValues?.['initialValue']) ?? 0;
+    currentValue =
+      parseFloat(node?.nodeInfo?.formValues?.['initialValue']) ?? 0;
 
     if (isNaN(currentValue)) {
       currentValue = 0;
@@ -125,7 +126,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
     name: 'variable',
     family: 'flow-canvas',
     isContainer: false,
-    createVisualNode: <NodeInfo>(
+    createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
@@ -146,6 +147,9 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
           fieldName: 'variableName',
           value: initalValues?.['variableName'] ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               variableName: value,
@@ -169,6 +173,9 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
           fieldName: 'initialValue',
           value: initalValues?.['initialValue'] ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               initialValue: value,
@@ -226,7 +233,6 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.nodeComponent.nodeInfo.formElements = formElements;
 
       tagNode = createElement(
         'div',
@@ -239,21 +245,25 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
       ) as unknown as INodeComponent<NodeInfo>;
 
       node = rect.nodeComponent;
-      node.nodeInfo.isVariable = true;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.sendData = compute;
-      node.nodeInfo.getData = getData;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.delete = () => {
-        canvasApp.unregisterVariable(variableName, id ?? '');
-        (
-          componentWrapper?.domElement as unknown as HTMLElement
-        ).classList.remove('border-green-200');
-        if (timeout) {
-          clearTimeout(timeout);
-          timeout = undefined;
-        }
-      };
+
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.isVariable = true;
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.sendData = compute;
+        node.nodeInfo.getData = getData;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.delete = () => {
+          canvasApp.unregisterVariable(variableName, id ?? '');
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          ).classList.remove('border-green-200');
+          if (timeout) {
+            clearTimeout(timeout);
+            timeout = undefined;
+          }
+        };
+      }
       return node;
     },
   };

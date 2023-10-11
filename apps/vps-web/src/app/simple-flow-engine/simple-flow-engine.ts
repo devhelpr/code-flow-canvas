@@ -12,6 +12,7 @@ import {
   getNodeConnectionPairById,
   getNodeConnectionPairByIdWhereNodeIsEndpoint,
 } from '../follow-path/get-node-connection-pairs';
+import { NodeInfo } from '../types/node-info';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -19,7 +20,7 @@ registerCustomFunction('random', [], () => {
 
 const getVariablePayload = <T>(
   node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance
+  canvasApp: CanvasAppInstance<T>
 ) => {
   const dataNodesConnectionPairs =
     getNodeConnectionPairByIdWhereNodeIsEndpoint<T>(
@@ -45,7 +46,7 @@ const getVariablePayload = <T>(
 
 const sendData = <T>(
   node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   data: string
 ) => {
   const dataNodesConnectionPairs = getNodeConnectionPairById<T>(
@@ -83,7 +84,7 @@ export interface RunNodeResult<T> {
 
 const triggerExecution = <T>(
   node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   result: any,
   animatePath: (
     node: IRectNodeComponent<T>,
@@ -270,7 +271,7 @@ export const increaseRunIndex = () => {
 
 export const runNode = <T>(
   node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   animatePath: (
     node: IRectNodeComponent<T>,
     color: string,
@@ -384,7 +385,7 @@ export const runNode = <T>(
 };
 export const run = <T>(
   nodes: ElementNodeMap<T>,
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   animatePath: (
     node: IRectNodeComponent<T>,
     color: string,

@@ -20,6 +20,7 @@ import { AnimatePathFunction } from '../follow-path/animate-path';
 export const getSlider =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
+    let canvasAppInstance: canvasAppReturnType | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
     let triggerButton = false;
@@ -49,7 +50,7 @@ export const getSlider =
       name: 'slider',
       family: 'flow-canvas',
       isContainer: false,
-      createVisualNode: <NodeInfo>(
+      createVisualNode: (
         canvasApp: canvasAppReturnType,
         x: number,
         y: number,
@@ -57,6 +58,7 @@ export const getSlider =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const initialValue = initalValues?.['expression'] ?? '';
 
         const componentWrapper = createElement(
@@ -78,11 +80,14 @@ export const getSlider =
             change: (event: Event) => {
               event.preventDefault();
               event.stopPropagation();
+              if (!canvasAppInstance) {
+                return;
+              }
               triggerButton = true;
               currentValue = parseInt((event.target as HTMLInputElement).value);
               runNode<NodeInfo>(
-                node,
-                canvasApp,
+                node as unknown as IRectNodeComponent<NodeInfo>,
+                canvasAppInstance,
                 animatePath,
                 undefined,
                 currentValue.toString(),
@@ -136,11 +141,13 @@ export const getSlider =
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }
-        rect.nodeComponent.nodeInfo.formElements = [];
 
         node = rect.nodeComponent;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
+        if (node.nodeInfo) {
+          node.nodeInfo.formElements = [];
+          node.nodeInfo.compute = compute;
+          node.nodeInfo.initializeCompute = initializeCompute;
+        }
         return node;
       },
     };

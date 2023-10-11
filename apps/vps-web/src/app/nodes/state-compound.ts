@@ -17,7 +17,8 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { StateMachine, createStateMachine } from './state-machine-node';
+import { createStateMachine } from './state-machine-node';
+import { StateMachine } from '../state-machine';
 
 export const createStateCompound: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -26,9 +27,9 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: CanvasAppInstance | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
-  let stateMachine: StateMachine | undefined = undefined;
+  let stateMachine: StateMachine<NodeInfo> | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
   let currentValue = 0;
@@ -135,6 +136,9 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
           fieldName: 'caption',
           value: initialValue ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               caption: value,
@@ -264,12 +268,14 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
-      if (nestedLevel ?? 0 > 0) {
-        rect.nodeComponent.nodeInfo.formElements = formElements;
+      if (node.nodeInfo) {
+        if (nestedLevel ?? 0 > 0) {
+          node.nodeInfo.formElements = formElements;
+        }
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.canvasAppInstance = canvasAppInstance;
       }
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.canvasAppInstance = canvasAppInstance;
 
       return node;
     },

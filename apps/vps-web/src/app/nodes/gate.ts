@@ -39,7 +39,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     //if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
     let result: any = false;
     try {
-      const expression = node.nodeInfo.formValues?.['expression'] ?? '';
+      const expression = node.nodeInfo?.formValues?.['expression'] ?? '';
       const compiledExpressionInfo = compileExpressionAsInfo(expression);
       const expressionFunction = (
         new Function(
@@ -135,8 +135,11 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
             { value: 'expression', label: 'Expression' },
           ],
           onChange: (value: string) => {
+            if (!node?.nodeInfo?.formValues) {
+              return;
+            }
             node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
+              ...node?.nodeInfo?.formValues,
               Mode: value,
             };
             console.log('onChange', node.nodeInfo);
@@ -150,6 +153,9 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
           fieldName: 'expression',
           value: initialExpressionValue ?? '',
           onChange: (value: string) => {
+            if (!node?.nodeInfo?.formValues) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               expression: value,
@@ -255,9 +261,11 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.formElements = formElements;
+      if (node.nodeInfo) {
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.formElements = formElements;
+      }
       return node;
     },
   };

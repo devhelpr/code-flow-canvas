@@ -84,7 +84,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         variables['value'] = value;
       }
       if (!astElement) {
-        const htmlString = node.nodeInfo.formValues['html'] || defaultHTML;
+        const htmlString = node?.nodeInfo?.formValues['html'] || defaultHTML;
         structuredMarkup = createStructuredExpressionsMarkup(htmlString);
         //console.log('structuredMarkup', structuredMarkup);
         const compiledMarkup = compileMarkup(structuredMarkup.markup);
@@ -193,7 +193,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     name: 'html-node',
     family: 'flow-canvas',
     isContainer: false,
-    createVisualNode: <NodeInfo>(
+    createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
@@ -209,6 +209,9 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           fieldName: 'html',
           value: initialValue,
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             console.log('html-node onchange', value);
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
@@ -278,14 +281,16 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.nodeComponent.nodeInfo.formElements = formElements;
 
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
-      node.nodeInfo.formValues = {
-        html: initialValue || defaultHTML,
-      };
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.formValues = {
+          html: initialValue || defaultHTML,
+        };
+      }
       setHTML('');
 
       return node;

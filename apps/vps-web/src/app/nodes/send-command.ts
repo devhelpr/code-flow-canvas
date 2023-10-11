@@ -79,7 +79,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const command = node.nodeInfo.formValues?.['command'] ?? '';
+    const command = node?.nodeInfo?.formValues?.['command'] ?? '';
     if (isCommmand(command)) {
       const match = command.match(/([\w]+)\(([^()]*)\)/);
       if (match) {
@@ -107,7 +107,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
     name: 'send-command',
     family: 'flow-canvas',
     isContainer: false,
-    createVisualNode: <NodeInfo>(
+    createVisualNode: (
       canvasApp: canvasAppReturnType,
       x: number,
       y: number,
@@ -124,6 +124,9 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
           fieldName: 'command',
           value: initialValue ?? '',
           onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               command: value,
@@ -197,11 +200,13 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.nodeComponent.nodeInfo.formElements = formElements;
 
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
       return node;
     },
   };

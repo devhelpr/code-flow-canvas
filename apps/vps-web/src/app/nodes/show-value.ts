@@ -121,8 +121,10 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
-      node.nodeInfo.compute = compute;
-      node.nodeInfo.initializeCompute = initializeCompute;
+      if (node.nodeInfo) {
+        node.nodeInfo.compute = compute;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
       return node;
     },
   };
