@@ -34,6 +34,7 @@ export interface NodeInfo {
     payload?: any
   ) => any;
   getData?: () => any;
+  getDependencies?: () => { startNodeId: string; endNodeId: string }[];
 }
 
 //export type NodeInfo = any;
