@@ -26,7 +26,7 @@ export const importToCanvas = (
   nodesList.forEach((node) => {
     if (node.nodeType === NodeType.Shape) {
       //node.nodeInfo?.type
-      const factory = getNodeTaskFactory(node.nodeInfo?.type);
+      const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
       if (factory) {
         const nodeTask = factory(canvasUpdated);
         if (nodeTask) {
@@ -53,7 +53,10 @@ export const importToCanvas = (
                   ) > -1
                 ) {
                   const factory = getNodeTaskFactory(element.nodeInfo?.type);
-                  if (factory) {
+                  if (
+                    factory &&
+                    canvasVisualNode?.nodeInfo?.canvasAppInstance
+                  ) {
                     const childNodeTask = factory(canvasUpdated);
 
                     const child = childNodeTask.createVisualNode(
@@ -71,7 +74,8 @@ export const importToCanvas = (
                     // TODO if childNodeTask.isContainer .. call importToCanvas again...
                     if (
                       childNodeTask.isContainer &&
-                      Array.isArray(element.elements)
+                      Array.isArray(element.elements) &&
+                      child.nodeInfo?.canvasAppInstance
                     ) {
                       // element.elements
                       importToCanvas(
@@ -89,8 +93,8 @@ export const importToCanvas = (
               const info = nodeTask.getConnectionInfo?.();
 
               const elementList = Array.from(
-                (canvasVisualNode.nodeInfo.canvasAppInstance
-                  .elements as ElementNodeMap<NodeInfo>) ?? []
+                (canvasVisualNode?.nodeInfo?.canvasAppInstance
+                  ?.elements as ElementNodeMap<NodeInfo>) ?? []
               );
               node.elements.forEach((node) => {
                 if (
@@ -141,7 +145,7 @@ export const importToCanvas = (
 
                   const curve =
                     node.lineType === LineType.BezierCubic
-                      ? canvasVisualNode.nodeInfo.canvasAppInstance.createCubicBezier(
+                      ? canvasVisualNode?.nodeInfo?.canvasAppInstance?.createCubicBezier(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
                           end?.x ?? node.endX ?? 0,
@@ -155,19 +159,19 @@ export const importToCanvas = (
                           node.id,
                           canvasVisualNode
                         )
-                      : canvasVisualNode.nodeInfo.canvasAppInstance.createLine(
+                      : canvasVisualNode?.nodeInfo?.canvasAppInstance?.createQuadraticBezier(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
                           end?.x ?? node.endX ?? 0,
                           end?.y ?? node.endY ?? 0,
-                          // c1x,
-                          // c1y,
+                          c1x,
+                          c1y,
                           false,
                           undefined,
                           node.id,
                           canvasVisualNode
                         );
-                  if (!curve.nodeComponent) {
+                  if (!curve || !curve.nodeComponent) {
                     return;
                   }
                   curve.nodeComponent.isControlled = true;
@@ -180,7 +184,7 @@ export const importToCanvas = (
                       getThumbNodeByName<NodeInfo>(
                         node.startThumbName ?? '',
                         start
-                      );
+                      ) || undefined;
                   }
 
                   if (end && curve.nodeComponent) {
@@ -189,7 +193,7 @@ export const importToCanvas = (
                       getThumbNodeByName<NodeInfo>(
                         node.endThumbName ?? '',
                         end
-                      );
+                      ) || undefined;
                   }
                   if (start) {
                     start.connections?.push(curve.nodeComponent);
@@ -290,13 +294,13 @@ export const importToCanvas = (
               node.id,
               containerNode
             )
-          : canvasApp.createLine(
+          : canvasApp.createQuadraticBezier(
               start?.x ?? node.x ?? 0,
               start?.y ?? node.y ?? 0,
               end?.x ?? node.endX ?? 0,
               end?.y ?? node.endY ?? 0,
-              // c1x,
-              // c1y,
+              c1x,
+              c1y,
               false,
               undefined,
               node.id,
