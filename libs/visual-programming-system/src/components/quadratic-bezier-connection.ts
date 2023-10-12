@@ -35,25 +35,6 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
   endPointElement: IThumbNodeComponent<T> | undefined;
 
-  // protected override doSomeCalculation() {
-  //   console.log(
-  //     'doSomeCalculation QuadraticBezierConnection',
-  //     this.points.beginX
-  //   );
-  // }
-
-  // MOVE To connection
-  // protected doSomeCalculation() {
-  //   console.log(
-  //     'doSomeCalculation in connection',
-  //     this.points.beginX,
-  //     this.points.beginY,
-  //     this.points.endX,
-  //     this.points.endY
-  //   );
-  // }
-  // call in connector update this.doSomeCalculation();
-
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -389,9 +370,9 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         const pi2y = yi + pVector.y * perpendicularVectorFactor;
 
         const intersectionsEnd = calculateQuadraticBezierLineIntersections(
-          { x: x1, y: y1 },
-          { x: cx, y: cy },
-          { x: x2, y: y2 },
+          { x: split1.curve2.x1, y: split1.curve2.y1 },
+          { x: split1.curve2.c1x, y: split1.curve2.c1y },
+          { x: split1.curve2.x2, y: split1.curve2.y2 },
           { x: pi1x, y: pi1y },
           { x: pi2x, y: pi2y },
           true
@@ -422,47 +403,48 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       // lets start with the first found...
       if (this.nodeComponent?.endNode) {
         const xleft =
-          this.nodeComponent.endNode.x -
-          bbox.x +
-          startOffsetX -
-          spacingAABB * 2;
+          this.nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
         const yleft =
-          this.nodeComponent.endNode.y -
-          bbox.y +
-          startOffsetY -
-          spacingAABB * 2;
-        const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 4;
+          this.nodeComponent.endNode.y - bbox.y + startOffsetY - spacingAABB;
+        const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
         const height =
-          (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 4;
-
+          (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
+        console.log(
+          'xleft',
+          this.nodeComponent.endNode.id,
+          xleft,
+          yleft,
+          width,
+          height
+        );
         const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
-          { x: x1, y: y1 },
-          { x: cx, y: cy },
-          { x: x2, y: y2 },
+          { x: split1.curve2.x1, y: split1.curve2.y1 },
+          { x: split1.curve2.c1x, y: split1.curve2.c1y },
+          { x: split1.curve2.x2, y: split1.curve2.y2 },
           { x: xleft, y: yleft },
           { x: xleft, y: yleft + height }
         );
 
         const AABBTopIntersect = calculateQuadraticBezierLineIntersections(
-          { x: x1, y: y1 },
-          { x: cx, y: cy },
-          { x: x2, y: y2 },
+          { x: split1.curve2.x1, y: split1.curve2.y1 },
+          { x: split1.curve2.c1x, y: split1.curve2.c1y },
+          { x: split1.curve2.x2, y: split1.curve2.y2 },
           { x: xleft, y: yleft },
           { x: xleft + width, y: yleft }
         );
 
         const AABBRightIntersect = calculateQuadraticBezierLineIntersections(
-          { x: x1, y: y1 },
-          { x: cx, y: cy },
-          { x: x2, y: y2 },
+          { x: split1.curve2.x1, y: split1.curve2.y1 },
+          { x: split1.curve2.c1x, y: split1.curve2.c1y },
+          { x: split1.curve2.x2, y: split1.curve2.y2 },
           { x: xleft + width, y: yleft },
           { x: xleft + width, y: yleft + height }
         );
 
         const AABBBottomIntersect = calculateQuadraticBezierLineIntersections(
-          { x: x1, y: y1 },
-          { x: cx, y: cy },
-          { x: x2, y: y2 },
+          { x: split1.curve2.x1, y: split1.curve2.y1 },
+          { x: split1.curve2.c1x, y: split1.curve2.c1y },
+          { x: split1.curve2.x2, y: split1.curve2.y2 },
           { x: xleft, y: yleft + height },
           { x: xleft + width, y: yleft + height }
         );
