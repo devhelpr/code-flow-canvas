@@ -148,7 +148,8 @@ export class FormsComponent extends Component<Props> {
 
   createFormElements() {
     this.components = [];
-    this.props.formElements.forEach((formControl) => {
+    let loop = 0;
+    this.props.formElements.forEach((formControl, index) => {
       if (formControl.fieldType === FormFieldType.Text) {
         const formControlComponent = new InputFieldChildComponent(this, {
           formId: this.props.id,
@@ -157,6 +158,7 @@ export class FormsComponent extends Component<Props> {
           value: formControl.value,
           isRow: formControl.isRow,
           onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.TextArea) {
@@ -165,9 +167,11 @@ export class FormsComponent extends Component<Props> {
           fieldName: formControl.fieldName,
           value: formControl.value,
           onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
         });
         this.components.push(formControlComponent);
       }
+      loop++;
       //listItemComponent.props.listItem = "updated via props";
     });
   }

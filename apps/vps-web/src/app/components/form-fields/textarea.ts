@@ -33,6 +33,7 @@ export interface TextAreaFieldProps {
   formId: string;
   fieldName: string;
   value: string;
+  isLast?: boolean;
   onChange?: (value: string) => void;
 }
 

@@ -12,6 +12,7 @@ export interface InputFieldProps {
   value: string;
   label?: string;
   isRow?: boolean;
+  isLast?: boolean;
   onChange?: (value: string) => void;
 }
 
@@ -31,10 +32,13 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
   constructor(parent: BaseComponent | null, props: InputFieldProps) {
     super(parent, props);
     this.template = createTemplate(
-      `<div class="w-full mb-2 ${props.isRow ? 'flex' : ''}">
-        <label for="${props.fieldName}" class="block mb-2 text-white ${
-        props.isRow ? 'mr-2' : ''
-      }">${props.label ?? props.fieldName}</label>
+      `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
+        props.isRow ? 'flex' : ''
+      }">
+        <label for="${props.fieldName}" class="block  mb-2 
+        text-white ${props.isRow ? 'mr-2' : ''}">${
+        props.label ?? props.fieldName
+      }</label>
         <input class="block w-full p-1"
           name="${props.fieldName}"
           autocomplete="off"
