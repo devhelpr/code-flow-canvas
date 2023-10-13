@@ -7,23 +7,39 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
-export const cleanupNodeInfoForSerializing = (nodeInfo: NodeInfo) => {
+export const cleanupNodeInfoForSerializing = (
+  nodeInfo: NodeInfo | undefined
+) => {
   const nodeInfoCopy: any = {};
-  for (const key in nodeInfo) {
-    if (
-      typeof nodeInfo[key] !== 'function' &&
-      key !== 'formElements' &&
-      key !== 'canvasAppInstance' &&
-      key !== 'stateMachine'
-    ) {
-      nodeInfoCopy[key] = nodeInfo[key];
+  if (nodeInfo) {
+    for (const key in nodeInfo) {
+      if (
+        typeof (nodeInfo as any)[key] !== 'function' &&
+        key !== 'formElements' &&
+        key !== 'canvasAppInstance' &&
+        key !== 'stateMachine'
+      ) {
+        nodeInfoCopy[key] = (nodeInfo as any)[key];
+      }
     }
   }
   return nodeInfoCopy;
 };
 
 export const serializeElementsMap = (elements: ElementNodeMap<NodeInfo>) => {
-  const nodesList = Array.from(elements, function (entry) {
+  const filteredElements = Array.from(elements).filter((entry) => {
+    const obj = entry[1] as INodeComponent<NodeInfo>;
+    if (obj.nodeType === NodeType.Connection) {
+      const connection = obj as unknown as IConnectionNodeComponent<NodeInfo>;
+      if (!connection.isAnnotationConnection) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  });
+  const nodesList = Array.from(filteredElements, function (entry) {
     const obj = entry[1] as INodeComponent<NodeInfo>;
     if (obj.nodeType === NodeType.Connection) {
       const connection = obj as unknown as IConnectionNodeComponent<NodeInfo>;

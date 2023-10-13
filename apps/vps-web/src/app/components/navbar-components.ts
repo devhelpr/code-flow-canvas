@@ -498,6 +498,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
     } else {
       this.rootAppElement?.classList.add('active-layer2');
     }
+
     return false;
   };
 
@@ -511,17 +512,72 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
       indien aanzetten:
       - loop door alle nodes
       - vraag aan de node of deze dependencies heeft (en geef die ook terug)
-         ... via registry de benodigde functie opvragen bij de node
-           ... of deze functie toevoegen aan de nodeInfo?
+          ... nodeInfo.getDependencies() ... 
+        
       - ... zo ja, dan benodigde annotation connections toevoegen   
 
     */
     this.showDependencyConnections = !this.showDependencyConnections;
     if (this.showDependencyConnections) {
-      //
+      this.props.canvasApp?.elements.forEach((element) => {
+        if (element.nodeInfo?.getDependencies) {
+          const dependencies = element.nodeInfo.getDependencies();
+          console.log('getDependencies', dependencies);
+          if (dependencies.length > 0) {
+            dependencies.forEach((dependency) => {
+              const startNode = this.props.canvasApp?.elements?.get(
+                dependency.startNodeId
+              ) as IRectNodeComponent<NodeInfo>;
+              const endNode = this.props.canvasApp?.elements?.get(
+                dependency.endNodeId
+              ) as IRectNodeComponent<NodeInfo>;
+
+              if (startNode && endNode) {
+                const connection = this.props.canvasApp?.createLine(
+                  startNode.x,
+                  startNode.y,
+                  endNode.x,
+                  endNode.y,
+                  true,
+                  true
+                );
+                if (
+                  connection &&
+                  connection.nodeComponent &&
+                  connection.nodeComponent.update
+                ) {
+                  connection.nodeComponent.startNode = startNode;
+                  connection.nodeComponent.endNode = endNode;
+
+                  if (startNode) {
+                    startNode.connections?.push(connection.nodeComponent);
+                  }
+                  if (endNode) {
+                    endNode.connections?.push(connection.nodeComponent);
+                  }
+
+                  connection.nodeComponent.isAnnotationConnection = true;
+                  connection.nodeComponent.layer = 2;
+                  connection.nodeComponent.update();
+                }
+              }
+            });
+          }
+        }
+      });
     } else {
-      //
+      this.props.canvasApp?.elements.forEach((element) => {
+        const node = element as INodeComponent<NodeInfo>;
+        if (node.nodeType === NodeType.Connection) {
+          const connection = node as IConnectionNodeComponent<NodeInfo>;
+          if (connection.isAnnotationConnection) {
+            this.props.removeElement(node);
+            this.props.canvasApp?.elements?.delete(element.id);
+          }
+        }
+      });
     }
+
     return false;
   };
 

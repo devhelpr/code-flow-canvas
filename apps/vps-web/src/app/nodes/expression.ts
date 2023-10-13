@@ -17,6 +17,7 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 
 export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -25,9 +26,24 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   let errorNode: INodeComponent<NodeInfo>;
   let canvasAppInstance: canvasAppReturnType | undefined = undefined;
   let currentValue = 0;
+  let compiledExpressionInfo:
+    | {
+        script: string;
+        bindings: any;
+        payloadProperties: string[];
+      }
+    | undefined = undefined;
   const initializeCompute = () => {
     currentValue = 0;
+    compiledExpressionInfo = undefined;
     return;
+  };
+
+  const compileExpression = () => {
+    const expression = node?.nodeInfo?.formValues?.['expression'] ?? '';
+    if (!compiledExpressionInfo) {
+      compiledExpressionInfo = compileExpressionAsInfo(expression);
+    }
   };
   const compute = (
     input: string,
@@ -38,8 +54,14 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {
+      compileExpression();
+      if (!compiledExpressionInfo) {
+        return {
+          result: undefined,
+          followPath: undefined,
+        };
+      }
       const expression = node?.nodeInfo?.formValues?.['expression'] ?? '';
-      const compiledExpressionInfo = compileExpressionAsInfo(expression);
       const expressionFunction = (
         new Function(
           'payload',
@@ -108,6 +130,38 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     };
   };
 
+  const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
+    const dependencies: { startNodeId: string; endNodeId: string }[] = [];
+    compileExpression();
+    if (compiledExpressionInfo?.payloadProperties && canvasAppInstance) {
+      const variablesInExpression = [
+        ...new Set(compiledExpressionInfo.payloadProperties),
+      ];
+      // console.log(
+      //   'getDependencies',
+      //   variablesInExpression,
+      //   'variables',
+      //   canvasAppInstance?.getVariableNames()
+      // );
+
+      variablesInExpression.forEach((variableName) => {
+        if (canvasAppInstance) {
+          const variableNode = getNodeByVariableName(
+            variableName,
+            canvasAppInstance
+          );
+          if (variableNode) {
+            dependencies.push({
+              startNodeId: node.id,
+              endNodeId: variableNode.id,
+            });
+          }
+        }
+      });
+    }
+    return dependencies;
+  };
+
   return {
     name: 'expression',
     family: 'flow-canvas',
@@ -121,6 +175,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       canvasAppInstance = canvasApp;
+      compiledExpressionInfo = undefined;
       const initialValue = initalValues?.['expression'] ?? '';
 
       const formElements = [
@@ -137,6 +192,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
               expression: value,
             };
             console.log('onChange', node.nodeInfo);
+            compiledExpressionInfo = undefined;
             if (updated) {
               updated();
             }
@@ -248,6 +304,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.getDependencies = getDependencies;
       }
       return node;
     },
