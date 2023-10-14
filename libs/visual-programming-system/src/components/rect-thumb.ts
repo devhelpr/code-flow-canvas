@@ -12,6 +12,7 @@ import {
 } from '../interfaces';
 import { NodeType } from '../types';
 import { pointerDown } from './events/pointer-events';
+import { LineConnection } from './line-connection';
 import { QuadraticBezierConnection } from './quadratic-bezier-connection';
 import { Rect } from './rect';
 
@@ -19,6 +20,7 @@ import { Rect } from './rect';
 // .. thumbs can be connect points or resize/move points.
 
 export class RectThumb<T> extends Rect<T> {
+  createStraightLineConnection = false;
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -41,7 +43,8 @@ export class RectThumb<T> extends Rect<T> {
     id?: string,
     containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean,
-    isCircle?: boolean
+    isCircle?: boolean,
+    createStraightLineConnection?: boolean
   ) {
     super(
       canvas,
@@ -69,6 +72,7 @@ export class RectThumb<T> extends Rect<T> {
     }
     this.nodeComponent.isCircle = isCircle;
     this.nodeComponent.isThumb = true;
+    this.createStraightLineConnection = createStraightLineConnection ?? false;
 
     this.nodeComponent.domElement?.addEventListener(
       'pointerup',
@@ -118,24 +122,42 @@ export class RectThumb<T> extends Rect<T> {
       x = x - parentX;
       y = y - parentY;
 
-      const curve = new QuadraticBezierConnection<T>(
-        this.canvas as unknown as INodeComponent<T>,
-        this.interactionStateMachine,
-        this.pathHiddenElement as unknown as IElementNode<T>,
-        this.canvasElements,
-        x,
-        y,
-        x,
-        y,
-        x,
-        y,
+      const curve = this.createStraightLineConnection
+        ? new LineConnection<T>(
+            this.canvas as unknown as INodeComponent<T>,
+            this.interactionStateMachine,
+            this.pathHiddenElement as unknown as IElementNode<T>,
+            this.canvasElements,
+            x,
+            y,
+            x,
+            y,
+            0,
+            0,
+            false,
+            undefined,
+            this.canvasUpdated,
+            undefined,
+            this.containerNode
+          )
+        : new QuadraticBezierConnection<T>(
+            this.canvas as unknown as INodeComponent<T>,
+            this.interactionStateMachine,
+            this.pathHiddenElement as unknown as IElementNode<T>,
+            this.canvasElements,
+            x,
+            y,
+            x,
+            y,
+            x,
+            y,
 
-        false,
-        undefined,
-        this.canvasUpdated,
-        undefined,
-        this.containerNode
-      );
+            false,
+            undefined,
+            this.canvasUpdated,
+            undefined,
+            this.containerNode
+          );
 
       if (!curve || !curve.nodeComponent || !curve.endPointElement) {
         throw new Error('curve not created');

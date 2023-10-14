@@ -287,7 +287,18 @@ export const importToCanvas = (
         console.log('import-to-canvas: create connection : no end');
       }
       const curve =
-        node.lineType === 'BezierCubic'
+        node.lineType === 'Straight'
+          ? canvasApp.createLine(
+              start?.x ?? node.x ?? 0,
+              start?.y ?? node.y ?? 0,
+              end?.x ?? node.endX ?? 0,
+              end?.y ?? node.endY ?? 0,
+              false,
+              undefined,
+              node.id,
+              containerNode
+            )
+          : node.lineType === 'BezierCubic'
           ? canvasApp.createCubicBezier(
               start?.x ?? node.x ?? 0,
               start?.y ?? node.y ?? 0,

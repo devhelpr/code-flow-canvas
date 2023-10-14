@@ -704,7 +704,8 @@ export const createCanvasApp = <T>(
       nodeInfo?: T,
       containerNode?: IRectNodeComponent<T>,
       isStaticPosition?: boolean,
-      isCircle?: boolean
+      isCircle?: boolean,
+      createStraightLineConnection?: boolean
     ) => {
       const rectInstance = new RectThumb<T>(
         canvas as unknown as INodeComponent<T>,
@@ -726,7 +727,8 @@ export const createCanvasApp = <T>(
         id,
         containerNode,
         isStaticPosition,
-        isCircle
+        isCircle,
+        createStraightLineConnection
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');
