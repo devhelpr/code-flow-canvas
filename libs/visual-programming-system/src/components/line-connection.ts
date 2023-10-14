@@ -402,12 +402,31 @@ export const getLinePoints = <T>(
     }
   } else {
     if (nodeComponent?.endNode) {
-      const xleft =
-        nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
-      const yleft =
-        nodeComponent.endNode.y - bbox.y + startOffsetY - spacingAABB;
-      const width = (nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
-      const height = (nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
+      let xleft = 0;
+      let yleft = 0;
+      let width = 0;
+      let height = 0;
+      if (
+        !nodeComponent?.endNode?.isThumb &&
+        nodeComponent.endNodeThumb?.thumbType === ThumbType.EndConnectorCenter
+      ) {
+        // Temp solution for connecting to left side of thumb when end node has a thumb of
+        // type EndConnectorCenter
+        xleft =
+          nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB - 16;
+        yleft =
+          nodeComponent.endNode.y -
+          bbox.y -
+          10 +
+          (nodeComponent.endNode.height ?? 0) / 2;
+        width = 24;
+        height = 24;
+      } else {
+        xleft = nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
+        yleft = nodeComponent.endNode.y - bbox.y + startOffsetY - spacingAABB;
+        width = (nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
+        height = (nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
+      }
 
       const end = pointOnRect(
         x1,
