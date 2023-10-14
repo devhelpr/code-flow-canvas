@@ -83,6 +83,7 @@ export interface InteractionStateMachine<T> {
   setCurrentDropTarget: (dropTarget: INodeComponent<T>) => void;
   clearDropTarget: (dropTarget: INodeComponent<T>) => void;
   getCurrentDropTarget: () => INodeComponent<T> | undefined;
+  reset: () => void;
 }
 
 export const createInteractionStateMachine = <
@@ -228,11 +229,23 @@ export const createInteractionStateMachine = <
     return currentDropTarget;
   };
 
+  const reset = () => {
+    interactionState = InteractionState.Idle;
+    interactionTarget = undefined;
+    currentElement = undefined;
+    currentCanvasNode = undefined;
+    const oldIsClicking = isClicking;
+    const oldIsMoving = isMoving;
+    isClicking = false;
+    isMoving = false;
+  };
+
   return {
     interactionEventState,
     getCurrentInteractionState,
     setCurrentDropTarget,
     clearDropTarget,
     getCurrentDropTarget,
+    reset,
   };
 };

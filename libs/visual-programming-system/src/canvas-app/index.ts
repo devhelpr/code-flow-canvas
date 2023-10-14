@@ -94,11 +94,23 @@ export const createCanvasApp = <T>(
     }
   };
 
+  rootElement.addEventListener(
+    'contextmenu',
+    function (event) {
+      //event.preventDefault();
+      console.log('contextmenu canvas', event.target, canvas.domElement);
+      interactionStateMachine.reset();
+      //return false;
+    },
+    false
+  );
+
   rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
     console.log('pointerdown canvas', event.target, canvas.domElement);
     if (disableInteraction) {
       return;
     }
+
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
@@ -296,14 +308,17 @@ export const createCanvasApp = <T>(
       if (disableInteraction) {
         return;
       }
-      console.log('pointerleave canvas', event);
 
       isMoving = false;
       isClicking = false;
       wasMoved = false;
 
       const currentState = interactionStateMachine.getCurrentInteractionState();
-      if (currentState.canvasNode?.id !== canvas.id) {
+      console.log('pointerleave canvas', event, currentState, canvas.id);
+      if (currentState?.canvasNode?.id === undefined || !event.target) {
+        console.log('pointerleave reset');
+        interactionStateMachine.reset();
+      } else if (currentState.canvasNode?.id !== canvas.id) {
         return;
       }
       if (
