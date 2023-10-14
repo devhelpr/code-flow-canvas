@@ -137,12 +137,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       const variablesInExpression = [
         ...new Set(compiledExpressionInfo.payloadProperties),
       ];
-      // console.log(
-      //   'getDependencies',
-      //   variablesInExpression,
-      //   'variables',
-      //   canvasAppInstance?.getVariableNames()
-      // );
 
       variablesInExpression.forEach((variableName) => {
         if (canvasAppInstance) {
@@ -152,8 +146,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           );
           if (variableNode) {
             dependencies.push({
-              startNodeId: node.id,
-              endNodeId: variableNode.id,
+              startNodeId: variableNode.id,
+              endNodeId: node.id,
             });
           }
         }

@@ -15,19 +15,25 @@ import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
+import {
+  getNodeByVariableName,
+  getNodeByFunctionName,
+} from '../graph/get-node-by-variable-name';
 
 export const getCallFunction =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let canvasAppInstance: canvasAppReturnType;
+    let args: string | undefined = undefined;
+    let commandName: string | undefined = undefined;
+    let parameterCommands: ReturnType<typeof compileExpressionAsInfo>[] = [];
 
     const runCommandParameterExpression = (
-      expression: string,
+      compiledExpressionInfo: ReturnType<typeof compileExpressionAsInfo>,
       loopIndex: number,
       value: string
     ) => {
-      const compiledExpressionInfo = compileExpressionAsInfo(expression);
       const expressionFunction = (
         new Function(
           'payload',
@@ -68,7 +74,74 @@ export const getCallFunction =
       return typeof input === 'string' && input.match(/[\w]+\(([^()]*)\)/);
     };
 
+    const prepareFunctionCallParameters = () => {
+      parameterCommands = [];
+      const command = node?.nodeInfo?.formValues?.['functionCall'] ?? '';
+      if (isCommmand(command)) {
+        const match = command.match(/([\w]+)\(([^()]*)\)/);
+        if (match) {
+          commandName = match[1];
+          args = match[2] as string;
+          args
+            .split(',')
+            .forEach((parameter: string) =>
+              prepareCommandParameterExpression(parameter)
+            );
+        }
+      }
+    };
+    const prepareCommandParameterExpression = (parameter: string) => {
+      const compiledExpressionInfo = compileExpressionAsInfo(parameter);
+
+      parameterCommands.push(compiledExpressionInfo);
+    };
+
+    const getDependencies = (): {
+      startNodeId: string;
+      endNodeId: string;
+    }[] => {
+      const dependencies: { startNodeId: string; endNodeId: string }[] = [];
+      prepareFunctionCallParameters();
+      if (canvasAppInstance && commandName) {
+        let variablesInExpression: string[] = [];
+        parameterCommands.forEach((parameterCommand) => {
+          variablesInExpression.push(...parameterCommand.payloadProperties);
+        });
+        variablesInExpression = [...new Set(variablesInExpression)];
+
+        variablesInExpression.forEach((variableName) => {
+          if (canvasAppInstance) {
+            const variableNode = getNodeByVariableName(
+              variableName,
+              canvasAppInstance
+            );
+            if (variableNode) {
+              dependencies.push({
+                startNodeId: variableNode.id,
+                endNodeId: node.id,
+              });
+            }
+          }
+        });
+        const commandNode = getNodeByFunctionName(
+          commandName,
+          canvasAppInstance
+        );
+
+        if (commandNode) {
+          dependencies.push({
+            startNodeId: node.id,
+            endNodeId: commandNode.id,
+          });
+        }
+      }
+      return dependencies;
+    };
+
     const initializeCompute = () => {
+      parameterCommands = [];
+      commandName = undefined;
+      args = undefined;
       return;
     };
     const computeAsync = (
@@ -78,59 +151,58 @@ export const getCallFunction =
       payload?: any
     ) => {
       return new Promise((resolve, reject) => {
-        const command = node?.nodeInfo?.formValues?.['functionCall'] ?? '';
-        if (isCommmand(command)) {
-          const match = command.match(/([\w]+)\(([^()]*)\)/);
-          if (match) {
-            const commandName = match[1];
-            const args = match[2];
-            const parsedArguments = args
-              .split(',')
-              .map((x: string) =>
-                runCommandParameterExpression(x, loopIndex ?? 0, input)
-              );
-
-            const result = `${commandName}(${parsedArguments.join(',')})`;
-
-            let isFunctionFound = false;
-            canvasAppInstance.elements.forEach((element) => {
-              if (element.nodeInfo?.type === 'function') {
-                if (
-                  !isFunctionFound &&
-                  element.nodeInfo.formValues?.['node'] === commandName
-                ) {
-                  const payload: Record<string, any> = {};
-                  element.nodeInfo.formValues?.['parameters']
-                    .split(',')
-                    .forEach((parameter: string, index: number) => {
-                      if (parsedArguments[index]) {
-                        payload[parameter] = parsedArguments[index];
-                      }
-                    });
-                  isFunctionFound = true;
-                  runNode<NodeInfo>(
-                    element as IRectNodeComponent<NodeInfo>,
-                    canvasAppInstance,
-                    animatePath,
-                    (input) => {
-                      resolve({
-                        output: input,
-                        result: input,
-                        followPath: undefined,
-                      });
-                    },
-                    {
-                      ...payload,
-                      trigger: 'TRIGGER',
-                    } as unknown as string, // TODO : improve this!
-                    []
-                  );
-                }
-              }
-            });
-            return;
-          }
+        if (!args || !commandName) {
+          prepareFunctionCallParameters();
         }
+
+        if (args && commandName) {
+          const parsedArguments = parameterCommands.map((parameterCommand) =>
+            runCommandParameterExpression(
+              parameterCommand,
+              loopIndex ?? 0,
+              input
+            )
+          );
+
+          let isFunctionFound = false;
+          canvasAppInstance.elements.forEach((element) => {
+            if (element.nodeInfo?.type === 'function') {
+              if (
+                !isFunctionFound &&
+                element.nodeInfo.formValues?.['node'] === commandName
+              ) {
+                const payload: Record<string, any> = {};
+                element.nodeInfo.formValues?.['parameters']
+                  .split(',')
+                  .forEach((parameter: string, index: number) => {
+                    if (parsedArguments[index]) {
+                      payload[parameter] = parsedArguments[index];
+                    }
+                  });
+                isFunctionFound = true;
+                runNode<NodeInfo>(
+                  element as IRectNodeComponent<NodeInfo>,
+                  canvasAppInstance,
+                  animatePath,
+                  (input) => {
+                    resolve({
+                      output: input,
+                      result: input,
+                      followPath: undefined,
+                    });
+                  },
+                  {
+                    ...payload,
+                    trigger: 'TRIGGER',
+                  } as unknown as string, // TODO : improve this!
+                  []
+                );
+              }
+            }
+          });
+          return;
+        }
+
         resolve({
           stop: true,
         });
@@ -239,6 +311,7 @@ export const getCallFunction =
           node.nodeInfo.formElements = formElements;
           node.nodeInfo.computeAsync = computeAsync;
           node.nodeInfo.initializeCompute = initializeCompute;
+          node.nodeInfo.getDependencies = getDependencies;
         }
         return node;
       },

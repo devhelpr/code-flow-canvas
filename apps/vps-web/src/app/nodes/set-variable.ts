@@ -13,6 +13,7 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 
 export const setVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -38,6 +39,24 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
       result: input,
       followPath: undefined,
     };
+  };
+
+  const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
+    const dependencies: { startNodeId: string; endNodeId: string }[] = [];
+    const variableName = node?.nodeInfo?.formValues?.['variableName'] ?? '';
+    if (variableName && canvasAppInstance) {
+      const variableNode = getNodeByVariableName(
+        variableName,
+        canvasAppInstance
+      );
+      if (variableNode) {
+        dependencies.push({
+          startNodeId: node.id,
+          endNodeId: variableNode.id,
+        });
+      }
+    }
+    return dependencies;
   };
 
   return {
@@ -141,6 +160,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.getDependencies = getDependencies;
       }
       return node;
     },

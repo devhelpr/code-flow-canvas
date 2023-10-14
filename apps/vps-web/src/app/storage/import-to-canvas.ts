@@ -183,7 +183,11 @@ export const importToCanvas = (
                     curve.nodeComponent.startNodeThumb =
                       getThumbNodeByName<NodeInfo>(
                         node.startThumbName ?? '',
-                        start
+                        start,
+                        {
+                          start: true,
+                          end: false,
+                        }
                       ) || undefined;
                   }
 
@@ -192,7 +196,11 @@ export const importToCanvas = (
                     curve.nodeComponent.endNodeThumb =
                       getThumbNodeByName<NodeInfo>(
                         node.endThumbName ?? '',
-                        end
+                        end,
+                        {
+                          start: false,
+                          end: true,
+                        }
                       ) || undefined;
                   }
                   if (start) {
@@ -319,7 +327,11 @@ export const importToCanvas = (
         curve.nodeComponent.startNode = start;
         const thumb = getThumbNodeByName<NodeInfo>(
           node.startThumbName ?? '',
-          start
+          start,
+          {
+            start: true,
+            end: false,
+          }
         );
         if (thumb) {
           curve.nodeComponent.startNodeThumb = thumb;
@@ -333,7 +345,11 @@ export const importToCanvas = (
         curve.nodeComponent.endNode = end;
         const thumb = getThumbNodeByName<NodeInfo>(
           node.endThumbName ?? '',
-          end
+          end,
+          {
+            start: false,
+            end: true,
+          }
         );
         if (thumb) {
           curve.nodeComponent.endNodeThumb = thumb;

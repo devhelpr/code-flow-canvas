@@ -444,7 +444,11 @@ export const run = <T>(
       const eNode = e[1] as INodeComponent<T>;
       if (eNode.nodeType === NodeType.Connection) {
         const element = e[1] as IConnectionNodeComponent<T>;
-        return element.endNode?.id === node.id && !element.isData;
+        return (
+          element.endNode?.id === node.id &&
+          !element.isData &&
+          !element.isAnnotationConnection
+        );
       }
       return false;
     });

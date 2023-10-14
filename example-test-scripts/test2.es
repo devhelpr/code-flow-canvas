@@ -11,4 +11,6 @@ if (c < 100) {
   showValue(c + 100);
 }
 
+c = c + 200;
+
 showValue(c);
