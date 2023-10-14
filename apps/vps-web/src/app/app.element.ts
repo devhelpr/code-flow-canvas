@@ -466,6 +466,7 @@ export class AppElement extends HTMLElement {
             removeElement: this.removeElement,
             rootElement: menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
+            setRestoring: setRestoring,
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
               canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
@@ -548,6 +549,10 @@ export class AppElement extends HTMLElement {
     canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
     });
+
+    const setRestoring = (restoring: boolean) => {
+      this.restoring = restoring;
+    };
 
     canvasApp.setOnCanvasClick((x, y) => {
       console.log('OnCanvasClick');

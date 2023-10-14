@@ -44,6 +44,7 @@ export interface NavbarComponentsProps {
   canvasUpdated: () => void;
   canvasApp: CanvasAppInstance<NodeInfo>;
   removeElement: (element: IElementNode<NodeInfo>) => void;
+  setRestoring: (restoring: boolean) => void;
   importToCanvas: (
     nodesList: FlowNode<NodeInfo>[],
     canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
@@ -517,6 +518,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
       - ... zo ja, dan benodigde annotation connections toevoegen   
 
     */
+    this.props.setRestoring(true);
     this.showDependencyConnections = !this.showDependencyConnections;
     if (this.showDependencyConnections) {
       this.props.canvasApp?.elements.forEach((element) => {
@@ -577,6 +579,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         }
       });
     }
+    this.props.setRestoring(false);
 
     return false;
   };
@@ -615,5 +618,6 @@ export const NavbarComponents = (props: NavbarComponentsProps) => {
     canvasApp: props.canvasApp,
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
+    setRestoring: props.setRestoring,
   });
 };
