@@ -76,15 +76,15 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
     super(parent, props);
     this.template = createTemplate(
       `<div>
-        <button class="${navBarButton} bg-blue-500 hover:bg-blue-700">Add Node</button>
-        <button class="${navBarButton}">Center</button>
-        <button class="${navBarButton}">Delete</button>
+        <button class="${navBarButton} bg-blue-500 hover:bg-blue-700"><span class="icon icon-add_to_queue text-[22px]"></span></button>
+        <button class="${navBarButton}"><span class="icon icon-center_focus_strong text-[22px]"></span></button>
+        <button class="${navBarButton}"><span class="icon icon-delete text-[22px]"></span></button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
         <button class="${navBarButton}">Import script</button>
         <button class="${navBarButton}">L1</button>
         <button class="${navBarButton}">L2</button>
-        <button class="${navBarButton}">Switch layer</button>
+        <button class="${navBarButton}"><span class="icon icon-layers text-[22px]"></span></button>
         <button class="${navBarButton}">Toggle deps</button>
         <children></children>
       </div>`

@@ -2,6 +2,7 @@ import './app.element.css';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import styles from '../styles.css?inline';
+import iconStyles from '../../public/icon-styles.css?inline';
 import {
   createElement,
   IElementNode,
@@ -64,7 +65,8 @@ import { importToCanvas } from './storage/import-to-canvas';
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <style>${styles}</style>  
+  <style>${styles}</style>
+  <style>${iconStyles}</style>
   <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
@@ -100,7 +102,7 @@ export class AppElement extends HTMLElement {
   editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
   editPopupLineEndPath: IElementNode<NodeInfo> | undefined = undefined;
   editPopupEditingNodeIndicator: IElementNode<NodeInfo> | undefined = undefined;
-
+  selectedNodeLabel: IElementNode<NodeInfo> | undefined = undefined;
   rootElement: HTMLElement | undefined = undefined;
 
   removeElement = (element: IElementNode<NodeInfo>) => {
@@ -483,6 +485,15 @@ export class AppElement extends HTMLElement {
               canvasUpdated();
             },
           }) as unknown as HTMLElement;
+
+          this.selectedNodeLabel = createElement(
+            'div',
+            {
+              id: 'selectedNode',
+              class: 'text-white',
+            },
+            menubarElement.domElement
+          );
         }
 
         this.clearCanvas();
@@ -649,7 +660,7 @@ export class AppElement extends HTMLElement {
         },
       },
       menubarElement.domElement,
-      'Reinitialze nodes'
+      'Reset state'
     );
 
     // createElement(
@@ -1423,15 +1434,6 @@ export class AppElement extends HTMLElement {
       ''
     );
 
-    const selectedNodeLabel = createElement(
-      'div',
-      {
-        id: 'selectedNode',
-        class: 'text-white',
-      },
-      menubarElement.domElement
-    );
-
     // transform-origin: top left;
     // const canvas = createElement(
     //   'div',
@@ -1599,8 +1601,8 @@ export class AppElement extends HTMLElement {
       }
 
       removeFormElement();
-      if (selectedNodeInfo) {
-        selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
+      if (selectedNodeInfo && this.selectedNodeLabel) {
+        this.selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
         const node = (
           selectedNodeInfo?.containerNode
             ? (selectedNodeInfo?.containerNode.nodeInfo as any)
@@ -1724,7 +1726,9 @@ export class AppElement extends HTMLElement {
             removeFormElement();
             currentSelectedNode = undefined;
 
-            selectedNodeLabel.domElement.textContent = '';
+            if (this.selectedNodeLabel) {
+              this.selectedNodeLabel.domElement.textContent = '';
+            }
             (
               this.editPopupContainer?.domElement as unknown as HTMLElement
             ).classList.add('hidden');
@@ -1814,7 +1818,9 @@ export class AppElement extends HTMLElement {
         console.log('before positionPopup1');
         this.positionPopup(node);
       } else {
-        selectedNodeLabel.domElement.textContent = '';
+        if (this.selectedNodeLabel) {
+          this.selectedNodeLabel.domElement.textContent = '';
+        }
         (
           this.editPopupContainer?.domElement as unknown as HTMLElement
         ).classList.add('hidden');
