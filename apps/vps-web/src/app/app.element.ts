@@ -931,8 +931,14 @@ export class AppElement extends HTMLElement {
           return false;
         },
       },
-      menubarElement.domElement,
-      'run'
+      menubarElement.domElement
+    );
+    createElement(
+      'span',
+      {
+        class: 'icon icon-play_arrow text-[22px]',
+      },
+      runButton.domElement
     );
 
     let speedMeter = 100;
