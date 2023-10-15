@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
@@ -6,7 +7,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
@@ -89,7 +90,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'connectivity',
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

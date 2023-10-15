@@ -1,8 +1,6 @@
-import { createCanvasApp } from '@devhelpr/visual-programming-system';
+import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { StateMachine } from '../state-machine';
-
-export type canvasAppReturnType = ReturnType<typeof createCanvasApp<NodeInfo>>;
 
 export interface NodeInfo {
   taskType?: string;
@@ -20,7 +18,7 @@ export interface NodeInfo {
   ) => Promise<any>;
   initializeCompute?: () => void;
   formElements?: any[];
-  canvasAppInstance?: canvasAppReturnType;
+  canvasAppInstance?: CanvasAppInstance<NodeInfo>;
   delete?: () => void;
   formValues?: any;
   type?: string;

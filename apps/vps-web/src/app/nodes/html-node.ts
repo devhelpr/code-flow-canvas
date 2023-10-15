@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createASTNodeElement,
   createElement,
   IElementNode,
@@ -7,7 +8,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
 import {
@@ -23,7 +24,7 @@ import {
 export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let divNode: IElementNode<NodeInfo>;
-  let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
+  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
   let astElement: IElementNode<NodeInfo> | undefined = undefined;
@@ -194,7 +195,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

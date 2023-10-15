@@ -8,7 +8,7 @@ import {
   IRectNodeComponent,
   ElementNodeMap,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 
 import { RunNodeResult, run } from '../simple-flow-engine/simple-flow-engine';
 import {
@@ -28,8 +28,9 @@ export const getLayoutNode =
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-    let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
-      undefined;
+    let rect:
+      | ReturnType<CanvasAppInstance<NodeInfo>['createRect']>
+      | undefined = undefined;
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
     let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
@@ -89,7 +90,7 @@ export const getLayoutNode =
         return { inputs: [input], outputs: [output] };
       },
       createVisualNode: (
-        canvasApp: canvasAppReturnType,
+        canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
         y: number,
         id?: string,

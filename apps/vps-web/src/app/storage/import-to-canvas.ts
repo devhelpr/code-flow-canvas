@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   ElementNodeMap,
   Flow,
   FlowNode,
@@ -15,7 +16,7 @@ import { getNodeTaskFactory } from '../node-task-registry';
 
 export const importToCanvas = (
   nodesList: FlowNode<NodeInfo>[],
-  canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   canvasUpdated: () => void,
   containerNode?: IRectNodeComponent<NodeInfo>,
   nestedLevel?: number

@@ -1,11 +1,12 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -50,7 +51,7 @@ export const getCheckbox =
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
-        canvasApp: canvasAppReturnType,
+        canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
         y: number,
         id?: string,

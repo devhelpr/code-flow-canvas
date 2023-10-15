@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
@@ -6,7 +7,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -40,7 +41,7 @@ export const getState: NodeTaskFactory<NodeInfo> = (
     category: 'state-machine',
     isContained: true,
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

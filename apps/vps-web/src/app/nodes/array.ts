@@ -1,5 +1,6 @@
 /* eslint-disable prefer-rest-params */
 import {
+  CanvasAppInstance,
   createElement,
   IElementNode,
   INodeComponent,
@@ -7,7 +8,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -23,7 +24,7 @@ import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 export const getArray: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let canvasAppInstance: canvasAppReturnType;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo>;
   let tagNode: IElementNode<NodeInfo> | undefined = undefined;
   let wrapper: IRectNodeComponent<NodeInfo>;
   let variableName = '';
@@ -31,7 +32,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
+  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
 
   // TODO : refactor this ...
@@ -329,7 +330,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     name: 'array',
     family: 'flow-canvas',
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

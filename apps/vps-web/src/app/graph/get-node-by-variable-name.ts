@@ -1,9 +1,12 @@
-import { INodeComponent } from '@devhelpr/visual-programming-system';
-import { NodeInfo, canvasAppReturnType } from '../types/node-info';
+import {
+  CanvasAppInstance,
+  INodeComponent,
+} from '@devhelpr/visual-programming-system';
+import { NodeInfo } from '../types/node-info';
 
 export const getNodeByVariableName = (
   variableName: string,
-  canvasAppInstance: canvasAppReturnType
+  canvasAppInstance: CanvasAppInstance<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
   let node: INodeComponent<NodeInfo> | undefined = undefined;
   Array.from(canvasAppInstance.elements).every((itemPair) => {
@@ -19,7 +22,7 @@ export const getNodeByVariableName = (
 
 export const getNodeByFunctionName = (
   functionName: string,
-  canvasAppInstance: canvasAppReturnType
+  canvasAppInstance: CanvasAppInstance<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
   let node: INodeComponent<NodeInfo> | undefined = undefined;
   Array.from(canvasAppInstance.elements).every((itemPair) => {

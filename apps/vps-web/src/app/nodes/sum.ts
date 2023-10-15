@@ -1,11 +1,12 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -19,7 +20,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let currentSum = 0;
-  let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
+  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
@@ -74,7 +75,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
     name: 'sum',
     family: 'flow-canvas',
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

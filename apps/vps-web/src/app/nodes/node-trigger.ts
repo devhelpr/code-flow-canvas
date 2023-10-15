@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   IElementNode,
   INodeComponent,
@@ -6,7 +7,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
@@ -17,7 +18,7 @@ export const getNodeTrigger =
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
-    let canvasAppInstance: canvasAppReturnType | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const initializeCompute = () => {
       return;
     };
@@ -55,7 +56,7 @@ export const getNodeTrigger =
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
-        canvasApp: canvasAppReturnType,
+        canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
         y: number,
         id?: string,

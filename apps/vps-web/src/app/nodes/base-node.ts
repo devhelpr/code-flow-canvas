@@ -1,9 +1,10 @@
 import {
+  CanvasAppInstance,
   INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import { canvasAppReturnType } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 
 export abstract class BaseNode<T, X> {
   abstract compute: (
@@ -16,7 +17,7 @@ export abstract class BaseNode<T, X> {
   };
   abstract initializeCompute: () => void;
   abstract createVisualNode: (
-    canvasApp: canvasAppReturnType,
+    canvasApp: CanvasAppInstance<NodeInfo>,
     x: number,
     y: number,
     id?: string,

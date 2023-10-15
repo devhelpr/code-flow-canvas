@@ -3,6 +3,7 @@ import {
   runExpression,
 } from '@devhelpr/expression-compiler';
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
@@ -12,7 +13,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/form-component';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -23,7 +24,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: canvasAppReturnType | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -111,7 +112,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

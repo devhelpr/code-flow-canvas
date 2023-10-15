@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   IElementNode,
   INodeComponent,
@@ -7,7 +8,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
@@ -18,7 +19,7 @@ import {
 export const getVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let canvasAppInstance: canvasAppReturnType;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo>;
   let node: IRectNodeComponent<NodeInfo>;
   let componentWrapper: IRectNodeComponent<NodeInfo>;
   let htmlNode: IElementNode<NodeInfo> | undefined = undefined;
@@ -127,7 +128,7 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

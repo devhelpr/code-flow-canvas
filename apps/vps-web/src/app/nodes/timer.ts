@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   IElementNode,
   INodeComponent,
@@ -6,7 +7,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -25,7 +26,7 @@ export const getTimer =
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
     let interval: any = undefined;
-    let canvasAppInstance: canvasAppReturnType | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const initialTimer = 1000;
     const initializeCompute = () => {
       return;
@@ -74,7 +75,7 @@ export const getTimer =
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
-        canvasApp: canvasAppReturnType,
+        canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
         y: number,
         id?: string,

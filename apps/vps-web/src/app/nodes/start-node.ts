@@ -1,11 +1,12 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -17,7 +18,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-  let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
+  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
@@ -33,7 +34,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
     name: 'start-node',
     family: 'flow-canvas',
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

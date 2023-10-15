@@ -10,7 +10,7 @@ import {
   thumbHalfWidth,
   IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   runNodeFromThumb,
   RunNodeResult,
@@ -99,7 +99,7 @@ export const getBaseIterator = <T>(
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<canvasAppReturnType['createRect']> | undefined =
+  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let mapCanvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let inputNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -327,7 +327,7 @@ export const getBaseIterator = <T>(
     name: nodeTypeName,
     family: 'flow-canvas',
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

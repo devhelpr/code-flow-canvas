@@ -47,7 +47,7 @@ export interface NavbarComponentsProps {
   setRestoring: (restoring: boolean) => void;
   importToCanvas: (
     nodesList: FlowNode<NodeInfo>[],
-    canvasApp: ReturnType<typeof createCanvasApp<NodeInfo>>,
+    canvasApp: CanvasAppInstance<NodeInfo>,
     canvasUpdated: () => void,
     containerNode?: IRectNodeComponent<NodeInfo>,
     nestedLevel?: number

@@ -1,8 +1,8 @@
 import {
+  CanvasAppInstance,
   INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType } from '../types/node-info';
 
 export type InitialValues = Record<string, any>;
 export type NodeTaskFactory<T> = (onUpdatedCanvas: () => void) => NodeTask<T>;
@@ -14,7 +14,7 @@ export type NodeTask<T> = {
   isContained?: boolean;
   childNodeTasks?: string[];
   createVisualNode: (
-    canvasApp: canvasAppReturnType,
+    canvasApp: CanvasAppInstance<T>,
     x: number,
     y: number,
     id?: string,

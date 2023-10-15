@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   IElementNode,
   INodeComponent,
@@ -6,7 +7,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/form-component';
@@ -42,7 +43,7 @@ export const getNodeTriggerTarget =
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
-        canvasApp: canvasAppReturnType,
+        canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
         y: number,
         id?: string,

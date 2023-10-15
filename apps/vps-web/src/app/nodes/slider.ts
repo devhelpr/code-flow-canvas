@@ -1,11 +1,12 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
@@ -20,7 +21,7 @@ import { AnimatePathFunction } from '../follow-path/animate-path';
 export const getSlider =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
-    let canvasAppInstance: canvasAppReturnType | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
     let triggerButton = false;
@@ -51,7 +52,7 @@ export const getSlider =
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
-        canvasApp: canvasAppReturnType,
+        canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
         y: number,
         id?: string,

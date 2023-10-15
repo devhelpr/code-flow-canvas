@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
@@ -6,7 +7,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormFieldType } from '../components/form-component';
-import { canvasAppReturnType, NodeInfo } from '../types/node-info';
+import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
@@ -19,7 +20,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: canvasAppReturnType | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -64,7 +65,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: (
-      canvasApp: canvasAppReturnType,
+      canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,
