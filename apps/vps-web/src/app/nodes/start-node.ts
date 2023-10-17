@@ -44,7 +44,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: '',
+          class: 'icon icon-play_circle_outline text-white text-[32px]',
         },
         undefined,
         ''
@@ -53,7 +53,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded  w-[100px] h-[100px] overflow-hidden text-center`,
+          class: `inner-node bg-slate-500 flex items-center justify-center rounded  w-[50px] h-[50px] overflow-hidden text-center`,
           style: {
             'clip-path': 'circle(50%)',
           },
@@ -65,8 +65,8 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       rect = canvasApp.createRectThumb(
         x,
         y,
-        100,
-        100,
+        50,
+        50,
         undefined,
         [
           {
