@@ -48,12 +48,9 @@ export const createStateMachine = (
     (stateNode.domElement as HTMLElement)?.classList.remove('state-active');
 
     if (
-      !stateNode.nodeInfo?.canvasAppInstance ||
-      !stateNode.nodeInfo?.stateMachine
+      stateNode.nodeInfo?.canvasAppInstance &&
+      stateNode.nodeInfo?.type === 'state-compound'
     ) {
-      return;
-    }
-    if (stateNode.nodeInfo?.type === 'state-compound') {
       const compoundState = createStateMachine(
         stateNode.nodeInfo.canvasAppInstance,
         true
