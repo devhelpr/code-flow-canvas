@@ -450,69 +450,81 @@ export class Rect<T> {
     };
 
   private onCanReceiveDroppedComponent(
-    thumbNode: IThumbNodeComponent<T>,
-    component: INodeComponent<T>,
+    thumbNodeDropTarget: IThumbNodeComponent<T>,
+    draggedConnectionController: INodeComponent<T>,
     receivingThumbNode: IThumbNodeComponent<T>
   ) {
-    // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
-    // (not to be confused with the resize handlers)
-    console.log(
-      'onCanReceiveDroppedComponent',
-      thumbNode,
-      component,
-      receivingThumbNode
-    );
+    // thumbNodeDropTarget is the thumb that is being dropped on
+    // thumbNodeDropTarget.thumbLinkedToNode is the node that is being dropped on
+
+    // draggedConnectionController is connection-controller
+    // draggedConnectionController.parent is the connection that is being dragged
+
     let connectionCount = 0;
     const connections = (
-      thumbNode.thumbLinkedToNode as unknown as IRectNodeComponent<T>
+      thumbNodeDropTarget.thumbLinkedToNode as unknown as IRectNodeComponent<T>
     )?.connections;
-    if (thumbNode.thumbConnectionType === ThumbConnectionType.start) {
+    if (thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.start) {
       connectionCount = connections?.filter((connection) => {
-        connection.startNode?.id === thumbNode.thumbLinkedToNode?.id;
+        return (
+          connection.startNode?.id === thumbNodeDropTarget.thumbLinkedToNode?.id
+        );
       }).length;
     } else {
-      connectionCount = connections?.filter((connection) => {
-        connection.endNode?.id === thumbNode.thumbLinkedToNode?.id;
+      connectionCount = connections.filter((connection) => {
+        return (
+          connection.endNode?.id === thumbNodeDropTarget.thumbLinkedToNode?.id
+        );
       }).length;
     }
+    // console.log(
+    //   'onCanReceiveDroppedComponent',
+    //   thumbNode.thumbConnectionType,
+    //   thumbNode.thumbLinkedToNode?.id,
+    //   connections,
+    //   thumbNode,
+    //   component,
+    //   receivingThumbNode,
+    //   connectionCount
+    // );
 
-    // thumbNode is the thumb that is being dropped on
-    console.log('thumbNode', thumbNode);
+    //console.log('thumbNode', thumbNode);
     if (
-      (thumbNode.maxConnections !== undefined &&
-        thumbNode.maxConnections !== -1 &&
-        connectionCount >= thumbNode.maxConnections) ||
-      (thumbNode.maxConnections === undefined && connectionCount >= 1)
+      (thumbNodeDropTarget.maxConnections !== undefined &&
+        thumbNodeDropTarget.maxConnections !== -1 &&
+        connectionCount >= thumbNodeDropTarget.maxConnections) ||
+      (thumbNodeDropTarget.maxConnections === undefined && connectionCount >= 1)
     ) {
       console.log('onCanReceiveDroppedComponent FALSE1');
       return false;
     }
 
     if (
-      component &&
-      component.parent &&
-      thumbNode.thumbConnectionType === ThumbConnectionType.end &&
-      component.connectionControllerType === ConnectionControllerType.end
+      draggedConnectionController &&
+      draggedConnectionController.parent &&
+      thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.end &&
+      draggedConnectionController.connectionControllerType ===
+        ConnectionControllerType.end
     ) {
-      // thumbNode is the thumb that is being dropped on
-      // component.parent.startNodeThumb is the thumb that is being dragged from
-
       console.log(
         'DROPPED ON RIGHT THUMB',
-        thumbNode.thumbConstraint,
-        (component.parent as unknown as IConnectionNodeComponent<T>)
-          .startNodeThumb?.thumbConstraint
+        thumbNodeDropTarget.thumbConstraint,
+        (
+          draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+        ).startNodeThumb?.thumbConstraint
       );
 
       if (
-        thumbNode.thumbConstraint !==
-        (component.parent as unknown as IConnectionNodeComponent<T>)
-          .startNodeThumb?.thumbConstraint
+        thumbNodeDropTarget.thumbConstraint !==
+        (
+          draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+        ).startNodeThumb?.thumbConstraint
       ) {
         if (
-          thumbNode.thumbConstraint &&
-          (component.parent as unknown as IConnectionNodeComponent<T>)
-            .startNodeThumb?.thumbConstraint
+          thumbNodeDropTarget.thumbConstraint &&
+          (
+            draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+          ).startNodeThumb?.thumbConstraint
         ) {
           console.log('onCanReceiveDroppedComponent FALSE2');
           return false;
@@ -520,32 +532,34 @@ export class Rect<T> {
       }
       return true;
     } else if (
-      component &&
-      component.parent &&
-      thumbNode.thumbConnectionType === ThumbConnectionType.start &&
-      component.connectionControllerType === ConnectionControllerType.begin
+      draggedConnectionController &&
+      draggedConnectionController.parent &&
+      thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.start &&
+      draggedConnectionController.connectionControllerType ===
+        ConnectionControllerType.begin
     ) {
-      // thumbNode is the thumb that is being dropped on
-      // component.parent.endNodeThumb is the thumb that is being dragged from
-
       console.log(
         'DROPPED ON LEFT THUMB',
-        thumbNode.thumbConstraint,
-        (component.parent as unknown as IConnectionNodeComponent<T>)
-          .endNodeThumb?.thumbConstraint
+        thumbNodeDropTarget.thumbConstraint,
+        (
+          draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+        ).endNodeThumb?.thumbConstraint
       );
 
       if (
-        (component.parent as unknown as IConnectionNodeComponent<T>)
-          .endNodeThumb?.thumbConstraint !== undefined &&
-        thumbNode.thumbConstraint !==
-          (component.parent as unknown as IConnectionNodeComponent<T>)
-            .endNodeThumb?.thumbConstraint
+        (
+          draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+        ).endNodeThumb?.thumbConstraint !== undefined &&
+        thumbNodeDropTarget.thumbConstraint !==
+          (
+            draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+          ).endNodeThumb?.thumbConstraint
       ) {
         if (
-          thumbNode.thumbConstraint &&
-          (component.parent as unknown as IConnectionNodeComponent<T>)
-            .endNodeThumb?.thumbConstraint
+          thumbNodeDropTarget.thumbConstraint &&
+          (
+            draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+          ).endNodeThumb?.thumbConstraint
         ) {
           console.log('onCanReceiveDroppedComponent FALSE3');
           return false;

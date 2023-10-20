@@ -414,6 +414,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
             label: '#',
             thumbConstraint: 'value',
             name: 'input',
+            maxConnections: -1,
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -423,6 +424,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
             label: 'C',
             thumbConstraint: 'command',
             name: 'command',
+            maxConnections: -1,
           },
         ],
         wrapper,
