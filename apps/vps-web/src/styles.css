@@ -150,6 +150,21 @@
 	pointer-events: auto;
 }
 
+.connection-cursor__circle.layer-1 {
+  z-index : 4;
+}
+.connection-cursor__message.layer-1 {
+  z-index : 4;
+}
+
+.connection-cursor__circle.layer-2 {
+  z-index: 1;
+}
+
+.connection-cursor__message.layer-2 {
+  z-index: 1;
+}
+
 
 @font-face {
 	font-family: 'icomoon';

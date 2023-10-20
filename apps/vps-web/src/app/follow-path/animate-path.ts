@@ -71,7 +71,7 @@ export type AnimatePathFromThumbFunction<T> = (
 ) => void;
 
 export type FollowPathFunction = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: (
@@ -118,7 +118,7 @@ export const setSpeedMeter = (speed: number) => {
 // TODO : build different variations of this function for the different use-cases
 
 export const animatePathForNodeConnectionPairs = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   nodeConnectionPairs:
     | false
     | {
@@ -184,7 +184,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       createElement(
         'div',
         {
-          class: `absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded`,
+          class: `connection-cursor__circle absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded`,
           style: {
             'background-color': color,
             'clip-path': 'circle(50%)',
@@ -200,7 +200,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       createElement(
         'div',
         {
-          class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
+          class: `connection-cursor__message flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
           style: {
             'clip-path':
               'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
@@ -216,7 +216,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       createElement(
         'div',
         {
-          class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+          class: `connection-cursor__text truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
         },
         message.domElement,
         input?.toString() ??
@@ -238,12 +238,25 @@ export const animatePathForNodeConnectionPairs = <T>(
     if (animatedNodes?.node3) {
       animatedNodes.node3 = undefined;
     }
+
     const domCircle = testCircle.domElement as HTMLElement;
     const domMessage = message.domElement as HTMLElement;
     if (!animatedNodes?.node1) {
       domCircle.style.display = 'none';
       domMessage.style.display = 'none';
       domMessage.style.pointerEvents = 'none';
+    }
+
+    if (connection.layer === 1) {
+      domCircle.classList.add('layer-1');
+      domMessage.classList.add('layer-1');
+      domCircle.classList.remove('layer-2');
+      domMessage.classList.remove('layer-2');
+    } else {
+      domCircle.classList.add('layer-2');
+      domMessage.classList.add('layer-2');
+      domCircle.classList.remove('layer-1');
+      domMessage.classList.remove('layer-1');
     }
     let loop = 0;
     const onInterval = () => {
@@ -408,7 +421,7 @@ export const animatePathForNodeConnectionPairs = <T>(
 };
 
 export const animatePath: FollowPathFunction = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: (
@@ -468,7 +481,7 @@ export const animatePath: FollowPathFunction = <T>(
 };
 
 export const animatePathFromThumb = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: (
