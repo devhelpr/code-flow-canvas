@@ -364,13 +364,37 @@ export const getLinePoints = <T>(
       newY1 = intersection[0].y;
     }
   } else if (nodeComponent?.startNode) {
-    const xleft =
-      nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
-    const yleft =
-      nodeComponent.startNode.y - bbox.y + startOffsetY - spacingAABB;
-    const width = (nodeComponent.startNode.width ?? 0) + spacingAABB * 2;
-    const height = (nodeComponent.startNode.height ?? 0) + spacingAABB * 2;
-
+    let xleft = 0;
+    let yleft = 0;
+    let width = 0;
+    let height = 0;
+    if (
+      !nodeComponent?.startNode?.isThumb &&
+      nodeComponent.startNodeThumb?.thumbType === ThumbType.StartConnectorCenter
+    ) {
+      // Temp solution for connecting to right side of thumb when end node has a thumb of
+      // type StartConnectorCenter
+      xleft =
+        nodeComponent.startNode.x -
+        bbox.x +
+        //startOffsetX +
+        (nodeComponent.startNode.width ?? 0) -
+        4; //+
+      //spacingAABB;
+      //16;
+      yleft =
+        nodeComponent.startNode.y -
+        bbox.y -
+        10 +
+        (nodeComponent.startNode.height ?? 0) / 2;
+      width = 24;
+      height = 24;
+    } else {
+      xleft = nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
+      yleft = nodeComponent.startNode.y - bbox.y + startOffsetY - spacingAABB;
+      width = (nodeComponent.startNode.width ?? 0) + spacingAABB * 2;
+      height = (nodeComponent.startNode.height ?? 0) + spacingAABB * 2;
+    }
     const start = pointOnRect(
       x2,
       y2,
