@@ -1,5 +1,11 @@
 export const navBarButton = `rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap
   disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+
+export const navBarButtonNomargin = `rounded-md bg-slate-500 text-white p-2 hover:bg-slate-600 select-none whitespace-nowrap
+disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+
+export const navBarPrimaryButton = `rounded-md bg-blue-500 text-white p-2 m-2 hover:bg-blue-600 select-none whitespace-nowrap
+  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 export const menubarClasses = `fixed top-0 z-[1050] flex flex-row flex-nowrap 
     items-center justify-start height-[50px] overflow-hidden bg-slate-700 w-full
     whitespace-nowrap`;

@@ -2,7 +2,7 @@ import './app.element.css';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import styles from '../styles.css?inline';
-import iconStyles from '../../public/icon-styles.css?inline';
+//import iconStyles from '../../public/icon-styles.css?inline';
 import {
   createElement,
   IElementNode,
@@ -62,11 +62,13 @@ import {
 } from './node-task-registry/canvas-node-task-registry';
 import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
+import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 
+// <style>${iconStyles}</style>
 const template = document.createElement('template');
 template.innerHTML = `
   <style>${styles}</style>
-  <style>${iconStyles}</style>
+  
   <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
@@ -85,7 +87,7 @@ export class AppElement extends HTMLElement {
     }
   }
 
-  restoring = false;
+  isStoring = false;
 
   canvas?: IElementNode<NodeInfo> = undefined;
   canvasApp?: CanvasAppInstance<NodeInfo> = undefined;
@@ -450,10 +452,10 @@ export class AppElement extends HTMLElement {
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
-        this.restoring = true;
+        this.isStoring = true;
         this.storageProvider = storageProvider;
 
-        if (this.storageProvider && this.canvasApp) {
+        if (this.storageProvider && this.canvasApp && this.rootElement) {
           NavbarComponents({
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
@@ -466,7 +468,7 @@ export class AppElement extends HTMLElement {
             removeElement: this.removeElement,
             rootElement: menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
-            setRestoring: setRestoring,
+            setIsStoring: setIsStoring,
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
               canvasApp: CanvasAppInstance<NodeInfo>,
@@ -474,7 +476,7 @@ export class AppElement extends HTMLElement {
               containerNode?: IRectNodeComponent<NodeInfo>,
               nestedLevel?: number
             ) => {
-              this.restoring = true;
+              this.isStoring = true;
               importToCanvas(
                 nodesList,
                 canvasApp,
@@ -482,7 +484,7 @@ export class AppElement extends HTMLElement {
                 containerNode,
                 nestedLevel
               );
-              this.restoring = false;
+              this.isStoring = false;
               canvasUpdated();
             },
           }) as unknown as HTMLElement;
@@ -495,8 +497,40 @@ export class AppElement extends HTMLElement {
             },
             menubarElement.domElement
           );
-        }
 
+          NodeSidebarMenuComponents({
+            clearCanvas: this.clearCanvas,
+            initializeNodes: initializeNodes,
+            storageProvider: this.storageProvider,
+            selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+            animatePath: animatePath,
+            animatePathFromThumb: animatePathFromThumb,
+            canvasUpdated: canvasUpdated,
+            canvasApp: this.canvasApp,
+            removeElement: this.removeElement,
+            rootElement: this.rootElement as HTMLElement,
+            rootAppElement: this.rootElement as HTMLElement,
+            setIsStoring: setIsStoring,
+            importToCanvas: (
+              nodesList: FlowNode<NodeInfo>[],
+              canvasApp: CanvasAppInstance<NodeInfo>,
+              canvasUpdated: () => void,
+              containerNode?: IRectNodeComponent<NodeInfo>,
+              nestedLevel?: number
+            ) => {
+              this.isStoring = true;
+              importToCanvas(
+                nodesList,
+                canvasApp,
+                canvasUpdated,
+                containerNode,
+                nestedLevel
+              );
+              this.isStoring = false;
+              canvasUpdated();
+            },
+          }) as unknown as HTMLElement;
+        }
         this.clearCanvas();
         storageProvider
           .getFlow('1234')
@@ -510,11 +544,11 @@ export class AppElement extends HTMLElement {
             );
             canvasApp.centerCamera();
             initializeNodes();
-            this.restoring = false;
+            this.isStoring = false;
           })
           .catch((error) => {
             console.log('error', error);
-            this.restoring = false;
+            this.isStoring = false;
           });
       })
       .catch((error) => {
@@ -541,7 +575,7 @@ export class AppElement extends HTMLElement {
     };
 
     const canvasUpdated = () => {
-      if (this.restoring) {
+      if (this.isStoring) {
         return;
       }
       store();
@@ -550,8 +584,8 @@ export class AppElement extends HTMLElement {
       canvasUpdated();
     });
 
-    const setRestoring = (restoring: boolean) => {
-      this.restoring = restoring;
+    const setIsStoring = (isStoring: boolean) => {
+      this.isStoring = isStoring;
     };
 
     canvasApp.setOnCanvasClick((x, y) => {

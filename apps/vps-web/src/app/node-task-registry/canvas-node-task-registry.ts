@@ -42,6 +42,7 @@ import { getFunction } from '../nodes/function';
 import { getCallFunction } from '../nodes/call-function';
 import { getTest } from '../nodes/test';
 import { getStart } from '../nodes/start-node';
+import { getEnd } from '../nodes/end-node';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -60,6 +61,7 @@ export const setupCanvasNodeTaskRegistry = (
   animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
 ) => {
   registerNodeFactory('start-node', getStart);
+  registerNodeFactory('end-node', getEnd);
 
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
   registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));

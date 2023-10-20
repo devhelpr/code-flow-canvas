@@ -14,7 +14,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getStart: NodeTaskFactory<NodeInfo> = (
+export const getEnd: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -31,7 +31,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
     };
   };
   return {
-    name: 'start-node',
+    name: 'end-node',
     family: 'flow-canvas',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
@@ -44,10 +44,10 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: 'icon icon-play_circle_outline text-white text-[32px]',
+          class: 'text-white',
         },
         undefined,
-        ''
+        'end'
       ) as unknown as INodeComponent<NodeInfo>;
 
       const wrapper = createElement(
@@ -72,7 +72,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
           {
             thumbType: ThumbType.Center,
             thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
+            connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
             hidden: true,
@@ -87,7 +87,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
         true,
         id,
         {
-          type: 'start-node',
+          type: 'end-node',
           formElements: [],
         },
         containerNode,

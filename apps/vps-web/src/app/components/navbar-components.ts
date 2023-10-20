@@ -1,20 +1,12 @@
 import {
-  CanvasAppInstance,
-  FlowNode,
   IConnectionNodeComponent,
-  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   NodeType,
-  createCanvasApp,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
-import { navBarButton } from '../consts/classes';
-import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
-} from '../follow-path/animate-path';
+import { navBarButton, navBarPrimaryButton } from '../consts/classes';
 
 import { NodeInfo } from '../types/node-info';
 import { getNodeTaskFactory } from '../node-task-registry/canvas-node-task-registry';
@@ -29,33 +21,11 @@ import {
   exportFlowToJson,
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
-import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
+import { AppNavComponentsProps } from '../component-interface/app-nav-component';
 
-export interface NavbarComponentsProps {
-  rootAppElement: HTMLElement;
-  rootElement: HTMLElement;
-  selectNodeType: HTMLSelectElement;
-  storageProvider: FlowrunnerIndexedDbStorageProvider;
-  initializeNodes: () => void;
-  clearCanvas: () => void;
-  animatePath: AnimatePathFunction<NodeInfo>;
-  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>;
-  canvasUpdated: () => void;
-  canvasApp: CanvasAppInstance<NodeInfo>;
-  removeElement: (element: IElementNode<NodeInfo>) => void;
-  setRestoring: (restoring: boolean) => void;
-  importToCanvas: (
-    nodesList: FlowNode<NodeInfo>[],
-    canvasApp: CanvasAppInstance<NodeInfo>,
-    canvasUpdated: () => void,
-    containerNode?: IRectNodeComponent<NodeInfo>,
-    nestedLevel?: number
-  ) => void;
-}
-
-export class NavbarComponent extends Component<NavbarComponentsProps> {
-  oldProps: NavbarComponentsProps | null = null;
+export class NavbarComponent extends Component<AppNavComponentsProps> {
+  oldProps: AppNavComponentsProps | null = null;
 
   previousDoRenderChildren: boolean | null = null;
   doRenderChildren: boolean | null = true;
@@ -73,11 +43,11 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
   showDependencyConnections = false;
   rootAppElement: HTMLElement | null = null;
 
-  constructor(parent: BaseComponent | null, props: NavbarComponentsProps) {
+  constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
     super(parent, props);
     this.template = createTemplate(
       `<div>
-        <button class="${navBarButton} bg-blue-500 hover:bg-blue-700"><span class="icon icon-add_to_queue text-[22px]"></span></button>
+        <button class="${navBarPrimaryButton}"><span class="icon icon-add text-[22px]"></span></button>
         <button class="${navBarButton}"><span class="icon icon-center_focus_strong text-[22px]"></span></button>
         <button class="${navBarButton}"><span class="icon icon-delete text-[22px]"></span></button>
         <button class="${navBarButton}">Export</button>
@@ -518,7 +488,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
       - ... zo ja, dan benodigde annotation connections toevoegen   
 
     */
-    this.props.setRestoring(true);
+    this.props.setIsStoring(true);
     this.showDependencyConnections = !this.showDependencyConnections;
     if (this.showDependencyConnections) {
       this.props.canvasApp?.elements.forEach((element) => {
@@ -579,7 +549,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
         }
       });
     }
-    this.props.setRestoring(false);
+    this.props.setIsStoring(false);
 
     return false;
   };
@@ -604,7 +574,7 @@ export class NavbarComponent extends Component<NavbarComponentsProps> {
   }
 }
 
-export const NavbarComponents = (props: NavbarComponentsProps) => {
+export const NavbarComponents = (props: AppNavComponentsProps) => {
   new NavbarComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,
@@ -618,6 +588,6 @@ export const NavbarComponents = (props: NavbarComponentsProps) => {
     canvasApp: props.canvasApp,
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
-    setRestoring: props.setRestoring,
+    setIsStoring: props.setIsStoring,
   });
 };
