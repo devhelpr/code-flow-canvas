@@ -27,7 +27,6 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils/create-element';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
-import { QuadraticBezierConnection } from './quadratic-bezier-connection';
 import { CubicBezierConnection } from './qubic-bezier-connection';
 
 export class ThumbNode<T> {
@@ -490,6 +489,7 @@ export class ThumbNode<T> {
       }
 
       e.stopPropagation();
+
       const selectedNodeId = getSelectedNode();
       if (selectedNodeId) {
         console.log('thumb 1');
@@ -554,6 +554,22 @@ export class ThumbNode<T> {
         this.parentRectNode &&
         this.canvasElements
       ) {
+        // thumb can (currently) have max 1 output connection
+        if (this.nodeComponent.thumbLinkedToNode) {
+          console.log('check outputs', this.nodeComponent.thumbLinkedToNode);
+          const connections = (
+            this.nodeComponent
+              .thumbLinkedToNode as unknown as IRectNodeComponent<T>
+          )?.connections;
+          const connectionCount = connections?.filter((connection) => {
+            return connection.startNodeThumb?.id === this.nodeComponent?.id;
+          }).length;
+          if (connectionCount && connectionCount > 0) {
+            console.log('output connection already exists', connectionCount);
+            return;
+          }
+        }
+
         let parentX = 0;
         let parentY = 0;
         if (this.containerNode) {
@@ -730,7 +746,7 @@ export class ThumbNode<T> {
   };
 
   onPointerUp = (e: PointerEvent) => {
-    console.log('onPointerUp');
+    console.log('thumb onPointerUp', this.nodeComponent?.id);
     if (this.disableInteraction) {
       return;
     }
@@ -764,6 +780,8 @@ export class ThumbNode<T> {
   };
 
   onPointerThumbUp = () => {
+    console.log('thumb onPointerThumbUp', this.nodeComponent?.id);
+
     if (this.disableInteraction) {
       return;
     }
