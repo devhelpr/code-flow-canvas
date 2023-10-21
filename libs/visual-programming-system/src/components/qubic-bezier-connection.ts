@@ -175,7 +175,6 @@ export class CubicBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      console.log('endPointNode update', x, y);
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
