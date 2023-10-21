@@ -118,6 +118,11 @@ export class Connection<T> {
       this.svgParent.domElement
     );
 
+    (this.svgParent.domElement as HTMLElement).setAttribute(
+      'connection-id',
+      id ?? ''
+    );
+
     this.createArrowMarker();
 
     this.nodeComponent = createSVGNodeComponent(
@@ -135,6 +140,7 @@ export class Connection<T> {
     this.nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
     this.nodeComponent.controlPointNodes = [];
     this.nodeComponent.containerNode = containerNode;
+    this.nodeComponent.connectorWrapper = this.svgParent;
     this.nodeComponent.delete = () => {
       if (this.svgParent) {
         this.svgParent.domElement.remove();
@@ -588,6 +594,7 @@ export class Connection<T> {
           this.points.beginY + startOffsetY,
           this.nodeComponent
         );
+
         this.nodeComponent.connectionEndNodeThumb?.update?.(
           this.nodeComponent?.connectionEndNodeThumb,
           this.points.endX + endOffsetX,
@@ -646,7 +653,27 @@ export class Connection<T> {
                 ? ThumbType.Center
                 : ThumbType.None)
           );
+
         if (
+          initiator.connectionControllerType === ConnectionControllerType.begin
+        ) {
+          this.points.beginX = x - startOffsetX;
+          this.points.beginY = y - startOffsetY;
+
+          if (!this.nodeComponent?.startNode) {
+            this.points.cx1 = this.points.beginX + 150;
+            this.points.cy1 = this.points.beginY;
+
+            if (this.nodeComponent) {
+              this.nodeComponent.connectionStartNodeThumb?.update?.(
+                this.nodeComponent.connectionStartNodeThumb,
+                this.points.beginX,
+                this.points.beginY,
+                this.nodeComponent
+              );
+            }
+          }
+        } else if (
           initiator.connectionControllerType === ConnectionControllerType.c1
         ) {
           this.points.cx1 = x;
@@ -666,15 +693,14 @@ export class Connection<T> {
             this.points.cx2 = this.points.endX - 150;
             this.points.cy2 = this.points.endY;
           }
-        } else if (
-          initiator.connectionControllerType === ConnectionControllerType.begin
-        ) {
-          this.points.beginX = x - startOffsetX;
-          this.points.beginY = y - startOffsetY;
 
-          if (!this.nodeComponent?.startNode) {
-            this.points.cx1 = this.points.beginX + 150;
-            this.points.cy1 = this.points.beginY;
+          if (this.nodeComponent) {
+            this.nodeComponent.connectionEndNodeThumb?.update?.(
+              this.nodeComponent.connectionEndNodeThumb,
+              this.points.endX,
+              this.points.endY,
+              this.nodeComponent
+            );
           }
         } else {
           return false;

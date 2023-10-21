@@ -1641,7 +1641,11 @@ export class AppElement extends HTMLElement {
             : this.canvasApp?.elements
         )?.get(currentSelectedNode.id);
         if (node) {
-          node.domElement.classList.remove('selected');
+          if (node.nodeType === NodeType.Connection) {
+            node.connectorWrapper?.classList?.remove('selected');
+          } else {
+            node.domElement.classList.remove('selected');
+          }
         }
       }
 
@@ -1658,8 +1662,12 @@ export class AppElement extends HTMLElement {
         if (!node) {
           return;
         }
-        node.domElement.classList.add('selected');
-
+        if (node.nodeType === NodeType.Connection) {
+          console.log('selected connection', node);
+          node.connectorWrapper?.domElement?.classList?.add('selected');
+        } else {
+          node.domElement.classList.add('selected');
+        }
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
           node &&

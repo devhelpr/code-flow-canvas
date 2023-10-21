@@ -14,7 +14,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
-export const getStart: NodeTaskFactory<NodeInfo> = (
+export const getMultiTrigger: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -31,7 +31,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
     };
   };
   return {
-    name: 'start-node',
+    name: 'multi-trigger',
     family: 'flow-canvas',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
@@ -44,7 +44,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: 'icon icon-play_circle_outline text-white text-[32px]',
+          class: 'icon icon-flash_on text-white text-[32px]',
         },
         undefined,
         ''
@@ -53,29 +53,37 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 flex items-center justify-center shape-circle  w-[50px] h-[50px] overflow-hidden text-center`,
+          class: `inner-node bg-slate-500 flex items-center justify-center rounded-lg w-[100px] h-[50px] overflow-hidden text-center`,
           style: {
-            'clip-path': 'circle(50%)',
+            // 'clip-path': 'circle(50%)',
           },
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
-      rect = canvasApp.createRectThumb(
+      rect = canvasApp.createRect(
         x,
         y,
-        50,
+        100,
         50,
         undefined,
         [
           {
-            thumbType: ThumbType.Center,
+            thumbType: ThumbType.StartConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             color: 'white',
             label: ' ',
-            hidden: true,
+            maxConnections: -1,
+          },
+          {
+            thumbType: ThumbType.EndConnectorCenter,
+            thumbIndex: 0,
+            connectionType: ThumbConnectionType.end,
+            color: 'white',
+            label: ' ',
+            maxConnections: -1,
           },
         ],
         wrapper,
@@ -87,13 +95,11 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
         true,
         id,
         {
-          type: 'start-node',
+          type: 'multi-trigger',
           formElements: [],
         },
         containerNode,
-        undefined,
-        true,
-        true
+        undefined
       );
 
       if (!rect.nodeComponent) {

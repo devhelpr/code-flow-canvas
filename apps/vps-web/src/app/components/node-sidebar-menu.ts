@@ -20,7 +20,7 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
     super(parent, props);
     this.template = createTemplate(
-      `<div class="flex flex-col absolute right-0 top-1/2 bg-white -translate-y-1/2 p-[4px]">
+      `<div class="z-10 flex flex-col absolute right-0 top-1/2 bg-white -translate-y-1/2 p-[4px]">
 		  <button class="${navBarButtonNomargin} flex  w-[32px] h-[32px]"><span class="icon icon-tune text-[16px]"></span></button>
 		  <children></children>
 		</div>`

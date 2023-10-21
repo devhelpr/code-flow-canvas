@@ -477,16 +477,18 @@ export class Rect<T> {
         );
       }).length;
     }
-    // console.log(
-    //   'onCanReceiveDroppedComponent',
-    //   thumbNode.thumbConnectionType,
-    //   thumbNode.thumbLinkedToNode?.id,
-    //   connections,
-    //   thumbNode,
-    //   component,
-    //   receivingThumbNode,
-    //   connectionCount
-    // );
+    console.log(
+      'onCanReceiveDroppedComponent',
+      thumbNodeDropTarget.thumbConnectionType,
+      draggedConnectionController.connectionControllerType,
+      draggedConnectionController,
+      thumbNodeDropTarget.thumbLinkedToNode?.id,
+      connections,
+      thumbNodeDropTarget,
+
+      receivingThumbNode,
+      connectionCount
+    );
 
     //console.log('thumbNode', thumbNode);
     if (

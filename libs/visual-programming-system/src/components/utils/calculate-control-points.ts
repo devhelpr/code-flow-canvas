@@ -141,11 +141,13 @@ export const onCalculateControlPoints = <T>(
         x +
         (controlPointDistance ?? distance ?? 0) +
         controlPointCurvingDistance * thumbFactor;
+      const cy = y;
+
       return {
         x: x,
         y: y,
         cx: cx,
-        cy: y,
+        cy: cy,
         nodeType,
       };
     }
@@ -156,16 +158,24 @@ export const onCalculateControlPoints = <T>(
       connectedNodeX,
       connectedNodeY
     );
-    const cx =
+    let cx =
       x +
       (controlPointDistance ?? distance ?? 0) +
       controlPointCurvingDistance * thumbFactor;
-
+    let cy = y;
+    if (connectedNode && connectedNode.x < rectNode.x) {
+      cx += 250;
+      if (connectedNode.y < rectNode.y) {
+        cy += 250;
+      } else {
+        cy -= 250;
+      }
+    }
     return {
       x: x,
       y: y,
       cx: cx,
-      cy: y,
+      cy: cy,
       nodeType,
     };
   }
@@ -225,11 +235,20 @@ export const onCalculateControlPoints = <T>(
         x -
         (controlPointDistance ?? distance ?? 0) -
         controlPointCurvingDistance * thumbFactor;
+
+      let cy = y;
+      if (connectedNode && connectedNodeX > x) {
+        if (connectedNodeY > y) {
+          cy += 250;
+        } else {
+          cy -= 250;
+        }
+      }
       return {
         x: x,
         y: y,
         cx: cx,
-        cy: y,
+        cy: cy,
         nodeType,
       };
     }
@@ -244,11 +263,20 @@ export const onCalculateControlPoints = <T>(
       x -
       (controlPointDistance ?? distance ?? 0) -
       controlPointCurvingDistance * thumbFactor;
+
+    let cy = y;
+    if (connectedNode && connectedNodeX > x) {
+      if (connectedNodeY > y) {
+        cy += 500;
+      } else {
+        cy -= 500;
+      }
+    }
     return {
       x: x,
       y: y,
       cx: cx,
-      cy: y,
+      cy: cy,
       nodeType,
     };
   }
@@ -260,6 +288,12 @@ export const onGetConnectionToThumbOffset = (
   nodeType: ControlAndEndPointNodeType,
   thumbType: ThumbType
 ) => {
+  if (thumbType === ThumbType.None) {
+    return {
+      offsetX: 0,
+      offsetY: 0,
+    };
+  }
   if (nodeType === ControlAndEndPointNodeType.start) {
     if (thumbType === ThumbType.StartConnectorBottom) {
       return {

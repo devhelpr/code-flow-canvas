@@ -38,6 +38,25 @@
 	border-radius: 50%;
 }
 
+.selected.connection + .thumb {
+  z-index: 3;
+}
+.selected.connection + .thumb + .thumb {
+  z-index: 3;
+}
+.connection + .thumb:hover div,
+.connection:hover + .thumb div,
+.selected.connection + .thumb div {
+  @apply !bg-white;
+}
+
+.connection + .thumb + .thumb:hover div,
+.connection:hover + .thumb + .thumb div,
+.selected.connection + .thumb + .thumb div {
+  @apply !bg-white;
+ 
+}
+
 
 /* source : https://cssloaders.github.io/ */
 .loader {
@@ -118,7 +137,7 @@
 }
 
 .connection.layer-2 .connection-path {
-	pointer-events: none;
+	/*pointer-events: none;*/
 }
 
 .rect-node {
@@ -128,7 +147,7 @@
 
 .active-layer2 .rect-node {
 	opacity: 0.25;
-	pointer-events: none;
+	/*pointer-events: none;*/
 	cursor: default;
 	z-index: 2;
 }
@@ -139,7 +158,7 @@
 }
 
 .active-layer2 .connection:not(.layer-2) .connection-path {
-	pointer-events: none;
+	/* pointer-events: none; */
 }
 
 .active-layer2 .connection.layer-2 {

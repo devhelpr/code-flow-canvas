@@ -73,6 +73,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   endX: number;
   endY: number;
   lineType?: LineType;
+  connectorWrapper?: IElementNode<T>;
   controlPoints?: { x: number; y: number }[];
   connectionStartNodeThumb?: IThumbNodeComponent<T>;
   connectionEndNodeThumb?: IThumbNodeComponent<T>;

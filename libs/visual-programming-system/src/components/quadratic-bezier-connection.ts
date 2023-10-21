@@ -143,6 +143,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     }
     startPointNode.nodeComponent.parent = this.nodeComponent;
     startPointNode.nodeComponent.isControlled = isControlled;
+    startPointNode.connectConnection();
     startPointNode.nodeComponent.update = (
       target?: INodeComponent<T>,
       x?: number,
@@ -185,6 +186,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     }
     endPointNode.nodeComponent.parent = this.nodeComponent;
     endPointNode.nodeComponent.isControlled = isControlled;
+    endPointNode.connectConnection();
     endPointNode.nodeComponent.update = (
       target?: INodeComponent<T>,
       x?: number,

@@ -53,7 +53,7 @@ export const getEnd: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 flex items-center justify-center rounded  w-[50px] h-[50px] overflow-hidden text-center`,
+          class: `inner-node shape-circle bg-slate-500 flex items-center justify-center  w-[50px] h-[50px] overflow-hidden text-center`,
           style: {
             'clip-path': 'circle(50%)',
           },

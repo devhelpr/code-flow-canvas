@@ -43,6 +43,7 @@ import { getCallFunction } from '../nodes/call-function';
 import { getTest } from '../nodes/test';
 import { getStart } from '../nodes/start-node';
 import { getEnd } from '../nodes/end-node';
+import { getMultiTrigger } from '../nodes/multi-trigger';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -62,6 +63,8 @@ export const setupCanvasNodeTaskRegistry = (
 ) => {
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
+
+  registerNodeFactory('multi-trigger', getMultiTrigger);
 
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
   registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));

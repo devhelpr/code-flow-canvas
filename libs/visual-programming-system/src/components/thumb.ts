@@ -1,3 +1,4 @@
+import { connect } from 'http2';
 import { transformCameraSpaceToWorldSpace } from '../camera';
 import {
   paddingRect,
@@ -98,7 +99,7 @@ export class ThumbNode<T> {
       'div',
       {
         // will-change-transform
-        class: `absolute cursor-pointer transition-none pointer-events-none ${
+        class: `thumb absolute cursor-pointer transition-none pointer-events-none ${
           additionalClasses || ''
         }`,
         style: {
@@ -124,6 +125,11 @@ export class ThumbNode<T> {
       throw new Error('nodeComponent is undefined');
     }
 
+    if (connectionControllerType !== undefined) {
+      (this.nodeComponent.domElement as HTMLElement).classList.add(
+        `connection-controller-${connectionControllerType}`
+      );
+    }
     this.nodeComponent.thumbName = thumbName;
     this.nodeComponent.x = 0;
     this.nodeComponent.y = 0;
@@ -136,7 +142,8 @@ export class ThumbNode<T> {
       {
         class: `${
           disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
-        }  origin-center`,
+        }        
+        origin-center`,
         style: {
           width: `${(radius ?? thumbRadius) * 2}px`,
           height: `${(radius ?? thumbRadius) * 2}px`,
@@ -146,6 +153,8 @@ export class ThumbNode<T> {
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
+              : connectionControllerType !== undefined
+              ? 'circle(25%)'
               : 'circle(50%)',
           'background-color': isTransparent
             ? 'transparent'
@@ -186,7 +195,7 @@ export class ThumbNode<T> {
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
-              : 'circle(50%)',
+              : 'circle(50%)', //'polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)', //
           'background-color': isTransparent
             ? 'transparent'
             : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
@@ -276,6 +285,13 @@ export class ThumbNode<T> {
       | SVGElement;
     this.nodeComponent.getThumbCircleElement = () => circleDomElement;
   }
+
+  connectConnection = () => {
+    (this.nodeComponent?.domElement as HTMLElement).setAttribute(
+      'connection-id',
+      this.nodeComponent?.parent?.id ?? ''
+    );
+  };
 
   setDisableInteraction = () => {
     if (!this.disableInteraction) {
@@ -395,10 +411,23 @@ export class ThumbNode<T> {
     if (!this.canvas) {
       return;
     }
-    console.log('THUMB initiateDraggingConnection', this.nodeComponent);
+
     const elementRect = (
       connectionThumb.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
+
+    console.log('THUMB initiateDraggingConnection', connectionThumb);
+
+    const connection =
+      connectionThumb?.parent as unknown as IConnectionNodeComponent<T>;
+
+    if (this.nodeComponent?.thumbConnectionType === 'start') {
+      connection.startNode = undefined;
+      connection.startNodeThumb = undefined;
+    } else {
+      connection.endNode = undefined;
+      connection.endNodeThumb = undefined;
+    }
 
     const rectCamera = transformCameraSpaceToWorldSpace(
       elementRect.x,
@@ -517,6 +546,7 @@ export class ThumbNode<T> {
             this.nodeComponent.thumbConnectionType === 'start'
               ? curve.connectionStartNodeThumb
               : curve.connectionEndNodeThumb;
+
           if (connectionThumb) {
             this.initiateDraggingConnection(connectionThumb, x, y);
           }
@@ -556,17 +586,19 @@ export class ThumbNode<T> {
       ) {
         // thumb can (currently) have max 1 output connection
         if (this.nodeComponent.thumbLinkedToNode) {
-          console.log('check outputs', this.nodeComponent.thumbLinkedToNode);
-          const connections = (
-            this.nodeComponent
-              .thumbLinkedToNode as unknown as IRectNodeComponent<T>
-          )?.connections;
-          const connectionCount = connections?.filter((connection) => {
-            return connection.startNodeThumb?.id === this.nodeComponent?.id;
-          }).length;
-          if (connectionCount && connectionCount > 0) {
-            console.log('output connection already exists', connectionCount);
-            return;
+          if (this.nodeComponent.maxConnections !== -1) {
+            console.log('check outputs', this.nodeComponent.thumbLinkedToNode);
+            const connections = (
+              this.nodeComponent
+                .thumbLinkedToNode as unknown as IRectNodeComponent<T>
+            )?.connections;
+            const connectionCount = connections?.filter((connection) => {
+              return connection.startNodeThumb?.id === this.nodeComponent?.id;
+            }).length;
+            if (connectionCount && connectionCount > 0) {
+              console.log('output connection already exists', connectionCount);
+              return;
+            }
           }
         }
 

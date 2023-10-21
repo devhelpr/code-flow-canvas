@@ -314,6 +314,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
             label: nestedLevel ?? 0 > 0 ? ' ' : '#',
             thumbConstraint: nestedLevel ?? 0 > 0 ? 'transition' : 'value',
             color: 'white',
+            maxConnections: -1,
           },
           {
             thumbType: ThumbType.EndConnectorLeft,

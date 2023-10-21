@@ -123,6 +123,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
     }
     startPointNode.nodeComponent.isControlled = isControlled;
     startPointNode.nodeComponent.parent = this.nodeComponent;
+    startPointNode.connectConnection();
     startPointNode.nodeComponent.update = (
       target?: INodeComponent<T>,
       x?: number,
@@ -164,6 +165,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
     }
     endPointNode.nodeComponent.isControlled = isControlled;
     endPointNode.nodeComponent.parent = this.nodeComponent;
+    endPointNode.connectConnection();
     endPointNode.nodeComponent.update = (
       target?: INodeComponent<T>,
       x?: number,
@@ -173,10 +175,11 @@ export class CubicBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
+      console.log('endPointNode update', x, y);
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };
-    this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
+    this.svgParent?.domElement.after(endPointNode.nodeComponent.domElement);
 
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
 
