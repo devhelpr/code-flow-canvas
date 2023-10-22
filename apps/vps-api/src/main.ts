@@ -11,6 +11,19 @@ router.get('/api', (ctx) => {
   ctx.response.type = 'text/json';
 });
 
+router.get('/test', async (ctx) => {
+  // run shell command and retrieve output from stdout
+  const p = Deno.run({
+    cmd: ['echo', 'abcd'],
+    stdout: 'piped',
+    stderr: 'piped',
+  });
+  await p.status();
+  const output = new TextDecoder().decode(await p.output()).trim();
+  console.log('test', output);
+  ctx.response.body = { message: output };
+  ctx.response.type = 'text/json';
+});
 const app = new Application();
 
 app.addEventListener('listen', ({ hostname, port, secure }) => {
