@@ -44,7 +44,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               console.log('json', json);
               result = json;
               resolve({
-                result: true,
+                result: result,
                 output: result,
                 followPath: undefined,
               });
@@ -152,7 +152,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.StartConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            color: 'purple',
+            color: 'white',
             label: '{}',
             thumbConstraint: 'object',
           },

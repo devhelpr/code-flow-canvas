@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve vps-web",
+    "startapi": "nx serve vps-api",
     "build": "nx build vps-web",
     "test": "nx run-many --all --target=test",
     "graph": "nx graph"
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@nrwl/js": "16.6.0",
     "@nx/cypress": "16.6.0",
+    "@nx/deno": "^16.6.0",
     "@nx/eslint-plugin": "16.6.0",
     "@nx/js": "16.6.0",
     "@nx/linter": "16.6.0",

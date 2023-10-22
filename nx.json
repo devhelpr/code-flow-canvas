@@ -47,5 +47,6 @@
       "linter": "eslint",
       "unitTestRunner": "vitest"
     }
-  }
+  },
+  "plugins": ["@nx/deno"]
 }

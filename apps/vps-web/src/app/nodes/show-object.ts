@@ -99,7 +99,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
             label: '{}',
             thumbConstraint: 'object',
             name: 'output',
-            color: 'purple',
+            color: 'white',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -108,7 +108,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
             label: '{}',
             thumbConstraint: 'object',
             name: 'input',
-            color: 'purple',
+            color: 'white',
           },
         ],
         wrapper,

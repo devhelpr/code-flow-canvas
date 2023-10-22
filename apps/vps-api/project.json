@@ -1,0 +1,39 @@
+{
+  "name": "vps-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/vps-api/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/deno:esbuild",
+      "outputs": ["{workspaceRoot}/dist/apps/vps-api"],
+      "options": {
+        "main": "apps/vps-api/src/main.ts",
+        "outputFile": "dist/apps/vps-api/main.js",
+        "denoConfig": "apps/vps-api/deno.json"
+      }
+    },
+    "serve": {
+      "executor": "@nx/deno:run",
+      "options": {
+        "buildTarget": "vps-api:build",
+        "watch": true
+      }
+    },
+    "test": {
+      "executor": "@nx/deno:test",
+      "outputs": ["{options.coverageDirectory}"],
+      "options": {
+        "coverageDirectory": "coverage/apps/vps-api",
+        "denoConfig": "apps/vps-api/deno.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/deno:lint",
+      "options": {
+        "denoConfig": "apps/vps-api/deno.json"
+      }
+    }
+  },
+  "tags": []
+}
