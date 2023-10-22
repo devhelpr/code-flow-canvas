@@ -117,6 +117,12 @@ export class ThumbNode<T> {
         },
         width: width ?? thumbWidth,
         height: height ?? thumbHeight,
+        // contextmenu: (event) => {
+        //   event.preventDefault();
+        //   event.stopPropagation();
+        //   interactionStateMachine.reset();
+        //   return false;
+        // },
       },
       this.canvasElement
     ) as IThumbNodeComponent<T>;
@@ -137,6 +143,11 @@ export class ThumbNode<T> {
     (this.nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
       this.nodeComponent.id;
 
+    let clipPathMainElement = 'circle(50%)';
+    if (!connectionControllerType) {
+      clipPathMainElement = 'none';
+      isTransparent = true;
+    }
     this.circleElement = createElement(
       'div',
       {
@@ -155,7 +166,7 @@ export class ThumbNode<T> {
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
               : connectionControllerType !== undefined
               ? 'circle(25%)'
-              : 'circle(50%)',
+              : clipPathMainElement,
           'background-color': isTransparent
             ? 'transparent'
             : borderColor
@@ -185,6 +196,22 @@ export class ThumbNode<T> {
     if (disableInteraction) {
       additionalInnerCirlceClasses += ' pointer-events-none';
     }
+
+    let clipShapeNodeThumb = 'circle(50%)';
+    if (!connectionControllerType) {
+      isTransparent = false;
+      if (connectionType === ThumbConnectionType.start) {
+        clipShapeNodeThumb =
+          'polygon(100% 0%, 75% 50%, 100% 100%, 25% 100%, 50% 50%, 25% 0%)';
+      } else {
+        clipShapeNodeThumb =
+          'polygon(75% 0%, 100% 50%, 75% 100%, 0% 100%, 25% 50%, 0% 0%)';
+      }
+    }
+
+    // if (this.containerNode) {
+    //   isTransparent = true;
+    // }
     const innerCircle = createElement(
       'div',
       {
@@ -195,7 +222,7 @@ export class ThumbNode<T> {
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
-              : 'circle(50%)', //'polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)', //
+              : clipShapeNodeThumb,
           'background-color': isTransparent
             ? 'transparent'
             : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
@@ -221,7 +248,19 @@ export class ThumbNode<T> {
           this.containerNode ? 'top-[2px] left-[1.5px]' : ''
         }`;
         clipPath = 'circle(50% at 50% 50%)';
+        clipPath = 'none';
+        innerLabelClasses = innerLabelClasses.replace('bg-black', 'bg-white');
       }
+
+      // if (this.containerNode && connectionType === ThumbConnectionType.start) {
+      //   innerLabelClasses = innerLabelClasses.replace(
+      //     'bg-white',
+      //     'bg-transparent'
+      //   );
+      // }
+      // if (!connectionControllerType) {
+
+      // }
       createElement(
         'div', //'circle',
         {
@@ -418,17 +457,6 @@ export class ThumbNode<T> {
 
     console.log('THUMB initiateDraggingConnection', connectionThumb);
 
-    const connection =
-      connectionThumb?.parent as unknown as IConnectionNodeComponent<T>;
-
-    if (this.nodeComponent?.thumbConnectionType === 'start') {
-      connection.startNode = undefined;
-      connection.startNodeThumb = undefined;
-    } else {
-      connection.endNode = undefined;
-      connection.endNodeThumb = undefined;
-    }
-
     const rectCamera = transformCameraSpaceToWorldSpace(
       elementRect.x,
       elementRect.y
@@ -546,6 +574,18 @@ export class ThumbNode<T> {
             this.nodeComponent.thumbConnectionType === 'start'
               ? curve.connectionStartNodeThumb
               : curve.connectionEndNodeThumb;
+
+          // remove existing connection
+          const connection =
+            connectionThumb?.parent as unknown as IConnectionNodeComponent<T>;
+
+          if (this.nodeComponent?.thumbConnectionType === 'start') {
+            connection.startNode = undefined;
+            connection.startNodeThumb = undefined;
+          } else {
+            connection.endNode = undefined;
+            connection.endNodeThumb = undefined;
+          }
 
           if (connectionThumb) {
             this.initiateDraggingConnection(connectionThumb, x, y);
