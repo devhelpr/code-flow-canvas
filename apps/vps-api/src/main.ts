@@ -27,22 +27,31 @@ router.get('/test', async (ctx) => {
   ctx.response.type = 'text/json';
 });
 
-router.get('/python', (ctx, done) => {
+router.post('/python', async (ctx, done) => {
   const np = python.import('numpy');
   const plt = python.import('matplotlib.pyplot');
   const base64 = python.import('base64');
   const io = python.import('io');
   const fig = plt.figure();
-  const xpoints = np.array([1, 8]);
-  const ypoints = np.array([3, 10]);
+  const ax = fig.subplots();
+  const reqBody = JSON.parse(await ctx.request.body().value);
+  console.log('body', reqBody, Array.isArray(reqBody), typeof reqBody);
+  if (Array.isArray(reqBody)) {
+    const xpoints = np.array([...reqBody.map((x: any, index) => index + 1)]);
+    const ypoints = np.array([...reqBody.map((x: any) => x)]);
 
-  plt.plot(xpoints, ypoints);
-
+    ax.plot(xpoints, ypoints);
+  } else {
+    throw new Error('reqBody is not an array');
+  }
   const tmpfile = io.BytesIO();
   fig.savefig(tmpfile); // "format= 'png'")
   const encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8');
   ctx.response.body = { image: encoded.toString() };
   ctx.response.type = 'text/json';
+
+  // ctx.response.body = { image: '' };
+  // ctx.response.type = 'text/json';
 });
 
 const app = new Application();

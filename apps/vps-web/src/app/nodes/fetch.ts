@@ -37,7 +37,10 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       let result: any = false;
       try {
         const url = node?.nodeInfo?.formValues?.['url'] ?? '';
-        fetch(url)
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(input),
+        })
           .then((response) => {
             console.log('response', response);
             response.json().then((json) => {
@@ -62,6 +65,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             resolve({
               result,
               followPath: undefined,
+              stop: true,
             });
           });
 
@@ -74,6 +78,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         (errorNode.domElement as unknown as HTMLElement).textContent =
           error?.toString() ?? 'Error';
         console.log('expression error', error);
+        resolve({
+          result,
+          followPath: undefined,
+          stop: true,
+        });
       }
       // if (result) {
       //   currentValue = result;
@@ -161,8 +170,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
-            label: '#',
-            thumbConstraint: 'value',
+            label: ' ',
+            //thumbConstraint: 'value',
           },
         ],
         jsxComponentWrapper,

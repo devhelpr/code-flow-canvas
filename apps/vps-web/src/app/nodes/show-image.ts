@@ -27,7 +27,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     if (htmlNode) {
       htmlNode.domElement.textContent = '-';
       if (rect) {
-        rect.resize(120);
+        rect.resize(256);
       }
     }
     return;
@@ -43,7 +43,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         ).src = `data:image/png;base64,${input.image}`;
         setTimeout(() => {
           if (rect) {
-            rect.resize(120);
+            rect.resize(256);
           }
         }, 0);
       }
@@ -67,7 +67,8 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'img',
         {
-          class: 'w-full block',
+          class: 'w-full block min-h-[32px]',
+          src: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
@@ -75,7 +76,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded max-w-[120px]`,
+          class: `inner-node bg-slate-500 p-4 rounded max-w-[256px]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -84,7 +85,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       rect = canvasApp.createRect(
         x,
         y,
-        120,
+        256,
         100,
         undefined,
         [

@@ -111,7 +111,7 @@ export const getCanvasNode =
         const wrapper = createElement(
           'div',
           {
-            class: `bg-slate-400 rounded opacity-90`,
+            class: `bg-slate-400 rounded opacity-90 relative z-[1151]`,
           },
           undefined,
           htmlNode.domElement as unknown as HTMLElement
