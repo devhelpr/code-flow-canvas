@@ -44,6 +44,7 @@ import { getTest } from '../nodes/test';
 import { getStart } from '../nodes/start-node';
 import { getEnd } from '../nodes/end-node';
 import { getMultiTrigger } from '../nodes/multi-trigger';
+import { getShowImage } from '../nodes/show-image';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -82,6 +83,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('show-object', getShowObject);
   registerNodeFactory('show-input', getShowInput);
   registerNodeFactory('show-value', getShowValue);
+  registerNodeFactory('show-image', getShowImage);
   registerNodeFactory('sum', getSum);
   registerNodeFactory('state', getState);
   registerNodeFactory('state-transition', getStateTransition);

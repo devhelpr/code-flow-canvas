@@ -1,5 +1,7 @@
 import { Application, Router } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
 import { oakCors } from 'https://deno.land/x/cors/mod.ts';
+import { python } from 'https://deno.land/x/python/mod.ts';
+
 const router = new Router();
 
 router.get('/', (ctx) => {
@@ -24,6 +26,25 @@ router.get('/test', async (ctx) => {
   ctx.response.body = { message: output };
   ctx.response.type = 'text/json';
 });
+
+router.get('/python', (ctx, done) => {
+  const np = python.import('numpy');
+  const plt = python.import('matplotlib.pyplot');
+  const base64 = python.import('base64');
+  const io = python.import('io');
+  const fig = plt.figure();
+  const xpoints = np.array([1, 8]);
+  const ypoints = np.array([3, 10]);
+
+  plt.plot(xpoints, ypoints);
+
+  const tmpfile = io.BytesIO();
+  fig.savefig(tmpfile); // "format= 'png'")
+  const encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8');
+  ctx.response.body = { image: encoded.toString() };
+  ctx.response.type = 'text/json';
+});
+
 const app = new Application();
 
 app.addEventListener('listen', ({ hostname, port, secure }) => {

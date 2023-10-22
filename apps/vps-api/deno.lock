@@ -1,7 +1,8 @@
 {
   "version": "3",
   "redirects": {
-    "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts"
+    "https://deno.land/x/cors/mod.ts": "https://deno.land/x/cors@v1.2.2/mod.ts",
+    "https://deno.land/x/python/mod.ts": "https://deno.land/x/python@0.4.1/mod.ts"
   },
   "remote": {
     "https://deno.land/std@0.152.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
@@ -76,6 +77,11 @@
     "https://deno.land/x/oak@v11.1.0/structured_clone.ts": "ecf42598652b8082f37252cb873d6e257ad728e6fe73c6bd61f343d94501fbde",
     "https://deno.land/x/oak@v11.1.0/testing.ts": "7612656efd2975f7a2e6848609f5971922dbec46b76372c5c623202fdd7b9a85",
     "https://deno.land/x/oak@v11.1.0/util.ts": "3af8c4ed04c6cc2bedbe66e562a77fc59c72df31c55a902a63885861ca1639d6",
-    "https://deno.land/x/path_to_regexp@v6.2.1/index.ts": "894060567837bae8fc9c5cbd4d0a05e9024672083d5883b525c031eea940e556"
+    "https://deno.land/x/path_to_regexp@v6.2.1/index.ts": "894060567837bae8fc9c5cbd4d0a05e9024672083d5883b525c031eea940e556",
+    "https://deno.land/x/python@0.4.1/mod.ts": "36292020f3a7e8c9774d5de7fe32e261b3b5ddfbb6689a78bb499014d40baa82",
+    "https://deno.land/x/python@0.4.1/src/ffi.ts": "9e96f50eda08a2a37adb2b51cac9db3cf71dae5ec4e6e8045af39359eff1ea97",
+    "https://deno.land/x/python@0.4.1/src/python.ts": "6a0f13e73de5b48d8bc21f3095f4e72b7cf3ac4a8035010e2898fae3fac96549",
+    "https://deno.land/x/python@0.4.1/src/symbols.ts": "10947b73f1c79ffa87d55074f47b3952e5983a4af02e3c36c404567dfa7bd980",
+    "https://deno.land/x/python@0.4.1/src/util.ts": "8abfee48a2f3870401db000c66d3bb66bcc4e9a9ca947eafc0600822a5369aba"
   }
 }
