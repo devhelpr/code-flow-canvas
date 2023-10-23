@@ -17,7 +17,6 @@ import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { createASTNodeElement, createElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
-import { ThumbNode } from './thumb';
 import {
   calculateConnectorX,
   calculateConnectorY,
@@ -26,6 +25,7 @@ import {
 import { setPosition } from './utils/set-position';
 import { NodeType } from '../types/node-type';
 import { thumbHeight, thumbWidth } from '../constants/measures';
+import { ThumbNodeConnector } from './thumb-node-connector';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -204,7 +204,7 @@ export class Rect<T> {
           thumb.thumbIndex ?? 0
         );
 
-        const thumbNode = new ThumbNode<T>(
+        const thumbNode = new ThumbNodeConnector<T>(
           this.nodeComponent.domElement,
           canvas,
           this.interactionStateMachine,

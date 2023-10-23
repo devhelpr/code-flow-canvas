@@ -18,7 +18,8 @@ import {
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
-import { ThumbNode } from './thumb';
+import { ThumbConnectionController } from './thumb-connection-controller';
+
 import {
   calculateQuadraticBezierLineIntersections,
   splitQuadraticBezierCurve,
@@ -112,7 +113,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         );
       }
     }
-    const startPointNode = new ThumbNode<T>(
+    const startPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
       canvas,
       interactionStateMachine,
@@ -162,7 +163,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     };
     this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
 
-    const endPointNode = new ThumbNode<T>(
+    const endPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
       canvas,
       interactionStateMachine,

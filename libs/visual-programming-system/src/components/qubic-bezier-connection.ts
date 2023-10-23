@@ -13,7 +13,7 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
 import { Connection } from './connection';
-import { ThumbNode } from './thumb';
+import { ThumbConnectionController } from './thumb-connection-controller';
 
 export class CubicBezierConnection<T> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
@@ -99,7 +99,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
         );
       }
     }
-    const startPointNode = new ThumbNode<T>(
+    const startPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
       canvas,
       interactionStateMachine,
@@ -140,7 +140,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
 
     this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
 
-    const endPointNode = new ThumbNode<T>(
+    const endPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
       canvas,
       interactionStateMachine,

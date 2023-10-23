@@ -18,7 +18,7 @@ import {
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
-import { ThumbNode } from './thumb';
+import { ThumbConnectionController } from './thumb-connection-controller';
 import { onQuadraticCalculateControlPoints } from './utils/calculate-quadratic-control-points';
 import { pointOnRect } from './utils/intersect-line';
 import { intersectionCircleLine } from './utils/vector-math';
@@ -104,7 +104,7 @@ export class LineConnection<T> extends Connection<T> {
         );
       }
     }
-    const startPointNode = new ThumbNode<T>(
+    const startPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
       canvas,
       interactionStateMachine,
@@ -154,7 +154,7 @@ export class LineConnection<T> extends Connection<T> {
     };
     this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
 
-    const endPointNode = new ThumbNode<T>(
+    const endPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
       canvas,
       interactionStateMachine,
