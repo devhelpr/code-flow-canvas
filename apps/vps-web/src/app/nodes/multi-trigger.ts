@@ -44,7 +44,7 @@ export const getMultiTrigger: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: 'icon icon-flash_on text-white text-[32px]',
+          class: 'icon icon-call_split text-white text-[32px] rotate-90',
         },
         undefined,
         ''

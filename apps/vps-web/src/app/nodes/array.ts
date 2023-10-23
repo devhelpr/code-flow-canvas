@@ -196,6 +196,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
               if (temp !== undefined && temp2 !== undefined) {
                 inputValues[index1] = temp2;
                 inputValues[index2] = temp;
+                canvasAppInstance?.setVariable(variableName, inputValues);
               }
               setTimeout(() => {
                 setValue(inputValues);
@@ -271,6 +272,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         hasInitialValue = false;
       }
       setValue(inputValues);
+
       const variableName = node.nodeInfo?.formValues?.['variableName'] ?? '';
       if (variableName) {
         canvasAppInstance.setVariable(variableName, inputValues);
@@ -409,6 +411,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
             label: '[]',
             thumbConstraint: 'array',
             name: 'output',
+            color: 'white',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,

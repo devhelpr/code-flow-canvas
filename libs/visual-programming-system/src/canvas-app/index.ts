@@ -39,6 +39,10 @@ export const createCanvasApp = <T>(
       setData: (data: any) => void;
     }
   > = {};
+  const variableObservers: Map<
+    string,
+    Map<string, (data: any) => void>
+  > = new Map();
   let scaleCamera = 1;
   let xCamera = 0;
   let yCamera = 0;
@@ -887,6 +891,13 @@ export const createCanvasApp = <T>(
     setVariable: (variableName: string, data: any) => {
       if (variableName && variables[variableName]) {
         variables[variableName].setData(data);
+
+        const map = variableObservers.get(`${variableName}`);
+        if (map) {
+          map.forEach((observer) => {
+            observer(data);
+          });
+        }
       }
     },
     getVariables: () => {
@@ -900,6 +911,24 @@ export const createCanvasApp = <T>(
     },
     getVariableNames: () => {
       return Object.keys(variables);
+    },
+    observeVariable: (
+      nodeId: string,
+      variableName: string,
+      updated: (data: any) => void
+    ) => {
+      let map = variableObservers.get(`${variableName}`);
+      if (!map) {
+        map = new Map();
+        variableObservers.set(`${variableName}`, map);
+      }
+      map.set(`${nodeId}`, updated);
+    },
+    removeObserveVariable: (nodeId: string, variableName: string) => {
+      const map = variableObservers.get(`${variableName}`);
+      if (map) {
+        map.delete(`${nodeId}`);
+      }
     },
   };
 };

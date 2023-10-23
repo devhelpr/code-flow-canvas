@@ -45,6 +45,7 @@ import { getStart } from '../nodes/start-node';
 import { getEnd } from '../nodes/end-node';
 import { getMultiTrigger } from '../nodes/multi-trigger';
 import { getShowImage } from '../nodes/show-image';
+import { observeVariable } from '../nodes/observe-variable';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -107,6 +108,7 @@ export const setupCanvasNodeTaskRegistry = (
 
   registerNodeFactory('call-function', getCallFunction(animatePath));
   registerNodeFactory('function', getFunction(animatePath));
+  registerNodeFactory('observe-variable', observeVariable(animatePath));
 
   registerNodeFactory(
     'sequential',
