@@ -44,11 +44,17 @@
 .selected.connection + .thumb + .thumb {
   z-index: 3;
 }
+.thumb {
+  cursor: default;
+}
 
-/* .connection + .thumb:hover,
-.connection + .thumb + .thumb:hover {
-  z-index:4;
-} */
+.thumb.cursor-pointer {
+  cursor: pointer;
+}
+
+.thumb.cursor-not-allowed {
+  cursor: not-allowed;
+}
 
 .connection-controller.thumb div:hover {
   @apply !bg-white;
@@ -61,14 +67,7 @@
 .node-connector.thumb.hover div {
   @apply !bg-white;
 }
-/* .connection + .thumb + .thumb div:hover {
-  @apply !bg-white;
-  z-index: 4;
-}
-.connection:hover + .thumb + .thumb div,
-.selected.connection + .thumb + .thumb div {
-  z-index: 4;
-} */
+
 
 .connection-controller.thumb.dragging div {
   @apply !bg-white;

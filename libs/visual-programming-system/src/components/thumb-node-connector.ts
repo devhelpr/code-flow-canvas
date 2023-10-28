@@ -8,7 +8,10 @@ import {
   thumbTextBaseSizeClass,
   paddingRect,
 } from '../constants/measures';
-import { InteractionStateMachine } from '../interaction-state-machine';
+import {
+  InteractionState,
+  InteractionStateMachine,
+} from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
@@ -300,6 +303,61 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     // - when the below log appears...
     // - start dragging and chance is big that connection is being dragged away
     // ... which is NOT allowed
+
+    // TODO : check if this node has a connection .. and if maxConnections is reached ...
+    //   ... then dont allow to connect from this node
+    //   ... but only do this when NOT while dragging a connection
+
+    // TODO : check if hovering input thumb node-connector.. then dont change the below...
+    //   ... but only do this when NOT while dragging a connection
+    const state = this.interactionStateMachine.getCurrentInteractionState();
+
+    if (state.state === InteractionState.Idle) {
+      if (
+        this.nodeComponent.thumbConnectionType === ThumbConnectionType.start
+      ) {
+        const node = this.nodeComponent.thumbLinkedToNode;
+        if (node) {
+          const connections = node.connections.filter((c) => {
+            return c.startNodeThumb?.id === this.nodeComponent?.id;
+          });
+
+          const maxConnections = this.nodeComponent.maxConnections ?? 1;
+          if (connections && connections.length > 0) {
+            if (maxConnections !== -1) {
+              if (connections.length >= maxConnections) {
+                (
+                  this.nodeComponent.domElement as unknown as SVGElement
+                ).classList.remove('cursor-pointer');
+                console.log('start thumb has max connections reached');
+                return;
+              }
+            }
+          }
+        }
+      } else if (
+        this.nodeComponent.thumbConnectionType === ThumbConnectionType.end
+      ) {
+        const node = this.nodeComponent.thumbLinkedToNode;
+        if (node) {
+          const connections = node.connections.filter((c) => {
+            return c.endNodeThumb?.id === this.nodeComponent?.id;
+          });
+          if (connections && connections.length > 0) {
+            const maxConnections = this.nodeComponent.maxConnections ?? 1;
+            if (maxConnections !== -1) {
+              if (connections.length >= maxConnections) {
+                (
+                  this.nodeComponent.domElement as unknown as SVGElement
+                ).classList.remove('cursor-pointer');
+                console.log('end thumb has max connections reached');
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       'cursor-pointer'

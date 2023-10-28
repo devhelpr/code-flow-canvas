@@ -99,7 +99,7 @@ export class ThumbNode<T> {
       'div',
       {
         // will-change-transform
-        class: `thumb absolute cursor-pointer transition-none pointer-events-none ${
+        class: `thumb absolute transition-none pointer-events-none ${
           additionalClasses || ''
         }`,
         style: {
