@@ -233,58 +233,9 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       this.nodeComponent?.isConnectPoint
     );
 
-    // TODO: Fix this scenaerio:
-    // - hover over rect-thumb..
-    // - when the below log appears...
-    // - start dragging and chance is big that connection is being dragged away
-    // ... which is NOT allowed
-
-    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-pointer'
-    );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
       'cursor-pointer'
     );
-    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-not-allowed'
-    );
-    if (this.nodeComponent.isConnectPoint) {
-      let canReceiveDrop = false;
-      if (this.nodeComponent.onCanReceiveDroppedComponent) {
-        const state = this.interactionStateMachine.getCurrentInteractionState();
-        if (state && state.element) {
-          canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
-            this.nodeComponent,
-            state.element as unknown as IConnectionNodeComponent<T>,
-            this.nodeComponent
-          );
-
-          if (!canReceiveDrop) {
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).style.filter = 'none';
-
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.remove('cursor-pointer');
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.add('cursor-not-allowed');
-            console.log(
-              'svg cant register drop target for current dragging element'
-            );
-            return;
-          } else {
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).style.filter = 'invert(1)';
-          }
-        }
-      }
-
-      console.log('svg register drop target', this.nodeComponent.id);
-      this.interactionStateMachine.setCurrentDropTarget(this.nodeComponent);
-    }
   };
 
   onPointerLeave = (_e: PointerEvent) => {
