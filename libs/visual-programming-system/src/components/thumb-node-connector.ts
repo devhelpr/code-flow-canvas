@@ -149,6 +149,10 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       additionalInnerCirlceClasses += ' pointer-events-none';
     }
 
+    (
+      this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
+    ).classList.add('node-connector');
+
     const clipShapeNodeThumb = 'circle(50%)';
 
     isTransparent = false;
@@ -303,6 +307,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
       'cursor-pointer'
     );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
+      'hover'
+    );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       'cursor-not-allowed'
     );
@@ -328,11 +335,18 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
             (
               this.nodeComponent.domElement as unknown as SVGElement
             ).classList.add('cursor-not-allowed');
+            (
+              this.nodeComponent.domElement as unknown as SVGElement
+            ).classList.remove('hover');
+
             console.log(
               'svg cant register drop target for current dragging element'
             );
             return;
           } else {
+            (
+              this.nodeComponent.domElement as unknown as SVGElement
+            ).classList.add('hover');
             (
               this.nodeComponent.domElement as unknown as SVGElement
             ).style.filter = 'invert(1)';
@@ -365,6 +379,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
         'cursor-pointer'
+      );
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+        'hover'
       );
     }
     if (this.nodeComponent && this.nodeComponent.getThumbCircleElement) {

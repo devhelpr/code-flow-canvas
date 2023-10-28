@@ -44,19 +44,35 @@
 .selected.connection + .thumb + .thumb {
   z-index: 3;
 }
-.connection + .thumb:hover div,
-.connection:hover + .thumb div,
-.selected.connection + .thumb div {
-  @apply !bg-white;
-}
 
-.connection + .thumb + .thumb:hover div,
-.connection:hover + .thumb + .thumb div,
-.selected.connection + .thumb + .thumb div {
+/* .connection + .thumb:hover,
+.connection + .thumb + .thumb:hover {
+  z-index:4;
+} */
+
+.connection-controller.thumb div:hover {
   @apply !bg-white;
  
 }
+.connection-controller.thumb,
+.connection-controller.thumb div {
+  z-index: 4;
+}
+.node-connector.thumb.hover div {
+  @apply !bg-white;
+}
+/* .connection + .thumb + .thumb div:hover {
+  @apply !bg-white;
+  z-index: 4;
+}
+.connection:hover + .thumb + .thumb div,
+.selected.connection + .thumb + .thumb div {
+  z-index: 4;
+} */
 
+.connection-controller.thumb.dragging div {
+  @apply !bg-white;
+}
 
 /* source : https://cssloaders.github.io/ */
 .loader {

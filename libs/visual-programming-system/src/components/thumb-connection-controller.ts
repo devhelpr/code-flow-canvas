@@ -112,6 +112,9 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     (
       this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
     ).style.clipPath = 'circle(25%)';
+    (
+      this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
+    ).classList.add('connection-controller');
 
     const clipPathMainElement = 'circle(25%)';
     const size = (radius ?? thumbRadius) * 2;
