@@ -48,6 +48,10 @@
   cursor: default;
 }
 
+.rect-thumb-node .thumb {
+  display: none;
+}
+
 .thumb.cursor-pointer {
   cursor: pointer;
 }
@@ -155,14 +159,24 @@
 	/*pointer-events: none;*/
 }
 
+.rect-thumb-node {
+  cursor: pointer;
+	z-index: 5;
+}
 .rect-node {
 	cursor: pointer;
 	z-index: 3;
 }
 
+.active-layer2 .rect-thumb-node {
+	opacity: 0.25;
+	cursor: default;
+	z-index: 4;
+
+}
+
 .active-layer2 .rect-node {
 	opacity: 0.25;
-	/*pointer-events: none;*/
 	cursor: default;
 	z-index: 2;
 }

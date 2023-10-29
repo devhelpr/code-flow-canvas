@@ -65,7 +65,8 @@ export class RectThumb<T> extends Rect<T> {
       canvasUpdated,
       id,
       containerNode,
-      isStaticPosition
+      isStaticPosition,
+      'rect-thumb-node'
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');

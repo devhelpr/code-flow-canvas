@@ -74,7 +74,8 @@ export class Rect<T> {
     canvasUpdated?: () => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
-    isStaticPosition?: boolean
+    isStaticPosition?: boolean,
+    parentNodeClassName?: string
   ) {
     this.canvas = canvas;
     this.canvasElements = elements;
@@ -109,7 +110,8 @@ export class Rect<T> {
       hasStaticWidthHeight,
       disableInteraction,
       canvasUpdated,
-      id
+      id,
+      parentNodeClassName ?? 'rect-node'
     );
     this.nodeComponent = this.rectInfo.nodeComponent;
     this.nodeComponent.isStaticPosition = isStaticPosition ?? false;
@@ -636,7 +638,8 @@ export class Rect<T> {
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     canvasUpdated?: () => void,
-    id?: string
+    id?: string,
+    parentNodeClassName?: string
   ) => {
     /*
       draw svg path based on bbox of the hidden path
@@ -665,7 +668,9 @@ export class Rect<T> {
     const rectContainerElement = createElement(
       'div',
       {
-        class: 'rect-node absolute top-0 left-0 select-none ', //will-change-transform
+        class: `${
+          parentNodeClassName ?? 'rect-node'
+        } absolute top-0 left-0 select-none `, //will-change-transform
       },
       canvasElement,
       undefined,
