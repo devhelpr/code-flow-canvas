@@ -40,7 +40,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       if (typeof input === 'object') {
         (
           htmlNode.domElement as HTMLImageElement
-        ).src = `data:image/png;base64,${input.image}`;
+        ).src = `data:image/png;base64,${(input as any).image}`;
         setTimeout(() => {
           if (rect) {
             rect.resize(256);
