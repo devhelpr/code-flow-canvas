@@ -198,11 +198,12 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
             this.props.canvasUpdated
           );
           if (
+            node.nodeInfo.canvasAppInstance &&
             selectedNodeTask.isContainer &&
             (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
           ) {
             nodeTask.createVisualNode(
-              node.nodeInfo.canvasAppInstance!,
+              node.nodeInfo.canvasAppInstance,
               50,
               50,
               undefined,
