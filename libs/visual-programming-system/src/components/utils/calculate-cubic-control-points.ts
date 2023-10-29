@@ -14,7 +14,31 @@ import {
 } from './calculate-connector-thumbs';
 import { calculate2DDistance } from './distance';
 
-const minDistance = 11;
+const interpolate = (
+  lowValue: number,
+  highValue: number,
+  minT: number,
+  maxT: number,
+  t: number,
+  tag?: string
+) => {
+  if (t > maxT) {
+    return highValue;
+  }
+
+  if (t < minT) {
+    return lowValue;
+  }
+
+  const result =
+    lowValue + ((highValue - lowValue) * (t - minT)) / (maxT - minT);
+
+  return result;
+};
+
+const minDistance = 75;
+const xInterpolateDistance = 25;
+
 const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   const factor = 0.15;
   const thumbFactor = 1;
@@ -161,10 +185,13 @@ export const onCubicCalculateControlPoints = <T>(
       connectedNodeX,
       connectedNodeY
     );
+
+    const yDistance = Math.abs(connectedNodeY - y);
+    const yHelper = interpolate(0, 1, 0, 20, yDistance) + 0.5;
     let cx =
       x +
-      (controlPointDistance ?? distance ?? 0) +
-      controlPointCurvingDistance * thumbFactor;
+      (controlPointDistance ?? distance ?? 0) * yHelper +
+      controlPointCurvingDistance * thumbFactor * yHelper;
     let cy = y;
     if (connectedNode && connectedNode.x < rectNode.x) {
       cx += 250;
@@ -176,8 +203,20 @@ export const onCubicCalculateControlPoints = <T>(
     }
     if (connectedNode && x < connectedNodeX) {
       const centerX = x + (connectedNodeX - x) / 2;
-      if (cx > centerX && distance > minDistance) {
-        cx = centerX;
+      const xDistance = Math.abs(connectedNodeX - x);
+      if (cx > centerX && xDistance > minDistance) {
+        if (xDistance < minDistance + xInterpolateDistance) {
+          cx = interpolate(
+            cx,
+            centerX,
+            minDistance,
+            minDistance + xInterpolateDistance,
+            xDistance,
+            'start'
+          );
+        } else {
+          cx = centerX;
+        }
       }
     }
     return {
@@ -269,10 +308,14 @@ export const onCubicCalculateControlPoints = <T>(
       connectedNodeX,
       connectedNodeY
     );
+
+    const yDistance = Math.abs(connectedNodeY - y);
+    const yHelper = interpolate(0, 1, 0, 20, yDistance) + 0.5;
+
     let cx =
       x -
-      (controlPointDistance ?? distance ?? 0) -
-      controlPointCurvingDistance * thumbFactor;
+      (controlPointDistance ?? distance ?? 0) * yHelper -
+      controlPointCurvingDistance * thumbFactor * yHelper;
 
     let cy = y;
     if (connectedNode && connectedNodeX > x) {
@@ -285,8 +328,20 @@ export const onCubicCalculateControlPoints = <T>(
 
     if (connectedNode && x > connectedNodeX) {
       const centerX = x - (x - connectedNodeX) / 2;
-      if (cx < centerX && distance > minDistance) {
-        cx = centerX;
+      const xDistance = Math.abs(connectedNodeX - x);
+      if (cx < centerX && xDistance > minDistance) {
+        if (xDistance < minDistance + xInterpolateDistance) {
+          cx = interpolate(
+            cx,
+            centerX,
+            minDistance,
+            minDistance + xInterpolateDistance,
+            xDistance,
+            'end'
+          );
+        } else {
+          cx = centerX;
+        }
       }
     }
     return {
