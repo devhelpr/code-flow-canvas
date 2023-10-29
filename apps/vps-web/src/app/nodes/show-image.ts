@@ -67,7 +67,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'img',
         {
-          class: 'w-full block min-h-[32px]',
+          class: 'w-full block min-h-[32px] pointer-events-none',
           src: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
         },
         undefined
