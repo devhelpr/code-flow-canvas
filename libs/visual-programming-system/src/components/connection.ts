@@ -18,9 +18,9 @@ import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { pointerDown } from './events/pointer-events';
 import {
-  onCalculateControlPoints as onCalculateCubicBezierControlPoints,
+  onCubicCalculateControlPoints,
   onGetConnectionToThumbOffset,
-} from './utils/calculate-control-points';
+} from './utils/calculate-cubic-control-points';
 
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
@@ -47,7 +47,7 @@ export class Connection<T> {
     endY: 0,
   };
 
-  onCalculateControlPoints = onCalculateCubicBezierControlPoints;
+  onCalculateControlPoints = onCubicCalculateControlPoints;
   pathElement: IElementNode<T> | undefined = undefined;
   pathTransparentElement: IElementNode<T> | undefined = undefined;
   svgParent: IElementNode<T> | undefined = undefined;
@@ -72,7 +72,7 @@ export class Connection<T> {
     controlPoint2Y: number,
     pathHiddenElement: IElementNode<T>,
     isDashed = false,
-    onCalculateControlPoints = onCalculateCubicBezierControlPoints,
+    onCalculateControlPoints = onCubicCalculateControlPoints,
     canvasUpdated?: () => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>

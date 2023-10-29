@@ -10,7 +10,7 @@ export * from './canvas-app';
 export * from './utils/bezier';
 export * from './spatial-partitioning';
 export * from './constants/measures';
-export * from './components/utils/calculate-control-points';
+export * from './components/utils/calculate-cubic-control-points';
 export * from './utils/thumbs';
 export { getLinePoints } from './components/line-connection';
 export { Rect } from './components/rect';
