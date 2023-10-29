@@ -14,6 +14,7 @@ import {
 } from './calculate-connector-thumbs';
 import { calculate2DDistance } from './distance';
 
+const minDistance = 11;
 const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   const factor = 0.15;
   const thumbFactor = 1;
@@ -137,12 +138,14 @@ export const onCubicCalculateControlPoints = <T>(
         connectedNodeX,
         connectedNodeY
       );
-      const cx =
+      let cx =
         x +
         (controlPointDistance ?? distance ?? 0) +
         controlPointCurvingDistance * thumbFactor;
       const cy = y;
-
+      if (cx > connectedNodeX) {
+        cx = connectedNodeX;
+      }
       return {
         x: x,
         y: y,
@@ -169,6 +172,12 @@ export const onCubicCalculateControlPoints = <T>(
         cy += 250;
       } else {
         cy -= 250;
+      }
+    }
+    if (connectedNode && x < connectedNodeX) {
+      const centerX = x + (connectedNodeX - x) / 2;
+      if (cx > centerX && distance > minDistance) {
+        cx = centerX;
       }
     }
     return {
@@ -244,6 +253,7 @@ export const onCubicCalculateControlPoints = <T>(
           cy -= 250;
         }
       }
+
       return {
         x: x,
         y: y,
@@ -259,7 +269,7 @@ export const onCubicCalculateControlPoints = <T>(
       connectedNodeX,
       connectedNodeY
     );
-    const cx =
+    let cx =
       x -
       (controlPointDistance ?? distance ?? 0) -
       controlPointCurvingDistance * thumbFactor;
@@ -270,6 +280,13 @@ export const onCubicCalculateControlPoints = <T>(
         cy += 500;
       } else {
         cy -= 500;
+      }
+    }
+
+    if (connectedNode && x > connectedNodeX) {
+      const centerX = x - (x - connectedNodeX) / 2;
+      if (cx < centerX && distance > minDistance) {
+        cx = centerX;
       }
     }
     return {
