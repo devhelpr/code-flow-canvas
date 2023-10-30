@@ -13,6 +13,10 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import {
+  createElementFromTemplate,
+  createTemplate,
+} from '@devhelpr/dom-components';
 
 export const getMultiTrigger: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
@@ -41,6 +45,13 @@ export const getMultiTrigger: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      const template = createTemplate(
+        `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <title>call_split</title>
+        <path stroke="currentColor" fill="currentColor" d="M9.984 3.984l-2.297 2.297 5.297 5.297v8.438h-1.969v-7.594l-4.734-4.734-2.297 2.297v-6h6zM14.016 3.984h6v6l-2.297-2.297-2.906 2.906-1.406-1.406 2.906-2.906z"></path>
+        </svg>`
+      );
+      const svgElement = createElementFromTemplate(template);
       htmlNode = createElement(
         'div',
         {
@@ -53,13 +64,13 @@ export const getMultiTrigger: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 flex items-center justify-center rounded-lg w-[100px] h-[50px] overflow-hidden text-center`,
+          class: `inner-node bg-transparent rotate-90 scale-[1.5] text-white flex items-center justify-center rounded-lg w-[100px] h-[50px] overflow-hidden text-center`,
           style: {
             // 'clip-path': 'circle(50%)',
           },
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        svgElement //htmlNode.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(
