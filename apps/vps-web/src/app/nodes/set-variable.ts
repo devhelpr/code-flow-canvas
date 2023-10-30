@@ -99,13 +99,30 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded`,
+          class: `relative`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
 
+      const titleBar = createElement(
+        'div',
+        {
+          class: `flex items-center bg-slate-600 text-white p-1 rounded-t pointer-events-none`,
+        },
+        componentWrapper.domElement,
+        'Set variable'
+      ) as unknown as INodeComponent<NodeInfo>;
+
+      const formWrapper = createElement(
+        'div',
+        {
+          class: `inner-node bg-slate-500 p-4 pt-0 rounded-b`,
+        },
+        componentWrapper.domElement
+      ) as unknown as INodeComponent<NodeInfo>;
+
       FormComponent({
-        rootElement: componentWrapper.domElement as HTMLElement,
+        rootElement: formWrapper.domElement as HTMLElement,
         id: id ?? '',
         formElements,
         hasSubmitButton: false,
@@ -138,7 +155,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         ],
         componentWrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: ``,
         },
         undefined,
         undefined,
@@ -157,6 +174,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
+
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
