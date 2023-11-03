@@ -46,6 +46,7 @@ import { getEnd } from '../nodes/end-node';
 import { getMultiTrigger } from '../nodes/multi-trigger';
 import { getShowImage } from '../nodes/show-image';
 import { observeVariable } from '../nodes/observe-variable';
+import { getSummingJunction } from '../nodes/summing-junction';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -66,7 +67,11 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
 
-  registerNodeFactory('multi-trigger', getMultiTrigger);
+  registerNodeFactory(
+    'multi-trigger',
+    getMultiTrigger(animatePath, animatePathFromThumb)
+  );
+  registerNodeFactory('summing-junction', getSummingJunction);
 
   registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
   registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));
