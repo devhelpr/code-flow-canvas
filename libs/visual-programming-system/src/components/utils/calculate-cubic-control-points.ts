@@ -193,7 +193,14 @@ export const onCubicCalculateControlPoints = <T>(
       (controlPointDistance ?? distance ?? 0) * yHelper +
       controlPointCurvingDistance * thumbFactor * yHelper;
     let cy = y;
-    if (connectedNode && connectedNode.x < rectNode.x) {
+
+    const isConnectingToRectThumb =
+      connectedNodeThumb?.thumbType === ThumbType.Center;
+    if (
+      !isConnectingToRectThumb &&
+      connectedNode &&
+      connectedNode.x < rectNode.x
+    ) {
       cx += 250;
       if (connectedNode.y < rectNode.y) {
         cy += 250;
@@ -201,7 +208,7 @@ export const onCubicCalculateControlPoints = <T>(
         cy -= 250;
       }
     }
-    if (connectedNode && x < connectedNodeX) {
+    if (!isConnectingToRectThumb && connectedNode && x < connectedNodeX) {
       const centerX = x + (connectedNodeX - x) / 2;
       const xDistance = Math.abs(connectedNodeX - x);
       if (cx > centerX && xDistance > minDistance) {
