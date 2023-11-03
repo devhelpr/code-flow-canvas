@@ -184,7 +184,12 @@ export class RectThumb<T> extends Rect<T> {
           curve.nodeComponent.update();
         }
 
-        this.initiateDraggingConnection(curve.endPointElement, xorg, yorg);
+        this.initiateDraggingConnection(
+          curve.endPointElement,
+          xorg,
+          yorg,
+          curve.nodeComponent
+        );
       }
 
       return true;
@@ -195,7 +200,8 @@ export class RectThumb<T> extends Rect<T> {
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
     x: number,
-    y: number
+    y: number,
+    connection: IConnectionNodeComponent<T>
   ) => {
     if (!this.canvas) {
       return;
@@ -252,6 +258,12 @@ export class RectThumb<T> extends Rect<T> {
 
       circleDomElement.classList.remove('pointer-events-auto');
       circleDomElement.classList.add('pointer-events-none');
+
+      const domNodeElement = connection?.connectionEndNodeThumb
+        ?.domElement as unknown as HTMLElement;
+      domNodeElement.classList.remove('pointer-events-auto');
+      domNodeElement.classList.add('pointer-events-none');
+      domNodeElement.classList.add('dragging');
     }
   };
 
