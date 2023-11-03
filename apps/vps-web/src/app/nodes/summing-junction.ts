@@ -59,7 +59,7 @@ export const getSummingJunction: NodeTaskFactory<NodeInfo> = (
           class: `inner-node bg-white 
           text-black flex items-center justify-center 
           rounded-circle
-          w-[75px] h-[75px] 
+          w-[50px] h-[50px] 
           overflow-hidden text-center`,
           style: {
             'clip-path': 'circle(50%)',
@@ -72,8 +72,8 @@ export const getSummingJunction: NodeTaskFactory<NodeInfo> = (
       rect = canvasApp.createRectThumb(
         x,
         y,
-        75,
-        75,
+        50,
+        50,
         undefined,
         [
           {

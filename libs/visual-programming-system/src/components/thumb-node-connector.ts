@@ -113,7 +113,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         }        
         origin-center`,
         style: {
-          width: `${(radius ?? thumbRadius) * 2}px`,
+          width: `${radius ?? thumbRadius * 2}px`,
           height: `${(radius ?? thumbRadius) * 2}px`,
           transform: `translate(${
             -(radius ?? thumbRadius) + (width ?? thumbWidth) / 2
@@ -121,7 +121,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           'clip-path':
             thumbShape === 'diamond'
               ? 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%'
-              : 'circle(50%)',
+              : 'none', //'circle(50%)',
           'background-color': isTransparent
             ? 'transparent'
             : borderColor
@@ -156,7 +156,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
     ).classList.add('node-connector');
 
-    const clipShapeNodeThumb = 'circle(50%)';
+    const clipShapeNodeThumb = 'none'; //,'circle(50%)';
 
     isTransparent = false;
     // if (connectionType === ThumbConnectionType.start) {
@@ -170,12 +170,17 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     // if (this.containerNode) {
     //   isTransparent = true;
     // }
+
+    const leftPosition =
+      connectionType === ThumbConnectionType.start
+        ? 'left-[9px]'
+        : 'left-[9px]';
     const innerCircle = createElement(
       'div',
       {
-        class: `absolute top-[3px] left-[3px] ${additionalInnerCirlceClasses}`, //top-[3px] left-[3px
+        class: `absolute rounded top-[3px] ${leftPosition} ${additionalInnerCirlceClasses}`, //top-[3px] left-[3px
         style: {
-          width: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
+          width: `${(radius ?? thumbRadius) - 3}px`, // -6
           height: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
           'clip-path':
             thumbShape === 'diamond'
@@ -199,15 +204,15 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         (connectionType === ThumbConnectionType.end && !this.containerNode) ||
         (this.containerNode && connectionType === ThumbConnectionType.start)
       ) {
-        innerLabelClasses = `pointer-events-none relative text-[14px] flex items-center justify-center
+        innerLabelClasses = `pointer-events-none relative text-[8px] flex items-center justify-center
          ${thumbTextBaseSizeClass}
         text-center
-        text-white bg-black h-[20px] w-[20px] pb-[1.5px] ${
-          this.containerNode ? 'top-[2px] left-[1.5px]' : ''
+        text-black h-[20px] w-[12px] pb-[1.5px] ${
+          this.containerNode ? 'top-[2px]' : ''
         }`;
-        clipPath = 'circle(50% at 50% 50%)';
+        //clipPath = 'circle(50% at 50% 50%)';
         clipPath = 'none';
-        innerLabelClasses = innerLabelClasses.replace('bg-black', 'bg-white');
+        //innerLabelClasses = innerLabelClasses.replace('bg-black', 'bg-white');
       }
 
       // if (this.containerNode && connectionType === ThumbConnectionType.start) {
@@ -405,9 +410,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
             (
               this.nodeComponent.domElement as unknown as SVGElement
             ).classList.add('hover');
-            (
-              this.nodeComponent.domElement as unknown as SVGElement
-            ).style.filter = 'invert(1)';
+            // (
+            //   this.nodeComponent.domElement as unknown as SVGElement
+            // ).style.filter = 'invert(1)';
           }
         }
       }

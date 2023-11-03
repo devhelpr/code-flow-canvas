@@ -68,8 +68,8 @@
 .connection-controller.thumb div {
   z-index: 4;
 }
-.node-connector.thumb.hover div {
-  @apply !bg-white;
+.node-connector.thumb.hover > div > div {
+  @apply !bg-blue-500;
 }
 
 
