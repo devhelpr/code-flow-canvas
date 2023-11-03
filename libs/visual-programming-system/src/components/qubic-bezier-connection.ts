@@ -241,15 +241,56 @@ export class CubicBezierConnection<T> extends Connection<T> {
     endOffsetY: number
   ): void {
     if (this.pathHiddenElement) {
-      (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
-        'd',
-        `M${this.points.beginX + startOffsetX} ${
-          this.points.beginY + startOffsetY
-        } C${this.points.cx1} ${this.points.cy1} ${this.points.cx2} ${
-          this.points.cy2
-        }  ${this.points.endX + endOffsetX} ${this.points.endY + endOffsetY}`
-      );
+      if (this.points.beginX > this.points.endX) {
+        const bottomY = this.getLowestYPosition() + 20;
+        (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+          'd',
+          `
+          M${this.points.beginX + startOffsetX} ${
+            this.points.beginY + startOffsetY
+          }
+
+          M${this.points.beginX + startOffsetX + 20} ${
+            this.points.beginY + startOffsetY
+          }
+          
+          L${this.points.beginX + startOffsetX + 20} ${bottomY + startOffsetY} 
+
+          L${this.points.endX + endOffsetX - 20} ${bottomY + startOffsetY}
+
+          L${this.points.endX + endOffsetX - 20} 
+          ${this.points.endY + endOffsetY}
+
+          L${this.points.endX + endOffsetX} 
+          ${this.points.endY + endOffsetY}`
+        );
+      } else {
+        (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+          'd',
+          `M${this.points.beginX + startOffsetX} ${
+            this.points.beginY + startOffsetY
+          } C${this.points.cx1} ${this.points.cy1} ${this.points.cx2} ${
+            this.points.cy2
+          }  ${this.points.endX + endOffsetX} ${this.points.endY + endOffsetY}`
+        );
+      }
     }
+  }
+
+  getLowestYPosition() {
+    let y = 0;
+    if (this.nodeComponent?.startNode) {
+      y = (this.nodeComponent?.startNode.height ?? 0) + this.points.beginY;
+    }
+
+    if (this.nodeComponent?.endNode) {
+      const endY = (this.nodeComponent?.endNode.height ?? 0) + this.points.endY;
+      if (endY > y) {
+        y = endY;
+      }
+    }
+
+    return y;
   }
 
   protected override setPath(
@@ -259,15 +300,96 @@ export class CubicBezierConnection<T> extends Connection<T> {
     endOffsetX: number,
     endOffsetY: number
   ): void {
-    const path = `M${this.points.beginX - bbox.x + startOffsetX} ${
+    if (!this.nodeComponent) {
+      return;
+    }
+    let path = `
+    
+    M${this.points.beginX - bbox.x + startOffsetX} ${
       this.points.beginY - bbox.y + startOffsetY
-    } C${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y} ${
+    }
+    
+    C${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y} ${
       this.points.cx2 - bbox.x
-    } ${this.points.cy2 - bbox.y}  ${this.points.endX - bbox.x + endOffsetX} ${
+    } 
+    
+    ${this.points.cy2 - bbox.y}  ${this.points.endX - bbox.x + endOffsetX} ${
       this.points.endY - bbox.y + endOffsetY
     }`;
 
+    this.nodeComponent.isLoopBack = false;
+    if (this.points.beginX > this.points.endX) {
+      this.nodeComponent.isLoopBack = true;
+      const bottomY = this.getLowestYPosition() + 20;
+      path = `
+      M${this.points.beginX - bbox.x + startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      C${this.points.beginX - bbox.x + startOffsetX + 20} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX + 20} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX + 20} ${
+        this.points.beginY - bbox.y + startOffsetY + 20
+      }
+      
+      L${this.points.beginX - bbox.x + startOffsetX + 20} ${
+        bottomY - bbox.y + startOffsetY - 20
+      }
+      
+      C${this.points.beginX - bbox.x + startOffsetX + 20} ${
+        bottomY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX + 20} ${
+        bottomY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX} ${
+        bottomY - bbox.y + startOffsetY
+      }
+
+      L${this.points.endX - bbox.x + endOffsetX} ${
+        bottomY - bbox.y + startOffsetY
+      }
+
+      C${this.points.endX - bbox.x + endOffsetX - 20} ${
+        bottomY - bbox.y + startOffsetY
+      }
+
+      ${this.points.endX - bbox.x + endOffsetX - 20} ${
+        bottomY - bbox.y + startOffsetY
+      }
+
+      ${this.points.endX - bbox.x + endOffsetX - 20} ${
+        bottomY - bbox.y + startOffsetY - 20
+      }
+       
+      L${this.points.endX - bbox.x + endOffsetX - 20} ${
+        this.points.endY - bbox.y + endOffsetY + 20
+      }
+
+      C${this.points.endX - bbox.x + endOffsetX - 20} ${
+        this.points.endY - bbox.y + endOffsetY
+      }
+
+      ${this.points.endX - bbox.x + endOffsetX - 20} ${
+        this.points.endY - bbox.y + endOffsetY
+      }
+
+      ${this.points.endX - bbox.x + endOffsetX} ${
+        this.points.endY - bbox.y + endOffsetY
+      }
+
+      `;
+    }
     (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
+
     (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
       'd',
       path

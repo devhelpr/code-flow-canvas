@@ -213,6 +213,7 @@ export class Connection<T> {
       },
       this.nodeComponent.domElement
     );
+    this.nodeComponent.pathElement = this.pathElement;
 
     if (!this.pathElement) throw new Error('pathElement is undefined');
     if (!this.pathTransparentElement)

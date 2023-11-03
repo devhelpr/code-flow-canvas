@@ -74,6 +74,8 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   endY: number;
   lineType?: LineType;
   connectorWrapper?: IElementNode<T>;
+  pathElement?: IElementNode<T>;
+
   controlPoints?: { x: number; y: number }[];
   connectionStartNodeThumb?: IThumbNodeComponent<T>;
   connectionEndNodeThumb?: IThumbNodeComponent<T>;
@@ -85,6 +87,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   isData?: boolean;
   layer?: number;
   isAnnotationConnection?: boolean;
+  isLoopBack?: boolean;
   onCalculateControlPoints: (
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,

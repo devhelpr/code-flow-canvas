@@ -61,8 +61,27 @@ export const getPointOnConnection = <T>(
   const tx = -paddingRect;
   const ty = -paddingRect;
 
+  const ratio = Math.min(percentage, 1);
+  if (connection.isLoopBack) {
+    if (connection.pathElement?.domElement) {
+      const path = connection.pathElement?.domElement as SVGPathElement;
+      const pathLength = path.getTotalLength();
+      const point = path.getPointAtLength(pathLength * ratio);
+
+      const loopBackXOffset = 20;
+      return {
+        x: point.x + endHelper.x + endOffsetX + tx - loopBackXOffset - 10,
+        y:
+          point.y +
+          ty +
+          (startHelper.y > endHelper.y
+            ? endHelper.y + endOffsetY
+            : startHelper.y + startOffsetY) -
+          10,
+      };
+    }
+  }
   if (connection.lineType === LineType.Straight) {
-    const ratio = Math.min(percentage, 1);
     const { xStart, yStart, xEnd, yEnd } = getLinePoints(
       connection,
       { x: paddingRect, y: paddingRect },
@@ -73,15 +92,7 @@ export const getPointOnConnection = <T>(
       endHelper.x + tx + endOffsetX,
       endHelper.y + ty + endOffsetY
     );
-    // const xHelper =
-    //   endHelper.x + tx + endOffsetX - (startHelper.x + tx + startOffsetX);
-    // const yHelper =
-    //   endHelper.y + ty + endOffsetY - (startHelper.y + ty + startOffsetY);
 
-    // return {
-    //   x: startHelper.x + tx + startOffsetX + xHelper * ratio,
-    //   y: startHelper.y + ty + startOffsetY + yHelper * ratio,
-    // };
     const xHelper = xEnd - xStart;
     const yHelper = yEnd - yStart;
 
@@ -93,7 +104,7 @@ export const getPointOnConnection = <T>(
   const bezierCurvePoints =
     connection.lineType === LineType.BezierCubic
       ? getPointOnCubicBezierCurve(
-          Math.min(percentage, 1),
+          ratio,
           {
             x: startHelper.x + tx + startOffsetX,
             y: startHelper.y + ty + startOffsetY,
@@ -109,7 +120,7 @@ export const getPointOnConnection = <T>(
           { x: endHelper.x + tx + endOffsetX, y: endHelper.y + ty + endOffsetY }
         )
       : getPointOnQuadraticBezierCurve(
-          Math.min(percentage, 1),
+          ratio,
           {
             x: startHelper.x + tx + startOffsetX,
             y: startHelper.y + ty + startOffsetY,
