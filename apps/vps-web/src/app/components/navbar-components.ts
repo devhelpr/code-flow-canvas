@@ -36,11 +36,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   exportButton: HTMLButtonElement | null = null;
   importButton: HTMLButtonElement | null = null;
   importScriptButton: HTMLButtonElement | null = null;
-  placeOnLayer1Button: HTMLButtonElement | null = null;
-  placeOnLayer2Button: HTMLButtonElement | null = null;
-  switchLayerButton: HTMLButtonElement | null = null;
-  toggleDependencyConnections: HTMLButtonElement | null = null;
-  showDependencyConnections = false;
+
   rootAppElement: HTMLElement | null = null;
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
@@ -53,10 +49,6 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
         <button class="${navBarButton}">Import script</button>
-        <button class="${navBarButton}">L1</button>
-        <button class="${navBarButton}">L2</button>
-        <button class="${navBarButton}"><span class="icon icon-layers text-[22px]"></span></button>
-        <button class="${navBarButton}">Toggle deps</button>
         <children></children>
       </div>`
     );
@@ -82,14 +74,6 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
         this.importScriptButton = this.importButton
           ?.nextSibling as HTMLButtonElement;
-        this.placeOnLayer1Button = this.importScriptButton
-          ?.nextSibling as HTMLButtonElement;
-        this.placeOnLayer2Button = this.placeOnLayer1Button
-          ?.nextSibling as HTMLButtonElement;
-        this.switchLayerButton = this.placeOnLayer2Button
-          ?.nextSibling as HTMLButtonElement;
-        this.toggleDependencyConnections = this.switchLayerButton
-          ?.nextSibling as HTMLButtonElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
@@ -100,34 +84,13 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
           'click',
           this.onClickImportScript
         );
-        this.placeOnLayer1Button.addEventListener(
-          'click',
-          this.onClickPlaceOnLayer1
-        );
-        this.placeOnLayer2Button.addEventListener(
-          'click',
-          this.onClickPlaceOnLayer2
-        );
-        this.switchLayerButton.addEventListener(
-          'click',
-          this.onClickSwitchLayer
-        );
-
-        this.toggleDependencyConnections.addEventListener(
-          'click',
-          this.onClickToggleDependencyConnections
-        );
 
         this.renderList.push(
           this.addNodeButton,
           this.centerButton,
           this.deleteButton,
           this.exportButton,
-          this.importButton,
-          this.placeOnLayer1Button,
-          this.placeOnLayer2Button,
-          this.switchLayerButton,
-          this.toggleDependencyConnections
+          this.importButton
         );
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
@@ -427,130 +390,6 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
       }
     };
     input.click();
-
-    return false;
-  };
-
-  onClickPlaceOnLayer1 = (event: Event) => {
-    event.preventDefault();
-    const nodeInfo = this.getSelectedNodeInfo();
-
-    if (nodeInfo) {
-      const node = nodeInfo.node;
-      if (node.nodeType === NodeType.Connection) {
-        const connection = node as IConnectionNodeComponent<NodeInfo>;
-        connection.layer = 1;
-        connection.update?.();
-        this.props.canvasUpdated();
-      }
-    }
-    return false;
-  };
-
-  onClickPlaceOnLayer2 = (event: Event) => {
-    event.preventDefault();
-    const nodeInfo = this.getSelectedNodeInfo();
-
-    if (nodeInfo) {
-      const node = nodeInfo.node;
-      if (node.nodeType === NodeType.Connection) {
-        const connection = node as IConnectionNodeComponent<NodeInfo>;
-        connection.layer = 2;
-        connection.update?.();
-        this.props.canvasUpdated();
-      }
-    }
-    return false;
-  };
-
-  onClickSwitchLayer = (event: Event) => {
-    event.preventDefault();
-    if (this.rootAppElement?.classList.contains('active-layer2')) {
-      this.rootAppElement?.classList.remove('active-layer2');
-    } else {
-      this.rootAppElement?.classList.add('active-layer2');
-    }
-
-    return false;
-  };
-
-  onClickToggleDependencyConnections = (event: Event) => {
-    event.preventDefault();
-    /*
-      indien uitzetten ...
-      - loop door alle connections (ook recursief in containers)..
-      - indien het een isAnnotationConnection is ... dan verwijderen
-
-      indien aanzetten:
-      - loop door alle nodes
-      - vraag aan de node of deze dependencies heeft (en geef die ook terug)
-          ... nodeInfo.getDependencies() ... 
-        
-      - ... zo ja, dan benodigde annotation connections toevoegen   
-
-    */
-    this.props.setIsStoring(true);
-    this.showDependencyConnections = !this.showDependencyConnections;
-    if (this.showDependencyConnections) {
-      this.props.canvasApp?.elements.forEach((element) => {
-        if (element.nodeInfo?.getDependencies) {
-          const dependencies = element.nodeInfo.getDependencies();
-          console.log('getDependencies', dependencies);
-          if (dependencies.length > 0) {
-            dependencies.forEach((dependency) => {
-              const startNode = this.props.canvasApp?.elements?.get(
-                dependency.startNodeId
-              ) as IRectNodeComponent<NodeInfo>;
-              const endNode = this.props.canvasApp?.elements?.get(
-                dependency.endNodeId
-              ) as IRectNodeComponent<NodeInfo>;
-
-              if (startNode && endNode) {
-                const connection = this.props.canvasApp?.createLine(
-                  startNode.x,
-                  startNode.y,
-                  endNode.x,
-                  endNode.y,
-                  true,
-                  true
-                );
-                if (
-                  connection &&
-                  connection.nodeComponent &&
-                  connection.nodeComponent.update
-                ) {
-                  connection.nodeComponent.startNode = startNode;
-                  connection.nodeComponent.endNode = endNode;
-
-                  if (startNode) {
-                    startNode.connections?.push(connection.nodeComponent);
-                  }
-                  if (endNode) {
-                    endNode.connections?.push(connection.nodeComponent);
-                  }
-
-                  connection.nodeComponent.isAnnotationConnection = true;
-                  connection.nodeComponent.layer = 2;
-                  connection.nodeComponent.update();
-                }
-              }
-            });
-          }
-        }
-      });
-    } else {
-      this.props.canvasApp?.elements.forEach((element) => {
-        const node = element as INodeComponent<NodeInfo>;
-        if (node.nodeType === NodeType.Connection) {
-          const connection = node as IConnectionNodeComponent<NodeInfo>;
-          if (connection.isAnnotationConnection) {
-            this.props.removeElement(node);
-            this.props.canvasApp?.elements?.delete(element.id);
-          }
-        }
-      });
-    }
-    this.props.setIsStoring(false);
 
     return false;
   };
