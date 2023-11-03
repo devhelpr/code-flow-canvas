@@ -13,6 +13,7 @@ import {
   calculateConnectorY,
 } from './calculate-connector-thumbs';
 import { calculate2DDistance } from './distance';
+import { intersectionCircleLine } from './vector-math';
 
 const interpolate = (
   lowValue: number,
@@ -234,6 +235,7 @@ export const onCubicCalculateControlPoints = <T>(
       nodeType,
     };
   }
+
   if (nodeType === ControlAndEndPointNodeType.end) {
     const x =
       rectNode.x +
@@ -272,6 +274,39 @@ export const onCubicCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.Center) {
+      const circleRadius = (rectNode?.width ?? 100) / 2 + 10;
+      const intersections = intersectionCircleLine(
+        {
+          center: { x: x, y: y },
+          radius: circleRadius,
+        },
+        { p1: { x: connectedNodeX, y: connectedNodeY }, p2: { x: x, y: y } }
+      );
+
+      if (connectedNodeY < y - circleRadius) {
+        return {
+          x: x,
+          y: y - circleRadius,
+          cx: x,
+          cy: y - circleRadius - circleRadius,
+        };
+      } else if (connectedNodeY > y + circleRadius) {
+        return {
+          x: x,
+          y: y + circleRadius,
+          cx: x,
+          cy: y + circleRadius + circleRadius,
+        };
+      }
+
+      if (intersections.length > 0) {
+        return {
+          x: intersections[0].x,
+          y: intersections[0].y,
+          cx: intersections[0].x,
+          cy: intersections[0].y,
+        };
+      }
       return {
         x: x,
         y: y,
