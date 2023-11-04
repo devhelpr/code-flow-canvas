@@ -283,6 +283,16 @@ export const onCubicCalculateControlPoints = <T>(
         { p1: { x: connectedNodeX, y: connectedNodeY }, p2: { x: x, y: y } }
       );
 
+      if (x < connectedNodeX) {
+        return {
+          x: x - circleRadius,
+          y: y,
+          cx: x - circleRadius,
+          cy: y,
+          nodeType,
+        };
+      }
+
       if (connectedNodeY < y - circleRadius) {
         return {
           x: x,

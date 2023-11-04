@@ -241,8 +241,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
     endOffsetY: number
   ): void {
     if (this.pathHiddenElement) {
-      const isConnectingToRectThumb =
-        this.nodeComponent?.endNodeThumb?.thumbType === ThumbType.Center;
+      const isConnectingToRectThumb = false;
+      // this.nodeComponent?.endNodeThumb?.thumbType === ThumbType.Center;
 
       if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
         const bottomY = this.getLowestYPosition() + 20;
@@ -329,8 +329,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
 
     this.nodeComponent.isLoopBack = false;
 
-    const isConnectingToRectThumb =
-      this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center;
+    const isConnectingToRectThumb = false;
+    //this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center;
 
     if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
       this.nodeComponent.isLoopBack = true;
