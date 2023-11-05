@@ -33,9 +33,13 @@ export type FormField = (
 ) & {
   fieldName: string;
   label?: string;
+
   value: string;
   isRow?: boolean;
   onChange?: (value: string) => void;
+  settings?: {
+    showLabel?: boolean;
+  };
 };
 
 export interface FormComponentProps {
@@ -157,6 +161,7 @@ export class FormsComponent extends Component<Props> {
           label: formControl.label,
           value: formControl.value,
           isRow: formControl.isRow,
+          settings: formControl.settings,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
         });

@@ -44,7 +44,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
     this.template = createTemplate(
       `<div>
         <button class="${navBarPrimaryButton}"><span class="icon icon-add text-[22px]"></span></button>
-        <button class="${navBarButton}"><span class="icon icon-center_focus_strong text-[22px]"></span></button>
+        <button class="${navBarButton}"><span class="icon icon-fit_screen text-[22px]"></span></button>
         <button class="${navBarButton}"><span class="icon icon-delete text-[22px]"></span></button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>

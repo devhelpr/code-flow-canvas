@@ -71,7 +71,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       ).bind(compiledExpressionInfo.bindings);
       //const variables = canvasAppInstance?.getVariables() ?? {};
       //console.log('expression canvas variables', variables, input);
-      const inputAsString = typeof input === 'object' ? '' : input;
+      const inputAsString =
+        typeof input === 'object' ? '' : parseFloat(input) || 0;
       let inputAsObject = {};
       if (typeof input === 'object') {
         inputAsObject = input;
@@ -127,6 +128,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     }
     return {
       result,
+      output: result,
       followPath: undefined,
     };
   };
@@ -227,6 +229,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             label: '#',
             thumbConstraint: 'value',
+            maxConnections: -1,
           },
           {
             thumbType: ThumbType.EndConnectorCenter,

@@ -137,4 +137,14 @@ export class ThumbNode<T> {
       circleDomElement.classList.add('pointer-events-none');
     }
   };
+
+  setEnableInteraction = () => {
+    if (this.disableInteraction) {
+      this.disableInteraction = false;
+      const circleDomElement = this.circleElement
+        ?.domElement as unknown as SVGElement;
+      circleDomElement.classList.remove('pointer-events-none');
+      circleDomElement.classList.add('pointer-events-auto');
+    }
+  };
 }

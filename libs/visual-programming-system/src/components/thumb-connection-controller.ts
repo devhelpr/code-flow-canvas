@@ -339,6 +339,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
   onPointerDown = (e: PointerEvent) => {
     console.log(
       'connection-controller onPointerDown',
+      this.disableInteraction,
+      this.nodeComponent?.connectionControllerType,
       e.target,
       this.nodeComponent?.id,
       this.nodeComponent?.parent &&
@@ -454,12 +456,14 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
           return;
         }
       }
+
       if (connection && this.canvas && connection.endNodeThumb) {
         const connectionThumb =
           this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.end
             ? connection.connectionEndNodeThumb
             : undefined;
+
         if (connectionThumb) {
           const { x, y } = transformCameraSpaceToWorldSpace(
             e.clientX,
@@ -615,9 +619,9 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       this.nodeComponent?.id
     );
 
-    if (this.disableInteraction) {
-      return;
-    }
+    // if (this.disableInteraction) {
+    //   return;
+    // }
 
     if (!this.nodeComponent) {
       return;
@@ -646,17 +650,46 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
           .parent as unknown as IConnectionNodeComponent<T>;
         if (connection) {
           if (rectNode.thumbConnectors?.[0].thumbType === ThumbType.Center) {
-            connection.endNode = rectNode;
-            connection.endNodeThumb = rectNode.thumbConnectors?.[0];
+            if (
+              this.nodeComponent.connectionControllerType ===
+              ConnectionControllerType.begin
+            ) {
+              connection.startNode = rectNode;
+              connection.startNodeThumb = rectNode.thumbConnectors?.[0];
 
-            rectNode.connections?.push(connection);
+              rectNode.connections?.push(connection);
 
-            connection.update?.(
-              connection,
-              connection.endNode?.x ?? 0,
-              connection.endNode?.y ?? 0,
-              rectNode
-            );
+              if (connection.startNode?.isThumb) {
+                this.setDisableInteraction();
+              } else {
+                this.setEnableInteraction();
+              }
+
+              connection.update?.(
+                connection,
+                connection.startNode?.x ?? 0,
+                connection.startNode?.y ?? 0,
+                rectNode
+              );
+            } else {
+              connection.endNode = rectNode;
+              connection.endNodeThumb = rectNode.thumbConnectors?.[0];
+
+              rectNode.connections?.push(connection);
+
+              if (connection.endNode?.isThumb) {
+                this.setDisableInteraction();
+              } else {
+                this.setEnableInteraction();
+              }
+
+              connection.update?.(
+                connection,
+                connection.endNode?.x ?? 0,
+                connection.endNode?.y ?? 0,
+                rectNode
+              );
+            }
           }
         }
       } else if (
@@ -712,8 +745,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     );
     this.interactionStateMachine.clearDropTarget(this.nodeComponent);
 
-    // TODO : DO THIS ONLY IF NOT CONNECTED TO A RECT THUMB !?
-    //  ... looks like this happens AFTER the fix and not BEFORE !??
+    this.setEnableInteraction();
 
     const circleDomElement = this.circleElement?.domElement as unknown as
       | HTMLElement

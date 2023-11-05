@@ -169,18 +169,21 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
+      const parentElement = createElement('div', {
+        class: 'inner-node',
+      });
       const jsxComponentWrapper = createElement(
         'div',
         {
           class:
-            'inner-node p-3 pl-10 flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
+            ' p-3 pl-10 flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
           style: {
             'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
             // 'shape-inside:': 'polygon(0 50%, 100% 0, 100% 100%)', // no-browser-support yet...
             // 'shape-padding': '10px',
           },
         },
-        undefined,
+        parentElement.domElement,
         initialExpressionValue ?? 'expression'
         // FormComponent({
         //   id: 'test',
@@ -237,7 +240,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
             name: 'input',
           },
         ],
-        jsxComponentWrapper,
+        parentElement as INodeComponent<NodeInfo>,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },

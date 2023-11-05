@@ -80,6 +80,9 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.Text,
           fieldName: 'variableName',
           value: initialValue ?? '',
+          settings: {
+            showLabel: false,
+          },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
@@ -104,10 +107,10 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
 
-      const titleBar = createElement(
+      createElement(
         'div',
         {
-          class: `flex items-center bg-slate-600 text-white p-1 rounded-t pointer-events-none`,
+          class: `flex items-center bg-slate-600 text-white p-1 px-3 rounded-t pointer-events-none`,
         },
         componentWrapper.domElement,
         'Set variable'
@@ -116,7 +119,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
       const formWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 pt-0 rounded-b`,
+          class: `inner-node bg-slate-500 p-4 pt-4 rounded-b`,
         },
         componentWrapper.domElement
       ) as unknown as INodeComponent<NodeInfo>;

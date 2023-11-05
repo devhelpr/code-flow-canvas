@@ -1326,7 +1326,7 @@ export class AppElement extends HTMLElement {
       'div',
       {
         class:
-          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 flex items-center z-[1050]', //top-[60px]',
+          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 items-center z-[1050] hidden', //flex',
         name: 'path-track-bg',
       },
       this.rootElement,

@@ -142,6 +142,16 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode.nodeComponent is undefined');
     }
+
+    if (
+      this.nodeComponent?.startNode &&
+      this.nodeComponent?.startNode?.isThumb
+    ) {
+      startPointNode.setDisableInteraction();
+    } else {
+      startPointNode.setEnableInteraction();
+    }
+
     startPointNode.nodeComponent.parent = this.nodeComponent;
     startPointNode.nodeComponent.isControlled = isControlled;
     startPointNode.connectConnection();
@@ -154,9 +164,9 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      if (this.nodeComponent?.startNode) {
-        startPointNode.setDisableInteraction();
-      }
+      // if (this.nodeComponent?.startNode) {
+      //   startPointNode.setDisableInteraction();
+      // }
 
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
@@ -185,6 +195,12 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     if (!endPointNode.nodeComponent) {
       throw new Error('endPointNode.nodeComponent is undefined');
     }
+
+    if (this.nodeComponent?.endNode && this.nodeComponent?.endNode?.isThumb) {
+      endPointNode.setDisableInteraction();
+    } else {
+      endPointNode.setEnableInteraction();
+    }
     endPointNode.nodeComponent.parent = this.nodeComponent;
     endPointNode.nodeComponent.isControlled = isControlled;
     endPointNode.connectConnection();
@@ -198,9 +214,9 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         return false;
       }
 
-      if (this.nodeComponent?.endNode) {
-        endPointNode.setDisableInteraction();
-      }
+      // if (this.nodeComponent?.endNode) {
+      //   endPointNode.setDisableInteraction();
+      // }
       setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
       return true;
     };

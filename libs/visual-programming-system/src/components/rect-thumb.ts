@@ -10,7 +10,9 @@ import {
   IThumb,
   IThumbNodeComponent,
 } from '../interfaces';
+import { getSelectedNode } from '../reactivity';
 import { NodeType } from '../types';
+import { createElement } from '../utils/create-element';
 import { pointerDown } from './events/pointer-events';
 import { LineConnection } from './line-connection';
 import { QuadraticBezierConnection } from './quadratic-bezier-connection';
@@ -21,6 +23,7 @@ import { Rect } from './rect';
 
 export class RectThumb<T> extends Rect<T> {
   createStraightLineConnection = false;
+  toolTipUseShiftToDragConnection: INodeComponent<T> | undefined = undefined;
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -75,6 +78,16 @@ export class RectThumb<T> extends Rect<T> {
     this.nodeComponent.isThumb = true;
     this.createStraightLineConnection = createStraightLineConnection ?? false;
 
+    this.toolTipUseShiftToDragConnection = createElement(
+      'div',
+      {
+        class:
+          'rect-thumb-tooltip pointer-events-node z-0 absolute hidden -top-[20px] translate-x-[calc(-50%+25px)] p-0.5 left-0 whitespace-nowrap text-[8px]',
+      },
+      this.nodeComponent.domElement,
+      'Hold shift to drag connections'
+    ) as unknown as INodeComponent<T>;
+
     this.nodeComponent.domElement?.addEventListener(
       'pointerup',
       this.onPointerUp
@@ -122,6 +135,74 @@ export class RectThumb<T> extends Rect<T> {
       const yorg = y;
       x = x - parentX;
       y = y - parentY;
+
+      const selectedNodeId = getSelectedNode();
+      if (selectedNodeId) {
+        const selectedNode = this.canvasElements?.get(
+          selectedNodeId.id
+        ) as unknown as INodeComponent<T>;
+        if (
+          selectedNode &&
+          selectedNode.nodeType === NodeType.Connection &&
+          event &&
+          this.nodeComponent?.connections &&
+          this.nodeComponent?.connections.length > 0
+        ) {
+          const startConnections = this.nodeComponent.connections.filter(
+            (connection) => {
+              return (
+                connection.startNode &&
+                connection.startNode?.id === this.nodeComponent?.id &&
+                connection.id === selectedNode.id
+              );
+            }
+          );
+          if (startConnections.length > 0) {
+            const connection = startConnections[0];
+
+            console.log('thumb 2 start', x, y);
+            if (connection.connectionStartNodeThumb) {
+              connection.startNode = undefined;
+              connection.startNodeThumb = undefined;
+
+              this.initiateDraggingConnection(
+                connection.connectionStartNodeThumb,
+                x,
+                y,
+                connection
+              );
+            }
+            return true;
+          }
+
+          const endConnections = this.nodeComponent.connections.filter(
+            (connection) => {
+              return (
+                connection.endNode &&
+                connection.endNode?.id === this.nodeComponent?.id &&
+                connection.id === selectedNode.id
+              );
+            }
+          );
+          if (endConnections.length > 0) {
+            const connection = endConnections[0];
+
+            console.log('thumb 2 end', x, y);
+            if (connection.connectionEndNodeThumb) {
+              connection.endNode = undefined;
+              connection.endNodeThumb = undefined;
+
+              this.initiateDraggingConnection(
+                connection.connectionEndNodeThumb,
+                x,
+                y,
+                connection
+              );
+            }
+            return true;
+          }
+        }
+      }
 
       const curve = this.createStraightLineConnection
         ? new LineConnection<T>(
@@ -259,8 +340,8 @@ export class RectThumb<T> extends Rect<T> {
       circleDomElement.classList.remove('pointer-events-auto');
       circleDomElement.classList.add('pointer-events-none');
 
-      const domNodeElement = connection?.connectionEndNodeThumb
-        ?.domElement as unknown as HTMLElement;
+      const domNodeElement =
+        connectionThumb?.domElement as unknown as HTMLElement;
       domNodeElement.classList.remove('pointer-events-auto');
       domNodeElement.classList.add('pointer-events-none');
       domNodeElement.classList.add('dragging');
@@ -307,9 +388,12 @@ export class RectThumb<T> extends Rect<T> {
         // );
 
         if (!canReceiveDrop) {
+          // (
+          //   this.nodeComponent.domElement as unknown as SVGElement
+          // ).style.filter = 'none';
           (
             this.nodeComponent.domElement as unknown as SVGElement
-          ).style.filter = 'none';
+          ).classList.remove('dropping');
 
           (
             this.nodeComponent.domElement as unknown as SVGElement
@@ -322,9 +406,13 @@ export class RectThumb<T> extends Rect<T> {
           );
           return;
         } else {
+          // (
+          //   this.nodeComponent.domElement as unknown as SVGElement
+          // ).style.filter = 'invert(1)';
+
           (
             this.nodeComponent.domElement as unknown as SVGElement
-          ).style.filter = 'invert(1)';
+          ).classList.add('dropping');
 
           console.log(
             'RECT-THUMB svg register drop target',
@@ -382,6 +470,10 @@ export class RectThumb<T> extends Rect<T> {
 
     console.log('RECT-THUMB svg unregister drop target', this.nodeComponent.id);
     this.interactionStateMachine.clearDropTarget(this.nodeComponent);
+
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      'dropping'
+    );
 
     (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
       'none';

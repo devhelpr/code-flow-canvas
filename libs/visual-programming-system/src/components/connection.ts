@@ -135,7 +135,8 @@ export class Connection<T> {
     ) as unknown as IConnectionNodeComponent<T>;
 
     if (!this.nodeComponent) throw new Error('nodeComponent is undefined');
-
+    if (!onCalculateControlPoints)
+      throw new Error('onCalculateControlPoints is undefined');
     this.nodeComponent.nodeType = NodeType.Connection;
     this.nodeComponent.onCalculateControlPoints = onCalculateControlPoints;
     this.nodeComponent.controlPointNodes = [];
@@ -189,10 +190,10 @@ export class Connection<T> {
     this.pathTransparentElement = createNSElement(
       'path',
       {
-        class: 'connection-path pointer-events-auto cursor-pointer',
+        class: 'connection-background-path pointer-events-auto cursor-pointer',
         d: path,
-        stroke: 'transparent',
-        'stroke-width': 50,
+        stroke: containerNode ? '#94a3b8' : '#1e293b',
+        'stroke-width': 10,
         fill: 'transparent',
         pointerdown: this.onPointerDown,
       },
@@ -202,9 +203,9 @@ export class Connection<T> {
     this.pathElement = createNSElement(
       'path',
       {
-        class: 'pointer-events-none',
+        class: 'connection-path pointer-events-none',
         d: path,
-        stroke: 'white',
+        stroke: 'currentColor',
         //'marker-start': 'url(#arrowbegin)',
         'marker-end': 'url(#arrow)',
         'stroke-width': 3,
@@ -726,9 +727,21 @@ export class Connection<T> {
       }
 
       if (this.nodeComponent.endNode) {
+        // hack
+        let offsetX = 0;
+        if (
+          this.nodeComponent.startNodeThumb?.thumbType !== ThumbType.Center &&
+          this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center
+        ) {
+          if (this.points.endX < this.points.beginX) {
+            offsetX = 15 + 20;
+          }
+        }
+        // end hack
+
         this.nodeComponent.endNode.update?.(
           this.nodeComponent.endNode,
-          this.points.endX,
+          this.points.endX + offsetX,
           this.points.endY,
           this.nodeComponent
         );
@@ -804,6 +817,7 @@ export class Connection<T> {
       'marker',
       {
         id: 'arrow',
+        class: 'arrow-marker',
         refX: '1.5',
         refY: '2',
         markerUnits: 'strokeWidth',
@@ -817,6 +831,7 @@ export class Connection<T> {
       'path',
       {
         d: 'M0,0 V4 L2,2 Z',
+        class: 'arrow-marker',
         fill: 'white',
       },
       marker.domElement
@@ -826,6 +841,7 @@ export class Connection<T> {
       'marker',
       {
         id: 'arrowbegin',
+        class: 'arrow-marker',
         refX: '2',
         refY: '2',
         markerUnits: 'strokeWidth',
@@ -841,6 +857,7 @@ export class Connection<T> {
         d: 'M2,2 L2,2 L0,2 Z', // 'M2,0 L2,4 L0,2 Z',
         stroke: 'white',
         fill: 'white',
+        class: 'arrow-marker',
       },
       markerBegin.domElement
     );

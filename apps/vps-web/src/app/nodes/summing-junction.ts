@@ -58,7 +58,7 @@ export const getSummingJunction: NodeTaskFactory<NodeInfo> = (
         {
           class: `inner-node bg-white 
           text-black flex items-center justify-center 
-          rounded-circle
+          rounded-full
           w-[50px] h-[50px] 
           overflow-hidden text-center`,
           style: {

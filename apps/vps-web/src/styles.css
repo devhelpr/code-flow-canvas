@@ -3,6 +3,22 @@
 @tailwind base;
 @tailwind utilities;
 
+.connection {
+  color: white;
+}
+.connection-path {
+  color: white;
+}
+
+.selected .connection-path {
+  @apply text-blue-500;
+}
+
+.selected.connection {
+  @apply text-blue-500;
+}
+
+
 .vertical-slider {
 	-webkit-appearance: slider-vertical;
 }
@@ -75,6 +91,13 @@
 
 .connection-controller.thumb.dragging div {
   @apply !bg-white;
+}
+
+.rect-thumb-node:not(.dropping):hover .rect-thumb-tooltip {
+  @apply bg-white text-black block; 
+}
+.rect-thumb-node.dropping .inner-node {
+  @apply bg-black text-white;
 }
 
 /* source : https://cssloaders.github.io/ */
@@ -206,13 +229,16 @@
 }
 
 .connection-cursor__circle.layer-2 {
-  z-index: 1;
+  z-index: 2;
 }
 
 .connection-cursor__message.layer-2 {
-  z-index: 1;
+  z-index: 2;
 }
 
+.active-layer2 .connection-cursor__message.layer-2 {
+  z-index: 3;
+}
 
 @font-face {
 	font-family: 'icomoon';

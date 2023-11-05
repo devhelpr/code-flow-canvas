@@ -13,6 +13,9 @@ export interface InputFieldProps {
   label?: string;
   isRow?: boolean;
   isLast?: boolean;
+  settings?: {
+    showLabel?: boolean;
+  };
   onChange?: (value: string) => void;
 }
 
@@ -35,7 +38,9 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
       }">
-        <label for="${props.fieldName}" class="block  mb-2 
+        <label for="${props.fieldName}" class="block  mb-2 ${
+        props.settings?.showLabel === false ? 'hidden' : ''
+      } 
         text-white ${props.isRow ? 'mr-2' : ''}">${
         props.label ?? props.fieldName
       }</label>

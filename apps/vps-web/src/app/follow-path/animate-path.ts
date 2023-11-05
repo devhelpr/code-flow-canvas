@@ -223,6 +223,7 @@ export const animatePathForNodeConnectionPairs = <T>(
           (start.nodeInfo as unknown as any)?.formValues?.Expression ??
           ''
       );
+    console.log('animatePathForNodeConnectionPairs', input);
     messageText.domElement.textContent =
       input?.toString() ??
       (start.nodeInfo as unknown as any)?.formValues?.Expression ??
@@ -247,16 +248,16 @@ export const animatePathForNodeConnectionPairs = <T>(
       domMessage.style.pointerEvents = 'none';
     }
 
-    if (connection.layer === 1) {
-      domCircle.classList.add('layer-1');
-      domMessage.classList.add('layer-1');
-      domCircle.classList.remove('layer-2');
-      domMessage.classList.remove('layer-2');
-    } else {
+    if (connection.layer === 2) {
       domCircle.classList.add('layer-2');
       domMessage.classList.add('layer-2');
       domCircle.classList.remove('layer-1');
       domMessage.classList.remove('layer-1');
+    } else {
+      domCircle.classList.add('layer-1');
+      domMessage.classList.add('layer-1');
+      domCircle.classList.remove('layer-2');
+      domMessage.classList.remove('layer-2');
     }
     let loop = 0;
     const onInterval = () => {

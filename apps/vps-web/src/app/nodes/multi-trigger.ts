@@ -138,6 +138,7 @@ export const getMultiTrigger =
               color: 'white',
               label: ' ',
               maxConnections: 1,
+              name: 'ouput1',
             },
             {
               thumbType: ThumbType.StartConnectorRight,
@@ -145,7 +146,8 @@ export const getMultiTrigger =
               connectionType: ThumbConnectionType.start,
               color: 'white',
               label: ' ',
-              maxConnections: 1,
+              maxConnections: -1,
+              name: 'ouput2',
             },
             {
               thumbType: ThumbType.EndConnectorCenter,

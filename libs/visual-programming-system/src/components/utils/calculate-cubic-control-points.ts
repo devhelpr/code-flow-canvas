@@ -148,8 +148,8 @@ export const onCubicCalculateControlPoints = <T>(
       };
     } else if (thumbType === ThumbType.Center) {
       return {
-        cpx: x,
-        cpy: y,
+        // cpx: x,
+        // cpy: y,
         x: x,
         y: y,
         cx: x,
@@ -299,6 +299,7 @@ export const onCubicCalculateControlPoints = <T>(
           y: y - circleRadius,
           cx: x,
           cy: y - circleRadius - circleRadius,
+          nodeType,
         };
       } else if (connectedNodeY > y + circleRadius) {
         return {
@@ -306,6 +307,7 @@ export const onCubicCalculateControlPoints = <T>(
           y: y + circleRadius,
           cx: x,
           cy: y + circleRadius + circleRadius,
+          nodeType,
         };
       }
 
@@ -315,6 +317,7 @@ export const onCubicCalculateControlPoints = <T>(
           y: intersections[0].y,
           cx: intersections[0].x,
           cy: intersections[0].y,
+          nodeType,
         };
       }
       return {
