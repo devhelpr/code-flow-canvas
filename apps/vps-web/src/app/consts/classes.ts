@@ -1,8 +1,8 @@
 export const navBarButton = `rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap
-  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+ disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 
 export const navBarButtonNomargin = `rounded-md bg-slate-500 text-white p-2 hover:bg-slate-600 select-none whitespace-nowrap
-disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+ disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 
 export const navBarPrimaryButton = `rounded-md bg-blue-500 text-white p-2 m-2 hover:bg-blue-600 select-none whitespace-nowrap
   disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;

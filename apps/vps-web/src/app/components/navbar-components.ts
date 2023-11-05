@@ -41,11 +41,12 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
     super(parent, props);
+    const inlineFlex = `inline-flex items-center justify-center min-h-[40px]`;
     this.template = createTemplate(
-      `<div>
-        <button class="${navBarPrimaryButton}"><span class="icon icon-add text-[22px]"></span></button>
-        <button class="${navBarButton}"><span class="icon icon-fit_screen text-[22px]"></span></button>
-        <button class="${navBarButton}"><span class="icon icon-delete text-[22px]"></span></button>
+      `<div class="inline-flex items-center content-center">
+        <button class="${navBarPrimaryButton} ${inlineFlex}"><span class="icon icon-add text-[22px]"></span></button>
+        <button class="${navBarButton} ${inlineFlex}"><span class="icon icon-fit_screen text-[22px]"></span></button>
+        <button class="${navBarButton} ${inlineFlex}"><span class="icon icon-delete text-[22px]"></span></button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
         <button class="${navBarButton}">Import script</button>
