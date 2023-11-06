@@ -47,7 +47,9 @@
 
 .selected > .inner-node {
 	@apply outline-indigo-300 outline-offset-[-4px] outline-dashed outline-4;
-	
+}
+.selected > .inner-node.select-outline-within {
+  @apply outline-offset-[0px]
 }
 
 .selected >.shape-circle {
@@ -93,11 +95,11 @@
   @apply !bg-white;
 }
 
-.rect-thumb-node:not(.dropping):hover .rect-thumb-tooltip {
+.rect-thumb-node:not(.dropping):hover > .rect-thumb-tooltip {
   @apply bg-white text-black block; 
 }
 .rect-thumb-node.dropping .inner-node {
-  @apply bg-black text-white;
+  @apply bg-blue-500 text-white;
 }
 
 /* source : https://cssloaders.github.io/ */

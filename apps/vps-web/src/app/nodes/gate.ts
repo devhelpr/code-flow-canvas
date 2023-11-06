@@ -170,7 +170,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
       ];
 
       const parentElement = createElement('div', {
-        class: 'inner-node',
+        class: 'inner-node select-outline-within',
       });
       const jsxComponentWrapper = createElement(
         'div',
