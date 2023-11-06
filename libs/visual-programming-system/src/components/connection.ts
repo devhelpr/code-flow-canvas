@@ -729,12 +729,21 @@ export class Connection<T> {
       if (this.nodeComponent.endNode) {
         // hack
         let offsetX = 0;
+        let offsetY = 0;
         if (
           this.nodeComponent.startNodeThumb?.thumbType !== ThumbType.Center &&
           this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center
         ) {
           if (this.points.endX < this.points.beginX) {
             offsetX = 15 + 20;
+          } else {
+            if (this.points.endY > this.points.beginY) {
+              offsetX = 0;
+              offsetY = 35;
+            } else {
+              offsetX = 0;
+              offsetY = -35;
+            }
           }
         }
         // end hack
@@ -742,7 +751,7 @@ export class Connection<T> {
         this.nodeComponent.endNode.update?.(
           this.nodeComponent.endNode,
           this.points.endX + offsetX,
-          this.points.endY,
+          this.points.endY + offsetY,
           this.nodeComponent
         );
       }
