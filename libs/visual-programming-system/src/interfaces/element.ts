@@ -116,6 +116,8 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
 
   thumbFormId?: string;
   thumbFormFieldName?: string;
+
+  prefixIcon?: string;
 }
 
 export const ControlAndEndPointNodeType = {
@@ -168,4 +170,5 @@ export type IThumb = {
   class?: string;
   formId?: string;
   formFieldName?: string;
+  prefixIcon?: string;
 };

@@ -150,6 +150,7 @@ export const getForEach =
               label: '#',
               thumbConstraint: 'value',
               name: 'output2',
+              prefixIcon: 'icon icon-refresh',
             },
             {
               thumbType: ThumbType.EndConnectorCenter,

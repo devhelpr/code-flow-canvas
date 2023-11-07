@@ -207,6 +207,7 @@ export class Rect<T> {
         );
 
         const thumbNode = new ThumbNodeConnector<T>(
+          thumb,
           this.nodeComponent.domElement,
           canvas,
           this.interactionStateMachine,

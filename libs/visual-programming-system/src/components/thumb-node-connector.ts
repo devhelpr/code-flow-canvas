@@ -19,6 +19,7 @@ import {
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
+  IThumb,
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces/element';
@@ -32,6 +33,7 @@ import { ThumbNode } from './thumb';
 
 export class ThumbNodeConnector<T> extends ThumbNode<T> {
   constructor(
+    thumb: IThumb,
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -97,6 +99,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       throw new Error('nodeComponent is undefined');
     }
 
+    this.nodeComponent.prefixIcon = thumb.prefixIcon;
     this.nodeComponent.thumbName = thumbName;
     this.nodeComponent.x = 0;
     this.nodeComponent.y = 0;
@@ -108,7 +111,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     this.circleElement = createElement(
       'div',
       {
-        class: `${
+        class: `inline-flex items-center ${
           disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
         }        
         origin-center`,
@@ -142,6 +145,16 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     );
 
     if (!this.circleElement) throw new Error('circleElement is undefined');
+
+    if (thumb.prefixIcon) {
+      createElement(
+        'div',
+        {
+          class: `relative text-white -left-[10px] ${thumb.prefixIcon}`,
+        },
+        this.circleElement.domElement
+      );
+    }
 
     let additionalInnerCirlceClasses = '';
     if (connectionType === ThumbConnectionType.end) {
