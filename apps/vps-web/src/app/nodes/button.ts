@@ -82,6 +82,8 @@ export const getButton =
               button.domElement.textContent =
                 node.nodeInfo.formValues['caption'] || 'Button';
               console.log('onChange', node.nodeInfo);
+
+              rect.resize(200);
               if (updated) {
                 updated();
               }
