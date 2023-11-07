@@ -6,7 +6,13 @@ import {
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
-import { navBarButton, navBarPrimaryButton } from '../consts/classes';
+import {
+  navBarButton,
+  navBarIconButton,
+  navBarIconButtonInnerElement,
+  navBarPrimaryButton,
+  navBarPrimaryIconButton,
+} from '../consts/classes';
 
 import { NodeInfo } from '../types/node-info';
 import { getNodeTaskFactory } from '../node-task-registry/canvas-node-task-registry';
@@ -41,12 +47,12 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
     super(parent, props);
-    const inlineFlex = `inline-flex items-center justify-center min-h-[40px]`;
+
     this.template = createTemplate(
       `<div class="inline-flex items-center content-center">
-        <button class="${navBarPrimaryButton} ${inlineFlex}"><span class="icon icon-add text-[22px]"></span></button>
-        <button class="${navBarButton} ${inlineFlex}"><span class="icon icon-fit_screen text-[22px]"></span></button>
-        <button class="${navBarButton} ${inlineFlex}"><span class="icon icon-delete text-[22px]"></span></button>
+        <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
+        <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
+        <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
         <button class="${navBarButton}">Import script</button>

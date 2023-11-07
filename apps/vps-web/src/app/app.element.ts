@@ -54,7 +54,12 @@ import {
 import { getPointOnConnection } from './follow-path/point-on-connection';
 import { AppComponents } from './components/app-components';
 import { NavbarComponents } from './components/navbar-components';
-import { menubarClasses, navBarButton } from './consts/classes';
+import {
+  menubarClasses,
+  navBarButton,
+  navBarIconButton,
+  navBarIconButtonInnerElement,
+} from './consts/classes';
 import {
   getNodeFactoryNames,
   getNodeTaskFactory,
@@ -945,7 +950,7 @@ export class AppElement extends HTMLElement {
     const runButton = createElement(
       'button',
       {
-        class: `${navBarButton} relative`,
+        class: `${navBarIconButton}`,
         click: (event) => {
           event.preventDefault();
           (runButton.domElement as HTMLButtonElement).disabled = true;
@@ -975,7 +980,7 @@ export class AppElement extends HTMLElement {
     createElement(
       'span',
       {
-        class: 'icon icon-play_arrow text-[22px]',
+        class: `${navBarIconButtonInnerElement} icon-play_arrow`,
       },
       runButton.domElement
     );
