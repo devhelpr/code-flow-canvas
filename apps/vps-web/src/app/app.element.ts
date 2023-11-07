@@ -70,27 +70,28 @@ import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 
 // <style>${iconStyles}</style>
+// <style>${styles}</style>
 const template = document.createElement('template');
 template.innerHTML = `
-  <style>${styles}</style>
-  
   <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
 
-export class AppElement extends HTMLElement {
+// export class AppElement extends HTMLElement {
+
+export class AppElement {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
     alert('clicked');
   };
 
-  disconnectedCallback() {
-    const button = document.querySelector('button');
-    if (button) {
-      button.removeEventListener('click', this.onclick);
-    }
-  }
+  // disconnectedCallback() {
+  //   const button = document.querySelector('button');
+  //   if (button) {
+  //     button.removeEventListener('click', this.onclick);
+  //   }
+  // }
 
   isStoring = false;
 
@@ -330,8 +331,6 @@ export class AppElement extends HTMLElement {
   };
 
   constructor() {
-    super();
-
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
 
@@ -340,13 +339,15 @@ export class AppElement extends HTMLElement {
         'NO Crypto defined ... uuid cannot be created! Are you on a http connection!?'
       );
     }
-    const shadowRoot = this.attachShadow({ mode: 'open' });
-    shadowRoot.appendChild(template.content.cloneNode(true));
-    this.rootElement = shadowRoot.querySelector('div#root') as HTMLElement;
+    const appRootElement = document.getElementById('app-root');
+    if (!appRootElement) {
+      return;
+    }
+    appRootElement.appendChild(template.content.cloneNode(true));
+    this.rootElement = appRootElement.querySelector('div#root') as HTMLElement;
     if (!this.rootElement) {
       return;
     }
-    const bezierCurve: any = undefined;
 
     const canvasApp = createCanvasApp<NodeInfo>(this.rootElement);
     this.canvas = canvasApp.canvas;
@@ -1946,7 +1947,6 @@ export class AppElement extends HTMLElement {
     });
   }
 }
-customElements.define('vps-web-root', AppElement);
 
 /*const [getCount, setCount] = createSignal(0);
 const [getValue, setValue] = createSignal('test');
@@ -1961,15 +1961,4 @@ setCount(3);
 }, 1000);
 */
 
-(function () {
-  const hello = 'world';
-  // the below doesn't work .. "new Function" doesn't allow access to the local scope
-  //const test = new Function('payload', 'return hello;');
-  //console.log(test({ test: 1 }));
-  function xyz() {
-    eval('console.log(hello);');
-  }
-  xyz();
-  const test = new Function('hello', 'return hello;');
-  console.log(test('hello world'));
-})();
+const appElement = new AppElement();
