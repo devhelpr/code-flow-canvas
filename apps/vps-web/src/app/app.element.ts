@@ -69,15 +69,11 @@ import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 
-// <style>${iconStyles}</style>
-// <style>${styles}</style>
 const template = document.createElement('template');
 template.innerHTML = `
   <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
-
-// export class AppElement extends HTMLElement {
 
 export class AppElement {
   public static observedAttributes = [];
@@ -85,13 +81,6 @@ export class AppElement {
   onclick = (_ev: MouseEvent) => {
     alert('clicked');
   };
-
-  // disconnectedCallback() {
-  //   const button = document.querySelector('button');
-  //   if (button) {
-  //     button.removeEventListener('click', this.onclick);
-  //   }
-  // }
 
   isStoring = false;
 
@@ -271,10 +260,6 @@ export class AppElement {
     sidebar.style.left = `${x}px`;
     sidebar.style.top = `${y}px`;
 
-    // TODO : calculate line position from center of selected node
-    //        to left side of sidebar
-
-    //
     const lineContainer = this.editPopupLineContainer
       ?.domElement as unknown as HTMLElement;
 
@@ -287,11 +272,7 @@ export class AppElement {
 
     lineContainer.style.top = `${y < yLine ? y : yLine}px`;
     lineContainer.style.width = `${x - xLine < 0 ? xLine - x : x - xLine}px`;
-    //lineContainer.style.height = `${y - yLine < 0 ? yLine - y : y - yLine}px`;
     lineContainer.style.height = `${1000}px`; // heightNode * scaleCamera
-
-    // lineContainer.style.width = `${100 + (widthNode / 2) * scaleCamera}px`;
-    // lineContainer.style.height = `${300 + 2 * heightNode * scaleCamera}px`;
 
     const indicatorElement = this.editPopupEditingNodeIndicator
       ?.domElement as unknown as HTMLElement;
@@ -320,14 +301,6 @@ export class AppElement {
       }
         `
     );
-    /*
-
-      `M0 ${heightNode * scaleCamera} 
-       L${100 + (widthNode / 2) * scaleCamera} ${
-        40 + (heightNode / 2) * scaleCamera
-      }`
-
-    */
   };
 
   constructor() {
@@ -597,31 +570,6 @@ export class AppElement {
     canvasApp.setOnCanvasClick((x, y) => {
       console.log('OnCanvasClick');
       setSelectNode(undefined);
-
-      // canvasApp.createRect(
-      //   x,
-      //   y,
-      //   200,
-      //   100,
-      //   undefined,
-      //   undefined,
-      //   [
-      //     {
-      //       thumbType: ThumbType.StartConnectorCenter,
-      //       thumbIndex: 0,
-      //       connectionType: ThumbConnectionType.start,
-      //     },
-      //     {
-      //       thumbType: ThumbType.EndConnectorCenter,
-      //       thumbIndex: 0,
-      //       connectionType: ThumbConnectionType.end,
-      //     },
-      //   ],
-      //   `<p>Node</p><p>Created on click</p><p>dummy node</p><div class="h-24"></div>`,
-      //   {
-      //     classNames: `bg-slate-500 p-4 rounded`,
-      //   }
-      // );
     });
 
     const menubarElement = createElement(
@@ -631,29 +579,6 @@ export class AppElement {
       },
       this.rootElement
     );
-    // const helperScriptElement = createElement('div', {}, rootElement);
-    // (helperScriptElement.domElement as HTMLElement).innerHTML = `
-
-    // `;
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       if (this.canvas) {
-    //         createNodeElement(
-    //           'div',
-    //           this.canvas.domElement,
-    //           canvasApp.elements
-    //         );
-    //       }
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add element'
-    // );
 
     createElement(
       'button',
@@ -817,133 +742,6 @@ export class AppElement {
     //   'import flow'
     // );
 
-    // createElement(
-    //   'button',
-    //   {
-    //     class: navBarButton,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       console.log('click RECT', (event.target as HTMLElement)?.tagName);
-    //       const startX = Math.floor(Math.random() * 250);
-    //       const startY = Math.floor(Math.random() * 500);
-
-    //       const testButton = createElement(
-    //         'button',
-    //         {
-    //           class: `${button} w-[300px] h-[300px] overflow-hidden m-0`,
-    //           click: (event) => {
-    //             event.preventDefault();
-    //             event.stopPropagation();
-    //             alert('test');
-    //             return false;
-    //           },
-    //         },
-    //         undefined,
-    //         'Click here'
-    //       );
-
-    //       const testIfCondition = createElement(
-    //         'div',
-    //         {
-    //           class:
-    //             'flex text-center items-center justify-center w-[100px] h-[120px] overflow-hidden bg-slate-500 rounded cursor-pointer',
-    //           style: {
-    //             'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
-    //           },
-    //         },
-    //         undefined,
-    //         'If condition'
-    //       );
-
-    //       const formElements = [
-    //         {
-    //           fieldType: FormFieldType.Text,
-    //           fieldName: 'Expression',
-    //           value: '',
-    //           onChange: (value: string) => {
-    //             node.nodeComponent.nodeInfo.formValues = {
-    //               ...node.nodeComponent.nodeInfo.formValues,
-    //               Expression: value,
-    //             };
-    //             console.log('onChange', node.nodeComponent.nodeInfo);
-    //           },
-    //         },
-    //       ];
-
-    //       const jsxComponentWrapper = createElement(
-    //         'div',
-    //         {
-    //           class: `bg-slate-500 p-4 rounded cursor-pointer`,
-    //         },
-    //         undefined,
-    //         FormComponent({
-    //           id: 'test',
-    //           formElements,
-    //           hasSubmitButton: false,
-    //           onSave: (formValues) => {
-    //             //
-    //           },
-    //         }) as unknown as HTMLElement
-    //       ) as unknown as INodeComponent<NodeInfo>;
-
-    //       const node = canvasApp.createRect(
-    //         startX,
-    //         startY,
-    //         200,
-    //         100,
-    //         undefined,
-    //         undefined,
-    //         [
-    //           {
-    //             thumbType: ThumbType.StartConnectorCenter,
-    //             thumbIndex: 0,
-    //             connectionType: ThumbConnectionType.start,
-    //           },
-    //           {
-    //             thumbType: ThumbType.EndConnectorCenter,
-    //             thumbIndex: 0,
-    //             connectionType: ThumbConnectionType.end,
-    //           },
-    //           // {
-    //           //   thumbType: ThumbType.StartConnectorRight,
-    //           //   thumbIndex: 0,
-    //           //   connectionType: ThumbConnectionType.start,
-    //           // },
-    //           // {
-    //           //   thumbType: ThumbType.StartConnectorRight,
-    //           //   thumbIndex: 1,
-    //           //   connectionType: ThumbConnectionType.start,
-    //           // },
-    //           // {
-    //           //   thumbType: ThumbType.StartConnectorTop,
-    //           //   thumbIndex: 0,
-    //           //   connectionType: ThumbConnectionType.start,
-    //           // },
-    //           // {
-    //           //   thumbType: ThumbType.EndConnectorTop,
-    //           //   thumbIndex: 0,
-    //           //   connectionType: ThumbConnectionType.end,
-    //           // },
-    //         ],
-    //         //testIfCondition as unknown as INodeComponent<NodeInfo>,
-    //         jsxComponentWrapper,
-    //         //testButton as unknown as INodeComponent<NodeInfo>,
-    //         //`<p>Node</p><p>Lorem ipsum</p><p>dummy node</p><div class="h-24"></div>`,
-    //         {
-    //           classNames: `bg-slate-500 p-4 rounded`,
-    //         }
-    //       );
-    //       node.nodeComponent.nodeInfo = {};
-    //       node.nodeComponent.nodeInfo.formElements = formElements;
-
-    //       createNamedSignal('test', '');
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'Add rect'
-    // );
-
     const serializeFlow = () => {
       return serializeElementsMap(canvasApp.elements);
     };
@@ -1081,20 +879,6 @@ export class AppElement {
       }
     };
     setupTasksInDropdown();
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: navBarButton,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       this.canvasApp?.centerCamera();
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'center'
-    // );
 
     // createElement(
     //   'button',
@@ -1271,26 +1055,6 @@ export class AppElement {
     //   },
     //   menubarElement.domElement,
     //   'stress test'
-    // );
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: button,
-    //     click: (event) => {
-    //       event.preventDefault();
-
-    //       const nodeId = getSelectedNode();
-    //       if (nodeId) {
-    //         const color =
-    //           '#' + Math.floor(Math.random() * 16777215).toString(16);
-    //         animatePath(nodeId, color);
-    //       }
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'move point over lines'
     // );
 
     this.testCircle = createElement(
@@ -1485,24 +1249,12 @@ export class AppElement {
       ''
     );
 
-    // transform-origin: top left;
-    // const canvas = createElement(
-    //   'div',
-    //   {
-    //     id: 'canvas',
-    //     class:
-    //       'w-full h-full bg-slate-800 flex-auto relative z-10 origin-top-left transition-none',
-    //   },
-    //   rootElement
-    // );
-
     this.editPopupContainer = createElement(
       'div',
       {
         id: 'textAreaContainer',
         class:
           'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-600 hidden overflow-auto',
-        //'fixed w-1/4 h-full top-0 right-0 left-auto z-50 p-2 bg-slate-400 hidden',
         wheel: (event) => {
           event.stopPropagation();
         },
@@ -1531,9 +1283,6 @@ export class AppElement {
         stroke: 'white',
         'stroke-width': '3px',
         fill: 'transparent',
-        style: {
-          //filter: 'drop-shadow(5px 5px 3px rgb(255 255 255 / 1))',
-        },
       },
       this.editPopupLineContainer.domElement
     );
@@ -1544,9 +1293,6 @@ export class AppElement {
         stroke: 'white',
         'stroke-width': '2px',
         fill: 'transparent',
-        style: {
-          //filter: 'drop-shadow(5px 5px 3px rgb(255 255 255 / 1))',
-        },
       },
       this.editPopupLineContainer.domElement
     );
@@ -1595,7 +1341,6 @@ export class AppElement {
         showProgressOnPathExecution(progressOoPathExecution, pathExecution);
       }
     };
-    //rootElement.appendChild(
     AppComponents({
       setExecutionPath,
       rootElement: this.rootElement,
@@ -1603,16 +1348,6 @@ export class AppElement {
     //);
     // let raf = -1;
     // let inputTimeout = -1;
-
-    // const textArea = createElement(
-    //   'textarea',
-    //   {
-    //     id: 'textAreaCode',
-    //     class: 'w-full h-full p-2 outline-none',
-    //     input:
-    //   },
-    //   sidebarContainer.domElement
-    // );
 
     let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
@@ -1730,10 +1465,6 @@ export class AppElement {
 
           return;
         }
-        // const [currentValue, setCurrentValue] = createNamedSignal(
-        //   nodeElementId,
-        //   (nodeInfo.formValues ?? {})['Expression'] ?? ''
-        // );
 
         const formElementInstance = createElement(
           'div',
@@ -1780,7 +1511,6 @@ export class AppElement {
                 node.nodeInfo = values;
               }
             }
-            //setCurrentValue(values['Expression']);
 
             removeFormElement();
             currentSelectedNode = undefined;
@@ -1905,27 +1635,6 @@ export class AppElement {
       currentSelectedNode = selectedNodeInfo;
     });
 
-    // createMarkupElement(
-    //   `
-    //   <div class="bg-black" >
-    //     <div>
-    //       <div>
-    //         <div style="background: white;" class="p-2">
-    //           <h2>TITLE</h2>
-    //           <p>subtitle</p>
-    //           <div class="bg-red-300">
-    //             <i style="color:blue;">lorem ipsummm<br></br></i>
-    //             {20 + 30}
-    //           </div>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    //   `,
-    //   canvasApp.canvas.domElement,
-    //   canvasApp.elements
-    // );
-
     setupMarkupElement(
       `
       function Test() {
@@ -1936,19 +1645,14 @@ export class AppElement {
       this.rootElement
     );
 
-    // const element = TestApp({
-    //   //parentClass: 'absolute top-0 left-0 bg-white z-[10000]',
-    // }); //TestDummyComponent();
-    // console.log('element', element);
-    // rootElement.append(element as unknown as Node);
-
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
     });
   }
 }
 
-/*const [getCount, setCount] = createSignal(0);
+/*
+const [getCount, setCount] = createSignal(0);
 const [getValue, setValue] = createSignal('test');
 createEffect(() => console.log('effect', getCount(), getValue()));
 setCount(1);
@@ -1956,7 +1660,8 @@ setCount(2);
 setValue('test2');
 setCount(3);
 */
-/*setInterval(() => {
+/*
+setInterval(() => {
   setCount(getCount() + 1);
 }, 1000);
 */
