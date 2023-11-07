@@ -107,6 +107,9 @@ export const observeVariable =
             fieldType: FormFieldType.Text,
             fieldName: 'variableName',
             value: initialValue ?? '',
+            settings: {
+              showLabel: false,
+            },
             onChange: (value: string) => {
               if (!node.nodeInfo) {
                 return;
@@ -133,13 +136,30 @@ export const observeVariable =
         const componentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded`,
+            class: `relative`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
+        createElement(
+          'div',
+          {
+            class: `flex items-center bg-slate-600 text-white p-1 px-3 rounded-t pointer-events-none`,
+          },
+          componentWrapper.domElement,
+          'Observe variable'
+        ) as unknown as INodeComponent<NodeInfo>;
+
+        const formWrapper = createElement(
+          'div',
+          {
+            class: `inner-node bg-slate-500 p-4 pt-4 rounded-b`,
+          },
+          componentWrapper.domElement
+        ) as unknown as INodeComponent<NodeInfo>;
+
         FormComponent({
-          rootElement: componentWrapper.domElement as HTMLElement,
+          rootElement: formWrapper.domElement as HTMLElement,
           id: id ?? '',
           formElements,
           hasSubmitButton: false,
@@ -165,7 +185,7 @@ export const observeVariable =
           ],
           componentWrapper,
           {
-            classNames: `bg-slate-500 p-4 rounded`,
+            classNames: ``,
           },
           undefined,
           undefined,
