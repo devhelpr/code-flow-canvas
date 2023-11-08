@@ -223,10 +223,16 @@ export class AppElement<T> {
     this.canvasApp?.setCamera(0, 0, 1);
   };
 
+  onShouldPositionPopup = (node: IRectNodeComponent<T>) => {
+    return true;
+  };
+
   onCameraChanged = (camera: Camera) => {
     const selectedNodeInfo = getSelectedNode();
 
     if (selectedNodeInfo) {
+      // TODO : improve this (nodeInfo reference) .. and move it to event handled by FlowApp
+      // .. or add canvasAppInstance to containerNode (INodeComponent)
       const node = (
         selectedNodeInfo?.containerNode
           ? (selectedNodeInfo?.containerNode.nodeInfo as any)?.canvasAppInstance
@@ -238,23 +244,10 @@ export class AppElement<T> {
         return;
       }
 
-      // TODO : improve this .. and move it to event handled by FlowApp
-      const nodeInfo: any = node?.nodeInfo ?? {};
-      if (
-        node &&
-        (node as INodeComponent<T>).nodeType === NodeType.Connection
-      ) {
-        return;
+      if (this.onShouldPositionPopup(node as IRectNodeComponent<T>)) {
+        console.log('before positionPopup2', selectedNodeInfo);
+        this.positionPopup(node);
       }
-
-      if (((nodeInfo as any)?.formElements ?? []).length === 0) {
-        return;
-      }
-      if (!this.formElement) {
-        return;
-      }
-      console.log('before positionPopup2', selectedNodeInfo);
-      this.positionPopup(node);
     }
   };
 

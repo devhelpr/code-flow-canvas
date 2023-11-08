@@ -1377,6 +1377,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     });
   }
 
+  onShouldPositionPopup = (node: IRectNodeComponent<NodeInfo>) => {
+    const nodeInfo = node?.nodeInfo ?? {};
+    if (node && node.nodeType === NodeType.Connection) {
+      return false;
+    }
+
+    if ((nodeInfo?.formElements ?? []).length === 0) {
+      return false;
+    }
+    if (!this.formElement) {
+      return false;
+    }
+    return true;
+  };
+
   onPreRemoveElement = (element: IElementNode<NodeInfo>) => {
     if (element.nodeInfo?.delete) {
       element.nodeInfo.delete();
