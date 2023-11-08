@@ -16,6 +16,6 @@ declare global {
   }
 }
 
-import('./app/app.element').then((module) => {
-  new module.AppElement('#app-root');
+import('./app/flow-app.element').then((module) => {
+  new module.FlowAppElement('#app-root');
 });
