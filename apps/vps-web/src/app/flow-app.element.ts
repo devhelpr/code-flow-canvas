@@ -70,7 +70,7 @@ import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
 
-export class FlowAppElement extends AppElement {
+export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -1376,6 +1376,12 @@ export class FlowAppElement extends AppElement {
       console.log('log', message);
     });
   }
+
+  onPreRemoveElement = (element: IElementNode<NodeInfo>) => {
+    if (element.nodeInfo?.delete) {
+      element.nodeInfo.delete();
+    }
+  };
 
   onPreclearCanvas = () => {
     this.clearPathExecution();

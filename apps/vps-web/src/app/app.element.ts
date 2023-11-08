@@ -75,7 +75,7 @@ template.innerHTML = `
   </div>
 `;
 
-export class AppElement {
+export class AppElement<T> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -84,22 +84,22 @@ export class AppElement {
 
   isStoring = false;
 
-  canvas?: IElementNode<NodeInfo> = undefined;
-  canvasApp?: CanvasAppInstance<NodeInfo> = undefined;
+  canvas?: IElementNode<T> = undefined;
+  canvasApp?: CanvasAppInstance<T> = undefined;
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
-  pathExecutions: RunNodeResult<NodeInfo>[][] = [];
+  pathExecutions: RunNodeResult<T>[][] = [];
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
-  currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
+  currentPathUnderInspection: RunNodeResult<T>[] | undefined = undefined;
 
-  formElement: INodeComponent<NodeInfo> | undefined = undefined;
-  editPopupContainer: IElementNode<NodeInfo> | undefined = undefined;
-  editPopupLineContainer: IElementNode<NodeInfo> | undefined = undefined;
-  editPopupLinePath: IElementNode<NodeInfo> | undefined = undefined;
-  editPopupLineEndPath: IElementNode<NodeInfo> | undefined = undefined;
-  editPopupEditingNodeIndicator: IElementNode<NodeInfo> | undefined = undefined;
-  selectedNodeLabel: IElementNode<NodeInfo> | undefined = undefined;
+  formElement: INodeComponent<T> | undefined = undefined;
+  editPopupContainer: IElementNode<T> | undefined = undefined;
+  editPopupLineContainer: IElementNode<T> | undefined = undefined;
+  editPopupLinePath: IElementNode<T> | undefined = undefined;
+  editPopupLineEndPath: IElementNode<T> | undefined = undefined;
+  editPopupEditingNodeIndicator: IElementNode<T> | undefined = undefined;
+  selectedNodeLabel: IElementNode<T> | undefined = undefined;
   rootElement: HTMLElement | undefined = undefined;
 
   appRootElement: Element | null;
@@ -125,7 +125,7 @@ export class AppElement {
       return;
     }
 
-    const canvasApp = createCanvasApp<NodeInfo>(this.rootElement);
+    const canvasApp = createCanvasApp<T>(this.rootElement);
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
 
@@ -191,19 +191,21 @@ export class AppElement {
     );
   }
 
-  removeElement = (element: IElementNode<NodeInfo>) => {
-    if (element.nodeInfo?.delete) {
-      element.nodeInfo.delete();
-    }
+  onPreRemoveElement = (element: IElementNode<T>) => {
+    //
+  };
+
+  removeElement = (element: IElementNode<T>) => {
+    this.onPreRemoveElement(element);
     element.domElement.remove();
-    const node = element as unknown as INodeComponent<NodeInfo>;
+    const node = element as unknown as INodeComponent<T>;
     if (node && node.delete) {
       node.delete();
     }
-    element.elements.forEach((element: IElementNode<NodeInfo>) => {
-      this.removeElement(element as unknown as IElementNode<NodeInfo>);
+    element.elements.forEach((element: IElementNode<T>) => {
+      this.removeElement(element as unknown as IElementNode<T>);
     });
-    element.elements = createElementMap<NodeInfo>();
+    element.elements = createElementMap<T>();
   };
   onPreclearCanvas = () => {
     //
@@ -215,7 +217,7 @@ export class AppElement {
 
     this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
-      this.removeElement(element as unknown as IElementNode<NodeInfo>);
+      this.removeElement(element as unknown as IElementNode<T>);
     });
     this.canvasApp?.elements.clear();
     this.canvasApp?.setCamera(0, 0, 1);
@@ -235,10 +237,12 @@ export class AppElement {
       if (!node) {
         return;
       }
+
+      // TODO : improve this .. and move it to event handled by FlowApp
       const nodeInfo: any = node?.nodeInfo ?? {};
       if (
         node &&
-        (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
+        (node as INodeComponent<T>).nodeType === NodeType.Connection
       ) {
         return;
       }
@@ -254,7 +258,7 @@ export class AppElement {
     }
   };
 
-  positionPopup = (node: IRectNodeComponent<NodeInfo>) => {
+  positionPopup = (node: IRectNodeComponent<T>) => {
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
@@ -264,7 +268,7 @@ export class AppElement {
 
     const sidebar = this.editPopupContainer
       ?.domElement as unknown as HTMLElement;
-    const nodeComponent = node as INodeComponent<NodeInfo>;
+    const nodeComponent = node as INodeComponent<T>;
 
     let parentX = 0;
     let parentY = 0;
@@ -360,7 +364,7 @@ export class AppElement {
       L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
         (yLine < y ? y - yLine : 0) + 170 + 5
       }
-        `
+      s`
     );
   };
 }
