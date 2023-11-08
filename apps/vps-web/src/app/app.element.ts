@@ -303,7 +303,7 @@ export class AppElement {
     );
   };
 
-  constructor() {
+  constructor(appRootSelector: string) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
 
@@ -312,7 +312,7 @@ export class AppElement {
         'NO Crypto defined ... uuid cannot be created! Are you on a http connection!?'
       );
     }
-    const appRootElement = document.getElementById('app-root');
+    const appRootElement = document.querySelector(appRootSelector);
     if (!appRootElement) {
       return;
     }
@@ -1666,4 +1666,4 @@ setInterval(() => {
 }, 1000);
 */
 
-const appElement = new AppElement();
+//const appElement = new AppElement();

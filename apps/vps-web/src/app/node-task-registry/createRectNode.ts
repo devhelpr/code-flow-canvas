@@ -4,19 +4,32 @@ import {
   INodeComponent,
   IRectNodeComponent,
   IThumb,
-  ThumbConnectionType,
-  ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormField } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues } from '../node-task-registry';
 
+export interface ComputeResult<T> {
+  result: T;
+  followPath: any;
+  output: T;
+}
+
+export abstract class BaseNodeCompute<T> {
+  abstract compute: (
+    input: T,
+    pathExecution?: RunNodeResult<NodeInfo>[],
+    loopIndex?: number,
+    payload?: { [key: string]: any }
+  ) => ComputeResult<T>;
+  abstract initializeCompute: () => void;
+}
+
 export const createRectNode = (
   nodeTypeName: string,
   nodeTitle: string,
   id: string,
-  initialValue: string,
   formElements: FormField[],
   x: number,
   y: number,
@@ -31,7 +44,8 @@ export const createRectNode = (
   initializeCompute: () => void,
   thumbs: IThumb[],
   canvasApp: CanvasAppInstance<NodeInfo>,
-  containerNode?: IRectNodeComponent<NodeInfo>
+  containerNode?: IRectNodeComponent<NodeInfo>,
+  initialValues?: InitialValues
 ) => {
   const componentWrapper = createElement(
     'div',
@@ -85,9 +99,7 @@ export const createRectNode = (
     id,
     {
       type: nodeTypeName,
-      formValues: {
-        variableName: initialValue ?? '',
-      },
+      formValues: initialValues ?? {},
     },
     containerNode
   );
@@ -106,6 +118,7 @@ export const createRectNode = (
     node,
     rect,
     componentWrapper,
+    contextInstance: canvasApp,
   };
 };
 
@@ -127,11 +140,13 @@ export const visualNodeFactory = (
     payload?: any
   ) => IComputeResult,
   initializeCompute: () => void,
-  formElements: FormField[],
+
   isContainer = false,
   width: number,
   height: number,
-  thumbs: IThumb[]
+  thumbs: IThumb[],
+  onGetFormElements: (values?: InitialValues) => FormField[],
+  onCreatedNode: (nodeInfo: ReturnType<typeof createRectNode>) => void
 ) => {
   return {
     name: nodeTypeName,
@@ -142,15 +157,14 @@ export const visualNodeFactory = (
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      initialValues?: InitialValues, // this can be the values imported from storage..
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
-      const initialValue = initalValues?.[defaultValueFieldName] ?? '';
-      return createRectNode(
+      const formElements = onGetFormElements(initialValues);
+      const nodeInstance = createRectNode(
         nodeTypeName,
         nodeTitle,
         id ?? '',
-        initialValue,
         formElements,
         x,
         y,
@@ -160,8 +174,11 @@ export const visualNodeFactory = (
         initializeCompute,
         thumbs,
         canvasApp,
-        containerNode
+        containerNode,
+        initialValues
       );
+      onCreatedNode(nodeInstance);
+      return nodeInstance.node;
     },
   };
 };

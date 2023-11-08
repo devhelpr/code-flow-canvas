@@ -180,10 +180,10 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           return;
         } else if (command === 'push') {
           pushValueToArray(runCommandParameterExpression(args, loopIndex));
-        } else if (command === 'pushNumber') {
-          pushValueToArray(
-            parseInt(runCommandParameterExpression(args, loopIndex)) || 0
-          );
+          // } else if (command === 'pushNumber') {
+          //   pushValueToArray(
+          //     parseInt(runCommandParameterExpression(args, loopIndex)) || 0
+          //   );
         } else if (command === 'swap') {
           const [index1, index2] = args
             .split(',')

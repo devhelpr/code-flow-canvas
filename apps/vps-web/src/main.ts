@@ -16,4 +16,6 @@ declare global {
   }
 }
 
-import './app/app.element.ts';
+import('./app/app.element').then((module) => {
+  new module.AppElement('#app-root');
+});
