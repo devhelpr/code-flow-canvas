@@ -59,7 +59,7 @@ export class AppElement<T> {
 
   appRootElement: Element | null;
 
-  constructor(appRootSelector: string) {
+  constructor(appRootSelector: string, customTemplate?: HTMLTemplateElement) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
 
@@ -72,7 +72,9 @@ export class AppElement<T> {
     if (!this.appRootElement) {
       return;
     }
-    this.appRootElement.appendChild(template.content.cloneNode(true));
+    this.appRootElement.appendChild(
+      (customTemplate ?? template).content.cloneNode(true)
+    );
     this.rootElement = this.appRootElement.querySelector(
       'div#root'
     ) as HTMLElement;

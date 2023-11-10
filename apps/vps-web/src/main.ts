@@ -16,6 +16,13 @@ declare global {
   }
 }
 
-import('./app/flow-app.element').then((module) => {
-  new module.FlowAppElement('#app-root');
-});
+const url = new URL(window.location.href);
+if (url.pathname === '/gl') {
+  import('./app/gl-app.element').then((module) => {
+    new module.GLAppElement('#app-root');
+  });
+} else {
+  import('./app/flow-app.element').then((module) => {
+    new module.FlowAppElement('#app-root');
+  });
+}
