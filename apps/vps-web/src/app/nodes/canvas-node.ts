@@ -173,6 +173,8 @@ export const getCanvasNode =
             canvasApp.interactionStateMachine
           );
 
+          rect.nodeComponent.canvasAppInstance = canvasAppInstance;
+
           const inputInstance = canvasAppInstance.createRect(
             -1,
             0,

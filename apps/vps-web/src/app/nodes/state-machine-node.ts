@@ -374,6 +374,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           '',
           canvasApp.interactionStateMachine
         );
+        rect.nodeComponent.canvasAppInstance = canvasAppInstance;
 
         const inputInstance = canvasAppInstance.createRect(
           -1,

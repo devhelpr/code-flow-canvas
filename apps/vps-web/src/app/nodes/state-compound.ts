@@ -246,6 +246,8 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
           canvasApp.interactionStateMachine
         );
 
+        rect.nodeComponent.canvasAppInstance = canvasAppInstance;
+
         canvasAppInstance.setOnCanvasUpdated(() => {
           updated?.();
           stateMachine = undefined;

@@ -1,0 +1,58 @@
+// onInput: (event: InputEvent) => {
+          //   const text =
+          //     (event?.target as unknown as HTMLTextAreaElement)?.value ?? '';
+
+          //   if (inputTimeout !== -1) {
+          //     clearTimeout(inputTimeout);
+          //     inputTimeout = -1;
+          //   }
+          //   inputTimeout = setTimeout(() => {
+          //     if (raf !== -1) {
+          //       window.cancelAnimationFrame(raf);
+          //       raf = -1;
+          //     }
+
+          //     console.log('oninput', text);
+          //     registerCustomBlock('frameUpdate');
+          //     const compiledExpressionInfo = compileExpressionAsInfo(text);
+          //     try {
+          //       const compiledExpression = (
+          //         new Function(
+          //           'payload',
+          //           `${compiledExpressionInfo.script}`
+          //         ) as unknown as (payload?: any) => any
+          //       ).bind(compiledExpressionInfo.bindings);
+          //       const result = compiledExpression();
+
+          //       // TODO : have this done by the compiler:
+          //       if (result && result.frameUpdate) {
+          //         result.frameUpdate = result.frameUpdate.bind(
+          //           compiledExpressionInfo.bindings
+          //         );
+
+          //         /*
+          //             test code:
+
+          //             let a = 1;
+          //             frameUpdate {
+          //               setStartPoint(1,a);
+          //               a=a+1;
+          //             }
+
+          //             TODO : implement deltaTime
+          //             TODO : implement custom log function
+          //         */
+
+          //         const rafCallback = (deltaTime: number) => {
+          //           result.frameUpdate(deltaTime);
+          //           if (raf !== -1) {
+          //             raf = window.requestAnimationFrame(rafCallback);
+          //           }
+          //         };
+          //         raf = window.requestAnimationFrame(rafCallback);
+          //       }
+          //     } catch (error) {
+          //       console.error('error compiling', error);
+          //     }
+          //   }, 100) as unknown as number;
+          // },

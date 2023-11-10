@@ -7,67 +7,22 @@ import {
   createElement,
   IElementNode,
   INodeComponent,
-  createEffect,
   getSelectedNode,
   setSelectNode,
-  setupMarkupElement,
   createElementMap,
   createCanvasApp,
   CanvasAppInstance,
-  ThumbType,
   IRectNodeComponent,
-  IConnectionNodeComponent,
-  IThumbNodeComponent,
-  Flow,
-  updateNamedSignal,
-  NodeType,
-  ElementNodeMap,
-  LineType,
-  SelectedNodeInfo,
   createNSElement,
   Camera,
-  FlowNode,
 } from '@devhelpr/visual-programming-system';
 
-import { registerCustomFunction } from '@devhelpr/expression-compiler';
-import flowData from '../example-data/tiltest.json';
-
-import { FormComponent } from './components/form-component';
-
+import { RunNodeResult } from './simple-flow-engine/simple-flow-engine';
 import {
-  increaseRunIndex,
-  resetRunIndex,
-  run,
-  RunNodeResult,
-} from './simple-flow-engine/simple-flow-engine';
-import { NodeInfo } from './types/node-info';
-import {
-  setSpeedMeter,
-  timers,
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
 } from './follow-path/animate-path';
-import {
-  createIndexedDBStorageProvider,
-  FlowrunnerIndexedDbStorageProvider,
-} from './storage/indexeddb-storage-provider';
-import { getPointOnConnection } from './follow-path/point-on-connection';
-import { AppComponents } from './components/app-components';
-import { NavbarComponents } from './components/navbar-components';
-import {
-  menubarClasses,
-  navBarButton,
-  navBarIconButton,
-  navBarIconButtonInnerElement,
-} from './consts/classes';
-import {
-  getNodeFactoryNames,
-  getNodeTaskFactory,
-  setupCanvasNodeTaskRegistry,
-} from './node-task-registry/canvas-node-task-registry';
-import { serializeElementsMap } from './storage/serialize-canvas';
-import { importToCanvas } from './storage/import-to-canvas';
-import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
+import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-provider';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -235,8 +190,7 @@ export class AppElement<T> {
       // .. or add canvasAppInstance to containerNode (INodeComponent)
       const node = (
         selectedNodeInfo?.containerNode
-          ? (selectedNodeInfo?.containerNode.nodeInfo as any)?.canvasAppInstance
-              ?.elements
+          ? selectedNodeInfo?.containerNode?.canvasAppInstance?.elements
           : this.canvasApp?.elements
       )?.get(selectedNodeInfo.id);
 
@@ -246,7 +200,7 @@ export class AppElement<T> {
 
       if (this.onShouldPositionPopup(node as IRectNodeComponent<T>)) {
         console.log('before positionPopup2', selectedNodeInfo);
-        this.positionPopup(node);
+        this.positionPopup(node as IRectNodeComponent<T>);
       }
     }
   };
@@ -272,8 +226,7 @@ export class AppElement<T> {
             x: 0,
             y: 0,
           };
-        // parentX = node.containerNode.x;
-        // parentY = node.containerNode.y;
+
         parentX = parentCoordinates.x;
         parentY = parentCoordinates.y;
       }
@@ -288,18 +241,7 @@ export class AppElement<T> {
     const widthNode = nodeComponent.width ?? 0;
     const heightNode = nodeComponent.height ?? 0;
 
-    console.log(
-      'selectedNode',
-      xCamera,
-      yCamera,
-      scaleCamera,
-      xNode,
-      yNode,
-      widthNode,
-      heightNode
-    );
     const rootClientRect = this.rootElement?.getBoundingClientRect();
-    console.log('rootClientRect', rootClientRect);
     let x = xCamera + xNode * scaleCamera + widthNode * scaleCamera + 100;
     if (x < 10) {
       x = 10;

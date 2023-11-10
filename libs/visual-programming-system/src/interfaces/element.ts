@@ -1,3 +1,4 @@
+import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
@@ -67,6 +68,7 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
   isStaticPosition?: boolean;
   isCircle?: boolean;
   isThumb?: boolean;
+  canvasAppInstance?: CanvasAppInstance<T>;
 }
 
 export interface IConnectionNodeComponent<T> extends INodeComponent<T> {

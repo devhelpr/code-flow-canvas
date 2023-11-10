@@ -942,5 +942,3 @@ export const createCanvasApp = <T>(
     },
   };
 };
-
-export type CanvasAppInstance<T> = ReturnType<typeof createCanvasApp<T>>;
