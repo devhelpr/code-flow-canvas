@@ -11,66 +11,40 @@ import {
   getSelectedNode,
   setSelectNode,
   setupMarkupElement,
-  createElementMap,
-  createCanvasApp,
   CanvasAppInstance,
-  ThumbType,
   IRectNodeComponent,
-  IConnectionNodeComponent,
-  IThumbNodeComponent,
   Flow,
   updateNamedSignal,
   NodeType,
-  ElementNodeMap,
-  LineType,
   SelectedNodeInfo,
-  createNSElement,
-  Camera,
   FlowNode,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
-import flowData from '../example-data/tiltest.json';
 
 import { FormComponent } from './components/form-component';
 
 import {
-  increaseRunIndex,
-  resetRunIndex,
-  run,
-  RunNodeResult,
-} from './simple-flow-engine/simple-flow-engine';
-import { NodeInfo } from './types/node-info';
-import {
-  setSpeedMeter,
-  timers,
-  animatePath as _animatePath,
-  animatePathFromThumb as _animatePathFromThumb,
-} from './follow-path/animate-path';
-import {
   createIndexedDBStorageProvider,
   FlowrunnerIndexedDbStorageProvider,
 } from './storage/indexeddb-storage-provider';
-import { getPointOnConnection } from './follow-path/point-on-connection';
-import { AppComponents } from './components/app-components';
-import { NavbarComponents } from './components/navbar-components';
+import { GLNavbarMenu } from './components/gl-navbar-components';
 import {
   menubarClasses,
   navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
 } from './consts/classes';
-import {
-  getNodeFactoryNames,
-  getNodeTaskFactory,
-  setupCanvasNodeTaskRegistry,
-} from './node-task-registry/canvas-node-task-registry';
 import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
-import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
+import {
+  getGLNodeFactoryNames,
+  getGLNodeTaskFactory,
+  setupGLNodeTaskRegistry,
+} from './node-task-registry/gl-node-task-registry';
 
-export class GLAppElement extends AppElement<NodeInfo> {
+export class GLAppElement extends AppElement<any> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -81,19 +55,10 @@ export class GLAppElement extends AppElement<NodeInfo> {
 
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
-  pathExecutions: RunNodeResult<NodeInfo>[][] = [];
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
-  currentPathUnderInspection: RunNodeResult<NodeInfo>[] | undefined = undefined;
-
-  formElement: INodeComponent<NodeInfo> | undefined = undefined;
-  selectedNodeLabel: IElementNode<NodeInfo> | undefined = undefined;
-
-  testCircle: IElementNode<NodeInfo> | undefined = undefined;
-  message: IElementNode<NodeInfo> | undefined = undefined;
-  messageText: IElementNode<NodeInfo> | undefined = undefined;
-
-  currentPathExecution: RunNodeResult<NodeInfo>[] | undefined = undefined;
+  formElement: INodeComponent<any> | undefined = undefined;
+  selectedNodeLabel: IElementNode<any> | undefined = undefined;
 
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
@@ -110,109 +75,10 @@ export class GLAppElement extends AppElement<NodeInfo> {
     if (!this.canvasApp) {
       return;
     }
+    this.setupWindowResize();
     this.setupGLCanvas();
 
-    const animatePath = (
-      node: IRectNodeComponent<NodeInfo>,
-      color: string,
-      onNextNode?: (
-        nodeId: string,
-        node: IRectNodeComponent<NodeInfo>,
-        input: string | any[]
-      ) =>
-        | {
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-            followPath?: string;
-          }
-        | Promise<{
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-            followPath?: string;
-          }>,
-      onStopped?: (input: string | any[]) => void,
-      input?: string | any[],
-      followPathByName?: string, // normal, success, failure, "subflow",
-      animatedNodes?: {
-        node1?: IElementNode<unknown>;
-        node2?: IElementNode<unknown>;
-        node3?: IElementNode<unknown>;
-      },
-      offsetX?: number,
-      offsetY?: number,
-      followPathToEndThumb?: boolean,
-      singleStep?: boolean,
-      followThumb?: string
-    ) => {
-      if (!this.canvasApp) {
-        throw new Error('canvasApp not defined');
-      }
-      return _animatePath<NodeInfo>(
-        this.canvasApp,
-        node,
-        color,
-        onNextNode,
-        onStopped,
-        input,
-        followPathByName,
-        animatedNodes,
-        offsetX,
-        offsetY,
-        followPathToEndThumb,
-        singleStep,
-        followThumb
-      );
-    };
-
-    const animatePathFromThumb = (
-      node: IThumbNodeComponent<NodeInfo>,
-      color: string,
-      onNextNode?: (
-        nodeId: string,
-        node: IRectNodeComponent<NodeInfo>,
-        input: string | any[]
-      ) =>
-        | { result: boolean; output: string | any[]; followPathByName?: string }
-        | Promise<{
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-          }>,
-      onStopped?: (input: string | any[]) => void,
-      input?: string | any[],
-      followPathByName?: string, // normal, success, failure, "subflow",
-      animatedNodes?: {
-        node1?: IElementNode<unknown>;
-        node2?: IElementNode<unknown>;
-        node3?: IElementNode<unknown>;
-      },
-      offsetX?: number,
-      offsetY?: number,
-      followPathToEndThumb?: boolean,
-      singleStep?: boolean
-    ) => {
-      if (!this.canvasApp) {
-        throw new Error('canvasApp not defined');
-      }
-      return _animatePathFromThumb<NodeInfo>(
-        this.canvasApp,
-        node,
-        color,
-        onNextNode,
-        onStopped,
-        input,
-        followPathByName,
-        animatedNodes,
-        offsetX,
-        offsetY,
-        followPathToEndThumb,
-        singleStep
-      );
-    };
-
-    setupCanvasNodeTaskRegistry(animatePath, animatePathFromThumb);
+    setupGLNodeTaskRegistry();
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
@@ -220,13 +86,11 @@ export class GLAppElement extends AppElement<NodeInfo> {
         this.storageProvider = storageProvider;
 
         if (this.storageProvider && this.canvasApp && this.rootElement) {
-          NavbarComponents({
+          GLNavbarMenu({
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
             selectNodeType: selectNodeType.domElement as HTMLSelectElement,
-            animatePath: animatePath,
-            animatePathFromThumb: animatePathFromThumb,
             canvasUpdated: canvasUpdated,
             canvasApp: this.canvasApp,
             removeElement: this.removeElement,
@@ -234,11 +98,12 @@ export class GLAppElement extends AppElement<NodeInfo> {
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             importToCanvas: (
-              nodesList: FlowNode<NodeInfo>[],
-              canvasApp: CanvasAppInstance<NodeInfo>,
+              nodesList: FlowNode<any>[],
+              canvasApp: CanvasAppInstance<any>,
               canvasUpdated: () => void,
-              containerNode?: IRectNodeComponent<NodeInfo>,
-              nestedLevel?: number
+              containerNode?: IRectNodeComponent<any>,
+              nestedLevel?: number,
+              getGLNodeTaskFactory?: (name: string) => any
             ) => {
               this.isStoring = true;
               importToCanvas(
@@ -246,7 +111,8 @@ export class GLAppElement extends AppElement<NodeInfo> {
                 canvasApp,
                 canvasUpdated,
                 containerNode,
-                nestedLevel
+                nestedLevel,
+                getGLNodeTaskFactory
               );
               this.isStoring = false;
               canvasUpdated();
@@ -261,39 +127,6 @@ export class GLAppElement extends AppElement<NodeInfo> {
             },
             menubarElement.domElement
           );
-
-          NodeSidebarMenuComponents({
-            clearCanvas: this.clearCanvas,
-            initializeNodes: initializeNodes,
-            storageProvider: this.storageProvider,
-            selectNodeType: selectNodeType.domElement as HTMLSelectElement,
-            animatePath: animatePath,
-            animatePathFromThumb: animatePathFromThumb,
-            canvasUpdated: canvasUpdated,
-            canvasApp: this.canvasApp,
-            removeElement: this.removeElement,
-            rootElement: this.rootElement as HTMLElement,
-            rootAppElement: this.rootElement as HTMLElement,
-            setIsStoring: setIsStoring,
-            importToCanvas: (
-              nodesList: FlowNode<NodeInfo>[],
-              canvasApp: CanvasAppInstance<NodeInfo>,
-              canvasUpdated: () => void,
-              containerNode?: IRectNodeComponent<NodeInfo>,
-              nestedLevel?: number
-            ) => {
-              this.isStoring = true;
-              importToCanvas(
-                nodesList,
-                canvasApp,
-                canvasUpdated,
-                containerNode,
-                nestedLevel
-              );
-              this.isStoring = false;
-              canvasUpdated();
-            },
-          }) as unknown as HTMLElement;
         }
         this.clearCanvas();
         storageProvider
@@ -307,7 +140,8 @@ export class GLAppElement extends AppElement<NodeInfo> {
               this.canvasApp,
               canvasUpdated,
               undefined,
-              0
+              0,
+              getGLNodeTaskFactory
             );
             this.canvasApp.centerCamera();
             initializeNodes();
@@ -329,7 +163,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
           return;
         }
         console.log('nodesList', nodesList);
-        const flow: Flow<NodeInfo> = {
+        const flow: Flow<any> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
           id: 'gl',
@@ -345,6 +179,20 @@ export class GLAppElement extends AppElement<NodeInfo> {
     };
 
     const canvasUpdated = () => {
+      if (this.canvasApp) {
+        this.canvasApp.elements.forEach((element) => {
+          const node = element as unknown as INodeComponent<any>;
+          if (node.nodeType === NodeType.Shape) {
+            const data = node.nodeInfo?.formValues['test'];
+            const parsedData = parseFloat(data);
+            if (!isNaN(parsedData)) {
+              this.test = parsedData;
+            }
+            console.log('canvasUpdated', data, parseFloat(data));
+          }
+        });
+        this.updateGLCanvasParameters();
+      }
       if (this.isStoring) {
         return;
       }
@@ -397,17 +245,13 @@ export class GLAppElement extends AppElement<NodeInfo> {
       });
 
       this.canvasApp?.elements.forEach((node) => {
-        const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
+        const nodeComponent = node as unknown as INodeComponent<any>;
         if (nodeComponent.nodeType !== NodeType.Connection) {
           if (nodeComponent?.nodeInfo?.initializeCompute) {
             nodeComponent.nodeInfo.initializeCompute();
           }
         }
       });
-      this.pathExecutions = [];
-      this.currentPathUnderInspection = undefined;
-      resetRunIndex();
-      (runButton.domElement as HTMLButtonElement).disabled = false;
     };
     createElement(
       'button',
@@ -424,159 +268,12 @@ export class GLAppElement extends AppElement<NodeInfo> {
       'Reset state'
     );
 
-    // createElement(
-    //   'button',
-    //   {
-    //     class: navBarButton,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       this.clearCanvas();
-    //       flowData.forEach((flowNode) => {
-    //         if (flowNode.shapeType !== 'Line') {
-    //           const rect = canvasApp?.createRect(
-    //             flowNode.x ?? 0,
-    //             flowNode.y ?? 0,
-    //             200,
-    //             300,
-    //             flowNode.taskType,
-    //             undefined,
-    //             [
-    //               {
-    //                 thumbType: ThumbType.StartConnectorCenter,
-    //                 thumbIndex: 0,
-    //                 connectionType: ThumbConnectionType.start,
-    //               },
-    //               {
-    //                 thumbType: ThumbType.EndConnectorCenter,
-    //                 thumbIndex: 0,
-    //                 connectionType: ThumbConnectionType.end,
-    //               },
-    //             ],
-    //             `<p>${flowNode.taskType}</p>`,
-    //             {
-    //               classNames: `bg-slate-500 p-4 rounded`,
-    //             }
-    //           );
-    //           rect.nodeComponent.nodeInfo = flowNode;
-    //         }
-    //       });
-
-    //       const elementList = Array.from(canvasApp?.elements ?? []);
-    //       console.log('elementList', elementList);
-
-    //       flowData.forEach((flowNode) => {
-    //         if (flowNode.shapeType === 'Line') {
-    //           let start: INodeComponent<NodeInfo> | undefined = undefined;
-    //           let end: INodeComponent<NodeInfo> | undefined = undefined;
-    //           if (flowNode.startshapeid) {
-    //             const startElement = elementList.find((e) => {
-    //               const element = e[1] as IElementNode<NodeInfo>;
-    //               return element.nodeInfo?.id === flowNode.startshapeid;
-    //             });
-    //             if (startElement) {
-    //               start =
-    //                 startElement[1] as unknown as INodeComponent<NodeInfo>;
-    //             }
-    //           }
-    //           if (flowNode.endshapeid) {
-    //             const endElement = elementList.find((e) => {
-    //               const element = e[1] as IElementNode<NodeInfo>;
-    //               return element.nodeInfo?.id === flowNode.endshapeid;
-    //             });
-    //             if (endElement) {
-    //               end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-    //             }
-    //           }
-
-    //           const curve = canvasApp.createCubicBezier(
-    //             start?.x ?? 0,
-    //             start?.y ?? 0,
-    //             end?.x ?? 0,
-    //             end?.y ?? 0,
-    //             (start?.x ?? 0) + 100,
-    //             (start?.y ?? 0) + 150,
-    //             (end?.x ?? 0) + 100,
-    //             (end?.y ?? 0) + 150,
-    //             false
-    //           );
-
-    //           curve.nodeComponent.isControlled = true;
-    //           curve.nodeComponent.nodeInfo = flowNode;
-
-    //           if (start && curve.nodeComponent) {
-
-    //             curve.nodeComponent.startNode = start;
-    //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
-    //               ThumbType.StartConnectorCenter,
-    //               start
-    //             );
-    //           }
-
-    //           if (end && curve.nodeComponent) {
-
-    //             curve.nodeComponent.endNode = end;
-    //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
-    //               ThumbType.EndConnectorCenter,
-    //               end
-    //             );
-    //           }
-    //           if (curve.nodeComponent.update) {
-    //             curve.nodeComponent.update();
-    //           }
-    //         }
-    //       });
-    //       this.canvasApp?.centerCamera();
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'import flow'
-    // );
-
     const serializeFlow = () => {
       if (!this.canvasApp) {
         return;
       }
       return serializeElementsMap(this.canvasApp.elements);
     };
-
-    const runButton = createElement(
-      'button',
-      {
-        class: `${navBarIconButton}`,
-        click: (event) => {
-          event.preventDefault();
-          (runButton.domElement as HTMLButtonElement).disabled = true;
-          this.clearPathExecution();
-          this.currentPathUnderInspection = undefined;
-          if (this.canvasApp?.elements) {
-            run<NodeInfo>(
-              this.canvasApp?.elements,
-              this.canvasApp,
-              animatePath,
-              (input, pathExecution) => {
-                if (pathExecution) {
-                  (pathRange.domElement as HTMLInputElement).value = '0';
-                  this.pathExecutions.push(pathExecution);
-                }
-                console.log('run finished', input, pathExecution);
-                (runButton.domElement as HTMLButtonElement).disabled = false;
-                increaseRunIndex();
-              }
-            );
-          }
-          return false;
-        },
-      },
-      menubarElement.domElement
-    );
-    createElement(
-      'span',
-      {
-        class: `${navBarIconButtonInnerElement} icon-play_arrow`,
-      },
-      runButton.domElement
-    );
 
     let speedMeter = 100;
     createElement(
@@ -590,11 +287,11 @@ export class GLAppElement extends AppElement<NodeInfo> {
         value: '100',
         change: (event) => {
           speedMeter = parseInt((event.target as HTMLInputElement).value);
-          setSpeedMeter(speedMeter);
-          const timerList = Array.from(timers ?? []);
-          timerList.forEach((timer) => {
-            timer[1]();
-          });
+          //setSpeedMeter(speedMeter);
+          // const timerList = Array.from(timers ?? []);
+          // timerList.forEach((timer) => {
+          //   timer[1]();
+          // });
         },
       },
       menubarElement.domElement,
@@ -633,9 +330,9 @@ export class GLAppElement extends AppElement<NodeInfo> {
     const setupTasksInDropdown = () => {
       if (selectNodeType?.domElement) {
         (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
-        const nodeTasks = getNodeFactoryNames();
+        const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
-          const factory = getNodeTaskFactory(nodeTask);
+          const factory = getGLNodeTaskFactory(nodeTask);
           if (factory) {
             const node = factory(canvasUpdated);
             if (node.isContained) {
@@ -655,9 +352,9 @@ export class GLAppElement extends AppElement<NodeInfo> {
     ) => {
       if (selectNodeType?.domElement) {
         (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
-        const nodeTasks = getNodeFactoryNames();
+        const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
-          const factory = getNodeTaskFactory(nodeTask);
+          const factory = getGLNodeTaskFactory(nodeTask);
           if (factory) {
             const node = factory(canvasUpdated);
             if (allowedNodeTasks.indexOf(node.name) < 0) {
@@ -674,245 +371,12 @@ export class GLAppElement extends AppElement<NodeInfo> {
     };
     setupTasksInDropdown();
 
-    this.testCircle = createElement(
-      'div',
-      {
-        class: `absolute bg-blue-500 top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded hidden`,
-        style: {
-          'clip-path': 'circle(50%)',
-        },
-      },
-      this.canvasApp?.canvas.domElement,
-      ''
-    );
-
-    // eslint-disable-next-line prefer-const
-    this.message = createElement(
-      'div',
-      {
-        class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-auto origin-center px-2 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
-        style: {
-          'clip-path':
-            'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
-        },
-      },
-      this.canvasApp?.canvas.domElement,
-      ''
-    );
-
-    this.messageText = createElement(
-      'div',
-      {
-        class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
-      },
-      this.message.domElement,
-      ''
-    );
-
-    const bgRange = createElement(
-      'div',
-      {
-        class:
-          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 items-center z-[1050] hidden', //flex',
-        name: 'path-track-bg',
-      },
-      this.rootElement,
-      ''
-    );
-
-    const showProgressOnPathExecution = (
-      value: number,
-      lastPathExecution: RunNodeResult<any>[]
-    ) => {
-      this.currentPathUnderInspection = lastPathExecution;
-
-      if (this.scopeNodeDomElement) {
-        this.scopeNodeDomElement.classList.remove('bg-blue-300');
-        this.scopeNodeDomElement = undefined;
-      }
-      this.currentPathExecution = lastPathExecution;
-
-      const stepSize = 100000 / (lastPathExecution.length - 1);
-      const step = Math.floor(value / stepSize);
-      const pathStep = lastPathExecution[step];
-      const node = pathStep.node;
-      if (pathStep.scopeNode) {
-        this.scopeNodeDomElement = (
-          pathStep.scopeNode.domElement as HTMLElement
-        ).firstChild as HTMLElement;
-        this.scopeNodeDomElement.classList.add('bg-blue-300');
-      }
-      lastPathExecution.forEach((path, indexPath) => {
-        if (path.node && path.node.domElement) {
-          (
-            (path.node.domElement as HTMLElement).firstChild as HTMLElement
-          ).classList.remove('bg-blue-400');
-        }
-      });
-      if (node && node.domElement) {
-        (
-          (node.domElement as HTMLElement).firstChild as HTMLElement
-        ).classList.add('bg-blue-400');
-
-        const pointValue = value - step * stepSize;
-        const percentage = pointValue / stepSize;
-        console.log(
-          'showProgressOnPathExecution',
-          step,
-          lastPathExecution.length
-        );
-        let loop = 0;
-        while (loop < lastPathExecution.length) {
-          const path = lastPathExecution[loop];
-          if (path.node && path.node.nodeInfo && path.node.nodeInfo.setValue) {
-            if (loop > step) {
-              path.node.nodeInfo.setValue(path.previousOutput ?? path.output);
-            } else {
-              path.node.nodeInfo.setValue(path.output);
-            }
-          }
-          loop++;
-        }
-        if (value % stepSize !== 0 && step < lastPathExecution.length) {
-          (this.testCircle?.domElement as HTMLElement).classList.remove(
-            'hidden'
-          );
-          (this.message?.domElement as HTMLElement).classList.remove('hidden');
-
-          const nextNodeId = lastPathExecution[step + 1].nodeId;
-          if (pathStep.endNode && pathStep.connection) {
-            const bezierCurvePoints = getPointOnConnection<NodeInfo>(
-              percentage,
-              pathStep.connection,
-              node,
-              pathStep.endNode
-            );
-            const domCircle = this.testCircle?.domElement as HTMLElement;
-            const domMessage = this.message?.domElement as HTMLElement;
-            const domMessageText = this.messageText?.domElement as HTMLElement;
-            domCircle.style.display = 'flex';
-            domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-            domMessage.style.display = 'flex';
-            domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-            domMessageText.textContent = pathStep.output.toString();
-            domMessage.title = pathStep.output.toString();
-          } else {
-            pathStep.node.connections.forEach((connection) => {
-              if (
-                connection.startNode?.id === pathStep.nodeId &&
-                connection.endNode?.id === nextNodeId
-              ) {
-                const bezierCurvePoints = getPointOnConnection<NodeInfo>(
-                  percentage,
-                  connection,
-                  connection.startNode,
-                  connection.endNode
-                );
-                const domCircle = this.testCircle?.domElement as HTMLElement;
-                const domMessage = this.message?.domElement as HTMLElement;
-                const domMessageText = this.messageText
-                  ?.domElement as HTMLElement;
-                domCircle.style.display = 'flex';
-                domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                domMessage.style.display = 'flex';
-                domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-                domMessageText.textContent = pathStep.output.toString();
-                domMessage.title = pathStep.output.toString();
-              }
-            });
-          }
-        }
-      }
-    };
-
-    const pathRange = createElement(
-      'input',
-      {
-        type: 'range',
-        class: 'p-2 m-2 relative w-full', //top-[60px]',
-        name: 'path-track',
-        min: '0',
-        max: '100000',
-        value: 1,
-        input: (event) => {
-          if (
-            this.currentPathUnderInspection === undefined &&
-            this.rootElement
-          ) {
-            // inspect latest path execution when no path is being inspected
-
-            const executionPathElement = this.rootElement.querySelector(
-              '#execution-path'
-            ) as HTMLInputElement;
-            if (executionPathElement) {
-              executionPathElement.value = '100';
-            }
-
-            this.currentPathUnderInspection =
-              this.pathExecutions[this.pathExecutions.length - 1];
-          }
-          if (this.currentPathUnderInspection) {
-            const value = parseInt((event.target as HTMLInputElement).value);
-            if (!isNaN(value)) {
-              showProgressOnPathExecution(
-                value,
-                this.currentPathUnderInspection
-              );
-            }
-          }
-        },
-      },
-      bgRange.domElement,
-      ''
-    );
-
-    const setExecutionPath = (value: number) => {
-      const index = Math.round(
-        ((this.pathExecutions.length - 1) * value) / 100
-      );
-
-      const pathExecution = this.pathExecutions[index];
-      if (pathExecution) {
-        const progressOoPathExecution = parseInt(
-          (pathRange.domElement as HTMLInputElement).value
-        );
-
-        console.log(
-          'setExecutionPath',
-          index,
-          value,
-          //          this.pathExecutions.length,
-          progressOoPathExecution, // this cannot be compared with  the index of pathExectution..
-          pathExecution.length
-        );
-
-        // pathExecution.forEach((path, index) => {
-        //   if (path.node && path.node.nodeInfo && path.node.nodeInfo.setValue) {
-        //     if (index < progressOoPathExecution - 1) {
-        //       path.node.nodeInfo.setValue(path.previousOutput ?? path.output);
-        //     } else {
-        //       path.node.nodeInfo.setValue(path.output);
-        //     }
-        //   }
-        // });
-
-        showProgressOnPathExecution(progressOoPathExecution, pathExecution);
-      }
-    };
-    AppComponents({
-      setExecutionPath,
-      rootElement: this.rootElement,
-    }) as unknown as HTMLElement;
-    //);
-    // let raf = -1;
-    // let inputTimeout = -1;
-
     let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
     const removeFormElement = () => {
       if (this.formElement) {
         this.canvasApp?.deleteElementFromNode(
-          this.editPopupContainer as INodeComponent<NodeInfo>,
+          this.editPopupContainer as INodeComponent<any>,
           this.formElement
         );
         this.formElement = undefined;
@@ -935,7 +399,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
       ) {
         const node = (
           currentSelectedNode?.containerNode
-            ? (currentSelectedNode?.containerNode.nodeInfo as any)
+            ? (currentSelectedNode?.containerNode?.nodeInfo as any)
                 ?.canvasAppInstance?.elements
             : this.canvasApp?.elements
         )?.get(currentSelectedNode.id);
@@ -953,7 +417,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
         this.selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
         const node = (
           selectedNodeInfo?.containerNode
-            ? (selectedNodeInfo?.containerNode.nodeInfo as any)
+            ? (selectedNodeInfo?.containerNode?.nodeInfo as any)
                 ?.canvasAppInstance?.elements
             : this.canvasApp?.elements
         )?.get(selectedNodeInfo.id);
@@ -970,7 +434,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
           node &&
-          (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
+          (node as INodeComponent<any>).nodeType === NodeType.Connection
         ) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
@@ -994,7 +458,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
 
         console.log('nodeInfo', nodeInfo);
 
-        const factory = getNodeTaskFactory(nodeInfo.type);
+        const factory = getGLNodeTaskFactory(nodeInfo.type);
         if (factory) {
           const nodeTask = factory(() => undefined);
           if ((nodeTask.childNodeTasks || []).length > 0) {
@@ -1030,7 +494,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
           this.editPopupContainer?.domElement,
           undefined
         );
-        this.formElement = formElementInstance as INodeComponent<NodeInfo>;
+        this.formElement = formElementInstance as INodeComponent<any>;
 
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
@@ -1150,7 +614,7 @@ export class GLAppElement extends AppElement<NodeInfo> {
     });
   }
 
-  onShouldPositionPopup = (node: IRectNodeComponent<NodeInfo>) => {
+  onShouldPositionPopup = (node: IRectNodeComponent<any>) => {
     const nodeInfo = node?.nodeInfo ?? {};
     if (node && node.nodeType === NodeType.Connection) {
       return false;
@@ -1165,167 +629,195 @@ export class GLAppElement extends AppElement<NodeInfo> {
     return true;
   };
 
-  onPreRemoveElement = (element: IElementNode<NodeInfo>) => {
+  onPreRemoveElement = (element: IElementNode<any>) => {
     if (element.nodeInfo?.delete) {
       element.nodeInfo.delete();
     }
   };
 
   onPreclearCanvas = () => {
-    this.clearPathExecution();
-    this.currentPathUnderInspection = undefined;
-    this.pathExecutions = [];
+    //
   };
 
-  clearPathExecution = () => {
-    if (this.scopeNodeDomElement) {
-      this.scopeNodeDomElement.classList.remove('bg-blue-300');
-    }
-    if (this.currentPathExecution) {
-      this.currentPathExecution.forEach((path) => {
-        if (path.node && path.node.domElement) {
-          (path.node.domElement.firstChild as HTMLElement)?.classList.remove(
-            'bg-blue-400'
-          );
-        }
-      });
-      const domCircle = this.testCircle?.domElement as HTMLElement;
-      const domMessage = this.message?.domElement as HTMLElement;
-      domCircle.style.display = 'none';
-      domMessage.style.display = 'none';
-      domCircle.classList.add('hidden');
-      domMessage.classList.add('hidden');
-      this.currentPathExecution = undefined;
+  updateGLCanvasParameters = () => {
+    if (
+      this.fragmentShader &&
+      this.vertexShader &&
+      this.shaderProgram &&
+      this.gl
+    ) {
+      console.log('SHADER RECREATION');
+      this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      this.gl.detachShader(this.shaderProgram, this.fragmentShader);
+      this.gl.deleteProgram(this.shaderProgram);
+      this.setupShader(this.gl);
+      this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     }
   };
 
-  setupGLCanvas = () => {
-    const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    const canvasSize = canvas.getBoundingClientRect();
-    canvas.width = canvasSize.width;
-    canvas.height = canvasSize.height;
-
+  test = 1;
+  glcanvas: HTMLCanvasElement | undefined = undefined;
+  canvasSize: DOMRect | undefined = undefined;
+  setupWindowResize = () => {
     window.addEventListener('resize', () => {
-      const canvasSize = canvas.getBoundingClientRect();
-      canvas.width = canvasSize.width;
-      canvas.height = canvasSize.height;
+      if (!this.glcanvas) {
+        return;
+      }
+      this.canvasSize = this.glcanvas?.getBoundingClientRect();
+      this.glcanvas.width = this.canvasSize.width;
+      this.glcanvas.height = this.canvasSize.height;
+      console.log('resize', this.canvasSize.width, this.canvasSize.height);
+      this.gl?.viewport(0, 0, this.canvasSize.width, this.canvasSize.height);
     });
+  };
+  gl: WebGLRenderingContext | null = null;
+  fragmentShader: WebGLShader | null = null;
+  vertexShader: WebGLShader | null = null;
+  shaderProgram: WebGLProgram | null = null;
+  u_timeUniformLocation: WebGLUniformLocation | null = null;
+  u_CanvasWidthUniformLocation: WebGLUniformLocation | null = null;
+  u_CanvasHeightUniformLocation: WebGLUniformLocation | null = null;
+  u_TestUniformLocation: WebGLUniformLocation | null = null;
+  vertexPositionAttribute = 0;
 
-    const gl = canvas.getContext('webgl');
-    if (!gl) {
-      console.error('WebGL not supported');
-      throw new Error('WebGL not supported');
+  createFragmentShader = (statements: string) => {
+    return `
+    precision mediump float;
+    uniform float u_time;
+    uniform float u_width;
+    uniform float u_height;
+    uniform float u_test;
+    
+    void main() {
+      float aspect = u_width/u_height;
+      vec2 resolution = vec2(u_width, u_height);
+      vec2 uv = (gl_FragCoord.xy / resolution.xy);      
+      vec2 centeredCoord = uv * 2.0  - 1.0;
+      centeredCoord.x *= aspect;
+
+      vec3 finalColor = vec3(0.0);
+
+      
+
+      ${statements}
+
+      //vec3 color = vec3(0.5, 0.7, 0.);
+      //color *= uv.x + uv.y;
+      //color *= smoothstep(0.2,0.3,length(uv-vec2(0.5,0.5)));
+      gl_FragColor = vec4(finalColor, 1.0);        
     }
-    const vsSource = `
+    `;
+  };
+
+  vsSource = `
       attribute vec4 aVertexPosition;
       void main() {
           gl_Position = aVertexPosition;
       }
     `;
 
-    const fsSource = `
-    precision mediump float;
-    uniform float u_time;
-    uniform float u_width;
-    uniform float u_height;
-    
-    
-    void main() {
-      vec2 resolution = vec2(u_width, u_height);
-      vec2 uv = (gl_FragCoord.xy / resolution.xy);
-      uv.x *= u_width/u_height;     
-      vec2 centeredCoord = uv * 2.0 - 1.0;
-      //centeredCoord.x += 0.5 * u_width/u_height;
-
-      float dist = length(centeredCoord) ;
-
-      float wave = sin(dist * 10.0 - u_time * 10.0) * 0.5 + 0.5;
-
-      vec3 color = vec3(0.,0., smoothstep(0.6,1.,1.0 - wave * 0.5));
-
-      //vec3 color = vec3(0.5, 0.7, 0.);
-      //color *= uv.x + uv.y;
-      //color *= smoothstep(0.2,0.3,length(uv-vec2(0.5,0.5)));
-      gl_FragColor = vec4(color, 1.0);        
+  createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
+    const shader = gl.createShader(type);
+    if (!shader) {
+      console.error('An error occurred creating the shaders');
+      return null;
     }
-    `;
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error(
+        'An error occurred compiling the shaders: ' +
+          gl.getShaderInfoLog(shader)
+      );
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  };
 
-    function createShader(
-      gl: WebGLRenderingContext,
-      type: number,
-      source: string
-    ) {
-      const shader = gl.createShader(type);
-      if (!shader) {
-        console.error('An error occurred creating the shaders');
-        return null;
-      }
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error(
-          'An error occurred compiling the shaders: ' +
-            gl.getShaderInfoLog(shader)
-        );
-        gl.deleteShader(shader);
-        return null;
-      }
-      return shader;
+  initShaderProgram = (
+    gl: WebGLRenderingContext,
+    vsSource: string,
+    fsSource: string
+  ) => {
+    this.vertexShader = this.createShader(gl, gl.VERTEX_SHADER, vsSource);
+    this.fragmentShader = this.createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+    this.shaderProgram = gl.createProgram();
+    if (!this.shaderProgram) {
+      console.error('Unable to create shader program');
+      return null;
+    }
+    if (!this.vertexShader || !this.fragmentShader) {
+      console.error('Unable to create vertex or fragment shader');
+      return null;
+    }
+    gl.attachShader(this.shaderProgram, this.vertexShader);
+    gl.attachShader(this.shaderProgram, this.fragmentShader);
+    gl.linkProgram(this.shaderProgram);
+
+    if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      console.error(
+        'Unable to initialize the shader program: ' +
+          gl.getProgramInfoLog(this.shaderProgram)
+      );
+      return null;
     }
 
-    function initShaderProgram(
-      gl: WebGLRenderingContext,
-      vsSource: string,
-      fsSource: string
-    ) {
-      const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
-      const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+    return;
+  };
 
-      const shaderProgram = gl.createProgram();
-      if (!shaderProgram) {
-        console.error('Unable to create shader program');
-        return null;
-      }
-      if (!vertexShader || !fragmentShader) {
-        console.error('Unable to create vertex or fragment shader');
-        return null;
-      }
-      gl.attachShader(shaderProgram, vertexShader);
-      gl.attachShader(shaderProgram, fragmentShader);
-      gl.linkProgram(shaderProgram);
+  setupShader = (gl: WebGLRenderingContext) => {
+    const fsSource = this.createFragmentShader(`
+    float dist1 = length(centeredCoord + vec2(sin(u_time*2.), cos(u_time*1.) ) ) ;
+      dist1 -= 0.5;
+      dist1 = abs(dist1);
+      dist1 = smoothstep(0.01, 0.05, dist1);
 
-      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        console.error(
-          'Unable to initialize the shader program: ' +
-            gl.getProgramInfoLog(shaderProgram)
-        );
-        return null;
-      }
-
-      return shaderProgram;
-    }
-
-    const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-    if (!shaderProgram) {
+      finalColor += vec3(0.,0., smoothstep(0.6,1.,1.0 - dist1 * 0.5));
+    `);
+    this.initShaderProgram(gl, this.vsSource, fsSource);
+    if (!this.shaderProgram) {
       throw new Error('Unable to initialize the shader program');
     }
-    const u_timeUniformLocation = gl.getUniformLocation(
-      shaderProgram,
+    this.u_timeUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
       'u_time'
     );
-    const u_CanvasWidthUniformLocation = gl.getUniformLocation(
-      shaderProgram,
+    this.u_CanvasWidthUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
       'u_width'
     );
-    const u_CanvasHeightUniformLocation = gl.getUniformLocation(
-      shaderProgram,
+    this.u_CanvasHeightUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
       'u_height'
     );
+    this.u_TestUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
+      'u_test'
+    );
 
-    const vertexPositionAttribute = gl.getAttribLocation(
-      shaderProgram,
+    this.vertexPositionAttribute = gl.getAttribLocation(
+      this.shaderProgram,
       'aVertexPosition'
     );
+  };
+  setupGLCanvas = () => {
+    this.glcanvas = document.getElementById('glcanvas') as HTMLCanvasElement;
+    this.canvasSize = this.glcanvas.getBoundingClientRect();
+    this.glcanvas.width = this.canvasSize.width;
+    this.glcanvas.height = this.canvasSize.height;
+
+    const gl = this.glcanvas.getContext('webgl');
+    this.gl?.viewport(0, 0, this.canvasSize.width, this.canvasSize.height);
+
+    if (!gl) {
+      console.error('WebGL not supported');
+      throw new Error('WebGL not supported');
+    }
+    this.gl = gl;
+
+    this.setupShader(gl);
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1333,55 +825,58 @@ export class GLAppElement extends AppElement<NodeInfo> {
     const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
-    function drawScene(
-      gl: WebGLRenderingContext,
-      shaderProgram: WebGLProgram,
-      positionBuffer: WebGLBuffer,
-      time: number
-    ) {
-      gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black
-      gl.clear(gl.COLOR_BUFFER_BIT);
-
-      gl.useProgram(shaderProgram);
-      gl.uniform1f(u_timeUniformLocation, time);
-      gl.uniform1f(u_CanvasWidthUniformLocation, canvas.width);
-      gl.uniform1f(u_CanvasHeightUniformLocation, canvas.height);
-
-      gl.enableVertexAttribArray(vertexPositionAttribute);
-      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-      const size = 2; // 2 components per iteration
-      const type = gl.FLOAT; // the data is 32bit floats
-      const normalize = false; // don't normalize the data
-      const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-      let offset = 0; // start at the beginning of the buffer
-      gl.vertexAttribPointer(
-        vertexPositionAttribute,
-        size,
-        type,
-        normalize,
-        stride,
-        offset
-      );
-
-      const primitiveType = gl.TRIANGLE_STRIP;
-      offset = 0;
-      const count = 4;
-      gl.drawArrays(primitiveType, offset, count);
-    }
     if (!positionBuffer) {
       throw new Error('Unable to create buffer');
     }
 
-    function renderLoop() {
+    const renderLoop = () => {
       const time = performance.now() * 0.001; // time in seconds
-      gl!.uniform1f(u_CanvasWidthUniformLocation, canvas.width);
-      gl!.uniform1f(u_CanvasHeightUniformLocation, canvas.height);
-
-      drawScene(gl!, shaderProgram!, positionBuffer!, time);
+      gl!.uniform1f(this.u_CanvasWidthUniformLocation, this.glcanvas!.width);
+      gl!.uniform1f(this.u_CanvasHeightUniformLocation, this.glcanvas!.height);
+      gl!.uniform1f(this.u_TestUniformLocation, this.test);
+      this.drawScene(gl!, this.shaderProgram!, positionBuffer!, time);
       requestAnimationFrame(renderLoop);
-    }
+    };
 
-    requestAnimationFrame(renderLoop);
+    this.rafId = requestAnimationFrame(renderLoop);
   };
+
+  drawScene = (
+    gl: WebGLRenderingContext,
+    shaderProgram: WebGLProgram,
+    positionBuffer: WebGLBuffer,
+    time: number
+  ) => {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.useProgram(shaderProgram);
+    gl.uniform1f(this.u_timeUniformLocation, time);
+    // gl.uniform1f(u_CanvasWidthUniformLocation, canvas.width);
+    // gl.uniform1f(u_CanvasHeightUniformLocation, canvas.height);
+    // gl.uniform1f(u_TestUniformLocation, testHelper);
+
+    gl.enableVertexAttribArray(this.vertexPositionAttribute);
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+    const size = 2; // 2 components per iteration
+    const type = gl.FLOAT; // the data is 32bit floats
+    const normalize = false; // don't normalize the data
+    const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+    let offset = 0; // start at the beginning of the buffer
+    gl.vertexAttribPointer(
+      this.vertexPositionAttribute,
+      size,
+      type,
+      normalize,
+      stride,
+      offset
+    );
+
+    const primitiveType = gl.TRIANGLE_STRIP;
+    offset = 0;
+    const count = 4;
+    gl.drawArrays(primitiveType, offset, count);
+  };
+  rafId = -1;
 }

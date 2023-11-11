@@ -12,20 +12,20 @@ import {
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { getNodeTaskFactory } from '../node-task-registry';
 
 export const importToCanvas = (
   nodesList: FlowNode<NodeInfo>[],
   canvasApp: CanvasAppInstance<NodeInfo>,
   canvasUpdated: () => void,
   containerNode?: IRectNodeComponent<NodeInfo>,
-  nestedLevel?: number
+  nestedLevel?: number,
+  getNodeTaskFactory?: (name: string) => any
 ) => {
   console.log('importToCanvas', nestedLevel);
   //   console.log('flow', flow);
   //   const nodesList = flow.flows.flow.nodes;
   nodesList.forEach((node) => {
-    if (node.nodeType === NodeType.Shape) {
+    if (getNodeTaskFactory && node.nodeType === NodeType.Shape) {
       //node.nodeInfo?.type
       const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
       if (factory) {

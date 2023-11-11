@@ -29,6 +29,28 @@ export interface AppNavComponentsProps {
     canvasApp: CanvasAppInstance<NodeInfo>,
     canvasUpdated: () => void,
     containerNode?: IRectNodeComponent<NodeInfo>,
-    nestedLevel?: number
+    nestedLevel?: number,
+    getNodeTaskFactory?: (name: string) => any
+  ) => void;
+}
+
+export interface GenericAppNavComponentsProps<T> {
+  rootAppElement: HTMLElement;
+  rootElement: HTMLElement;
+  selectNodeType: HTMLSelectElement;
+  storageProvider: FlowrunnerIndexedDbStorageProvider;
+  initializeNodes: () => void;
+  clearCanvas: () => void;
+  canvasUpdated: () => void;
+  canvasApp: CanvasAppInstance<T>;
+  removeElement: (element: IElementNode<T>) => void;
+  setIsStoring: (isStoring: boolean) => void;
+  importToCanvas: (
+    nodesList: FlowNode<T>[],
+    canvasApp: CanvasAppInstance<T>,
+    canvasUpdated: () => void,
+    containerNode?: IRectNodeComponent<T>,
+    nestedLevel?: number,
+    getNodeTaskFactory?: (name: string) => any
   ) => void;
 }

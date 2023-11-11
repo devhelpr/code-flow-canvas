@@ -10,11 +10,13 @@ import {
 } from '@devhelpr/dom-components';
 import { InputFieldChildComponent } from './form-fields/input';
 import { TextAreaFieldComponent } from './form-fields/textarea';
+import { SliderFieldChildComponent } from './form-fields/slider';
 
 export const FormFieldType = {
   Text: 'Text',
   TextArea: 'TextArea',
   Select: 'Select',
+  Slider: 'Slider',
 } as const;
 
 export type FormFieldType = (typeof FormFieldType)[keyof typeof FormFieldType];
@@ -29,6 +31,9 @@ export type FormField = (
     }
   | {
       fieldType: 'TextArea';
+    }
+  | {
+      fieldType: 'Slider';
     }
 ) & {
   fieldName: string;
@@ -156,6 +161,18 @@ export class FormsComponent extends Component<Props> {
     this.props.formElements.forEach((formControl, index) => {
       if (formControl.fieldType === FormFieldType.Text) {
         const formControlComponent = new InputFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          label: formControl.label,
+          value: formControl.value,
+          isRow: formControl.isRow,
+          settings: formControl.settings,
+          onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.Slider) {
+        const formControlComponent = new SliderFieldChildComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,

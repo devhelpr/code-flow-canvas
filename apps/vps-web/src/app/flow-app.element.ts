@@ -230,7 +230,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               canvasApp: CanvasAppInstance<NodeInfo>,
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<NodeInfo>,
-              nestedLevel?: number
+              nestedLevel?: number,
+              getNodeTaskFactory?: (name: string) => any
             ) => {
               this.isStoring = true;
               importToCanvas(
@@ -238,7 +239,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 canvasApp,
                 canvasUpdated,
                 containerNode,
-                nestedLevel
+                nestedLevel,
+                getNodeTaskFactory
               );
               this.isStoring = false;
               canvasUpdated();
@@ -272,7 +274,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               canvasApp: CanvasAppInstance<NodeInfo>,
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<NodeInfo>,
-              nestedLevel?: number
+              nestedLevel?: number,
+              getNodeTaskFactory?: (name: string) => any
             ) => {
               this.isStoring = true;
               importToCanvas(
@@ -280,7 +283,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 canvasApp,
                 canvasUpdated,
                 containerNode,
-                nestedLevel
+                nestedLevel,
+                getNodeTaskFactory
               );
               this.isStoring = false;
               canvasUpdated();
@@ -299,7 +303,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               this.canvasApp,
               canvasUpdated,
               undefined,
-              0
+              0,
+              getNodeTaskFactory
             );
             this.canvasApp.centerCamera();
             initializeNodes();

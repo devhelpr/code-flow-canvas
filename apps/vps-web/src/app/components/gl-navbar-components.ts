@@ -10,12 +10,10 @@ import {
   navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
-  navBarPrimaryButton,
   navBarPrimaryIconButton,
 } from '../consts/classes';
 
 import { NodeInfo } from '../types/node-info';
-import { getNodeTaskFactory } from '../node-task-registry/canvas-node-task-registry';
 import {
   BaseComponent,
   Component,
@@ -27,11 +25,13 @@ import {
   exportFlowToJson,
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
-import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
-import { AppNavComponentsProps } from '../component-interface/app-nav-component';
+import { GenericAppNavComponentsProps } from '../component-interface/app-nav-component';
+import { getGLNodeTaskFactory } from '../node-task-registry/gl-node-task-registry';
 
-export class NavbarComponent extends Component<AppNavComponentsProps> {
-  oldProps: AppNavComponentsProps | null = null;
+export class GLNavbarComponent extends Component<
+  GenericAppNavComponentsProps<any>
+> {
+  oldProps: GenericAppNavComponentsProps<any> | null = null;
 
   previousDoRenderChildren: boolean | null = null;
   doRenderChildren: boolean | null = true;
@@ -45,7 +45,10 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
 
   rootAppElement: HTMLElement | null = null;
 
-  constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
+  constructor(
+    parent: BaseComponent | null,
+    props: GenericAppNavComponentsProps<any>
+  ) {
     super(parent, props);
 
     this.template = createTemplate(
@@ -55,7 +58,6 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <button class="${navBarButton}">Export</button>
         <button class="${navBarButton}">Import</button>
-        <button class="${navBarButton}">Import script</button>
         <children></children>
       </div>`
     );
@@ -79,18 +81,12 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
-        this.importScriptButton = this.importButton
-          ?.nextSibling as HTMLButtonElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
         this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
-        this.importScriptButton.addEventListener(
-          'click',
-          this.onClickImportScript
-        );
 
         this.renderList.push(
           this.addNodeButton,
@@ -132,7 +128,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
     const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
     const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
-    const factory = getNodeTaskFactory(nodeType);
+    const factory = getGLNodeTaskFactory(nodeType);
 
     if (factory) {
       const nodeTask = factory(this.props.canvasUpdated);
@@ -160,7 +156,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         if (!node.nodeInfo?.taskType) {
           return;
         }
-        const selectedNodeTaskFactory = getNodeTaskFactory(
+        const selectedNodeTaskFactory = getGLNodeTaskFactory(
           node.nodeInfo.taskType
         );
         if (node && selectedNodeTaskFactory) {
@@ -190,9 +186,6 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
           }
         }
       }
-      //factory.createVisualNode(props.canvasApp, startX, startY);
-      //} else if (factory) {
-      //const nodeTask = factory(props.canvasUpdated);
       const node = nodeTask.createVisualNode(
         this.props.canvasApp,
         startX,
@@ -336,7 +329,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
               this.props.canvasUpdated,
               undefined,
               0,
-              getNodeTaskFactory
+              getGLNodeTaskFactory
             );
             this.props.canvasApp.centerCamera();
             this.props.initializeNodes();
@@ -346,59 +339,6 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
       }
     };
     input.click();
-    return false;
-  };
-
-  onClickImportScript = (event: Event) => {
-    event.preventDefault();
-
-    const input = document.createElement('input') as HTMLInputElement & {
-      files: FileList;
-    };
-
-    input.type = 'file';
-    input.setAttribute('accept', '.es');
-    input.onchange = () => {
-      const files = Array.from(input.files);
-      if (files && files.length > 0) {
-        // const file = URL.createObjectURL(files[0]);
-        // console.log(file);
-
-        const reader = new FileReader();
-        reader.addEventListener('load', (event) => {
-          if (event && event.target && event.target.result) {
-            const data = event.target.result.toString();
-            const nodeList = convertExpressionScriptToFlow(data);
-            if (nodeList) {
-              const flow = {
-                schemaType: 'flow',
-                schemaVersion: '0.0.1',
-                id: '1234',
-                flows: {
-                  flow: {
-                    flowType: 'flow',
-                    nodes: nodeList,
-                  },
-                },
-              };
-              this.props.clearCanvas();
-              this.props.importToCanvas(
-                flow.flows.flow.nodes,
-                this.props.canvasApp,
-                this.props.canvasUpdated,
-                undefined,
-                0
-              );
-              this.props.canvasApp.centerCamera();
-              this.props.initializeNodes();
-            }
-          }
-        });
-        reader.readAsBinaryString(files[0]);
-      }
-    };
-    input.click();
-
     return false;
   };
 
@@ -422,16 +362,14 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   }
 }
 
-export const NavbarComponents = (props: AppNavComponentsProps) => {
-  new NavbarComponent(null, {
+export const GLNavbarMenu = (props: GenericAppNavComponentsProps<any>) => {
+  new GLNavbarComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,
     clearCanvas: props.clearCanvas,
     rootElement: props.rootElement,
     rootAppElement: props.rootAppElement,
     selectNodeType: props.selectNodeType,
-    animatePath: props.animatePath,
-    animatePathFromThumb: props.animatePathFromThumb,
     canvasUpdated: props.canvasUpdated,
     canvasApp: props.canvasApp,
     removeElement: props.removeElement,
