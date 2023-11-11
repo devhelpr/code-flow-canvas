@@ -22,9 +22,23 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
     loopIndex?: number,
     payload?: any
   ) => {
+    const index = loopIndex ? loopIndex : 0;
+    const x = Math.random() * 2.0 - 1.0;
+    const y = Math.random() * 2.0 - 1.0;
+    const xsine = Math.random() * 4;
+    const ysine = Math.random() * 4;
+    const factor = Math.random() * 2;
+    const shaderCode = `
+    float dist${index} = length(centeredCoord + vec2(${factor}*sin(u_time*${xsine})+${x}, ${factor}*cos(u_time*${ysine})+${y}) ) ;
+      dist${index} -= 0.5;
+      dist${index} = abs(dist${index});
+      dist${index} = smoothstep(0.01, 0.05, dist${index});
+
+      finalColor += vec3(0.,0., smoothstep(0.6,1.,1.0 - dist${index} * 0.5));
+    `;
     return {
-      result: input,
-      output: input,
+      result: shaderCode,
+      output: shaderCode,
       followPath: undefined,
     };
   };
@@ -87,6 +101,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
         {
           type: 'circle-node',
           formValues: {},
+          compute: compute,
         },
         containerNode
       );

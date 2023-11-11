@@ -179,20 +179,7 @@ export class GLAppElement extends AppElement<any> {
     };
 
     const canvasUpdated = () => {
-      if (this.canvasApp) {
-        this.canvasApp.elements.forEach((element) => {
-          const node = element as unknown as INodeComponent<any>;
-          if (node.nodeType === NodeType.Shape) {
-            const data = node.nodeInfo?.formValues['test'];
-            const parsedData = parseFloat(data);
-            if (!isNaN(parsedData)) {
-              this.test = parsedData;
-            }
-            console.log('canvasUpdated', data, parseFloat(data));
-          }
-        });
-        this.updateGLCanvasParameters();
-      }
+      this.flowTOGLCanvas();
       if (this.isStoring) {
         return;
       }
@@ -767,14 +754,17 @@ export class GLAppElement extends AppElement<any> {
     return;
   };
 
-  setupShader = (gl: WebGLRenderingContext) => {
-    const fsSource = this.createFragmentShader(`
-    float dist1 = length(centeredCoord + vec2(sin(u_time*2.), cos(u_time*1.) ) ) ;
+  /*
+  float dist1 = length(centeredCoord + vec2(sin(u_time*2.), cos(u_time*1.) ) ) ;
       dist1 -= 0.5;
       dist1 = abs(dist1);
       dist1 = smoothstep(0.01, 0.05, dist1);
 
       finalColor += vec3(0.,0., smoothstep(0.6,1.,1.0 - dist1 * 0.5));
+  */
+  setupShader = (gl: WebGLRenderingContext) => {
+    const fsSource = this.createFragmentShader(`
+      ${this.shaderStatements}
     `);
     this.initShaderProgram(gl, this.vsSource, fsSource);
     if (!this.shaderProgram) {
@@ -802,6 +792,35 @@ export class GLAppElement extends AppElement<any> {
       'aVertexPosition'
     );
   };
+
+  shaderStatements = '';
+  flowTOGLCanvas = () => {
+    let sdfIndex = 1;
+    this.shaderStatements = '';
+    if (this.canvasApp) {
+      this.canvasApp.elements.forEach((element) => {
+        const node = element as unknown as INodeComponent<any>;
+        if (node.nodeType === NodeType.Shape) {
+          //'circle-node'
+          if (node.nodeInfo?.type === 'circle-node') {
+            const result = node.nodeInfo?.compute(0, [], sdfIndex, {});
+            this.shaderStatements += result?.result ?? '';
+            this.shaderStatements += `
+`;
+            sdfIndex++;
+          }
+          const data = node.nodeInfo?.formValues['test'];
+          const parsedData = parseFloat(data);
+          if (!isNaN(parsedData)) {
+            this.test = parsedData;
+          }
+          console.log('canvasUpdated', data, parseFloat(data));
+        }
+      });
+      this.updateGLCanvasParameters();
+    }
+  };
+
   setupGLCanvas = () => {
     this.glcanvas = document.getElementById('glcanvas') as HTMLCanvasElement;
     this.canvasSize = this.glcanvas.getBoundingClientRect();
