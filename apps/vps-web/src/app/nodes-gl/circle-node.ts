@@ -22,20 +22,29 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
     loopIndex?: number,
     payload?: any
   ) => {
+    const color = payload?.['color'] ?? 'vec3(1.,1.,1.)';
     const index = loopIndex ? loopIndex : 0;
     const x = Math.random() * 2.0 - 1.0;
     const y = Math.random() * 2.0 - 1.0;
     const xsine = Math.random() * 4;
     const ysine = Math.random() * 4;
-    const factor = Math.random() * 2;
+    const factor = Math.random() * 0.5;
+    const radius = Math.random() * 0.1;
     const shaderCode = `
-    float dist${index} = length(centeredCoord + vec2(${factor}*sin(u_time*${xsine})+${x}, ${factor}*cos(u_time*${ysine})+${y}) ) ;
-      dist${index} -= 0.5;
+      float dist${index} = length(centeredCoord + vec2(${factor}*sin(u_time*${xsine})+${x}, ${factor}*cos(u_time*${xsine})+${y}) ) ;
+      dist${index} -= ${radius};
+      //dist${index} = ${radius} / dist${index};
       dist${index} = abs(dist${index});
-      dist${index} = smoothstep(0.01, 0.05, dist${index});
-
-      finalColor += vec3(0.,0., smoothstep(0.6,1.,1.0 - dist${index} * 0.5));
+      float distep${index} = dist${index};//smoothstep(0.10, 0.28, dist${index});
+      
+      float colorhelper${index} = distep${index};//smoothstep(0.,1.,1.0 - distep${index});
+      vec3 color${index} = ${color}; 
+      vec3 colordist${index} = color${index} * vec3(distep${index});
+      finalColor = mix(finalColor, colordist${index}, dist${index} > 0.85 ? 0. : dist${index});
     `;
+    // float colorhelper${index} = smoothstep(0.7,1.,1.0 - dist${index} * 0.5);
+    // vec3 color${index} = vec3(0.5 * colorhelper${index},0., 1. * colorhelper${index});
+    //finalColor = mix(finalColor, color${index},dist${index});
     return {
       result: shaderCode,
       output: shaderCode,
@@ -77,7 +86,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            thumbConstraint: '',
+            thumbConstraint: 'x',
             name: 'x',
           },
           {
@@ -86,8 +95,8 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            thumbConstraint: '',
-            name: 'y',
+            thumbConstraint: 'color',
+            name: 'color',
           },
         ],
         jsxComponentWrapper,

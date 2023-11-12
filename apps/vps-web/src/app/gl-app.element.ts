@@ -145,6 +145,7 @@ export class GLAppElement extends AppElement<any> {
             );
             this.canvasApp.centerCamera();
             initializeNodes();
+            this.flowTOGLCanvas();
             this.isStoring = false;
           })
           .catch((error) => {
@@ -179,10 +180,10 @@ export class GLAppElement extends AppElement<any> {
     };
 
     const canvasUpdated = () => {
-      this.flowTOGLCanvas();
       if (this.isStoring) {
         return;
       }
+      this.flowTOGLCanvas();
       store();
     };
     this.canvasApp.setOnCanvasUpdated(() => {
@@ -633,12 +634,20 @@ export class GLAppElement extends AppElement<any> {
       this.shaderProgram &&
       this.gl
     ) {
+      this.pauseRender = true;
       console.log('SHADER RECREATION');
+
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       this.gl.detachShader(this.shaderProgram, this.fragmentShader);
+      this.gl.detachShader(this.shaderProgram, this.vertexShader);
       this.gl.deleteProgram(this.shaderProgram);
+      this.u_timeUniformLocation = null;
+      this.u_CanvasWidthUniformLocation = null;
+      this.u_CanvasHeightUniformLocation = null;
+      this.u_TestUniformLocation = null;
       this.setupShader(this.gl);
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      this.pauseRender = false;
     }
   };
 
@@ -688,12 +697,13 @@ export class GLAppElement extends AppElement<any> {
 
       ${statements}
 
-      //vec3 color = vec3(0.5, 0.7, 0.);
-      //color *= uv.x + uv.y;
-      //color *= smoothstep(0.2,0.3,length(uv-vec2(0.5,0.5)));
+      
       gl_FragColor = vec4(finalColor, 1.0);        
     }
     `;
+    //vec3 color = vec3(0.5, 0.7, 0.);
+    //color *= uv.x + uv.y;
+    //color *= smoothstep(0.2,0.3,length(uv-vec2(0.5,0.5)));
   };
 
   vsSource = `
@@ -766,6 +776,7 @@ export class GLAppElement extends AppElement<any> {
     const fsSource = this.createFragmentShader(`
       ${this.shaderStatements}
     `);
+    console.log('fsSource', fsSource);
     this.initShaderProgram(gl, this.vsSource, fsSource);
     if (!this.shaderProgram) {
       throw new Error('Unable to initialize the shader program');
@@ -793,8 +804,39 @@ export class GLAppElement extends AppElement<any> {
     );
   };
 
+  getNodeOutput = (node: IRectNodeComponent<any>) => {
+    const inputs: Record<string, string> = {};
+
+    node.connections.forEach((connection) => {
+      if (connection.endNode?.id === node.id) {
+        if (connection.endNodeThumb?.thumbName) {
+          inputs[connection.endNodeThumb?.thumbName] = this.getNodeOutput(
+            connection.startNode as IRectNodeComponent<any>
+          );
+        }
+      }
+    });
+
+    const result = node?.nodeInfo?.compute(0, [], 0, inputs);
+    return result.result;
+  };
+
+  getInputsForNode = (node: IRectNodeComponent<any>) => {
+    const inputs: Record<string, string> = {};
+    node.connections.forEach((connection) => {
+      if (connection.endNode?.id === node.id) {
+        if (connection.endNodeThumb?.thumbName && connection.startNode) {
+          inputs[connection.endNodeThumb?.thumbName] = this.getNodeOutput(
+            connection.startNode
+          );
+        }
+      }
+    });
+    return inputs;
+  };
   shaderStatements = '';
   flowTOGLCanvas = () => {
+    console.log('flowTOGLCanvas');
     let sdfIndex = 1;
     this.shaderStatements = '';
     if (this.canvasApp) {
@@ -803,24 +845,34 @@ export class GLAppElement extends AppElement<any> {
         if (node.nodeType === NodeType.Shape) {
           //'circle-node'
           if (node.nodeInfo?.type === 'circle-node') {
-            const result = node.nodeInfo?.compute(0, [], sdfIndex, {});
+            const inputs = this.getInputsForNode(
+              node as IRectNodeComponent<any>
+            );
+            const result = node.nodeInfo?.compute(0, [], sdfIndex, inputs);
             this.shaderStatements += result?.result ?? '';
             this.shaderStatements += `
 `;
             sdfIndex++;
           }
-          const data = node.nodeInfo?.formValues['test'];
-          const parsedData = parseFloat(data);
-          if (!isNaN(parsedData)) {
-            this.test = parsedData;
-          }
-          console.log('canvasUpdated', data, parseFloat(data));
+          // const data = node.nodeInfo?.formValues['test'];
+          // const parsedData = parseFloat(data);
+          // if (!isNaN(parsedData)) {
+          //   this.test = parsedData;
+          // }
+          // console.log('canvasUpdated', data, parseFloat(data));
         }
       });
+      //       if (sdfIndex > 1) {
+      //         this.shaderStatements += `
+      //       finalColor = finalColor / ${sdfIndex - 1}.;
+      // `;
+      //       }
       this.updateGLCanvasParameters();
     }
   };
 
+  pauseRender = false;
+  positionBuffer: WebGLBuffer | null = null;
   setupGLCanvas = () => {
     this.glcanvas = document.getElementById('glcanvas') as HTMLCanvasElement;
     this.canvasSize = this.glcanvas.getBoundingClientRect();
@@ -838,33 +890,45 @@ export class GLAppElement extends AppElement<any> {
 
     this.setupShader(gl);
 
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    this.positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
 
     const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
-    if (!positionBuffer) {
+    if (!this.positionBuffer) {
       throw new Error('Unable to create buffer');
     }
 
-    const renderLoop = () => {
-      const time = performance.now() * 0.001; // time in seconds
-      gl!.uniform1f(this.u_CanvasWidthUniformLocation, this.glcanvas!.width);
-      gl!.uniform1f(this.u_CanvasHeightUniformLocation, this.glcanvas!.height);
-      gl!.uniform1f(this.u_TestUniformLocation, this.test);
-      this.drawScene(gl!, this.shaderProgram!, positionBuffer!, time);
-      requestAnimationFrame(renderLoop);
-    };
-
-    this.rafId = requestAnimationFrame(renderLoop);
+    this.rafId = requestAnimationFrame(this.renderLoop);
   };
+  renderLoop = () => {
+    if (
+      this.pauseRender ||
+      !this.gl ||
+      !this.shaderProgram ||
+      !this.glcanvas ||
+      !this.positionBuffer
+    ) {
+      return;
+    }
+    const time = performance.now() * 0.001; // time in seconds
 
+    this.drawScene(
+      this.gl,
+      this.shaderProgram,
+      this.positionBuffer,
+      time,
+      this.glcanvas
+    );
+    requestAnimationFrame(this.renderLoop);
+  };
   drawScene = (
     gl: WebGLRenderingContext,
     shaderProgram: WebGLProgram,
     positionBuffer: WebGLBuffer,
-    time: number
+    time: number,
+    glcanvas: HTMLCanvasElement
   ) => {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -874,6 +938,9 @@ export class GLAppElement extends AppElement<any> {
     // gl.uniform1f(u_CanvasWidthUniformLocation, canvas.width);
     // gl.uniform1f(u_CanvasHeightUniformLocation, canvas.height);
     // gl.uniform1f(u_TestUniformLocation, testHelper);
+    gl.uniform1f(this.u_CanvasWidthUniformLocation, glcanvas.width);
+    gl.uniform1f(this.u_CanvasHeightUniformLocation, glcanvas.height);
+    gl.uniform1f(this.u_TestUniformLocation, this.test);
 
     gl.enableVertexAttribArray(this.vertexPositionAttribute);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);

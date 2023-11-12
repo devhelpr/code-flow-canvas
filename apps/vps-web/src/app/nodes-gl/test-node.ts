@@ -16,6 +16,24 @@ import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
 const fieldName = 'test';
 
+function hexToRgb(
+  hex: string,
+  defaultColor: { r: number; g: number; b: number }
+) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : {
+        r: defaultColor.r,
+        g: defaultColor.g,
+        b: defaultColor.b,
+      };
+}
+
 export const getTestNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
@@ -30,8 +48,14 @@ export const getTestNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
+    const color = hexToRgb(node.nodeInfo?.formValues?.['color'] ?? '#000000', {
+      r: 0,
+      g: 0,
+      b: 0,
+    });
+
     return {
-      result: input,
+      result: `vec3(${color?.r / 256},${color?.g / 256},${color?.b / 256})`,
       output: input,
       followPath: undefined,
     };
@@ -54,31 +78,44 @@ export const getTestNode: NodeTaskFactory<any> = (
         connectionType: ThumbConnectionType.start,
         color: 'white',
         label: ' ',
-      },
-      {
-        thumbType: ThumbType.EndConnectorCenter,
-        thumbIndex: 0,
-        connectionType: ThumbConnectionType.end,
-        color: 'white',
-        label: ' ',
+        thumbConstraint: 'color',
       },
     ],
     (values?: InitialValues) => {
       const formElements = [
+        // {
+        //   fieldType: FormFieldType.Slider,
+        //   fieldName: fieldName,
+        //   value: values?.[fieldName] ?? '',
+        //   settings: {
+        //     showLabel: false,
+        //   },
+        //   onChange: (value: string) => {
+        //     if (!node.nodeInfo) {
+        //       return;
+        //     }
+        //     node.nodeInfo.formValues = {
+        //       ...node.nodeInfo.formValues,
+        //       [fieldName]: value,
+        //     };
+        //     if (updated) {
+        //       updated();
+        //     }
+        //   },
+        // },
         {
-          fieldType: FormFieldType.Slider,
-          fieldName: fieldName,
-          value: values?.[fieldName] ?? '',
-          settings: {
-            showLabel: false,
-          },
+          fieldType: FormFieldType.Color,
+          fieldName: 'color',
+          value: values?.['color'] ?? '',
+
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
             }
+            console.log('color value', value);
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
-              [fieldName]: value,
+              ['color']: value,
             };
             if (updated) {
               updated();
