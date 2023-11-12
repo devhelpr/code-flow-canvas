@@ -29,7 +29,6 @@ export abstract class BaseNodeCompute<T> {
 export const createRectNode = (
   nodeTypeName: string,
   nodeTitle: string,
-  id: string,
   formElements: FormField[],
   x: number,
   y: number,
@@ -44,6 +43,7 @@ export const createRectNode = (
   initializeCompute: () => void,
   thumbs: IThumb[],
   canvasApp: CanvasAppInstance<NodeInfo>,
+  id?: string,
   containerNode?: IRectNodeComponent<NodeInfo>,
   initialValues?: InitialValues
 ) => {
@@ -164,7 +164,7 @@ export const visualNodeFactory = (
       const nodeInstance = createRectNode(
         nodeTypeName,
         nodeTitle,
-        id ?? '',
+
         formElements,
         x,
         y,
@@ -174,6 +174,7 @@ export const visualNodeFactory = (
         initializeCompute,
         thumbs,
         canvasApp,
+        id,
         containerNode,
         initialValues
       );
