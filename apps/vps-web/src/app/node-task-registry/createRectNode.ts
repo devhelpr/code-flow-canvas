@@ -84,26 +84,27 @@ export const createRectNode = (
   const formWrapper = createElement(
     'div',
     {
-      class: `inner-node bg-slate-500 p-4 pt-4 ${
+      class: `inner-node bg-slate-500  ${
         showTitlebar ? 'rounded-b' : 'rounded'
       } min-h-auto flex-auto ${
-        hasCenteredLabel ? 'flex items-center justify-center' : ''
-      }}`,
+        hasCenteredLabel ? 'flex items-center justify-center' : 'p-4 pt-4'
+      }`,
     },
     componentWrapper.domElement,
     hasCenteredLabel ? nodeTitle : undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
-  FormComponent({
-    rootElement: formWrapper.domElement as HTMLElement,
-    id: id ?? '',
-    formElements,
-    hasSubmitButton: false,
-    onSave: (formValues) => {
-      console.log('onSave', formValues);
-    },
-  }) as unknown as HTMLElement;
-
+  if (formElements.length > 0) {
+    FormComponent({
+      rootElement: formWrapper.domElement as HTMLElement,
+      id: id ?? '',
+      formElements,
+      hasSubmitButton: false,
+      onSave: (formValues) => {
+        console.log('onSave', formValues);
+      },
+    }) as unknown as HTMLElement;
+  }
   const rect = canvasApp.createRect(
     x,
     y,

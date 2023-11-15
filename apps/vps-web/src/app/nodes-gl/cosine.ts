@@ -37,6 +37,7 @@ const thumbs = [
 
     name: 'value',
     thumbConstraint: thumbConstraint,
+    prefixLabel: 'rads',
   },
 ];
 
@@ -89,6 +90,9 @@ export const getCosineNode: NodeTaskFactory<any> = (
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
       node = nodeInstance.node;
+    },
+    {
+      hasTitlebar: false,
     }
   );
 };

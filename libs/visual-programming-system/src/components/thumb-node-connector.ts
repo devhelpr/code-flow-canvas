@@ -100,6 +100,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     }
 
     this.nodeComponent.prefixIcon = thumb.prefixIcon;
+    this.nodeComponent.prefixLabel = thumb.prefixLabel;
     this.nodeComponent.thumbName = thumbName;
     this.nodeComponent.x = 0;
     this.nodeComponent.y = 0;
@@ -155,7 +156,16 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         this.circleElement.domElement
       );
     }
-
+    if (thumb.prefixLabel) {
+      createElement(
+        'div',
+        {
+          class: `relative text-white -right-[30px]`,
+        },
+        this.circleElement.domElement,
+        thumb.prefixLabel
+      );
+    }
     let additionalInnerCirlceClasses = '';
     if (connectionType === ThumbConnectionType.end) {
       additionalInnerCirlceClasses = `flex items-center justify-center`;

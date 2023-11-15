@@ -91,7 +91,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
       const rect = canvasApp.createRect(
         x,
         y,
-        110,
+        220,
         220,
         undefined,
         [
@@ -103,6 +103,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
             label: ' ',
             thumbConstraint: 'value',
             name: 'x',
+            prefixLabel: 'x',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -112,6 +113,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
             label: ' ',
             thumbConstraint: 'value',
             name: 'y',
+            prefixLabel: 'y',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -121,6 +123,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
             label: ' ',
             thumbConstraint: 'value',
             name: 'factor',
+            prefixLabel: 'factor',
           },
           {
             thumbType: ThumbType.EndConnectorLeft,
@@ -130,6 +133,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
             label: ' ',
             thumbConstraint: 'color',
             name: 'color',
+            prefixLabel: 'color',
           },
         ],
         jsxComponentWrapper,
