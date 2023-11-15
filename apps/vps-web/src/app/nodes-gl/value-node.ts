@@ -14,27 +14,7 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
-const fieldName = 'test';
-
-function hexToRgb(
-  hex: string,
-  defaultColor: { r: number; g: number; b: number }
-) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : {
-        r: defaultColor.r,
-        g: defaultColor.g,
-        b: defaultColor.b,
-      };
-}
-
-export const getTestNode: NodeTaskFactory<any> = (
+export const getValueNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
@@ -48,24 +28,24 @@ export const getTestNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const color = hexToRgb(node.nodeInfo?.formValues?.['color'] ?? '#000000', {
-      r: 0,
-      g: 0,
-      b: 0,
-    });
-
+    let value = parseFloat(
+      node.nodeInfo?.formValues?.['value'] ?? 0
+    ).toString();
+    if (value.indexOf('.') < 0) {
+      value = `${value}.0`;
+    }
     return {
-      result: `vec3(${color?.r / 256},${color?.g / 256},${color?.b / 256})`,
+      result: `${value}`,
       output: input,
       followPath: undefined,
     };
   };
 
   return visualNodeFactory(
-    'test-node',
-    'Test node',
+    'value-node',
+    'Value node',
     'flow-canvas',
-    'test',
+    'value',
     compute,
     initializeCompute,
     false,
@@ -78,44 +58,30 @@ export const getTestNode: NodeTaskFactory<any> = (
         connectionType: ThumbConnectionType.start,
         color: 'white',
         label: ' ',
-        thumbConstraint: 'color',
+        thumbConstraint: 'value',
+        maxConnections: -1,
       },
     ],
     (values?: InitialValues) => {
       const formElements = [
-        // {
-        //   fieldType: FormFieldType.Slider,
-        //   fieldName: fieldName,
-        //   value: values?.[fieldName] ?? '',
-        //   settings: {
-        //     showLabel: false,
-        //   },
-        //   onChange: (value: string) => {
-        //     if (!node.nodeInfo) {
-        //       return;
-        //     }
-        //     node.nodeInfo.formValues = {
-        //       ...node.nodeInfo.formValues,
-        //       [fieldName]: value,
-        //     };
-        //     if (updated) {
-        //       updated();
-        //     }
-        //   },
-        // },
         {
-          fieldType: FormFieldType.Color,
-          fieldName: 'color',
-          value: values?.['color'] ?? '',
-
+          fieldType: FormFieldType.Slider,
+          fieldName: 'value',
+          value: values?.['value'] ?? '',
+          min: 0.0,
+          max: 0.5,
+          step: 0.01,
+          settings: {
+            showLabel: false,
+          },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
             }
-            console.log('color value', value);
+
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
-              ['color']: value,
+              ['value']: value,
             };
             if (updated) {
               updated();

@@ -11,6 +11,9 @@ export interface SliderFieldProps {
   fieldName: string;
   value: string;
   label?: string;
+  min?: number;
+  max?: number;
+  step?: number;
   isRow?: boolean;
   isLast?: boolean;
   settings?: {
@@ -48,8 +51,9 @@ export class SliderFieldChildComponent extends Component<SliderFieldProps> {
           name="${props.fieldName}"      
           id="${props.formId}_${props.fieldName}"
           value="${props.value}"
-          min="0.1"
-          max="100"
+          min="${props.min ?? 0.1}"
+          max="${props.max ?? 100}"
+          step="${props.step ?? 0.1}"
           type="range"></input>
         </div>`
     );

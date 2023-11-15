@@ -45,31 +45,53 @@ export const createRectNode = (
   canvasApp: CanvasAppInstance<NodeInfo>,
   id?: string,
   containerNode?: IRectNodeComponent<NodeInfo>,
-  initialValues?: InitialValues
+  initialValues?: InitialValues,
+  settings?: {
+    hasTitlebar?: boolean;
+  }
 ) => {
   const componentWrapper = createElement(
     'div',
     {
-      class: `relative`,
+      class: `relative flex flex-col`,
     },
     undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
-  createElement(
-    'div',
-    {
-      class: `flex items-center bg-slate-600 text-white p-1 px-3 rounded-t pointer-events-none`,
-    },
-    componentWrapper.domElement,
-    nodeTitle
-  ) as unknown as INodeComponent<NodeInfo>;
+  const showTitlebar = settings ? settings?.hasTitlebar : true;
+  if (showTitlebar) {
+    createElement(
+      'div',
+      {
+        class: `flex items-center bg-slate-600 text-white p-1 px-3 rounded-t pointer-events-none`,
+      },
+      componentWrapper.domElement,
+      nodeTitle
+    ) as unknown as INodeComponent<NodeInfo>;
+  } else {
+    createElement(
+      'div',
+      {
+        class: `flex items-center rounded-t pointer-events-none`,
+      },
+      componentWrapper.domElement,
+      undefined
+    ) as unknown as INodeComponent<NodeInfo>;
+  }
 
+  const hasCenteredLabel =
+    formElements.length === 0 && settings?.hasTitlebar === false;
   const formWrapper = createElement(
     'div',
     {
-      class: `inner-node bg-slate-500 p-4 pt-4 rounded-b`,
+      class: `inner-node bg-slate-500 p-4 pt-4 ${
+        showTitlebar ? 'rounded-b' : 'rounded'
+      } min-h-auto flex-auto ${
+        hasCenteredLabel ? 'flex items-center justify-center' : ''
+      }}`,
     },
-    componentWrapper.domElement
+    componentWrapper.domElement,
+    hasCenteredLabel ? nodeTitle : undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
   FormComponent({
@@ -146,7 +168,10 @@ export const visualNodeFactory = (
   height: number,
   thumbs: IThumb[],
   onGetFormElements: (values?: InitialValues) => FormField[],
-  onCreatedNode: (nodeInfo: ReturnType<typeof createRectNode>) => void
+  onCreatedNode: (nodeInfo: ReturnType<typeof createRectNode>) => void,
+  settings?: {
+    hasTitlebar?: boolean;
+  }
 ) => {
   return {
     name: nodeTypeName,
@@ -176,7 +201,8 @@ export const visualNodeFactory = (
         canvasApp,
         id,
         containerNode,
-        initialValues
+        initialValues,
+        settings
       );
       onCreatedNode(nodeInstance);
       return nodeInstance.node;

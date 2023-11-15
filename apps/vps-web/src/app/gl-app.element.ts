@@ -628,19 +628,21 @@ export class GLAppElement extends AppElement<any> {
   };
 
   updateGLCanvasParameters = () => {
+    this.pauseRender = true;
     if (
       this.fragmentShader &&
       this.vertexShader &&
       this.shaderProgram &&
       this.gl
     ) {
-      this.pauseRender = true;
       console.log('SHADER RECREATION');
 
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       this.gl.detachShader(this.shaderProgram, this.fragmentShader);
       this.gl.detachShader(this.shaderProgram, this.vertexShader);
       this.gl.deleteProgram(this.shaderProgram);
+    }
+    if (this.gl) {
       this.u_timeUniformLocation = null;
       this.u_CanvasWidthUniformLocation = null;
       this.u_CanvasHeightUniformLocation = null;
@@ -684,21 +686,37 @@ export class GLAppElement extends AppElement<any> {
     uniform float u_height;
     uniform float u_test;
     
+    float metaball(vec2 p, vec2 center, float radius) {
+      float r = radius * radius;
+      float d = length(p - center);
+      return r / (d * d);
+    }
+
+  
     void main() {
       float aspect = u_width/u_height;
       vec2 resolution = vec2(u_width, u_height);
       vec2 uv = (gl_FragCoord.xy / resolution.xy);      
-      vec2 centeredCoord = uv * 2.0  - 1.0;
-      centeredCoord.x *= aspect;
+      uv = uv * 2.0 - 1.0;
+      uv.x *= aspect;
 
       vec3 finalColor = vec3(0.0);
-
-      
+      vec3 totalcolinf = vec3(0.00);
+      float totalInfluence = 0.0;
 
       ${statements}
 
-      
-      gl_FragColor = vec4(finalColor, 1.0);        
+      float threshold = 1.5;
+
+      if (totalInfluence > threshold) {
+          vec3 color = (totalcolinf) / totalInfluence;
+          //gl_FragColor = vec4(vec3(uv.y+0.5,uv.x+0.5,0.0), 1.0);
+          gl_FragColor = vec4(color, 1.0);
+      } else {
+          // Background color
+          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      }
+      //gl_FragColor = vec4(finalColor, 1.0);        
     }
     `;
     //vec3 color = vec3(0.5, 0.7, 0.);
@@ -899,9 +917,10 @@ export class GLAppElement extends AppElement<any> {
     if (!this.positionBuffer) {
       throw new Error('Unable to create buffer');
     }
-
+    this.timerCount = 0.0;
     this.rafId = requestAnimationFrame(this.renderLoop);
   };
+  timerCount = 0.0;
   renderLoop = () => {
     if (
       this.pauseRender ||
@@ -912,6 +931,11 @@ export class GLAppElement extends AppElement<any> {
     ) {
       return;
     }
+    // if (this.timerCount === 0) {
+    //   this.timerCount = performance.now();
+    // } else {
+    //   this.timerCount = performance.now() - this.timerCount;
+    // }
     const time = performance.now() * 0.001; // time in seconds
 
     this.drawScene(
@@ -921,6 +945,7 @@ export class GLAppElement extends AppElement<any> {
       time,
       this.glcanvas
     );
+    this.timerCount = 0.0;
     requestAnimationFrame(this.renderLoop);
   };
   drawScene = (

@@ -1,0 +1,39 @@
+float metaball(vec2 p, vec2 center, float radius) {
+    return radius / length(p - center);
+    //return length(p - center) - radius;
+}
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    // Normalized pixel coordinates (from 0 to 1)
+    vec2 uv = fragCoord/iResolution.xy;
+uv.x *= iResolution.x / iResolution.y;
+    // Time varying pixel color
+    vec3 col = vec3(0.0);
+
+    // Define the centers of the metaballs
+    vec2 center1 = vec2(sin(iTime * 8.25) * 0.3 + 0.5, cos(iTime * 3.5) * 0.3 + 0.5);
+    vec2 center2 = vec2(cos(iTime * 1.5) * 0.3 + 0.5, sin(iTime * 1.5) * 0.3 + 0.5);
+    vec2 center3 = vec2(sin(iTime * 0.7) * 0.3 + 0.5, cos(iTime * 0.7) * 0.3 + 0.5);
+
+    // Compute metaballs' fields and colors
+    float m1 = metaball(uv, center1, 0.15);
+    float m2 = metaball(uv, center2, 0.25);
+    float m3 = metaball(uv, center3, 0.35);
+    
+    
+    col += vec3(0.0, 1.0, 0.0) * (m1); // Red metaball
+    col += vec3(1.0, 0.0, 0.0) * (m2); // Green metaball
+    col += vec3(0.0, 0.0, 1.0) * (m3); // Blue metaball
+
+    
+    // Check if the metaballs' influence is below a certain threshold
+    float threshold = 5.; // You can adjust this threshold
+    if (m1 + m2 + m3 < threshold) {
+        col = vec3(0.0); // Set color to black
+    } else {
+    col = col / (m1+m2+m3);
+    }
+
+    // Output to screen
+    fragColor = vec4(col,1.0);
+}

@@ -36,6 +36,9 @@ export type FormField = (
     }
   | {
       fieldType: 'Slider';
+      min?: number;
+      max?: number;
+      step?: number;
     }
   | {
       fieldType: 'Color';
@@ -183,6 +186,9 @@ export class FormsComponent extends Component<Props> {
           label: formControl.label,
           value: formControl.value,
           isRow: formControl.isRow,
+          min: formControl.min,
+          max: formControl.max,
+          step: formControl.step,
           settings: formControl.settings,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,

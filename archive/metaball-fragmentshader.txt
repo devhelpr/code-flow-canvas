@@ -1,0 +1,55 @@
+
+float metaball(vec2 p, vec2 center, float radius) {
+    float r = radius * radius;
+    float d = length(p - center);
+    return r / (d * d);
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+   vec2 uv = fragCoord.xy / iResolution.xy;
+    uv = uv * 2.0 - 1.0;
+    uv.x *= iResolution.x / iResolution.y;
+
+    // Initialize the field value
+    float field = 0.0;
+
+    // Metaball centers
+    vec2 center1 = vec2(sin(iTime)*8., cos(iTime)) * 0.25;
+    vec2 center2 = vec2(sin(iTime + 2.0)*2., cos(iTime + 2.0)) * 0.25;
+    vec2 center3 = vec2(sin(iTime + 4.0)*4., cos(iTime + 4.0)) * 0.25;
+
+    // Calculate the influence of each metaball
+    vec3 totalcolinf = vec3(0.00);
+    float totalInfluence = 0.0;
+    
+    float influence1 = metaball(uv, center1, 0.25);
+    vec3 color1 = vec3(1.0, 0.0, 0.0); // Red
+    totalcolinf += color1 * influence1;
+    totalInfluence += influence1;
+    
+    float influence2 = metaball(uv, center2, 0.25);
+    vec3 color2 = vec3(0.0, 1.0, 0.0); // Green
+    totalcolinf += color2 * influence2;
+    totalInfluence += influence2;
+   
+    float influence3 = metaball(uv, center3, 0.25);    
+    vec3 color3 = vec3(0.0, 0.0, 1.0); // Blue
+    totalcolinf += color3 * influence3;
+    totalInfluence += influence3;
+    
+
+    // Threshold for the metaball surface
+    float threshold = 1.5;
+
+    // Check if the point is within the metaball surface
+    if (totalInfluence > threshold) {
+        // Blend colors based on the relative influence of each metaball
+        vec3 color = (totalcolinf) / totalInfluence;
+        fragColor = vec4(color, 1.0);
+    } else {
+        // Background color
+        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+
+}

@@ -40,6 +40,9 @@ export class Rect<T> {
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
   protected containerNode?: IRectNodeComponent<T>;
+
+  protected minHeight = 0;
+
   protected updateEventListeners: ((
     target?: INodeComponent<T>,
     x?: number,
@@ -83,10 +86,23 @@ export class Rect<T> {
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
     let widthHelper = width;
-    let heightHelper = height;
+
     this.containerNode = containerNode;
     this.isStaticPosition = isStaticPosition;
     this.pathHiddenElement = pathHiddenElement;
+
+    if (thumbs) {
+      const thumbStartItemsCount = thumbs.filter((thumb) => {
+        return thumb.connectionType === ThumbConnectionType.start;
+      }).length;
+      const thumbEndItemsCount = thumbs.filter((thumb) => {
+        return thumb.connectionType === ThumbConnectionType.end;
+      }).length;
+      this.minHeight = Math.max(thumbStartItemsCount, thumbEndItemsCount) * 55;
+    }
+
+    let heightHelper = Math.max(height, this.minHeight);
+    console.log('minHeight', height, this.minHeight);
 
     this.rectInfo = this.createRectElement(
       canvas.domElement,
@@ -174,9 +190,9 @@ export class Rect<T> {
     this.nodeComponent.x = startX;
     this.nodeComponent.y = startY;
     this.nodeComponent.width = width;
-    this.nodeComponent.height = height;
+    this.nodeComponent.height = Math.max(height, this.minHeight);
     this.oldWidth = width;
-    this.oldHeight = height;
+    this.oldHeight = Math.max(height, this.minHeight);
 
     if (!hasStaticWidthHeight) {
       const astElementSize = (
@@ -188,6 +204,10 @@ export class Rect<T> {
       this.nodeComponent.height = astElementSize.height / scale; // - 20;
       this.points.width = astElementSize.width / scale;
       this.points.height = astElementSize.height / scale; // - 20;
+      if (this.points.height < this.minHeight) {
+        this.points.height = this.minHeight;
+        this.nodeComponent.height = this.minHeight;
+      }
     }
 
     widthHelper = this.nodeComponent.width ?? 0;
@@ -288,7 +308,7 @@ export class Rect<T> {
       setSelectNode({
         id: this.nodeComponent.id,
         containerNode: this.nodeComponent
-          .containerNode as unknown as INodeComponent<unknown>,
+          .containerNode as unknown as IRectNodeComponent<unknown>,
       });
     };
     this.nodeComponent.connections = [];
@@ -316,8 +336,11 @@ export class Rect<T> {
     const { scale } = getCamera();
     this.nodeComponent.width = astElementSize.width / scale;
     this.nodeComponent.height = astElementSize.height / scale;
-    this.points.width = astElementSize.width / scale;
-    this.points.height = astElementSize.height / scale;
+    if (this.nodeComponent.height < this.minHeight) {
+      this.nodeComponent.height = this.minHeight;
+    }
+    this.points.width = this.nodeComponent.width;
+    this.points.height = this.nodeComponent.height;
 
     rectContainerDOMElement.style.width = `${this.nodeComponent.width}px`;
     rectContainerDOMElement.style.height = `${this.nodeComponent.height}px`;
@@ -469,15 +492,11 @@ export class Rect<T> {
     )?.connections;
     if (thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.start) {
       connectionCount = connections?.filter((connection) => {
-        return (
-          connection.startNode?.id === thumbNodeDropTarget.thumbLinkedToNode?.id
-        );
+        return connection.startNodeThumb?.id === thumbNodeDropTarget.id;
       }).length;
     } else {
       connectionCount = connections.filter((connection) => {
-        return (
-          connection.endNode?.id === thumbNodeDropTarget.thumbLinkedToNode?.id
-        );
+        return connection.endNodeThumb?.id === thumbNodeDropTarget.id;
       }).length;
     }
     console.log(
