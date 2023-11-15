@@ -84,7 +84,8 @@ export const importToCanvas = (
                         child.nodeInfo.canvasAppInstance,
                         canvasUpdated,
                         child,
-                        nestedLevel ? nestedLevel + 2 : 2
+                        nestedLevel ? nestedLevel + 2 : 2,
+                        getNodeTaskFactory
                       );
                     }
                   }
