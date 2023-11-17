@@ -10,6 +10,42 @@ import {
 } from '../interfaces/element';
 import { createElement } from './create-element';
 
+/**
+ * This function, `createASTNodeElement`, creates an AST node element from a given AST node,
+ * parent element, map of elements, optional expressions, and an optional scope ID.
+ *
+ * It initializes an `element` variable and an `elementProperties` object, then iterates over the
+ * `properties` of the `astNode`, adding each property to `elementProperties`.
+ *
+ * If the `astNode` type is 'EXPRESSION', it compiles and runs the expression,
+ * storing the result in `text`.
+ *
+ * If the `tagName` of the `astNode` is 'script' or 'style' with a `scopeId`, it sets `dontFollowChildren` to `true` and
+ * wraps the body in a self-invoking function or `@scope` rule respectively.
+ *
+ * The `element` is created using the `createElement` function with the `tagName`, `elementProperties`,
+ * `parentElement`, and `text`.
+ *
+ * If `text` contains any expressions, it updates the `value`, `isTextNode`, and `element` properties of
+ * the corresponding expression and sets the `textContent` of the `domElement` to an empty string.
+ *
+ * If the `value` of each property contains any expressions, it updates the `value`, `isProperty`, `propertyName`, and `element`
+ * properties of the corresponding expression and sets the attribute of the `domElement`
+ * to an empty string.
+ *
+ * If the `element` was successfully created, it sets the `id` of the `domElement`, adds the `element`
+ *  to the `elements` map, and recursively creates AST node elements for each child of the `astNode` (unless `dontFollowChildren` is `true`).
+ *
+ * The function then returns the created `element`.
+ *
+ * @template T - The type of the element.
+ * @param {IASTTreeNode} astNode - The AST node.
+ * @param {DOMElementNode} parentElement - The parent element.
+ * @param {ElementNodeMap<T>} elements - The map of elements.
+ * @param {Record<string, object>} [expressions] - The expressions.
+ * @param {string} [scopeId] - The scope ID.
+ * @returns {IElementNode<T>} - The created element.
+ */
 export const createASTNodeElement = <T>(
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
