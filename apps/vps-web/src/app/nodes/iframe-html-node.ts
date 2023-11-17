@@ -10,7 +10,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
-import { create } from 'domain';
+import { createStructuredExpressionsMarkup } from '../utils/replace-expression-script';
 
 export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -18,6 +18,13 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
+  let oldHtml = '';
+  let structuredMarkup:
+    | {
+        expressions: Record<string, object>;
+        markup: string;
+      }
+    | undefined = undefined;
 
   const defaultHTML = `<div class="bg-sky-800 text-white 
     flex items-center justify-center
@@ -49,23 +56,46 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       // </body>
       // </html>`;
 
-      const htmlString = `${node?.nodeInfo?.formValues['html'] || defaultHTML}`;
+      let htmlString = `${node?.nodeInfo?.formValues['html'] || defaultHTML}`;
 
-      console.log('htmlString', htmlString);
-      if (isEmpty) {
-        (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
-      } else {
-        (divNode.domElement as HTMLElement).innerHTML = '';
-
-        createElement(
-          'iframe',
-          {
-            srcdoc: `${htmlString}`,
-            class: 'w-full h-full bg-white',
-          },
-          divNode.domElement as HTMLElement
-        );
+      if (oldHtml === '' || oldHtml !== htmlString) {
+        oldHtml = htmlString;
+        console.log('htmlString', htmlString);
+        if (isEmpty) {
+          (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
+        } else {
+          (divNode.domElement as HTMLElement).innerHTML = '';
+          structuredMarkup = createStructuredExpressionsMarkup(htmlString);
+          htmlString = `${htmlString}
+            <script>
+              window.addEventListener('message', (event) => {                
+                console.log('Received message:', event.data);
+              });            
+            </script>            
+            `;
+          createElement(
+            'iframe',
+            {
+              srcdoc: `${htmlString}`,
+              id: `iframe${node.id}`,
+              class: 'w-full h-full bg-white',
+            },
+            divNode.domElement as HTMLElement
+          );
+        }
       }
+
+      if (structuredMarkup) {
+        //
+      }
+
+      const iframe = document.getElementById(
+        `iframe${node.id}`
+      ) as HTMLIFrameElement;
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage('TEST'); // can't send structured data which contains code...
+      }
+
       if (rect) {
         rect.resize();
       }

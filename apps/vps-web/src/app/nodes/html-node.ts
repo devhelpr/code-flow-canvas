@@ -87,11 +87,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       if (!astElement) {
         const htmlString = node?.nodeInfo?.formValues['html'] || defaultHTML;
         structuredMarkup = createStructuredExpressionsMarkup(htmlString);
-        //console.log('structuredMarkup', structuredMarkup);
         const compiledMarkup = compileMarkup(structuredMarkup.markup);
-        // htmlString = replaceExpressionScript(htmlString, variables, true);
-
-        // (divNode.domElement as HTMLElement).innerHTML = htmlString;
         if (compiledMarkup) {
           (divNode.domElement as HTMLElement).innerHTML = '';
           astElement = createASTNodeElement(
@@ -105,6 +101,11 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         }
       }
       if (astElement && structuredMarkup) {
+        // Iterates over `structuredMarkup.expressions`. Each entry is an object with properties like `expressionFunction`, `value`, `isProperty`, `propertyName`, `isTextNode`, and `element`.
+        // Checks if `value` contains substrings enclosed in square brackets. If so, it replaces the matched substring with the result of `expressionFunction` call.
+        // If the result is `false` or `undefined`, the matched substring is removed.
+        // If the object represents a property, it sets the property on the `domElement` of the `element` object. If the property name is 'class', it assigns the `resultContent` to the `className` of the `domElement`. For other properties, it uses the `setAttribute` method.
+        // If the object represents a text node, it sets the `textContent` of the `domElement` to `resultContent`.
         Object.entries(structuredMarkup.expressions).forEach((entry) => {
           console.log('entry', entry);
           const info = entry[1] as {

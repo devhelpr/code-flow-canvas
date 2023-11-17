@@ -75,6 +75,14 @@ export const replaceExpressionScript = (
   return resultContent;
 };
 
+/*
+
+*/
+/**
+ * Creates structured expressions markup by replacing expressions in the content with unique identifiers.
+ * @param content - The content string containing expressions to be replaced.
+ * @returns An object containing the expressions and the updated markup.
+ */
 export const createStructuredExpressionsMarkup = (content: string) => {
   let resultContent = content;
   const scriptList: Record<string, object> = {};
@@ -90,19 +98,6 @@ export const createStructuredExpressionsMarkup = (content: string) => {
           ) => any
         ).bind(info.bindings);
         try {
-          // const result = runExpression(
-          //   expressionFunction,
-          //   {
-          //     ...payload,
-          //   },
-          //   true,
-          //   info.payloadProperties
-          // );
-          //if (result !== false && result !== undefined) {
-          //const value = result.toString();
-          // if (!!keepUnknownFields && value === undefined) {
-          //   value = match;
-          // }
           const value = crypto.randomUUID();
           if (match.substring(0, 2) == '{{') {
             resultContent = resultContent.replace(match, `[${value}]`);
@@ -117,18 +112,6 @@ export const createStructuredExpressionsMarkup = (content: string) => {
             script: expression,
             expressionFunction,
           };
-
-          // } else {
-          //   if (match.substring(0, 2) == '{{') {
-          //     resultContent = resultContent.replace(match, '');
-          //   } else {
-          //     const allOccurancesOfMatchRegex = new RegExp(match, 'gm');
-          //     resultContent = resultContent.replace(
-          //       allOccurancesOfMatchRegex,
-          //       ''
-          //     );
-          //   }
-          // }
         } catch (error) {
           console.error('replaceExpressionScript error', error);
 
