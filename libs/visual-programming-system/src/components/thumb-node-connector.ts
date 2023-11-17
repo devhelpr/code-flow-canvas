@@ -311,6 +311,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     this.nodeComponent.getThumbCircleElement = () => circleDomElement;
   }
 
+  newCurve: CubicBezierConnection<T> | undefined;
+
   onPointerOver = (_e: PointerEvent) => {
     if (this.disableInteraction) {
       return;
@@ -547,6 +549,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       this.nodeComponent?.id,
       (this.nodeComponent?.domElement as any).classList
     );
+    this.newCurve = undefined;
     if (this.disableInteraction) {
       return;
     }
@@ -715,6 +718,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           undefined,
           this.containerNode
         );
+
         if (curve.nodeComponent?.connectionEndNodeThumb) {
           const circleDomElement =
             curve.nodeComponent?.connectionEndNodeThumb.getThumbCircleElement?.();
@@ -750,6 +754,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         if (!curve || !curve.nodeComponent || !curve.endPointElement) {
           throw new Error('curve not created');
         }
+        this.newCurve = curve;
 
         if (curve && this.canvas) {
           curve.nodeComponent.startNode = this.parentRectNode;
@@ -860,16 +865,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     }
   };
 
-  onPointerUp = (e: PointerEvent) => {
-    console.log('thumb onPointerUp', this.nodeComponent?.id);
-    if (this.disableInteraction) {
-      return;
-    }
-    if (!this.nodeComponent) {
-      return;
-    }
-
-    if (this.nodeComponent.domElement) {
+  resetNodeThumbInteraction = () => {
+    if (this.nodeComponent && this.nodeComponent.domElement) {
       (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
         'none';
 
@@ -892,6 +889,41 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       circleDomElement.classList.add('pointer-events-auto');
       circleDomElement.classList.remove('pointer-events-none');
     }
+  };
+
+  onPointerUp = (e: PointerEvent) => {
+    console.log(
+      'thumb onPointerUp',
+      this.nodeComponent?.id,
+      this.interactionStateMachine.getCurrentInteractionState()
+    );
+    const state = this.interactionStateMachine.getCurrentInteractionState();
+    if (state.state === InteractionState.Idle) {
+      if (this.newCurve) {
+        this.newCurve.startPointElement?.domElement?.remove();
+        this.newCurve.endPointElement?.domElement?.remove();
+        if (this.newCurve.nodeComponent) {
+          this.newCurve.nodeComponent.domElement?.remove();
+        }
+        if (this.nodeComponent) {
+          const node = this.nodeComponent.thumbLinkedToNode;
+          if (node) {
+            node.connections = node.connections.filter((c) => {
+              return c.id !== this.newCurve?.nodeComponent?.id;
+            });
+          }
+        }
+        this.newCurve = undefined;
+        this.resetNodeThumbInteraction();
+      }
+    }
+    if (this.disableInteraction) {
+      return;
+    }
+    if (!this.nodeComponent) {
+      return;
+    }
+    this.resetNodeThumbInteraction();
   };
 
   onPointerThumbUp = () => {

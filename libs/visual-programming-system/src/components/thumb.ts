@@ -117,12 +117,13 @@ export class ThumbNode<T> {
         },
         width: width ?? thumbWidth,
         height: height ?? thumbHeight,
-        // contextmenu: (event) => {
-        //   event.preventDefault();
-        //   event.stopPropagation();
-        //   interactionStateMachine.reset();
-        //   return false;
-        // },
+        contextmenu: (event) => {
+          event.preventDefault();
+          console.log('contextmenu');
+          event.stopPropagation();
+          interactionStateMachine.reset();
+          return false;
+        },
       },
       this.canvasElement
     ) as IThumbNodeComponent<T>;
