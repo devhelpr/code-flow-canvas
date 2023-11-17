@@ -4,7 +4,6 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
@@ -14,9 +13,9 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
-const fieldName = 'uv';
-const labelName = 'UV range';
-const nodeName = 'uv-node';
+const fieldName = 'addition';
+const labelName = 'Addition';
+const nodeName = 'addition-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
@@ -29,9 +28,27 @@ const thumbs = [
     thumbConstraint: thumbConstraint,
     maxConnections: -1,
   },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'value1',
+    thumbConstraint: thumbConstraint,
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'value2',
+    thumbConstraint: thumbConstraint,
+  },
 ];
 
-export const getUVNodeX: NodeTaskFactory<any> = (
+export const getAdditionNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
@@ -45,72 +62,41 @@ export const getUVNodeX: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
+    const parsedValue1 = parseFloat(payload?.['value1']);
+    let value1 = '';
+
+    value1 = payload?.['value1'];
+    const parsedValue2 = parseFloat(payload?.['value2']);
+    let value2 = '';
+
+    value2 = payload?.['value2'];
     return {
-      result: `uv.x`,
+      result: `${value1} + ${value2}`,
       output: input,
       followPath: undefined,
     };
   };
 
   return visualNodeFactory(
-    `${nodeName}-x`,
-    `${labelName} X`,
+    nodeName,
+    labelName,
     familyName,
     fieldName,
     compute,
     initializeCompute,
     false,
-    200,
     100,
+    320,
     thumbs,
     (values?: InitialValues) => {
       return [];
     },
     (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance!;
-      node = nodeInstance.node!;
-    }
-  );
-};
-
-export const getUVNodeY: NodeTaskFactory<any> = (
-  updated: () => void
-): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
-  const initializeCompute = () => {
-    return;
-  };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
-    return {
-      result: `uv.y`,
-      output: input,
-      followPath: undefined,
-    };
-  };
-
-  return visualNodeFactory(
-    `${nodeName}-y`,
-    `${labelName} Y`,
-    familyName,
-    fieldName,
-    compute,
-    initializeCompute,
-    false,
-    200,
-    100,
-    thumbs,
-    (values?: InitialValues) => {
-      return [];
+      contextInstance = nodeInstance.contextInstance;
+      node = nodeInstance.node;
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance!;
-      node = nodeInstance.node!;
+    {
+      hasTitlebar: false,
     }
   );
 };

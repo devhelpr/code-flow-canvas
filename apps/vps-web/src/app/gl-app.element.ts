@@ -700,6 +700,7 @@ export class GLAppElement extends AppElement<any> {
       uv = uv * 2.0 - 1.0;
       uv.x *= aspect;
 
+      vec3 backgroundColor = vec3(0.0, 0.0, 0.0);
       vec3 finalColor = vec3(0.0);
       vec3 totalcolinf = vec3(0.00);
       float totalInfluence = 0.0;
@@ -710,13 +711,10 @@ export class GLAppElement extends AppElement<any> {
 
       if (totalInfluence > threshold) {
           vec3 color = (totalcolinf) / totalInfluence;
-          //gl_FragColor = vec4(vec3(uv.y+0.5,uv.x+0.5,0.0), 1.0);
           gl_FragColor = vec4(color, 1.0);
       } else {
-          // Background color
-          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-      }
-      //gl_FragColor = vec4(finalColor, 1.0);        
+          gl_FragColor = vec4(backgroundColor, 1.0);
+      }          
     }
     `;
     //vec3 color = vec3(0.5, 0.7, 0.);
@@ -862,7 +860,10 @@ export class GLAppElement extends AppElement<any> {
         const node = element as unknown as INodeComponent<any>;
         if (node.nodeType === NodeType.Shape) {
           //'circle-node'
-          if (node.nodeInfo?.type === 'circle-node') {
+          if (
+            node.nodeInfo?.type === 'circle-node' ||
+            node.nodeInfo?.type === 'background-color-node'
+          ) {
             const inputs = this.getInputsForNode(
               node as IRectNodeComponent<any>
             );
