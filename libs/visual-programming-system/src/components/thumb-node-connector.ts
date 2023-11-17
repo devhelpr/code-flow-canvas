@@ -870,15 +870,6 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
         'none';
 
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
-      pointerUp(
-        x,
-        y,
-        this.nodeComponent,
-        this.canvas as IElementNode<T>,
-        this.interactionInfo,
-        this.interactionStateMachine
-      );
       const circleDomElement = this.circleElement?.domElement as unknown as
         | HTMLElement
         | SVGElement;
@@ -924,6 +915,15 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       return;
     }
     this.resetNodeThumbInteraction();
+    const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+    pointerUp(
+      x,
+      y,
+      this.nodeComponent,
+      this.canvas as IElementNode<T>,
+      this.interactionInfo,
+      this.interactionStateMachine
+    );
   };
 
   onPointerThumbUp = () => {
