@@ -46,8 +46,8 @@ export const addElementToParent = (
 };
 
 export const createTemplate = (template: string): HTMLTemplateElement => {
-  const templateElement = document.createElement("template");
-  templateElement.innerHTML = template.replace(/\n[ \t]+/g, "");
+  const templateElement = document.createElement('template');
+  templateElement.innerHTML = template.replace(/\n[ \t]+/g, '');
   return templateElement;
 };
 
@@ -58,7 +58,7 @@ export const createElementFromTemplate = (
   const element = template.content.cloneNode(true) as HTMLElement;
 
   Array.prototype.forEach.call(element.children, (node) => {
-    if (node.nodeName.toString() === "" && node.textContent.trim() === "")
+    if (node.nodeName.toString() === '' && node.textContent.trim() === '')
       node.remove();
   });
 
