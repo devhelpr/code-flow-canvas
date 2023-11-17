@@ -606,7 +606,7 @@ export const createCanvasApp = <T>(
         const rootWidth = rootElement.clientWidth;
         const rootHeight = rootElement.clientHeight;
 
-        const width = maxX - minX;
+        const width = maxX - minX + 80;
         const height = maxY - minY;
         const scale = rootWidth / width;
 
@@ -629,7 +629,7 @@ export const createCanvasApp = <T>(
           'rootHeight',
           rootHeight
         );
-        xCamera = rootWidth / 2 - (scale * width) / 2 - scale * minX;
+        xCamera = rootWidth / 2 - (scale * width) / 2 - scale * (minX - 40);
         yCamera = rootHeight / 2 - (scale * height) / 2 - scale * minY;
         scaleCamera = scale;
       }
