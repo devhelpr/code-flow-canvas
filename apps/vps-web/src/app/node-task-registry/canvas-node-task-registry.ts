@@ -47,6 +47,7 @@ import { getMultiTrigger } from '../nodes/multi-trigger';
 import { getShowImage } from '../nodes/show-image';
 import { observeVariable } from '../nodes/observe-variable';
 import { getSummingJunction } from '../nodes/summing-junction';
+import { getIFrameHtmlNode } from '../nodes/iframe-html-node';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -106,6 +107,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('checkbox', getCheckbox(animatePath));
   registerNodeFactory('styled-node', getStyledNode(animatePath));
   registerNodeFactory('html-node', getHtmlNode);
+  registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
   registerNodeFactory('annotation', getAnnotation(animatePath));
 
   registerNodeFactory('node-trigger', getNodeTrigger(animatePath));
