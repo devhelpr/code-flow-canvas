@@ -13,6 +13,7 @@ import { getAdditionNode } from '../nodes-gl/addition';
 import { getLengthNode } from '../nodes-gl/length';
 import { getNoiseNode } from '../nodes-gl/noise';
 import { getValue100Node } from '../nodes-gl/value100-node';
+import { getSplitColorsNode } from '../nodes-gl/split-colors';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 
@@ -40,6 +41,7 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('length-node', getLengthNode);
   registerGLNodeFactory('noise-node', getNoiseNode);
   registerGLNodeFactory('value100-node', getValue100Node);
+  registerGLNodeFactory('split-colors-node', getSplitColorsNode);
 };
 
 export const getGLNodeTaskFactory = (name: string) => {

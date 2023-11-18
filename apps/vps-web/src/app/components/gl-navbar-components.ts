@@ -3,6 +3,7 @@ import {
   INodeComponent,
   IRectNodeComponent,
   NodeType,
+  ThumbConnectionType,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
@@ -110,7 +111,7 @@ export class GLNavbarComponent extends Component<
     }
     this.isMounted = false;
   }
-
+  lastAddedNode: IRectNodeComponent<any> | null = null;
   onClickAddNode = (event: Event) => {
     event.preventDefault();
     const nodeType = this.props.selectNodeType.value;
@@ -125,9 +126,39 @@ export class GLNavbarComponent extends Component<
       halfWidth,
       halfHeight
     );
-    const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
-    const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
+    let startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
+    let startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
+    const selectedNode = this.getSelectedNodeInfo();
+    let node: IRectNodeComponent<any> | undefined = undefined;
+    if (
+      selectedNode &&
+      selectedNode.node &&
+      selectedNode.node.nodeType === NodeType.Shape
+    ) {
+      this.lastAddedNode = null;
+      node = selectedNode.node as IRectNodeComponent<any>;
+    } else if (this.lastAddedNode) {
+      node = this.lastAddedNode;
+    }
+    if (node) {
+      let hasOutputConnections = false;
+      let hasInputConnections = false;
+      if (node.thumbConnectors) {
+        hasOutputConnections = node.thumbConnectors.some((c) => {
+          return c.thumbConnectionType === ThumbConnectionType.start;
+        });
+        hasInputConnections = node.thumbConnectors.some((c) => {
+          return c.thumbConnectionType === ThumbConnectionType.end;
+        });
+      }
+      startY = node.y;
+      if (hasOutputConnections) {
+        startX = node.x + (node.width ?? 200) + 250;
+      } else if (hasInputConnections) {
+        startX = node.x - 300;
+      }
+    }
     const factory = getGLNodeTaskFactory(nodeType);
 
     if (factory) {
@@ -192,6 +223,7 @@ export class GLNavbarComponent extends Component<
         startY
       );
       if (node && node.nodeInfo) {
+        this.lastAddedNode = node;
         node.nodeInfo.taskType = nodeType;
       }
     }
@@ -227,6 +259,7 @@ export class GLNavbarComponent extends Component<
 
   onClickDelete = (event: Event) => {
     event.preventDefault();
+    this.lastAddedNode = null;
     const nodeInfo = this.getSelectedNodeInfo();
 
     if (nodeInfo) {

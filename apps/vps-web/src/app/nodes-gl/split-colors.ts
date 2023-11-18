@@ -10,7 +10,7 @@ import {
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
-export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
+export const getSplitColorsNode = (updated: () => void): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
 
   const initializeCompute = () => {
@@ -20,58 +20,33 @@ export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
     input: string,
     pathExecution?: RunNodeResult<any>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string
   ) => {
-    let red_color = payload?.['r'] ?? '0.';
-    let green_color = payload?.['g'] ?? '0.';
-    let blue_color = payload?.['b'] ?? '0.';
-    const vector = payload?.['vector'];
-    let preStatements = '';
-    let isRedStatementSet = false;
-    if (red_color === green_color) {
-      isRedStatementSet = true;
-      preStatements += `
-        float red = ${red_color};
-      `;
-      red_color = 'red';
-      green_color = 'red';
+    const vector = payload?.['color'];
+    if (thumbName === 'r') {
+      return {
+        result: `${vector}.r`,
+        output: input,
+        followPath: undefined,
+      };
+    } else if (thumbName == 'g') {
+      return {
+        result: `${vector}.g`,
+        output: input,
+        followPath: undefined,
+      };
+    } else {
+      return {
+        result: `${vector}.b`,
+        output: input,
+        followPath: undefined,
+      };
     }
-
-    if (red_color === blue_color) {
-      if (!isRedStatementSet) {
-        preStatements += `
-          float red = ${red_color};
-        `;
-        red_color = 'red';
-      }
-      blue_color = 'red';
-    }
-
-    if (green_color === blue_color && green_color !== 'red') {
-      preStatements += `
-        float green = ${green_color};
-      `;
-      green_color = 'green';
-      blue_color = 'green';
-    }
-    let shaderCode = `
-      ${preStatements}
-      backgroundColor = vec3(${red_color}, ${green_color}, ${blue_color});
-    `;
-    if (vector) {
-      shaderCode = `
-      backgroundColor = ${vector};
-    `;
-    }
-    return {
-      result: shaderCode,
-      output: shaderCode,
-      followPath: undefined,
-    };
   };
 
-  const nodeName = 'background-color-node';
-  const nodeTitle = 'Background Color';
+  const nodeName = 'split-colors-node';
+  const nodeTitle = 'Split Colors';
   return {
     name: nodeName,
     family: 'flow-canvas',
@@ -101,44 +76,47 @@ export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
         undefined,
         [
           {
-            thumbType: ThumbType.EndConnectorLeft,
+            thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
+            connectionType: ThumbConnectionType.start,
             color: 'red',
             label: ' ',
             thumbConstraint: 'value',
             name: 'r',
             prefixLabel: 'r',
+            maxConnections: -1,
           },
           {
-            thumbType: ThumbType.EndConnectorLeft,
+            thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 1,
-            connectionType: ThumbConnectionType.end,
+            connectionType: ThumbConnectionType.start,
             color: 'green',
             label: ' ',
             thumbConstraint: 'value',
             name: 'g',
             prefixLabel: 'g',
+            maxConnections: -1,
           },
           {
-            thumbType: ThumbType.EndConnectorLeft,
+            thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 2,
-            connectionType: ThumbConnectionType.end,
+            connectionType: ThumbConnectionType.start,
             color: 'blue',
             label: ' ',
             thumbConstraint: 'value',
             name: 'b',
             prefixLabel: 'b',
+            maxConnections: -1,
           },
           {
-            thumbType: ThumbType.EndConnectorLeft,
+            thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 3,
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            thumbConstraint: 'vec2',
-            name: 'vector',
-            prefixLabel: 'vector',
+            thumbConstraint: 'vec3',
+            name: 'color',
+            prefixLabel: 'color',
           },
         ],
         jsxComponentWrapper,

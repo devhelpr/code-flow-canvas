@@ -25,18 +25,39 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    thumbConstraint: thumbConstraint,
+    thumbConstraint: 'vec3',
     maxConnections: -1,
   },
   {
-    thumbType: ThumbType.EndConnectorCenter,
+    thumbType: ThumbType.EndConnectorLeft,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
 
-    name: 'value',
-    thumbConstraint: thumbConstraint,
+    name: 'vector',
+    prefixLabel: 'vector',
+    thumbConstraint: 'vec2',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'time',
+    prefixLabel: 'time',
+    thumbConstraint: 'value',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 2,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'zoom',
+    prefixLabel: 'zoom',
+    thumbConstraint: 'value',
   },
 ];
 
@@ -54,9 +75,11 @@ export const getNoiseNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const value = payload?.['value'];
+    const value = payload?.['vector'];
+    const time = payload?.['time'] ?? '1.';
+    const zoom = payload?.['zoom'] ?? '.0001';
     return {
-      result: `noise(${value})`,
+      result: `normalNoise(${value},${zoom},1.,${time})`,
       output: input,
       followPath: undefined,
     };

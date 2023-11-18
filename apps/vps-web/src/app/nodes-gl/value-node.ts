@@ -28,9 +28,8 @@ export const getValueNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    let value = (
-      parseFloat(node.nodeInfo?.formValues?.['value'] ?? 0) +
-      Math.random() * 0.5
+    let value = parseFloat(
+      node.nodeInfo?.formValues?.['value'] ?? 0
     ).toString();
     if (value.indexOf('.') < 0) {
       value = `${value}.0`;

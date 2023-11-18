@@ -43,6 +43,7 @@ import {
   getGLNodeTaskFactory,
   setupGLNodeTaskRegistry,
 } from './node-task-registry/gl-node-task-registry';
+import { noise } from './gl-functions/noise';
 
 export class GLAppElement extends AppElement<any> {
   public static observedAttributes = [];
@@ -686,19 +687,16 @@ export class GLAppElement extends AppElement<any> {
     uniform float u_height;
     uniform float u_test;
     
+    #define PI = 3.1415926535897932384626433832795;
     float metaball(vec2 p, vec2 center, float radius) {
       float r = radius * radius;
       float d = length(p - center);
       return r / (d * d);
     }
 
-    float rand(float n){return fract(sin(n) * 43758.5453123);}
+    
 
-float noise(float p){
-	float fl = floor(p);
-  float fc = fract(p);
-	return mix(rand(fl), rand(fl + 1.0), fc);
-}
+    ${noise()}
 	
   
     void main() {
