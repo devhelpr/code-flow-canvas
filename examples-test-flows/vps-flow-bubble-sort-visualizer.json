@@ -10,8 +10,8 @@
           "id": "991a990d-2b90-4464-a66d-81da67a0f02f",
           "x": 575.8693207610806,
           "y": 535.8060453159778,
-          "width": 240.0003095472748,
-          "height": 157.9997970657668,
+          "width": 239.99997051564102,
+          "height": 158.00000114325954,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "array",
@@ -52,8 +52,8 @@
           "id": "b7c08ea0-1bf5-4aa2-af8a-24175d287aca",
           "x": 1321.1857610792372,
           "y": 468.98486321370274,
-          "width": 239.99996355618188,
-          "height": 55.99991680548765,
+          "width": 240.0000979239702,
+          "height": 55.99987440658203,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "sum"
@@ -105,8 +105,8 @@
         },
         {
           "id": "ba7ca0fa-6968-4e7a-9125-3c41f3ab33a2",
-          "x": 1638.783678013424,
-          "y": -264.37593683856386,
+          "x": 1914.5561000151204,
+          "y": -378.59743513273645,
           "width": 100,
           "height": 64,
           "nodeType": "Shape",
@@ -260,8 +260,8 @@
         },
         {
           "id": "a42e5595-4e6d-46c3-9c0d-d550da37e942",
-          "x": 1094.5694600077532,
-          "y": -7.827547649593001,
+          "x": 1174.2495638843322,
+          "y": -108.84562573506128,
           "width": 200,
           "height": 112,
           "nodeType": "Shape",
@@ -274,10 +274,10 @@
         },
         {
           "id": "684e098f-9f0d-48eb-9f39-81d1f893af77",
-          "x": 1449.381975803816,
-          "y": 112.20687427897776,
-          "width": 256.0003301837598,
-          "height": 200.00025795606234,
+          "x": 1649.7409420372076,
+          "y": -82.21010750165637,
+          "width": 256.0000570894454,
+          "height": 199.99994380847644,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-image"
@@ -285,8 +285,8 @@
         },
         {
           "id": "17216351-46a2-4c0f-9540-8dc57fed9696",
-          "x": 682.1823749151853,
-          "y": 38.44150934885362,
+          "x": 566.684138348251,
+          "y": -354.3403688071371,
           "width": 200,
           "height": 112,
           "nodeType": "Shape",
@@ -324,15 +324,15 @@
         },
         {
           "id": "91b14556-8c10-4312-a98b-5e225158a9dc",
-          "x": 1271.3537785625786,
-          "y": -465.855061529319,
-          "width": 300.0002242462845,
-          "height": 181.99999070830327,
+          "x": 1271.3537216143193,
+          "y": -465.85506699348724,
+          "width": 299.9999157127147,
+          "height": 182.0000361402929,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Bubble Sort Visualizer</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\n    <style>\n      #chart-container {\n        width: 100%;\n        max-width: 600px;\n        margin: 0rem auto;\n      }\n    </style>\n  </head>\n  <body class=\"bg-gray-800 text-white\">\n    <div class=\"container mx-auto p-4\">\n    \n        <div id=\"arrayContainer\" class=\"flex space-x-2 mb-4 hidden\"></div>\n        <div id=\"chart-container\">\n          <canvas id=\"sortChart\"></canvas>\n        </div>\n      </div>\n    </div>\n\n    <script>\n      const arrayContainer = document.getElementById(\"arrayContainer\");\n      const sortButton = document.getElementById(\"sortButton\");\n      const addButton = document.getElementById(\"addButton\");\n      const sortChart = document.getElementById(\"sortChart\").getContext(\"2d\");\n      const resetButton = document.getElementById(\"resetButton\");\n      let array = [];\n      let wasSwapped = false;\n      let sortData = [];\n\n      const chart = new Chart(sortChart, {\n        type: \"line\",\n        data: {\n          labels: [],\n          datasets: [\n            {\n              label: \"Array Values\",\n              data: sortData,\n              backgroundColor: \"rgba(59, 130, 246, 0.2)\",\n              borderColor: \"rgba(59, 130, 246, 1)\",\n              borderWidth: 1,\n            },\n          ],\n        },\n        options: {\n          scales: {\n            y: {\n              beginAtZero: true,\n            },\n          },\n        },\n      });\n\n      function displayArray() {\n        arrayContainer.innerHTML = \"\";\n        array.forEach((value) => {\n          const element = document.createElement(\"div\");\n          element.textContent = value;\n          element.className = \"bg-gray-500 text-white p-2\";\n          arrayContainer.appendChild(element);\n        });\n      }\n\n      function addRandomNumber() {\n        const randomNumber = Math.floor(Math.random() * 100);\n        array.push(randomNumber);\n        displayArray();\n        updateChart();\n      }\n      window.onExecute = (input) => {\n        array = Array.isArray(input) ? input : [];\n        displayArray();\n        updateChart();\n      };\n\n      function bubbleSort() {\n        let n = array.length;\n        //do {\n        wasSwapped = false;\n        for (let i = 0; i < n - 1; i++) {\n          if (array[i] > array[i + 1]) {\n            [array[i], array[i + 1]] = [array[i + 1], array[i]];\n            wasSwapped = true;\n          }\n        }\n        n--;\n        displayArray();\n        updateChart();\n        //} while (wasSwapped);\n      }\n      //setInterval(() => {\n       // bubbleSort();\n      //}, 100);\n\n      function updateChart() {\n        chart.data.labels = array.map((_, index) => index + 1);\n        chart.data.datasets[0].data = array;\n        chart.update();\n      }\n\n\n    </script>\n  </body>\n</html>\n"
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Bubble Sort Visualizer</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\n    <style>\n      #chart-container {\n        width: 100%;\n        max-width: 600px;\n        margin: 0rem auto;\n      }\n    </style>\n  </head>\n  <body class=\"bg-gray-800 text-white\">\n    <div class=\"container mx-auto p-4\">\n    \n        <div id=\"arrayContainer\" class=\"flex space-x-2 mb-4 hidden\"></div>\n        <div id=\"chart-container\">\n          <canvas id=\"sortChart\"></canvas>\n        </div>\n      </div>\n    </div>\n\n    <script>\n      const arrayContainer = document.getElementById(\"arrayContainer\");\n      const sortButton = document.getElementById(\"sortButton\");\n      const addButton = document.getElementById(\"addButton\");\n      const sortChart = document.getElementById(\"sortChart\").getContext(\"2d\");\n      const resetButton = document.getElementById(\"resetButton\");\n      let array = [];\n      let wasSwapped = false;\n      let sortData = [];\n\n      const chart = new Chart(sortChart, {\n        type: \"line\",\n\n        data: {\n          labels: [],\n          datasets: [\n            {\n              label: \"Array Values\",\n              data: sortData,\n              backgroundColor: \"rgba(59, 130, 246, 1.0)\",\n              borderColor: \"rgba(59, 130, 246, 1)\",\n              borderWidth: 1\n            },\n          ],\n        },\n        options: {\nplugins: {\n            legend: {\n                display: false,\n               \n            }\n        },\n          scales: {\n            y: {\n              beginAtZero: true,\n            },\n          },\n        },\n      });\n\n      function displayArray() {\n        arrayContainer.innerHTML = \"\";\n        array.forEach((value) => {\n          const element = document.createElement(\"div\");\n          element.textContent = value;\n          element.className = \"bg-white text-white p-2\";\n          arrayContainer.appendChild(element);\n        });\n      }\n\n      function addRandomNumber() {\n        const randomNumber = Math.floor(Math.random() * 100);\n        array.push(randomNumber);\n        displayArray();\n        updateChart();\n      }\n      window.onExecute = (input) => {\n        array = Array.isArray(input) ? input : [];\n        displayArray();\n        updateChart();\n      };\n\n      function bubbleSort() {\n        let n = array.length;\n        //do {\n        wasSwapped = false;\n        for (let i = 0; i < n - 1; i++) {\n          if (array[i] > array[i + 1]) {\n            [array[i], array[i + 1]] = [array[i + 1], array[i]];\n            wasSwapped = true;\n          }\n        }\n        n--;\n        displayArray();\n        updateChart();\n        //} while (wasSwapped);\n      }\n      //setInterval(() => {\n       // bubbleSort();\n      //}, 100);\n\n      function updateChart() {\n        chart.data.labels = array.map((_, index) => index + 1);\n        chart.data.datasets[0].data = array;\n        chart.update();\n      }\n\n\n    </script>\n  </body>\n</html>\n"
             }
           }
         },
@@ -349,8 +349,8 @@
         },
         {
           "id": "454b598e-8732-4fd3-884d-18c765c13925",
-          "x": -242.09666920475894,
-          "y": 422.3855066619211,
+          "x": -242.09673793483302,
+          "y": 422.38555659059773,
           "endX": -155.93635597597182,
           "endY": 425.87368262914157,
           "startNodeId": "bf5e6232-8c99-4183-90ec-84ad3ad0495a",
@@ -589,10 +589,10 @@
         },
         {
           "id": "b1593f59-b60b-4c1e-b713-918f5a836e30",
-          "x": 1294.5694600077532,
-          "y": 48.172452350407,
-          "endX": 1449.381975803816,
-          "endY": 142.20687427897775,
+          "x": 1374.2495638843322,
+          "y": -52.845625735061276,
+          "endX": 1649.7409420372076,
+          "endY": -52.21010750165637,
           "startNodeId": "a42e5595-4e6d-46c3-9c0d-d550da37e942",
           "endNodeId": "684e098f-9f0d-48eb-9f39-81d1f893af77",
           "startThumbName": "output",
@@ -604,8 +604,8 @@
         },
         {
           "id": "991a8456-9775-4489-83ff-6640d4bc128a",
-          "x": 882.1823749151853,
-          "y": 94.44150934885363,
+          "x": 766.684138348251,
+          "y": -298.3403688071371,
           "endX": 949.5379829680131,
           "endY": -281.2566742759837,
           "startNodeId": "17216351-46a2-4c0f-9540-8dc57fed9696",
@@ -651,8 +651,8 @@
           "id": "e5576a88-1247-4344-bc80-e501a5d71c92",
           "x": 1049.5379829680132,
           "y": -306.2566742759837,
-          "endX": 1263.437801217292,
-          "endY": -177.98044786753474,
+          "endX": 1271.3537785625786,
+          "endY": -374.855061529319,
           "startNodeId": "a7e1122e-5a21-494e-8402-a918456f1d76",
           "endNodeId": "91b14556-8c10-4312-a98b-5e225158a9dc",
           "startThumbName": "ouput1",
@@ -681,8 +681,8 @@
           "id": "7472bb37-f6b4-460b-8546-03d0d5c63005",
           "x": 1049.5379829680132,
           "y": -256.2566742759837,
-          "endX": 1094.5694600077532,
-          "endY": 48.172452350407,
+          "endX": 1174.2495638843322,
+          "endY": -52.845625735061276,
           "startNodeId": "a7e1122e-5a21-494e-8402-a918456f1d76",
           "endNodeId": "a42e5595-4e6d-46c3-9c0d-d550da37e942",
           "startThumbName": "ouput2",

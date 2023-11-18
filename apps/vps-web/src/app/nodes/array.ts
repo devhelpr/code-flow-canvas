@@ -175,7 +175,11 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         const command = match[1];
         const args = match[2];
 
-        if (command === 'trigger') {
+        if (command === 'reset') {
+          inputValues = [];
+          setValue(inputValues);
+          canvasAppInstance?.setVariable(variableName, inputValues);
+        } else if (command === 'trigger') {
           resolve(false);
           return;
         } else if (command === 'push') {
