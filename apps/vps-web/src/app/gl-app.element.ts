@@ -692,6 +692,14 @@ export class GLAppElement extends AppElement<any> {
       return r / (d * d);
     }
 
+    float rand(float n){return fract(sin(n) * 43758.5453123);}
+
+float noise(float p){
+	float fl = floor(p);
+  float fc = fract(p);
+	return mix(rand(fl), rand(fl + 1.0), fc);
+}
+	
   
     void main() {
       float aspect = u_width/u_height;
@@ -708,9 +716,12 @@ export class GLAppElement extends AppElement<any> {
       ${statements}
 
       float threshold = 1.5;
-
+      float threshold2 = 3.5;
       if (totalInfluence > threshold) {
           vec3 color = (totalcolinf) / totalInfluence;
+          if (totalInfluence < threshold2) {
+            color = mix(backgroundColor, color, (totalInfluence - threshold) / (threshold2 - threshold));
+          }
           gl_FragColor = vec4(color, 1.0);
       } else {
           gl_FragColor = vec4(backgroundColor, 1.0);
@@ -820,20 +831,26 @@ export class GLAppElement extends AppElement<any> {
     );
   };
 
-  getNodeOutput = (node: IRectNodeComponent<any>) => {
+  getNodeOutput = (node: IRectNodeComponent<any>, thumbName: string) => {
     const inputs: Record<string, string> = {};
 
     node.connections.forEach((connection) => {
       if (connection.endNode?.id === node.id) {
+        console.log(
+          'getNodeOutput',
+          connection.startNodeThumb?.thumbName ?? '',
+          connection.startNodeThumb
+        );
         if (connection.endNodeThumb?.thumbName) {
-          inputs[connection.endNodeThumb?.thumbName] = this.getNodeOutput(
-            connection.startNode as IRectNodeComponent<any>
+          inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
+            connection.startNode as IRectNodeComponent<any>,
+            connection.startNodeThumb?.thumbName ?? ''
           );
         }
       }
     });
 
-    const result = node?.nodeInfo?.compute(0, [], 0, inputs);
+    const result = node?.nodeInfo?.compute(0, [], 0, inputs, thumbName);
     return result.result;
   };
 
@@ -842,8 +859,9 @@ export class GLAppElement extends AppElement<any> {
     node.connections.forEach((connection) => {
       if (connection.endNode?.id === node.id) {
         if (connection.endNodeThumb?.thumbName && connection.startNode) {
-          inputs[connection.endNodeThumb?.thumbName] = this.getNodeOutput(
-            connection.startNode
+          inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
+            connection.startNode,
+            connection.startNodeThumb?.thumbName ?? ''
           );
         }
       }
@@ -859,7 +877,6 @@ export class GLAppElement extends AppElement<any> {
       this.canvasApp.elements.forEach((element) => {
         const node = element as unknown as INodeComponent<any>;
         if (node.nodeType === NodeType.Shape) {
-          //'circle-node'
           if (
             node.nodeInfo?.type === 'circle-node' ||
             node.nodeInfo?.type === 'background-color-node'
@@ -873,19 +890,9 @@ export class GLAppElement extends AppElement<any> {
 `;
             sdfIndex++;
           }
-          // const data = node.nodeInfo?.formValues['test'];
-          // const parsedData = parseFloat(data);
-          // if (!isNaN(parsedData)) {
-          //   this.test = parsedData;
-          // }
-          // console.log('canvasUpdated', data, parseFloat(data));
         }
       });
-      //       if (sdfIndex > 1) {
-      //         this.shaderStatements += `
-      //       finalColor = finalColor / ${sdfIndex - 1}.;
-      // `;
-      //       }
+
       this.updateGLCanvasParameters();
     }
   };
@@ -971,11 +978,11 @@ export class GLAppElement extends AppElement<any> {
     gl.enableVertexAttribArray(this.vertexPositionAttribute);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    const size = 2; // 2 components per iteration
-    const type = gl.FLOAT; // the data is 32bit floats
-    const normalize = false; // don't normalize the data
-    const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-    let offset = 0; // start at the beginning of the buffer
+    const size = 2;
+    const type = gl.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    let offset = 0;
     gl.vertexAttribPointer(
       this.vertexPositionAttribute,
       size,

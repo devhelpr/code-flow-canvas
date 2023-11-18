@@ -63,7 +63,7 @@ export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
         x,
         y,
         220,
-        220,
+        100,
         undefined,
         [
           {

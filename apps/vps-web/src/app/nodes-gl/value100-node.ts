@@ -14,7 +14,7 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
-export const getValueNode: NodeTaskFactory<any> = (
+export const getValue100Node: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
@@ -43,8 +43,8 @@ export const getValueNode: NodeTaskFactory<any> = (
   };
 
   return visualNodeFactory(
-    'value-node',
-    'Value node',
+    'value100-node',
+    'Value100 node',
     'flow-canvas',
     'value',
     compute,
@@ -69,9 +69,9 @@ export const getValueNode: NodeTaskFactory<any> = (
           fieldType: FormFieldType.Slider,
           fieldName: 'value',
           value: values?.['value'] ?? '',
-          min: -2.0,
-          max: 2.0,
-          step: 0.01,
+          min: -100.0,
+          max: 100.0,
+          step: 0.1,
           settings: {
             showLabel: false,
           },

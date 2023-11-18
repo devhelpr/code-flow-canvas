@@ -13,9 +13,9 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
-const fieldName = 'cosine';
-const labelName = 'Cosine';
-const nodeName = 'cosine-node';
+const fieldName = 'length';
+const labelName = 'Length';
+const nodeName = 'length-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
@@ -35,13 +35,13 @@ const thumbs = [
     color: 'white',
     label: ' ',
 
-    name: 'value',
-    thumbConstraint: thumbConstraint,
-    prefixLabel: 'rads',
+    name: 'vector',
+    thumbConstraint: 'vec2',
+    prefixLabel: 'vector',
   },
 ];
 
-export const getCosineNode: NodeTaskFactory<any> = (
+export const getLengthNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
@@ -55,9 +55,9 @@ export const getCosineNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const value = payload?.['value'];
+    const value = payload?.['vector'];
     return {
-      result: `cos(${value})`,
+      result: `length(${value})`,
       output: input,
       followPath: undefined,
     };
