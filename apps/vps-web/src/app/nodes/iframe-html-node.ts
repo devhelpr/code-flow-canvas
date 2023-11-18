@@ -11,6 +11,37 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
 import { createStructuredExpressionsMarkup } from '../utils/replace-expression-script';
+import { compileExpressionAsInfo } from '@devhelpr/expression-compiler';
+
+function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
+  const childNodes = node.childNodes;
+  for (let i = 0; i < childNodes.length; i++) {
+    const childNode = childNodes[i];
+    if (childNode.textContent) {
+      const matches = childNode.textContent.match(/{{[\s\S]+?}}/gm);
+      if (matches) {
+        matches.forEach((match) => {
+          console.log('expression', match.slice(2, -2));
+          const info = compileExpressionAsInfo(match.slice(2, -2));
+          const expressionFunction = (
+            new Function('payload', `${info.script}`) as unknown as (
+              payload?: object
+            ) => any
+          ).bind(info.bindings);
+          try {
+            const result = expressionFunction({});
+            console.log('result', result);
+            //
+          } catch (error) {
+            console.error('replaceExpressionScript error', error);
+          }
+        });
+      }
+    } else {
+      traverseDOMTree(childNode, compileExpressionAsInfoFunction);
+    }
+  }
+}
 
 export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -69,8 +100,26 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           htmlString = `${htmlString}
             <script>
               window.addEventListener('message', (event) => {                
-                console.log('Received message:', event.data);
+                console.log('Received message:', event.data, window.parent["createStructuredExpressionsMarkup"]);
+                const html = document.body.innerHTML;
+                const expressions = window.parent["createStructuredExpressionsMarkup"](html);
+                console.log('expressions', expressions);
+                console.log('html', expressions.markup);
+
+                const traverseDOMTree = window.parent['traverseDOMTree'];
+                const compileExpressionAsInfo = window.parent['compileExpressionAsInfo'];
+                console.log('traverseDOMTree', traverseDOMTree);
+                traverseDOMTree(document.body,compileExpressionAsInfo);
+                const onExecute = window["onExecute"];
+                if (onExecute) {
+                  const value = JSON.parse(event.data);
+                  console.log('onExecute is defined', event.data);
+                  onExecute(value);
+                } else {
+                  console.log('onExecute is undefined');
+                }
               });            
+
             </script>            
             `;
           createElement(
@@ -93,7 +142,13 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         `iframe${node.id}`
       ) as HTMLIFrameElement;
       if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage('TEST'); // can't send structured data which contains code...
+        (window as any)['createStructuredExpressionsMarkup'] =
+          createStructuredExpressionsMarkup;
+
+        (window as any)['traverseDOMTree'] = traverseDOMTree;
+        (window as any)['compileExpressionAsInfo'] = compileExpressionAsInfo;
+        const data = JSON.stringify(value);
+        iframe.contentWindow.postMessage(data); // can't send structured data which contains code...
       }
 
       if (rect) {
