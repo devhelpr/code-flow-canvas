@@ -160,7 +160,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       createElement(
         'div',
         {
-          class: `relative text-white pointer-events-none ${
+          class: `thumb-prefix-label relative text-white pointer-events-none select-none ${
             thumb.connectionType === ThumbConnectionType.end
               ? '-right-[30px] block'
               : 'origin-right -translate-x-[100%] text-right flex justify-end '

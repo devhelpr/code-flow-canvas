@@ -89,6 +89,11 @@
   @apply !bg-blue-500;
 }
 
+.node-connector.thumb.hover > div .thumb-prefix-label {
+	@apply !bg-transparent;
+}
+
+
 
 .connection-controller.thumb.dragging div {
   @apply !bg-white;
