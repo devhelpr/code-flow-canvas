@@ -136,7 +136,7 @@ export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            thumbConstraint: 'vec2',
+            thumbConstraint: 'vec3',
             name: 'vector',
             prefixLabel: 'vector',
           },
