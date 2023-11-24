@@ -138,14 +138,14 @@ export class NodeTransformer<T> {
       this.moveNodesPanel.domElement
     );
 
-    this.inividualNodeMover = createElement(
-      'div',
-      {
-        class: `w-[24px] h-[24px]  ${pointerCursor}
-         bg-white rounded-[50%]`,
-      },
-      this.moveNodesPanel.domElement
-    );
+    // this.inividualNodeMover = createElement(
+    //   'div',
+    //   {
+    //     class: `w-[18px] h-[18px]  ${pointerCursor}
+    //      bg-white rounded-[50%]`,
+    //   },
+    //   this.moveNodesPanel.domElement
+    // );
 
     this.upstreamNodesMover = createElement(
       'div',

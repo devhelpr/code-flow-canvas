@@ -1032,7 +1032,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
           id: selectedNodeInfo.id,
-          hasSubmitButton: true,
+          hasSubmitButton: false,
           onSave: (values: any) => {
             console.log('onSave', values);
 

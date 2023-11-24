@@ -1,0 +1,116 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "d6028051-499f-4f12-b58f-d7fe6abb605d",
+          "x": 559.001889263164,
+          "y": 254.65964353954507,
+          "width": 518.1853934855003,
+          "height": 492.3787815339126,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Array Visualization</title>\n    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n        #chart-container {\n            position: relative;\n            margin: auto;\n            height: 40vh;\n            width: 80vw;\n        }\n    </style>\n</head>\n<body class=\"bg-gray-100\">\n\n<div class=\"flex flex-col items-center justify-center min-h-screen p-4\">\n    <div id=\"array-container\" class=\"flex flex-wrap gap-2 mb-8\">\n        <!-- Array cells will be inserted here -->\n    </div>\n    <div id=\"chart-container\">\n        <canvas id=\"arrayChart\"></canvas>\n    </div>\n</div>\n\n<script>\n    // Initialize the global variable \"input\" with an empty array\n    window.input = [];\n\n    // Function to render the array as cells\n    function renderArray() {\n        const arrayContainer = document.getElementById('array-container');\n        arrayContainer.innerHTML = ''; // Clear the container\n        window.input.forEach((value, index) => {\n            const cell = document.createElement('div');\n            cell.className = 'p-4 bg-white shadow rounded text-center';\n            cell.textContent = value;\n            arrayContainer.appendChild(cell);\n        });\n    }\n\n    // Function to render the bar chart\n    function renderChart() {\n        const ctx = document.getElementById('arrayChart').getContext('2d');\n        if (window.myChart) {\n            window.myChart.destroy(); // Destroy the old chart instance if exists\n        }\n        window.myChart = new Chart(ctx, {\n            type: 'bar',\n            data: {\n                labels: window.input.map((_, index) => `Index ${index}`),\n                datasets: [{\n                    label: 'Array Values',\n                    data: window.input,\n                    backgroundColor: 'rgba(59, 130, 246, 0.5)',\n                    borderColor: 'rgba(37, 99, 235, 1)',\n                    borderWidth: 1\n                }]\n            },\n            options: {\n                scales: {\n                    y: {\n                        beginAtZero: true\n                    }\n                }\n            }\n        });\n    }\n\n    // Global method to rerender the UI\n    window.onExecute = function() {\n        renderArray();\n        renderChart();\n    };\n\n    // Call onExecute to render the initial state\n    window.onExecute();\n</script>\n\n</body>\n</html>",
+              "aiprompt": "create a UI that shows an array (as cells next to each it other, wrap the row if needed) based on the existing global variable \"input\", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.\nShow a bar-chart visualisation of the array.\nInitialize the global variable \"input\" after loading the page with an empty array."
+            }
+          }
+        },
+        {
+          "id": "230d5d6a-0615-41ca-a45e-f8b672bfd3a3",
+          "x": 132.14285738604897,
+          "y": 402.4733189109364,
+          "width": 240.0000841151481,
+          "height": 116.00000818732045,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "array",
+            "formValues": {
+              "variableName": ""
+            }
+          }
+        },
+        {
+          "id": "46b34e82-ae9a-4a04-a395-8591ad549e4d",
+          "x": -207.81943702996517,
+          "y": 384.8338159670717,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "random"
+            }
+          }
+        },
+        {
+          "id": "d1f4e866-f35d-4ecd-a7ab-67e738ca34cd",
+          "x": 332.14285738604895,
+          "y": 432.4733189109364,
+          "endX": 559.001805537265,
+          "endY": 500.849028210833,
+          "startNodeId": "230d5d6a-0615-41ca-a45e-f8b672bfd3a3",
+          "endNodeId": "d6028051-499f-4f12-b58f-d7fe6abb605d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "15180377-e170-4cb3-8bc4-baa94cc299fe",
+          "x": -7.819437029965172,
+          "y": 440.8338159670717,
+          "endX": 132.14285738604897,
+          "endY": 432.4733189109364,
+          "startNodeId": "46b34e82-ae9a-4a04-a395-8591ad549e4d",
+          "endNodeId": "230d5d6a-0615-41ca-a45e-f8b672bfd3a3",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "52df93c3-5bcb-4c9e-96cc-d125afc75811",
+          "x": 1306.3431026752671,
+          "y": 223.57665497567896,
+          "width": 400,
+          "height": 400,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Average Calculator</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script type=\"module\">\n        window.input = [];\n\n        window.onExecute = function() {\n            const average = calculateAverage(window.input);\n            document.getElementById('averageValue').textContent = average.toFixed(2);\n        };\n\n        function calculateAverage(arr) {\n            if (arr.length === 0) return 0;\n            const sum = arr.reduce((acc, val) => acc + val, 0);\n            return sum / arr.length;\n        }\n\n        document.addEventListener('DOMContentLoaded', (event) => {\n            window.onExecute(); // Calculate average on initial load\n        });\n    </script>\n    <style>\n        /* Additional styles if needed */\n    </style>\n</head>\n<body class=\"bg-gray-100 font-sans leading-normal tracking-normal\">\n    <div class=\"container mx-auto p-8\">\n        <div class=\"flex flex-wrap justify-center\">\n            <div class=\"w-full md:w-1/2 xl:w-1/3 p-6\">\n                <div class=\"bg-white border rounded shadow\">\n                    <div class=\"border-b p-3\">\n                        <h5 class=\"font-bold uppercase text-gray-600\">Average Calculator</h5>\n                    </div>\n                    <div class=\"p-5\">\n                        <div class=\"text-center mb-5\">\n                            <div id=\"averageValue\" class=\"text-2xl font-semibold text-gray-800\">0.00</div>\n                            <div class=\"text-sm text-gray-600\">Current Average</div>\n                        </div>\n                        <button onclick=\"window.onExecute()\" class=\"w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline\">\n                            Recalculate Average\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+              "aiprompt": "create a UI that shows the avarage of an array  based on the existing global variable \"input\", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.\nInitialize the global variable \"input\" after loading the page with an empty array."
+            },
+            "taskType": "iframe-html-node"
+          }
+        },
+        {
+          "id": "371c4041-6f28-4230-a170-9e1627a192d2",
+          "x": 1077.1871990227653,
+          "y": 500.849028210833,
+          "endX": 1305.7147235172342,
+          "endY": 423.57665497567893,
+          "startNodeId": "d6028051-499f-4f12-b58f-d7fe6abb605d",
+          "endNodeId": "52df93c3-5bcb-4c9e-96cc-d125afc75811",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  }
+}

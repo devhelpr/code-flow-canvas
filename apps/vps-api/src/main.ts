@@ -1,6 +1,7 @@
 import { Application, Router } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
 import { oakCors } from 'https://deno.land/x/cors/mod.ts';
 import { python } from 'https://deno.land/x/python/mod.ts';
+import { getHtmlFromOpenAI } from './html-from-api.ts';
 
 const router = new Router();
 
@@ -52,6 +53,41 @@ router.post('/python', async (ctx, done) => {
 
   // ctx.response.body = { image: '' };
   // ctx.response.type = 'text/json';
+});
+
+router.post('/create-ui', async (ctx) => {
+  const apiKey = Deno.env.get('OPEN_API_KEY');
+  console.log('apiKey', apiKey);
+  const json = await ctx.request.body().value;
+  console.log('json', json);
+  const message = json.message;
+  if (!message) {
+    ctx.response.status = 500;
+    ctx.response.body = { message: 'error: no message provided' };
+    ctx.response.type = 'text/json';
+    return;
+  }
+  console.log('message', message);
+  const outputJson: any = await getHtmlFromOpenAI({
+    message: message,
+    apiKey: apiKey!,
+  });
+  console.log(outputJson);
+
+  if (outputJson.error) {
+    ctx.response.status = 500;
+    ctx.response.body = { message: 'error generation HTML' };
+    ctx.response.type = 'text/json';
+    return;
+  }
+
+  let html = outputJson.choices[0].message.content;
+  if (html.startsWith('```html')) {
+    html = html.slice(7, -3).trim();
+  }
+
+  ctx.response.body = { message: html };
+  ctx.response.type = 'text/json';
 });
 
 const app = new Application();

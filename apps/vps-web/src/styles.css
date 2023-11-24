@@ -107,6 +107,26 @@
 }
 
 /* source : https://cssloaders.github.io/ */
+.simple-loader {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: simple-loader-rotation 1s linear infinite;
+    }
+
+    @keyframes simple-loader-rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+
+
 .loader {
 	width: 24px;
 	height: 24px;

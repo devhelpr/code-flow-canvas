@@ -488,7 +488,7 @@ export class GLAppElement extends AppElement<any> {
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
           id: selectedNodeInfo.id,
-          hasSubmitButton: true,
+          hasSubmitButton: false,
           onSave: (values: any) => {
             console.log('onSave', values);
 

@@ -12,6 +12,7 @@ import { InputFieldChildComponent } from './form-fields/input';
 import { TextAreaFieldComponent } from './form-fields/textarea';
 import { SliderFieldChildComponent } from './form-fields/slider';
 import { ColorFieldChildComponent } from './form-fields/color';
+import { ButtonFieldChildComponent } from './form-fields/button';
 
 export const FormFieldType = {
   Text: 'Text',
@@ -19,6 +20,7 @@ export const FormFieldType = {
   Select: 'Select',
   Slider: 'Slider',
   Color: 'Color',
+  Button: 'Button',
 } as const;
 
 export type FormFieldType = (typeof FormFieldType)[keyof typeof FormFieldType];
@@ -30,6 +32,11 @@ export type FormField = (
     }
   | {
       fieldType: 'Text';
+    }
+  | {
+      fieldType: 'Button';
+      caption: string;
+      onButtonClick?: () => Promise<void> | void;
     }
   | {
       fieldType: 'TextArea';
@@ -210,8 +217,18 @@ export class FormsComponent extends Component<Props> {
         const formControlComponent = new TextAreaFieldComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
+          label: formControl.label,
           value: formControl.value,
           onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.Button) {
+        const formControlComponent = new ButtonFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          caption: formControl.caption,
+          onButtonClick: formControl.onButtonClick,
           isLast: index === this.props.formElements.length - 1,
         });
         this.components.push(formControlComponent);

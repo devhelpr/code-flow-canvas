@@ -12,6 +12,7 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
 import { createStructuredExpressionsMarkup } from '../utils/replace-expression-script';
 import { compileExpressionAsInfo } from '@devhelpr/expression-compiler';
+import { abort } from 'process';
 
 function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
   const childNodes = node.childNodes;
@@ -99,6 +100,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           structuredMarkup = createStructuredExpressionsMarkup(htmlString);
           htmlString = `${htmlString}
             <script>
+              window["input"] = [];
               window.addEventListener('message', (event) => {                
                 console.log('Received message:', event.data, window.parent["createStructuredExpressionsMarkup"]);
                 const html = document.body.innerHTML;
@@ -110,9 +112,15 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
                 const compileExpressionAsInfo = window.parent['compileExpressionAsInfo'];
                 console.log('traverseDOMTree', traverseDOMTree);
                 traverseDOMTree(document.body,compileExpressionAsInfo);
+
+                const value = JSON.parse(event.data);
+                window["input"] = value;
+
+
                 const onExecute = window["onExecute"];
+                console.log('onExecute', onExecute, value, window["input"] );
                 if (onExecute) {
-                  const value = JSON.parse(event.data);
+                 
                   console.log('onExecute is defined', event.data);
                   onExecute(value);
                 } else {
@@ -187,6 +195,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       height?: number
     ) => {
       const initialValue = initalValues?.['html'] || defaultHTML;
+      let aiPrompt = initalValues?.['aiprompt'] || '';
       console.log('iframe', width, height);
       const formElements = [
         {
@@ -207,6 +216,65 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
               setHTML('');
               updated();
             }
+          },
+        },
+
+        {
+          fieldType: FormFieldType.TextArea,
+          fieldName: 'aiprompt',
+          label: 'AI Prompt to generate HTML',
+          value: aiPrompt,
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            aiPrompt = value;
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              aiprompt: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.Button,
+          fieldName: 'execute',
+          caption: 'Get HTML from AI',
+          onButtonClick: () => {
+            return new Promise<void>((resolve, reject) => {
+              fetch('http://localhost:3000/create-ui', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  message: aiPrompt,
+                }),
+              }).then((response) => {
+                console.log('response', response);
+                response.json().then((json) => {
+                  if (!node.nodeInfo) {
+                    resolve();
+                    return;
+                  }
+                  console.log('json', json);
+                  const html = json.message;
+                  node.nodeInfo.formValues = {
+                    ...node.nodeInfo.formValues,
+                    html: html,
+                  };
+                  setHTML('');
+                  if (updated) {
+                    updated();
+                  }
+                  resolve();
+                });
+              });
+            });
           },
         },
       ];
@@ -269,6 +337,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           type: 'iframe-html-node',
           formValues: {
             html: initialValue || defaultHTML,
+            aiprompt: aiPrompt,
           },
         },
         containerNode
@@ -284,6 +353,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
           html: initialValue || defaultHTML,
+          aiprompt: aiPrompt,
         };
       }
       setHTML('');
