@@ -1,3 +1,4 @@
+import { execPath } from 'process';
 import { transformCameraSpaceToWorldSpace } from '../camera';
 import {
   InteractionEvent,
@@ -129,7 +130,10 @@ export class NodeTransformer<T> {
         class: `w-0 h-0  ${pointerCursor}
         border-t-[12px] border-t-transparent
         border-r-[18px] border-r-white
-        border-b-[12px] border-b-transparent`,
+        border-b-[12px] border-b-transparent
+        cursor-pointer`,
+        ['data-ResizeMode']: 'move-downstream-nodes',
+        pointerdown: this.onPointerDown,
       },
       this.moveNodesPanel.domElement
     );
@@ -149,7 +153,11 @@ export class NodeTransformer<T> {
         class: `w-0 h-0  ${pointerCursor}
         border-t-[12px] border-t-transparent
         border-l-[18px] border-l-white
-        border-b-[12px] border-b-transparent`,
+        border-b-[12px] border-b-transparent
+        cursor-pointer`,
+
+        ['data-ResizeMode']: 'move-upstream-nodes',
+        pointerdown: this.onPointerDown,
       },
       this.moveNodesPanel.domElement
     );
@@ -256,6 +264,28 @@ export class NodeTransformer<T> {
 
       this.resizeMode =
         (event.target as HTMLElement).getAttribute('data-ResizeMode') ?? '';
+
+      if (this.resizeMode == 'move-upstream-nodes') {
+        this.moveNodes = [];
+        this.orgPositionMoveNodes = {};
+        this.getUpstreamNodes(this.attachedNode);
+        this.moveNodes.forEach((node) => {
+          this.orgPositionMoveNodes[node.id] = {
+            x: node.x,
+            y: node.y,
+          };
+        });
+      } else if (this.resizeMode === 'move-downstream-nodes') {
+        this.moveNodes = [];
+        this.orgPositionMoveNodes = {};
+        this.getDownstreamNodes(this.attachedNode);
+        this.moveNodes.forEach((node) => {
+          this.orgPositionMoveNodes[node.id] = {
+            x: node.x,
+            y: node.y,
+          };
+        });
+      }
       this.interactionStateMachine.interactionEventState(
         InteractionEvent.PointerDown,
         {
@@ -272,6 +302,40 @@ export class NodeTransformer<T> {
       );
       event.stopPropagation();
       return false;
+    }
+  };
+
+  orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
+  moveNodes: IRectNodeComponent<T>[] = [];
+  getUpstreamNodes = (node: IRectNodeComponent<T>) => {
+    if (node.connections.length > 0) {
+      node.connections.forEach((connection) => {
+        if (connection.startNode?.id === node.id) {
+          if (
+            connection.endNode &&
+            !this.moveNodes.find((node) => node.id === connection.endNode?.id)
+          ) {
+            this.moveNodes.push(connection.endNode);
+            this.getUpstreamNodes(connection.endNode);
+          }
+        }
+      });
+    }
+  };
+
+  getDownstreamNodes = (node: IRectNodeComponent<T>) => {
+    if (node.connections.length > 0) {
+      node.connections.forEach((connection) => {
+        if (connection.endNode?.id === node.id) {
+          if (
+            connection.startNode &&
+            !this.moveNodes.find((node) => node.id === connection.startNode?.id)
+          ) {
+            this.moveNodes.push(connection.startNode);
+            this.getDownstreamNodes(connection.startNode);
+          }
+        }
+      });
     }
   };
 
@@ -297,7 +361,18 @@ export class NodeTransformer<T> {
 
     // TODO : check if bounds are ok
     if (this.attachedNode) {
-      if (this.resizeMode == 'left-top') {
+      if (
+        this.resizeMode == 'move-upstream-nodes' ||
+        this.resizeMode == 'move-downstream-nodes'
+      ) {
+        this.attachedNode.x = this.orgX + offsetX;
+        this.attachedNode.y = this.orgY + offsetY;
+        this.moveNodes.forEach((node) => {
+          node.x = this.orgPositionMoveNodes[node.id].x + offsetX;
+          node.y = this.orgPositionMoveNodes[node.id].y + offsetY;
+          node.update?.(node, node.x, node.y, node);
+        });
+      } else if (this.resizeMode == 'left-top') {
         this.attachedNode.x = x;
         this.attachedNode.y = y;
         this.attachedNode.width = this.orgWidth - offsetX;

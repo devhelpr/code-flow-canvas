@@ -266,7 +266,7 @@ export class Connection<T> {
       setSelectNode({
         id: this.nodeComponent.id,
         containerNode: this.nodeComponent
-          .containerNode as unknown as INodeComponent<unknown>,
+          .containerNode as unknown as IRectNodeComponent<unknown>,
       });
 
       this.orgPoints = { ...this.points };
