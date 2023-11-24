@@ -17,9 +17,19 @@ Respond ONLY with the contents of the html file.`;
 	input prompt:
 
 
-	create a UI that shows an array (as cells next to each it other, wrap the row if needed) based on the existing global variable "input", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.
+	create a UI that shows an array (as cells next to each it other, wrap the row if needed) 
+	based on the existing global variable "input", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.
 Show a bar-chart visualisation of the array.
 Initialize the global variable "input" after loading the page with an empty array.
+
+
+
+Based on the existing global variable "input", this variable is already defined by the system (don't add it yourself!):
+Create a UI that shows an array (as cells next to each it other, wrap the row if needed). 
+Show a bar-chart visualisation of the array.
+
+Initialize the global variable "input" after loading the page with an empty array.
+Rerender the UI when an existing global method onExecute is called.
 
 */
 
