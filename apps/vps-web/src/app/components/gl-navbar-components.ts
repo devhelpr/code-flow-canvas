@@ -114,6 +114,7 @@ export class GLNavbarComponent extends Component<
   lastAddedNode: IRectNodeComponent<any> | null = null;
   onClickAddNode = (event: Event) => {
     event.preventDefault();
+    this.props.canvasApp?.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
     let halfWidth = 0;
     let halfHeight = 0;
@@ -259,6 +260,7 @@ export class GLNavbarComponent extends Component<
 
   onClickDelete = (event: Event) => {
     event.preventDefault();
+    this.props.canvasApp?.resetNodeTransform();
     this.lastAddedNode = null;
     const nodeInfo = this.getSelectedNodeInfo();
 

@@ -532,6 +532,9 @@ export const createCanvasApp = <T>(
     ) => {
       onClickCanvas = onClickCanvasHandler;
     },
+    resetNodeTransform: () => {
+      nodeTransformer.detachNode();
+    },
     setOnCameraChanged: (
       onCameraChangedHandler: (camera: {
         x: number;

@@ -95,14 +95,16 @@ export const onQuadraticCalculateControlPoints = <T>(
         connectedNodeX ?? 0,
         connectedNodeY ?? 0
       );
+      const cy =
+        y +
+        (controlPointDistance ?? distance ?? 0) +
+        controlPointCurvingDistance * thumbFactor;
+
       return {
         x: x,
         y: y,
         cx: x,
-        cy:
-          y +
-          (controlPointDistance ?? distance ?? 0) +
-          controlPointCurvingDistance * thumbFactor,
+        cy: cy,
         nodeType,
       };
     } else if (thumbType === ThumbType.StartConnectorTop) {
@@ -132,6 +134,15 @@ export const onQuadraticCalculateControlPoints = <T>(
       );
       const centerX = ((connectedNodeX ?? 0) + x) / 2;
       const centerY = ((connectedNodeY ?? 0) + y) / 2;
+
+      // TEST: helper distance to have less curving when nodes are bigger
+      // let helperDistance =
+      //   distance -
+      //   (rectNode?.width ?? 0) * 0.1 -
+      //   (connectedNode?.width ?? 0) * 0.1;
+      // if (helperDistance < 1) {
+      //   helperDistance = 1;
+      // }
       const factor = -Math.min(distance * Math.sqrt(2) * 0.5, 50);
       const cx = centerX + (factor * -((connectedNodeY ?? 0) - y)) / distance;
       const cy = centerY + (factor * ((connectedNodeX ?? 0) - x)) / distance;

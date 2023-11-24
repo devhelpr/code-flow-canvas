@@ -117,6 +117,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
 
   onClickAddNode = (event: Event) => {
     event.preventDefault();
+    this.props.canvasApp?.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
     let halfWidth = 0;
     let halfHeight = 0;
@@ -235,7 +236,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   onClickDelete = (event: Event) => {
     event.preventDefault();
     const nodeInfo = this.getSelectedNodeInfo();
-
+    this.props.canvasApp?.resetNodeTransform();
     if (nodeInfo) {
       const node = nodeInfo.node;
       if (node.nodeType === NodeType.Connection) {
