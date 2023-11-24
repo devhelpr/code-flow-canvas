@@ -5,6 +5,7 @@ import {
   transformCameraSpaceToWorldSpace,
 } from '../camera';
 import { LineConnection } from '../components/line-connection';
+import { NodeTransformer } from '../components/node-transformer';
 import { QuadraticBezierConnection } from '../components/quadratic-bezier-connection';
 import { CubicBezierConnection } from '../components/qubic-bezier-connection';
 import { Rect } from '../components/rect';
@@ -71,6 +72,11 @@ export const createCanvasApp = <T>(
     rootElement
   );
 
+  const nodeTransformer = new NodeTransformer(
+    canvas.domElement,
+    interactionStateMachine
+  );
+
   const setCameraPosition = (x: number, y: number) => {
     if (canvas.domElement) {
       const diffX = x - startClientDragX;
@@ -80,6 +86,7 @@ export const createCanvasApp = <T>(
       yCamera = startDragY + diffY;
 
       setCamera(xCamera, yCamera, scaleCamera);
+      nodeTransformer.updateCamera();
       if (onCameraChanged) {
         onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
       }
@@ -430,6 +437,7 @@ export const createCanvasApp = <T>(
           yCamera = newPos.y;
 
           setCamera(xCamera, yCamera, scaleCamera);
+          nodeTransformer.updateCamera();
           if (onCameraChanged) {
             onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
           }
@@ -479,10 +487,12 @@ export const createCanvasApp = <T>(
             y: event.clientY / scaleCamera - yCamera / scaleCamera,
           };
           onClickCanvas(mousePointTo.x, mousePointTo.y);
+          nodeTransformer.detachNode();
 
           return false;
         }
       }
+
       return true;
     });
   }
@@ -513,6 +523,7 @@ export const createCanvasApp = <T>(
     canvas,
     rootElement,
     interactionStateMachine,
+    nodeTransformer,
     setOnCanvasUpdated: (onCanvasUpdatedHandler: () => void) => {
       onCanvasUpdated = onCanvasUpdatedHandler;
     },
@@ -543,6 +554,8 @@ export const createCanvasApp = <T>(
       scaleCamera = scale;
 
       setCamera(xCamera, yCamera, scaleCamera);
+      nodeTransformer.updateCamera();
+
       if (onCameraChanged) {
         onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
       }
@@ -635,6 +648,7 @@ export const createCanvasApp = <T>(
       }
 
       setCamera(xCamera, yCamera, scaleCamera);
+      nodeTransformer.updateCamera();
       if (onCameraChanged) {
         onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
       }
@@ -673,6 +687,7 @@ export const createCanvasApp = <T>(
       const rectInstance = new Rect<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
+        nodeTransformer as unknown as NodeTransformer<T>,
         pathHiddenElement,
         elements,
         x,
@@ -724,6 +739,7 @@ export const createCanvasApp = <T>(
       const rectInstance = new RectThumb<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
+        nodeTransformer as unknown as NodeTransformer<T>,
         pathHiddenElement,
         elements,
         x,

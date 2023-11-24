@@ -182,10 +182,12 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
       const initialValue = initalValues?.['html'] || defaultHTML;
-
+      console.log('iframe', width, height);
       const formElements = [
         {
           fieldType: FormFieldType.TextArea,
@@ -226,12 +228,18 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         componentWrapper.domElement,
         'HTML Node'
       );
-      divNode = createElement('div', {}, componentWrapper.domElement);
+      divNode = createElement(
+        'div',
+        {
+          class: 'w-full h-full',
+        },
+        componentWrapper.domElement
+      );
       rect = canvasApp.createRect(
         x,
         y,
-        200,
-        100,
+        width ?? 400,
+        height ?? 400,
         undefined,
         [
           {
@@ -253,7 +261,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         {
           classNames: `bg-sky-900 p-4 rounded`,
         },
-        false,
+        true,
         undefined,
         undefined,
         id,

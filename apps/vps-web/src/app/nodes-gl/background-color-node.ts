@@ -147,7 +147,7 @@ export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
         },
         true,
         undefined,
-        undefined,
+        true,
         id,
         {
           type: nodeName,

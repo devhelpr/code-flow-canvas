@@ -114,14 +114,14 @@ export const createInteractionStateMachine = <
     peek = false,
     canvasNode?: IElementNode<T>
   ): false | InterActionInfo<T> => {
-    // console.log(
-    //   'interactionEventState',
-    //   interactionState,
-    //   interactionState === InteractionState.Moving,
-    //   event === InteractionEvent.PointerUp,
-    //   interactionTarget?.id,
-    //   target.id
-    // );
+    console.log(
+      'interactionEventState',
+      interactionState,
+      interactionState === InteractionState.Moving,
+      event,
+      interactionTarget?.id,
+      target.id
+    );
     if (interactionState === InteractionState.Idle) {
       if (event === InteractionEvent.PointerDown) {
         interactionState = InteractionState.Moving;
@@ -148,6 +148,7 @@ export const createInteractionStateMachine = <
       interactionTarget.id === target.id
     ) {
       if (event === InteractionEvent.PointerMove) {
+        console.log('interactionEventState PointerMove');
         if (isClicking) {
           isMoving = true;
         }

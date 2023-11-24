@@ -69,6 +69,8 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
   isCircle?: boolean;
   isThumb?: boolean;
   canvasAppInstance?: CanvasAppInstance<T>;
+  canBeResized?: boolean;
+  setSize: (width: number, height: number) => void;
 }
 
 export interface IConnectionNodeComponent<T> extends INodeComponent<T> {

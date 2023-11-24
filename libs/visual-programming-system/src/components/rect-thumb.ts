@@ -15,6 +15,7 @@ import { NodeType } from '../types';
 import { createElement } from '../utils/create-element';
 import { pointerDown } from './events/pointer-events';
 import { LineConnection } from './line-connection';
+import { NodeTransformer } from './node-transformer';
 import { QuadraticBezierConnection } from './quadratic-bezier-connection';
 import { Rect } from './rect';
 
@@ -27,6 +28,7 @@ export class RectThumb<T> extends Rect<T> {
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
+    nodeTransformer: NodeTransformer<T>,
     pathHiddenElement: IElementNode<T>,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -52,6 +54,7 @@ export class RectThumb<T> extends Rect<T> {
     super(
       canvas,
       interactionStateMachine,
+      nodeTransformer,
       pathHiddenElement,
       elements,
       startX,

@@ -225,8 +225,8 @@ export const importToCanvas = (
               node.id,
               node.nodeInfo?.formValues ?? undefined,
               containerNode,
-              undefined,
-              undefined,
+              node.width,
+              node.height,
               nestedLevel
             );
           }

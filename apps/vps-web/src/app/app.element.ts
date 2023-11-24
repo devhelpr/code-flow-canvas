@@ -201,7 +201,6 @@ export class AppElement<T> {
       }
 
       if (this.onShouldPositionPopup(node as IRectNodeComponent<T>)) {
-        console.log('before positionPopup2', selectedNodeInfo);
         this.positionPopup(node as IRectNodeComponent<T>);
       }
     }
@@ -300,8 +299,7 @@ export class AppElement<T> {
       }
       L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
         (yLine < y ? y - yLine : 0) + 170 + 5
-      }
-      s`
+      }`
     );
   };
 }

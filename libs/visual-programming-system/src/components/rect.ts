@@ -26,12 +26,14 @@ import { setPosition } from './utils/set-position';
 import { NodeType } from '../types/node-type';
 import { thumbHeight, thumbWidth } from '../constants/measures';
 import { ThumbNodeConnector } from './thumb-node-connector';
+import { NodeTransformer } from './node-transformer';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
   public isStaticPosition?: boolean;
 
   protected rectInfo: ReturnType<typeof this.createRectElement>;
+  protected nodeTransformer: NodeTransformer<T>;
 
   protected canvas: IElementNode<T> | undefined;
   protected canvasElements?: ElementNodeMap<T>;
@@ -59,6 +61,7 @@ export class Rect<T> {
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
+    nodeTransformer: NodeTransformer<T>,
     pathHiddenElement: IElementNode<T>,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -83,6 +86,9 @@ export class Rect<T> {
     this.canvas = canvas;
     this.canvasElements = elements;
     this.canvasUpdated = canvasUpdated;
+    this.nodeTransformer = nodeTransformer;
+    this.nodeTransformer.detachNode();
+
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
     let widthHelper = width;
@@ -130,7 +136,14 @@ export class Rect<T> {
       parentNodeClassName ?? 'rect-node'
     );
     this.nodeComponent = this.rectInfo.nodeComponent;
+    this.nodeComponent.setSize = this.setSize;
+
     this.nodeComponent.isStaticPosition = isStaticPosition ?? false;
+    this.nodeComponent.canBeResized =
+      hasStaticWidthHeight === true &&
+      !isStaticPosition &&
+      !disableManualResize &&
+      !disableInteraction;
     this.nodeComponent.containerNode = containerNode;
     this.nodeComponent.getParentedCoordinates = () => {
       console.log(
@@ -310,8 +323,10 @@ export class Rect<T> {
         containerNode: this.nodeComponent
           .containerNode as unknown as IRectNodeComponent<unknown>,
       });
+      this.nodeTransformer.attachNode(this.nodeComponent);
     };
     this.nodeComponent.connections = [];
+    //this.nodeTransformer.attachNode(this.nodeComponent);
   }
 
   public resize(width?: number) {
@@ -633,6 +648,11 @@ export class Rect<T> {
     }
     setPosition(target, x, y, initiator?.nodeType !== NodeType.Shape, false);
     return true;
+  };
+
+  protected setSize = (width: number, height: number) => {
+    this.points.width = width;
+    this.points.height = height;
   };
 
   protected createRectElement = (
@@ -1117,6 +1137,8 @@ export class Rect<T> {
       this.updateEventListeners.forEach((onUpdate) => {
         onUpdate(this.nodeComponent, x, y, initiator);
       });
+
+      this.nodeTransformer.updateCamera();
 
       return true;
     };
