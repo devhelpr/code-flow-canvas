@@ -313,6 +313,7 @@ export class NodeTransformer<T> {
         if (connection.startNode?.id === node.id) {
           if (
             connection.endNode &&
+            connection.startNode.x < connection.endNode.x &&
             !this.moveNodes.find((node) => node.id === connection.endNode?.id)
           ) {
             this.moveNodes.push(connection.endNode);
@@ -329,6 +330,7 @@ export class NodeTransformer<T> {
         if (connection.endNode?.id === node.id) {
           if (
             connection.startNode &&
+            connection.startNode.x < connection.endNode.x &&
             !this.moveNodes.find((node) => node.id === connection.startNode?.id)
           ) {
             this.moveNodes.push(connection.startNode);
