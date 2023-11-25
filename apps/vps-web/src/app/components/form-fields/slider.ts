@@ -5,8 +5,9 @@ import {
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
+import { BaseFormFieldProps, FormFieldComponent } from './field';
 
-export interface SliderFieldProps {
+export interface SliderFieldProps extends BaseFormFieldProps {
   formId: string;
   fieldName: string;
   value: string;
@@ -22,14 +23,7 @@ export interface SliderFieldProps {
   onChange?: (value: string) => void;
 }
 
-// export interface InputFieldChildProps {
-//   value: string;
-//   formId: string;
-//   fieldName: string;
-//   onChange?: (value: string) => void;
-// }
-
-export class SliderFieldChildComponent extends Component<SliderFieldProps> {
+export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldProps> {
   oldProps: SliderFieldProps | null = null;
   input: HTMLInputElement | null = null;
   label: HTMLLabelElement | null = null;
@@ -37,6 +31,7 @@ export class SliderFieldChildComponent extends Component<SliderFieldProps> {
   initialRender = false;
   constructor(parent: BaseComponent | null, props: SliderFieldProps) {
     super(parent, props);
+    this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
@@ -130,31 +125,3 @@ export class SliderFieldChildComponent extends Component<SliderFieldProps> {
     }
   }
 }
-
-export const SliderField = (props: SliderFieldProps) => {
-  //let inputRef: HTMLInputElement | null = null;
-  // trackNamedSignal(`${props.formId}_${props.fieldName}`, (value) => {
-  //   console.log('trackNamedSignal', props.formId, props.fieldName, value);
-  //   if (inputRef) {
-  //     inputRef.value = value;
-  //   }
-  // });
-  // return (
-  //   <input
-  //     reference={(reference: HTMLInputElement) => (inputRef = reference)}
-  //     id={props.fieldName}
-  //     type="text"
-  //     class="block w-full p-1"
-  //     name={props.fieldName}
-  //     autocomplete="off"
-  //     value={props.value}
-  //     oninput={(event: InputEvent) => {
-  //       const input = event.target as HTMLInputElement;
-  //       console.log(input.value);
-  //       if (props.onChange) {
-  //         props.onChange(input.value);
-  //       }
-  //     }}
-  //   ></input>
-  // );
-};

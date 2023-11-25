@@ -28,7 +28,8 @@ Based on the existing global variable "input", this variable is already defined 
 Create a UI that shows an array (as cells next to each it other, wrap the row if needed). 
 Show a bar-chart visualisation of the array.
 
-Initialize the global variable "input" after loading the page with an empty array.
+Initialize the global variable "input" after loading the page with the existing value or an empty array.
+
 Rerender the UI when an existing global method onExecute is called.
 
 */
@@ -54,6 +55,7 @@ export async function getHtmlFromOpenAI({
     model: 'gpt-4-1106-preview',
     max_tokens: 4096,
     temperature: 0,
+    seed: 12345,
     messages: [
       {
         role: 'system',
@@ -136,6 +138,7 @@ export type GPT4VCompletionRequest = {
   temperature?: number | undefined;
   top_p?: number | undefined;
   max_tokens?: number | undefined;
+  seed?: number | undefined;
   n?: number | undefined;
   best_of?: number | undefined;
   frequency_penalty?: number | undefined;

@@ -4,8 +4,9 @@ import {
   createTemplate,
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
+import { BaseFormFieldProps, FormContext, FormFieldComponent } from './field';
 
-export interface ButtonFieldProps {
+export interface ButtonFieldProps extends BaseFormFieldProps {
   formId: string;
   fieldName: string;
   caption?: string;
@@ -14,10 +15,10 @@ export interface ButtonFieldProps {
   settings?: {
     showLabel?: boolean;
   };
-  onButtonClick?: () => Promise<void> | void;
+  onButtonClick?: (formContext: FormContext) => Promise<void> | void;
 }
 
-export class ButtonFieldChildComponent extends Component<ButtonFieldProps> {
+export class ButtonFieldChildComponent extends FormFieldComponent<ButtonFieldProps> {
   oldProps: ButtonFieldProps | null = null;
   button: HTMLButtonElement | null = null;
   simpleLoader: HTMLSpanElement | null = null;
@@ -25,6 +26,7 @@ export class ButtonFieldChildComponent extends Component<ButtonFieldProps> {
   initialRender = false;
   constructor(parent: BaseComponent | null, props: ButtonFieldProps) {
     super(parent, props);
+    this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
@@ -78,7 +80,9 @@ export class ButtonFieldChildComponent extends Component<ButtonFieldProps> {
       if (!this.button) return;
       this.button.disabled = true;
       this.simpleLoader?.classList.remove('hidden');
-      await this.props.onButtonClick();
+      await this.props.onButtonClick({
+        setFormFieldValue: this.props.setValue,
+      });
       this.simpleLoader?.classList.add('hidden');
       this.button.disabled = false;
     }

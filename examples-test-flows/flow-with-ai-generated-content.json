@@ -8,16 +8,16 @@
       "nodes": [
         {
           "id": "d6028051-499f-4f12-b58f-d7fe6abb605d",
-          "x": 559.001889263164,
-          "y": 254.65964353954507,
+          "x": 588.2886924074766,
+          "y": 179.00033176405444,
           "width": 518.1853934855003,
           "height": 492.3787815339126,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Array Visualization</title>\n    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n        #chart-container {\n            position: relative;\n            margin: auto;\n            height: 40vh;\n            width: 80vw;\n        }\n    </style>\n</head>\n<body class=\"bg-gray-100\">\n\n<div class=\"flex flex-col items-center justify-center min-h-screen p-4\">\n    <div id=\"array-container\" class=\"flex flex-wrap gap-2 mb-8\">\n        <!-- Array cells will be inserted here -->\n    </div>\n    <div id=\"chart-container\">\n        <canvas id=\"arrayChart\"></canvas>\n    </div>\n</div>\n\n<script>\n    // Initialize the global variable \"input\" with an empty array\n    window.input = [];\n\n    // Function to render the array as cells\n    function renderArray() {\n        const arrayContainer = document.getElementById('array-container');\n        arrayContainer.innerHTML = ''; // Clear the container\n        window.input.forEach((value, index) => {\n            const cell = document.createElement('div');\n            cell.className = 'p-4 bg-white shadow rounded text-center';\n            cell.textContent = value;\n            arrayContainer.appendChild(cell);\n        });\n    }\n\n    // Function to render the bar chart\n    function renderChart() {\n        const ctx = document.getElementById('arrayChart').getContext('2d');\n        if (window.myChart) {\n            window.myChart.destroy(); // Destroy the old chart instance if exists\n        }\n        window.myChart = new Chart(ctx, {\n            type: 'bar',\n            data: {\n                labels: window.input.map((_, index) => `Index ${index}`),\n                datasets: [{\n                    label: 'Array Values',\n                    data: window.input,\n                    backgroundColor: 'rgba(59, 130, 246, 0.5)',\n                    borderColor: 'rgba(37, 99, 235, 1)',\n                    borderWidth: 1\n                }]\n            },\n            options: {\n                scales: {\n                    y: {\n                        beginAtZero: true\n                    }\n                }\n            }\n        });\n    }\n\n    // Global method to rerender the UI\n    window.onExecute = function() {\n        renderArray();\n        renderChart();\n    };\n\n    // Call onExecute to render the initial state\n    window.onExecute();\n</script>\n\n</body>\n</html>",
-              "aiprompt": "create a UI that shows an array (as cells next to each it other, wrap the row if needed) based on the existing global variable \"input\", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.\nShow a bar-chart visualisation of the array.\nInitialize the global variable \"input\" after loading the page with an empty array."
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Array Visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\n</head>\n<body class=\"bg-gray-100\">\n\n<div class=\"min-h-screen flex flex-col items-center justify-center\">\n    <div id=\"array-container\" class=\"flex flex-wrap gap-2 p-4\">\n        <!-- Array cells will be inserted here -->\n    </div>\n    <div class=\"w-full max-w-xl p-4\">\n        <canvas id=\"arrayChart\"></canvas>\n    </div>\n</div>\n\n<script>\n    // Initialize the global variable \"input\"\n    window.input = window.input || [];\n\n    // Function to render the array cells\n    function renderArray() {\n        const container = document.getElementById('array-container');\n        container.innerHTML = '';\n        window.input.forEach((value) => {\n            const cell = document.createElement('div');\n            cell.className = 'p-2 bg-blue-500 text-white rounded shadow';\n            cell.textContent = value;\n            container.appendChild(cell);\n        });\n    }\n\n    // Chart.js instance\n    let arrayChart;\n\n    // Function to render the bar chart\n    function renderChart() {\n        const ctx = document.getElementById('arrayChart').getContext('2d');\n        if (!arrayChart) {\n            arrayChart = new Chart(ctx, {\n                type: 'bar',\n                data: {\n                    labels: window.input.map((_, index) => `Index ${index}`),\n                    datasets: [{\n                        label: 'Values',\n                        data: window.input,\n                        backgroundColor: 'rgba(59, 130, 246, 0.5)',\n                        borderColor: 'rgba(59, 130, 246, 1)',\n                        borderWidth: 1\n                    }]\n                },\n                options: {\n                    scales: {\n                        y: {\n                            beginAtZero: true\n                        }\n                    }\n                }\n            });\n        } else {\n            arrayChart.data.labels = window.input.map((_, index) => `Index ${index}`);\n            arrayChart.data.datasets[0].data = window.input;\n            arrayChart.update();\n        }\n    }\n\n    // Function to rerender the UI\n    function rerenderUI() {\n        renderArray();\n        renderChart();\n    }\n\n    // Attach the rerenderUI function to the global onExecute method\n    window.onExecute = rerenderUI;\n\n    // Initial render\n    rerenderUI();\n</script>\n\n</body>\n</html>",
+              "aiprompt": "create a UI that shows an array (as cells next to each it other, wrap the row if needed) based on the existing global variable \"input\", this variable is already defined by the system (don't add it yourself!). \nShow a bar-chart visualisation of the array.\nRerender the UI when an existing global method onExecute is called, dont recreate the chart on each rerender but reuse the current instance if it exists, otherwise create the chart..\n\nInitialize the global variable \"input\" after loading the page with the existing value or an empty array.\n"
             }
           }
         },
@@ -25,8 +25,8 @@
           "id": "230d5d6a-0615-41ca-a45e-f8b672bfd3a3",
           "x": 132.14285738604897,
           "y": 402.4733189109364,
-          "width": 240.0000841151481,
-          "height": 116.00000818732045,
+          "width": 240.0000203328138,
+          "height": 116.00001695529791,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "array",
@@ -50,11 +50,26 @@
           }
         },
         {
+          "id": "52df93c3-5bcb-4c9e-96cc-d125afc75811",
+          "x": 1306.3426885723115,
+          "y": 224.06157204110818,
+          "width": 411.3375681011473,
+          "height": 424.2125672034932,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Average Calculator</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script type=\"module\">\n        window.input = [];\n\n        window.onExecute = function() {\n            const average = calculateAverage(window.input);\n            document.getElementById('averageValue').textContent = average.toFixed(2);\n        };\n\n        function calculateAverage(arr) {\n            if (arr.length === 0) return 0;\n            const sum = arr.reduce((acc, val) => acc + val, 0);\n            return sum / arr.length;\n        }\n\n        document.addEventListener('DOMContentLoaded', (event) => {\n            window.onExecute(); // Calculate the average on initial load\n        });\n    </script>\n    <style>\n        /* Additional styles if needed */\n    </style>\n</head>\n<body class=\"bg-gray-100 flex items-center justify-center h-screen\">\n    <div class=\"bg-white p-8 rounded-lg shadow-lg text-center\">\n        <h1 class=\"text-2xl font-bold mb-4\">Average Value</h1>\n        <div id=\"averageDisplay\" class=\"text-gray-700\">\n            <span class=\"text-5xl\" id=\"averageValue\">0.00</span>\n        </div>\n    </div>\n</body>\n</html>",
+              "aiprompt": "create a UI that shows the avarage of an array  based on the existing global variable \"input\", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.\nInitialize the global variable \"input\" after loading the page with an empty array.\nCenter the content in the middle of the screen and the width of the content panel should only match the content."
+            }
+          }
+        },
+        {
           "id": "d1f4e866-f35d-4ecd-a7ab-67e738ca34cd",
           "x": 332.14285738604895,
           "y": 432.4733189109364,
-          "endX": 559.001805537265,
-          "endY": 500.849028210833,
+          "endX": 588.2887684036751,
+          "endY": 425.67259877976994,
           "startNodeId": "230d5d6a-0615-41ca-a45e-f8b672bfd3a3",
           "endNodeId": "d6028051-499f-4f12-b58f-d7fe6abb605d",
           "startThumbName": "output",
@@ -80,27 +95,11 @@
           "nodeInfo": {}
         },
         {
-          "id": "52df93c3-5bcb-4c9e-96cc-d125afc75811",
-          "x": 1306.3431026752671,
-          "y": 223.57665497567896,
-          "width": 400,
-          "height": 400,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "iframe-html-node",
-            "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Average Calculator</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script type=\"module\">\n        window.input = [];\n\n        window.onExecute = function() {\n            const average = calculateAverage(window.input);\n            document.getElementById('averageValue').textContent = average.toFixed(2);\n        };\n\n        function calculateAverage(arr) {\n            if (arr.length === 0) return 0;\n            const sum = arr.reduce((acc, val) => acc + val, 0);\n            return sum / arr.length;\n        }\n\n        document.addEventListener('DOMContentLoaded', (event) => {\n            window.onExecute(); // Calculate average on initial load\n        });\n    </script>\n    <style>\n        /* Additional styles if needed */\n    </style>\n</head>\n<body class=\"bg-gray-100 font-sans leading-normal tracking-normal\">\n    <div class=\"container mx-auto p-8\">\n        <div class=\"flex flex-wrap justify-center\">\n            <div class=\"w-full md:w-1/2 xl:w-1/3 p-6\">\n                <div class=\"bg-white border rounded shadow\">\n                    <div class=\"border-b p-3\">\n                        <h5 class=\"font-bold uppercase text-gray-600\">Average Calculator</h5>\n                    </div>\n                    <div class=\"p-5\">\n                        <div class=\"text-center mb-5\">\n                            <div id=\"averageValue\" class=\"text-2xl font-semibold text-gray-800\">0.00</div>\n                            <div class=\"text-sm text-gray-600\">Current Average</div>\n                        </div>\n                        <button onclick=\"window.onExecute()\" class=\"w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline\">\n                            Recalculate Average\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
-              "aiprompt": "create a UI that shows the avarage of an array  based on the existing global variable \"input\", this variable is already defined by the system (don't add it yourself!). Rerender the UI when an existing global method onExecute is called.\nInitialize the global variable \"input\" after loading the page with an empty array."
-            },
-            "taskType": "iframe-html-node"
-          }
-        },
-        {
           "id": "371c4041-6f28-4230-a170-9e1627a192d2",
-          "x": 1077.1871990227653,
-          "y": 500.849028210833,
-          "endX": 1305.7147235172342,
-          "endY": 423.57665497567893,
+          "x": 1106.4741618891753,
+          "y": 425.67259877976994,
+          "endX": 1306.343093867576,
+          "endY": 435.6908501094558,
           "startNodeId": "d6028051-499f-4f12-b58f-d7fe6abb605d",
           "endNodeId": "52df93c3-5bcb-4c9e-96cc-d125afc75811",
           "startThumbName": "output",

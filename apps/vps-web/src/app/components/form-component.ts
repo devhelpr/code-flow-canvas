@@ -13,6 +13,7 @@ import { TextAreaFieldComponent } from './form-fields/textarea';
 import { SliderFieldChildComponent } from './form-fields/slider';
 import { ColorFieldChildComponent } from './form-fields/color';
 import { ButtonFieldChildComponent } from './form-fields/button';
+import { FormFieldComponent } from './form-fields/field';
 
 export const FormFieldType = {
   Text: 'Text',
@@ -53,7 +54,7 @@ export type FormField = (
 ) & {
   fieldName: string;
   label?: string;
-
+  setValue: (fieldName: string, value: string) => void;
   value: string;
   isRow?: boolean;
   onChange?: (value: string) => void;
@@ -170,6 +171,16 @@ export class FormsComponent extends Component<Props> {
     }
   };
 
+  setValue = (fieldName: string, value: string) => {
+    const formElement = this.components.find(
+      (component) =>
+        (component as FormFieldComponent<any>).fieldName === fieldName
+    );
+    if (formElement) {
+      (formElement as FormFieldComponent<any>).setValue(value);
+    }
+  };
+
   createFormElements() {
     this.components = [];
     let loop = 0;
@@ -182,6 +193,7 @@ export class FormsComponent extends Component<Props> {
           value: formControl.value,
           isRow: formControl.isRow,
           settings: formControl.settings,
+          setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
         });
@@ -197,6 +209,7 @@ export class FormsComponent extends Component<Props> {
           max: formControl.max,
           step: formControl.step,
           settings: formControl.settings,
+          setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
         });
@@ -209,6 +222,7 @@ export class FormsComponent extends Component<Props> {
           value: formControl.value,
           isRow: formControl.isRow,
           settings: formControl.settings,
+          setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
         });
@@ -219,6 +233,7 @@ export class FormsComponent extends Component<Props> {
           fieldName: formControl.fieldName,
           label: formControl.label,
           value: formControl.value,
+          setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
         });
@@ -228,6 +243,7 @@ export class FormsComponent extends Component<Props> {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           caption: formControl.caption,
+          setValue: this.setValue,
           onButtonClick: formControl.onButtonClick,
           isLast: index === this.props.formElements.length - 1,
         });

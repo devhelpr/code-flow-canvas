@@ -45,9 +45,10 @@ export const pointerDown = <T>(
     yOffsetWithinElementOnFirstClick = y;
     if (element?.nodeType === NodeType.Shape) {
       // .. this is a hack to make sure that the element is always on top
-      (canvasNode?.domElement as unknown as HTMLElement | SVGElement)?.append(
-        element.domElement
-      );
+      // .. this causes a refresh of the iframe-html-node
+      // (canvasNode?.domElement as unknown as HTMLElement | SVGElement)?.append(
+      //   element.domElement
+      // );
     }
 
     console.log(

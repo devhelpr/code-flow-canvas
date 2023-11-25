@@ -12,7 +12,7 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/form-component';
 import { createStructuredExpressionsMarkup } from '../utils/replace-expression-script';
 import { compileExpressionAsInfo } from '@devhelpr/expression-compiler';
-import { abort } from 'process';
+import { FormContext } from '../components/form-fields/field';
 
 function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
   const childNodes = node.childNodes;
@@ -45,6 +45,7 @@ function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
 }
 
 export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
+  let currentInput = '';
   let node: IRectNodeComponent<NodeInfo>;
   let divNode: IElementNode<NodeInfo>;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
@@ -60,15 +61,10 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
 
   const defaultHTML = `<div class="bg-sky-800 text-white 
     flex items-center justify-center
-    min-w-[200px] min-h-[200px]">Click to edit HTML</div>`;
-
-  function encodeHTMLEntities(text: string) {
-    const textArea = document.createElement('textarea');
-    textArea.textContent = text;
-    return textArea.innerHTML;
-  }
+    min-w-full min-h-full">Click to edit HTML</div>`;
 
   const setHTML = (value: string) => {
+    console.log('setHTML start', value);
     try {
       const splitted = (value ?? '').toString().split(':');
       if (splitted.length === 2) {
@@ -77,30 +73,24 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         variables['value'] = value;
       }
 
+      let iframeWasCreated = false;
+
       const isEmpty = !node?.nodeInfo?.formValues['html'];
-      //       const htmlString = `<!DOCTYPE html>
-      // <html lang="en">
-      //   <head>
-      //     <meta charset="utf-8" />
-      //   </head>
-      //   <body>
-      // ${node?.nodeInfo?.formValues['html'] || defaultHTML}
-      // </body>
-      // </html>`;
 
       let htmlString = `${node?.nodeInfo?.formValues['html'] || defaultHTML}`;
+      const hasHTMLDoctype = htmlString.indexOf('<!DOCTYPE html>') > -1;
 
       if (oldHtml === '' || oldHtml !== htmlString) {
         oldHtml = htmlString;
         console.log('htmlString', htmlString);
-        if (isEmpty) {
+        if (isEmpty || !hasHTMLDoctype) {
           (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
         } else {
           (divNode.domElement as HTMLElement).innerHTML = '';
           structuredMarkup = createStructuredExpressionsMarkup(htmlString);
           htmlString = `${htmlString}
             <script>
-              window["input"] = [];
+              window["input"] = window["input"] || [];
               window.addEventListener('message', (event) => {                
                 console.log('Received message:', event.data, window.parent["createStructuredExpressionsMarkup"]);
                 const html = document.body.innerHTML;
@@ -139,11 +129,8 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             },
             divNode.domElement as HTMLElement
           );
+          iframeWasCreated = true;
         }
-      }
-
-      if (structuredMarkup) {
-        //
       }
 
       const iframe = document.getElementById(
@@ -155,8 +142,21 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
 
         (window as any)['traverseDOMTree'] = traverseDOMTree;
         (window as any)['compileExpressionAsInfo'] = compileExpressionAsInfo;
+
+        // can't send structured data which contains code...
         const data = JSON.stringify(value);
-        iframe.contentWindow.postMessage(data); // can't send structured data which contains code...
+        console.log('setHTML', data);
+
+        if (iframeWasCreated) {
+          setTimeout(() => {
+            console.log('postMessage', data);
+            if (iframe.contentWindow) {
+              iframe.contentWindow.postMessage(data);
+            }
+          }, 200);
+        } else {
+          iframe.contentWindow.postMessage(data);
+        }
       }
 
       if (rect) {
@@ -168,11 +168,12 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   };
 
   const initializeCompute = () => {
+    currentInput = '';
     variables = {};
-
-    return;
   };
+
   const compute = (input: string) => {
+    currentInput = input;
     setHTML(input);
 
     return {
@@ -213,7 +214,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {
-              setHTML('');
+              setHTML(currentInput);
               updated();
             }
           },
@@ -244,7 +245,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           fieldType: FormFieldType.Button,
           fieldName: 'execute',
           caption: 'Get HTML from AI',
-          onButtonClick: () => {
+          onButtonClick: (formContext: FormContext) => {
             return new Promise<void>((resolve, reject) => {
               fetch('http://localhost:3000/create-ui', {
                 method: 'POST',
@@ -267,10 +268,15 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
                     ...node.nodeInfo.formValues,
                     html: html,
                   };
-                  setHTML('');
+                  console.log('currentinput after prompting', currentInput);
+
                   if (updated) {
                     updated();
                   }
+                  formContext.setFormFieldValue('html', html);
+                  setTimeout(() => {
+                    setHTML(currentInput);
+                  }, 0);
                   resolve();
                 });
               });
@@ -299,7 +305,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       divNode = createElement(
         'div',
         {
-          class: 'w-full h-full',
+          class: 'w-full h-[calc(100%-42px)]',
         },
         componentWrapper.domElement
       );
@@ -356,7 +362,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           aiprompt: aiPrompt,
         };
       }
-      setHTML('');
+      setHTML(currentInput);
 
       return node;
     },

@@ -5,8 +5,9 @@ import {
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
+import { BaseFormFieldProps, FormFieldComponent } from './field';
 
-export interface ColorFieldProps {
+export interface ColorFieldProps extends BaseFormFieldProps {
   formId: string;
   fieldName: string;
   value: string;
@@ -26,7 +27,7 @@ export interface ColorFieldProps {
 //   onChange?: (value: string) => void;
 // }
 
-export class ColorFieldChildComponent extends Component<ColorFieldProps> {
+export class ColorFieldChildComponent extends FormFieldComponent<ColorFieldProps> {
   oldProps: ColorFieldProps | null = null;
   input: HTMLInputElement | null = null;
   label: HTMLLabelElement | null = null;
@@ -34,6 +35,7 @@ export class ColorFieldChildComponent extends Component<ColorFieldProps> {
   initialRender = false;
   constructor(parent: BaseComponent | null, props: ColorFieldProps) {
     super(parent, props);
+    this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''

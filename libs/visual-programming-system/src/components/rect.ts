@@ -844,9 +844,11 @@ export class Rect<T> {
       );
 
       if (interactionInfoResult) {
-        (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
-          this.nodeComponent.domElement
-        );
+        // .. this is a hack to make sure that the element is always on top
+        // .. this causes a refresh of the iframe-html-node
+        // (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
+        //   this.nodeComponent.domElement
+        // );
       }
     }
   };

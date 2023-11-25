@@ -1,35 +1,12 @@
-// export interface TextAreaFieldProps {
-//   fieldName: string;
-//   value: string;
-//   onChange?: (value: string) => void;
-// }
-
-// export const TextAreaField = (props: TextAreaFieldProps) => (
-//   <textarea
-//     id={props.fieldName}
-//     type="text"
-//     class="block w-full h-[200px] p-1"
-//     name={props.fieldName}
-//     oninput={(event: InputEvent) => {
-//       const input = event.target as HTMLInputElement;
-//       if (props.onChange) {
-//         props.onChange(input.value);
-//       }
-//     }}
-//   >
-//     {props.value}
-//   </textarea>
-// );
-
 import {
-  Component,
   BaseComponent,
   createTemplate,
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
+import { BaseFormFieldProps, FormFieldComponent } from './field';
 
-export interface TextAreaFieldProps {
+export interface TextAreaFieldProps extends BaseFormFieldProps {
   formId: string;
   fieldName: string;
   value: string;
@@ -38,7 +15,7 @@ export interface TextAreaFieldProps {
   onChange?: (value: string) => void;
 }
 
-export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
+export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProps> {
   oldProps: TextAreaFieldProps | null = null;
   textarea: HTMLTextAreaElement | null = null;
   label: HTMLLabelElement | null = null;
@@ -46,6 +23,7 @@ export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
   initialRender = false;
   constructor(parent: BaseComponent | null, props: TextAreaFieldProps) {
     super(parent, props);
+    this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full mb-2">
         <label for="${props.fieldName}" class="block mb-2 text-white">${
@@ -104,6 +82,12 @@ export class TextAreaFieldComponent extends Component<TextAreaFieldProps> {
       this.element.remove();
     }
     this.isMounted = false;
+  }
+
+  public setValue(value: string): void {
+    console.log('setValue textarea', value, this.textarea);
+    if (!this.textarea) return;
+    this.textarea.value = value;
   }
 
   onInput = (event: Event) => {

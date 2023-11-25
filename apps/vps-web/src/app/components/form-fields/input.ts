@@ -5,8 +5,9 @@ import {
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
+import { BaseFormFieldProps, FormFieldComponent } from './field';
 
-export interface InputFieldProps {
+export interface InputFieldProps extends BaseFormFieldProps {
   formId: string;
   fieldName: string;
   value: string;
@@ -26,7 +27,7 @@ export interface InputFieldProps {
 //   onChange?: (value: string) => void;
 // }
 
-export class InputFieldChildComponent extends Component<InputFieldProps> {
+export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps> {
   oldProps: InputFieldProps | null = null;
   input: HTMLInputElement | null = null;
   label: HTMLLabelElement | null = null;
@@ -34,6 +35,7 @@ export class InputFieldChildComponent extends Component<InputFieldProps> {
   initialRender = false;
   constructor(parent: BaseComponent | null, props: InputFieldProps) {
     super(parent, props);
+    this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
