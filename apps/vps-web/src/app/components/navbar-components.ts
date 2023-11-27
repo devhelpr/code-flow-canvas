@@ -117,8 +117,12 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
 
   onClickAddNode = (event: Event) => {
     event.preventDefault();
+    console.log('onClickAddNode flow-app');
     this.props.canvasApp?.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
+    if (!nodeType) {
+      console.log('onClickAddNode: no nodeType selected');
+    }
     let halfWidth = 0;
     let halfHeight = 0;
     if (this.props.canvasApp?.rootElement) {
@@ -158,36 +162,36 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
             return;
           }
         }
-        if (!node.nodeInfo?.taskType) {
-          return;
-        }
-        const selectedNodeTaskFactory = getNodeTaskFactory(
-          node.nodeInfo.taskType
-        );
-        if (node && selectedNodeTaskFactory) {
-          const selectedNodeTask = selectedNodeTaskFactory(
-            this.props.canvasUpdated
+        if (node.nodeInfo?.taskType) {
+          const selectedNodeTaskFactory = getNodeTaskFactory(
+            node.nodeInfo.taskType
           );
-          if (
-            node.nodeInfo.canvasAppInstance &&
-            selectedNodeTask.isContainer &&
-            (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
-          ) {
-            nodeTask.createVisualNode(
-              node.nodeInfo.canvasAppInstance,
-              50,
-              50,
-              undefined,
-              undefined,
-              node as IRectNodeComponent<NodeInfo>,
-              undefined,
-              undefined,
-              (node.nestedLevel ?? 0) + 1
+          if (node && selectedNodeTaskFactory) {
+            const selectedNodeTask = selectedNodeTaskFactory(
+              this.props.canvasUpdated
             );
+            if (
+              node.nodeInfo.canvasAppInstance &&
+              selectedNodeTask.isContainer &&
+              (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
+            ) {
+              nodeTask.createVisualNode(
+                node.nodeInfo.canvasAppInstance,
+                50,
+                50,
+                undefined,
+                undefined,
+                node as IRectNodeComponent<NodeInfo>,
+                undefined,
+                undefined,
+                (node.nestedLevel ?? 0) + 1
+              );
 
-            return;
-          } else if (selectedNodeTask.isContainer) {
-            return;
+              return;
+            } else if (selectedNodeTask.isContainer) {
+              console.log('onClickAddNode: selectedNodeTask isContainer');
+              return;
+            }
           }
         }
       }

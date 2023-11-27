@@ -318,6 +318,9 @@ export class GLAppElement extends AppElement<any> {
     );
     const setupTasksInDropdown = () => {
       if (selectNodeType?.domElement) {
+        const nodeType = (selectNodeType?.domElement as HTMLSelectElement)
+          .value;
+        let isPreviouslySelectedNodeTypeInDropdown = false;
         (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
         const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
@@ -328,12 +331,18 @@ export class GLAppElement extends AppElement<any> {
               return;
             }
           }
+          if (nodeTask === nodeType) {
+            isPreviouslySelectedNodeTypeInDropdown = true;
+          }
           createOption(
             selectNodeType.domElement as HTMLSelectElement,
             nodeTask,
             nodeTask
           );
         });
+        if (isPreviouslySelectedNodeTypeInDropdown) {
+          (selectNodeType?.domElement as HTMLSelectElement).value = nodeType;
+        }
       }
     };
     const setupTasksForContainerTaskInDropdown = (
@@ -588,16 +597,6 @@ export class GLAppElement extends AppElement<any> {
       currentSelectedNode = selectedNodeInfo;
     });
 
-    setupMarkupElement(
-      `
-      function Test() {
-        return <div class="bg-black"><div class="p-4">test{2*3}</div></div>;
-      }  
-      return Test();  
-    `,
-      this.rootElement
-    );
-
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
     });
@@ -702,6 +701,10 @@ export class GLAppElement extends AppElement<any> {
       return palette(paletteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(2.0,1.0,0.0), vec3(0.5,0.20,0.25));
     }
     
+    vec2 rotate(vec2 v, float a) {
+      float degreeToRad = a * 0.017453292519943295;
+      return vec2(sin(degreeToRad) * v.x + cos(degreeToRad) * v.y, cos(degreeToRad) * v.x - sin(degreeToRad) * v.y);
+    }
 
     ${noise()}
 	

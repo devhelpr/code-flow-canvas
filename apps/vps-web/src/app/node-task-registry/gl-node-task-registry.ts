@@ -8,13 +8,17 @@ import { getTimeNode } from '../nodes-gl/time';
 import { getMultiplyNode } from '../nodes-gl/multiply';
 import { getBackgroundColorNode } from '../nodes-gl/background-color-node';
 import { getUVNode } from '../nodes-gl/uv-node';
-import { get } from 'http';
 import { getAdditionNode } from '../nodes-gl/addition';
 import { getLengthNode } from '../nodes-gl/length';
 import { getNoiseNode } from '../nodes-gl/noise';
 import { getValue100Node } from '../nodes-gl/value100-node';
 import { getSplitColorsNode } from '../nodes-gl/split-colors';
 import { getPaletteNode } from '../nodes-gl/palette';
+import { getRotateNode } from '../nodes-gl/rotate';
+import { getSplitVector2dNode } from '../nodes-gl/split-vec2';
+import { getSmoothStepFloatNode } from '../nodes-gl/smooth-step-float';
+import { getClampFloatNode } from '../nodes-gl/clamp-float';
+import { getModuloFloatNode } from '../nodes-gl/modulo-float';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 
@@ -44,6 +48,11 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('value100-node', getValue100Node);
   registerGLNodeFactory('split-colors-node', getSplitColorsNode);
   registerGLNodeFactory('palette', getPaletteNode);
+  registerGLNodeFactory('rotate-node', getRotateNode);
+  registerGLNodeFactory('split-vector2-node', getSplitVector2dNode);
+  registerGLNodeFactory('smooth-step-float-node', getSmoothStepFloatNode);
+  registerGLNodeFactory('clamp-float-node', getClampFloatNode);
+  registerGLNodeFactory('modulo-float-node', getModuloFloatNode);
 };
 
 export const getGLNodeTaskFactory = (name: string) => {

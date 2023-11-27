@@ -629,6 +629,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
     const setupTasksInDropdown = () => {
       if (selectNodeType?.domElement) {
+        const nodeType = (selectNodeType?.domElement as HTMLSelectElement)
+          .value;
+        let isPreviouslySelectedNodeTypeInDropdown = false;
         (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
         const nodeTasks = getNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
@@ -639,12 +642,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               return;
             }
           }
+          if (nodeTask === nodeType) {
+            isPreviouslySelectedNodeTypeInDropdown = true;
+          }
           createOption(
             selectNodeType.domElement as HTMLSelectElement,
             nodeTask,
             nodeTask
           );
         });
+        if (isPreviouslySelectedNodeTypeInDropdown) {
+          (selectNodeType?.domElement as HTMLSelectElement).value = nodeType;
+        }
       }
     };
     const setupTasksForContainerTaskInDropdown = (
@@ -1132,15 +1141,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       currentSelectedNode = selectedNodeInfo;
     });
 
-    setupMarkupElement(
-      `
-      function Test() {
-        return <div class="bg-black"><div class="p-4">test{2*3}</div></div>;
-      }  
-      return Test();  
-    `,
-      this.rootElement
-    );
+    // setupMarkupElement(
+    //   `
+    //   function Test() {
+    //     return <div class="bg-black"><div class="p-4">test{2*3}</div></div>;
+    //   }
+    //   return Test();
+    // `,
+    //   this.rootElement
+    // );
 
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);

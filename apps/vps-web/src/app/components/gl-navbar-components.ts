@@ -114,6 +114,7 @@ export class GLNavbarComponent extends Component<
   lastAddedNode: IRectNodeComponent<any> | null = null;
   onClickAddNode = (event: Event) => {
     event.preventDefault();
+    console.log('onClickAddNode gl-app');
     this.props.canvasApp?.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
     let halfWidth = 0;
@@ -185,36 +186,36 @@ export class GLNavbarComponent extends Component<
             return;
           }
         }
-        if (!node.nodeInfo?.taskType) {
-          return;
-        }
-        const selectedNodeTaskFactory = getGLNodeTaskFactory(
-          node.nodeInfo.taskType
-        );
-        if (node && selectedNodeTaskFactory) {
-          const selectedNodeTask = selectedNodeTaskFactory(
-            this.props.canvasUpdated
+        if (node.nodeInfo?.taskType) {
+          const selectedNodeTaskFactory = getGLNodeTaskFactory(
+            node.nodeInfo.taskType
           );
-          if (
-            node.nodeInfo.canvasAppInstance &&
-            selectedNodeTask.isContainer &&
-            (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
-          ) {
-            nodeTask.createVisualNode(
-              node.nodeInfo.canvasAppInstance,
-              50,
-              50,
-              undefined,
-              undefined,
-              node as IRectNodeComponent<NodeInfo>,
-              undefined,
-              undefined,
-              (node.nestedLevel ?? 0) + 1
+          if (node && selectedNodeTaskFactory) {
+            const selectedNodeTask = selectedNodeTaskFactory(
+              this.props.canvasUpdated
             );
+            if (
+              node.nodeInfo.canvasAppInstance &&
+              selectedNodeTask.isContainer &&
+              (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
+            ) {
+              nodeTask.createVisualNode(
+                node.nodeInfo.canvasAppInstance,
+                50,
+                50,
+                undefined,
+                undefined,
+                node as IRectNodeComponent<NodeInfo>,
+                undefined,
+                undefined,
+                (node.nestedLevel ?? 0) + 1
+              );
 
-            return;
-          } else if (selectedNodeTask.isContainer) {
-            return;
+              return;
+            } else if (selectedNodeTask.isContainer) {
+              console.log('onClickAddNode: selectedNodeTask isContainer');
+              return;
+            }
           }
         }
       }
