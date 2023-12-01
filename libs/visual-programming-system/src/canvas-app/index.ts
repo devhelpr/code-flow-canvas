@@ -1,3 +1,4 @@
+import { on } from 'events';
 import {
   Camera,
   getCamera,
@@ -524,6 +525,9 @@ export const createCanvasApp = <T>(
     rootElement,
     interactionStateMachine,
     nodeTransformer,
+    getOnCanvasUpdated: () => {
+      return onCanvasUpdated;
+    },
     setOnCanvasUpdated: (onCanvasUpdatedHandler: () => void) => {
       onCanvasUpdated = onCanvasUpdatedHandler;
     },

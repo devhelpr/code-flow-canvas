@@ -79,6 +79,17 @@ export class GLAppElement extends AppElement<any> {
     this.setupWindowResize();
     this.setupGLCanvas();
 
+    const canvasUpdated = () => {
+      if (this.isStoring) {
+        return;
+      }
+      this.flowTOGLCanvas();
+      store();
+    };
+    this.canvasApp.setOnCanvasUpdated(() => {
+      canvasUpdated();
+    });
+
     setupGLNodeTaskRegistry();
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
@@ -179,17 +190,6 @@ export class GLAppElement extends AppElement<any> {
         this.storageProvider.saveFlow('gl', flow);
       }
     };
-
-    const canvasUpdated = () => {
-      if (this.isStoring) {
-        return;
-      }
-      this.flowTOGLCanvas();
-      store();
-    };
-    this.canvasApp.setOnCanvasUpdated(() => {
-      canvasUpdated();
-    });
 
     const setIsStoring = (isStoring: boolean) => {
       this.isStoring = isStoring;
@@ -466,7 +466,7 @@ export class GLAppElement extends AppElement<any> {
           }
         }
 
-        if (((nodeInfo as any)?.formElements ?? []).length === 0) {
+        if (((nodeInfo as any)?.formElements ?? []).length <= 1) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
           ).classList.add('hidden');
@@ -699,6 +699,10 @@ export class GLAppElement extends AppElement<any> {
 
     vec3 chooseColor(in float paletteOffset) {
       return palette(paletteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(2.0,1.0,0.0), vec3(0.5,0.20,0.25));
+    }
+
+    vec3 chooseColor2(in float paletteOffset) {
+      return palette(paletteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.33,0.67));
     }
     
     vec2 rotate(vec2 v, float a) {

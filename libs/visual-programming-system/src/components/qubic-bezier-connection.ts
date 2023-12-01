@@ -70,7 +70,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
         setSelectNode({
           id: this.nodeComponent.id,
           containerNode: this.nodeComponent
-            .containerNode as unknown as INodeComponent<unknown>,
+            .containerNode as unknown as IRectNodeComponent<unknown>,
         });
       }
     };
@@ -245,7 +245,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
       // this.nodeComponent?.endNodeThumb?.thumbType === ThumbType.Center;
 
       if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
-        const bottomY = this.getLowestYPosition() + 20;
+        const bottomY = this.getLowestYPosition() + 40;
         (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
           'd',
           `
@@ -334,7 +334,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
 
     if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
       this.nodeComponent.isLoopBack = true;
-      const bottomY = this.getLowestYPosition() + 20;
+      const bottomY = this.getLowestYPosition() + 40;
       path = `
       M${this.points.beginX - bbox.x + startOffsetX} ${
         this.points.beginY - bbox.y + startOffsetY

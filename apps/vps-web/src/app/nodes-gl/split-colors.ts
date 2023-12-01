@@ -123,7 +123,7 @@ export const getSplitColorsNode = (updated: () => void): NodeTask<any> => {
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        true,
+        undefined,
         undefined,
         undefined,
         id,

@@ -203,6 +203,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         singleStep
       );
     };
+    const canvasUpdated = () => {
+      if (this.isStoring) {
+        return;
+      }
+      store();
+    };
+    this.canvasApp.setOnCanvasUpdated(() => {
+      canvasUpdated();
+    });
 
     setupCanvasNodeTaskRegistry(animatePath, animatePathFromThumb);
     createIndexedDBStorageProvider()
@@ -340,16 +349,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.storageProvider.saveFlow('1234', flow);
       }
     };
-
-    const canvasUpdated = () => {
-      if (this.isStoring) {
-        return;
-      }
-      store();
-    };
-    this.canvasApp.setOnCanvasUpdated(() => {
-      canvasUpdated();
-    });
 
     const setIsStoring = (isStoring: boolean) => {
       this.isStoring = isStoring;
@@ -1010,7 +1009,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         }
 
-        if (((nodeInfo as any)?.formElements ?? []).length === 0) {
+        if (((nodeInfo as any)?.formElements ?? []).length <= 1) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
           ).classList.add('hidden');

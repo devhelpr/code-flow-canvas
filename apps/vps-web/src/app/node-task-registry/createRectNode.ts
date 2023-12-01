@@ -5,7 +5,11 @@ import {
   IRectNodeComponent,
   IThumb,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormField } from '../components/form-component';
+import {
+  FormComponent,
+  FormField,
+  FormValues,
+} from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues } from '../node-task-registry';
@@ -48,7 +52,10 @@ export const createRectNode = (
   initialValues?: InitialValues,
   settings?: {
     hasTitlebar?: boolean;
-  }
+    childNodeWrapperClass?: string;
+    additionalClassNames?: string;
+  },
+  childNode?: HTMLElement
 ) => {
   const componentWrapper = createElement(
     'div',
@@ -88,7 +95,9 @@ export const createRectNode = (
         showTitlebar ? 'rounded-b' : 'rounded'
       } min-h-auto flex-auto ${
         hasCenteredLabel ? 'flex items-center justify-center' : 'p-4 pt-4'
-      }`,
+      }
+      ${settings?.additionalClassNames ?? ''} 
+      `,
     },
     componentWrapper.domElement,
     hasCenteredLabel ? nodeTitle : undefined
@@ -101,9 +110,30 @@ export const createRectNode = (
       formElements,
       hasSubmitButton: false,
       onSave: (formValues) => {
-        console.log('onSave', formValues);
+        console.log('onSave', formValues, rect);
       },
+      setDataOnNode: (formValues: FormValues) => {
+        const node = rect.nodeComponent;
+        if (node && node.nodeInfo) {
+          node.nodeInfo = {
+            ...node.nodeInfo,
+            formValues,
+          };
+        }
+      },
+      getDataFromNode: () => {
+        return initialValues ?? {};
+      },
+      canvasUpdated: canvasApp.getOnCanvasUpdated(),
     }) as unknown as HTMLElement;
+  }
+  if (childNode) {
+    createElement(
+      'div',
+      { class: `${settings?.childNodeWrapperClass ?? ''}` },
+      formWrapper.domElement,
+      childNode
+    );
   }
   const rect = canvasApp.createRect(
     x,
@@ -172,7 +202,10 @@ export const visualNodeFactory = (
   onCreatedNode: (nodeInfo: ReturnType<typeof createRectNode>) => void,
   settings?: {
     hasTitlebar?: boolean;
-  }
+    childNodeWrapperClass?: string;
+    additionalClassNames?: string;
+  },
+  childNode?: HTMLElement
 ) => {
   return {
     name: nodeTypeName,
@@ -203,7 +236,8 @@ export const visualNodeFactory = (
         id,
         containerNode,
         initialValues,
-        settings
+        settings,
+        childNode
       );
       onCreatedNode(nodeInstance);
       return nodeInstance.node;

@@ -68,8 +68,8 @@ export const getValueNode: NodeTaskFactory<any> = (
           fieldType: FormFieldType.Slider,
           fieldName: 'value',
           value: values?.['value'] ?? '',
-          min: -2.0,
-          max: 2.0,
+          min: -1.0,
+          max: 1.0,
           step: 0.01,
           settings: {
             showLabel: false,

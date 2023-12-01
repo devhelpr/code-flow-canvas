@@ -70,7 +70,7 @@ export const getModuloFloatNode: NodeTaskFactory<any> = (
     const b = payload?.['b'];
 
     return {
-      result: `mod(${a}, ${b})`,
+      result: `mod(${a}, floor(${b} + 0.5))`,
       output: input,
       followPath: undefined,
     };

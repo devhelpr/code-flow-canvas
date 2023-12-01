@@ -3,7 +3,6 @@ import {
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
-  createElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
@@ -13,13 +12,12 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { parse } from 'path';
 
-const fieldName = 'rotate';
-const labelName = 'Rotate';
-const nodeName = 'rotate-node';
+const fieldName = 'subtract';
+const labelName = 'Subtract';
+const nodeName = 'subtract-node';
 const familyName = 'flow-canvas';
-const thumbConstraint = 'vec2';
+const thumbConstraint = 'value';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -29,7 +27,6 @@ const thumbs = [
     label: ' ',
     thumbConstraint: thumbConstraint,
     maxConnections: -1,
-    prefixLabel: 'vector',
   },
   {
     thumbType: ThumbType.EndConnectorLeft,
@@ -37,10 +34,8 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-
-    name: 'vector',
+    name: 'value1',
     thumbConstraint: thumbConstraint,
-    prefixLabel: 'vector',
   },
   {
     thumbType: ThumbType.EndConnectorLeft,
@@ -48,14 +43,12 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-
-    name: 'degree',
-    thumbConstraint: 'value',
-    prefixLabel: 'degree',
+    name: 'value2',
+    thumbConstraint: thumbConstraint,
   },
 ];
 
-export const getRotateNode: NodeTaskFactory<any> = (
+export const getSubtractNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
@@ -63,26 +56,16 @@ export const getRotateNode: NodeTaskFactory<any> = (
   const initializeCompute = () => {
     return;
   };
-
-  const element = createElement('div', {
-    class: 'block',
-  });
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
   ) => {
-    const vector = payload?.['vector'];
-
-    const degree = payload?.['degree'];
-    if (element) {
-      element.domElement.textContent = `${(
-        (parseFloat(degree) || 0) % 360
-      ).toFixed(0)}`;
-    }
+    const value1 = payload?.['value1'];
+    const value2 = payload?.['value2'];
     return {
-      result: `rotate(${vector}, ${degree})`,
+      result: `${value1} - ${value2}`,
       output: input,
       followPath: undefined,
     };
@@ -96,8 +79,8 @@ export const getRotateNode: NodeTaskFactory<any> = (
     compute,
     initializeCompute,
     false,
-    200,
     100,
+    320,
     thumbs,
     (values?: InitialValues) => {
       return [];
@@ -108,9 +91,6 @@ export const getRotateNode: NodeTaskFactory<any> = (
     },
     {
       hasTitlebar: false,
-      additionalClassNames: 'flex-wrap flex-col',
-      childNodeWrapperClass: 'w-full block text-center',
-    },
-    element.domElement as HTMLElement
+    }
   );
 };

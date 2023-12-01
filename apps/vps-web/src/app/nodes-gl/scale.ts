@@ -3,7 +3,6 @@ import {
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
-  createElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
@@ -13,11 +12,10 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { parse } from 'path';
 
-const fieldName = 'rotate';
-const labelName = 'Rotate';
-const nodeName = 'rotate-node';
+const fieldName = 'scale';
+const labelName = 'Scale';
+const nodeName = 'scale-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'vec2';
 const thumbs = [
@@ -49,13 +47,13 @@ const thumbs = [
     color: 'white',
     label: ' ',
 
-    name: 'degree',
+    name: 'scale',
     thumbConstraint: 'value',
-    prefixLabel: 'degree',
+    prefixLabel: 'scale',
   },
 ];
 
-export const getRotateNode: NodeTaskFactory<any> = (
+export const getScaleNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
@@ -63,10 +61,6 @@ export const getRotateNode: NodeTaskFactory<any> = (
   const initializeCompute = () => {
     return;
   };
-
-  const element = createElement('div', {
-    class: 'block',
-  });
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
@@ -74,15 +68,9 @@ export const getRotateNode: NodeTaskFactory<any> = (
     payload?: any
   ) => {
     const vector = payload?.['vector'];
-
-    const degree = payload?.['degree'];
-    if (element) {
-      element.domElement.textContent = `${(
-        (parseFloat(degree) || 0) % 360
-      ).toFixed(0)}`;
-    }
+    const scale = payload?.['scale'];
     return {
-      result: `rotate(${vector}, ${degree})`,
+      result: `${vector} * ${scale}`,
       output: input,
       followPath: undefined,
     };
@@ -108,9 +96,6 @@ export const getRotateNode: NodeTaskFactory<any> = (
     },
     {
       hasTitlebar: false,
-      additionalClassNames: 'flex-wrap flex-col',
-      childNodeWrapperClass: 'w-full block text-center',
-    },
-    element.domElement as HTMLElement
+    }
   );
 };

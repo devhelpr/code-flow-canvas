@@ -21,17 +21,45 @@ export interface SliderFieldProps extends BaseFormFieldProps {
     showLabel?: boolean;
   };
   onChange?: (value: string) => void;
+  onGetSettings: () => {
+    min: number;
+    max: number;
+    step: number;
+  };
+  onStoreSettings: (settings: {
+    min: number;
+    max: number;
+    step: number;
+  }) => void;
 }
 
 export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldProps> {
   oldProps: SliderFieldProps | null = null;
   input: HTMLInputElement | null = null;
   label: HTMLLabelElement | null = null;
+  parametersWrapper: HTMLDivElement | null = null;
+  minLabel: HTMLSpanElement | null = null;
+  minInput: HTMLInputElement | null = null;
+  valueLabel: HTMLSpanElement | null = null;
+  maxLabel: HTMLSpanElement | null = null;
+  maxInput: HTMLInputElement | null = null;
   doRenderChildren = false;
   initialRender = false;
+  min = 0.1;
+  max = 100;
+  step = 0.1;
   constructor(parent: BaseComponent | null, props: SliderFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
+
+    const { min, max, step } = props.onGetSettings?.() ?? {
+      min: props.min ?? 0.1,
+      max: props.max ?? 100,
+      step: props.step ?? 0.1,
+    };
+    this.min = min ?? 0.1;
+    this.max = max ?? 100;
+    this.step = step ?? 0.1;
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
@@ -42,14 +70,27 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         text-white ${props.isRow ? 'mr-2' : ''}">${
         props.label ?? props.fieldName
       }</label>
-        <input class="block w-full p-1 text-white accent-white"
+        <input class="block w-full py-1 text-white accent-white slider"
           name="${props.fieldName}"      
           id="${props.formId}_${props.fieldName}"
           value="${props.value}"
-          min="${props.min ?? 0.1}"
-          max="${props.max ?? 100}"
-          step="${props.step ?? 0.1}"
+          min="${this.min}"
+          max="${this.max}"
+          step="${this.step}"
           type="range"></input>
+          <div class="flex w-full justify-center relative">
+            <button class="absolute left-0 text-xs cursor-pointer">${
+              this.min
+            }</button>
+            <input class="absolute left-0 text-xs w-[40px] appearance-none hidden"></input>
+            <span class="slider-value-bubble text-sm absolute text-center origin-center px-2 -top-[50px] left-0 -translate-x-1/2 bg-white rounded text-black">${
+              props.value
+            }</span>
+            <button class="absolute right-0 text-xs cursor-pointer">${
+              this.max
+            }</button>
+            <input class="absolute right-0 text-xs w-[40px] appearance-none hidden"></input>
+          </div>
         </div>`
     );
 
@@ -69,11 +110,122 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
         this.input = this.label.nextSibling as HTMLInputElement;
-        this.renderList.push(this.label, this.input);
+        this.parametersWrapper = this.input.nextSibling as HTMLDivElement;
+        this.minLabel = this.parametersWrapper.firstChild as HTMLSpanElement;
+        this.minInput = this.minLabel.nextSibling as HTMLInputElement;
+        this.valueLabel = this.minInput.nextSibling as HTMLSpanElement;
+        this.maxLabel = this.valueLabel.nextSibling as HTMLSpanElement;
+        this.maxInput = this.maxLabel.nextSibling as HTMLInputElement;
+        this.renderList.push(this.label, this.input, this.parametersWrapper);
+
+        const value = Number(this.valueLabel.textContent);
+        const min = this.min;
+        const max = this.max;
+        const newVal = Number(((value - min) * 100) / (max - min));
+
+        this.valueLabel.style.left = `calc(${newVal}% + ${
+          8 - newVal * 0.15
+        }px)`;
+
         this.input.addEventListener('input', this.onInput);
         this.input.addEventListener('pointerdown', (event: PointerEvent) => {
           event.stopPropagation();
         });
+
+        this.minLabel.addEventListener('click', (event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (this.minInput) {
+            this.minInput.value = this.input?.min ?? '0.1';
+            this.minLabel?.classList.add('hidden');
+            this.minInput?.classList.remove('hidden');
+            this.minInput?.focus();
+          }
+          return false;
+        });
+
+        const setMin = () => {
+          if (
+            this.minInput &&
+            this.minLabel &&
+            this.input &&
+            this.maxInput &&
+            this.maxLabel
+          ) {
+            this.minLabel.textContent = this.minInput.value;
+            this.input.min = this.minInput.value;
+            this.min = parseFloat(this.minInput.value);
+
+            this.minInput.blur();
+            this.minInput.classList.add('hidden');
+            this.minLabel.classList.remove('hidden');
+            this.props.onStoreSettings({
+              min: this.min,
+              max: this.max,
+              step: this.step,
+            });
+          }
+        };
+        this.minInput.addEventListener('keydown', (event: Event) => {
+          if ((event as KeyboardEvent).key === 'Enter') {
+            event.stopPropagation();
+            setMin();
+          }
+          return false;
+        });
+
+        this.minInput.addEventListener('blur', (event: Event) => {
+          setMin();
+        });
+
+        this.maxLabel.addEventListener('click', (event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (this.maxInput) {
+            this.maxInput.value = this.input?.max ?? '100';
+            this.maxLabel?.classList.add('hidden');
+            this.maxInput?.classList.remove('hidden');
+            this.maxInput?.focus();
+          }
+          return false;
+        });
+
+        const setMax = () => {
+          if (
+            this.maxInput &&
+            this.maxLabel &&
+            this.input &&
+            this.minInput &&
+            this.minLabel
+          ) {
+            this.maxLabel.textContent = this.maxInput.value;
+            this.input.max = this.maxInput.value;
+
+            this.max = parseFloat(this.maxInput.value);
+
+            this.maxInput.classList.add('hidden');
+            this.maxLabel.classList.remove('hidden');
+            this.maxInput.blur();
+            this.props.onStoreSettings({
+              min: this.min,
+              max: this.max,
+              step: this.step,
+            });
+          }
+        };
+
+        this.maxInput.addEventListener('keydown', (event: Event) => {
+          if ((event as KeyboardEvent).key === 'Enter') {
+            event.stopPropagation();
+            setMax();
+          }
+          return false;
+        });
+
+        this.maxInput.addEventListener('blur', (event: Event) => {
+          setMax();
+        });
+
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
           (value) => {
@@ -104,6 +256,17 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
   onInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
     console.log(input.value);
+    if (this.valueLabel) {
+      this.valueLabel.textContent = input.value;
+      const value = Number(input.value);
+
+      const min = this.min;
+      const max = this.max;
+      const newVal = Number(((value - min) * 100) / (max - min));
+
+      //this.valueLabel.style.left = `calc(${newVal}%)`;
+      this.valueLabel.style.left = `calc(${newVal}% + ${8 - newVal * 0.15}px)`;
+    }
     if (this.props.onChange) {
       this.props.onChange(input.value);
     }

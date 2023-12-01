@@ -54,7 +54,7 @@ export type FormField = (
 ) & {
   fieldName: string;
   label?: string;
-  setValue: (fieldName: string, value: string) => void;
+  //setValue?: (fieldName: string, value: string) => void;
   value: string;
   isRow?: boolean;
   onChange?: (value: string) => void;
@@ -69,9 +69,12 @@ export interface FormComponentProps {
   formElements: FormField[];
   hasSubmitButton?: boolean;
   id: string;
+  canvasUpdated?: () => void;
+  setDataOnNode?: (formValues: FormValues) => void;
+  getDataFromNode?: () => FormValues;
 }
 
-type FormValues = {
+export type FormValues = {
   [key: string]: string;
 };
 
@@ -81,6 +84,9 @@ export interface Props {
   formElements: FormField[];
   hasSubmitButton?: boolean;
   id: string;
+  canvasUpdated?: () => void;
+  setDataOnNode?: (formValues: FormValues) => void;
+  getDataFromNode?: () => FormValues;
 }
 
 export class FormsComponent extends Component<Props> {
@@ -111,6 +117,7 @@ export class FormsComponent extends Component<Props> {
       </div>`
     );
     this.rootElement = props.rootElement;
+    this.values = props.getDataFromNode ? props.getDataFromNode() : {};
     this.mount();
   }
   mount() {
@@ -171,6 +178,14 @@ export class FormsComponent extends Component<Props> {
     }
   };
 
+  onChangeSettings = (fieldName: string, settings: string) => {
+    this.values[fieldName] = settings;
+    if (this.props.setDataOnNode) {
+      this.props.setDataOnNode(this.values);
+    }
+    // todo : ... call item.onChange()... ???
+  };
+
   setValue = (fieldName: string, value: string) => {
     const formElement = this.components.find(
       (component) =>
@@ -212,6 +227,32 @@ export class FormsComponent extends Component<Props> {
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
+          onGetSettings: () => {
+            return this.values[`${formControl.fieldName}SliderSettings`]
+              ? JSON.parse(
+                  this.values[`${formControl.fieldName}SliderSettings`]
+                )
+              : {
+                  min: formControl.min,
+                  max: formControl.max,
+                  step: formControl.step,
+                };
+          },
+          onStoreSettings: (formValues) => {
+            console.log('onSave', formValues);
+            this.values[`${formControl.fieldName}SliderSettings`] =
+              JSON.stringify(formValues);
+
+            // this should store the settings in the form values..
+            this.onChangeSettings(
+              `${formControl.fieldName}SliderSettings`,
+              JSON.stringify(formValues)
+            );
+            if (this.props.canvasUpdated) {
+              this.props.canvasUpdated();
+            }
+            // TODO : call canvasudated !??
+          },
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Color) {
@@ -300,6 +341,9 @@ export const FormComponent = (props: FormComponentProps) => {
     formElements: props.formElements,
     hasSubmitButton: props.hasSubmitButton,
     id: props.id,
+    canvasUpdated: props.canvasUpdated,
+    setDataOnNode: props.setDataOnNode,
+    getDataFromNode: props.getDataFromNode,
   }).render();
   // const values: FormValues = {};
   // const onChange = (item: FormField, value: string) => {

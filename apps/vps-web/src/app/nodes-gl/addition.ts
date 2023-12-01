@@ -62,14 +62,8 @@ export const getAdditionNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const parsedValue1 = parseFloat(payload?.['value1']);
-    let value1 = '';
-
-    value1 = payload?.['value1'];
-    const parsedValue2 = parseFloat(payload?.['value2']);
-    let value2 = '';
-
-    value2 = payload?.['value2'];
+    const value1 = payload?.['value1'];
+    const value2 = payload?.['value2'];
     return {
       result: `${value1} + ${value2}`,
       output: input,

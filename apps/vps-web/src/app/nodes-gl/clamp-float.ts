@@ -35,9 +35,9 @@ const thumbs = [
     color: 'white',
     label: ' ',
 
-    name: 'a',
+    name: 'min',
     thumbConstraint: thumbConstraint,
-    prefixLabel: 'a',
+    prefixLabel: 'min',
   },
   {
     thumbType: ThumbType.EndConnectorLeft,
@@ -46,9 +46,9 @@ const thumbs = [
     color: 'white',
     label: ' ',
 
-    name: 'b',
+    name: 'max',
     thumbConstraint: thumbConstraint,
-    prefixLabel: 'b',
+    prefixLabel: 'max',
   },
   {
     thumbType: ThumbType.EndConnectorLeft,
@@ -77,11 +77,11 @@ export const getClampFloatNode: NodeTaskFactory<any> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const a = payload?.['a'];
-    const b = payload?.['b'];
+    const min = payload?.['min'];
+    const max = payload?.['max'];
     const x = payload?.['x'];
     return {
-      result: `clamp(${a}, ${b}, ${x})`,
+      result: `clamp(${x} , ${min}, ${max})`,
       output: input,
       followPath: undefined,
     };

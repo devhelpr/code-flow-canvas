@@ -57,7 +57,7 @@ export const getPaletteNode: NodeTaskFactory<any> = (
   ) => {
     const value = payload?.['index'];
     return {
-      result: `chooseColor(${value})`,
+      result: `chooseColor2(${value})`,
       output: input,
       followPath: undefined,
     };

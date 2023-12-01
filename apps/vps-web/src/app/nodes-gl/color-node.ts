@@ -76,7 +76,7 @@ export const getColorNode: NodeTaskFactory<any> = (
         connectionType: ThumbConnectionType.start,
         color: 'white',
         label: ' ',
-        thumbConstraint: 'color',
+        thumbConstraint: 'vec3',
         maxConnections: -1,
       },
     ],
