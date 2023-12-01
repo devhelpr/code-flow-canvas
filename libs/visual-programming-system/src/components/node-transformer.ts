@@ -239,13 +239,14 @@ export class NodeTransformer<T> {
   orgY = 0;
   orgWidth = 0;
   orgHeight = 0;
+  resizeSameWidthAndHeight = false;
   onPointerDown = (event: PointerEvent) => {
     if (this.interactionStateMachine && this.attachedNode) {
       console.log(
         'pointerDown nodetransformer',
         (event.target as HTMLElement).getAttribute('data-ResizeMode')
       );
-
+      this.resizeSameWidthAndHeight = event.shiftKey;
       (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
         'pointer-events-auto'
       );
@@ -378,7 +379,11 @@ export class NodeTransformer<T> {
         this.attachedNode.x = x;
         this.attachedNode.y = y;
         this.attachedNode.width = this.orgWidth - offsetX;
-        this.attachedNode.height = this.orgHeight - offsetY;
+        if (this.resizeSameWidthAndHeight) {
+          this.attachedNode.height = this.attachedNode.width;
+        } else {
+          this.attachedNode.height = this.orgHeight - offsetY;
+        }
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
@@ -386,14 +391,22 @@ export class NodeTransformer<T> {
       } else if (this.resizeMode == 'right-top') {
         this.attachedNode.y = y;
         this.attachedNode.width = this.orgWidth + offsetX;
-        this.attachedNode.height = this.orgHeight - offsetY;
+        if (this.resizeSameWidthAndHeight) {
+          this.attachedNode.height = this.attachedNode.width;
+        } else {
+          this.attachedNode.height = this.orgHeight - offsetY;
+        }
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
         );
       } else if (this.resizeMode == 'right-bottom') {
         this.attachedNode.width = this.orgWidth + offsetX;
-        this.attachedNode.height = this.orgHeight + offsetY;
+        if (this.resizeSameWidthAndHeight) {
+          this.attachedNode.height = this.attachedNode.width;
+        } else {
+          this.attachedNode.height = this.orgHeight + offsetY;
+        }
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
@@ -401,7 +414,11 @@ export class NodeTransformer<T> {
       } else if (this.resizeMode == 'left-bottom') {
         this.attachedNode.x = x;
         this.attachedNode.width = this.orgWidth - offsetX;
-        this.attachedNode.height = this.orgHeight + offsetY;
+        if (this.resizeSameWidthAndHeight) {
+          this.attachedNode.height = this.attachedNode.width;
+        } else {
+          this.attachedNode.height = this.orgHeight + offsetY;
+        }
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height

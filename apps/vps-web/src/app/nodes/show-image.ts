@@ -12,6 +12,33 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { FormFieldType } from '../components/form-component';
+import { FormContext } from '../components/form-fields/field';
+
+const selectImage = () => {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input') as HTMLInputElement & {
+      files: FileList;
+    };
+
+    input.type = 'file';
+    input.setAttribute('accept', '.png,.jpg,.jpeg');
+    input.onchange = () => {
+      const files = Array.from(input.files);
+      if (files && files.length > 0) {
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+          if (event && event.target && event.target.result) {
+            resolve(window.btoa(event.target.result as string));
+          }
+          input.remove();
+        });
+        reader.readAsBinaryString(files[0]);
+      }
+    };
+    input.click();
+  });
+};
 
 export const getShowImage: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -41,11 +68,6 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         (
           htmlNode.domElement as HTMLImageElement
         ).src = `data:image/png;base64,${(input as any).image}`;
-        setTimeout(() => {
-          if (rect) {
-            rect.resize(256);
-          }
-        }, 0);
       }
     }
     return {
@@ -62,12 +84,45 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
+      const formElements = [
+        {
+          fieldType: FormFieldType.Button,
+          fieldName: 'loadImage',
+          caption: 'Load image',
+          onButtonClick: (formContext: FormContext) => {
+            return new Promise<void>((resolve, reject) => {
+              selectImage().then((image) => {
+                if (
+                  htmlNode &&
+                  image &&
+                  node &&
+                  node.nodeInfo &&
+                  node.nodeInfo.formValues
+                ) {
+                  node.nodeInfo.formValues.image = image;
+                  updated?.();
+
+                  (
+                    htmlNode.domElement as HTMLImageElement
+                  ).src = `data:image/png;base64,${image}`;
+                  resolve();
+                } else {
+                  reject();
+                }
+              });
+            });
+          },
+        },
+      ];
       htmlNode = createElement(
         'img',
         {
-          class: 'w-full block min-h-[32px] pointer-events-none',
+          class:
+            'w-full h-full block min-h-[32px] pointer-events-none object-covwr overflow-hidden',
           src: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
         },
         undefined
@@ -76,17 +131,16 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded max-w-[256px]`,
+          class: `inner-node bg-slate-500 rounded max-w-full `,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
-
       rect = canvasApp.createRect(
         x,
         y,
-        256,
-        100,
+        width ?? 256,
+        height ?? 256,
         undefined,
         [
           {
@@ -112,9 +166,9 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        undefined,
-        false,
         true,
+        false,
+        false,
         id,
         {
           type: 'show-image',
@@ -122,14 +176,26 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         }
       );
 
+      if (initalValues && initalValues['image']) {
+        hasInitialValue = false;
+        (
+          htmlNode.domElement as HTMLImageElement
+        ).src = `data:image/png;base64,${initalValues['image']}`;
+      }
+
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.showFormOnlyInPopup = true;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.formValues = {
+          image: initalValues?.['image'] ?? '',
+        };
       }
       return node;
     },
