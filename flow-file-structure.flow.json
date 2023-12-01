@@ -1,0 +1,27 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "title": "Flow",
+      "nodes": []
+    },
+    "flow-a": {
+      "flowType": "flow",
+      "title": "SubFlow A",
+      "nodes": [
+        {
+          "compositionId": "9873ac48-a808-42b2-9792-37f190ab218b"
+        }
+      ]
+    }
+  },
+  "compositions": {
+    "9873ac48-a808-42b2-9792-37f190ab218b": {
+      "title": "calculate something",
+      "nodes": []
+    }
+  }
+}
