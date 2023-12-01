@@ -96,8 +96,8 @@ export const getSineNode: NodeTaskFactory<any> = (
     compute,
     initializeCompute,
     false,
-    200,
-    100,
+    150,
+    150,
     thumbs,
     (values?: InitialValues) => {
       return [];
@@ -108,6 +108,8 @@ export const getSineNode: NodeTaskFactory<any> = (
     },
     {
       hasTitlebar: false,
+      additionalClassNames: 'flex-wrap flex-col py-5',
+      childNodeWrapperClass: 'w-full flex justify-center text-center',
     },
     element
   );

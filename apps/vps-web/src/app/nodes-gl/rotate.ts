@@ -51,7 +51,7 @@ const thumbs = [
 
     name: 'degree',
     thumbConstraint: 'value',
-    prefixLabel: 'degree',
+    prefixLabel: 'angle',
   },
 ];
 

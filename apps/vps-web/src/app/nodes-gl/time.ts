@@ -12,6 +12,10 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import {
+  createElementFromTemplate,
+  createTemplate,
+} from '@devhelpr/dom-components';
 
 const fieldName = 'time';
 const labelName = 'Time';
@@ -51,6 +55,10 @@ export const getTimeNode: NodeTaskFactory<any> = (
     };
   };
 
+  const element = createElementFromTemplate(
+    createTemplate(`<div class="loader"></div>`)
+  );
+
   return visualNodeFactory(
     nodeName,
     labelName,
@@ -59,7 +67,7 @@ export const getTimeNode: NodeTaskFactory<any> = (
     compute,
     initializeCompute,
     false,
-    200,
+    100,
     100,
     thumbs,
     (values?: InitialValues) => {
@@ -68,6 +76,12 @@ export const getTimeNode: NodeTaskFactory<any> = (
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
       node = nodeInstance.node;
-    }
+    },
+    {
+      hasTitlebar: false,
+      additionalClassNames: 'flex-wrap flex-col',
+      childNodeWrapperClass: 'w-full block text-center',
+    },
+    element
   );
 };

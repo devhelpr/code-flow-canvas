@@ -116,6 +116,9 @@ export const getUVNode: NodeTaskFactory<any> = (
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance!;
       node = nodeInstance.node!;
+    },
+    {
+      hasTitlebar: false,
     }
   );
 };
