@@ -13,6 +13,7 @@ import {
   getNodeConnectionPairByIdWhereNodeIsEndpoint,
 } from '../follow-path/get-node-connection-pairs';
 import { NodeInfo } from '../types/node-info';
+import { connect } from 'http2';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -92,7 +93,8 @@ const triggerExecution = <T>(
     onNextNode?: (
       nodeId: string,
       node: IRectNodeComponent<T>,
-      input: string | any[]
+      input: string | any[],
+      connection: IConnectionNodeComponent<T>
     ) =>
       | { result: boolean; output: string | any[]; followPathByName?: string }
       | Promise<{
@@ -137,7 +139,12 @@ const triggerExecution = <T>(
     animatePath(
       node,
       'white',
-      (nodeId: string, node: IRectNodeComponent<T>, input: string | any[]) => {
+      (
+        nodeId: string,
+        node: IRectNodeComponent<T>,
+        input: string | any[],
+        connection: IConnectionNodeComponent<T>
+      ) => {
         let result: any = false;
         let previousOutput: any = undefined;
         const formInfo = node.nodeInfo as unknown as any;
@@ -148,7 +155,8 @@ const triggerExecution = <T>(
             input,
             pathExecution,
             runIndex,
-            payload
+            payload,
+            connection?.endNodeThumb?.thumbName
           );
 
           return new Promise((resolve, reject) => {
@@ -198,7 +206,8 @@ const triggerExecution = <T>(
             input,
             pathExecution,
             runIndex,
-            payload
+            payload,
+            connection?.endNodeThumb?.thumbName
           );
           result = computeResult.result;
           sendData(node, canvasApp, result);
@@ -269,6 +278,7 @@ export const increaseRunIndex = () => {
   runIndex++;
 };
 
+// TODO : does this need connection as (optional?) parameter?
 export const runNode = <T>(
   node: IRectNodeComponent<T>,
   canvasApp: CanvasAppInstance<T>,
@@ -278,7 +288,8 @@ export const runNode = <T>(
     onNextNode?: (
       nodeId: string,
       node: IRectNodeComponent<T>,
-      input: string | any[]
+      input: string | any[],
+      connection: IConnectionNodeComponent<T>
     ) =>
       | { result: boolean; output: string | any[]; followPathByName?: string }
       | Promise<{
@@ -305,7 +316,8 @@ export const runNode = <T>(
   pathExecution?: RunNodeResult<T>[],
   offsetX?: number,
   offsetY?: number,
-  loopIndex?: number
+  loopIndex?: number,
+  connection?: IConnectionNodeComponent<T>
 ) => {
   const payload = getVariablePayload<T>(node, canvasApp);
 
@@ -320,7 +332,8 @@ export const runNode = <T>(
         input ?? '',
         pathExecution,
         loopIndex === undefined ? runIndex : loopIndex,
-        payload
+        payload,
+        connection?.endNodeThumb?.thumbName
       )
       .then((computeResult: any) => {
         sendData(node, canvasApp, computeResult.result);
@@ -352,7 +365,8 @@ export const runNode = <T>(
       input ?? '',
       pathExecution,
       loopIndex === undefined ? runIndex : loopIndex,
-      payload
+      payload,
+      connection?.endNodeThumb?.thumbName
     );
 
     sendData(node, canvasApp, computeResult.result);
@@ -392,7 +406,8 @@ export const run = <T>(
     onNextNode?: (
       nodeId: string,
       node: IRectNodeComponent<T>,
-      input: string | any[]
+      input: string | any[],
+      connection: IConnectionNodeComponent<T>
     ) =>
       | {
           result: boolean;
@@ -493,7 +508,8 @@ export const runNodeFromThumb = <T>(
     onNextNode?: (
       nodeId: string,
       node: INodeComponent<T>,
-      input: string | any[]
+      input: string | any[],
+      connection: IConnectionNodeComponent<T>
     ) =>
       | {
           result: boolean;
@@ -523,7 +539,12 @@ export const runNodeFromThumb = <T>(
   animatePathFromThumb(
     nodeThumb,
     'white',
-    (nodeId: string, node: INodeComponent<T>, input: string | any[]) => {
+    (
+      nodeId: string,
+      node: INodeComponent<T>,
+      input: string | any[],
+      connection: IConnectionNodeComponent<T>
+    ) => {
       let result: any = false;
       let previousOutput: any = undefined;
       const formInfo = node.nodeInfo as unknown as any;
@@ -531,7 +552,13 @@ export const runNodeFromThumb = <T>(
       if (formInfo && formInfo.computeAsync) {
         return new Promise((resolve, reject) => {
           formInfo
-            .computeAsync(input, pathExecution, loopIndex)
+            .computeAsync(
+              input,
+              pathExecution,
+              loopIndex,
+              undefined,
+              connection?.endNodeThumb?.thumbName
+            )
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
@@ -570,7 +597,13 @@ export const runNodeFromThumb = <T>(
             });
         });
       } else if (formInfo && formInfo.compute) {
-        const computeResult = formInfo.compute(input, pathExecution, loopIndex);
+        const computeResult = formInfo.compute(
+          input,
+          pathExecution,
+          loopIndex,
+          undefined,
+          connection?.endNodeThumb?.thumbName
+        );
         result = computeResult.result;
         followPath = computeResult.followPath;
         previousOutput = computeResult.previousOutput;

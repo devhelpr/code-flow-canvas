@@ -8,15 +8,18 @@ export interface NodeInfo {
     input: any,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string
   ) => any;
   computeAsync?: (
     input: any,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string
   ) => Promise<any>;
   initializeCompute?: () => void;
+  showFormOnlyInPopup?: boolean;
   formElements?: any[];
   canvasAppInstance?: CanvasAppInstance<NodeInfo>;
   delete?: () => void;

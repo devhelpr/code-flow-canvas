@@ -110,7 +110,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       onNextNode?: (
         nodeId: string,
         node: IRectNodeComponent<NodeInfo>,
-        input: string | any[]
+        input: string | any[],
+        connection: IConnectionNodeComponent<NodeInfo>
       ) =>
         | {
             result: boolean;
@@ -164,7 +165,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       onNextNode?: (
         nodeId: string,
         node: IRectNodeComponent<NodeInfo>,
-        input: string | any[]
+        input: string | any[],
+        connection: IConnectionNodeComponent<NodeInfo>
       ) =>
         | { result: boolean; output: string | any[]; followPathByName?: string }
         | Promise<{
@@ -1009,7 +1011,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         }
 
-        if (((nodeInfo as any)?.formElements ?? []).length <= 1) {
+        if (
+          ((nodeInfo as any)?.formElements ?? []).length <= 1 &&
+          !(nodeInfo.showFormOnlyInPopup && nodeInfo.formElements.length >= 1)
+        ) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
           ).classList.add('hidden');

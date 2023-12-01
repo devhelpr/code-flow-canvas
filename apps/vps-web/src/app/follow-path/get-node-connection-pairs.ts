@@ -7,7 +7,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 
 export const getNodeConnectionPairById = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean,
@@ -107,7 +107,7 @@ export const getNodeConnectionPairById = <T>(
 };
 
 export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean,
@@ -198,7 +198,7 @@ export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
 };
 
 export const getNodeConnectionPairsFromThumb = <T>(
-  canvasApp: CanvasAppInstance,
+  canvasApp: CanvasAppInstance<T>,
   nodeThumb: IThumbNodeComponent<T>,
   onlyDataConnections?: boolean
 ) => {

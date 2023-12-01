@@ -1,5 +1,6 @@
 import {
   CanvasAppInstance,
+  IConnectionNodeComponent,
   IElementNode,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
@@ -9,7 +10,8 @@ export abstract class BaseAnimatePath<T> {
   abstract onNextNode: (
     nodeId: string,
     node: IRectNodeComponent<T>,
-    input: string | any[]
+    input: string | any[],
+    connection: IConnectionNodeComponent<T>
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }
     | Promise<{
@@ -18,7 +20,7 @@ export abstract class BaseAnimatePath<T> {
         followPathByName?: string;
       }>;
   abstract onStopped?: (input: string | any[]) => void;
-  abstract canvasApp: CanvasAppInstance;
+  abstract canvasApp: CanvasAppInstance<T>;
   abstract node: IRectNodeComponent<T>;
   abstract animatedNodes?: {
     [key: string]: IElementNode<unknown>;

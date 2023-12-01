@@ -48,6 +48,7 @@ import { getShowImage } from '../nodes/show-image';
 import { observeVariable } from '../nodes/observe-variable';
 import { getSummingJunction } from '../nodes/summing-junction';
 import { getIFrameHtmlNode } from '../nodes/iframe-html-node';
+import { getMultiplyNode } from '../nodes/multiply';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -128,6 +129,8 @@ export const setupCanvasNodeTaskRegistry = (
   );
 
   registerNodeFactory('test', getTest);
+
+  registerNodeFactory('multiply-node', getMultiplyNode);
 };
 
 export const getNodeTaskFactory = (name: string) => {
