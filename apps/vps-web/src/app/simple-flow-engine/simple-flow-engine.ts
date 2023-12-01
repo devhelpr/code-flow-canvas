@@ -278,7 +278,6 @@ export const increaseRunIndex = () => {
   runIndex++;
 };
 
-// TODO : does this need connection as (optional?) parameter?
 export const runNode = <T>(
   node: IRectNodeComponent<T>,
   canvasApp: CanvasAppInstance<T>,
