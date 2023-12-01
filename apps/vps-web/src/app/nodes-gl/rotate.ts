@@ -77,9 +77,12 @@ export const getRotateNode: NodeTaskFactory<any> = (
 
     const degree = payload?.['degree'];
     if (element) {
-      element.domElement.textContent = `${(
-        (parseFloat(degree) || 0) % 360
-      ).toFixed(0)}`;
+      const degreeParsed = parseFloat(payload?.['degree']) ?? 0;
+      let degreeAsString = '';
+      if (!isNaN(degreeParsed)) {
+        degreeAsString = `${(degreeParsed % 360).toFixed(0)}`;
+      }
+      element.domElement.textContent = degreeAsString;
     }
     return {
       result: `rotate(${vector}, ${degree})`,

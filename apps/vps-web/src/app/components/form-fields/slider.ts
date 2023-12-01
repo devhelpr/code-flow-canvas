@@ -75,7 +75,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         <input class="block w-full py-1 text-white accent-white slider"
           name="${props.formId}_${props.fieldName}"      
           id="${props.formId}_${props.fieldName}"
-          value="${props.value}"
+          value="${props.value ?? 0}"
           min="${this.min}"
           max="${this.max}"
           step="${this.step}"
@@ -88,7 +88,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         props.fieldName
       }_min" class="absolute left-0 text-xs w-[40px] appearance-none hidden"></input>
             <span class="slider-value-bubble text-sm absolute text-center origin-center px-2 -top-[50px] left-0 -translate-x-1/2 bg-white rounded text-black">${
-              props.value
+              props.value || '0'
             }</span>
             <button class="absolute text-xs cursor-pointer">${
               this.step
@@ -135,7 +135,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
 
         this.renderList.push(this.label, this.input, this.parametersWrapper);
 
-        const value = Number(this.valueLabel.textContent);
+        const value = Number(this.valueLabel.textContent || '0') || 0;
         const min = this.min;
         const max = this.max;
         const newVal = Number(((value - min) * 100) / (max - min));

@@ -848,11 +848,11 @@ export class GLAppElement extends AppElement<any> {
 
     node.connections.forEach((connection) => {
       if (connection.endNode?.id === node.id) {
-        console.log(
-          'getNodeOutput',
-          connection.startNodeThumb?.thumbName ?? '',
-          connection.startNodeThumb
-        );
+        // console.log(
+        //   'getNodeOutput',
+        //   connection.startNodeThumb?.thumbName ?? '',
+        //   connection.startNodeThumb
+        // );
         if (connection.endNodeThumb?.thumbName) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
             connection.startNode as IRectNodeComponent<any>,
@@ -957,7 +957,7 @@ export class GLAppElement extends AppElement<any> {
     //   this.timerCount = performance.now() - this.timerCount;
     // }
     const time = performance.now() * 0.001; // time in seconds
-
+    //console.log('time', time);
     this.drawScene(
       this.gl,
       this.shaderProgram,
