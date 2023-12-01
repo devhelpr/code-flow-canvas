@@ -32,9 +32,9 @@ export const getTimer =
       return;
     };
     const compute = (input: string) => {
-      if (input === 'TIMER') {
+      if ((input as any)?.trigger === 'TIMER') {
         return {
-          result: true,
+          result: (input as any)?.input ?? true,
         };
       }
       const timer = () => {
@@ -47,7 +47,10 @@ export const getTimer =
             canvasAppInstance,
             animatePath,
             undefined,
-            'TIMER',
+            {
+              trigger: 'TIMER',
+              input,
+            } as unknown as string,
             []
           );
         }

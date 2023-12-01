@@ -81,7 +81,12 @@ export const getMultiplyNode: NodeTaskFactory<NodeInfo> = (
         values.value2 = input;
       }
     }
-    if (values.value1 === undefined || values.value2 === undefined) {
+    if (
+      values.value1 === undefined ||
+      values.value2 === undefined ||
+      isNaN(parseFloat(values.value1)) ||
+      isNaN(parseFloat(values.value2))
+    ) {
       return {
         result: undefined,
         output: input,
@@ -95,7 +100,7 @@ export const getMultiplyNode: NodeTaskFactory<NodeInfo> = (
     values.value2 = undefined;
     return {
       result: value1 * value2,
-      output: input,
+      output: value1 * value2,
       followPath: undefined,
     };
   };
