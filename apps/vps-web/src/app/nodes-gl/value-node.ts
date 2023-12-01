@@ -43,7 +43,7 @@ export const getValueNode: NodeTaskFactory<any> = (
 
   return visualNodeFactory(
     'value-node',
-    'Value node',
+    'Value',
     'flow-canvas',
     'value',
     compute,

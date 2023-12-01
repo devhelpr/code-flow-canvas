@@ -213,8 +213,12 @@
 	z-index: 5;
 }
 .rect-node {
-	cursor: pointer;
+	cursor: grab;
 	z-index: 3;
+}
+
+input {
+	cursor: pointer;
 }
 
 .active-layer2 .rect-thumb-node {

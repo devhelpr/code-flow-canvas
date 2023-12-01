@@ -41,6 +41,8 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
   minLabel: HTMLSpanElement | null = null;
   minInput: HTMLInputElement | null = null;
   valueLabel: HTMLSpanElement | null = null;
+  stepLabel: HTMLSpanElement | null = null;
+  stepInput: HTMLInputElement | null = null;
   maxLabel: HTMLSpanElement | null = null;
   maxInput: HTMLInputElement | null = null;
   doRenderChildren = false;
@@ -71,7 +73,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         props.label ?? props.fieldName
       }</label>
         <input class="block w-full py-1 text-white accent-white slider"
-          name="${props.fieldName}"      
+          name="${props.formId}_${props.fieldName}"      
           id="${props.formId}_${props.fieldName}"
           value="${props.value}"
           min="${this.min}"
@@ -82,14 +84,24 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
             <button class="absolute left-0 text-xs cursor-pointer">${
               this.min
             }</button>
-            <input class="absolute left-0 text-xs w-[40px] appearance-none hidden"></input>
+            <input name="${props.formId}_${
+        props.fieldName
+      }_min" class="absolute left-0 text-xs w-[40px] appearance-none hidden"></input>
             <span class="slider-value-bubble text-sm absolute text-center origin-center px-2 -top-[50px] left-0 -translate-x-1/2 bg-white rounded text-black">${
               props.value
             }</span>
+            <button class="absolute text-xs cursor-pointer">${
+              this.step
+            }</button>
+            <input name="${props.formId}_${
+        props.fieldName
+      }_step" class="text-xs w-[40px] appearance-none hidden"></input>
             <button class="absolute right-0 text-xs cursor-pointer">${
               this.max
             }</button>
-            <input class="absolute right-0 text-xs w-[40px] appearance-none hidden"></input>
+            <input name="${props.formId}_${
+        props.fieldName
+      }_max" class="absolute right-0 text-xs w-[40px] appearance-none hidden"></input>
           </div>
         </div>`
     );
@@ -110,12 +122,17 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
         this.input = this.label.nextSibling as HTMLInputElement;
+
         this.parametersWrapper = this.input.nextSibling as HTMLDivElement;
+
         this.minLabel = this.parametersWrapper.firstChild as HTMLSpanElement;
         this.minInput = this.minLabel.nextSibling as HTMLInputElement;
         this.valueLabel = this.minInput.nextSibling as HTMLSpanElement;
-        this.maxLabel = this.valueLabel.nextSibling as HTMLSpanElement;
+        this.stepLabel = this.valueLabel.nextSibling as HTMLSpanElement;
+        this.stepInput = this.stepLabel.nextSibling as HTMLInputElement;
+        this.maxLabel = this.stepInput.nextSibling as HTMLSpanElement;
         this.maxInput = this.maxLabel.nextSibling as HTMLInputElement;
+
         this.renderList.push(this.label, this.input, this.parametersWrapper);
 
         const value = Number(this.valueLabel.textContent);
@@ -145,13 +162,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         });
 
         const setMin = () => {
-          if (
-            this.minInput &&
-            this.minLabel &&
-            this.input &&
-            this.maxInput &&
-            this.maxLabel
-          ) {
+          if (this.minInput && this.minLabel && this.input) {
             this.minLabel.textContent = this.minInput.value;
             this.input.min = this.minInput.value;
             this.min = parseFloat(this.minInput.value);
@@ -178,6 +189,47 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
           setMin();
         });
 
+        this.stepLabel.addEventListener('click', (event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (this.stepInput) {
+            this.stepInput.value = this.input?.step ?? '0.1';
+            this.stepLabel?.classList.add('hidden');
+            this.stepInput?.classList.remove('hidden');
+            this.stepInput?.focus();
+          }
+          return false;
+        });
+
+        const setStep = () => {
+          if (this.input && this.stepInput && this.stepLabel) {
+            this.stepLabel.textContent = this.stepInput.value;
+            this.input.step = this.stepInput.value;
+            this.step = parseFloat(this.stepInput.value);
+
+            this.stepInput.blur();
+            this.stepInput.classList.add('hidden');
+            this.stepLabel.classList.remove('hidden');
+            this.props.onStoreSettings({
+              min: this.min,
+              max: this.max,
+              step: this.step,
+            });
+          }
+        };
+
+        this.stepInput.addEventListener('keydown', (event: Event) => {
+          if ((event as KeyboardEvent).key === 'Enter') {
+            event.stopPropagation();
+            setStep();
+          }
+          return false;
+        });
+
+        this.stepInput.addEventListener('blur', (event: Event) => {
+          setStep();
+        });
+
         this.maxLabel.addEventListener('click', (event: MouseEvent) => {
           event.preventDefault();
           event.stopPropagation();
@@ -191,13 +243,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         });
 
         const setMax = () => {
-          if (
-            this.maxInput &&
-            this.maxLabel &&
-            this.input &&
-            this.minInput &&
-            this.minLabel
-          ) {
+          if (this.maxInput && this.maxLabel && this.input) {
             this.maxLabel.textContent = this.maxInput.value;
             this.input.max = this.maxInput.value;
 
@@ -264,7 +310,6 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
       const max = this.max;
       const newVal = Number(((value - min) * 100) / (max - min));
 
-      //this.valueLabel.style.left = `calc(${newVal}%)`;
       this.valueLabel.style.left = `calc(${newVal}% + ${8 - newVal * 0.15}px)`;
     }
     if (this.props.onChange) {
@@ -277,10 +322,6 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
     if (!this.input) return;
 
     this.oldProps = this.props;
-
-    if (this.input) {
-      //this.h1.textContent = atom1.getValue() || this.props.value;
-    }
 
     if (this.initialRender) {
       this.initialRender = false;
