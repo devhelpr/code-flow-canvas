@@ -121,6 +121,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             label: '[]',
+            color: 'white',
             thumbConstraint: 'array',
             name: 'input',
           },

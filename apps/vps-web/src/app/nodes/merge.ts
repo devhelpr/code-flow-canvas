@@ -13,9 +13,9 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
-const fieldName = 'multiply';
-const labelName = 'Multiply';
-const nodeName = 'multiply-node';
+const fieldName = 'merge';
+const labelName = 'Merge';
+export const mergeModeName = 'merge';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
@@ -25,7 +25,7 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    thumbConstraint: thumbConstraint,
+    //thumbConstraint: thumbConstraint,
     maxConnections: 1,
   },
   {
@@ -34,9 +34,10 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'value1',
+    name: 'a',
     thumbConstraint: thumbConstraint,
     maxConnections: 1,
+    prefixLabel: 'a',
   },
   {
     thumbType: ThumbType.EndConnectorLeft,
@@ -44,13 +45,14 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'value2',
+    name: 'b',
     thumbConstraint: thumbConstraint,
     maxConnections: 1,
+    prefixLabel: 'b',
   },
 ];
 
-export const getMultiplyNode: NodeTaskFactory<NodeInfo> = (
+export const getMergeNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -76,39 +78,40 @@ export const getMultiplyNode: NodeTaskFactory<NodeInfo> = (
     payload?: any,
     thumbName?: string
   ) => {
-    if (thumbName === 'value1') {
+    if (thumbName === 'a') {
       values.value1 = input;
     } else {
-      if (thumbName === 'value2') {
+      if (thumbName === 'b') {
         values.value2 = input;
       }
     }
-    if (
-      values.value1 === undefined ||
-      values.value2 === undefined ||
-      isNaN(parseFloat(values.value1)) ||
-      isNaN(parseFloat(values.value2))
-    ) {
+    if (values.value1 === undefined || values.value2 === undefined) {
       return {
         result: undefined,
-        output: input,
+        output: undefined,
         stop: true,
         followPath: undefined,
       };
     }
-    const value1 = parseFloat(values.value1) ?? 0;
-    const value2 = parseFloat(values.value2) ?? 0;
+    const value1 = values.value1;
+    const value2 = values.value2;
     values.value1 = undefined;
     values.value2 = undefined;
     return {
-      result: value1 * value2,
-      output: value1 * value2,
+      result: {
+        a: value1,
+        b: value2,
+      },
+      output: {
+        a: value1,
+        b: value2,
+      },
       followPath: undefined,
     };
   };
 
   return visualNodeFactory(
-    nodeName,
+    mergeModeName,
     labelName,
     familyName,
     fieldName,

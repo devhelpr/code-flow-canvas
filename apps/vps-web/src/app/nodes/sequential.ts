@@ -50,6 +50,7 @@ export const getSequential =
           node.thumbConnectors[0],
           animatePathFromThumb,
           (inputFromFirstRun: string | any[]) => {
+            console.log('Sequential inputFromFirstRun', inputFromFirstRun);
             if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
               reject();
               return;
@@ -59,6 +60,10 @@ export const getSequential =
               node.thumbConnectors[1],
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
+                console.log(
+                  'Sequential inputFromSecondRun',
+                  inputFromSecondRun
+                );
                 resolve({
                   result: input,
                   stop: true,
@@ -70,10 +75,10 @@ export const getSequential =
               0
             );
 
-            resolve({
-              result: input,
-              stop: true,
-            });
+            // resolve({
+            //   result: input,
+            //   stop: true,
+            // });
 
             // resolve({
             //   result: input,

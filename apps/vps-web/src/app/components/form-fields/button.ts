@@ -80,9 +80,13 @@ export class ButtonFieldChildComponent extends FormFieldComponent<ButtonFieldPro
       if (!this.button) return;
       this.button.disabled = true;
       this.simpleLoader?.classList.remove('hidden');
-      await this.props.onButtonClick({
-        setFormFieldValue: this.props.setValue,
-      });
+      try {
+        await this.props.onButtonClick({
+          setFormFieldValue: this.props.setValue,
+        });
+      } catch (error) {
+        console.error(error);
+      }
       this.simpleLoader?.classList.add('hidden');
       this.button.disabled = false;
     }

@@ -110,7 +110,7 @@ export type FollowPathFunction = <T>(
 ) => void;
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
-let speedMeter = 100;
+let speedMeter = 1000;
 export const setSpeedMeter = (speed: number) => {
   speedMeter = speed;
 };
@@ -175,7 +175,7 @@ export const animatePathForNodeConnectionPairs = <T>(
     }
     return;
   }
-  const maxSpeed = 50;
+  const maxSpeed = 500;
   const currentSpeed = speedMeter;
   nodeConnectionPairs.forEach((nodeConnectionPair) => {
     const start = nodeConnectionPair.start;
@@ -293,7 +293,8 @@ export const animatePathForNodeConnectionPairs = <T>(
           bezierCurvePoints.x + (offsetX ?? 0)
         }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
-        loop += 0.015;
+        // loop += 0.015;
+        loop += 0.1;
         if (loop > 1.015) {
           loop = 0;
 
@@ -386,7 +387,7 @@ export const animatePathForNodeConnectionPairs = <T>(
             timers.delete(cancel);
             cancel = setInterval(
               onInterval,
-              (maxSpeed * (100 - speedMeter)) / 100
+              (maxSpeed * (1000 - speedMeter)) / 1000
             );
             setCanceler();
           }
@@ -410,14 +411,21 @@ export const animatePathForNodeConnectionPairs = <T>(
         }
       }
     };
-
-    let cancel = setInterval(onInterval, (maxSpeed * (100 - speedMeter)) / 100);
+    console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+    let cancel = setInterval(
+      onInterval,
+      (maxSpeed * (1000 - speedMeter)) / 1000
+    );
 
     const setCanceler = () => {
       timers.set(cancel, () => {
         clearInterval(cancel);
         timers.delete(cancel);
-        cancel = setInterval(onInterval, (maxSpeed * (100 - speedMeter)) / 100);
+        console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+        cancel = setInterval(
+          onInterval,
+          (maxSpeed * (1000 - speedMeter)) / 1000
+        );
         setCanceler();
       });
     };

@@ -49,6 +49,12 @@ import { observeVariable } from '../nodes/observe-variable';
 import { getSummingJunction } from '../nodes/summing-junction';
 import { getIFrameHtmlNode } from '../nodes/iframe-html-node';
 import { getMultiplyNode } from '../nodes/multiply';
+import { loadTextFileNodeName, loadTextFile } from '../nodes/load-text-file';
+import {
+  runRegexNodeName,
+  runRegularExpression,
+} from '../nodes/regular-expression';
+import { getMergeNode, mergeModeName } from '../nodes/merge';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -131,6 +137,9 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('test', getTest);
 
   registerNodeFactory('multiply-node', getMultiplyNode);
+  registerNodeFactory(loadTextFileNodeName, loadTextFile(animatePath));
+  registerNodeFactory(runRegexNodeName, runRegularExpression);
+  registerNodeFactory(mergeModeName, getMergeNode);
 };
 
 export const getNodeTaskFactory = (name: string) => {

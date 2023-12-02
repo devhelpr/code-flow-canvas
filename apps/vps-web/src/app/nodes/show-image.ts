@@ -53,9 +53,6 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     hasInitialValue = true;
     if (htmlNode) {
       htmlNode.domElement.textContent = '-';
-      if (rect) {
-        rect.resize(256);
-      }
     }
     return;
   };

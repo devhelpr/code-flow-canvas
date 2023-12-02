@@ -95,7 +95,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           [variableName]: {
             get: () => {
               console.log('get', variableName);
-              return canvasAppInstance?.getVariable(variableName);
+              return parseFloat(canvasAppInstance?.getVariable(variableName));
             },
             set: (value) => {
               canvasAppInstance?.setVariable(variableName, value);

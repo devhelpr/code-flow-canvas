@@ -66,6 +66,12 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         'div',
         {
           class: 'break-words text-center',
+          style: {
+            display: '-webkit-box',
+            '-webkit-line-clamp': '10',
+            '-webkit-box-orient': 'vertical',
+            overflow: 'hidden',
+          },
         },
         undefined,
         'Input'
@@ -74,7 +80,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded max-w-[120px]`,
+          class: `inner-node bg-slate-500 p-4 rounded max-w-[120px] max-h-[500px] `,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
