@@ -24,7 +24,7 @@ import {
   AnimatePathFunction,
 } from '../follow-path/animate-path';
 
-export const getSequential =
+export const getParallel =
   (
     animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
@@ -46,33 +46,44 @@ export const getSequential =
           reject();
           return;
         }
+        let seq1Ran = false;
+        let seq2Ran = false;
         runNodeFromThumb(
           node.thumbConnectors[0],
           animatePathFromThumb,
           (inputFromFirstRun: string | any[]) => {
-            console.log('Sequential inputFromFirstRun', inputFromFirstRun);
+            console.log('Parallel inputFromFirstRun', inputFromFirstRun);
             if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
               reject();
               return;
             }
-            runNodeFromThumb(
-              node.thumbConnectors[1],
-              animatePathFromThumb,
-              (inputFromSecondRun: string | any[]) => {
-                console.log(
-                  'Sequential inputFromSecondRun',
-                  inputFromSecondRun
-                );
-                resolve({
-                  result: input,
-                  stop: true,
-                });
-              },
-              input,
-              pathExecution,
-              node,
-              0
-            );
+            seq1Ran = true;
+            if (seq2Ran) {
+              resolve({
+                result: input,
+                stop: true,
+              });
+            }
+          },
+          input,
+          pathExecution,
+          node,
+          0
+        );
+
+        runNodeFromThumb(
+          node.thumbConnectors[1],
+          animatePathFromThumb,
+          (inputFromSecondRun: string | any[]) => {
+            seq2Ran = true;
+            console.log('Parallel inputFromSecondRun', inputFromSecondRun);
+
+            if (seq1Ran) {
+              resolve({
+                result: input,
+                stop: true,
+              });
+            }
           },
           input,
           pathExecution,
@@ -83,7 +94,7 @@ export const getSequential =
     };
 
     return {
-      name: 'sequential',
+      name: 'parallel',
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
@@ -147,7 +158,7 @@ export const getSequential =
           undefined,
           id,
           {
-            type: 'sequential',
+            type: 'parallel',
             formValues: {},
           },
           containerNode

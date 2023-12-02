@@ -55,6 +55,7 @@ import {
   runRegularExpression,
 } from '../nodes/regular-expression';
 import { getMergeNode, mergeModeName } from '../nodes/merge';
+import { getParallel } from '../nodes/parallel';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -127,6 +128,11 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(
     'sequential',
     getSequential(animatePath, animatePathFromThumb)
+  );
+
+  registerNodeFactory(
+    'parallel',
+    getParallel(animatePath, animatePathFromThumb)
   );
 
   registerNodeFactory(
