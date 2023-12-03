@@ -6,20 +6,14 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
 import {
   RunNodeResult,
   runNodeFromThumb,
 } from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  animatePathFromThumb,
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
@@ -31,8 +25,12 @@ export const getForEach =
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-
+    let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
+    const title = 'foreach';
     const initializeCompute = () => {
+      if (foreachComponent && foreachComponent.domElement) {
+        foreachComponent.domElement.textContent = `${title}`;
+      }
       return;
     };
     const computeAsync = (
@@ -52,11 +50,16 @@ export const getForEach =
         if (!Array.isArray(input)) {
           values = [input];
         }
-
+        if (foreachComponent && foreachComponent.domElement) {
+          foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
+        }
         const runNext = (mapLoop: number) => {
           if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
             reject();
             return;
+          }
+          if (foreachComponent && foreachComponent.domElement) {
+            foreachComponent.domElement.textContent = `${title} ${mapLoop}/${values.length}`;
           }
           if (mapLoop < values.length) {
             console.log('runNext', mapLoop, values[mapLoop]);
@@ -115,12 +118,10 @@ export const getForEach =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const initialValue = initalValues?.['expression'] ?? '';
-
-        const jsxComponentWrapper = createElement(
+        foreachComponent = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center`,
+            class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center text-center`,
           },
           undefined,
           'foreach'
@@ -161,7 +162,7 @@ export const getForEach =
               thumbConstraint: 'array',
             },
           ],
-          jsxComponentWrapper,
+          foreachComponent,
           {
             classNames: `bg-slate-500 p-4 rounded`,
           },
