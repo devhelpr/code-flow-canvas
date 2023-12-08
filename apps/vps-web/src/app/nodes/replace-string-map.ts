@@ -12,13 +12,12 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
-const fieldName = 'regex';
-export const runRegexNodeName = 'regular-expression';
-export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
+const fieldName = 'stringMap';
+export const replaceStringMapNodeName = 'replace-string-map';
+
+export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -32,45 +31,47 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const regex = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-    if (!regex) {
-      return {
-        result: input,
-        output: input,
-        stop: true,
-        followPath: undefined,
-      };
-    }
-    const regexObj = new RegExp(regex);
-    const result = input.match(regexObj);
-    if (result) {
-      const value = parseFloat(result[0]);
-      // if (isNaN(value)) {
-      //   return {
-      //     result: input,
-      //     output: input,
-      //     stop: true,
-      //     followPath: undefined,
-      //   };
-      // }
-      return {
-        result: value,
-        output: value,
-        followPath: undefined,
-      };
+    let output = (input ?? '').toString();
+    let continueLoop = true;
+    const stringMap = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+    const map = stringMap.split('\n');
+
+    while (continueLoop) {
+      let replaceIndex = -1;
+      let findWord = '';
+      let replaceBy = '';
+      map.forEach((line: string, mapIndex: number) => {
+        const parts = line.split(':');
+        if (parts.length === 2) {
+          const index = output.indexOf(parts[0]);
+          if (index >= 0) {
+            if (replaceIndex === -1 || index < replaceIndex) {
+              replaceIndex = index;
+              findWord = parts[0];
+              replaceBy = parts[1];
+            }
+          }
+        }
+      });
+
+      if (replaceIndex === -1) {
+        continueLoop = false;
+      } else {
+        replaceIndex = -1;
+        output = output.replace(new RegExp(findWord, 'g'), replaceBy);
+      }
     }
 
     return {
-      result: input,
-      output: input,
-      stop: true,
+      result: output,
+      output: output,
       followPath: undefined,
     };
   };
 
   return visualNodeFactory(
-    runRegexNodeName,
-    'Regular expression',
+    replaceStringMapNodeName,
+    'Replace string map ',
     'flow-canvas',
     fieldName,
     compute,
@@ -85,7 +86,6 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.start,
         color: 'white',
         label: ' ',
-        thumbConstraint: thumbConstraints.value,
       },
       {
         thumbType: ThumbType.EndConnectorCenter,
@@ -93,17 +93,16 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        thumbConstraint: thumbConstraints.value,
       },
     ],
     (values?: InitialValues) => {
       const formElements = [
         {
-          fieldType: FormFieldType.Text,
+          fieldType: FormFieldType.TextArea,
           fieldName: fieldName,
           value: values?.[fieldName] ?? '',
           settings: {
-            showLabel: false,
+            showLabel: true,
           },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
@@ -125,6 +124,16 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
       node = nodeInstance.node;
+      if (node.nodeInfo) {
+        node.nodeInfo.formValues = {
+          ...node.nodeInfo.formValues,
+          [fieldName]: node.nodeInfo.formValues[fieldName] ?? '',
+        };
+      }
+    },
+    {
+      hasTitlebar: true,
+      hasFormInPopup: true,
     }
   );
 };

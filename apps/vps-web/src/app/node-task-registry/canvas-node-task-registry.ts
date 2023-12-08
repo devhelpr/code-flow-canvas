@@ -56,6 +56,17 @@ import {
 } from '../nodes/regular-expression';
 import { getMergeNode, mergeModeName } from '../nodes/merge';
 import { getParallel } from '../nodes/parallel';
+import {
+  replaceStringMapNodeName,
+  replaceStringMap,
+} from '../nodes/replace-string-map';
+import { splitStringNodeName, splitString } from '../nodes/split-string';
+import { createSetNodeName, createSet } from '../nodes/create-set';
+import {
+  intersectSetsNodeName,
+  getInsersectSetsNode,
+} from '../nodes/intersect-sets';
+import { getSetSizeNode, setSizeNodeName } from '../nodes/set-size';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -146,6 +157,14 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(loadTextFileNodeName, loadTextFile(animatePath));
   registerNodeFactory(runRegexNodeName, runRegularExpression);
   registerNodeFactory(mergeModeName, getMergeNode);
+
+  registerNodeFactory(replaceStringMapNodeName, replaceStringMap);
+
+  registerNodeFactory(splitStringNodeName, splitString);
+  registerNodeFactory(createSetNodeName, createSet);
+  registerNodeFactory(intersectSetsNodeName, getInsersectSetsNode);
+  registerNodeFactory(setSizeNodeName, getSetSizeNode);
+  registerNodeFactory('merge', getMergeNode);
 };
 
 export const getNodeTaskFactory = (name: string) => {

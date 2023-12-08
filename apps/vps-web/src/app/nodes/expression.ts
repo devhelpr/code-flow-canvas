@@ -71,10 +71,12 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       ).bind(compiledExpressionInfo.bindings);
       //const variables = canvasAppInstance?.getVariables() ?? {};
       //console.log('expression canvas variables', variables, input);
-      const inputAsString =
+      let inputAsString =
         typeof input === 'object' ? '' : parseFloat(input) || 0;
       let inputAsObject = {};
-      if (typeof input === 'object') {
+      if (Array.isArray(input)) {
+        inputAsString = input;
+      } else if (typeof input === 'object') {
         inputAsObject = input;
       }
       const payloadForExpression = {
@@ -82,6 +84,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         input: inputAsString,
         currentValue: currentValue,
         value: currentValue,
+        array: input,
         current: currentValue,
         last: currentValue,
         index: loopIndex ?? 0,
@@ -111,7 +114,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         compiledExpressionInfo.payloadProperties
       );
 
-      if (expression !== '' && (isNaN(result) || result === undefined)) {
+      // TODO : isNaN is not always correct .. for example when the output is an array
+      //if (expression !== '' && (isNaN(result) || result === undefined)) {
+      if (expression !== '' && result === undefined) {
         throw new Error("Expression couldn't be run");
       }
     } catch (error) {
@@ -228,7 +233,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             connectionType: ThumbConnectionType.start,
             color: 'white',
             label: '#',
-            thumbConstraint: 'value',
+            //thumbConstraint: 'value', // TODO : do this dynamically based on the expression result
             maxConnections: -1,
           },
           {
@@ -239,26 +244,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             label: ' ',
             //thumbConstraint: 'value',
           },
-          // {
-          //   thumbType: ThumbType.StartConnectorBottom,
-          //   thumbIndex: 0,
-          //   connectionType: ThumbConnectionType.start,
-          //   color: 'yellow',
-          //   label: '#',
-          //   thumbConstraint: 'value',
-          //   isDataPort: true,
-          //   name: 'data-output',
-          // },
-          // {
-          //   thumbType: ThumbType.EndConnectorTop,
-          //   thumbIndex: 0,
-          //   connectionType: ThumbConnectionType.end,
-          //   color: 'yellow',
-          //   label: '#',
-          //   thumbConstraint: 'value',
-          //   isDataPort: true,
-          //   name: 'data-input',
-          // },
         ],
         componentWrapper,
         {

@@ -122,6 +122,10 @@ export const getForEach =
           'div',
           {
             class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center text-center`,
+            style: {
+              'clip-path':
+                'polygon(20% 0%, 100% 0, 100% 100%, 20% 100%, 0% 80%, 0% 20%)',
+            },
           },
           undefined,
           'foreach'

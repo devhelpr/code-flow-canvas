@@ -4,6 +4,7 @@ export const thumbConstraints = {
   object: 'object',
   number: 'number',
   string: 'string',
+  set: 'set',
 } as const;
 // export type ThumbConstraints =
 //   (typeof thumbConstraints)[keyof typeof thumbConstraints];

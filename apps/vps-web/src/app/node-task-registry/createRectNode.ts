@@ -54,6 +54,7 @@ export const createRectNode = (
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
+    hasFormInPopup?: boolean;
   },
   childNode?: HTMLElement
 ) => {
@@ -103,7 +104,7 @@ export const createRectNode = (
     hasCenteredLabel ? nodeTitle : undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
-  if (formElements.length > 0) {
+  if (formElements.length > 0 && !settings?.hasFormInPopup) {
     FormComponent({
       rootElement: formWrapper.domElement as HTMLElement,
       id: id ?? '',
@@ -166,6 +167,7 @@ export const createRectNode = (
     node.nodeInfo.formElements = formElements;
     node.nodeInfo.compute = compute;
     node.nodeInfo.initializeCompute = initializeCompute;
+    node.nodeInfo.showFormOnlyInPopup = settings?.hasFormInPopup ?? false;
   }
   return {
     node,
@@ -204,6 +206,7 @@ export const visualNodeFactory = (
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
+    hasFormInPopup?: boolean;
   },
   childNode?: HTMLElement
 ) => {

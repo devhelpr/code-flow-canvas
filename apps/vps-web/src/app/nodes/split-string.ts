@@ -12,13 +12,12 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
-const fieldName = 'regex';
-export const runRegexNodeName = 'regular-expression';
-export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
+const fieldName = 'splitBy';
+export const splitStringNodeName = 'split-string';
+export const splitString: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -32,8 +31,8 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
     loopIndex?: number,
     payload?: any
   ) => {
-    const regex = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-    if (!regex) {
+    const splitBy = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+    if (!splitBy) {
       return {
         result: input,
         output: input,
@@ -41,21 +40,12 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-    const regexObj = new RegExp(regex);
-    const result = input.match(regexObj);
-    if (result) {
-      const value = parseFloat(result[0]);
-      // if (isNaN(value)) {
-      //   return {
-      //     result: input,
-      //     output: input,
-      //     stop: true,
-      //     followPath: undefined,
-      //   };
-      // }
+    const splitLines = input.trim().split(splitBy);
+
+    if (splitLines) {
       return {
-        result: value,
-        output: value,
+        result: splitLines,
+        output: splitLines,
         followPath: undefined,
       };
     }
@@ -69,8 +59,8 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    runRegexNodeName,
-    'Regular expression',
+    splitStringNodeName,
+    'Split String',
     'flow-canvas',
     fieldName,
     compute,
@@ -84,8 +74,8 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
         thumbIndex: 0,
         connectionType: ThumbConnectionType.start,
         color: 'white',
-        label: ' ',
-        thumbConstraint: thumbConstraints.value,
+        label: '[]',
+        thumbConstraint: thumbConstraints.array,
       },
       {
         thumbType: ThumbType.EndConnectorCenter,

@@ -1158,6 +1158,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
     });
+
+    registerCustomFunction('pow', [], (a = 0, b = 0) => {
+      return Math.pow(a, b);
+    });
   }
 
   onShouldPositionPopup = (node: IRectNodeComponent<NodeInfo>) => {
