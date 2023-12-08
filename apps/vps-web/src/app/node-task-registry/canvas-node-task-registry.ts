@@ -13,7 +13,6 @@ import { getExpressionExecute } from '../nodes/expression-execute';
 import { getExpressionPart } from '../nodes/expression-part';
 import { getFetch } from '../nodes/fetch';
 import { getIfCondition } from '../nodes/if-condition';
-import { getFilter, getMap } from '../nodes/map';
 import { getShowInput } from '../nodes/show-input';
 import { getShowObject } from '../nodes/show-object';
 import { getShowValue } from '../nodes/show-value';
@@ -80,6 +79,11 @@ import {
   setDictionaryVariableNodeName,
   setDictionaryVariable,
 } from '../nodes/set-dictionary-value';
+import {
+  getDictionaryAsArray,
+  getDictionaryAsArrayNodeName,
+} from '../nodes/get-dictionary-as-array';
+import { getMap, mapNodeName } from '../nodes/map';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -106,9 +110,9 @@ export const setupCanvasNodeTaskRegistry = (
   );
   registerNodeFactory('summing-junction', getSummingJunction);
 
-  registerNodeFactory('map', getMap(animatePath, animatePathFromThumb));
-  registerNodeFactory('filter', getFilter(animatePath, animatePathFromThumb));
   registerNodeFactory('foreach', getForEach(animatePath, animatePathFromThumb));
+  registerNodeFactory(mapNodeName, getMap(animatePath, animatePathFromThumb));
+
   registerNodeFactory('expression', getExpression);
   registerNodeFactory('expression-part', getExpressionPart);
   registerNodeFactory('expression-execute', getExpressionExecute);
@@ -182,6 +186,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(scopeVariableNodeName, getScopedVariable);
   registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
   registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
+  registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
 };
 
 export const getNodeTaskFactory = (name: string) => {

@@ -68,9 +68,15 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
       return currentValue;
     } else if (fieldType === 'dictionary') {
       if (scope && parameter) {
-        return scopedData[scope]?.[parameter];
+        if (parameter === undefined) {
+          return scopedData[scope];
+        }
+        return scopedData[scope]?.[parameter.toString()];
       }
-      return currentValue?.[parameter];
+      if (parameter === undefined) {
+        return currentValue;
+      }
+      return currentValue?.[parameter.toString()];
     }
   };
 
@@ -114,21 +120,6 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number
   ) => {
-    // let result: any = false;
-    // try {
-    //   currentValue = parseFloat(input) ?? 0;
-    //   if (isNaN(currentValue)) {
-    //     currentValue = 0;
-    //   }
-    //   if (htmlNode) {
-    //     (htmlNode.domElement as unknown as HTMLElement).textContent =
-    //       currentValue.toString();
-    //   }
-    //   result = currentValue;
-    // } catch (error) {
-    //   result = undefined;
-    // }
-
     return {
       result: false,
       stop: true,

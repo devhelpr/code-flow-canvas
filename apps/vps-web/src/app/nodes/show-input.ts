@@ -41,7 +41,21 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         hasInitialValue = false;
       }
 
-      htmlNode.domElement.textContent = (inputValues || '-').toString();
+      if (inputValues && typeof inputValues === 'object') {
+        htmlNode.domElement.textContent = JSON.stringify(inputValues, null, 2);
+      } else if (inputValues && Array.isArray(inputValues)) {
+        let output = '';
+        inputValues.forEach((item) => {
+          if (typeof item === 'object') {
+            output += JSON.stringify(item, null, 2) + '\n';
+          } else {
+            output += item + '\n';
+          }
+        });
+        htmlNode.domElement.textContent = output;
+      } else {
+        htmlNode.domElement.textContent = (inputValues || '-').toString();
+      }
       if (rect) {
         rect.resize(240);
       }

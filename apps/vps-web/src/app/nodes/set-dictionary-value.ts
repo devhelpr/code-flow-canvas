@@ -70,6 +70,8 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
         });
       }
     }
+    values.key = undefined;
+    values.value = undefined;
     return {
       result: values.value,
       output: values.value,

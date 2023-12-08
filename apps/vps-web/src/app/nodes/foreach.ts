@@ -19,6 +19,21 @@ import {
 } from '../follow-path/animate-path';
 import { RangeValueType } from '../types/value-type';
 
+/*
+
+needed when we want to implement a base-iterator from which foreach/map/filter/sort can be derived
+
+  export const SubOutputActionType = {
+  pushToResult: 'pushToResult',
+  filterFromResult: 'filterFromResult',
+  keepInput: 'keepInput',
+} as const;
+
+export type SubOutputActionType =
+  (typeof SubOutputActionType)[keyof typeof SubOutputActionType];
+
+
+*/
 const isInputOfRangeValueType = (input: RangeValueType) => {
   if (typeof input === 'object' && input) {
     return (

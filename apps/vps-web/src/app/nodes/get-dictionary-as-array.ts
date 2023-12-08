@@ -12,57 +12,85 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
-const fieldName = 'splitBy';
-export const splitStringNodeName = 'split-string';
-export const splitString: NodeTaskFactory<NodeInfo> = (
+const fieldName = 'variableName';
+export const getDictionaryAsArrayNodeName = 'get-dictionary-as-array';
+
+export const getDictionaryAsArray: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+
   const initializeCompute = () => {
     return;
   };
+
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string
   ) => {
-    const splitBy = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-    if (!splitBy) {
-      const array = Array.from(input);
-      return {
-        result: array,
-        output: array,
-        followPath: undefined,
-      };
+    if (contextInstance) {
+      const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+      if (!variableName) {
+        return {
+          result: undefined,
+          output: undefined,
+          stop: true,
+          followPath: undefined,
+        };
+      }
+      console.log('setDictionaryVariable', variableName, input);
+      if (variableName) {
+        const data = contextInstance.getVariableInfo(variableName);
+        if (data && data.data) {
+          const array = Object.keys(data.data).map((key) => {
+            return {
+              key,
+              value: data.data[key],
+            };
+          });
+          return {
+            result: array,
+            output: array,
+            followPath: undefined,
+          };
+        }
+      }
     }
-    const splitLines = input.trim().split(splitBy);
-
-    if (splitLines) {
-      return {
-        result: splitLines,
-        output: splitLines,
-        followPath: undefined,
-      };
-    }
-
     return {
-      result: input,
-      output: input,
+      result: undefined,
+      output: undefined,
       stop: true,
       followPath: undefined,
     };
   };
 
+  const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
+    const dependencies: { startNodeId: string; endNodeId: string }[] = [];
+    const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+    if (variableName && contextInstance) {
+      const variableNode = getNodeByVariableName(variableName, contextInstance);
+      if (variableNode) {
+        dependencies.push({
+          startNodeId: variableNode.id,
+          endNodeId: node.id,
+        });
+      }
+    }
+    return dependencies;
+  };
+
   return visualNodeFactory(
-    splitStringNodeName,
-    'Split String',
+    getDictionaryAsArrayNodeName,
+    'Dictionary as array',
     'flow-canvas',
-    fieldName,
+    'variableName',
     compute,
     initializeCompute,
     false,
@@ -74,8 +102,7 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
         thumbIndex: 0,
         connectionType: ThumbConnectionType.start,
         color: 'white',
-        label: '[]',
-        thumbConstraint: thumbConstraints.array,
+        label: ' ',
       },
       {
         thumbType: ThumbType.EndConnectorCenter,
@@ -83,7 +110,7 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        thumbConstraint: thumbConstraints.value,
+        maxConnections: 1,
       },
     ],
     (values?: InitialValues) => {
@@ -115,6 +142,13 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
       node = nodeInstance.node;
+      if (nodeInstance.node.nodeInfo) {
+        nodeInstance.node.nodeInfo.getDependencies = getDependencies;
+      }
+    },
+    {
+      hasTitlebar: false,
+      hasFormInPopup: true,
     }
   );
 };

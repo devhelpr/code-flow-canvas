@@ -930,7 +930,10 @@ export const createCanvasApp = <T>(
     },
     getVariableInfo: (variableName: string) => {
       if (variableName && variables[variableName]) {
-        return variables[variableName];
+        return {
+          ...variables[variableName],
+          data: variables[variableName].getData(undefined, getCurrentScope()),
+        };
       }
       return false;
     },
