@@ -145,6 +145,7 @@ export const getCallFunction =
       args = undefined;
       return;
     };
+
     const computeAsync = (
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
@@ -152,11 +153,11 @@ export const getCallFunction =
       payload?: any
     ) => {
       return new Promise((resolve, reject) => {
-        if (!args || !commandName) {
+        if (args === undefined || !commandName) {
           prepareFunctionCallParameters();
         }
 
-        if (args && commandName) {
+        if (args !== undefined && commandName) {
           const parsedArguments = parameterCommands.map((parameterCommand) =>
             runCommandParameterExpression(
               parameterCommand,
@@ -164,6 +165,9 @@ export const getCallFunction =
               input
             )
           );
+
+          const scopeGuid = crypto.randomUUID();
+          canvasAppInstance?.setScope(scopeGuid);
 
           let isFunctionFound = false;
           canvasAppInstance.elements.forEach((element) => {
@@ -186,6 +190,7 @@ export const getCallFunction =
                   canvasAppInstance,
                   animatePath,
                   (input) => {
+                    canvasAppInstance?.returnToPreviousScope();
                     resolve({
                       output: input,
                       result: input,

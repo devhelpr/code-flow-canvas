@@ -33,18 +33,22 @@ export const createCanvasApp = <T>(
   const interactionStateMachine =
     interactionStateMachineInstance ?? createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
+
   const variables: Record<
     string,
     {
       id: string;
-      getData: () => any;
-      setData: (data: any) => void;
+      getData: (scope?: string) => any;
+      setData: (data: any, scope?: string) => void;
     }
   > = {};
   const variableObservers: Map<
     string,
     Map<string, (data: any) => void>
   > = new Map();
+
+  const scopeStack: string[] = [];
+
   let scaleCamera = 1;
   let xCamera = 0;
   let yCamera = 0;
@@ -519,6 +523,9 @@ export const createCanvasApp = <T>(
     hiddenSVG.domElement
   );
 
+  const getCurrentScope = () => {
+    return scopeStack.length > 0 ? scopeStack[scopeStack.length - 1] : '';
+  };
   return {
     elements,
     canvas,
@@ -917,13 +924,13 @@ export const createCanvasApp = <T>(
     },
     getVariable: (variableName: string) => {
       if (variableName && variables[variableName]) {
-        return variables[variableName].getData();
+        return variables[variableName].getData(getCurrentScope());
       }
       return false;
     },
     setVariable: (variableName: string, data: any) => {
       if (variableName && variables[variableName]) {
-        variables[variableName].setData(data);
+        variables[variableName].setData(data, getCurrentScope());
 
         const map = variableObservers.get(`${variableName}`);
         if (map) {
@@ -937,7 +944,7 @@ export const createCanvasApp = <T>(
       const result: Record<string, any> = {};
       Object.entries(variables).forEach(([key, value]) => {
         if (key) {
-          result[key] = value.getData();
+          result[key] = value.getData(getCurrentScope());
         }
       });
       return result;
@@ -962,6 +969,17 @@ export const createCanvasApp = <T>(
       if (map) {
         map.delete(`${nodeId}`);
       }
+    },
+    getCurrentScope: () => {
+      return getCurrentScope();
+    },
+    setScope: (scopeGuid: string) => {
+      if (scopeGuid) {
+        scopeStack.push(scopeGuid);
+      }
+    },
+    returnToPreviousScope: () => {
+      scopeStack.pop();
     },
   };
 };

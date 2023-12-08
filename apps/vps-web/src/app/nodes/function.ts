@@ -22,10 +22,7 @@ export const getFunction =
       return;
     };
     const compute = (input: string) => {
-      if (
-        !node?.nodeInfo?.formValues?.['node'] ||
-        !node?.nodeInfo?.formValues?.['parameters']
-      ) {
+      if (!node?.nodeInfo?.formValues?.['node']) {
         return {
           result: false,
           stop: true,
@@ -33,7 +30,7 @@ export const getFunction =
       }
       const parameters: string =
         node?.nodeInfo?.formValues?.['parameters'] ?? '';
-      const parametersArray = parameters.split(',');
+      const parametersArray = parameters ? parameters.split(',') : [];
       const inputObject = input as any;
       let isError = false;
       if (inputObject && inputObject.trigger === 'TRIGGER') {

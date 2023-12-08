@@ -68,6 +68,10 @@ import {
 } from '../nodes/intersect-sets';
 import { getSetSizeNode, setSizeNodeName } from '../nodes/set-size';
 import { rangeNodeName, getRangeNode } from '../nodes/range';
+import {
+  scopeVariableNodeName,
+  getScopedVariable,
+} from '../nodes/scoped-variable';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -167,6 +171,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(setSizeNodeName, getSetSizeNode);
   registerNodeFactory('merge', getMergeNode);
   registerNodeFactory(rangeNodeName, getRangeNode);
+  registerNodeFactory(scopeVariableNodeName, getScopedVariable);
 };
 
 export const getNodeTaskFactory = (name: string) => {
