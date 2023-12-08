@@ -84,6 +84,8 @@ import {
   getDictionaryAsArrayNodeName,
 } from '../nodes/get-dictionary-as-array';
 import { getMap, mapNodeName } from '../nodes/map';
+import { getSortArrayNode, sortNodeName } from '../nodes/sort-array';
+import { joinArrayNodeName, joinArray } from '../nodes/join-array';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -187,6 +189,8 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
   registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
   registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
+  registerNodeFactory(sortNodeName, getSortArrayNode);
+  registerNodeFactory(joinArrayNodeName, joinArray);
 };
 
 export const getNodeTaskFactory = (name: string) => {
