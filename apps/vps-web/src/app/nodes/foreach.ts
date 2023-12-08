@@ -17,6 +17,24 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
+import { RangeValueType } from '../types/value-type';
+
+const isInputOfRangeValueType = (input: RangeValueType) => {
+  if (typeof input === 'object' && input) {
+    return (
+      input.min !== undefined &&
+      input.max !== undefined &&
+      input.step !== undefined &&
+      typeof input.min === 'number' &&
+      typeof input.max === 'number' &&
+      typeof input.step === 'number' &&
+      !isNaN(input.min) &&
+      !isNaN(input.max) &&
+      !isNaN(input.step)
+    );
+  }
+  return false;
+};
 
 export const getForEach =
   (
@@ -47,8 +65,31 @@ export const getForEach =
 
         let values: any[] = [];
         values = input as unknown as any[];
-        if (!Array.isArray(input)) {
-          values = [input];
+        let isRange = false;
+        let forEachLength = 0;
+        let startIndex = 0;
+        let step = 1;
+        const rangeInput = input as unknown as RangeValueType;
+        if (
+          isInputOfRangeValueType(rangeInput) &&
+          rangeInput.max !== undefined &&
+          rangeInput.min !== undefined &&
+          rangeInput.step !== undefined
+        ) {
+          isRange = true;
+          startIndex = rangeInput.min;
+          step = rangeInput.step;
+          forEachLength = rangeInput.max;
+
+          /*Math.floor(
+            (rangeInput.max - rangeInput.min) / rangeInput.step
+          );
+          */
+        } else {
+          if (!Array.isArray(input)) {
+            values = [input];
+          }
+          forEachLength = values.length;
         }
         if (foreachComponent && foreachComponent.domElement) {
           foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
@@ -59,10 +100,10 @@ export const getForEach =
             return;
           }
           if (foreachComponent && foreachComponent.domElement) {
-            foreachComponent.domElement.textContent = `${title} ${mapLoop}/${values.length}`;
+            foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
           }
-          if (mapLoop < values.length) {
-            console.log('runNext', mapLoop, values[mapLoop]);
+          if (mapLoop < forEachLength) {
+            //console.log('runNext', mapLoop, values[mapLoop]);
             runNodeFromThumb(
               node.thumbConnectors[1],
               animatePathFromThumb,
@@ -73,9 +114,9 @@ export const getForEach =
                 }
                 console.log('runNext onstopped', mapLoop, inputFromFirstRun);
 
-                runNext(mapLoop + 1);
+                runNext(mapLoop + step);
               },
-              values[mapLoop],
+              isRange ? mapLoop : values[mapLoop],
               pathExecution,
               node,
               mapLoop
@@ -86,11 +127,11 @@ export const getForEach =
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
                 resolve({
-                  result: input,
+                  result: isRange ? [] : input,
                   stop: true,
                 });
               },
-              input,
+              isRange ? [] : input,
               pathExecution,
               node,
               loopIndex
@@ -98,7 +139,7 @@ export const getForEach =
           }
         };
 
-        runNext(0);
+        runNext(startIndex);
         // resolve({
         //   result: input,
         //   stop: true,
@@ -163,7 +204,7 @@ export const getForEach =
               connectionType: ThumbConnectionType.end,
               color: 'white',
               label: '[]',
-              thumbConstraint: 'array',
+              thumbConstraint: ['array', 'range'],
             },
           ],
           foreachComponent,

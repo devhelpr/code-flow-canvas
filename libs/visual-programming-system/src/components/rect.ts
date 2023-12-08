@@ -559,7 +559,24 @@ export class Rect<T> {
           draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
         ).startNodeThumb?.thumbConstraint
       ) {
+        const thumbConstraint = (
+          draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+        ).startNodeThumb?.thumbConstraint;
         if (
+          Array.isArray(thumbNodeDropTarget.thumbConstraint) &&
+          !Array.isArray(thumbConstraint) &&
+          typeof thumbConstraint === 'string'
+        ) {
+          if (
+            thumbNodeDropTarget.thumbConstraint.indexOf(thumbConstraint) < 0
+          ) {
+            console.log('onCanReceiveDroppedComponent FALSE2');
+            return false;
+          }
+        }
+        if (
+          typeof thumbNodeDropTarget.thumbConstraint === 'string' &&
+          typeof thumbConstraint === 'string' &&
           thumbNodeDropTarget.thumbConstraint &&
           (
             draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
