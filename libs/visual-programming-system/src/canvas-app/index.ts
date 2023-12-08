@@ -38,7 +38,7 @@ export const createCanvasApp = <T>(
     string,
     {
       id: string;
-      getData: (scope?: string) => any;
+      getData: (parameter?: any, scope?: string) => any;
       setData: (data: any, scope?: string) => void;
     }
   > = {};
@@ -922,9 +922,15 @@ export const createCanvasApp = <T>(
         delete variables[variableName];
       }
     },
-    getVariable: (variableName: string) => {
+    getVariable: (variableName: string, parameter?: any) => {
       if (variableName && variables[variableName]) {
-        return variables[variableName].getData(getCurrentScope());
+        return variables[variableName].getData(parameter, getCurrentScope());
+      }
+      return false;
+    },
+    getVariableInfo: (variableName: string) => {
+      if (variableName && variables[variableName]) {
+        return variables[variableName];
       }
       return false;
     },

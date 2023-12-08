@@ -72,6 +72,14 @@ import {
   scopeVariableNodeName,
   getScopedVariable,
 } from '../nodes/scoped-variable';
+import {
+  getDictionaryVariableNodeName,
+  getDictionaryVariable,
+} from '../nodes/get-dictionary-value';
+import {
+  setDictionaryVariableNodeName,
+  setDictionaryVariable,
+} from '../nodes/set-dictionary-value';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -172,6 +180,8 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('merge', getMergeNode);
   registerNodeFactory(rangeNodeName, getRangeNode);
   registerNodeFactory(scopeVariableNodeName, getScopedVariable);
+  registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
+  registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
 };
 
 export const getNodeTaskFactory = (name: string) => {

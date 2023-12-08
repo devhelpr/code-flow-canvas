@@ -27,27 +27,75 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
   let htmlNode: IElementNode<NodeInfo> | undefined = undefined;
   let tagNode: IElementNode<NodeInfo> | undefined = undefined;
   let variableName = '';
-  let currentValue = 0;
+  let currentValue: any = 0;
   let timeout: any = undefined;
 
+  let fieldType = 'value';
   let scopedData: Record<string, any> = {};
+
+  const setDataForFieldType = (data: any, scope?: string) => {
+    if (fieldType === 'value') {
+      if (scope) {
+        scopedData[scope] = data;
+      } else {
+        currentValue = data;
+      }
+    } else if (fieldType === 'dictionary') {
+      if (scope) {
+        if (!scopedData[scope]) {
+          scopedData[scope] = {};
+        }
+      } else {
+        if (!currentValue) {
+          currentValue = {};
+        }
+      }
+      if (data && data.key) {
+        if (scope) {
+          scopedData[scope][data.key] = data.value;
+        } else {
+          currentValue[data.key] = data.value;
+        }
+      }
+    }
+  };
+
+  const getDataForFieldType = (parameter?: any, scope?: string) => {
+    if (fieldType === 'value') {
+      if (scope) {
+        return scopedData[scope];
+      }
+      return currentValue;
+    } else if (fieldType === 'dictionary') {
+      if (scope && parameter) {
+        return scopedData[scope]?.[parameter];
+      }
+      return currentValue?.[parameter];
+    }
+  };
 
   const initializeCompute = () => {
     scopedData = {};
+    currentValue = undefined;
+    fieldType = node?.nodeInfo?.formValues?.['fieldType'] ?? 'value';
+    setDataForFieldType(
+      fieldType === 'value'
+        ? node?.nodeInfo?.formValues?.['initialValue'] ?? 0
+        : undefined
+    );
 
-    currentValue =
-      parseFloat(node?.nodeInfo?.formValues?.['initialValue']) ?? 0;
-
-    if (isNaN(currentValue)) {
-      currentValue = 0;
-      if (htmlNode) {
-        (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
+    if (fieldType === 'value') {
+      if (isNaN(currentValue)) {
+        currentValue = 0;
+        if (htmlNode) {
+          (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
+        }
+      } else if (htmlNode) {
+        (htmlNode.domElement as unknown as HTMLElement).textContent =
+          currentValue.toString();
       }
-    } else if (htmlNode) {
-      (htmlNode.domElement as unknown as HTMLElement).textContent =
-        currentValue.toString();
+      canvasAppInstance?.setVariable(variableName, currentValue);
     }
-    canvasAppInstance?.setVariable(variableName, currentValue);
 
     if (timeout) {
       clearTimeout(timeout);
@@ -60,33 +108,35 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
 
     return;
   };
+
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number
   ) => {
-    let result: any = false;
-    try {
-      currentValue = parseFloat(input) ?? 0;
-      if (isNaN(currentValue)) {
-        currentValue = 0;
-      }
-      if (htmlNode) {
-        (htmlNode.domElement as unknown as HTMLElement).textContent =
-          currentValue.toString();
-      }
-      result = currentValue;
-    } catch (error) {
-      result = undefined;
-    }
+    // let result: any = false;
+    // try {
+    //   currentValue = parseFloat(input) ?? 0;
+    //   if (isNaN(currentValue)) {
+    //     currentValue = 0;
+    //   }
+    //   if (htmlNode) {
+    //     (htmlNode.domElement as unknown as HTMLElement).textContent =
+    //       currentValue.toString();
+    //   }
+    //   result = currentValue;
+    // } catch (error) {
+    //   result = undefined;
+    // }
 
     return {
-      result,
+      result: false,
+      stop: true,
       followPath: undefined,
     };
   };
 
-  const getData = (scope?: string) => {
+  const getData = (parameter?: any, scope?: string) => {
     if (timeout) {
       clearTimeout(timeout);
       timeout = undefined;
@@ -103,21 +153,15 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         'border-green-200'
       );
     }, 250);
-    if (scope) {
-      return scopedData[scope];
-    }
-    return currentValue;
+    return getDataForFieldType(parameter, scope);
   };
   const setData = (data: any, scope?: string) => {
-    if (scope) {
-      scopedData[scope] = data;
-    } else {
-      currentValue = data;
-    }
+    setDataForFieldType(data, scope);
 
+    const value = fieldType === 'value' ? currentValue : data.value;
     if (htmlNode) {
       (htmlNode.domElement as unknown as HTMLElement).textContent =
-        data.toString();
+        value.toString();
 
       if (timeout) {
         clearTimeout(timeout);
@@ -201,6 +245,35 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
             }
           },
         },
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'fieldType',
+          value: initalValues?.['fieldType'] ?? 'value',
+          options: [
+            {
+              value: 'value',
+              label: 'Value',
+            },
+            {
+              value: 'dictionary',
+              label: 'Dictionary',
+            },
+          ],
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              fieldType: value,
+            };
+            fieldType = value;
+            initializeCompute();
+            if (updated) {
+              updated();
+            }
+          },
+        },
       ];
 
       htmlNode = createElement(
@@ -241,6 +314,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
           formValues: {
             variableName: variableName,
             initialValue: initalValues?.['initialValue'] ?? '',
+            fieldType: initalValues?.['fieldType'] ?? 'value',
           },
         },
         containerNode

@@ -1,13 +1,17 @@
+import { trackNamedSignal } from '@devhelpr/visual-programming-system';
+import { BaseFormFieldProps, FormFieldComponent } from './field';
 import {
-  Component,
   BaseComponent,
   createTemplate,
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
-import { trackNamedSignal } from '@devhelpr/visual-programming-system';
-import { BaseFormFieldProps, FormFieldComponent } from './field';
 
-export interface InputFieldProps extends BaseFormFieldProps {
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export interface SelectFieldProps extends BaseFormFieldProps {
   formId: string;
   fieldName: string;
   value: string;
@@ -17,8 +21,41 @@ export interface InputFieldProps extends BaseFormFieldProps {
   settings?: {
     showLabel?: boolean;
   };
+  options: SelectOption[];
   onChange?: (value: string) => void;
 }
+
+//export const SelectField = (props: SelectFieldProps) => {
+//let selectRef: HTMLInputElement | null = null;
+
+//
+
+// return (
+//   <select
+//     reference={(reference: HTMLInputElement) => (selectRef = reference)}
+//     id={props.fieldName}
+//     class="block w-full p-1"
+//     name={props.fieldName}
+//     autocomplete="off"
+//     value={props.value}
+//     oninput={(event: InputEvent) => {
+//       const select = event.target as HTMLInputElement;
+//       console.log(select.value);
+//       if (props.onChange) {
+//         props.onChange(select.value);
+//       }
+//     }}
+//   >
+//     <list:Render list={props.options}>
+//       {(item: SelectOption) => (
+//         <option value={item.value} selected={item.value === props.value}>
+//           {item.label}
+//         </option>
+//       )}
+//     </list:Render>
+//   </select>
+// );
+//};
 
 // export interface InputFieldChildProps {
 //   value: string;
@@ -27,13 +64,13 @@ export interface InputFieldProps extends BaseFormFieldProps {
 //   onChange?: (value: string) => void;
 // }
 
-export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps> {
-  oldProps: InputFieldProps | null = null;
-  input: HTMLInputElement | null = null;
+export class SelectFieldChildComponent extends FormFieldComponent<SelectFieldProps> {
+  oldProps: SelectFieldProps | null = null;
+  select: HTMLSelectElement | null = null;
   label: HTMLLabelElement | null = null;
   doRenderChildren = false;
   initialRender = false;
-  constructor(parent: BaseComponent | null, props: InputFieldProps) {
+  constructor(parent: BaseComponent | null, props: SelectFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
     this.template = createTemplate(
@@ -45,14 +82,17 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
       } 
         text-white ${props.isRow ? 'mr-2' : ''}">${
         props.label ?? props.fieldName
-      }</label>
-        <input class="block w-full p-1"
+      }</label><select class="block w-full p-1"
           name="${props.fieldName}"
           autocomplete="off"
           id="${props.formId}_${props.fieldName}"
-          value="${props.value ?? ''}"
-          type="text"></input>
-        </div>`
+          value="${props.value}"
+          type="text">${props.options.map((option) => {
+            return `<option value="${option.value}"
+             ${option.value === props.value ? 'selected' : ''}
+            >${option.label}</option>`;
+          })}</select>
+        </select>`
     );
 
     this.mount();
@@ -70,9 +110,9 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
       if (this.element) {
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
-        this.input = this.label.nextSibling as HTMLInputElement;
-        this.renderList.push(this.label, this.input);
-        this.input.addEventListener('input', this.onInput);
+        this.select = this.label.nextSibling as HTMLSelectElement;
+        this.renderList.push(this.label, this.select);
+        this.select.addEventListener('input', this.onInput);
 
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
@@ -83,8 +123,8 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
               this.props.fieldName,
               value
             );
-            if (this.input) {
-              this.input.value = value;
+            if (this.select) {
+              this.select.value = value;
             }
           }
         );
@@ -111,45 +151,17 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
   render() {
     super.render();
     if (!this.element) return;
-    if (!this.input) return;
+    if (!this.select) return;
 
     this.oldProps = this.props;
 
-    if (this.input) {
+    if (this.select) {
       //this.h1.textContent = atom1.getValue() || this.props.value;
     }
 
     if (this.initialRender) {
       this.initialRender = false;
-      this.renderElements([this.input]);
+      this.renderElements([this.select]);
     }
   }
 }
-
-export const InputField = (props: InputFieldProps) => {
-  //let inputRef: HTMLInputElement | null = null;
-  // trackNamedSignal(`${props.formId}_${props.fieldName}`, (value) => {
-  //   console.log('trackNamedSignal', props.formId, props.fieldName, value);
-  //   if (inputRef) {
-  //     inputRef.value = value;
-  //   }
-  // });
-  // return (
-  //   <input
-  //     reference={(reference: HTMLInputElement) => (inputRef = reference)}
-  //     id={props.fieldName}
-  //     type="text"
-  //     class="block w-full p-1"
-  //     name={props.fieldName}
-  //     autocomplete="off"
-  //     value={props.value}
-  //     oninput={(event: InputEvent) => {
-  //       const input = event.target as HTMLInputElement;
-  //       console.log(input.value);
-  //       if (props.onChange) {
-  //         props.onChange(input.value);
-  //       }
-  //     }}
-  //   ></input>
-  // );
-};

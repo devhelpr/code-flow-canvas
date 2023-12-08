@@ -88,7 +88,8 @@ export const createRectNode = (
   }
 
   const hasCenteredLabel =
-    formElements.length === 0 && settings?.hasTitlebar === false;
+    (formElements.length === 0 && settings?.hasTitlebar === false) ||
+    (settings?.hasFormInPopup && settings?.hasTitlebar === false);
   const formWrapper = createElement(
     'div',
     {

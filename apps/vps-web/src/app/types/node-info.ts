@@ -34,7 +34,7 @@ export interface NodeInfo {
     loopIndex?: number,
     payload?: any
   ) => any;
-  getData?: (scope?: string) => any;
+  getData?: (parameter?: any, scope?: string) => any;
   getDependencies?: () => { startNodeId: string; endNodeId: string }[];
 }
 

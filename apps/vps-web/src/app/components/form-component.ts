@@ -14,6 +14,7 @@ import { SliderFieldChildComponent } from './form-fields/slider';
 import { ColorFieldChildComponent } from './form-fields/color';
 import { ButtonFieldChildComponent } from './form-fields/button';
 import { FormFieldComponent } from './form-fields/field';
+import { SelectFieldChildComponent } from './form-fields/select';
 
 export const FormFieldType = {
   Text: 'Text',
@@ -208,6 +209,20 @@ export class FormsComponent extends Component<Props> {
           value: formControl.value,
           isRow: formControl.isRow,
           settings: formControl.settings,
+          setValue: this.setValue,
+          onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.Select) {
+        const formControlComponent = new SelectFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          label: formControl.label,
+          value: formControl.value,
+          isRow: formControl.isRow,
+          settings: formControl.settings,
+          options: formControl.options,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
