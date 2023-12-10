@@ -99,12 +99,13 @@ export const getSequential =
         const jsxComponentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded`,
+            class: `inner-node bg-slate-500 p-4 rounded pl-6 flex flex-row justify-center items-center`,
             style: {
               'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
             },
           },
-          undefined
+          undefined,
+          'sequential'
         ) as unknown as INodeComponent<NodeInfo>;
 
         const rect = canvasApp.createRect(

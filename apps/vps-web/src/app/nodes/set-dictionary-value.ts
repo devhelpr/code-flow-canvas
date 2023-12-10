@@ -102,8 +102,8 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     compute,
     initializeCompute,
     false,
+    280,
     200,
-    100,
     [
       {
         thumbType: ThumbType.StartConnectorCenter,
@@ -165,10 +165,17 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;
       }
+
+      const domElement = nodeInstance.node.domElement as HTMLElement;
+      const textNode = domElement.querySelector('.inner-node');
+      if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+        textNode.innerHTML = `Set key value in<br />'${node.nodeInfo?.formValues?.[fieldName]}' dictionary`;
+      }
     },
     {
       hasTitlebar: false,
       hasFormInPopup: true,
+      additionalClassNames: 'text-center',
     }
   );
 };

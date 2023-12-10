@@ -111,6 +111,11 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
           currentValue.toString();
       }
       canvasAppInstance?.setVariable(variableName, currentValue);
+    } else {
+      if (htmlNode) {
+        (htmlNode.domElement as unknown as HTMLElement).textContent =
+          'dictionary';
+      }
     }
 
     if (rect) {

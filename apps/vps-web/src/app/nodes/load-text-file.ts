@@ -69,7 +69,7 @@ export const loadTextFile =
     const initializeCompute = () => {
       hasInitialValue = true;
       if (htmlNode) {
-        htmlNode.domElement.textContent = '-';
+        htmlNode.domElement.textContent = 'Click to load text file';
       }
       return;
     };

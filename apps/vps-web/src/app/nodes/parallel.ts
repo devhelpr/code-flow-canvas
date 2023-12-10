@@ -110,12 +110,13 @@ export const getParallel =
         const jsxComponentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded`,
+            class: `inner-node bg-slate-500 p-4 pl-8 rounded flex flex-row justify-center items-center`,
             style: {
               'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
             },
           },
-          undefined
+          undefined,
+          'parallel'
         ) as unknown as INodeComponent<NodeInfo>;
 
         const rect = canvasApp.createRect(

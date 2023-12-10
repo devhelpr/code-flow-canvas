@@ -142,10 +142,17 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;
       }
+
+      const domElement = nodeInstance.node.domElement as HTMLElement;
+      const textNode = domElement.querySelector('.inner-node');
+      if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+        textNode.innerHTML = `'${node.nodeInfo?.formValues?.[fieldName]}' dictionary<br /> size`;
+      }
     },
     {
       hasTitlebar: false,
       hasFormInPopup: true,
+      additionalClassNames: 'text-center',
     }
   );
 };
