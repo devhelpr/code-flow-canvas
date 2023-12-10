@@ -164,7 +164,7 @@ const triggerExecution = <T>(
               .then((computeResult: any) => {
                 if (computeResult.stop) {
                   if (onStopped) {
-                    onStopped('');
+                    onStopped(computeResult.output ?? '');
                   }
                   return {
                     result: false,
@@ -216,7 +216,7 @@ const triggerExecution = <T>(
 
           if (computeResult.stop) {
             if (onStopped) {
-              onStopped('');
+              onStopped(computeResult.output ?? '');
             }
             return {
               result: false,
@@ -341,7 +341,7 @@ export const runNode = <T>(
         previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
           if (onStopped) {
-            onStopped('');
+            onStopped(computeResult.output ?? '');
           }
           return;
         }
@@ -374,7 +374,7 @@ export const runNode = <T>(
     previousOutput = computeResult.previousOutput;
     if (computeResult.stop) {
       if (onStopped) {
-        onStopped('');
+        onStopped(computeResult.output ?? '');
       }
       return;
     }

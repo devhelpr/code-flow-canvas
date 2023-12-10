@@ -139,9 +139,9 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
           value: values?.[fieldName] ?? '',
-          settings: {
-            showLabel: false,
-          },
+          // settings: {
+          //   showLabel: false,
+          // },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;

@@ -16,7 +16,7 @@ import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
 const fieldName = 'range';
 const labelName = 'Sort';
-export const sortNodeName = 'sort-array';
+export const sortArrayNodeName = 'sort-array';
 const familyName = 'flow-canvas';
 const thumbs = [
   {
@@ -73,7 +73,7 @@ export const getSortArrayNode: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    sortNodeName,
+    sortArrayNodeName,
     labelName,
     familyName,
     fieldName,

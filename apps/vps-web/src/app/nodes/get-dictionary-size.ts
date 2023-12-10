@@ -14,11 +14,12 @@ import {
 } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
 const fieldName = 'variableName';
-export const getDictionaryVariableNodeName = 'get-dictionary-variable';
+export const getDictionarySizeNodeName = 'get-dictionary-size';
 
-export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
+export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -35,25 +36,33 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     payload?: any,
     thumbName?: string
   ) => {
-    if (!input) {
-      return {
-        result: undefined,
-        output: undefined,
-        stop: true,
-        followPath: undefined,
-      };
-    }
-    let data = '';
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+      if (!variableName) {
+        return {
+          result: undefined,
+          output: undefined,
+          stop: true,
+          followPath: undefined,
+        };
+      }
       console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        data = contextInstance.getVariable(variableName, input);
+        const data = contextInstance.getVariableInfo(variableName);
+        if (data && data.data) {
+          const dictionarySize = Object.keys(data.data).length;
+          return {
+            result: dictionarySize,
+            output: dictionarySize,
+            followPath: undefined,
+          };
+        }
       }
     }
     return {
-      result: data,
-      output: data,
+      result: undefined,
+      output: undefined,
+      stop: true,
       followPath: undefined,
     };
   };
@@ -74,8 +83,8 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    getDictionaryVariableNodeName,
-    'Get by key',
+    getDictionarySizeNodeName,
+    'Dictionary size',
     'flow-canvas',
     'variableName',
     compute,
@@ -90,6 +99,7 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.start,
         color: 'white',
         label: ' ',
+        thumbConstraint: thumbConstraints.value,
       },
       {
         thumbType: ThumbType.EndConnectorCenter,
@@ -97,7 +107,6 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        prefixLabel: 'key',
         maxConnections: 1,
       },
     ],
@@ -107,9 +116,9 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
           value: values?.[fieldName] ?? '',
-          // settings: {
-          //   showLabel: false,
-          // },
+          settings: {
+            showLabel: true,
+          },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;

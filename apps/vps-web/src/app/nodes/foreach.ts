@@ -34,6 +34,7 @@ export type SubOutputActionType =
 
 
 */
+const activeForeachColor = 'bg-blue-500';
 const isInputOfRangeValueType = (input: RangeValueType) => {
   if (typeof input === 'object' && input) {
     return (
@@ -63,6 +64,10 @@ export const getForEach =
     const initializeCompute = () => {
       if (foreachComponent && foreachComponent.domElement) {
         foreachComponent.domElement.textContent = `${title}`;
+
+        const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+        forEachDomElement.classList.add('bg-slate-500');
+        forEachDomElement.classList.remove(activeForeachColor);
       }
       return;
     };
@@ -77,6 +82,10 @@ export const getForEach =
           reject();
           return;
         }
+
+        const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+        forEachDomElement.classList.add('bg-slate-500');
+        forEachDomElement.classList.remove(activeForeachColor);
 
         let values: any[] = [];
         values = input as unknown as any[];
@@ -137,12 +146,19 @@ export const getForEach =
               mapLoop
             );
           } else {
+            forEachDomElement.classList.add('bg-slate-500');
+            forEachDomElement.classList.remove(activeForeachColor);
+
             runNodeFromThumb(
               node.thumbConnectors[0],
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
                 resolve({
-                  result: isRange ? [] : input,
+                  result: inputFromSecondRun,
+                  output: inputFromSecondRun,
+                  // result: isRange ? [] : input,
+                  // output: isRange ? [] : input,
+                  followPath: undefined,
                   stop: true,
                 });
               },
@@ -154,6 +170,8 @@ export const getForEach =
           }
         };
 
+        forEachDomElement.classList.remove('bg-slate-500');
+        forEachDomElement.classList.add(activeForeachColor);
         runNext(startIndex);
         // resolve({
         //   result: input,
@@ -177,7 +195,8 @@ export const getForEach =
         foreachComponent = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center text-center`,
+            class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center text-center
+            transition-colors duration-200`,
             style: {
               'clip-path':
                 'polygon(20% 0%, 100% 0, 100% 100%, 20% 100%, 0% 80%, 0% 20%)',

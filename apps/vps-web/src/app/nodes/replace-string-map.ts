@@ -35,33 +35,43 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
     let continueLoop = true;
     const stringMap = node?.nodeInfo?.formValues?.[fieldName] ?? '';
     const map = stringMap.split('\n');
-
-    while (continueLoop) {
-      let replaceIndex = -1;
-      let findWord = '';
-      let replaceBy = '';
+    const mode = node?.nodeInfo?.formValues?.['replaceMode'] ?? '';
+    if (mode === 'string') {
       map.forEach((line: string, mapIndex: number) => {
         const parts = line.split(':');
         if (parts.length === 2) {
-          const index = output.indexOf(parts[0]);
-          if (index >= 0) {
-            if (replaceIndex === -1 || index < replaceIndex) {
-              replaceIndex = index;
-              findWord = parts[0];
-              replaceBy = parts[1];
-            }
-          }
+          //if (output === parts[0]) {
+          output = output.replaceAll(parts[0], parts[1]);
+          //}
         }
       });
+    } else {
+      while (continueLoop) {
+        let replaceIndex = -1;
+        let findWord = '';
+        let replaceBy = '';
+        map.forEach((line: string, mapIndex: number) => {
+          const parts = line.split(':');
+          if (parts.length === 2) {
+            const index = output.indexOf(parts[0]);
+            if (index >= 0) {
+              if (replaceIndex === -1 || index < replaceIndex) {
+                replaceIndex = index;
+                findWord = parts[0];
+                replaceBy = parts[1];
+              }
+            }
+          }
+        });
 
-      if (replaceIndex === -1) {
-        continueLoop = false;
-      } else {
-        replaceIndex = -1;
-        output = output.replace(new RegExp(findWord, 'g'), replaceBy);
+        if (replaceIndex === -1) {
+          continueLoop = false;
+        } else {
+          replaceIndex = -1;
+          output = output.replace(new RegExp(findWord, 'g'), replaceBy);
+        }
       }
     }
-
     return {
       result: output,
       output: output,
@@ -111,6 +121,31 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               [fieldName]: value,
+            };
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'replaceMode',
+          value: values?.['replaceMode'] ?? '',
+          options: [
+            { value: 'sentence', label: 'Sentence' },
+            { value: 'string', label: 'string' },
+          ],
+          settings: {
+            showLabel: true,
+          },
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['replaceMode']: value,
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {

@@ -1162,6 +1162,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     registerCustomFunction('pow', [], (a = 0, b = 0) => {
       return Math.pow(a, b);
     });
+
+    registerCustomFunction('parseFloat', [], (a = 0) => {
+      return parseFloat(a) || 0;
+    });
   }
 
   onShouldPositionPopup = (node: IRectNodeComponent<NodeInfo>) => {

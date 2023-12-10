@@ -61,7 +61,8 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       }
     }
     return {
-      result: input || '',
+      result: input,
+      output: input,
       followPath: undefined,
     };
   };

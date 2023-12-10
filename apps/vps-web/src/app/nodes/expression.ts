@@ -69,6 +69,12 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           `${compiledExpressionInfo.script}`
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
+
+      console.log(
+        'compiledExpressionInfo.scrip',
+        compiledExpressionInfo.script
+      );
+
       //const variables = canvasAppInstance?.getVariables() ?? {};
       //console.log('expression canvas variables', variables, input);
       let inputAsString =
@@ -98,7 +104,12 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           [variableName]: {
             get: () => {
               console.log('get', variableName);
-              return parseFloat(canvasAppInstance?.getVariable(variableName));
+
+              // TODO : figure out when this was necesary ??? probably when countint input read from files
+
+              //return parseFloat(canvasAppInstance?.getVariable(variableName));
+
+              return canvasAppInstance?.getVariable(variableName);
             },
             set: (value) => {
               canvasAppInstance?.setVariable(variableName, value);
@@ -113,7 +124,11 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         false, // when True ... this fails when expression contains array indexes...
         compiledExpressionInfo.payloadProperties
       );
-
+      console.log(
+        'expression result',
+        result,
+        compiledExpressionInfo.payloadProperties
+      );
       // TODO : isNaN is not always correct .. for example when the output is an array
       //if (expression !== '' && (isNaN(result) || result === undefined)) {
       if (expression !== '' && result === undefined) {

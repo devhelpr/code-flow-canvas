@@ -100,7 +100,11 @@ export const getVariable: NodeTaskFactory<NodeInfo> = (
     return currentValue;
   };
   const setData = (data: any) => {
-    currentValue = data;
+    if (typeof data === 'string') {
+      currentValue = parseFloat(data) || 0;
+    } else {
+      currentValue = data;
+    }
     if (htmlNode) {
       (htmlNode.domElement as unknown as HTMLElement).textContent =
         currentValue.toString();

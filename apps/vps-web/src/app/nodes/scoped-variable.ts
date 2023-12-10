@@ -4,6 +4,7 @@ import {
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
+  Rect,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -22,6 +23,8 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let canvasAppInstance: CanvasAppInstance<NodeInfo>;
+  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+    undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let componentWrapper: IRectNodeComponent<NodeInfo>;
   let htmlNode: IElementNode<NodeInfo> | undefined = undefined;
@@ -35,10 +38,14 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
 
   const setDataForFieldType = (data: any, scope?: string) => {
     if (fieldType === 'value') {
+      let value = data;
+      if (typeof value === 'string') {
+        value = parseFloat(value) || 0;
+      }
       if (scope) {
-        scopedData[scope] = data;
+        scopedData[scope] = value;
       } else {
-        currentValue = data;
+        currentValue = value;
       }
     } else if (fieldType === 'dictionary') {
       if (scope) {
@@ -67,11 +74,14 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
       }
       return currentValue;
     } else if (fieldType === 'dictionary') {
-      if (scope && parameter) {
+      if (scope) {
         if (parameter === undefined) {
           return scopedData[scope];
         }
-        return scopedData[scope]?.[parameter.toString()];
+        if (scopedData[scope]) {
+          return scopedData[scope][parameter.toString()];
+        }
+        return '';
       }
       if (parameter === undefined) {
         return currentValue;
@@ -101,6 +111,10 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
           currentValue.toString();
       }
       canvasAppInstance?.setVariable(variableName, currentValue);
+    }
+
+    if (rect) {
+      rect.resize(120);
     }
 
     if (timeout) {
@@ -151,9 +165,37 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
 
     const value = fieldType === 'value' ? currentValue : data.value;
     if (htmlNode) {
-      (htmlNode.domElement as unknown as HTMLElement).textContent =
-        value.toString();
+      if (fieldType === 'dictionary') {
+        const dictionary = getDataForFieldType(undefined, scope);
+        if (dictionary) {
+          const keys = Object.keys(dictionary);
+          let asHtml = keys
+            .map((key, index) => {
+              if (index >= 5) {
+                return '';
+              }
+              return `
+              <div class="flex flex-row">
+                <div class="flex-grow text-left">${key}</div>
+                <div class="flex-grow text-right">${dictionary[key]}</div>
+              </div>`;
+            })
+            .join('');
+          asHtml += `<div>Size: ${keys.length}</div>`;
 
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML = asHtml;
+          if (rect) {
+            rect.resize(240);
+          }
+        }
+      } else {
+        (htmlNode.domElement as unknown as HTMLElement).textContent =
+          value.toString();
+
+        if (rect) {
+          rect.resize(120);
+        }
+      }
       if (timeout) {
         clearTimeout(timeout);
         timeout = undefined;
@@ -285,7 +327,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         htmlNode.domElement as unknown as HTMLElement
       ) as unknown as IRectNodeComponent<NodeInfo>;
 
-      const rect = canvasApp.createRect(
+      rect = canvasApp.createRect(
         x,
         y,
         100,

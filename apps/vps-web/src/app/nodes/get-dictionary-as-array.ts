@@ -14,6 +14,7 @@ import {
 } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
 const fieldName = 'variableName';
 export const getDictionaryAsArrayNodeName = 'get-dictionary-as-array';
@@ -102,7 +103,8 @@ export const getDictionaryAsArray: NodeTaskFactory<NodeInfo> = (
         thumbIndex: 0,
         connectionType: ThumbConnectionType.start,
         color: 'white',
-        label: ' ',
+        label: '[]',
+        thumbConstraint: thumbConstraints.array,
       },
       {
         thumbType: ThumbType.EndConnectorCenter,
@@ -120,7 +122,7 @@ export const getDictionaryAsArray: NodeTaskFactory<NodeInfo> = (
           fieldName: fieldName,
           value: values?.[fieldName] ?? '',
           settings: {
-            showLabel: false,
+            showLabel: true,
           },
           onChange: (value: string) => {
             if (!node.nodeInfo) {

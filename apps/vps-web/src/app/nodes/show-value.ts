@@ -45,6 +45,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
     }
     return {
       result: input,
+      output: input,
       followPath: undefined,
     };
   };

@@ -21,10 +21,15 @@ import {
   getNodeByFunctionName,
 } from '../graph/get-node-by-variable-name';
 
+const defaultFunctionColor = 'bg-slate-500';
+const activeFunctionColor = 'bg-orange-400';
+
 export const getCallFunction =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let componentWrapper: INodeComponent<NodeInfo> | undefined;
+
     let canvasAppInstance: CanvasAppInstance<NodeInfo>;
     let args: string | undefined = undefined;
     let commandName: string | undefined = undefined;
@@ -44,6 +49,7 @@ export const getCallFunction =
 
       const payloadForExpression = {
         value: value,
+        input: value,
         index: loopIndex ?? 0,
         runIteration: loopIndex ?? 0,
         random: Math.round(Math.random() * 100),
@@ -152,6 +158,9 @@ export const getCallFunction =
       loopIndex?: number,
       payload?: any
     ) => {
+      const componentDomElement = componentWrapper?.domElement as HTMLElement;
+      componentDomElement.classList.remove(activeFunctionColor);
+      componentDomElement.classList.add(defaultFunctionColor);
       return new Promise((resolve, reject) => {
         if (args === undefined || !commandName) {
           prepareFunctionCallParameters();
@@ -185,12 +194,32 @@ export const getCallFunction =
                     }
                   });
                 isFunctionFound = true;
+
+                componentDomElement.classList.add(activeFunctionColor);
+                componentDomElement.classList.remove(defaultFunctionColor);
+
                 runNode<NodeInfo>(
                   element as IRectNodeComponent<NodeInfo>,
                   canvasAppInstance,
                   animatePath,
                   (input) => {
                     canvasAppInstance?.returnToPreviousScope();
+
+                    componentDomElement.classList.remove(activeFunctionColor);
+                    componentDomElement.classList.add(defaultFunctionColor);
+
+                    if (
+                      (
+                        (element as IRectNodeComponent<NodeInfo>)
+                          .nodeInfo as any
+                      ).onFunctionFinished
+                    ) {
+                      (
+                        (element as IRectNodeComponent<NodeInfo>)
+                          .nodeInfo as any
+                      ).onFunctionFinished();
+                    }
+
                     resolve({
                       output: input,
                       result: input,
@@ -251,10 +280,10 @@ export const getCallFunction =
           },
         ];
 
-        const componentWrapper = createElement(
+        componentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded`,
+            class: `inner-node bg-slate-500 p-4 rounded border-2 border-slate-500 transition-colors duration-200`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
@@ -294,7 +323,7 @@ export const getCallFunction =
           ],
           componentWrapper,
           {
-            classNames: `bg-slate-500 p-4 rounded`,
+            classNames: `p-4 rounded`,
           },
           undefined,
           undefined,

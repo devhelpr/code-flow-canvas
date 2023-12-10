@@ -17,46 +17,14 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
-import { RangeValueType } from '../types/value-type';
 
-/*
-
-needed when we want to implement a base-iterator from which foreach/map/filter/sort can be derived
-
-  export const SubOutputActionType = {
-  pushToResult: 'pushToResult',
-  filterFromResult: 'filterFromResult',
-  keepInput: 'keepInput',
-} as const;
-
-export type SubOutputActionType =
-  (typeof SubOutputActionType)[keyof typeof SubOutputActionType];
-
-
-*/
-
-const activeMapColor = 'bg-blue-400';
+const activeSortColor = 'bg-blue-300';
 export const mapNodeName = 'map';
-const title = 'map';
 
-const isInputOfRangeValueType = (input: RangeValueType) => {
-  if (typeof input === 'object' && input) {
-    return (
-      input.min !== undefined &&
-      input.max !== undefined &&
-      input.step !== undefined &&
-      typeof input.min === 'number' &&
-      typeof input.max === 'number' &&
-      typeof input.step === 'number' &&
-      !isNaN(input.min) &&
-      !isNaN(input.max) &&
-      !isNaN(input.step)
-    );
-  }
-  return false;
-};
+export const sortNodeName = 'sort';
+const title = 'sort';
 
-export const getMap =
+export const getSort =
   (
     animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
@@ -68,10 +36,12 @@ export const getMap =
     const initializeCompute = () => {
       if (foreachComponent && foreachComponent.domElement) {
         foreachComponent.domElement.textContent = `${title}`;
+
         const forEachDomElement = foreachComponent?.domElement as HTMLElement;
         forEachDomElement.classList.add('bg-slate-500');
-        forEachDomElement.classList.remove(activeMapColor);
+        forEachDomElement.classList.remove(activeSortColor);
       }
+
       return;
     };
     const computeAsync = (
@@ -82,7 +52,7 @@ export const getMap =
     ) => {
       const forEachDomElement = foreachComponent?.domElement as HTMLElement;
       forEachDomElement.classList.add('bg-slate-500');
-      forEachDomElement.classList.remove(activeMapColor);
+      forEachDomElement.classList.remove(activeSortColor);
 
       return new Promise((resolve, reject) => {
         if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -92,32 +62,13 @@ export const getMap =
 
         let values: any[] = [];
         values = input as unknown as any[];
-        let isRange = false;
         let forEachLength = 0;
-        let startIndex = 0;
-        let step = 1;
-        const rangeInput = input as unknown as RangeValueType;
-        if (
-          isInputOfRangeValueType(rangeInput) &&
-          rangeInput.max !== undefined &&
-          rangeInput.min !== undefined &&
-          rangeInput.step !== undefined
-        ) {
-          isRange = true;
-          startIndex = rangeInput.min;
-          step = rangeInput.step;
-          forEachLength = rangeInput.max;
-
-          /*Math.floor(
-            (rangeInput.max - rangeInput.min) / rangeInput.step
-          );
-          */
-        } else {
-          if (!Array.isArray(input)) {
-            values = [input];
-          }
-          forEachLength = values.length;
+        const startIndex = 0;
+        const step = 1;
+        if (!Array.isArray(input)) {
+          values = [input];
         }
+        forEachLength = values.length;
         if (foreachComponent && foreachComponent.domElement) {
           foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
         }
@@ -140,20 +91,34 @@ export const getMap =
                   reject();
                   return;
                 }
-                output.push(outputFromMap);
+                output.push({
+                  index: mapLoop,
+                  sortValue: outputFromMap,
+                });
                 console.log('map runNext onstopped', mapLoop, outputFromMap);
 
                 runNext(mapLoop + step);
               },
-              isRange ? mapLoop : values[mapLoop],
+              { ...values[mapLoop] } as unknown as any,
               pathExecution,
               node,
               mapLoop
             );
           } else {
             forEachDomElement.classList.add('bg-slate-500');
-            forEachDomElement.classList.remove(activeMapColor);
+            forEachDomElement.classList.remove(activeSortColor);
 
+            const sortedOutputList = output.toSorted((a, b) => {
+              if (a.sortValue < b.sortValue) {
+                return -1;
+              } else if (a.sortValue > b.sortValue) {
+                return 1;
+              }
+              return 0;
+            });
+            const sortedList = sortedOutputList.map(
+              (item, _index) => values[item.index]
+            );
             runNodeFromThumb(
               node.thumbConnectors[0],
               animatePathFromThumb,
@@ -168,7 +133,7 @@ export const getMap =
                   stop: true,
                 });
               },
-              output,
+              sortedList,
               pathExecution,
               node,
               loopIndex
@@ -177,17 +142,14 @@ export const getMap =
         };
 
         forEachDomElement.classList.remove('bg-slate-500');
-        forEachDomElement.classList.add(activeMapColor);
+        forEachDomElement.classList.add(activeSortColor);
+
         runNext(startIndex);
-        // resolve({
-        //   result: input,
-        //   stop: true,
-        // });
       });
     };
 
     return {
-      name: mapNodeName,
+      name: sortNodeName,
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
@@ -256,7 +218,7 @@ export const getMap =
           undefined,
           id,
           {
-            type: mapNodeName,
+            type: sortNodeName,
             formValues: {},
           },
           containerNode

@@ -12,10 +12,14 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/form-component';
 
+const defaultFunctionColor = 'bg-yellow-400';
+const activeFunctionColor = 'bg-orange-400';
+
 export const getFunction =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let componentWrapper: INodeComponent<NodeInfo> | undefined;
     let divElement: IElementNode<NodeInfo>;
     let parametersContainer: IElementNode<NodeInfo>;
     const initializeCompute = () => {
@@ -28,6 +32,10 @@ export const getFunction =
           stop: true,
         };
       }
+      const componentDomElement = componentWrapper?.domElement as HTMLElement;
+      componentDomElement.classList.add(defaultFunctionColor);
+      componentDomElement.classList.remove(activeFunctionColor);
+
       const parameters: string =
         node?.nodeInfo?.formValues?.['parameters'] ?? '';
       const parametersArray = parameters ? parameters.split(',') : [];
@@ -35,6 +43,9 @@ export const getFunction =
       let isError = false;
       if (inputObject && inputObject.trigger === 'TRIGGER') {
         const payload: Record<string, any> = {};
+
+        componentDomElement.classList.remove(defaultFunctionColor);
+        componentDomElement.classList.add(activeFunctionColor);
 
         parametersArray.forEach((parameter) => {
           if (!inputObject[parameter]) {
@@ -70,7 +81,7 @@ export const getFunction =
           'span',
           {
             'data-index': index,
-            class: `outline-[4px] max-w-[40px] text-ellipsis overflow-hidden inline-block px-0.5 leading-5 bg-slate-500 border border-slate-600 rounded text-white`,
+            class: `outline-[4px] max-w-full text-ellipsis overflow-hidden inline-block px-0.5 leading-5 bg-slate-500 border border-slate-600 rounded text-white`,
             title: parameter,
           },
           undefined,
@@ -142,10 +153,10 @@ export const getFunction =
           },
         ];
 
-        const componentWrapper = createElement(
+        componentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-sky-900 p-4 rounded flex flex-row justify-center items-center`,
+            class: `inner-node ${defaultFunctionColor} p-4 rounded flex flex-row justify-center items-center transition-colors duration-200`,
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
@@ -153,7 +164,7 @@ export const getFunction =
         divElement = createElement(
           'div',
           {
-            class: `text-center block text-white font-bold`,
+            class: `text-center block text-black font-bold`,
           },
           componentWrapper.domElement
         );
@@ -170,7 +181,7 @@ export const getFunction =
         const rect = canvasApp.createRect(
           x,
           y,
-          100,
+          150,
           100,
           undefined,
 
@@ -185,7 +196,7 @@ export const getFunction =
           ],
           componentWrapper,
           {
-            classNames: `bg-sky-900 py-4 px-2 rounded`,
+            classNames: ` py-4 px-2 rounded`,
           },
           false,
           undefined,
@@ -209,6 +220,12 @@ export const getFunction =
           node.nodeInfo.formElements = formElements;
           node.nodeInfo.compute = compute;
           node.nodeInfo.initializeCompute = initializeCompute;
+          (node.nodeInfo as any).onFunctionFinished = () => {
+            const componentDomElement =
+              componentWrapper?.domElement as HTMLElement;
+            componentDomElement.classList.add(defaultFunctionColor);
+            componentDomElement.classList.remove(activeFunctionColor);
+          };
         }
         showParameters();
 

@@ -71,13 +71,13 @@ export const getSequential =
               input,
               pathExecution,
               node,
-              0
+              loopIndex
             );
           },
           input,
           pathExecution,
           node,
-          0
+          loopIndex
         );
       });
     };

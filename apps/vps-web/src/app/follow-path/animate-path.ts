@@ -12,6 +12,18 @@ import {
 } from './get-node-connection-pairs';
 import { getPointOnConnection } from './point-on-connection';
 
+function getSpeed(maxSpeed: number, speedMeter: number) {
+  //return 1;
+  return (maxSpeed * (1000 - speedMeter)) / 1000;
+}
+function getLoopIncrement() {
+  return 0.1;
+}
+function getMaxLoop() {
+  //return 0;
+  return 1.015;
+}
+
 export type AnimatePathFunction<T> = (
   node: IRectNodeComponent<T>,
   color: string,
@@ -294,8 +306,9 @@ export const animatePathForNodeConnectionPairs = <T>(
         }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
         // loop += 0.015;
-        loop += 0.1;
-        if (loop > 1.015) {
+        loop += getLoopIncrement(); //0.1;
+        if (loop > getMaxLoop()) {
+          //  1.015
           loop = 0;
 
           // canvasApp?.elements.delete(testCircle.id);
@@ -358,9 +371,10 @@ export const animatePathForNodeConnectionPairs = <T>(
                   console.log(
                     'animatePath onStopped1',
                     nodeConnectionPairs,
-                    input
+                    input,
+                    result.output
                   );
-                  onStopped(input ?? '');
+                  onStopped(result.output ?? input ?? '');
                 }
               }
             };
@@ -385,10 +399,7 @@ export const animatePathForNodeConnectionPairs = <T>(
           if (speedMeter !== currentSpeed) {
             clearInterval(cancel);
             timers.delete(cancel);
-            cancel = setInterval(
-              onInterval,
-              (maxSpeed * (1000 - speedMeter)) / 1000
-            );
+            cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
             setCanceler();
           }
         }
@@ -411,21 +422,15 @@ export const animatePathForNodeConnectionPairs = <T>(
         }
       }
     };
-    console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
-    let cancel = setInterval(
-      onInterval,
-      (maxSpeed * (1000 - speedMeter)) / 1000
-    );
+    // console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+    let cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
 
     const setCanceler = () => {
       timers.set(cancel, () => {
         clearInterval(cancel);
         timers.delete(cancel);
-        console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
-        cancel = setInterval(
-          onInterval,
-          (maxSpeed * (1000 - speedMeter)) / 1000
-        );
+        //console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+        cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
         setCanceler();
       });
     };

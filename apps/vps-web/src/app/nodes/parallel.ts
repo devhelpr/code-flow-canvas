@@ -60,7 +60,7 @@ export const getParallel =
             seq1Ran = true;
             if (seq2Ran) {
               resolve({
-                result: input,
+                result: inputFromFirstRun,
                 stop: true,
               });
             }
@@ -68,7 +68,7 @@ export const getParallel =
           input,
           pathExecution,
           node,
-          0
+          loopIndex
         );
 
         runNodeFromThumb(
@@ -80,7 +80,7 @@ export const getParallel =
 
             if (seq1Ran) {
               resolve({
-                result: input,
+                result: inputFromSecondRun,
                 stop: true,
               });
             }
@@ -88,7 +88,7 @@ export const getParallel =
           input,
           pathExecution,
           node,
-          0
+          loopIndex
         );
       });
     };

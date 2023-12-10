@@ -84,8 +84,13 @@ import {
   getDictionaryAsArrayNodeName,
 } from '../nodes/get-dictionary-as-array';
 import { getMap, mapNodeName } from '../nodes/map';
-import { getSortArrayNode, sortNodeName } from '../nodes/sort-array';
+import { getSortArrayNode, sortArrayNodeName } from '../nodes/sort-array';
 import { joinArrayNodeName, joinArray } from '../nodes/join-array';
+import { getSort, sortNodeName } from '../nodes/sort';
+import {
+  getDictionarySize,
+  getDictionarySizeNodeName,
+} from '../nodes/get-dictionary-size';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -114,6 +119,7 @@ export const setupCanvasNodeTaskRegistry = (
 
   registerNodeFactory('foreach', getForEach(animatePath, animatePathFromThumb));
   registerNodeFactory(mapNodeName, getMap(animatePath, animatePathFromThumb));
+  registerNodeFactory(sortNodeName, getSort(animatePath, animatePathFromThumb));
 
   registerNodeFactory('expression', getExpression);
   registerNodeFactory('expression-part', getExpressionPart);
@@ -189,7 +195,8 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
   registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
   registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
-  registerNodeFactory(sortNodeName, getSortArrayNode);
+  registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
+  registerNodeFactory(sortArrayNodeName, getSortArrayNode);
   registerNodeFactory(joinArrayNodeName, joinArray);
 };
 
