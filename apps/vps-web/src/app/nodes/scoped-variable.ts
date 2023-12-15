@@ -18,6 +18,7 @@ import {
 } from '../node-task-registry';
 import { showDictionaryData } from './data-viewers/dictionary';
 import { showArrayData } from './data-viewers/array';
+import { showGridData } from './data-viewers/grid';
 
 export const scopeVariableNodeName = 'scope-variable';
 
@@ -39,12 +40,35 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
   let fieldValueType = 'number';
   let scopedData: Record<string, any> = {};
 
+  const getDefaultValue = () => {
+    switch (fieldValueType) {
+      case 'number':
+        return 0;
+      case 'string':
+        return '';
+      case 'integer':
+        return 0;
+      default:
+        return '';
+    }
+  };
+
+  const convertDataToType = (data: any) => {
+    switch (fieldValueType) {
+      case 'number':
+        return typeof data === 'number' ? data : parseFloat(data) || 0;
+      case 'string':
+        return data.toString();
+      case 'integer':
+        return parseInt(data) || 0;
+      default:
+        return data.toString();
+    }
+  };
+
   const setDataForFieldType = (data: any, scopeId?: string) => {
     if (fieldType === 'value') {
-      let value = data;
-      if (typeof value === 'string') {
-        value = parseFloat(value) || 0;
-      }
+      const value = convertDataToType(data);
       if (scopeId) {
         scopedData[scopeId] = value;
       } else {
@@ -61,10 +85,11 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         }
       }
       if (data && data.key) {
+        const value = convertDataToType(data.value);
         if (scopeId) {
-          scopedData[scopeId][data.key] = data.value;
+          scopedData[scopeId][data.key] = value;
         } else {
-          currentValue[data.key] = data.value;
+          currentValue[data.key] = value;
         }
       }
     } else if (fieldType === 'array') {
@@ -79,9 +104,43 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
       }
       if (data) {
         if (scopeId) {
-          scopedData[scopeId].push(data);
+          if (data && data.index !== undefined) {
+            const value = convertDataToType(data.value);
+            if (data.index < scopedData[scopeId].length) {
+              scopedData[scopeId][data.index] = value;
+            }
+          } else {
+            const value = convertDataToType(data);
+            scopedData[scopeId].push(value);
+          }
         } else {
-          currentValue.push(data);
+          if (data && data.index !== undefined) {
+            const value = convertDataToType(data.value);
+            if (data.index < currentValue.length) {
+              currentValue[data.index] = value;
+            }
+          } else {
+            const value = convertDataToType(data);
+            currentValue.push(value);
+          }
+        }
+      }
+    } else if (fieldType === 'grid') {
+      if (scopeId) {
+        if (!scopedData[scopeId]) {
+          scopedData[scopeId] = [];
+        }
+      } else {
+        if (!currentValue) {
+          currentValue = [];
+        }
+      }
+      if (data && data.row !== undefined && data.column !== undefined) {
+        const value = convertDataToType(data.value);
+        if (scopeId) {
+          scopedData[scopeId][data.row][data.column] = value;
+        } else {
+          currentValue[data.row][data.column] = value;
         }
       }
     }
@@ -101,7 +160,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         if (scopedData[scopeId]) {
           return scopedData[scopeId][parameter.toString()];
         }
-        return '';
+        return getDefaultValue();
       }
       if (parameter === undefined) {
         return currentValue;
@@ -115,12 +174,33 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         if (scopedData[scopeId]) {
           return scopedData[scopeId][parameter];
         }
-        return '';
+        return getDefaultValue();
       }
       if (parameter === undefined) {
         return currentValue;
       }
       return currentValue?.[parameter];
+    } else if (fieldType === 'grid') {
+      if (scopeId) {
+        if (parameter === undefined) {
+          return scopedData[scopeId];
+        }
+        if (
+          scopedData[scopeId] &&
+          parameter.row !== undefined &&
+          parameter.column !== undefined
+        ) {
+          return scopedData[scopeId][parameter.row][parameter.column];
+        }
+        return getDefaultValue();
+      }
+      if (parameter === undefined) {
+        return currentValue;
+      }
+      if (parameter.row !== undefined && parameter.column !== undefined) {
+        return currentValue?.[parameter.row]?.[parameter.column];
+      }
+      return getDefaultValue();
     }
   };
 
@@ -128,6 +208,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
     scopedData = {};
     currentValue = undefined;
     fieldType = node?.nodeInfo?.formValues?.['fieldType'] ?? 'value';
+    fieldValueType = node?.nodeInfo?.formValues?.['fieldValueType'] ?? 'number';
     setDataForFieldType(
       fieldType === 'value'
         ? node?.nodeInfo?.formValues?.['initialValue'] ?? 0
@@ -153,6 +234,10 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
     } else if (fieldType === 'array') {
       if (htmlNode) {
         (htmlNode.domElement as unknown as HTMLElement).textContent = 'array';
+      }
+    } else if (fieldType === 'grid') {
+      if (htmlNode) {
+        (htmlNode.domElement as unknown as HTMLElement).textContent = 'grid';
       }
     } else {
       if (htmlNode) {
@@ -230,6 +315,29 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
             rect.resize(240);
           }
         }
+      } else if (fieldType === 'grid') {
+        const grid = getDataForFieldType(undefined, scopeId);
+        if (grid && Array.isArray(grid)) {
+          if (grid.length > 0) {
+            showGridData(
+              grid,
+              {
+                rowCount: grid.length,
+                columnCount: grid[0].length,
+              },
+              htmlNode
+            );
+            if (rect) {
+              rect.resize(grid[0].length * 32);
+            }
+          } else {
+            (htmlNode.domElement as unknown as HTMLElement).textContent =
+              'empty grid';
+            if (rect) {
+              rect.resize(120);
+            }
+          }
+        }
       } else {
         (htmlNode.domElement as unknown as HTMLElement).textContent =
           value.toString();
@@ -255,6 +363,62 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
       }, 250);
     }
   };
+  const initializeDataStructure = (structureInfo: any, scopeId?: string) => {
+    if (fieldType === 'grid') {
+      if (
+        structureInfo &&
+        structureInfo.rowCount &&
+        structureInfo.columnCount
+      ) {
+        const rowCount = parseInt(structureInfo.rowCount);
+        const columnCount = parseInt(structureInfo.columnCount);
+        if (rowCount > 0 && columnCount > 0) {
+          if (scopeId) {
+            scopedData[scopeId] = [];
+            for (let i = 0; i < rowCount; i++) {
+              scopedData[scopeId].push([]);
+              for (let j = 0; j < columnCount; j++) {
+                scopedData[scopeId][i].push(getDefaultValue());
+              }
+            }
+          } else {
+            currentValue = [];
+            for (let i = 0; i < rowCount; i++) {
+              currentValue.push([]);
+              for (let j = 0; j < columnCount; j++) {
+                currentValue[i].push(getDefaultValue());
+              }
+            }
+          }
+        }
+
+        if (htmlNode && fieldType === 'grid') {
+          const grid = getDataForFieldType(undefined, scopeId);
+          if (grid && Array.isArray(grid)) {
+            if (grid.length > 0) {
+              showGridData(
+                grid,
+                {
+                  rowCount: grid.length,
+                  columnCount: grid[0].length,
+                },
+                htmlNode
+              );
+              if (rect) {
+                rect.resize(grid[0].length * 32);
+              }
+            } else {
+              (htmlNode.domElement as unknown as HTMLElement).textContent =
+                'empty grid';
+              if (rect) {
+                rect.resize(120);
+              }
+            }
+          }
+        }
+      }
+    }
+  };
 
   return {
     name: scopeVariableNodeName,
@@ -274,6 +438,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         id: id ?? '',
         getData,
         setData,
+        initializeDataStructure,
       });
       const formElements = [
         {
@@ -341,6 +506,10 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
               value: 'grid',
               label: 'Grid/Matrix',
             },
+            // {
+            //   value: 'dataTable',
+            //   label: 'DataTable',
+            // },
           ],
           onChange: (value: string) => {
             if (!node.nodeInfo) {

@@ -102,6 +102,14 @@ import {
   getArrayVariableNodeName,
 } from '../nodes/get-array-value';
 import { reverseArray, reverseArrayNodeName } from '../nodes/reverse-array';
+import {
+  initializeGridVariableNodeName,
+  initializeGridVariable,
+} from '../nodes/initialize-grid';
+import {
+  setArrayValueByIndexVariableNodeName,
+  setArrayValueByIndexVariable,
+} from '../nodes/set-array-value-by-index';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -203,17 +211,29 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('merge', getMergeNode);
   registerNodeFactory(rangeNodeName, getRangeNode);
   registerNodeFactory(scopeVariableNodeName, getScopedVariable);
+
+  // dictionary nodes
   registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
   registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
   registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
   registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
+
+  // array nodes
   registerNodeFactory(pushValueToArrayVariableNodeName, pushArrayVariable);
   registerNodeFactory(getArraySizeNodeName, getArraySize);
   registerNodeFactory(getArrayNodeName, getArrayVariable);
   registerNodeFactory(getArrayVariableNodeName, getArrayValueByIndex);
+  registerNodeFactory(
+    setArrayValueByIndexVariableNodeName,
+    setArrayValueByIndexVariable
+  );
+
   registerNodeFactory(sortArrayNodeName, getSortArrayNode);
   registerNodeFactory(joinArrayNodeName, joinArray);
   registerNodeFactory(reverseArrayNodeName, reverseArray);
+
+  // grid nodes
+  registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
 };
 
 export const getNodeTaskFactory = (name: string) => {

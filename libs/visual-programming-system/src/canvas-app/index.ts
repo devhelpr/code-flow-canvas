@@ -38,8 +38,9 @@ export const createCanvasApp = <T>(
     string,
     {
       id: string;
-      getData: (parameter?: any, scope?: string) => any;
-      setData: (data: any, scope?: string) => void;
+      getData: (parameter?: any, scopeId?: string) => any;
+      setData: (data: any, scopeId?: string) => void;
+      initializeDataStructure?: (structureInfo: any, scopeId?: string) => void;
     }
   > = {};
   const variableObservers: Map<
@@ -939,6 +940,7 @@ export const createCanvasApp = <T>(
         id: string;
         getData: () => any;
         setData: (data: any) => void;
+        initializeDataStructure?: (structureInfo: any) => void;
       }
     ) => {
       if (variableName && variable.id) {
@@ -993,6 +995,18 @@ export const createCanvasApp = <T>(
     },
     getVariableNames: () => {
       return Object.keys(variables);
+    },
+    initializeVariableDataSturcture: (
+      variableName: string,
+      structureInfo: any,
+      scopeId?: string
+    ) => {
+      if (variableName && variables[variableName] && structureInfo) {
+        const variable = variables[variableName];
+        if (variable.initializeDataStructure) {
+          variable.initializeDataStructure(structureInfo, scopeId);
+        }
+      }
     },
     observeVariable: (
       nodeId: string,
