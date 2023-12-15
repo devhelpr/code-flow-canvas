@@ -16,6 +16,8 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { showDictionaryData } from './data-viewers/dictionary';
+import { showArrayData } from './data-viewers/array';
 
 export const scopeVariableNodeName = 'scope-variable';
 
@@ -34,6 +36,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
   let timeout: any = undefined;
 
   let fieldType = 'value';
+  let fieldValueType = 'number';
   let scopedData: Record<string, any> = {};
 
   const setDataForFieldType = (data: any, scopeId?: string) => {
@@ -64,6 +67,23 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
           currentValue[data.key] = data.value;
         }
       }
+    } else if (fieldType === 'array') {
+      if (scopeId) {
+        if (!scopedData[scopeId]) {
+          scopedData[scopeId] = [];
+        }
+      } else {
+        if (!currentValue) {
+          currentValue = [];
+        }
+      }
+      if (data) {
+        if (scopeId) {
+          scopedData[scopeId].push(data);
+        } else {
+          currentValue.push(data);
+        }
+      }
     }
   };
 
@@ -87,6 +107,20 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         return currentValue;
       }
       return currentValue?.[parameter.toString()];
+    } else if (fieldType === 'array') {
+      if (scopeId) {
+        if (parameter === undefined) {
+          return scopedData[scopeId];
+        }
+        if (scopedData[scopeId]) {
+          return scopedData[scopeId][parameter];
+        }
+        return '';
+      }
+      if (parameter === undefined) {
+        return currentValue;
+      }
+      return currentValue?.[parameter];
     }
   };
 
@@ -111,10 +145,20 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
           currentValue.toString();
       }
       canvasAppInstance?.setVariable(variableName, currentValue);
-    } else {
+    } else if (fieldType === 'dictionary') {
       if (htmlNode) {
         (htmlNode.domElement as unknown as HTMLElement).textContent =
           'dictionary';
+      }
+    } else if (fieldType === 'array') {
+      if (htmlNode) {
+        (htmlNode.domElement as unknown as HTMLElement).textContent = 'array';
+      }
+    } else {
+      if (htmlNode) {
+        (
+          htmlNode.domElement as unknown as HTMLElement
+        ).textContent = `${fieldType} is not supported yet`;
       }
     }
 
@@ -173,22 +217,15 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
       if (fieldType === 'dictionary') {
         const dictionary = getDataForFieldType(undefined, scopeId);
         if (dictionary) {
-          const keys = Object.keys(dictionary);
-          let asHtml = keys
-            .map((key, index) => {
-              if (index >= 5) {
-                return '';
-              }
-              return `
-              <div class="flex flex-row">
-                <div class="flex-grow text-left">${key}</div>
-                <div class="flex-grow text-right">${dictionary[key]}</div>
-              </div>`;
-            })
-            .join('');
-          asHtml += `<div>Size: ${keys.length}</div>`;
-
-          (htmlNode.domElement as unknown as HTMLElement).innerHTML = asHtml;
+          showDictionaryData(dictionary, htmlNode);
+          if (rect) {
+            rect.resize(240);
+          }
+        }
+      } else if (fieldType === 'array') {
+        const array = getDataForFieldType(undefined, scopeId);
+        if (array && Array.isArray(array)) {
+          showArrayData(array, htmlNode);
           if (rect) {
             rect.resize(240);
           }
@@ -296,6 +333,14 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
               value: 'dictionary',
               label: 'Dictionary',
             },
+            {
+              value: 'array',
+              label: 'Array',
+            },
+            {
+              value: 'grid',
+              label: 'Grid/Matrix',
+            },
           ],
           onChange: (value: string) => {
             if (!node.nodeInfo) {
@@ -306,6 +351,63 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
               fieldType: value,
             };
             fieldType = value;
+            initializeCompute();
+            if (updated) {
+              updated();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'fieldValueType',
+          value: initalValues?.['fieldValueType'] ?? 'number',
+          options: [
+            {
+              value: 'number',
+              label: 'Number',
+            },
+            {
+              value: 'string',
+              label: 'String',
+            },
+            /*{
+              value: 'integer',
+              label: 'Integer',
+            },
+            {
+              value: 'decimal',
+              label: 'Decimal',
+            },
+            {
+              value: 'latlong',
+              label: 'Latitude/Longitude',
+            },
+            {
+              value: 'date',
+              label: 'Date',
+            },
+            {
+              value: 'time',
+              label: 'Time',
+            },
+            { value: 'datetime', label: 'Date/Time' },
+            { value: 'boolean', label: 'Boolean' },
+            { value: 'color', label: 'Color' },
+            { value: 'byte', label: 'Byte' },
+            { value: 'word', label: 'Word(32bit)' },
+            { value: 'dword', label: 'Double Word(64bit)' },
+            { value: 'bigint', label: 'Bigint' },
+            */
+          ],
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              fieldValueType: value,
+            };
+            fieldValueType = value;
             initializeCompute();
             if (updated) {
               updated();

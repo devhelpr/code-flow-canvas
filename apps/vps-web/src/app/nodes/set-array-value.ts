@@ -16,25 +16,15 @@ import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
 const fieldName = 'variableName';
-export const setDictionaryVariableNodeName = 'set-dictionary-variable';
+export const pushValueToArrayVariableNodeName = 'push-value-to-array-variable';
 
-export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
+export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
-  const values = {
-    key: undefined,
-    value: undefined,
-  } as {
-    key: undefined | string;
-    value: undefined | string;
-  };
-
   const initializeCompute = () => {
-    values.key = undefined;
-    values.value = undefined;
     return;
   };
 
@@ -46,42 +36,16 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     thumbName?: string,
     scopeId?: string
   ) => {
-    if (thumbName === 'key') {
-      values.key = input ?? undefined;
-    } else if (thumbName === 'value') {
-      values.value = input ?? undefined;
-    }
-
-    if (values.key === undefined || values.value === undefined) {
-      return {
-        result: undefined,
-        output: undefined,
-        stop: true,
-        followPath: undefined,
-      };
-    }
-
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        contextInstance.setVariable(
-          variableName,
-          {
-            key: values.key,
-            value: values.value,
-          },
-          scopeId
-        );
+        contextInstance.setVariable(variableName, input, scopeId);
       }
     }
-    const value = values.value;
-    values.key = undefined;
-    values.value = undefined;
-
     return {
-      result: value,
-      output: value,
+      result: input,
+      output: input,
       followPath: undefined,
     };
   };
@@ -102,8 +66,8 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    setDictionaryVariableNodeName,
-    'Set key-value',
+    pushValueToArrayVariableNodeName,
+    'Push value to array',
     'flow-canvas',
     'variableName',
     compute,
@@ -120,18 +84,8 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
         label: ' ',
       },
       {
-        thumbType: ThumbType.EndConnectorLeft,
+        thumbType: ThumbType.EndConnectorCenter,
         thumbIndex: 0,
-        connectionType: ThumbConnectionType.end,
-        color: 'white',
-        label: ' ',
-        prefixLabel: 'key',
-        name: 'key',
-        maxConnections: 1,
-      },
-      {
-        thumbType: ThumbType.EndConnectorLeft,
-        thumbIndex: 1,
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
@@ -176,7 +130,7 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       const domElement = nodeInstance.node.domElement as HTMLElement;
       const textNode = domElement.querySelector('.inner-node');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Set key value in<br />'${node.nodeInfo?.formValues?.[fieldName]}' dictionary`;
+        textNode.innerHTML = `Push value to<br />'${node.nodeInfo?.formValues?.[fieldName]}' array`;
       }
     },
     {

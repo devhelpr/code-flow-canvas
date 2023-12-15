@@ -91,6 +91,17 @@ import {
   getDictionarySize,
   getDictionarySizeNodeName,
 } from '../nodes/get-dictionary-size';
+import {
+  pushArrayVariable,
+  pushValueToArrayVariableNodeName,
+} from '../nodes/set-array-value';
+import { getArraySizeNodeName, getArraySize } from '../nodes/get-array-size';
+import { getArrayNodeName, getArrayVariable } from '../nodes/get-array';
+import {
+  getArrayValueByIndex,
+  getArrayVariableNodeName,
+} from '../nodes/get-array-value';
+import { reverseArray, reverseArrayNodeName } from '../nodes/reverse-array';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -196,8 +207,13 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
   registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
   registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
+  registerNodeFactory(pushValueToArrayVariableNodeName, pushArrayVariable);
+  registerNodeFactory(getArraySizeNodeName, getArraySize);
+  registerNodeFactory(getArrayNodeName, getArrayVariable);
+  registerNodeFactory(getArrayVariableNodeName, getArrayValueByIndex);
   registerNodeFactory(sortArrayNodeName, getSortArrayNode);
   registerNodeFactory(joinArrayNodeName, joinArray);
+  registerNodeFactory(reverseArrayNodeName, reverseArray);
 };
 
 export const getNodeTaskFactory = (name: string) => {

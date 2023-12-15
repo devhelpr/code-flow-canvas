@@ -16,25 +16,15 @@ import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
 const fieldName = 'variableName';
-export const setDictionaryVariableNodeName = 'set-dictionary-variable';
+export const getArrayVariableNodeName = 'get-array-value-by-index';
 
-export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
+export const getArrayValueByIndex: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
-  const values = {
-    key: undefined,
-    value: undefined,
-  } as {
-    key: undefined | string;
-    value: undefined | string;
-  };
-
   const initializeCompute = () => {
-    values.key = undefined;
-    values.value = undefined;
     return;
   };
 
@@ -46,13 +36,7 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     thumbName?: string,
     scopeId?: string
   ) => {
-    if (thumbName === 'key') {
-      values.key = input ?? undefined;
-    } else if (thumbName === 'value') {
-      values.value = input ?? undefined;
-    }
-
-    if (values.key === undefined || values.value === undefined) {
+    if (!input) {
       return {
         result: undefined,
         output: undefined,
@@ -60,28 +44,31 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-
+    let data = '';
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        contextInstance.setVariable(
-          variableName,
-          {
-            key: values.key,
-            value: values.value,
-          },
-          scopeId
-        );
+        data = contextInstance.getVariable(variableName, undefined, scopeId);
+        let index = -1;
+        if (typeof input == 'number') {
+          index = input;
+        } else if (typeof input == 'string') {
+          index = parseInt(input);
+        }
+        if (index > -1 && Array.isArray(data) && data.length > index) {
+          const value = data[index];
+          return {
+            result: value,
+            output: value,
+            followPath: undefined,
+          };
+        }
       }
     }
-    const value = values.value;
-    values.key = undefined;
-    values.value = undefined;
-
     return {
-      result: value,
-      output: value,
+      result: undefined,
+      output: undefined,
+      stop: true,
       followPath: undefined,
     };
   };
@@ -93,8 +80,8 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       const variableNode = getNodeByVariableName(variableName, contextInstance);
       if (variableNode) {
         dependencies.push({
-          startNodeId: node.id,
-          endNodeId: variableNode.id,
+          startNodeId: variableNode.id,
+          endNodeId: node.id,
         });
       }
     }
@@ -102,15 +89,15 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    setDictionaryVariableNodeName,
-    'Set key-value',
+    getArrayVariableNodeName,
+    `Get by index from array`,
     'flow-canvas',
     'variableName',
     compute,
     initializeCompute,
     false,
-    280,
-    200,
+    300,
+    100,
     [
       {
         thumbType: ThumbType.StartConnectorCenter,
@@ -120,23 +107,12 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
         label: ' ',
       },
       {
-        thumbType: ThumbType.EndConnectorLeft,
+        thumbType: ThumbType.EndConnectorCenter,
         thumbIndex: 0,
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        prefixLabel: 'key',
-        name: 'key',
-        maxConnections: 1,
-      },
-      {
-        thumbType: ThumbType.EndConnectorLeft,
-        thumbIndex: 1,
-        connectionType: ThumbConnectionType.end,
-        color: 'white',
-        label: ' ',
-        prefixLabel: 'value',
-        name: 'value',
+        prefixLabel: 'index',
         maxConnections: 1,
       },
     ],
@@ -176,7 +152,7 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       const domElement = nodeInstance.node.domElement as HTMLElement;
       const textNode = domElement.querySelector('.inner-node');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Set key value in<br />'${node.nodeInfo?.formValues?.[fieldName]}' dictionary`;
+        textNode.innerHTML = `Get by index from<br />'${node.nodeInfo?.formValues?.[fieldName]}' array`;
       }
     },
     {
