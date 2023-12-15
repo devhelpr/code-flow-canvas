@@ -94,7 +94,7 @@ import {
 import {
   pushArrayVariable,
   pushValueToArrayVariableNodeName,
-} from '../nodes/set-array-value';
+} from '../nodes/push-array-value';
 import { getArraySizeNodeName, getArraySize } from '../nodes/get-array-size';
 import { getArrayNodeName, getArrayVariable } from '../nodes/get-array';
 import {
