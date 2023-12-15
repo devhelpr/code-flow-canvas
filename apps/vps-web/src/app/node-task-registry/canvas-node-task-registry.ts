@@ -110,6 +110,10 @@ import {
   setArrayValueByIndexVariableNodeName,
   setArrayValueByIndexVariable,
 } from '../nodes/set-array-value-by-index';
+import {
+  setGridRowVariable,
+  setGridRowVariableNodeName,
+} from '../nodes/set-grid-row';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -234,6 +238,7 @@ export const setupCanvasNodeTaskRegistry = (
 
   // grid nodes
   registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
+  registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
 };
 
 export const getNodeTaskFactory = (name: string) => {

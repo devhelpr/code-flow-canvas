@@ -128,19 +128,63 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
     } else if (fieldType === 'grid') {
       if (scopeId) {
         if (!scopedData[scopeId]) {
-          scopedData[scopeId] = [];
+          scopedData[scopeId] = {
+            info: {
+              rowCount: 0,
+              columnsCount: 0,
+            },
+            data: [],
+          };
         }
       } else {
         if (!currentValue) {
-          currentValue = [];
+          currentValue = {
+            info: {
+              rowCount: 0,
+              columnsCount: 0,
+            },
+            data: [],
+          };
         }
       }
-      if (data && data.row !== undefined && data.column !== undefined) {
+      if (data && data.setMode === 'fillRow') {
+        let structureInfo = {
+          rowCount: data.row,
+          columnCount: data.array.length,
+        };
+        if (scopeId) {
+          structureInfo = scopedData[scopeId].info;
+        } else {
+          structureInfo = currentValue.info;
+        }
+
+        if (Array.isArray(data.array)) {
+          const copyArray = [...data.array];
+          if (data.array.length > structureInfo.columnCount) {
+            copyArray.splice(structureInfo.columnCount);
+          } else {
+            if (data.array.length < structureInfo.columnCount) {
+              for (
+                let i = data.array.length;
+                i < structureInfo.columnCount;
+                i++
+              ) {
+                copyArray.push(getDefaultValue());
+              }
+            }
+          }
+          if (scopeId) {
+            scopedData[scopeId].data[data.row] = copyArray;
+          } else {
+            currentValue.data[data.row] = copyArray;
+          }
+        }
+      } else if (data && data.row !== undefined && data.column !== undefined) {
         const value = convertDataToType(data.value);
         if (scopeId) {
-          scopedData[scopeId][data.row][data.column] = value;
+          scopedData[scopeId].data[data.row][data.column] = value;
         } else {
-          currentValue[data.row][data.column] = value;
+          currentValue.data[data.row][data.column] = value;
         }
       }
     }
@@ -190,7 +234,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
           parameter.row !== undefined &&
           parameter.column !== undefined
         ) {
-          return scopedData[scopeId][parameter.row][parameter.column];
+          return scopedData[scopeId].data[parameter.row][parameter.column];
         }
         return getDefaultValue();
       }
@@ -198,7 +242,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         return currentValue;
       }
       if (parameter.row !== undefined && parameter.column !== undefined) {
-        return currentValue?.[parameter.row]?.[parameter.column];
+        return currentValue?.data?.[parameter.row]?.[parameter.column];
       }
       return getDefaultValue();
     }
@@ -317,18 +361,18 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         }
       } else if (fieldType === 'grid') {
         const grid = getDataForFieldType(undefined, scopeId);
-        if (grid && Array.isArray(grid)) {
-          if (grid.length > 0) {
+        if (grid && Array.isArray(grid.data)) {
+          if (grid.data.length > 0) {
             showGridData(
-              grid,
+              grid.data,
               {
-                rowCount: grid.length,
-                columnCount: grid[0].length,
+                rowCount: grid.data.length,
+                columnCount: grid.data[0].length,
               },
               htmlNode
             );
             if (rect) {
-              rect.resize(grid[0].length * 32);
+              rect.resize(grid.data[0].length * 32);
             }
           } else {
             (htmlNode.domElement as unknown as HTMLElement).textContent =
@@ -376,20 +420,27 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         const rowCount = structureInfo.rowCount;
         const columnCount = structureInfo.columnCount;
         if (rowCount > 0 && columnCount > 0) {
+          const initialData = {
+            info: {
+              rowCount,
+              columnCount,
+            },
+            data: [],
+          };
           if (scopeId) {
-            scopedData[scopeId] = [];
+            scopedData[scopeId] = initialData;
             for (let i = 0; i < rowCount; i++) {
-              scopedData[scopeId].push([]);
+              scopedData[scopeId].data.push([]);
               for (let j = 0; j < columnCount; j++) {
-                scopedData[scopeId][i].push(getDefaultValue());
+                scopedData[scopeId].data[i].push(getDefaultValue());
               }
             }
           } else {
-            currentValue = [];
+            currentValue = initialData;
             for (let i = 0; i < rowCount; i++) {
-              currentValue.push([]);
+              currentValue.data.push([]);
               for (let j = 0; j < columnCount; j++) {
-                currentValue[i].push(getDefaultValue());
+                currentValue.data[i].push(getDefaultValue());
               }
             }
           }
@@ -397,18 +448,18 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
 
         if (htmlNode && fieldType === 'grid') {
           const grid = getDataForFieldType(undefined, scopeId);
-          if (grid && Array.isArray(grid)) {
-            if (grid.length > 0) {
+          if (grid && Array.isArray(grid.data)) {
+            if (grid.data.length > 0) {
               showGridData(
-                grid,
+                grid.data,
                 {
-                  rowCount: grid.length,
-                  columnCount: grid[0].length,
+                  rowCount: grid.data.length,
+                  columnCount: grid.data[0].length,
                 },
                 htmlNode
               );
               if (rect) {
-                rect.resize(grid[0].length * 32);
+                rect.resize(grid.data[0].length * 32);
               }
             } else {
               (htmlNode.domElement as unknown as HTMLElement).textContent =
