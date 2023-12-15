@@ -452,6 +452,7 @@ export const run = <T>(
 
   const nodeList = Array.from(nodes);
   let isRunning = false;
+  let cameraSet = false;
   nodes.forEach((node) => {
     const nodeComponent = node as unknown as IRectNodeComponent<T>;
     const connectionsFromEndNode = nodeList.filter((e) => {
@@ -474,6 +475,11 @@ export const run = <T>(
       nodeInfo?.type !== 'node-trigger-target' &&
       nodeInfo?.type !== 'function'
     ) {
+      if (!cameraSet) {
+        const camera = canvasApp.getCamera();
+        cameraSet = true;
+        canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
+      }
       isRunning = true;
       runNode<T>(
         nodeComponent,

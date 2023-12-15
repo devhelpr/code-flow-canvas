@@ -46,6 +46,10 @@ import {
   timers,
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
+  setCameraAnimation,
+  setTargetCameraAnimation,
+  setPositionTargetCameraAnimation,
+  getFollowNodeExecution,
 } from './follow-path/animate-path';
 import {
   createIndexedDBStorageProvider,
@@ -214,6 +218,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
     });
+
+    setCameraAnimation(this.canvasApp);
 
     setupCanvasNodeTaskRegistry(animatePath, animatePathFromThumb);
     createIndexedDBStorageProvider()
@@ -546,6 +552,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           event.preventDefault();
           (runButton.domElement as HTMLButtonElement).disabled = true;
           this.clearPathExecution();
+          removeFormElement();
           this.currentPathUnderInspection = undefined;
           if (this.canvasApp?.elements) {
             run<NodeInfo>(
@@ -924,6 +931,20 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         );
         this.formElement = undefined;
       }
+      (
+        this.editPopupContainer?.domElement as unknown as HTMLElement
+      ).classList.add('hidden');
+      (
+        this.editPopupLineContainer?.domElement as unknown as HTMLElement
+      ).classList.add('hidden');
+
+      (
+        this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
+      ).classList.add('hidden');
+
+      (
+        this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
+      ).classList.remove('editing-node-indicator');
     };
 
     createEffect(() => {
@@ -973,6 +994,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           node.connectorWrapper?.domElement?.classList?.add('selected');
         } else {
           node.domElement.classList.add('selected');
+
+          setTargetCameraAnimation(node.x, node.y, node.id, 1.0);
         }
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
@@ -1012,8 +1035,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         }
 
         if (
-          ((nodeInfo as any)?.formElements ?? []).length <= 1 &&
-          !(nodeInfo.showFormOnlyInPopup && nodeInfo.formElements.length >= 1)
+          getFollowNodeExecution() ||
+          (((nodeInfo as any)?.formElements ?? []).length <= 1 &&
+            !(
+              nodeInfo.showFormOnlyInPopup && nodeInfo.formElements.length >= 1
+            ))
         ) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
@@ -1165,6 +1191,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     registerCustomFunction('parseFloat', [], (a = 0) => {
       return parseFloat(a) || 0;
+    });
+
+    this.canvasApp?.setOnWheelEvent((x, y, scale) => {
+      setPositionTargetCameraAnimation(x, y, scale);
+    });
+
+    this.canvasApp?.setonDragCanvasEvent((x, y) => {
+      setPositionTargetCameraAnimation(x, y);
     });
   }
 

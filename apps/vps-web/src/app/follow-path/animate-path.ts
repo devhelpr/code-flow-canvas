@@ -11,6 +11,7 @@ import {
   getNodeConnectionPairsFromThumb,
 } from './get-node-connection-pairs';
 import { getPointOnConnection } from './point-on-connection';
+import { NodeInfo } from '../types/node-info';
 
 function getSpeed(maxSpeed: number, speedMeter: number) {
   //return 1;
@@ -23,6 +24,14 @@ function getMaxLoop() {
   //return 0;
   return 1.015;
 }
+
+let followNodeExecution = false;
+export const setFollowNodeExecution = (follow: boolean) => {
+  followNodeExecution = follow;
+};
+export const getFollowNodeExecution = () => {
+  return followNodeExecution;
+};
 
 export type AnimatePathFunction<T> = (
   node: IRectNodeComponent<T>,
@@ -122,10 +131,96 @@ export type FollowPathFunction = <T>(
 ) => void;
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
+
+interface NodeAnimatonInfo {
+  node: IRectNodeComponent<NodeInfo>;
+  loopIndex: number;
+}
+
+const nodeAnimationMap: Map<string, NodeAnimatonInfo> = new Map();
+
 let speedMeter = 1000;
 export const setSpeedMeter = (speed: number) => {
   speedMeter = speed;
 };
+
+let targetX: number | undefined = undefined;
+let targetY: number | undefined = undefined;
+let nodeId = '';
+let targetScale = 1.0;
+let isTargetinCameraSpace = false;
+export function setTargetCameraAnimation(
+  x: number,
+  y: number,
+  id: string,
+  scale: number
+) {
+  console.log('setTargetCameraAnimation', x, y, id, scale);
+  targetX = x;
+  targetY = y;
+  nodeId = id;
+  targetScale = scale;
+  isTargetinCameraSpace = false;
+}
+
+export function setPositionTargetCameraAnimation(
+  x: number,
+  y: number,
+  scale?: number
+) {
+  isTargetinCameraSpace = true;
+  targetX = x;
+  targetY = y;
+  if (scale !== undefined) {
+    targetScale = scale;
+  }
+}
+
+let isCameraAnimationRunning = false;
+export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
+  isCameraAnimationRunning = true;
+  const animateCamera = () => {
+    if (targetX !== undefined && targetY !== undefined) {
+      const canvasCamera = canvasApp.getCamera();
+      let x = 600 - targetX * targetScale;
+      let y = 340 - targetY * targetScale;
+      let factor = 0.005;
+      if (isTargetinCameraSpace) {
+        x = targetX;
+        y = targetY;
+        factor = 0.3;
+      }
+      const distance = Math.sqrt(
+        Math.pow(canvasCamera.x - x, 2) + Math.pow(canvasCamera.y - y, 2)
+      );
+      // canvasApp.setCamera(
+      //   -x, // + distance * 0.001,
+      //   -y, // + distance * 0.001,
+      //   1.0 //canvasCamera.scale
+      // );
+
+      const scaleDiff = targetScale - canvasCamera.scale;
+      if (distance < 0.001) {
+        canvasApp.setCamera(
+          canvasCamera.x,
+          canvasCamera.y,
+          canvasCamera.scale + scaleDiff * factor
+        );
+      } else {
+        const normalizedX = (x - canvasCamera.x) / distance;
+        const normalizedY = (y - canvasCamera.y) / distance;
+
+        canvasApp.setCamera(
+          canvasCamera.x + distance * factor * normalizedX,
+          canvasCamera.y + distance * factor * normalizedY,
+          canvasCamera.scale + scaleDiff * factor
+        );
+      }
+    }
+    requestAnimationFrame(animateCamera);
+  };
+  requestAnimationFrame(animateCamera);
+}
 
 // TODO : alt : animatePathFromThumb
 // TODO : rename node1,node2,node3 and put in object
@@ -189,11 +284,54 @@ export const animatePathForNodeConnectionPairs = <T>(
   }
   const maxSpeed = 500;
   const currentSpeed = speedMeter;
-  nodeConnectionPairs.forEach((nodeConnectionPair) => {
+  nodeConnectionPairs.forEach((nodeConnectionPair, index) => {
     const start = nodeConnectionPair.start;
     const connection = nodeConnectionPair.connection;
     const end = nodeConnectionPair.end;
+    if (
+      followNodeExecution &&
+      index === 0 &&
+      end &&
+      end.id !== nodeId &&
+      start.id !== nodeId
+    ) {
+      nodeId = end.id;
 
+      if (isTargetinCameraSpace) {
+        targetX = end.x;
+        targetY = end.y;
+      } else {
+        targetX = end.x;
+        targetY = end.y;
+      }
+      targetScale = 0.5;
+      isTargetinCameraSpace = false;
+
+      // if (!isCameraAnimationRunning) {
+      //   isCameraAnimationRunning = true;
+      //   setCameraAnimation(canvasApp);
+      // }
+      // const canvasCamera = canvasApp.getCamera();
+      // const x = end.x; // canvasCamera.scale;
+      // const y = end.y; // canvasCamera.scale;
+      // const distance = Math.sqrt(
+      //   Math.pow(canvasCamera.x - x, 2) + Math.pow(canvasCamera.y - y, 2)
+      // );
+      // canvasApp.setCamera(
+      //   -x, // + distance * 0.001,
+      //   -y, // + distance * 0.001,
+      //   1.0 //canvasCamera.scale
+      // );
+
+      // const normalizedX = (x - canvasCamera.x) / distance;
+      // const normalizedY = (y - canvasCamera.y) / distance;
+
+      // canvasApp.setCamera(
+      //   canvasCamera.x + distance * 0.01 * normalizedX,
+      //   canvasCamera.y + distance * 0.01 * normalizedY,
+      //   0.5 //canvasCamera.scale
+      // );
+    }
     // eslint-disable-next-line prefer-const
     let testCircle =
       animatedNodes?.node1 ??

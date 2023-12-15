@@ -65,6 +65,12 @@ export const createCanvasApp = <T>(
   let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
   let onCanvasUpdated: (() => void) | undefined = undefined;
   let onCameraChanged: ((camera: Camera) => void) | undefined = undefined;
+  let onWheelEvent:
+    | ((x: number, y: number, scale: number) => void)
+    | undefined = undefined;
+
+  let onDragCanvasEvent: ((x: number, y: number) => void) | undefined =
+    undefined;
 
   const canvas = createElement<T>(
     'div',
@@ -217,6 +223,9 @@ export const createCanvasApp = <T>(
         if (interactionState) {
           if (interactionState.target?.id === canvas.id) {
             setCameraPosition(event.clientX, event.clientY);
+            if (onDragCanvasEvent) {
+              onDragCanvasEvent(xCamera, yCamera);
+            }
           } else {
             const { x, y } = transformCameraSpaceToWorldSpace(
               event.clientX,
@@ -413,11 +422,6 @@ export const createCanvasApp = <T>(
         const scaleFactor = 1 + delta * 0.05;
 
         const scaleBy = scaleFactor;
-        // if (scaleBy < 0.95) {
-        //   scaleBy = 0.95;
-        // } else if (scaleBy > 1.05) {
-        //   scaleBy = 1.05;
-        // }
 
         if (canvas.domElement) {
           const mousePointTo = {
@@ -425,39 +429,58 @@ export const createCanvasApp = <T>(
             y: event.clientY / scaleCamera - yCamera / scaleCamera,
           };
 
-          scaleCamera = scaleCamera * scaleBy;
-          //result.pixelY > 0 ? this.scale * scaleBy : this.scale / scaleBy;
-          if (scaleCamera < 0.05) {
-            scaleCamera = 0.05;
-          } else if (scaleCamera > 5) {
-            scaleCamera = 5;
+          let newScale = scaleCamera * scaleBy;
+          if (newScale < 0.05) {
+            newScale = 0.05;
+          } else if (newScale > 5) {
+            newScale = 5;
           }
 
           const newPos = {
-            x: -(mousePointTo.x - event.clientX / scaleCamera) * scaleCamera,
-            y: -(mousePointTo.y - event.clientY / scaleCamera) * scaleCamera,
+            x: -(mousePointTo.x - event.clientX / newScale) * newScale,
+            y: -(mousePointTo.y - event.clientY / newScale) * newScale,
           };
 
-          xCamera = newPos.x;
-          yCamera = newPos.y;
+          // scaleCamera = scaleCamera * scaleBy;
+          // if (scaleCamera < 0.05) {
+          //   scaleCamera = 0.05;
+          // } else if (scaleCamera > 5) {
+          //   scaleCamera = 5;
+          // }
 
-          setCamera(xCamera, yCamera, scaleCamera);
-          nodeTransformer.updateCamera();
-          if (onCameraChanged) {
-            onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
+          // const newPos = {
+          //   x: -(mousePointTo.x - event.clientX / scaleCamera) * scaleCamera,
+          //   y: -(mousePointTo.y - event.clientY / scaleCamera) * scaleCamera,
+          // };
+
+          // xCamera = newPos.x;
+          // yCamera = newPos.y;
+
+          // setCamera(xCamera, yCamera, scaleCamera);
+          // nodeTransformer.updateCamera();
+          // if (onCameraChanged) {
+          //   onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
+          // }
+
+          // (canvas.domElement as unknown as HTMLElement).style.transform =
+          //   'translate(' +
+          //   xCamera +
+          //   'px,' +
+          //   yCamera +
+          //   'px) ' +
+          //   'scale(' +
+          //   scaleCamera +
+          //   ',' +
+          //   scaleCamera +
+          //   ') ';
+
+          // if (onWheelEvent) {
+          //   onWheelEvent(xCamera, yCamera, scaleCamera);
+          // }
+
+          if (onWheelEvent) {
+            onWheelEvent(newPos.x, newPos.y, newScale);
           }
-
-          (canvas.domElement as unknown as HTMLElement).style.transform =
-            'translate(' +
-            xCamera +
-            'px,' +
-            yCamera +
-            'px) ' +
-            'scale(' +
-            scaleCamera +
-            ',' +
-            scaleCamera +
-            ') ';
         }
         return false;
       });
@@ -899,6 +922,16 @@ export const createCanvasApp = <T>(
           onCanvasUpdated();
         }
       }
+    },
+    setOnWheelEvent: (
+      onWheelEventHandler: (x: number, y: number, scale: number) => void
+    ) => {
+      onWheelEvent = onWheelEventHandler;
+    },
+    setonDragCanvasEvent: (
+      onDragCanvasEventHandler: (x: number, y: number) => void
+    ) => {
+      onDragCanvasEvent = onDragCanvasEventHandler;
     },
     registerVariable: (
       variableName: string,

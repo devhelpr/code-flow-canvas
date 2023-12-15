@@ -1,4 +1,7 @@
-import { navBarButton, navBarButtonNomargin } from '../consts/classes';
+import {
+  navBarButtonNomargin,
+  invertedNavBarButtonNomargin,
+} from '../consts/classes';
 
 import {
   BaseComponent,
@@ -15,6 +18,10 @@ import {
   getSelectedNode,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import {
+  getFollowNodeExecution,
+  setFollowNodeExecution,
+} from '../follow-path/animate-path';
 
 export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   oldProps: AppNavComponentsProps | null = null;
@@ -29,6 +36,7 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   placeOnLayer2Button: HTMLButtonElement | null = null;
   switchLayerButton: HTMLButtonElement | null = null;
   toggleDependencyConnections: HTMLButtonElement | null = null;
+  followNodeExecution: HTMLButtonElement | null = null;
   showDependencyConnections = false;
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
@@ -39,7 +47,8 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
       <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L1</button>
       <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L2</button>
       <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-layers text-[22px]"></span></button>
-      <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px]"><span class="icon icon-arrow_forward text-[22px]"></span></button>
+      <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-arrow_forward text-[22px]"></span></button>
+      <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px]">F</button>
 
 		  <children></children>
 		</div>`
@@ -68,6 +77,8 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
           ?.nextSibling as HTMLButtonElement;
         this.toggleDependencyConnections = this.switchLayerButton
           ?.nextSibling as HTMLButtonElement;
+        this.followNodeExecution = this.toggleDependencyConnections
+          ?.nextSibling as HTMLButtonElement;
 
         this.testNodeButton.addEventListener('click', this.onClickAddNode);
 
@@ -89,12 +100,18 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
           this.onClickToggleDependencyConnections
         );
 
+        this.followNodeExecution.addEventListener(
+          'click',
+          this.onClickFollowNodeExecution
+        );
+
         this.renderList.push(
           this.testNodeButton,
           this.placeOnLayer1Button,
           this.placeOnLayer2Button,
           this.switchLayerButton,
-          this.toggleDependencyConnections
+          this.toggleDependencyConnections,
+          this.followNodeExecution
         );
         this.rootElement.append(this.element);
       }
@@ -258,6 +275,54 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
     }
     this.props.setIsStoring(false);
 
+    return false;
+  };
+
+  removeClassListFromElement = (
+    element: HTMLElement | null,
+    classList: string
+  ) => {
+    if (element) {
+      const index = element.className.indexOf(classList);
+      if (index > -1) {
+        const newClassName =
+          element.className.substring(0, index) +
+          element.className.substring(index + classList.length);
+        element.className = newClassName;
+      }
+    }
+  };
+  addClassListToElement = (element: HTMLElement | null, classList: string) => {
+    if (element) {
+      const index = element.className.indexOf(classList);
+      if (index === -1) {
+        element.className += ' ' + classList;
+      }
+    }
+  };
+
+  onClickFollowNodeExecution = (event: Event) => {
+    event.preventDefault();
+    setFollowNodeExecution(!getFollowNodeExecution());
+    if (getFollowNodeExecution()) {
+      this.removeClassListFromElement(
+        this.followNodeExecution,
+        navBarButtonNomargin
+      );
+      this.addClassListToElement(
+        this.followNodeExecution,
+        invertedNavBarButtonNomargin
+      );
+    } else {
+      this.removeClassListFromElement(
+        this.followNodeExecution,
+        invertedNavBarButtonNomargin
+      );
+      this.addClassListToElement(
+        this.followNodeExecution,
+        navBarButtonNomargin
+      );
+    }
     return false;
   };
 
