@@ -21,7 +21,7 @@ import { NodeInfo } from '../types/node-info';
 import {
   getFollowNodeExecution,
   setFollowNodeExecution,
-} from '../follow-path/animate-path';
+} from '../follow-path/followNodeExecution';
 
 export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   oldProps: AppNavComponentsProps | null = null;

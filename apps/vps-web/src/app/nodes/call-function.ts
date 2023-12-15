@@ -176,7 +176,7 @@ export const getCallFunction =
           );
 
           const scopeGuid = crypto.randomUUID();
-          canvasAppInstance?.setScope(scopeGuid);
+          //canvasAppInstance?.setScope(scopeGuid);
 
           let isFunctionFound = false;
           canvasAppInstance.elements.forEach((element) => {
@@ -203,7 +203,7 @@ export const getCallFunction =
                   canvasAppInstance,
                   animatePath,
                   (input) => {
-                    canvasAppInstance?.returnToPreviousScope();
+                    //canvasAppInstance?.returnToPreviousScope();
 
                     componentDomElement.classList.remove(activeFunctionColor);
                     componentDomElement.classList.add(defaultFunctionColor);
@@ -230,7 +230,12 @@ export const getCallFunction =
                     ...payload,
                     trigger: 'TRIGGER',
                   } as unknown as string, // TODO : improve this!
-                  []
+                  [],
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  scopeGuid
                 );
               }
             }

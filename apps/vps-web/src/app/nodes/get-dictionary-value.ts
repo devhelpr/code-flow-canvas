@@ -33,7 +33,8 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (!input) {
       return {
@@ -48,7 +49,7 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        data = contextInstance.getVariable(variableName, input);
+        data = contextInstance.getVariable(variableName, input, scopeId);
       }
     }
     return {

@@ -78,7 +78,9 @@ export const getMap =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       const forEachDomElement = foreachComponent?.domElement as HTMLElement;
       forEachDomElement.classList.add('bg-slate-500');
@@ -148,7 +150,8 @@ export const getMap =
               isRange ? mapLoop : values[mapLoop],
               pathExecution,
               node,
-              mapLoop
+              mapLoop,
+              scopeId
             );
           } else {
             forEachDomElement.classList.add('bg-slate-500');
@@ -171,7 +174,8 @@ export const getMap =
               output,
               pathExecution,
               node,
-              loopIndex
+              loopIndex,
+              scopeId
             );
           }
         };

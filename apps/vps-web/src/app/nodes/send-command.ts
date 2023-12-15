@@ -28,7 +28,8 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
   const runCommandParameterExpression = (
     expression: string,
     loopIndex: number,
-    value: string
+    value: string,
+    scopeId?: string
   ) => {
     const compiledExpressionInfo = compileExpressionAsInfo(expression);
     const expressionFunction = (
@@ -49,10 +50,10 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
         [variableName]: {
           get: () => {
             console.log('get', variableName);
-            return canvasAppInstance?.getVariable(variableName);
+            return canvasAppInstance?.getVariable(variableName, scopeId);
           },
           set: (value) => {
-            canvasAppInstance?.setVariable(variableName, value);
+            canvasAppInstance?.setVariable(variableName, value, scopeId);
           },
         },
       });
@@ -78,7 +79,9 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string
   ) => {
     const command = node?.nodeInfo?.formValues?.['command'] ?? '';
     if (isCommmand(command)) {
@@ -89,7 +92,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
         const parsedArguments = args
           .split(',')
           .map((x: string) =>
-            runCommandParameterExpression(x, loopIndex ?? 0, input)
+            runCommandParameterExpression(x, loopIndex ?? 0, input, scopeId)
           );
 
         const result = `${commandName}(${parsedArguments.join(',')})`;

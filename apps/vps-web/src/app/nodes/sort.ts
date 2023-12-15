@@ -48,7 +48,9 @@ export const getSort =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       const forEachDomElement = foreachComponent?.domElement as HTMLElement;
       forEachDomElement.classList.add('bg-slate-500');
@@ -102,7 +104,8 @@ export const getSort =
               { ...values[mapLoop] } as unknown as any,
               pathExecution,
               node,
-              mapLoop
+              mapLoop,
+              scopeId
             );
           } else {
             forEachDomElement.classList.add('bg-slate-500');
@@ -136,7 +139,8 @@ export const getSort =
               sortedList,
               pathExecution,
               node,
-              loopIndex
+              loopIndex,
+              scopeId
             );
           }
         };

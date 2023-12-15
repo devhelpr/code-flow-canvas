@@ -43,7 +43,8 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (thumbName === 'key') {
       values.key = input ?? undefined;
@@ -64,10 +65,14 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        contextInstance.setVariable(variableName, {
-          key: values.key,
-          value: values.value,
-        });
+        contextInstance.setVariable(
+          variableName,
+          {
+            key: values.key,
+            value: values.value,
+          },
+          scopeId
+        );
       }
     }
     values.key = undefined;

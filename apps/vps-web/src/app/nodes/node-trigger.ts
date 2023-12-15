@@ -9,7 +9,10 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import { runNode } from '../simple-flow-engine/simple-flow-engine';
+import {
+  runNode,
+  RunNodeResult,
+} from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/form-component';
 
@@ -22,7 +25,14 @@ export const getNodeTrigger =
     const initializeCompute = () => {
       return;
     };
-    const compute = (input: string) => {
+    const compute = (
+      input: string,
+      pathExecution?: RunNodeResult<NodeInfo>[],
+      loopIndex?: number,
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
+    ) => {
       const nodeName = node?.nodeInfo?.formValues['node'] || '';
       if (canvasAppInstance && nodeName) {
         let triggerNode: IElementNode<NodeInfo> | undefined = undefined;
@@ -41,7 +51,12 @@ export const getNodeTrigger =
             animatePath,
             undefined,
             'TRIGGER',
-            []
+            [],
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            scopeId
           );
         }
       }

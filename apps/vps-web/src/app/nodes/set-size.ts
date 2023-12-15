@@ -54,7 +54,8 @@ export const getSetSizeNode: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (
       input === undefined ||

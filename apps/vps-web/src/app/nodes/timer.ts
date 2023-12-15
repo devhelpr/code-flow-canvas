@@ -31,7 +31,14 @@ export const getTimer =
     const initializeCompute = () => {
       return;
     };
-    const compute = (input: string) => {
+    const compute = (
+      input: string,
+      pathExecution?: RunNodeResult<NodeInfo>[],
+      loopIndex?: number,
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
+    ) => {
       if ((input as any)?.trigger === 'TIMER') {
         return {
           result: (input as any)?.input ?? true,
@@ -51,7 +58,12 @@ export const getTimer =
               trigger: 'TIMER',
               input,
             } as unknown as string,
-            []
+            [],
+            undefined,
+            undefined,
+            loopIndex,
+            undefined,
+            scopeId
           );
         }
       };

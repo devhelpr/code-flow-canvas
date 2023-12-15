@@ -34,7 +34,9 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string
   ) => {
     console.log('Gate compute', loopIndex);
     //if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
@@ -65,10 +67,10 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
           [variableName]: {
             get: () => {
               console.log('get', variableName);
-              return canvasAppInstance?.getVariable(variableName);
+              return canvasAppInstance?.getVariable(variableName, scopeId);
             },
             set: (value) => {
-              canvasAppInstance?.setVariable(variableName, value);
+              canvasAppInstance?.setVariable(variableName, value, scopeId);
             },
           },
         });

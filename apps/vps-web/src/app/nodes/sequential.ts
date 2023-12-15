@@ -39,7 +39,9 @@ export const getSequential =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
         if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -71,13 +73,15 @@ export const getSequential =
               input,
               pathExecution,
               node,
-              loopIndex
+              loopIndex,
+              scopeId
             );
           },
           input,
           pathExecution,
           node,
-          loopIndex
+          loopIndex,
+          scopeId
         );
       });
     };

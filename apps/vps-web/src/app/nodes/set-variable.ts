@@ -29,13 +29,15 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       console.log('setVariable', variableName, input);
       if (variableName) {
-        contextInstance.setVariable(variableName, input);
+        contextInstance.setVariable(variableName, input, scopeId);
       }
     }
     return {

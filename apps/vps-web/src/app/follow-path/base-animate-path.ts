@@ -11,7 +11,8 @@ export abstract class BaseAnimatePath<T> {
     nodeId: string,
     node: IRectNodeComponent<T>,
     input: string | any[],
-    connection: IConnectionNodeComponent<T>
+    connection: IConnectionNodeComponent<T>,
+    scopeId?: string
   ) =>
     | { result: boolean; output: string | any[]; followPathByName?: string }
     | Promise<{
@@ -19,7 +20,7 @@ export abstract class BaseAnimatePath<T> {
         output: string | any[];
         followPathByName?: string;
       }>;
-  abstract onStopped?: (input: string | any[]) => void;
+  abstract onStopped?: (input: string | any[], scopeId?: string) => void;
   abstract canvasApp: CanvasAppInstance<T>;
   abstract node: IRectNodeComponent<T>;
   abstract animatedNodes?: {

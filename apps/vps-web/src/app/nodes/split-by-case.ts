@@ -40,7 +40,9 @@ export const getSplitByCase =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
         if (!node.thumbConnectors || node.thumbConnectors.length < 3) {
@@ -89,7 +91,8 @@ export const getSplitByCase =
             input,
             pathExecution,
             node,
-            0
+            loopIndex,
+            scopeId
           );
         } else {
           resolve({

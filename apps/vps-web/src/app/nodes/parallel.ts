@@ -39,7 +39,9 @@ export const getParallel =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
         if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -68,7 +70,8 @@ export const getParallel =
           input,
           pathExecution,
           node,
-          loopIndex
+          loopIndex,
+          scopeId
         );
 
         runNodeFromThumb(
@@ -88,7 +91,8 @@ export const getParallel =
           input,
           pathExecution,
           node,
-          loopIndex
+          loopIndex,
+          scopeId
         );
       });
     };

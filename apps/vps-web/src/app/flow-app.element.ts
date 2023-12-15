@@ -49,8 +49,8 @@ import {
   setCameraAnimation,
   setTargetCameraAnimation,
   setPositionTargetCameraAnimation,
-  getFollowNodeExecution,
 } from './follow-path/animate-path';
+import { getFollowNodeExecution } from './follow-path/followNodeExecution';
 import {
   createIndexedDBStorageProvider,
   FlowrunnerIndexedDbStorageProvider,
@@ -141,7 +141,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       offsetY?: number,
       followPathToEndThumb?: boolean,
       singleStep?: boolean,
-      followThumb?: string
+      followThumb?: string,
+      scopeId?: string
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -159,7 +160,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         offsetY,
         followPathToEndThumb,
         singleStep,
-        followThumb
+        followThumb,
+        scopeId
       );
     };
 
@@ -170,7 +172,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         nodeId: string,
         node: IRectNodeComponent<NodeInfo>,
         input: string | any[],
-        connection: IConnectionNodeComponent<NodeInfo>
+        connection: IConnectionNodeComponent<NodeInfo>,
+        scopeId?: string
       ) =>
         | { result: boolean; output: string | any[]; followPathByName?: string }
         | Promise<{
@@ -178,7 +181,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             output: string | any[];
             followPathByName?: string;
           }>,
-      onStopped?: (input: string | any[]) => void,
+      onStopped?: (input: string | any[], scopeId?: string) => void,
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
       animatedNodes?: {
@@ -189,7 +192,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       offsetX?: number,
       offsetY?: number,
       followPathToEndThumb?: boolean,
-      singleStep?: boolean
+      singleStep?: boolean,
+      scopeId?: string
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -206,7 +210,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         offsetX,
         offsetY,
         followPathToEndThumb,
-        singleStep
+        singleStep,
+        scopeId
       );
     };
     const canvasUpdated = () => {

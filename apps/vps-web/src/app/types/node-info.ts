@@ -9,14 +9,16 @@ export interface NodeInfo {
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => any;
   computeAsync?: (
     input: any,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => Promise<any>;
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;

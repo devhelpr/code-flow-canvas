@@ -74,7 +74,8 @@ export const getMultiplyNode: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (thumbName === 'value1') {
       values.value1 = input;

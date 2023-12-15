@@ -36,21 +36,21 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
   let fieldType = 'value';
   let scopedData: Record<string, any> = {};
 
-  const setDataForFieldType = (data: any, scope?: string) => {
+  const setDataForFieldType = (data: any, scopeId?: string) => {
     if (fieldType === 'value') {
       let value = data;
       if (typeof value === 'string') {
         value = parseFloat(value) || 0;
       }
-      if (scope) {
-        scopedData[scope] = value;
+      if (scopeId) {
+        scopedData[scopeId] = value;
       } else {
         currentValue = value;
       }
     } else if (fieldType === 'dictionary') {
-      if (scope) {
-        if (!scopedData[scope]) {
-          scopedData[scope] = {};
+      if (scopeId) {
+        if (!scopedData[scopeId]) {
+          scopedData[scopeId] = {};
         }
       } else {
         if (!currentValue) {
@@ -58,8 +58,8 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         }
       }
       if (data && data.key) {
-        if (scope) {
-          scopedData[scope][data.key] = data.value;
+        if (scopeId) {
+          scopedData[scopeId][data.key] = data.value;
         } else {
           currentValue[data.key] = data.value;
         }
@@ -67,19 +67,19 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
     }
   };
 
-  const getDataForFieldType = (parameter?: any, scope?: string) => {
+  const getDataForFieldType = (parameter?: any, scopeId?: string) => {
     if (fieldType === 'value') {
-      if (scope) {
-        return scopedData[scope];
+      if (scopeId) {
+        return scopedData[scopeId];
       }
       return currentValue;
     } else if (fieldType === 'dictionary') {
-      if (scope) {
+      if (scopeId) {
         if (parameter === undefined) {
-          return scopedData[scope];
+          return scopedData[scopeId];
         }
-        if (scopedData[scope]) {
-          return scopedData[scope][parameter.toString()];
+        if (scopedData[scopeId]) {
+          return scopedData[scopeId][parameter.toString()];
         }
         return '';
       }
@@ -146,7 +146,7 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
     };
   };
 
-  const getData = (parameter?: any, scope?: string) => {
+  const getData = (parameter?: any, scopeId?: string) => {
     if (timeout) {
       clearTimeout(timeout);
       timeout = undefined;
@@ -163,15 +163,15 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
         'border-green-200'
       );
     }, 250);
-    return getDataForFieldType(parameter, scope);
+    return getDataForFieldType(parameter, scopeId);
   };
-  const setData = (data: any, scope?: string) => {
-    setDataForFieldType(data, scope);
+  const setData = (data: any, scopeId?: string) => {
+    setDataForFieldType(data, scopeId);
 
     const value = fieldType === 'value' ? currentValue : data.value;
     if (htmlNode) {
       if (fieldType === 'dictionary') {
-        const dictionary = getDataForFieldType(undefined, scope);
+        const dictionary = getDataForFieldType(undefined, scopeId);
         if (dictionary) {
           const keys = Object.keys(dictionary);
           let asHtml = keys

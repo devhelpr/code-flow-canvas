@@ -75,7 +75,9 @@ export const getForEach =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
         if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -143,7 +145,8 @@ export const getForEach =
               isRange ? mapLoop : values[mapLoop],
               pathExecution,
               node,
-              mapLoop
+              mapLoop,
+              scopeId
             );
           } else {
             forEachDomElement.classList.add('bg-slate-500');
@@ -165,7 +168,8 @@ export const getForEach =
               isRange ? [] : input,
               pathExecution,
               node,
-              loopIndex
+              loopIndex,
+              scopeId
             );
           }
         };

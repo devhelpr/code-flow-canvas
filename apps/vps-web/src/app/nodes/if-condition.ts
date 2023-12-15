@@ -33,7 +33,10 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+    loopIndex?: number,
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (node?.nodeInfo?.formValues?.['Mode'] === 'expression') {
       let result: any = false;

@@ -168,7 +168,11 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     }
   };
 
-  const processCommand = (input: string, loopIndex: number) => {
+  const processCommand = (
+    input: string,
+    loopIndex: number,
+    scopeId?: string
+  ) => {
     return new Promise<boolean>((resolve, reject) => {
       const match = input.match(/([\w]+)\(([^()]*)\)/);
       if (match) {
@@ -183,15 +187,13 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           resolve(false);
           return;
         } else if (command === 'push') {
-          pushValueToArray(runCommandParameterExpression(args, loopIndex));
-          // } else if (command === 'pushNumber') {
-          //   pushValueToArray(
-          //     parseInt(runCommandParameterExpression(args, loopIndex)) || 0
-          //   );
+          pushValueToArray(
+            runCommandParameterExpression(args, loopIndex, scopeId)
+          );
         } else if (command === 'swap') {
           const [index1, index2] = args
             .split(',')
-            .map((x) => runCommandParameterExpression(x, loopIndex));
+            .map((x) => runCommandParameterExpression(x, loopIndex, scopeId));
           console.log('swap', index1, index2);
           try {
             const temp = inputValues.at(index1);
@@ -223,7 +225,8 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
 
   const runCommandParameterExpression = (
     expression: string,
-    loopIndex: number
+    loopIndex: number,
+    scopeId?: string
   ) => {
     const compiledExpressionInfo = compileExpressionAsInfo(expression);
     const expressionFunction = (
@@ -243,7 +246,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         [variableName]: {
           get: () => {
             console.log('get', variableName);
-            return canvasAppInstance?.getVariable(variableName);
+            return canvasAppInstance?.getVariable(variableName, scopeId);
           },
           set: (value) => {
             canvasAppInstance?.setVariable(variableName, value);
@@ -297,11 +300,13 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string
   ) => {
     return new Promise((resolve, reject) => {
       if (isCommmand(input)) {
-        processCommand(input, loopIndex ?? 0).then((result) => {
+        processCommand(input, loopIndex ?? 0, scopeId).then((result) => {
           if (result) {
             resolve({
               stop: true,

@@ -53,7 +53,8 @@ export const getSortArrayNode: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (Array.isArray(input)) {
       const array = [...input];

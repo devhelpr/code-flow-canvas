@@ -546,9 +546,9 @@ export const createCanvasApp = <T>(
     hiddenSVG.domElement
   );
 
-  const getCurrentScope = () => {
-    return scopeStack.length > 0 ? scopeStack[scopeStack.length - 1] : '';
-  };
+  // const getCurrentScope = () => {
+  //   return scopeStack.length > 0 ? scopeStack[scopeStack.length - 1] : '';
+  // };
   return {
     elements,
     canvas,
@@ -955,24 +955,24 @@ export const createCanvasApp = <T>(
         delete variables[variableName];
       }
     },
-    getVariable: (variableName: string, parameter?: any) => {
+    getVariable: (variableName: string, parameter?: any, scopeId?: string) => {
       if (variableName && variables[variableName]) {
-        return variables[variableName].getData(parameter, getCurrentScope());
+        return variables[variableName].getData(parameter, scopeId);
       }
       return false;
     },
-    getVariableInfo: (variableName: string) => {
+    getVariableInfo: (variableName: string, scopeId?: string) => {
       if (variableName && variables[variableName]) {
         return {
           ...variables[variableName],
-          data: variables[variableName].getData(undefined, getCurrentScope()),
+          data: variables[variableName].getData(undefined, scopeId),
         };
       }
       return false;
     },
-    setVariable: (variableName: string, data: any) => {
+    setVariable: (variableName: string, data: any, scopeId?: string) => {
       if (variableName && variables[variableName]) {
-        variables[variableName].setData(data, getCurrentScope());
+        variables[variableName].setData(data, scopeId);
 
         const map = variableObservers.get(`${variableName}`);
         if (map) {
@@ -982,11 +982,11 @@ export const createCanvasApp = <T>(
         }
       }
     },
-    getVariables: () => {
+    getVariables: (scopeId?: string) => {
       const result: Record<string, any> = {};
       Object.entries(variables).forEach(([key, value]) => {
         if (key) {
-          result[key] = value.getData(getCurrentScope());
+          result[key] = value.getData(scopeId);
         }
       });
       return result;
@@ -1012,16 +1012,16 @@ export const createCanvasApp = <T>(
         map.delete(`${nodeId}`);
       }
     },
-    getCurrentScope: () => {
-      return getCurrentScope();
-    },
-    setScope: (scopeGuid: string) => {
-      if (scopeGuid) {
-        scopeStack.push(scopeGuid);
-      }
-    },
-    returnToPreviousScope: () => {
-      scopeStack.pop();
-    },
+    // getCurrentScope: () => {
+    //   return getCurrentScope();
+    // },
+    // setScope: (scopeGuid: string) => {
+    //   if (scopeGuid) {
+    //     scopeStack.push(scopeGuid);
+    //   }
+    // },
+    // returnToPreviousScope: () => {
+    //   scopeStack.pop();
+    //},
   };
 };

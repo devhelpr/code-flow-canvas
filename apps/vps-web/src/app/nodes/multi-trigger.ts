@@ -43,7 +43,9 @@ export const getMultiTrigger =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       if (node.thumbConnectors && node.thumbConnectors.length > 2) {
         runNodeFromThumb(
@@ -55,7 +57,8 @@ export const getMultiTrigger =
           input,
           pathExecution,
           node,
-          loopIndex
+          loopIndex,
+          scopeId
         );
 
         runNodeFromThumb(
@@ -67,7 +70,8 @@ export const getMultiTrigger =
           input,
           pathExecution,
           node,
-          loopIndex
+          loopIndex,
+          scopeId
         );
       }
 

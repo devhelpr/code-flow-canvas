@@ -50,7 +50,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string
   ) => {
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
@@ -109,10 +111,10 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
               //return parseFloat(canvasAppInstance?.getVariable(variableName));
 
-              return canvasAppInstance?.getVariable(variableName);
+              return canvasAppInstance?.getVariable(variableName, scopeId);
             },
             set: (value) => {
-              canvasAppInstance?.setVariable(variableName, value);
+              canvasAppInstance?.setVariable(variableName, value, scopeId);
             },
           },
         });

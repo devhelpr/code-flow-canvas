@@ -34,7 +34,8 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
@@ -48,7 +49,7 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
       }
       console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        const data = contextInstance.getVariableInfo(variableName);
+        const data = contextInstance.getVariableInfo(variableName, scopeId);
         if (data && data.data) {
           const dictionarySize = Object.keys(data.data).length;
           return {

@@ -11,6 +11,7 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/form-component';
+import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
 export const getNodeTriggerTarget =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
@@ -20,7 +21,14 @@ export const getNodeTriggerTarget =
     const initializeCompute = () => {
       return;
     };
-    const compute = (input: string) => {
+    const compute = (
+      input: string,
+      pathExecution?: RunNodeResult<NodeInfo>[],
+      loopIndex?: number,
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
+    ) => {
       if (!node?.nodeInfo?.formValues?.['node']) {
         return {
           result: false,
