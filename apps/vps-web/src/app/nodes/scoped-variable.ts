@@ -18,7 +18,7 @@ import {
 } from '../node-task-registry';
 import { showDictionaryData } from './data-viewers/dictionary';
 import { showArrayData } from './data-viewers/array';
-import { showGridData } from './data-viewers/grid';
+import { showGridData, StructureInfo } from './data-viewers/grid';
 
 export const scopeVariableNodeName = 'scope-variable';
 
@@ -363,15 +363,18 @@ export const getScopedVariable: NodeTaskFactory<NodeInfo> = (
       }, 250);
     }
   };
-  const initializeDataStructure = (structureInfo: any, scopeId?: string) => {
+  const initializeDataStructure = (
+    structureInfo: StructureInfo,
+    scopeId?: string
+  ) => {
     if (fieldType === 'grid') {
       if (
         structureInfo &&
         structureInfo.rowCount &&
         structureInfo.columnCount
       ) {
-        const rowCount = parseInt(structureInfo.rowCount);
-        const columnCount = parseInt(structureInfo.columnCount);
+        const rowCount = structureInfo.rowCount;
+        const columnCount = structureInfo.columnCount;
         if (rowCount > 0 && columnCount > 0) {
           if (scopeId) {
             scopedData[scopeId] = [];
