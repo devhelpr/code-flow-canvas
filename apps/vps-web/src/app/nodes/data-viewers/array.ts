@@ -4,8 +4,9 @@ import { NodeInfo } from '../../types/node-info';
 function createArrayView(
   array: any[],
   htmlNode: IElementNode<NodeInfo>,
-  pageIndex = 0,
-  pageSize = 5
+  pageIndex: number,
+  pageSize: number,
+  isGlobal: boolean
 ) {
   let asHtml = array
     .map((data, index) => {
@@ -23,15 +24,19 @@ function createArrayView(
   } page: ${pageIndex + 1}</div>
 		<button class="previous-page icon icon-arrow_left text-3xl disabled:text-gray-800"></button>
 		<button class="next-page icon icon-arrow_right text-3xl disabled:text-gray-800"></button>
-	  </div>`;
+	  </div><div>${isGlobal ? 'global' : 'scope dependent'}</div>`;
 
   (htmlNode.domElement as unknown as HTMLElement).innerHTML = asHtml;
 }
 
-export function showArrayData(array: any[], htmlNode: IElementNode<NodeInfo>) {
+export function showArrayData(
+  array: any[],
+  htmlNode: IElementNode<NodeInfo>,
+  isGlobal: boolean
+) {
   let pageIndex = 0;
   const pageSize = 5;
-  createArrayView(array, htmlNode, 0, pageSize);
+  createArrayView(array, htmlNode, 0, pageSize, isGlobal);
 
   const setEvents = () => {
     const uiElement = htmlNode.domElement as unknown as HTMLElement;
@@ -62,7 +67,7 @@ export function showArrayData(array: any[], htmlNode: IElementNode<NodeInfo>) {
       previousPageButton.addEventListener('click', () => {
         if (pageIndex > 0) {
           pageIndex--;
-          createArrayView(array, htmlNode, pageIndex, pageSize);
+          createArrayView(array, htmlNode, pageIndex, pageSize, isGlobal);
           setEvents();
         } else {
           enableDisableButtons();
@@ -73,7 +78,7 @@ export function showArrayData(array: any[], htmlNode: IElementNode<NodeInfo>) {
       nextPageButton.addEventListener('click', () => {
         if (pageIndex < Math.ceil(array.length / pageSize) - 1) {
           pageIndex++;
-          createArrayView(array, htmlNode, pageIndex, pageSize);
+          createArrayView(array, htmlNode, pageIndex, pageSize, isGlobal);
           setEvents();
         } else {
           enableDisableButtons();

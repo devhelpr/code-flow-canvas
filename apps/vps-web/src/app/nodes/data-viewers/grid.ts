@@ -9,7 +9,8 @@ export interface StructureInfo {
 function createGridView(
   grid: any[][],
   htmlNode: IElementNode<NodeInfo>,
-  structureInfo: StructureInfo
+  structureInfo: StructureInfo,
+  isGlobal: boolean
 ) {
   const asHtml = grid
     .map((data, index) => {
@@ -35,7 +36,8 @@ function createGridView(
 export function showGridData(
   grid: any[][],
   structureInfo: StructureInfo,
-  htmlNode: IElementNode<NodeInfo>
+  htmlNode: IElementNode<NodeInfo>,
+  isGlobal: boolean
 ) {
-  createGridView(grid, htmlNode, structureInfo);
+  createGridView(grid, htmlNode, structureInfo, isGlobal);
 }

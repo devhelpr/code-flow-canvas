@@ -32,7 +32,8 @@ function createDictionaryView(
 
 export function showDictionaryData(
   dictionary: Record<string, any>,
-  htmlNode: IElementNode<NodeInfo>
+  htmlNode: IElementNode<NodeInfo>,
+  isGlobal: boolean
 ) {
   const keys = Object.keys(dictionary);
   let pageIndex = 0;

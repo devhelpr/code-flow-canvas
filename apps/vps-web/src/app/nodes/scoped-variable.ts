@@ -258,6 +258,14 @@ export const getScopedVariable =
     };
 
     const initializeCompute = () => {
+      const variableScopeType = isGlobal ? 'global' : 'scope dependent';
+
+      function getLabel(description: string) {
+        return `${description} (${variableScopeType})`;
+      }
+
+      const variableName = node?.nodeInfo?.formValues?.['variableName'] ?? '';
+
       scopedData = {};
       currentValue = undefined;
       fieldType = node?.nodeInfo?.formValues?.['fieldType'] ?? 'value';
@@ -277,21 +285,23 @@ export const getScopedVariable =
           }
         } else if (htmlNode) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
-            currentValue.toString();
+            getLabel(currentValue.toString());
         }
         canvasAppInstance?.setVariable(variableName, currentValue);
       } else if (fieldType === 'dictionary') {
         if (htmlNode) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
-            'dictionary';
+            getLabel('dictionary');
         }
       } else if (fieldType === 'array') {
         if (htmlNode) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent = 'array';
+          (htmlNode.domElement as unknown as HTMLElement).textContent =
+            getLabel('array');
         }
       } else if (fieldType === 'grid') {
         if (htmlNode) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent = 'grid';
+          (htmlNode.domElement as unknown as HTMLElement).textContent =
+            getLabel('grid');
         }
       } else {
         if (htmlNode) {
@@ -356,7 +366,7 @@ export const getScopedVariable =
         if (fieldType === 'dictionary') {
           const dictionary = getDataForFieldType(undefined, scopeId);
           if (dictionary) {
-            showDictionaryData(dictionary, htmlNode);
+            showDictionaryData(dictionary, htmlNode, isGlobal);
             if (rect) {
               rect.resize(240);
             }
@@ -364,7 +374,7 @@ export const getScopedVariable =
         } else if (fieldType === 'array') {
           const array = getDataForFieldType(undefined, scopeId);
           if (array && Array.isArray(array)) {
-            showArrayData(array, htmlNode);
+            showArrayData(array, htmlNode, isGlobal);
             if (rect) {
               rect.resize(240);
             }
@@ -379,7 +389,8 @@ export const getScopedVariable =
                   rowCount: grid.data.length,
                   columnCount: grid.data[0].length,
                 },
-                htmlNode
+                htmlNode,
+                isGlobal
               );
               if (rect) {
                 rect.resize(grid.data[0].length * 32);
@@ -466,7 +477,8 @@ export const getScopedVariable =
                     rowCount: grid.data.length,
                     columnCount: grid.data[0].length,
                   },
-                  htmlNode
+                  htmlNode,
+                  isGlobal
                 );
                 if (rect) {
                   rect.resize(grid.data[0].length * 32);
@@ -485,7 +497,7 @@ export const getScopedVariable =
     };
 
     return {
-      name: scopeVariableNodeName,
+      name: isGlobal ? 'variable' : scopeVariableNodeName,
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
@@ -683,7 +695,7 @@ export const getScopedVariable =
           undefined,
           id,
           {
-            type: scopeVariableNodeName,
+            type: isGlobal ? 'variable' : scopeVariableNodeName,
             formValues: {
               variableName: variableName,
               initialValue: initalValues?.['initialValue'] ?? '',
