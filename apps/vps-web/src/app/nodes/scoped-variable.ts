@@ -700,6 +700,7 @@ export const getScopedVariable =
               variableName: variableName,
               initialValue: initalValues?.['initialValue'] ?? '',
               fieldType: initalValues?.['fieldType'] ?? 'value',
+              fieldValueType: initalValues?.['fieldValueType'] ?? 'number',
             },
           },
           containerNode

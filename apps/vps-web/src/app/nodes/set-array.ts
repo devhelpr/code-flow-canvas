@@ -49,7 +49,7 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       if (variableName) {
-        contextInstance.setVariable(variableName, input, scopeId);
+        contextInstance.setVariable(variableName, [...input], scopeId);
       }
     }
 
