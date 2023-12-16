@@ -105,7 +105,9 @@ export const getScopedVariable =
         }
         if (data) {
           if (scopeId && !isGlobal) {
-            if (data && data.index !== undefined) {
+            if (Array.isArray(data)) {
+              scopedData[scopeId] = data;
+            } else if (data && data.index !== undefined) {
               const value = convertDataToType(data.value);
               if (data.index < scopedData[scopeId].length) {
                 scopedData[scopeId][data.index] = value;
@@ -115,7 +117,9 @@ export const getScopedVariable =
               scopedData[scopeId].push(value);
             }
           } else {
-            if (data && data.index !== undefined) {
+            if (Array.isArray(data)) {
+              currentValue = data;
+            } else if (data && data.index !== undefined) {
               const value = convertDataToType(data.value);
               if (data.index < currentValue.length) {
                 currentValue[data.index] = value;

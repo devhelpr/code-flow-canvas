@@ -114,6 +114,7 @@ import {
   setGridRowVariable,
   setGridRowVariableNodeName,
 } from '../nodes/set-grid-row';
+import { setArrayNodeName, setArrayVariable } from '../nodes/set-array';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -231,6 +232,7 @@ export const setupCanvasNodeTaskRegistry = (
     setArrayValueByIndexVariableNodeName,
     setArrayValueByIndexVariable
   );
+  registerNodeFactory(setArrayNodeName, setArrayVariable);
 
   registerNodeFactory(sortArrayNodeName, getSortArrayNode);
   registerNodeFactory(joinArrayNodeName, joinArray);
