@@ -214,7 +214,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(setSizeNodeName, getSetSizeNode);
   registerNodeFactory('merge', getMergeNode);
   registerNodeFactory(rangeNodeName, getRangeNode);
-  registerNodeFactory(scopeVariableNodeName, getScopedVariable);
+  registerNodeFactory(scopeVariableNodeName, getScopedVariable(false));
 
   // dictionary nodes
   registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);

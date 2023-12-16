@@ -999,8 +999,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           node.connectorWrapper?.domElement?.classList?.add('selected');
         } else {
           node.domElement.classList.add('selected');
-
-          setTargetCameraAnimation(node.x, node.y, node.id, 1.0);
+          if (getFollowNodeExecution()) {
+            setTargetCameraAnimation(node.x, node.y, node.id, 1.0);
+          }
         }
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
