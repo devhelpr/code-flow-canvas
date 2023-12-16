@@ -119,6 +119,7 @@ import {
   popArrayValue,
   popArrayVariableNodeName,
 } from '../nodes/pop-array-value';
+import { getWhile, whileNodeName } from '../nodes/while';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -148,6 +149,10 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('foreach', getForEach(animatePath, animatePathFromThumb));
   registerNodeFactory(mapNodeName, getMap(animatePath, animatePathFromThumb));
   registerNodeFactory(sortNodeName, getSort(animatePath, animatePathFromThumb));
+  registerNodeFactory(
+    whileNodeName,
+    getWhile(animatePath, animatePathFromThumb)
+  );
 
   registerNodeFactory('expression', getExpression);
   registerNodeFactory('expression-part', getExpressionPart);
