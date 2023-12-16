@@ -15,29 +15,11 @@ import {
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { thumbConstraints } from '../node-task-registry/thumbConstraints';
-import { RangeValueType } from '../types/value-type';
-
-const isInputOfRangeValueType = (input: RangeValueType) => {
-  if (typeof input === 'object' && input) {
-    return (
-      input.min !== undefined &&
-      input.max !== undefined &&
-      input.step !== undefined &&
-      typeof input.min === 'number' &&
-      typeof input.max === 'number' &&
-      typeof input.step === 'number' &&
-      !isNaN(input.min) &&
-      !isNaN(input.max) &&
-      !isNaN(input.step)
-    );
-  }
-  return false;
-};
 
 const fieldName = 'variableName';
-export const setArrayNodeName = 'set-array-variable';
+export const getHasArrayDataNodeName = 'has-array-data';
 
-export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
+export const getHasArrayDataVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -55,55 +37,31 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
     thumbName?: string,
     scopeId?: string
   ) => {
-    if (
-      input === undefined ||
-      (!Array.isArray(input) &&
-        !isInputOfRangeValueType(input as unknown as RangeValueType))
-    ) {
-      return {
-        result: undefined,
-        output: undefined,
-        stop: true,
-        followPath: undefined,
-      };
-    }
-
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+      if (!variableName) {
+        return {
+          result: undefined,
+          output: undefined,
+          stop: true,
+          followPath: undefined,
+        };
+      }
       if (variableName) {
-        let forEachLength = 0;
-        let startIndex = 0;
-        let step = 1;
-        const rangeInput = input as unknown as RangeValueType;
-        if (
-          isInputOfRangeValueType(rangeInput) &&
-          rangeInput.max !== undefined &&
-          rangeInput.min !== undefined &&
-          rangeInput.step !== undefined
-        ) {
-          startIndex = rangeInput.min;
-          step = rangeInput.step;
-          forEachLength = rangeInput.max;
-
-          const rangeArray: number[] = [];
-          for (let index = startIndex; index <= forEachLength; index += step) {
-            rangeArray.push(index);
-          }
-
-          contextInstance.setVariable(variableName, rangeArray, scopeId);
-          /*Math.floor(
-            (rangeInput.max - rangeInput.min) / rangeInput.step
-          );
-          */
-        } else {
-          contextInstance.setVariable(variableName, [...input], scopeId);
+        const data = contextInstance.getVariableInfo(variableName, scopeId);
+        if (data && Array.isArray(data.data)) {
+          return {
+            result: data.data.length > 0,
+            output: data.data.length > 0,
+            followPath: undefined,
+          };
         }
       }
     }
-
     return {
-      result: input,
-      output: input,
+      result: undefined,
+      output: undefined,
+      stop: true,
       followPath: undefined,
     };
   };
@@ -115,8 +73,8 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
       const variableNode = getNodeByVariableName(variableName, contextInstance);
       if (variableNode) {
         dependencies.push({
-          startNodeId: node.id,
-          endNodeId: variableNode.id,
+          startNodeId: variableNode.id,
+          endNodeId: node.id,
         });
       }
     }
@@ -124,34 +82,31 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    setArrayNodeName,
-    'Set array',
+    getHasArrayDataNodeName,
+    'Has array data',
     'flow-canvas',
     'variableName',
     compute,
     initializeCompute,
     false,
     200,
-    200,
+    100,
     [
       {
         thumbType: ThumbType.StartConnectorCenter,
         thumbIndex: 0,
         connectionType: ThumbConnectionType.start,
         color: 'white',
-        label: '[]',
-        maxConnections: 1,
-        thumbConstraint: thumbConstraints.array,
+        label: '#',
+        thumbConstraint: thumbConstraints.value,
       },
       {
-        thumbType: ThumbType.EndConnectorLeft,
+        thumbType: ThumbType.EndConnectorCenter,
         thumbIndex: 0,
         connectionType: ThumbConnectionType.end,
         color: 'white',
-        label: '[]',
-        name: 'array',
+        label: ' ',
         maxConnections: 1,
-        thumbConstraint: ['array', 'range'],
       },
     ],
     (values?: InitialValues) => {
@@ -160,9 +115,9 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
           value: values?.[fieldName] ?? '',
-          // settings: {
-          //   showLabel: false,
-          // },
+          settings: {
+            showLabel: true,
+          },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
@@ -190,7 +145,7 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
       const domElement = nodeInstance.node.domElement as HTMLElement;
       const textNode = domElement.querySelector('.inner-node');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Set array<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
+        textNode.innerHTML = `Has array <br />'${node.nodeInfo?.formValues?.[fieldName]}' data`;
       }
     },
     {

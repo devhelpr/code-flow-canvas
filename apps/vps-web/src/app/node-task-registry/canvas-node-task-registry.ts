@@ -120,6 +120,10 @@ import {
   popArrayVariableNodeName,
 } from '../nodes/pop-array-value';
 import { getWhile, whileNodeName } from '../nodes/while';
+import {
+  getHasArrayDataNodeName,
+  getHasArrayDataVariable,
+} from '../nodes/get-has-array-data';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -247,6 +251,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(sortArrayNodeName, getSortArrayNode);
   registerNodeFactory(joinArrayNodeName, joinArray);
   registerNodeFactory(reverseArrayNodeName, reverseArray);
+  registerNodeFactory(getHasArrayDataNodeName, getHasArrayDataVariable);
 
   // grid nodes
   registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);

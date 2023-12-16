@@ -38,14 +38,6 @@ export const popArrayValue: NodeTaskFactory<NodeInfo> = (
     thumbName?: string,
     scopeId?: string
   ) => {
-    if (input === undefined || !Array.isArray(input)) {
-      return {
-        result: undefined,
-        output: undefined,
-        stop: true,
-        followPath: undefined,
-      };
-    }
     let data: any[] = [];
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
