@@ -83,7 +83,7 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
     compute,
     initializeCompute,
     false,
-    280,
+    200,
     200,
     [
       {
@@ -91,7 +91,9 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
         thumbIndex: 0,
         connectionType: ThumbConnectionType.start,
         color: 'white',
-        label: ' ',
+        label: '[]',
+        maxConnections: 1,
+        thumbConstraint: thumbConstraints.array,
       },
       {
         thumbType: ThumbType.EndConnectorLeft,
