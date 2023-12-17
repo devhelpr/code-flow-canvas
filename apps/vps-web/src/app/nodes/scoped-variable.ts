@@ -49,6 +49,8 @@ export const getScopedVariable =
           return '';
         case 'integer':
           return 0;
+        case 'array':
+          return [];
         default:
           return '';
       }
@@ -62,6 +64,8 @@ export const getScopedVariable =
           return data.toString();
         case 'integer':
           return parseInt(data) || 0;
+        case 'array':
+          return Array.isArray(data) ? data : [];
         default:
           return data.toString();
       }
@@ -110,11 +114,21 @@ export const getScopedVariable =
             } else if (data && data.index !== undefined) {
               const value = convertDataToType(data.value);
               if (data.index < scopedData[scopeId].length) {
-                scopedData[scopeId][data.index] = value;
+                if (
+                  fieldValueType === 'array' &&
+                  Array.isArray(scopedData[scopeId][data.index])
+                ) {
+                  // push raw value (fieldValueType is array)
+                  scopedData[scopeId][data.index].push(data.value);
+                } else {
+                  scopedData[scopeId][data.index] = value;
+                }
               }
-            } else {
-              const value = convertDataToType(data);
-              scopedData[scopeId].push(value);
+            } else if (data.push) {
+              // data needs to be pushed 'raw' without convertDataToType
+              // .. convertDataToType converts to array when fieldValueType is array
+              // .. and here you want to push a value to that array
+              scopedData[scopeId].push(data.push);
             }
           } else {
             if (Array.isArray(data)) {
@@ -122,11 +136,21 @@ export const getScopedVariable =
             } else if (data && data.index !== undefined) {
               const value = convertDataToType(data.value);
               if (data.index < currentValue.length) {
-                currentValue[data.index] = value;
+                if (
+                  fieldValueType === 'array' &&
+                  Array.isArray(currentValue[data.index])
+                ) {
+                  // push raw value (fieldValueType is array)
+                  currentValue[data.index].push(data.value);
+                } else {
+                  currentValue[data.index] = value;
+                }
               }
-            } else {
-              const value = convertDataToType(data);
-              currentValue.push(value);
+            } else if (data.push) {
+              // data needs to be pushed 'raw' without convertDataToType
+              // .. convertDataToType converts to array when fieldValueType is array
+              // .. and here you want to push a value to that array
+              currentValue.push(data.push);
             }
           }
         }
@@ -256,14 +280,11 @@ export const getScopedVariable =
         return getDefaultValue();
       }
     };
-
-    const initializeCompute = () => {
+    function getLabel(description: string) {
       const variableScopeType = isGlobal ? 'global' : 'scope dependent';
-
-      function getLabel(description: string) {
-        return `${description} (${variableScopeType})`;
-      }
-
+      return `${description} (${variableScopeType})`;
+    }
+    const initializeCompute = () => {
       const variableName = node?.nodeInfo?.formValues?.['variableName'] ?? '';
 
       scopedData = {};
@@ -405,7 +426,7 @@ export const getScopedVariable =
           }
         } else {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
-            value.toString();
+            getLabel(value.toString());
 
           if (rect) {
             rect.resize(120);
@@ -614,6 +635,10 @@ export const getScopedVariable =
               {
                 value: 'string',
                 label: 'String',
+              },
+              {
+                value: 'array',
+                label: 'Array',
               },
               /*{
               value: 'integer',

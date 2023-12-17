@@ -124,6 +124,7 @@ import {
   getHasArrayDataNodeName,
   getHasArrayDataVariable,
 } from '../nodes/get-has-array-data';
+import { createArray, createArrayNodeName } from '../nodes/create-array';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -224,6 +225,7 @@ export const setupCanvasNodeTaskRegistry = (
 
   registerNodeFactory(splitStringNodeName, splitString);
   registerNodeFactory(createSetNodeName, createSet);
+  registerNodeFactory(createArrayNodeName, createArray);
   registerNodeFactory(intersectSetsNodeName, getInsersectSetsNode);
   registerNodeFactory(setSizeNodeName, getSetSizeNode);
   registerNodeFactory('merge', getMergeNode);

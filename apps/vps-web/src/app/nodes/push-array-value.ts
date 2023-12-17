@@ -40,7 +40,7 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
-        contextInstance.setVariable(variableName, input, scopeId);
+        contextInstance.setVariable(variableName, { push: input }, scopeId);
       }
     }
     return {

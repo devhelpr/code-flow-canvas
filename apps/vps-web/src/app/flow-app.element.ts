@@ -63,6 +63,7 @@ import {
   navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
+  navBarWarningButton,
 } from './consts/classes';
 import {
   getNodeFactoryNames,
@@ -383,12 +384,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     createElement(
       'button',
       {
-        class: navBarButton,
+        class: navBarWarningButton,
         click: (event) => {
           event.preventDefault();
           event.stopPropagation();
-          this.clearCanvas();
-          store();
+          if (confirm('Are you sure you want to clear the canvas?')) {
+            this.clearCanvas();
+            store();
+          }
           return false;
         },
       },
@@ -1195,8 +1198,27 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       return Math.pow(a, b);
     });
 
+    registerCustomFunction('max', [], (a = 0, b = 0) => {
+      return Math.max(a, b);
+    });
+
+    registerCustomFunction('min', [], (a = 0, b = 0) => {
+      return Math.min(a, b);
+    });
+
     registerCustomFunction('parseFloat', [], (a = 0) => {
       return parseFloat(a) || 0;
+    });
+
+    registerCustomFunction('isEmptyString', [], (a = '') => {
+      return typeof a === 'string' && a === '';
+    });
+    registerCustomFunction('isEmptyText', [], (a = '') => {
+      return typeof a === 'string' && a === '';
+    });
+
+    registerCustomFunction('hasText', [], (a = '') => {
+      return typeof a === 'string' && a !== '' && a !== undefined && a !== null;
     });
 
     this.canvasApp?.setOnWheelEvent((x, y, scale) => {

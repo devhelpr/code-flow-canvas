@@ -1,5 +1,9 @@
 export const navBarButton = `rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap
  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+
+export const navBarWarningButton = `rounded-md bg-orange-500 text-white p-2 m-2 hover:bg-orange-600 select-none whitespace-nowrap
+ disabled:bg-orange-700 disabled:hover:bg-orange-700 disabled:text-white`;
+
 export const navBarIconButton = `inline-flex items-center justify-center min-h-[40px]
 rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap
  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white

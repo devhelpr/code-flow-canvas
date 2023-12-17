@@ -17,7 +17,7 @@ import { visualNodeFactory } from '../node-task-registry/createRectNode';
 
 const fieldName = 'variableName';
 export const setArrayValueByIndexVariableNodeName =
-  'set-array-variable-by-value';
+  'set-array-variable-by-index';
 
 export const setArrayValueByIndexVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
