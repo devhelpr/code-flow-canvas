@@ -12,7 +12,7 @@ function createArrayView(
     .map((data, index) => {
       if (index >= pageIndex * pageSize && index < (pageIndex + 1) * pageSize) {
         return `
-		  <div class="flex flex-row">
+		  <div class="flex flex-row justify-start text-left">
 			<div class="flex-grow">${data}</div>
 		  </div>`;
       }

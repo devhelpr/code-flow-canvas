@@ -65,6 +65,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         };
       }
       const expression = node?.nodeInfo?.formValues?.['expression'] ?? '';
+      const inputType = node?.nodeInfo?.formValues?.['inputType'] ?? 'number';
       const expressionFunction = (
         new Function(
           'payload',
@@ -77,18 +78,36 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         compiledExpressionInfo.script
       );
 
-      //const variables = canvasAppInstance?.getVariables() ?? {};
-      //console.log('expression canvas variables', variables, input);
-      let inputAsString =
-        typeof input === 'object' ? '' : parseFloat(input) || 0;
+      const parseInput = (input: string) => {
+        if (inputType === 'number') {
+          return parseFloat(input) || 0;
+        } else if (inputType === 'integer') {
+          return parseInt(input) || 0;
+        } else if (inputType === 'boolean') {
+          return input === 'true' || input === '1' || Boolean(input)
+            ? true
+            : false;
+        } else if (inputType === 'array') {
+          return Array.isArray(input) ? input : [];
+        } else {
+          return (input ?? '').toString();
+        }
+      };
+
+      let inputAsString = typeof input === 'object' ? '' : parseInput(input);
       let inputAsObject = {};
       if (Array.isArray(input)) {
-        inputAsString = input;
+        if (inputType === 'array') {
+          inputAsString = input;
+        } else {
+          inputAsString = input.map((item) =>
+            parseInput(item)
+          ) as unknown as string; // dirty hack
+        }
       } else if (typeof input === 'object') {
         inputAsObject = input;
       }
       const payloadForExpression = {
-        //...variables,
         input: inputAsString,
         currentValue: currentValue,
         value: currentValue,
@@ -106,11 +125,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           [variableName]: {
             get: () => {
               console.log('get', variableName);
-
-              // TODO : figure out when this was necesary ??? probably when countint input read from files
-
-              //return parseFloat(canvasAppInstance?.getVariable(variableName));
-
               return canvasAppInstance?.getVariable(variableName, scopeId);
             },
             set: (value) => {
@@ -196,7 +210,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       canvasAppInstance = canvasApp;
       compiledExpressionInfo = undefined;
       const initialValue = initalValues?.['expression'] ?? '';
-
+      const initialInputType = initalValues?.['inputType'] ?? 'number';
       const formElements = [
         {
           fieldType: FormFieldType.Text,
@@ -274,6 +288,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           type: 'expression',
           formValues: {
             expression: initialValue ?? '',
+            inputType: initialInputType ?? 'number',
           },
         },
         containerNode
@@ -301,7 +316,36 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
       if (node.nodeInfo) {
-        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.formElements = [
+          ...formElements,
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'inputType',
+            value: initialInputType ?? 'number',
+            options: [
+              { value: 'number', label: 'Number' },
+              { value: 'string', label: 'String' },
+              { value: 'integer', label: 'Integer' },
+              { value: 'boolean', label: 'Boolean' },
+              { value: 'array', label: 'Array' },
+            ],
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                inputType: value,
+              };
+              console.log('onChange', node.nodeInfo);
+
+              compiledExpressionInfo = undefined;
+              if (updated) {
+                updated();
+              }
+            },
+          },
+        ];
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.getDependencies = getDependencies;

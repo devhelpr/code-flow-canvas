@@ -19,7 +19,8 @@ function getSpeed(maxSpeed: number, speedMeter: number) {
   return (maxSpeed * (1000 - speedMeter)) / 1000;
 }
 function getLoopIncrement() {
-  return 0.1;
+  return 0.25;
+  //return 0.1;
 }
 function getMaxLoop() {
   //return 0;

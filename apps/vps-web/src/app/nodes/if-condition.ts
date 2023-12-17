@@ -24,6 +24,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
   let currentValue = 0;
   const initializeCompute = () => {
@@ -39,6 +40,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
     scopeId?: string
   ) => {
     if (node?.nodeInfo?.formValues?.['Mode'] === 'expression') {
+      const inputType = node?.nodeInfo?.formValues?.['inputType'] ?? 'number';
       let result: any = false;
       try {
         const expression = node.nodeInfo.formValues?.['expression'] ?? '';
@@ -49,14 +51,66 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
             `${compiledExpressionInfo.script}`
           ) as unknown as (payload?: any) => any
         ).bind(compiledExpressionInfo.bindings);
+
+        const parseInput = (input: string) => {
+          if (inputType === 'number') {
+            return parseFloat(input) || 0;
+          } else if (inputType === 'integer') {
+            return parseInt(input) || 0;
+          } else if (inputType === 'boolean') {
+            return input === 'true' || input === '1' || Boolean(input)
+              ? true
+              : false;
+          } else if (inputType === 'array') {
+            return Array.isArray(input) ? input : [];
+          } else {
+            return (input ?? '').toString();
+          }
+        };
+
+        let inputAsString = typeof input === 'object' ? '' : parseInput(input);
+        let inputAsObject = {};
+        if (Array.isArray(input)) {
+          if (inputType === 'array') {
+            inputAsString = input;
+          } else {
+            inputAsString = input.map((item) =>
+              parseInput(item)
+            ) as unknown as string; // dirty hack
+          }
+        } else if (typeof input === 'object') {
+          inputAsObject = input;
+        }
+        const payloadForExpression = {
+          //...variables,
+          input: inputAsString,
+          currentValue: currentValue,
+          value: currentValue,
+          array: input,
+          current: currentValue,
+          last: currentValue,
+          index: loopIndex ?? 0,
+          runIteration: loopIndex ?? 0,
+          random: Math.round(Math.random() * 100),
+          ...payload,
+          ...inputAsObject,
+        };
+        canvasAppInstance?.getVariableNames().forEach((variableName) => {
+          Object.defineProperties(payloadForExpression, {
+            [variableName]: {
+              get: () => {
+                return canvasAppInstance?.getVariable(variableName, scopeId);
+              },
+              set: (value) => {
+                canvasAppInstance?.setVariable(variableName, value, scopeId);
+              },
+            },
+          });
+        });
+
         result = runExpression(
           expressionFunction,
-          {
-            input: input,
-            value: input,
-            currentValue: input,
-            index: loopIndex ?? 0,
-          },
+          payloadForExpression,
           true,
           compiledExpressionInfo.payloadProperties
         );
@@ -99,7 +153,9 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       initialValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      canvasAppInstance = canvasApp;
       const initialExpressionValue = initialValues?.['expression'] ?? '';
+      const initialInputType = initialValues?.['inputType'] ?? 'number';
       console.log(
         'initialExpressionValue',
         initialExpressionValue,
@@ -141,6 +197,32 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               expression: value,
             };
             console.log('onChange', node.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'inputType',
+          value: initialInputType ?? 'number',
+          options: [
+            { value: 'number', label: 'Number' },
+            { value: 'string', label: 'String' },
+            { value: 'integer', label: 'Integer' },
+            { value: 'boolean', label: 'Boolean' },
+            { value: 'array', label: 'Array' },
+          ],
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              inputType: value,
+            };
+            console.log('onChange', node.nodeInfo);
+
             if (updated) {
               updated();
             }
@@ -220,8 +302,8 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
-            label: '#',
-            thumbConstraint: 'value',
+            label: ' ',
+            //thumbConstraint: 'value',
             name: 'input',
           },
         ],
@@ -239,6 +321,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
           formValues: {
             Mode: 'expression',
             expression: initialExpressionValue ?? '',
+            inputType: initialInputType ?? 'number',
           },
         },
         containerNode
