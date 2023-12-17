@@ -125,6 +125,10 @@ import {
   getHasArrayDataVariable,
 } from '../nodes/get-has-array-data';
 import { createArray, createArrayNodeName } from '../nodes/create-array';
+import {
+  initializeArrayariableNodeName,
+  initializeArrayVariable,
+} from '../nodes/initialize-array';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -239,6 +243,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
 
   // array nodes
+  registerNodeFactory(initializeArrayariableNodeName, initializeArrayVariable);
   registerNodeFactory(pushValueToArrayVariableNodeName, pushArrayVariable);
   registerNodeFactory(getArraySizeNodeName, getArraySize);
   registerNodeFactory(getArrayNodeName, getArrayVariable);

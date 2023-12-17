@@ -996,12 +996,12 @@ export const createCanvasApp = <T>(
     getVariableNames: () => {
       return Object.keys(variables);
     },
-    initializeVariableDataSturcture: (
+    initializeVariableDataStructure: (
       variableName: string,
       structureInfo: any,
       scopeId?: string
     ) => {
-      if (variableName && variables[variableName] && structureInfo) {
+      if (variableName && variables[variableName]) {
         const variable = variables[variableName];
         if (variable.initializeDataStructure) {
           variable.initializeDataStructure(structureInfo, scopeId);

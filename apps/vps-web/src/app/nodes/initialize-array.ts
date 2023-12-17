@@ -17,25 +17,15 @@ import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
 const fieldName = 'variableName';
-export const initializeGridVariableNodeName = 'initialize-grid-variable';
+export const initializeArrayariableNodeName = 'initialize-array-variable';
 
-export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
+export const initializeArrayVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
-  const values = {
-    columns: undefined,
-    rows: undefined,
-  } as {
-    columns: undefined | number;
-    rows: undefined | number;
-  };
-
   const initializeCompute = () => {
-    values.columns = undefined;
-    values.rows = undefined;
     return;
   };
 
@@ -47,39 +37,16 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
     thumbName?: string,
     scopeId?: string
   ) => {
-    if (thumbName === 'columns') {
-      values.columns =
-        typeof input === 'number' ? input : parseInt(input) ?? undefined;
-    } else if (thumbName === 'rows') {
-      values.rows =
-        typeof input === 'number' ? input : parseInt(input) ?? undefined;
-    }
-
-    if (values.rows === undefined || values.columns === undefined) {
-      return {
-        result: undefined,
-        output: undefined,
-        stop: true,
-        followPath: undefined,
-      };
-    }
-
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
         contextInstance.initializeVariableDataStructure(
           variableName,
-          {
-            columnCount: values.columns,
-            rowCount: values.rows,
-          },
+          undefined,
           scopeId
         );
       }
     }
-    values.rows = undefined;
-    values.columns = undefined;
 
     return {
       result: '',
@@ -104,8 +71,8 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   return visualNodeFactory(
-    initializeGridVariableNodeName,
-    'Initialize grid',
+    initializeArrayariableNodeName,
+    'Initialize array',
     'flow-canvas',
     'variableName',
     compute,
@@ -122,26 +89,12 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
         label: ' ',
       },
       {
-        thumbType: ThumbType.EndConnectorLeft,
+        thumbType: ThumbType.EndConnectorCenter,
         thumbIndex: 0,
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        prefixLabel: 'rows',
-        name: 'rows',
         maxConnections: 1,
-        thumbConstraint: thumbConstraints.value,
-      },
-      {
-        thumbType: ThumbType.EndConnectorLeft,
-        thumbIndex: 1,
-        connectionType: ThumbConnectionType.end,
-        color: 'white',
-        label: ' ',
-        prefixLabel: 'columns',
-        name: 'columns',
-        maxConnections: 1,
-        thumbConstraint: thumbConstraints.value,
       },
     ],
     (values?: InitialValues) => {
@@ -180,7 +133,7 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
       const domElement = nodeInstance.node.domElement as HTMLElement;
       const textNode = domElement.querySelector('.inner-node');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Initialize grid<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
+        textNode.innerHTML = `Initialize array<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
       }
     },
     {

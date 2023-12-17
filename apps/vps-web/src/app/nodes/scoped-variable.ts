@@ -514,6 +514,12 @@ export const getScopedVariable =
             }
           }
         }
+      } else if (fieldType === 'array') {
+        if (scopeId && !isGlobal) {
+          scopedData[scopeId] = [];
+        } else {
+          currentValue = [];
+        }
       }
     };
 
