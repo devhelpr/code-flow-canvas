@@ -50,6 +50,10 @@ export const createCanvasApp = <T>(
 
   const scopeStack: string[] = [];
 
+  const isMacOs =
+    typeof navigator !== 'undefined' &&
+    navigator?.userAgent?.indexOf('Mac') >= 0;
+
   let scaleCamera = 1;
   let xCamera = 0;
   let yCamera = 0;
@@ -413,11 +417,19 @@ export const createCanvasApp = <T>(
         if (event.shiftKey) {
           timeDiff = timeDiff * 16;
         }
-        //const delta = result.pixelY; // / timeDiff;
-        const delta = Math.max(
-          -1,
-          Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
-        );
+        //isMacOs
+
+        // const delta = Math.max(
+        //   -1,
+        //   Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
+        // );
+
+        const factor = event.ctrlKey ? (isMacOs ? 5 : 50) : isMacOs ? 1 : 20;
+
+        const delta =
+          -event.deltaY *
+          (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
+          factor;
 
         // Determine the scale factor for the zoom
         const scaleFactor = 1 + delta * 0.05;
