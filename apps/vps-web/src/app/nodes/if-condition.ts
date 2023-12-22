@@ -99,7 +99,11 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
           Object.defineProperties(payloadForExpression, {
             [variableName]: {
               get: () => {
-                return canvasAppInstance?.getVariable(variableName, scopeId);
+                return canvasAppInstance?.getVariable(
+                  variableName,
+                  undefined,
+                  scopeId
+                );
               },
               set: (value) => {
                 canvasAppInstance?.setVariable(variableName, value, scopeId);

@@ -203,7 +203,7 @@ export const getCallFunction =
                   canvasAppInstance,
                   animatePath,
                   (input) => {
-                    //canvasAppInstance?.returnToPreviousScope();
+                    canvasAppInstance?.removeScope(scopeGuid);
 
                     componentDomElement.classList.remove(activeFunctionColor);
                     componentDomElement.classList.add(defaultFunctionColor);

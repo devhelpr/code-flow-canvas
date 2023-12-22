@@ -522,7 +522,11 @@ export const getScopedVariable =
         }
       }
     };
-
+    const removeScope = (scopeId: string) => {
+      if (scopeId && scopedData[scopeId]) {
+        delete scopedData[scopeId];
+      }
+    };
     return {
       name: isGlobal ? 'variable' : scopeVariableNodeName,
       family: 'flow-canvas',
@@ -544,6 +548,7 @@ export const getScopedVariable =
             getData,
             setData,
             initializeDataStructure,
+            removeScope,
           });
         }
         const formElements = [
@@ -566,6 +571,7 @@ export const getScopedVariable =
                 id: node.id ?? '',
                 getData,
                 setData,
+                removeScope,
               });
               console.log('onChange', node.nodeInfo);
               if (updated) {

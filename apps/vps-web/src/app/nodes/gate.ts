@@ -67,7 +67,11 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
           [variableName]: {
             get: () => {
               console.log('get', variableName);
-              return canvasAppInstance?.getVariable(variableName, scopeId);
+              return canvasAppInstance?.getVariable(
+                variableName,
+                undefined,
+                scopeId
+              );
             },
             set: (value) => {
               canvasAppInstance?.setVariable(variableName, value, scopeId);

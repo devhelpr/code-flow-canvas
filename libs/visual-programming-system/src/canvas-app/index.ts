@@ -41,6 +41,7 @@ export const createCanvasApp = <T>(
       getData: (parameter?: any, scopeId?: string) => any;
       setData: (data: any, scopeId?: string) => void;
       initializeDataStructure?: (structureInfo: any, scopeId?: string) => void;
+      removeScope: (scopeId: string) => void;
     }
   > = {};
   const variableObservers: Map<
@@ -971,6 +972,7 @@ export const createCanvasApp = <T>(
         getData: () => any;
         setData: (data: any) => void;
         initializeDataStructure?: (structureInfo: any) => void;
+        removeScope: (scopeId: string) => void;
       }
     ) => {
       if (variableName && variable.id) {
@@ -1054,6 +1056,15 @@ export const createCanvasApp = <T>(
       const map = variableObservers.get(`${variableName}`);
       if (map) {
         map.delete(`${nodeId}`);
+      }
+    },
+    removeScope: (scopeId: string) => {
+      if (scopeId) {
+        const keys = Object.keys(variables);
+        keys.forEach((key) => {
+          const variable = variables[key];
+          variable.removeScope(scopeId);
+        });
       }
     },
     // getCurrentScope: () => {
