@@ -344,6 +344,9 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   const setData = (data: any) => {
     //currentValue = data;
   };
+  const removeScope = (scopeId: string) => {
+    //
+  };
 
   return {
     name: 'array',
@@ -362,6 +365,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         id: id ?? '',
         getData,
         setData,
+        removeScope,
       });
       const formElements = [
         {
@@ -383,6 +387,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
               id: id ?? '',
               getData,
               setData,
+              removeScope,
             });
             console.log('onChange', node.nodeInfo);
             if (updated) {

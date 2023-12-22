@@ -38,7 +38,8 @@ export const getCallFunction =
     const runCommandParameterExpression = (
       compiledExpressionInfo: ReturnType<typeof compileExpressionAsInfo>,
       loopIndex: number,
-      value: string
+      value: string,
+      scopeId?: string
     ) => {
       const expressionFunction = (
         new Function(
@@ -59,10 +60,14 @@ export const getCallFunction =
           [variableName]: {
             get: () => {
               console.log('get', variableName);
-              return canvasAppInstance?.getVariable(variableName);
+              return canvasAppInstance?.getVariable(
+                variableName,
+                undefined,
+                scopeId
+              );
             },
             set: (value) => {
-              canvasAppInstance?.setVariable(variableName, value);
+              canvasAppInstance?.setVariable(variableName, value, scopeId);
             },
           },
         });
@@ -156,7 +161,9 @@ export const getCallFunction =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string
     ) => {
       const componentDomElement = componentWrapper?.domElement as HTMLElement;
       componentDomElement.classList.remove(activeFunctionColor);
@@ -171,7 +178,8 @@ export const getCallFunction =
             runCommandParameterExpression(
               parameterCommand,
               loopIndex ?? 0,
-              input
+              input,
+              scopeId
             )
           );
 
