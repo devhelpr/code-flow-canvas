@@ -424,7 +424,13 @@ export const createCanvasApp = <T>(
         //   Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
         // );
 
-        const factor = event.ctrlKey ? (isMacOs ? 5 : 50) : isMacOs ? 1 : 20;
+        const factor = event.ctrlKey
+          ? isMacOs
+            ? 350
+            : 50
+          : isMacOs
+          ? 150
+          : 20;
 
         const delta =
           -event.deltaY *
