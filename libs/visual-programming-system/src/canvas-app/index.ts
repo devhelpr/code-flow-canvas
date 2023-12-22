@@ -675,7 +675,10 @@ export const createCanvasApp = <T>(
         const rootWidth = rootElement.clientWidth;
         const rootHeight = rootElement.clientHeight;
 
-        const width = maxX - minX + 80;
+        const helperWidth = maxX - minX;
+        const helperScale = rootWidth / helperWidth;
+
+        const width = maxX - minX + 120 / helperScale;
         const height = maxY - minY;
         const scale = rootWidth / width;
 
@@ -698,9 +701,14 @@ export const createCanvasApp = <T>(
           'rootHeight',
           rootHeight
         );
-        xCamera = rootWidth / 2 - (scale * width) / 2 - scale * (minX - 40);
+        xCamera =
+          rootWidth / 2 -
+          (scale * width) / 2 -
+          scale * (minX - 60 / helperScale);
         yCamera = rootHeight / 2 - (scale * height) / 2 - scale * minY;
         scaleCamera = scale;
+
+        console.log('centerCamera', xCamera, yCamera, scaleCamera);
       }
 
       setCamera(xCamera, yCamera, scaleCamera);
@@ -720,6 +728,10 @@ export const createCanvasApp = <T>(
         ',' +
         scaleCamera +
         ') ';
+
+      if (onWheelEvent) {
+        onWheelEvent(xCamera, yCamera, scaleCamera);
+      }
     },
     createRect: (
       x: number,
