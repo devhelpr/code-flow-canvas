@@ -537,12 +537,15 @@ export const getScopedVariable =
       ) => {
         canvasAppInstance = canvasApp;
         variableName = initalValues?.['variableName'] ?? '';
-        canvasApp.registerVariable(variableName, {
-          id: id ?? '',
-          getData,
-          setData,
-          initializeDataStructure,
-        });
+
+        if (id) {
+          canvasApp.registerVariable(variableName, {
+            id: id,
+            getData,
+            setData,
+            initializeDataStructure,
+          });
+        }
         const formElements = [
           {
             fieldType: FormFieldType.Text,
@@ -556,11 +559,11 @@ export const getScopedVariable =
                 ...node.nodeInfo.formValues,
                 variableName: value,
               };
-              canvasApp.unregisterVariable(variableName, id ?? '');
+              canvasApp.unregisterVariable(variableName, node.id ?? '');
               variableName = value;
               (tagNode?.domElement as HTMLElement).textContent = variableName;
               canvasApp.registerVariable(variableName, {
-                id: id ?? '',
+                id: node.id ?? '',
                 getData,
                 setData,
               });
@@ -760,7 +763,7 @@ export const getScopedVariable =
           node.nodeInfo.getData = getData;
           node.nodeInfo.initializeCompute = initializeCompute;
           node.nodeInfo.delete = () => {
-            canvasApp.unregisterVariable(variableName, id ?? '');
+            canvasApp.unregisterVariable(variableName, node.id ?? '');
             (
               componentWrapper?.domElement as unknown as HTMLElement
             ).classList.remove('border-green-200');
