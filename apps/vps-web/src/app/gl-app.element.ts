@@ -34,6 +34,7 @@ import {
   navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
+  navBarWarningButton,
 } from './consts/classes';
 import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
@@ -44,6 +45,10 @@ import {
   setupGLNodeTaskRegistry,
 } from './node-task-registry/gl-node-task-registry';
 import { noise } from './gl-functions/noise';
+import {
+  setCameraAnimation,
+  setPositionTargetCameraAnimation,
+} from './follow-path/animate-path';
 
 export class GLAppElement extends AppElement<any> {
   public static observedAttributes = [];
@@ -90,6 +95,8 @@ export class GLAppElement extends AppElement<any> {
       canvasUpdated();
     });
 
+    setCameraAnimation(this.canvasApp);
+
     setupGLNodeTaskRegistry();
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
@@ -130,6 +137,39 @@ export class GLAppElement extends AppElement<any> {
               canvasUpdated();
             },
           }) as unknown as HTMLElement;
+
+          createElement(
+            'button',
+            {
+              class: navBarButton,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                initializeNodes();
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Reset state'
+          );
+
+          createElement(
+            'button',
+            {
+              class: navBarWarningButton,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (confirm('Are you sure you want to clear the canvas?')) {
+                  this.clearCanvas();
+                  store();
+                }
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Clear canvas'
+          );
 
           this.selectedNodeLabel = createElement(
             'div',
@@ -208,22 +248,6 @@ export class GLAppElement extends AppElement<any> {
       this.rootElement
     );
 
-    createElement(
-      'button',
-      {
-        class: navBarButton,
-        click: (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.clearCanvas();
-          store();
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Clear canvas'
-    );
-
     const initializeNodes = () => {
       if (!this.rootElement) {
         return;
@@ -242,20 +266,6 @@ export class GLAppElement extends AppElement<any> {
         }
       });
     };
-    createElement(
-      'button',
-      {
-        class: navBarButton,
-        click: (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          initializeNodes();
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Reset state'
-    );
 
     const serializeFlow = () => {
       if (!this.canvasApp) {
@@ -599,6 +609,14 @@ export class GLAppElement extends AppElement<any> {
 
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
+    });
+
+    this.canvasApp?.setOnWheelEvent((x, y, scale) => {
+      setPositionTargetCameraAnimation(x, y, scale);
+    });
+
+    this.canvasApp?.setonDragCanvasEvent((x, y) => {
+      setPositionTargetCameraAnimation(x, y);
     });
   }
 

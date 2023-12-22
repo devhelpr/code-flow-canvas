@@ -270,6 +270,39 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             },
           }) as unknown as HTMLElement;
 
+          createElement(
+            'button',
+            {
+              class: navBarButton,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                initializeNodes();
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Reset state'
+          );
+
+          createElement(
+            'button',
+            {
+              class: navBarWarningButton,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (confirm('Are you sure you want to clear the canvas?')) {
+                  this.clearCanvas();
+                  store();
+                }
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Clear canvas'
+          );
+
           this.selectedNodeLabel = createElement(
             'div',
             {
@@ -381,24 +414,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.rootElement
     );
 
-    createElement(
-      'button',
-      {
-        class: navBarWarningButton,
-        click: (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (confirm('Are you sure you want to clear the canvas?')) {
-            this.clearCanvas();
-            store();
-          }
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Clear canvas'
-    );
-
     const initializeNodes = () => {
       if (!this.rootElement) {
         return;
@@ -421,129 +436,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       resetRunIndex();
       (runButton.domElement as HTMLButtonElement).disabled = false;
     };
-    createElement(
-      'button',
-      {
-        class: navBarButton,
-        click: (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          initializeNodes();
-          return false;
-        },
-      },
-      menubarElement.domElement,
-      'Reset state'
-    );
-
-    // createElement(
-    //   'button',
-    //   {
-    //     class: navBarButton,
-    //     click: (event) => {
-    //       event.preventDefault();
-    //       this.clearCanvas();
-    //       flowData.forEach((flowNode) => {
-    //         if (flowNode.shapeType !== 'Line') {
-    //           const rect = canvasApp?.createRect(
-    //             flowNode.x ?? 0,
-    //             flowNode.y ?? 0,
-    //             200,
-    //             300,
-    //             flowNode.taskType,
-    //             undefined,
-    //             [
-    //               {
-    //                 thumbType: ThumbType.StartConnectorCenter,
-    //                 thumbIndex: 0,
-    //                 connectionType: ThumbConnectionType.start,
-    //               },
-    //               {
-    //                 thumbType: ThumbType.EndConnectorCenter,
-    //                 thumbIndex: 0,
-    //                 connectionType: ThumbConnectionType.end,
-    //               },
-    //             ],
-    //             `<p>${flowNode.taskType}</p>`,
-    //             {
-    //               classNames: `bg-slate-500 p-4 rounded`,
-    //             }
-    //           );
-    //           rect.nodeComponent.nodeInfo = flowNode;
-    //         }
-    //       });
-
-    //       const elementList = Array.from(canvasApp?.elements ?? []);
-    //       console.log('elementList', elementList);
-
-    //       flowData.forEach((flowNode) => {
-    //         if (flowNode.shapeType === 'Line') {
-    //           let start: INodeComponent<NodeInfo> | undefined = undefined;
-    //           let end: INodeComponent<NodeInfo> | undefined = undefined;
-    //           if (flowNode.startshapeid) {
-    //             const startElement = elementList.find((e) => {
-    //               const element = e[1] as IElementNode<NodeInfo>;
-    //               return element.nodeInfo?.id === flowNode.startshapeid;
-    //             });
-    //             if (startElement) {
-    //               start =
-    //                 startElement[1] as unknown as INodeComponent<NodeInfo>;
-    //             }
-    //           }
-    //           if (flowNode.endshapeid) {
-    //             const endElement = elementList.find((e) => {
-    //               const element = e[1] as IElementNode<NodeInfo>;
-    //               return element.nodeInfo?.id === flowNode.endshapeid;
-    //             });
-    //             if (endElement) {
-    //               end = endElement[1] as unknown as INodeComponent<NodeInfo>;
-    //             }
-    //           }
-
-    //           const curve = canvasApp.createCubicBezier(
-    //             start?.x ?? 0,
-    //             start?.y ?? 0,
-    //             end?.x ?? 0,
-    //             end?.y ?? 0,
-    //             (start?.x ?? 0) + 100,
-    //             (start?.y ?? 0) + 150,
-    //             (end?.x ?? 0) + 100,
-    //             (end?.y ?? 0) + 150,
-    //             false
-    //           );
-
-    //           curve.nodeComponent.isControlled = true;
-    //           curve.nodeComponent.nodeInfo = flowNode;
-
-    //           if (start && curve.nodeComponent) {
-
-    //             curve.nodeComponent.startNode = start;
-    //             curve.nodeComponent.startNodeThumb = this.getThumbNode(
-    //               ThumbType.StartConnectorCenter,
-    //               start
-    //             );
-    //           }
-
-    //           if (end && curve.nodeComponent) {
-
-    //             curve.nodeComponent.endNode = end;
-    //             curve.nodeComponent.endNodeThumb = this.getThumbNode(
-    //               ThumbType.EndConnectorCenter,
-    //               end
-    //             );
-    //           }
-    //           if (curve.nodeComponent.update) {
-    //             curve.nodeComponent.update();
-    //           }
-    //         }
-    //       });
-    //       this.canvasApp?.centerCamera();
-    //       return false;
-    //     },
-    //   },
-    //   menubarElement.domElement,
-    //   'import flow'
-    // );
 
     const serializeFlow = () => {
       if (!this.canvasApp) {
@@ -925,6 +817,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       setExecutionPath,
       rootElement: this.rootElement,
     }) as unknown as HTMLElement;
+
     //);
     // let raf = -1;
     // let inputTimeout = -1;
