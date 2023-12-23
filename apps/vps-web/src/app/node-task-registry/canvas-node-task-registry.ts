@@ -265,7 +265,10 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
   registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
 
-  registerNodeFactory(dialogFormNodeName, dialogFormNode);
+  registerNodeFactory(
+    dialogFormNodeName,
+    dialogFormNode(animatePath, animatePathFromThumb)
+  );
 };
 
 export const getNodeTaskFactory = (name: string) => {

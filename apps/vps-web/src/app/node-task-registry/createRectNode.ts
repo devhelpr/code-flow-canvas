@@ -34,6 +34,7 @@ export interface IComputeResult {
   result: any;
   followPath: any;
   output: any;
+  stop?: boolean;
 }
 
 export const createRectNode = (
@@ -61,6 +62,7 @@ export const createRectNode = (
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
     hasFormInPopup?: boolean;
+    hasStaticWidthHeight?: boolean;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false
@@ -155,7 +157,7 @@ export const createRectNode = (
     {
       classNames: ``,
     },
-    undefined,
+    settings?.hasStaticWidthHeight ?? false,
     undefined,
     undefined,
     id,
@@ -220,6 +222,7 @@ export const visualNodeFactory = (
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
     hasFormInPopup?: boolean;
+    hasStaticWidthHeight?: boolean;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false
