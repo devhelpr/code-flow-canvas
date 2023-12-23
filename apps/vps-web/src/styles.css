@@ -292,3 +292,30 @@ input {
   margin-left: -5px;
   margin-top: -1px;
 }
+
+dialog {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 100000;
+    width: 50%;
+    height: 50%;
+	transform: translate(-50%, -50%);
+}
+
+dialog::backdrop {
+	background-color: rgb(0 0 0 / 0);
+	transition: display 0.3s allow-discrete,
+	  overlay 0.3s allow-discrete,
+	  background-color 0.3s; 
+}
+
+dialog[open]::backdrop {
+	background-color: rgb(0 0 0 / 0.5);
+}
+
+@starting-style {
+	dialog[open]::backdrop {
+	  background-color: rgb(0 0 0 / 0);
+	}
+  }

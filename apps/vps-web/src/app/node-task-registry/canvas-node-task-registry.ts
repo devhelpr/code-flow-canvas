@@ -129,6 +129,7 @@ import {
   initializeArrayariableNodeName,
   initializeArrayVariable,
 } from '../nodes/initialize-array';
+import { dialogFormNodeName, dialogFormNode } from '../nodes/dialog-form';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -263,6 +264,8 @@ export const setupCanvasNodeTaskRegistry = (
   // grid nodes
   registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
   registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
+
+  registerNodeFactory(dialogFormNodeName, dialogFormNode);
 };
 
 export const getNodeTaskFactory = (name: string) => {

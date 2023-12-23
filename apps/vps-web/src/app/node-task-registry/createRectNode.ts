@@ -30,6 +30,12 @@ export abstract class BaseNodeCompute<T> {
   abstract initializeCompute: () => void;
 }
 
+export interface IComputeResult {
+  result: any;
+  followPath: any;
+  output: any;
+}
+
 export const createRectNode = (
   nodeTypeName: string,
   nodeTitle: string,
@@ -43,7 +49,7 @@ export const createRectNode = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
-  ) => { result: any; followPath: any; output: any },
+  ) => IComputeResult | Promise<IComputeResult>,
   initializeCompute: () => void,
   thumbs: IThumb[],
   canvasApp: CanvasAppInstance<NodeInfo>,
@@ -56,7 +62,8 @@ export const createRectNode = (
     additionalClassNames?: string;
     hasFormInPopup?: boolean;
   },
-  childNode?: HTMLElement
+  childNode?: HTMLElement,
+  isAsyncCompute = false
 ) => {
   const componentWrapper = createElement(
     'div',
@@ -166,7 +173,18 @@ export const createRectNode = (
   const node = rect.nodeComponent;
   if (node.nodeInfo) {
     node.nodeInfo.formElements = formElements;
-    node.nodeInfo.compute = compute;
+    if (isAsyncCompute) {
+      node.nodeInfo.computeAsync = compute as (
+        input: any,
+        pathExecution?: RunNodeResult<NodeInfo>[],
+        loopIndex?: number,
+        payload?: any,
+        thumbName?: string,
+        scopeId?: string
+      ) => Promise<any>;
+    } else {
+      node.nodeInfo.compute = compute;
+    }
     node.nodeInfo.initializeCompute = initializeCompute;
     node.nodeInfo.showFormOnlyInPopup = settings?.hasFormInPopup ?? false;
   }
@@ -178,12 +196,6 @@ export const createRectNode = (
   };
 };
 
-export interface IComputeResult {
-  result: any;
-  followPath: any;
-  output: any;
-}
-
 export const visualNodeFactory = (
   nodeTypeName: string,
   nodeTitle: string,
@@ -194,7 +206,7 @@ export const visualNodeFactory = (
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
-  ) => IComputeResult,
+  ) => IComputeResult | Promise<IComputeResult>,
   initializeCompute: () => void,
 
   isContainer = false,
@@ -209,7 +221,8 @@ export const visualNodeFactory = (
     additionalClassNames?: string;
     hasFormInPopup?: boolean;
   },
-  childNode?: HTMLElement
+  childNode?: HTMLElement,
+  isAsyncCompute = false
 ) => {
   return {
     name: nodeTypeName,
@@ -241,7 +254,8 @@ export const visualNodeFactory = (
         containerNode,
         initialValues,
         settings,
-        childNode
+        childNode,
+        isAsyncCompute
       );
       onCreatedNode(nodeInstance);
       return nodeInstance.node;
