@@ -6,7 +6,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
+import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   compileExpressionAsInfo,
@@ -19,6 +19,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { replaceValues } from '../utils/replace-values';
+import { FormFieldType } from '../components/FormField';
 
 export const getValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void

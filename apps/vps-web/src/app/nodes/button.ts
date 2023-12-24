@@ -18,7 +18,7 @@ import {
   RunNodeResult,
 } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 
 export const getButton =
   (animatePath: AnimatePathFunction<NodeInfo>) =>

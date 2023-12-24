@@ -6,7 +6,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
+import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
@@ -15,6 +15,7 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
+import { FormFieldType } from '../components/FormField';
 
 export const getExpressionPart: NodeTaskFactory<NodeInfo> = (
   updated: () => void

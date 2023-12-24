@@ -5,14 +5,11 @@ import {
   IRectNodeComponent,
   IThumb,
 } from '@devhelpr/visual-programming-system';
-import {
-  FormComponent,
-  FormField,
-  FormValues,
-} from '../components/form-component';
+import { FormComponent, FormValues } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues } from '../node-task-registry';
+import { FormField } from '../components/FormField';
 
 export interface ComputeResult<T> {
   result: T;

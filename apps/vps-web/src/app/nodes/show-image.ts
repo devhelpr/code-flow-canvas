@@ -12,7 +12,7 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 import { FormContext } from '../components/form-fields/field';
 
 const selectImage = () => {

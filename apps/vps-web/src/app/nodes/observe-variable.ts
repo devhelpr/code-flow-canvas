@@ -6,7 +6,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
+import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   runNode,
@@ -19,6 +19,7 @@ import {
 } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { AnimatePathFunction } from '../follow-path/animate-path';
+import { FormFieldType } from '../components/FormField';
 
 export const observeVariable =
   (animatePath: AnimatePathFunction<NodeInfo>) =>

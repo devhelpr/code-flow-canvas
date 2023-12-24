@@ -5,7 +5,6 @@ import {
   ThumbType,
   createElement,
 } from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   RunNodeResult,
@@ -29,6 +28,7 @@ import {
   AnimatePathFunction,
   AnimatePathFromThumbFunction,
 } from '../follow-path/animate-path';
+import { FormFieldType } from '../components/FormField';
 
 const fieldName = 'message';
 export const dialogFormNodeName = 'dialog-form-node';

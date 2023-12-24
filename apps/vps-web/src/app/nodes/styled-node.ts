@@ -10,7 +10,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 import { replaceValues } from '../utils/replace-values';
 
 export const getStyledNode =

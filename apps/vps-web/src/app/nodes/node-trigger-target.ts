@@ -10,7 +10,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
 export const getNodeTriggerTarget =

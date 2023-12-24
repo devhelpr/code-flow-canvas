@@ -6,7 +6,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
+import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   compileExpressionAsInfo,
@@ -20,6 +20,7 @@ import {
   getNodeByVariableName,
   getNodeByFunctionName,
 } from '../graph/get-node-by-variable-name';
+import { FormFieldType } from '../components/FormField';
 
 const defaultFunctionColor = 'bg-slate-500';
 const activeFunctionColor = 'bg-orange-400';

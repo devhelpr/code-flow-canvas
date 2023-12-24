@@ -10,7 +10,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 import {
   createStructuredExpressionsMarkup,
   replaceExpressionScript,

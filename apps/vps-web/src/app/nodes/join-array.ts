@@ -4,7 +4,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {

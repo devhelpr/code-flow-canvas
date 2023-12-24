@@ -14,12 +14,12 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { FormFieldType } from '../components/form-component';
 import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
+import { FormFieldType } from '../components/FormField';
 
 export const getArray: NodeTaskFactory<NodeInfo> = (
   updated: () => void

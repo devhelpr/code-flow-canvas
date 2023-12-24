@@ -7,7 +7,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
+import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
 import {
@@ -24,6 +24,7 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
+import { FormFieldType } from '../components/FormField';
 
 export const getSplitByCase =
   (

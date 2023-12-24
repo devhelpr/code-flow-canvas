@@ -13,7 +13,7 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { FormFieldType } from '../components/form-component';
+import { FormFieldType } from '../components/FormField';
 
 export const getState: NodeTaskFactory<NodeInfo> = (
   updated: () => void
