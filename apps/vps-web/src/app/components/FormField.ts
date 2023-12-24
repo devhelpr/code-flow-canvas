@@ -38,7 +38,7 @@ export type FormField = (
   | {
       fieldType: 'Array';
       formElements: FormField[];
-      values: Record<string, string>;
+      values: Record<string, string>[];
     }
 ) & {
   fieldName: string;

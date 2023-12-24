@@ -16,6 +16,7 @@ import { ButtonFieldChildComponent } from './form-fields/button';
 import { FormFieldComponent } from './form-fields/field';
 import { SelectFieldChildComponent } from './form-fields/select';
 import { FormField, FormFieldType } from './FormField';
+import { ArrayFieldChildComponent } from './form-fields/array';
 
 export interface FormComponentProps {
   rootElement: HTMLElement;
@@ -255,6 +256,17 @@ export class FormsComponent extends Component<Props> {
           setValue: this.setValue,
           onButtonClick: formControl.onButtonClick,
           isLast: index === this.props.formElements.length - 1,
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.Array) {
+        const formControlComponent = new ArrayFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          label: formControl.label,
+          formElements: formControl.formElements,
+          values: formControl.values,
+          isLast: index === this.props.formElements.length - 1,
+          setValue: this.setValue,
         });
         this.components.push(formControlComponent);
       }
