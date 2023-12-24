@@ -185,7 +185,7 @@ export const getCallFunction =
           );
 
           const scopeGuid = crypto.randomUUID();
-          //canvasAppInstance?.setScope(scopeGuid);
+          console.log('scope created', scopeGuid);
 
           let isFunctionFound = false;
           canvasAppInstance.elements.forEach((element) => {
@@ -207,16 +207,31 @@ export const getCallFunction =
                 componentDomElement.classList.add(activeFunctionColor);
                 componentDomElement.classList.remove(defaultFunctionColor);
 
+                console.log(
+                  'callFunction start',
+                  commandName,
+                  scopeId,
+                  parameterCommands,
+                  input
+                );
+
                 runNode<NodeInfo>(
                   element as IRectNodeComponent<NodeInfo>,
                   canvasAppInstance,
                   animatePath,
-                  (input) => {
+                  (inputFunction) => {
+                    console.log('scope removed', scopeGuid);
                     canvasAppInstance?.removeScope(scopeGuid);
 
                     componentDomElement.classList.remove(activeFunctionColor);
                     componentDomElement.classList.add(defaultFunctionColor);
-
+                    console.log(
+                      'callFunction',
+                      commandName,
+                      scopeId,
+                      parameterCommands,
+                      inputFunction
+                    );
                     if (
                       (
                         (element as IRectNodeComponent<NodeInfo>)
@@ -230,8 +245,8 @@ export const getCallFunction =
                     }
 
                     resolve({
-                      output: input,
-                      result: input,
+                      output: inputFunction,
+                      result: inputFunction,
                       followPath: undefined,
                     });
                   },

@@ -122,7 +122,13 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         if (expression !== '' && (isNaN(result) || result === undefined)) {
           throw new Error("Expression couldn't be run");
         }
-        console.log('IFCondition result', result, input, expression);
+        console.log(
+          'IFCondition result',
+          result,
+          input,
+          expression,
+          payloadForExpression
+        );
       } catch (error) {
         result = undefined;
         // (errorNode.domElement as unknown as HTMLElement).classList.remove(
@@ -137,11 +143,13 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       }
       return {
         result: input,
+        output: input,
         followPath: result ? 'success' : 'failure',
       };
     }
     return {
       result: input,
+      output: input,
       followPath: Math.random() < 0.5 ? 'success' : 'failure',
     };
   };

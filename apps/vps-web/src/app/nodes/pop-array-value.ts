@@ -54,6 +54,7 @@ export const popArrayValue: NodeTaskFactory<NodeInfo> = (
           } else {
             poppedItem = data.pop();
           }
+          console.log('poppedItem', poppedItem, data);
           contextInstance.setVariable(variableName, data, scopeId);
 
           if (poppedItem !== undefined) {

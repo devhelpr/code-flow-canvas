@@ -62,6 +62,7 @@ export const getParallel =
             if (seq2Ran) {
               resolve({
                 result: inputFromFirstRun,
+                output: inputFromFirstRun,
                 stop: true,
               });
             }

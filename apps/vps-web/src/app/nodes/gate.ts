@@ -51,27 +51,61 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
 
+      const parseInput = (input: string) => {
+        //if (inputType === 'number') {
+        return parseFloat(input) || 0;
+        // } else if (inputType === 'integer') {
+        //   return parseInt(input) || 0;
+        // } else if (inputType === 'boolean') {
+        //   return input === 'true' || input === '1' || Boolean(input)
+        //     ? true
+        //     : false;
+        // } else if (inputType === 'array') {
+        //   return Array.isArray(input) ? input : [];
+        // } else {
+        //   return (input ?? '').toString();
+        // }
+      };
+
+      let inputAsString = typeof input === 'object' ? '' : parseInput(input);
+      let inputAsObject = {};
+      if (Array.isArray(input)) {
+        // if (inputType === 'array') {
+        //   inputAsString = input;
+        // } else
+        {
+          inputAsString = input.map((item) =>
+            parseInput(item)
+          ) as unknown as string; // dirty hack
+        }
+      } else if (typeof input === 'object') {
+        inputAsObject = input;
+      }
+
       const payloadForExpression = {
-        input: input,
-        currentValue: input,
-        value: input,
-        current: input,
+        input: inputAsString,
+        currentValue: currentValue,
+        value: currentValue,
+        array: input,
+        current: currentValue,
         last: currentValue,
         index: loopIndex ?? 0,
         runIteration: loopIndex ?? 0,
         random: Math.round(Math.random() * 100),
         ...payload,
+        ...inputAsObject,
       };
       canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
         Object.defineProperties(payloadForExpression, {
           [variableName]: {
             get: () => {
-              console.log('get', variableName);
-              return canvasAppInstance?.getVariable(
+              const helper = canvasAppInstance?.getVariable(
                 variableName,
                 undefined,
                 scopeId
               );
+              console.log('get', variableName, helper);
+              return helper;
             },
             set: (value) => {
               canvasAppInstance?.setVariable(variableName, value, scopeId);
@@ -105,6 +139,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     }
     return {
       result: input,
+      output: input,
       stop: !result,
     };
     //}

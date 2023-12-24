@@ -6,7 +6,6 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
 import {

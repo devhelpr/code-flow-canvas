@@ -128,7 +128,11 @@ export const getScopedVariable =
               // data needs to be pushed 'raw' without convertDataToType
               // .. convertDataToType converts to array when fieldValueType is array
               // .. and here you want to push a value to that array
-              scopedData[scopeId].push(data.push);
+              if (Array.isArray(data.push)) {
+                scopedData[scopeId].push(...data.push);
+              } else {
+                scopedData[scopeId].push(data.push);
+              }
             }
           } else {
             if (Array.isArray(data)) {
@@ -150,7 +154,11 @@ export const getScopedVariable =
               // data needs to be pushed 'raw' without convertDataToType
               // .. convertDataToType converts to array when fieldValueType is array
               // .. and here you want to push a value to that array
-              currentValue.push(data.push);
+              if (Array.isArray(data.push)) {
+                currentValue.push(...data.push);
+              } else {
+                currentValue.push(data.push);
+              }
             }
           }
         }

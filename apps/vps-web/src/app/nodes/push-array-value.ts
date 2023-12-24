@@ -38,9 +38,9 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
   ) => {
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
         contextInstance.setVariable(variableName, { push: input }, scopeId);
+        console.log('pushArrayVariable', variableName, input);
       }
     }
     return {

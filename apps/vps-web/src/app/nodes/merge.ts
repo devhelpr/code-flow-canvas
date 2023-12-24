@@ -58,34 +58,46 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
-    values.value1 = undefined;
-    values.value2 = undefined;
+    values = { global: { value1: undefined, value2: undefined } };
     return;
   };
 
-  const values = {
-    value1: undefined,
-    value2: undefined,
-  } as {
-    value1: undefined | string;
-    value2: undefined | string;
-  };
+  let values = {
+    global: {
+      value1: undefined,
+      value2: undefined,
+    },
+  } as Record<
+    string,
+    {
+      value1: undefined | string;
+      value2: undefined | string;
+    }
+  >;
 
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    scopeId?: string
   ) => {
+    if (scopeId && !values[scopeId]) {
+      values[scopeId] = {
+        value1: undefined,
+        value2: undefined,
+      };
+    }
+    const localValues = values[scopeId ?? 'global'];
     if (thumbName === 'a') {
-      values.value1 = input;
+      localValues.value1 = input;
     } else {
       if (thumbName === 'b') {
-        values.value2 = input;
+        localValues.value2 = input;
       }
     }
-    if (values.value1 === undefined || values.value2 === undefined) {
+    if (localValues.value1 === undefined || localValues.value2 === undefined) {
       return {
         result: undefined,
         output: undefined,
@@ -93,10 +105,18 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-    const value1 = values.value1;
-    const value2 = values.value2;
-    values.value1 = undefined;
-    values.value2 = undefined;
+    const value1 = localValues.value1;
+    const value2 = localValues.value2;
+    localValues.value1 = undefined;
+    localValues.value2 = undefined;
+
+    if (contextInstance && scopeId) {
+      contextInstance.registerTempVariable('a', value1, scopeId);
+      contextInstance.registerTempVariable('b', value2, scopeId);
+    }
+    console.log('merge', scopeId, value1, value2, {
+      ...contextInstance?.getVariables(scopeId),
+    });
     return {
       result: {
         a: value1,

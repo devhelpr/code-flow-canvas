@@ -1014,6 +1014,15 @@ export const createCanvasApp = <T>(
       return false;
     },
     getVariableInfo: (variableName: string, scopeId?: string) => {
+      if (scopeId && tempVariables[scopeId][variableName]) {
+        return {
+          [variableName]: {
+            id: variableName,
+          },
+          data: tempVariables[scopeId][variableName],
+        };
+      }
+
       if (variableName && variables[variableName]) {
         return {
           ...variables[variableName],
@@ -1023,7 +1032,9 @@ export const createCanvasApp = <T>(
       return false;
     },
     setVariable: (variableName: string, data: any, scopeId?: string) => {
-      if (variableName && variables[variableName]) {
+      if (scopeId && tempVariables[scopeId][variableName]) {
+        tempVariables[scopeId][variableName] = data;
+      } else if (variableName && variables[variableName]) {
         variables[variableName].setData(data, scopeId);
 
         const map = variableObservers.get(`${variableName}`);
@@ -1038,7 +1049,7 @@ export const createCanvasApp = <T>(
       const result: Record<string, any> = {};
       Object.entries(variables).forEach(([key, value]) => {
         if (key) {
-          result[key] = value.getData(scopeId);
+          result[key] = value.getData(undefined, scopeId);
         }
       });
       return result;
