@@ -20,6 +20,7 @@ export const getFunction =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let componentWrapper: INodeComponent<NodeInfo> | undefined;
     let divElement: IElementNode<NodeInfo>;
     let parametersContainer: IElementNode<NodeInfo>;
@@ -46,7 +47,9 @@ export const getFunction =
 
       const parameters: string =
         node?.nodeInfo?.formValues?.['parameters'] ?? '';
-      const parametersArray = parameters ? parameters.split(',') : [];
+      const parametersArray = (parameters ? parameters.split(',') : []).map(
+        (parameter) => parameter.trim()
+      );
       const inputObject = input as any;
       let isError = false;
       if (inputObject && inputObject.trigger === 'TRIGGER') {
@@ -58,6 +61,13 @@ export const getFunction =
         parametersArray.forEach((parameter) => {
           if (!inputObject[parameter]) {
             isError = true;
+          }
+          if (canvasAppInstance && scopeId) {
+            canvasAppInstance.registerTempVariable(
+              parameter,
+              inputObject[parameter],
+              scopeId
+            );
           }
           payload[parameter] = inputObject[parameter];
         });
@@ -116,6 +126,7 @@ export const getFunction =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const initialValue = initalValues?.['node'] || '';
         const intialParameters = initalValues?.['parameters'] || '';
         const formElements = [

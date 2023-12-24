@@ -67,6 +67,7 @@ export const getSequential =
                 );
                 resolve({
                   result: input,
+                  output: input,
                   stop: true,
                 });
               },

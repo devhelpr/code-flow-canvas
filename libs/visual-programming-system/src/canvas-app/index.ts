@@ -49,7 +49,7 @@ export const createCanvasApp = <T>(
     Map<string, (data: any) => void>
   > = new Map();
 
-  const scopeStack: string[] = [];
+  const tempVariables: Record<string, any> = {};
 
   const isMacOs =
     typeof navigator !== 'undefined' &&
@@ -979,6 +979,16 @@ export const createCanvasApp = <T>(
         variables[variableName] = variable;
       }
     },
+    registerTempVariable: (
+      variableName: string,
+      data: any,
+      scopeId: string
+    ) => {
+      if (!tempVariables[scopeId]) {
+        tempVariables[scopeId] = {};
+      }
+      tempVariables[scopeId][variableName] = data;
+    },
     unregisterVariable: (variableName: string, id: string) => {
       if (
         id &&
@@ -990,6 +1000,14 @@ export const createCanvasApp = <T>(
       }
     },
     getVariable: (variableName: string, parameter?: any, scopeId?: string) => {
+      if (
+        variableName &&
+        scopeId &&
+        tempVariables[scopeId] &&
+        tempVariables[scopeId][variableName]
+      ) {
+        return tempVariables[scopeId][variableName];
+      }
       if (variableName && variables[variableName]) {
         return variables[variableName].getData(parameter, scopeId);
       }
@@ -1025,7 +1043,13 @@ export const createCanvasApp = <T>(
       });
       return result;
     },
-    getVariableNames: () => {
+    getVariableNames: (scopeId?: string) => {
+      if (scopeId) {
+        return [
+          ...Object.keys(variables),
+          ...Object.keys(tempVariables[scopeId] ?? {}),
+        ];
+      }
       return Object.keys(variables);
     },
     initializeVariableDataStructure: (
@@ -1065,6 +1089,10 @@ export const createCanvasApp = <T>(
           const variable = variables[key];
           variable.removeScope(scopeId);
         });
+
+        if (tempVariables[scopeId]) {
+          delete tempVariables[scopeId];
+        }
       }
     },
     // getCurrentScope: () => {

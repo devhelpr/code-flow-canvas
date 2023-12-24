@@ -62,7 +62,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
         random: Math.round(Math.random() * 100),
         ...payload,
       };
-      canvasAppInstance?.getVariableNames().forEach((variableName) => {
+      canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
         Object.defineProperties(payloadForExpression, {
           [variableName]: {
             get: () => {

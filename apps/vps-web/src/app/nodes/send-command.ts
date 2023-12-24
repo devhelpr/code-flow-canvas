@@ -46,7 +46,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
       runIteration: loopIndex ?? 0,
       random: Math.round(Math.random() * 100),
     };
-    canvasAppInstance?.getVariableNames().forEach((variableName) => {
+    canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
       Object.defineProperties(payloadForExpression, {
         [variableName]: {
           get: () => {

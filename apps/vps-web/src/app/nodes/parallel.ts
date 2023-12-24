@@ -6,7 +6,6 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
 import {
@@ -84,6 +83,7 @@ export const getParallel =
             if (seq1Ran) {
               resolve({
                 result: inputFromSecondRun,
+                output: inputFromSecondRun,
                 stop: true,
               });
             }

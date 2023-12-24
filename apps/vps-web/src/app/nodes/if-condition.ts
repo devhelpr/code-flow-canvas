@@ -95,7 +95,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
           ...payload,
           ...inputAsObject,
         };
-        canvasAppInstance?.getVariableNames().forEach((variableName) => {
+        canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
           Object.defineProperties(payloadForExpression, {
             [variableName]: {
               get: () => {

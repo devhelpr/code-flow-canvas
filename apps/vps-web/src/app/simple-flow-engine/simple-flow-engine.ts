@@ -178,7 +178,7 @@ const triggerExecution = <T>(
                     onStopped(computeResult.output ?? '', undefined, scopeId);
                   }
                   return {
-                    result: false,
+                    result: result,
                     stop: true,
                     output: result,
                   };
@@ -231,7 +231,7 @@ const triggerExecution = <T>(
               onStopped(computeResult.output ?? '', undefined, scopeId);
             }
             return {
-              result: false,
+              result: result,
               stop: true,
               output: result,
             };
@@ -607,7 +607,7 @@ export const runNodeFromThumb = <T>(
 
               if (computeResult.stop) {
                 resolve({
-                  result: false,
+                  result: result,
                   stop: true,
                   output: result,
                 });
@@ -652,7 +652,7 @@ export const runNodeFromThumb = <T>(
         previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
           return {
-            result: false,
+            result: result,
             stop: true,
             output: result,
           };

@@ -56,7 +56,7 @@ export const getCallFunction =
         runIteration: loopIndex ?? 0,
         random: Math.round(Math.random() * 100),
       };
-      canvasAppInstance?.getVariableNames().forEach((variableName) => {
+      canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
         Object.defineProperties(payloadForExpression, {
           [variableName]: {
             get: () => {
@@ -199,7 +199,7 @@ export const getCallFunction =
                   .split(',')
                   .forEach((parameter: string, index: number) => {
                     if (parsedArguments[index]) {
-                      payload[parameter] = parsedArguments[index];
+                      payload[parameter.trim()] = parsedArguments[index];
                     }
                   });
                 isFunctionFound = true;

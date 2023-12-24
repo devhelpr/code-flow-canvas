@@ -30,6 +30,7 @@ import {
 } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
+const formControlsfieldName = 'formControls';
 const fieldName = 'message';
 export const dialogFormNodeName = 'dialog-form-node';
 
@@ -233,6 +234,43 @@ export const dialogFormNode =
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 [fieldName]: value,
+              };
+              console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Array,
+            fieldName: fieldName,
+            value: values?.[fieldName] ?? '',
+            values: (values?.[formControlsfieldName] ?? []) as Record<
+              string,
+              string
+            >[],
+            settings: {
+              showLabel: true,
+            },
+            formElements: [
+              {
+                fieldType: FormFieldType.Text,
+                fieldName: 'label',
+                value: '',
+              },
+              {
+                fieldType: FormFieldType.Text,
+                fieldName: 'fieldType',
+                value: '',
+              },
+            ],
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                [formControlsfieldName]: value,
               };
               console.log('onChange', node.nodeInfo);
               if (updated) {
