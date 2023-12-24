@@ -170,8 +170,8 @@ export const dialogFormNode =
         <p class="pt-[24px]">Dialog Form</p>
         <div method="dialog" class="justify-end flex flex-auto items-end">
           <div class="flex w-full flex-row justify-end gap-[2px]">
-            <div class="bg-slate-700 m-0 w-[16px] h-[8px]"></div>
-            <div class="bg-slate-700 m-0 w-[16px] h-[8px]"></div>
+            <div class="bg-slate-700 m-0 w-[24px] h-[12px]"></div>
+            <div class="bg-slate-700 m-0 w-[24px] h-[12px]"></div>
           </div>
         </div>
       </div>
