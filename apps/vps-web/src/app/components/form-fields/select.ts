@@ -25,45 +25,6 @@ export interface SelectFieldProps extends BaseFormFieldProps {
   onChange?: (value: string) => void;
 }
 
-//export const SelectField = (props: SelectFieldProps) => {
-//let selectRef: HTMLInputElement | null = null;
-
-//
-
-// return (
-//   <select
-//     reference={(reference: HTMLInputElement) => (selectRef = reference)}
-//     id={props.fieldName}
-//     class="block w-full p-1"
-//     name={props.fieldName}
-//     autocomplete="off"
-//     value={props.value}
-//     oninput={(event: InputEvent) => {
-//       const select = event.target as HTMLInputElement;
-//       console.log(select.value);
-//       if (props.onChange) {
-//         props.onChange(select.value);
-//       }
-//     }}
-//   >
-//     <list:Render list={props.options}>
-//       {(item: SelectOption) => (
-//         <option value={item.value} selected={item.value === props.value}>
-//           {item.label}
-//         </option>
-//       )}
-//     </list:Render>
-//   </select>
-// );
-//};
-
-// export interface InputFieldChildProps {
-//   value: string;
-//   formId: string;
-//   fieldName: string;
-//   onChange?: (value: string) => void;
-// }
-
 export class SelectFieldChildComponent extends FormFieldComponent<SelectFieldProps> {
   oldProps: SelectFieldProps | null = null;
   select: HTMLSelectElement | null = null;

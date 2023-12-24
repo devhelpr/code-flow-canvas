@@ -20,13 +20,6 @@ export interface ColorFieldProps extends BaseFormFieldProps {
   onChange?: (value: string) => void;
 }
 
-// export interface InputFieldChildProps {
-//   value: string;
-//   formId: string;
-//   fieldName: string;
-//   onChange?: (value: string) => void;
-// }
-
 export class ColorFieldChildComponent extends FormFieldComponent<ColorFieldProps> {
   oldProps: ColorFieldProps | null = null;
   input: HTMLInputElement | null = null;
