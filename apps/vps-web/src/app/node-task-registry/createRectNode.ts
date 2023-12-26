@@ -74,10 +74,14 @@ export const createRectNode = (
     undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
+  let hasBeforeDecorator = false;
+  let hasAfterDecorator = false;
   // decorators before
   if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
+    let firstBeforeDecorator = true;
     nodeInfo.decorators.forEach((decorator) => {
       if (decorator.executeOrder === 'before') {
+        hasBeforeDecorator = true;
         const factory = getNodeTaskFactory(decorator.taskType);
         if (factory) {
           const nodeTask = factory();
@@ -85,11 +89,13 @@ export const createRectNode = (
             const decoratorWrapper = createElement(
               'div',
               {
-                class: `relative bg-slate-500 text-center py-2 rounded`,
+                class: `relative bg-slate-500 text-center py-2 min-h-[60px] h-[60px] ${
+                  firstBeforeDecorator ? 'rounded-t' : ''
+                }`,
               },
               componentWrapper.domElement as HTMLElement
             ) as unknown as INodeComponent<NodeInfo>;
-
+            firstBeforeDecorator = false;
             decorator.decoratorNode = nodeTask.createDecoratorNode(
               canvasApp,
               decorator.formValues,
@@ -97,6 +103,8 @@ export const createRectNode = (
             );
           }
         }
+      } else {
+        hasAfterDecorator = true;
       }
     });
   }
@@ -105,7 +113,7 @@ export const createRectNode = (
     createElement(
       'div',
       {
-        class: `flex items-center bg-slate-600 text-white p-1 px-3 rounded-t pointer-events-none`,
+        class: `flex items-center bg-slate-600 border-slate-500 text-white p-1 px-3 rounded-t pointer-events-none`,
       },
       componentWrapper.domElement,
       nodeTitle
@@ -114,7 +122,9 @@ export const createRectNode = (
     createElement(
       'div',
       {
-        class: `flex items-center rounded-t pointer-events-none`,
+        class: `flex items-center ${
+          !hasBeforeDecorator ? 'rounded-t' : ''
+        } pointer-events-none`,
       },
       componentWrapper.domElement,
       undefined
@@ -127,10 +137,18 @@ export const createRectNode = (
   const formWrapper = createElement(
     'div',
     {
-      class: `inner-node bg-slate-500  ${
-        showTitlebar ? 'rounded-b' : 'rounded'
+      class: `inner-node bg-slate-500 border-slate-500  ${
+        showTitlebar
+          ? 'rounded-b'
+          : !hasBeforeDecorator && !hasAfterDecorator
+          ? 'rounded'
+          : hasBeforeDecorator && !hasAfterDecorator
+          ? 'rounded-b'
+          : ''
       } min-h-auto flex-auto ${
-        hasCenteredLabel ? 'flex items-center justify-center' : 'p-4 pt-4'
+        hasCenteredLabel
+          ? 'flex items-center bg-slate-500 border-slate-500 justify-center'
+          : 'p-4 pt-4'
       }
       ${settings?.additionalClassNames ?? ''} 
       `,
@@ -174,6 +192,7 @@ export const createRectNode = (
 
   // decorators after
   if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
+    let firstAfterDecorator = true;
     nodeInfo.decorators.forEach((decorator) => {
       if (decorator.executeOrder === 'after') {
         const factory = getNodeTaskFactory(decorator.taskType);
@@ -181,11 +200,13 @@ export const createRectNode = (
           const decoratorWrapper = createElement(
             'div',
             {
-              class: `relative bg-slate-500 text-center py-2 rounded`,
+              class: `relative bg-slate-500 border-slate-500 text-center py-2 ${
+                firstAfterDecorator ? 'rounded-b' : ''
+              }`,
             },
             componentWrapper.domElement as HTMLElement
           ) as unknown as INodeComponent<NodeInfo>;
-
+          firstAfterDecorator = false;
           decorator.decoratorNode = factory.createDecoratorNode(
             canvasApp,
             decorator.formValues,

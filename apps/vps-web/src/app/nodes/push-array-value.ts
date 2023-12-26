@@ -89,7 +89,7 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        prefixLabel: 'value',
+        //prefixLabel: 'value',
         name: 'value',
         maxConnections: 1,
       },
@@ -130,7 +130,7 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
       const domElement = nodeInstance.node.domElement as HTMLElement;
       const textNode = domElement.querySelector('.inner-node');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Push value to<br />'${node.nodeInfo?.formValues?.[fieldName]}' array`;
+        textNode.innerHTML = `Push to '${node.nodeInfo?.formValues?.[fieldName]}' array`;
       }
     },
     {
