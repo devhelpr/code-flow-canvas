@@ -14,10 +14,44 @@ import {
   getNodeConnectionPairByIdWhereNodeIsEndpoint,
 } from '../follow-path/get-node-connection-pairs';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
+import { exec } from 'child_process';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
 });
+
+const handleDecoratrs = (
+  decorators: any[],
+  executeOrder: 'before' | 'after',
+  input: any,
+  payload: any,
+  scopeId?: string
+) => {
+  const executeDecorators = decorators.filter((e: any) => {
+    return e.executeOrder === executeOrder;
+  });
+  let decoratorInput = input;
+  executeDecorators.forEach((decorator: any) => {
+    const decoratorNode = decorator.decoratorNode;
+    if (decoratorNode && decoratorNode.nodeInfo?.compute) {
+      const decoratorResult = decoratorNode.nodeInfo?.compute(
+        decoratorInput,
+        undefined,
+        runIndex,
+        payload,
+        undefined,
+        scopeId
+      );
+      if (decoratorResult && !decoratorResult.stop && decoratorResult.output) {
+        decoratorInput = decoratorResult.output;
+      } else {
+        // ? error handling decorators ?
+        return false;
+      }
+    }
+  });
+  return decoratorInput;
+};
 
 const getVariablePayload = <T>(
   node: IRectNodeComponent<T>,
@@ -213,6 +247,22 @@ const triggerExecution = <T>(
               });
           });
         } else if (formInfo && formInfo.compute) {
+          if (formInfo.decorators) {
+            const decoratorInput = handleDecoratrs(
+              formInfo.decorators,
+              'before',
+              input,
+              payload,
+              scopeId
+            );
+            if (decoratorInput === false) {
+              return {
+                result: false,
+                output: undefined,
+              };
+            }
+            input = decoratorInput;
+          }
           const computeResult = formInfo.compute(
             input,
             pathExecution,
@@ -235,6 +285,25 @@ const triggerExecution = <T>(
               stop: true,
               output: result,
             };
+          }
+
+          if (formInfo.decorators) {
+            if (formInfo.decorators) {
+              const decoratorInput = handleDecoratrs(
+                formInfo.decorators,
+                'after',
+                input,
+                payload,
+                scopeId
+              );
+              if (decoratorInput === false) {
+                return {
+                  result: false,
+                  output: undefined,
+                };
+              }
+              input = decoratorInput;
+            }
           }
         } else {
           result = false;
@@ -381,6 +450,22 @@ export const runNode = <T>(
         );
       });
   } else if (formInfo && formInfo?.compute) {
+    if (formInfo.decorators) {
+      const decoratorInput = handleDecoratrs(
+        formInfo.decorators,
+        'before',
+        input,
+        payload,
+        scopeId
+      );
+      if (decoratorInput === false) {
+        return {
+          result: false,
+          output: undefined,
+        };
+      }
+      input = decoratorInput;
+    }
     const computeResult = formInfo.compute(
       input ?? '',
       pathExecution,
@@ -400,6 +485,24 @@ export const runNode = <T>(
       }
       return;
     }
+
+    if (formInfo.decorators) {
+      const decoratorInput = handleDecoratrs(
+        formInfo.decorators,
+        'after',
+        input,
+        payload,
+        scopeId
+      );
+      if (decoratorInput === false) {
+        return {
+          result: false,
+          output: undefined,
+        };
+      }
+      input = decoratorInput;
+    }
+
     triggerExecution(
       node,
       canvasApp,
@@ -639,6 +742,23 @@ export const runNodeFromThumb = <T>(
             });
         });
       } else if (formInfo && formInfo.compute) {
+        if (formInfo.decorators) {
+          const decoratorInput = handleDecoratrs(
+            formInfo.decorators,
+            'before',
+            input,
+            undefined,
+            scopeId
+          );
+          if (decoratorInput === false) {
+            return {
+              result: false,
+              output: undefined,
+            };
+          }
+          input = decoratorInput;
+        }
+
         const computeResult = formInfo.compute(
           input,
           pathExecution,
@@ -681,6 +801,23 @@ export const runNodeFromThumb = <T>(
           node: node as unknown as IRectNodeComponent<T>,
           nodeType: (node.nodeInfo as any)?.type ?? '',
         });
+      }
+
+      if (formInfo.decorators) {
+        const decoratorInput = handleDecoratrs(
+          formInfo.decorators,
+          'after',
+          input,
+          undefined,
+          scopeId
+        );
+        if (decoratorInput === false) {
+          return {
+            result: false,
+            output: undefined,
+          };
+        }
+        input = decoratorInput;
       }
 
       return {

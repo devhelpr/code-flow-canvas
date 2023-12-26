@@ -2,6 +2,25 @@ import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { StateMachine } from '../state-machine';
 
+export interface INodeDecorator {
+  taskType: string;
+  formValues?: any;
+  executeOrder?: 'before' | 'after';
+  decoratorNode?: {
+    nodeInfo: {
+      compute?: (
+        input: any,
+        pathExecution?: RunNodeResult<NodeInfo>[],
+        loopIndex?: number,
+        payload?: any,
+        thumbName?: string,
+        scopeId?: string
+      ) => any;
+      initializeCompute?: () => void;
+    };
+  };
+}
+
 export interface NodeInfo {
   taskType?: string;
   compute?: (
@@ -38,6 +57,8 @@ export interface NodeInfo {
   ) => any;
   getData?: (parameter?: any, scope?: string) => any;
   getDependencies?: () => { startNodeId: string; endNodeId: string }[];
+  supportsDecorators?: boolean;
+  decorators?: INodeDecorator[];
 }
 
 //export type NodeInfo = any;

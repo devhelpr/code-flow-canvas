@@ -19,7 +19,19 @@ export const cleanupNodeInfoForSerializing = (
         key !== 'canvasAppInstance' &&
         key !== 'stateMachine'
       ) {
-        nodeInfoCopy[key] = (nodeInfo as any)[key];
+        let value = (nodeInfo as any)[key];
+        if (key === 'decorators' && value) {
+          const decorators: any[] = [];
+          for (const decorator of value) {
+            decorators.push({
+              taskType: decorator.taskType,
+              formValues: decorator.formValues,
+              executeOrder: decorator.executeOrder,
+            });
+          }
+          value = decorators;
+        }
+        nodeInfoCopy[key] = value;
       }
     }
   }

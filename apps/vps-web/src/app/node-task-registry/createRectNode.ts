@@ -62,7 +62,9 @@ export const createRectNode = (
     hasStaticWidthHeight?: boolean;
   },
   childNode?: HTMLElement,
-  isAsyncCompute = false
+  isAsyncCompute = false,
+  nodeInfo?: NodeInfo,
+  getNodeTaskFactory?: (name: string) => any
 ) => {
   const componentWrapper = createElement(
     'div',
@@ -72,6 +74,32 @@ export const createRectNode = (
     undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
+  // decorators before
+  if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
+    nodeInfo.decorators.forEach((decorator) => {
+      if (decorator.executeOrder === 'before') {
+        const factory = getNodeTaskFactory(decorator.taskType);
+        if (factory) {
+          const nodeTask = factory();
+          if (nodeTask) {
+            const decoratorWrapper = createElement(
+              'div',
+              {
+                class: `relative bg-slate-500 text-center py-2 rounded`,
+              },
+              componentWrapper.domElement as HTMLElement
+            ) as unknown as INodeComponent<NodeInfo>;
+
+            decorator.decoratorNode = nodeTask.createDecoratorNode(
+              canvasApp,
+              decorator.formValues,
+              decoratorWrapper.domElement as HTMLElement
+            );
+          }
+        }
+      }
+    });
+  }
   const showTitlebar = settings ? settings?.hasTitlebar : true;
   if (showTitlebar) {
     createElement(
@@ -143,6 +171,31 @@ export const createRectNode = (
       childNode
     );
   }
+
+  // decorators after
+  if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
+    nodeInfo.decorators.forEach((decorator) => {
+      if (decorator.executeOrder === 'after') {
+        const factory = getNodeTaskFactory(decorator.taskType);
+        if (factory) {
+          const decoratorWrapper = createElement(
+            'div',
+            {
+              class: `relative bg-slate-500 text-center py-2 rounded`,
+            },
+            componentWrapper.domElement as HTMLElement
+          ) as unknown as INodeComponent<NodeInfo>;
+
+          decorator.decoratorNode = factory.createDecoratorNode(
+            canvasApp,
+            decorator.formValues,
+            decoratorWrapper.domElement as HTMLElement
+          );
+        }
+      }
+    });
+  }
+
   const rect = canvasApp.createRect(
     x,
     y,
@@ -161,6 +214,7 @@ export const createRectNode = (
     {
       type: nodeTypeName,
       formValues: initialValues ?? {},
+      decorators: nodeInfo?.decorators,
     },
     containerNode
   );
@@ -222,19 +276,26 @@ export const visualNodeFactory = (
     hasStaticWidthHeight?: boolean;
   },
   childNode?: HTMLElement,
-  isAsyncCompute = false
+  isAsyncCompute = false,
+  canBeUsedAsDecorator = false
 ) => {
   return {
     name: nodeTypeName,
     family: nodeFamily,
     isContainer: isContainer,
+    canBeUsedAsDecorator,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,
       initialValues?: InitialValues, // this can be the values imported from storage..
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      _width?: number,
+      _height?: number,
+      nestedLevel?: number,
+      nodeInfo?: NodeInfo,
+      getNodeTaskFactory?: (name: string) => any
     ) => {
       const formElements = onGetFormElements(initialValues);
       const nodeInstance = createRectNode(
@@ -255,7 +316,9 @@ export const visualNodeFactory = (
         initialValues,
         settings,
         childNode,
-        isAsyncCompute
+        isAsyncCompute,
+        nodeInfo,
+        getNodeTaskFactory
       );
       onCreatedNode(nodeInstance);
       return nodeInstance.node;

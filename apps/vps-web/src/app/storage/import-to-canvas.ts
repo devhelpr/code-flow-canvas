@@ -41,7 +41,9 @@ export const importToCanvas = (
               containerNode,
               node.width,
               node.height,
-              nestedLevel ?? 0
+              nestedLevel ?? 0,
+              node.nodeInfo,
+              getNodeTaskFactory
             );
 
             if (node.elements && canvasVisualNode.nodeInfo) {
@@ -69,7 +71,9 @@ export const importToCanvas = (
                       canvasVisualNode,
                       element.width,
                       element.height,
-                      nestedLevel ? nestedLevel + 1 : 1
+                      nestedLevel ? nestedLevel + 1 : 1,
+                      node.nodeInfo,
+                      getNodeTaskFactory
                     );
 
                     // TODO if childNodeTask.isContainer .. call importToCanvas again...
@@ -227,7 +231,9 @@ export const importToCanvas = (
               containerNode,
               node.width,
               node.height,
-              nestedLevel
+              nestedLevel,
+              node.nodeInfo,
+              getNodeTaskFactory
             );
           }
         }

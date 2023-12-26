@@ -12,6 +12,7 @@ export type NodeTask<T> = {
   category?: string;
   isContainer?: boolean;
   isContained?: boolean;
+  canBeUsedAsDecorator?: boolean;
   childNodeTasks?: string[];
   createVisualNode: (
     canvasApp: CanvasAppInstance<T>,
@@ -28,6 +29,10 @@ export type NodeTask<T> = {
     inputs: IRectNodeComponent<T>[];
     outputs: IRectNodeComponent<T>[];
   };
+  createDecoratorNode?: (
+    canvasApp: CanvasAppInstance<T>,
+    initalValues?: InitialValues
+  ) => INodeComponent<T>;
 };
 
 export type NodeTypeRegistry<T> = Record<string, NodeTaskFactory<T>>;

@@ -55,7 +55,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     thumbName?: string,
     scopeId?: string
   ) => {
-    (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
+    if (errorNode) {
+      (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
+    }
     let result: any = false;
     try {
       compileExpression();
@@ -157,11 +159,13 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       }
     } catch (error) {
       result = undefined;
-      (errorNode.domElement as unknown as HTMLElement).classList.remove(
-        'hidden'
-      );
-      (errorNode.domElement as unknown as HTMLElement).textContent =
-        error?.toString() ?? 'Error';
+      if (errorNode) {
+        (errorNode.domElement as unknown as HTMLElement).classList.remove(
+          'hidden'
+        );
+        (errorNode.domElement as unknown as HTMLElement).textContent =
+          error?.toString() ?? 'Error';
+      }
       console.log('expression error', error);
     }
     if (result !== undefined) {
@@ -204,6 +208,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     name: 'expression',
     family: 'flow-canvas',
     isContainer: false,
+    canBeUsedAsDecorator: true,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
@@ -356,6 +361,31 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.getDependencies = getDependencies;
       }
       return node;
+    },
+    createDecoratorNode: (
+      canvasApp: CanvasAppInstance<NodeInfo>,
+      initalValues?: InitialValues,
+      rootElement?: HTMLElement
+    ) => {
+      canvasAppInstance = canvasApp;
+      compiledExpressionInfo = undefined;
+      const initialValue = initalValues?.['expression'] ?? '';
+      const decoratorNode = createElement(
+        'div',
+        {
+          class: `decorator-node bg-slate-500 p-2 inline-block rounded text-center border-2 border-slate-600 border-solid`,
+        },
+        rootElement,
+        initialValue
+      ) as unknown as INodeComponent<NodeInfo>;
+
+      decoratorNode.nodeInfo = {
+        compute,
+        initializeCompute,
+        formValues: initalValues,
+      };
+      node = decoratorNode as unknown as IRectNodeComponent<NodeInfo>;
+      return decoratorNode;
     },
   };
 };
