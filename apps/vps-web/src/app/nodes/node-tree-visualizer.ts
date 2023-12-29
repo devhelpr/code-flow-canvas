@@ -264,6 +264,7 @@ export const getNodeTreeVisualizer = (
           }
         };
         node.nodeInfo.showFormOnlyInPopup = true;
+        node.nodeInfo.initializeOnStartFlow = true;
       }
       return node;
     },

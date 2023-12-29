@@ -455,6 +455,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           removeFormElement();
           this.currentPathUnderInspection = undefined;
           if (this.canvasApp?.elements) {
+            this.canvasApp?.elements.forEach((node) => {
+              if (
+                node &&
+                node.nodeInfo &&
+                node.nodeInfo.initializeOnStartFlow
+              ) {
+                node.nodeInfo?.initializeCompute?.();
+              }
+            });
             run<NodeInfo>(
               this.canvasApp?.elements,
               this.canvasApp,

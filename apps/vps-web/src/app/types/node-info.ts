@@ -59,6 +59,7 @@ export interface NodeInfo {
   getDependencies?: () => { startNodeId: string; endNodeId: string }[];
   supportsDecorators?: boolean;
   decorators?: INodeDecorator[];
+  initializeOnStartFlow?: boolean;
 }
 
 //export type NodeInfo = any;
