@@ -332,5 +332,5 @@ dialog[open]::backdrop {
   }
 
   .grid-3-columns {
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: auto auto auto;
   }
