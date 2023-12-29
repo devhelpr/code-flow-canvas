@@ -21,9 +21,15 @@ import {
   getNodeByFunctionName,
 } from '../graph/get-node-by-variable-name';
 import { FormFieldType } from '../components/FormField';
+import {
+  IComputeResult,
+  visualNodeFactory,
+} from '../node-task-registry/createRectNode';
+import { ComputeResult } from './canvas-node';
 
 const defaultFunctionColor = 'bg-slate-500';
 const activeFunctionColor = 'bg-orange-400';
+const fieldName = 'functionCall';
 
 export const getCallFunction =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
@@ -169,7 +175,7 @@ export const getCallFunction =
       const componentDomElement = componentWrapper?.domElement as HTMLElement;
       componentDomElement.classList.remove(activeFunctionColor);
       componentDomElement.classList.add(defaultFunctionColor);
-      return new Promise((resolve, reject) => {
+      return new Promise<IComputeResult>((resolve, reject) => {
         if (args === undefined || !commandName) {
           prepareFunctionCallParameters();
         }
@@ -269,24 +275,150 @@ export const getCallFunction =
 
         resolve({
           stop: true,
+          result: undefined,
+          output: undefined,
+          followPath: undefined,
         });
       });
     };
 
-    return {
-      name: 'call-function',
-      family: 'flow-canvas',
-      isContainer: false,
-      createVisualNode: (
-        canvasApp: CanvasAppInstance<NodeInfo>,
-        x: number,
-        y: number,
-        id?: string,
-        initalValues?: InitialValues,
-        containerNode?: IRectNodeComponent<NodeInfo>
-      ) => {
-        const initialValue = initalValues?.['functionCall'] ?? '';
-        canvasAppInstance = canvasApp;
+    // return {
+    //   name: 'call-function',
+    //   family: 'flow-canvas',
+    //   isContainer: false,
+    //   createVisualNode: (
+    //     canvasApp: CanvasAppInstance<NodeInfo>,
+    //     x: number,
+    //     y: number,
+    //     id?: string,
+    //     initalValues?: InitialValues,
+    //     containerNode?: IRectNodeComponent<NodeInfo>
+    //   ) => {
+    //     const initialValue = initalValues?.['functionCall'] ?? '';
+    //     canvasAppInstance = canvasApp;
+
+    //     const formElements = [
+    //       {
+    //         fieldType: FormFieldType.Text,
+    //         fieldName: 'functionCall',
+    //         value: initialValue ?? '',
+    //         onChange: (value: string) => {
+    //           if (!node.nodeInfo) {
+    //             return;
+    //           }
+    //           node.nodeInfo.formValues = {
+    //             ...node.nodeInfo.formValues,
+    //             functionCall: value,
+    //           };
+    //           console.log('onChange', node.nodeInfo);
+    //           if (updated) {
+    //             updated();
+    //           }
+    //         },
+    //       },
+    //     ];
+
+    //     componentWrapper = createElement(
+    //       'div',
+    //       {
+    //         class: `inner-node bg-slate-500 p-4 rounded border-2 border-slate-500 transition-colors duration-200`,
+    //       },
+    //       undefined
+    //     ) as unknown as INodeComponent<NodeInfo>;
+
+    //     FormComponent({
+    //       rootElement: componentWrapper.domElement as HTMLElement,
+    //       id: id ?? '',
+    //       formElements,
+    //       hasSubmitButton: false,
+    //       onSave: (formValues) => {
+    //         console.log('onSave', formValues);
+    //       },
+    //     }) as unknown as HTMLElement;
+
+    //     const rect = canvasApp.createRect(
+    //       x,
+    //       y,
+    //       200,
+    //       100,
+    //       undefined,
+    //       [
+    //         {
+    //           thumbType: ThumbType.StartConnectorCenter,
+    //           thumbIndex: 0,
+    //           connectionType: ThumbConnectionType.start,
+    //           color: 'white',
+    //           label: ' ',
+    //         },
+    //         {
+    //           thumbType: ThumbType.EndConnectorCenter,
+    //           thumbIndex: 0,
+    //           connectionType: ThumbConnectionType.end,
+    //           color: 'white',
+    //           label: ' ',
+    //           //thumbConstraint: 'value',
+    //         },
+    //       ],
+    //       componentWrapper,
+    //       {
+    //         classNames: `p-4 rounded`,
+    //       },
+    //       undefined,
+    //       undefined,
+    //       undefined,
+    //       id,
+    //       {
+    //         type: 'call-function',
+    //         formValues: {
+    //           functionCall: initialValue ?? '',
+    //         },
+    //       },
+    //       containerNode
+    //     );
+    //     if (!rect.nodeComponent) {
+    //       throw new Error('rect.nodeComponent is undefined');
+    //     }
+
+    //     node = rect.nodeComponent;
+    //     if (node.nodeInfo) {
+    //       node.nodeInfo.formElements = formElements;
+    //       node.nodeInfo.computeAsync = computeAsync;
+    //       node.nodeInfo.initializeCompute = initializeCompute;
+    //       node.nodeInfo.getDependencies = getDependencies;
+    //     }
+    //     return node;
+    //   },
+    // };
+
+    return visualNodeFactory(
+      'call-function',
+      'Call function',
+      'flow-canvas',
+      'functionCall',
+      computeAsync,
+      initializeCompute,
+      false,
+      200,
+      100,
+      [
+        {
+          thumbType: ThumbType.StartConnectorCenter,
+          thumbIndex: 0,
+          connectionType: ThumbConnectionType.start,
+          color: 'white',
+          label: ' ',
+        },
+        {
+          thumbType: ThumbType.EndConnectorCenter,
+          thumbIndex: 0,
+          connectionType: ThumbConnectionType.end,
+          color: 'white',
+          label: ' ',
+          //thumbConstraint: 'value',
+        },
+      ],
+      (values?: InitialValues) => {
+        const initialValue = values?.[fieldName] ?? '';
 
         const formElements = [
           {
@@ -308,76 +440,28 @@ export const getCallFunction =
             },
           },
         ];
-
-        componentWrapper = createElement(
-          'div',
-          {
-            class: `inner-node bg-slate-500 p-4 rounded border-2 border-slate-500 transition-colors duration-200`,
-          },
-          undefined
-        ) as unknown as INodeComponent<NodeInfo>;
-
-        FormComponent({
-          rootElement: componentWrapper.domElement as HTMLElement,
-          id: id ?? '',
-          formElements,
-          hasSubmitButton: false,
-          onSave: (formValues) => {
-            console.log('onSave', formValues);
-          },
-        }) as unknown as HTMLElement;
-
-        const rect = canvasApp.createRect(
-          x,
-          y,
-          200,
-          100,
-          undefined,
-          [
-            {
-              thumbType: ThumbType.StartConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: ' ',
-            },
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              color: 'white',
-              label: ' ',
-              //thumbConstraint: 'value',
-            },
-          ],
-          componentWrapper,
-          {
-            classNames: `p-4 rounded`,
-          },
-          undefined,
-          undefined,
-          undefined,
-          id,
-          {
-            type: 'call-function',
-            formValues: {
-              functionCall: initialValue ?? '',
-            },
-          },
-          containerNode
-        );
-        if (!rect.nodeComponent) {
-          throw new Error('rect.nodeComponent is undefined');
+        return formElements;
+      },
+      (nodeInstance) => {
+        canvasAppInstance = nodeInstance.contextInstance;
+        if (nodeInstance && nodeInstance.componentWrapper) {
+          componentWrapper = nodeInstance.componentWrapper;
         }
+        node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
 
-        node = rect.nodeComponent;
         if (node.nodeInfo) {
-          node.nodeInfo.formElements = formElements;
           node.nodeInfo.computeAsync = computeAsync;
           node.nodeInfo.initializeCompute = initializeCompute;
           node.nodeInfo.getDependencies = getDependencies;
         }
-        return node;
       },
-    };
+      {
+        hasTitlebar: false,
+        childNodeWrapperClass:
+          'border-2 border-slate-500 transition-colors duration-200',
+      },
+      undefined,
+      true,
+      false
+    );
   };

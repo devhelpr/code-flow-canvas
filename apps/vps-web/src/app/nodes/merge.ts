@@ -146,7 +146,7 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
     {
       hasTitlebar: false,

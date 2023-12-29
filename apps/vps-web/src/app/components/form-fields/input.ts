@@ -63,6 +63,8 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
         this.input = this.label.nextSibling as HTMLInputElement;
+        this.input.value = this.props.value;
+
         this.renderList.push(this.label, this.input);
         this.input.addEventListener('input', this.onInput);
 

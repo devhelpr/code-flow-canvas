@@ -130,6 +130,14 @@ import {
   initializeArrayVariable,
 } from '../nodes/initialize-array';
 import { dialogFormNodeName, dialogFormNode } from '../nodes/dialog-form';
+import {
+  getNodeTreeVisualizer,
+  nodeTreeVisualizerNodeName,
+} from '../nodes/node-tree-visualizer';
+import {
+  sendNodeToNodeTree,
+  sendNodeToNodeTreeNodeName,
+} from '../nodes/send-node-to-node-tree';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 
@@ -269,6 +277,9 @@ export const setupCanvasNodeTaskRegistry = (
     dialogFormNodeName,
     dialogFormNode(animatePath, animatePathFromThumb)
   );
+
+  registerNodeFactory(nodeTreeVisualizerNodeName, getNodeTreeVisualizer);
+  registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);
 };
 
 export const getNodeTaskFactory = (name: string) => {

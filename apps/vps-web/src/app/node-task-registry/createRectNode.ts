@@ -4,6 +4,7 @@ import {
   INodeComponent,
   IRectNodeComponent,
   IThumb,
+  Rect,
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormValues } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
@@ -15,6 +16,14 @@ export interface ComputeResult<T> {
   result: T;
   followPath: any;
   output: T;
+}
+
+export interface CreateNodeInfo {
+  node: INodeComponent<NodeInfo>;
+  rect?: Rect<NodeInfo>;
+  componentWrapper?: INodeComponent<NodeInfo>;
+  contextInstance: CanvasAppInstance<NodeInfo>;
+  isDecoratorNode: boolean;
 }
 
 export abstract class BaseNodeCompute<T> {
@@ -65,7 +74,7 @@ export const createRectNode = (
   isAsyncCompute = false,
   nodeInfo?: NodeInfo,
   getNodeTaskFactory?: (name: string) => any
-) => {
+): CreateNodeInfo => {
   const componentWrapper = createElement(
     'div',
     {
@@ -197,21 +206,24 @@ export const createRectNode = (
       if (decorator.executeOrder === 'after') {
         const factory = getNodeTaskFactory(decorator.taskType);
         if (factory) {
-          const decoratorWrapper = createElement(
-            'div',
-            {
-              class: `relative bg-slate-500 border-slate-500 text-center py-2 ${
-                firstAfterDecorator ? 'rounded-b' : ''
-              }`,
-            },
-            componentWrapper.domElement as HTMLElement
-          ) as unknown as INodeComponent<NodeInfo>;
-          firstAfterDecorator = false;
-          decorator.decoratorNode = factory.createDecoratorNode(
-            canvasApp,
-            decorator.formValues,
-            decoratorWrapper.domElement as HTMLElement
-          );
+          const nodeTask = factory();
+          if (nodeTask) {
+            const decoratorWrapper = createElement(
+              'div',
+              {
+                class: `relative bg-slate-500 border-slate-500 text-center py-2 ${
+                  firstAfterDecorator ? 'rounded-b' : ''
+                }`,
+              },
+              componentWrapper.domElement as HTMLElement
+            ) as unknown as INodeComponent<NodeInfo>;
+            firstAfterDecorator = false;
+            decorator.decoratorNode = nodeTask.createDecoratorNode(
+              canvasApp,
+              decorator.formValues,
+              decoratorWrapper.domElement as HTMLElement
+            );
+          }
         }
       }
     });
@@ -267,6 +279,7 @@ export const createRectNode = (
     rect,
     componentWrapper,
     contextInstance: canvasApp,
+    isDecoratorNode: false,
   };
 };
 
@@ -288,18 +301,58 @@ export const visualNodeFactory = (
   height: number,
   thumbs: IThumb[],
   onGetFormElements: (values?: InitialValues) => FormField[],
-  onCreatedNode: (nodeInfo: ReturnType<typeof createRectNode>) => void,
+  onCreatedNode: (nodeInfo: CreateNodeInfo) => void,
   settings?: {
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
     hasFormInPopup?: boolean;
     hasStaticWidthHeight?: boolean;
+    decoratorTitle?: string;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
   canBeUsedAsDecorator = false
 ) => {
+  let createDecoratorNode:
+    | undefined
+    | ((
+        canvasApp: CanvasAppInstance<NodeInfo>,
+        initalValues?: InitialValues,
+        rootElement?: HTMLElement
+      ) => INodeComponent<NodeInfo>) = undefined;
+  if (canBeUsedAsDecorator) {
+    createDecoratorNode = (
+      canvasApp: CanvasAppInstance<NodeInfo>,
+      initalValues?: InitialValues,
+      rootElement?: HTMLElement
+    ) => {
+      const initialValue = initalValues?.[defaultValueFieldName] ?? '';
+      const decoratorNode = createElement(
+        'div',
+        {
+          class: `decorator-node bg-slate-500 p-2 inline-block rounded text-center border-2 border-slate-600 border-solid`,
+        },
+        rootElement,
+        settings?.decoratorTitle ?? initialValue
+      ) as unknown as INodeComponent<NodeInfo>;
+
+      decoratorNode.nodeInfo = {
+        compute,
+        initializeCompute,
+        formValues: initalValues,
+        canvasAppInstance: canvasApp,
+      };
+      if (onCreatedNode) {
+        onCreatedNode({
+          contextInstance: canvasApp,
+          node: decoratorNode,
+          isDecoratorNode: true,
+        });
+      }
+      return decoratorNode;
+    };
+  }
   return {
     name: nodeTypeName,
     family: nodeFamily,
@@ -342,7 +395,8 @@ export const visualNodeFactory = (
         getNodeTaskFactory
       );
       onCreatedNode(nodeInstance);
-      return nodeInstance.node;
+      return nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
+    createDecoratorNode,
   };
 };

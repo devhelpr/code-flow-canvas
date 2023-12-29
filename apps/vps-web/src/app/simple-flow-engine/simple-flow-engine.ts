@@ -195,6 +195,23 @@ const triggerExecution = <T>(
 
         const payload = getVariablePayload<T>(node, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
+          if (formInfo.decorators) {
+            const decoratorInput = handleDecoratrs(
+              formInfo.decorators,
+              'before',
+              input,
+              payload,
+              scopeId
+            );
+            if (decoratorInput === false) {
+              return {
+                result: false,
+                output: undefined,
+              };
+            }
+            input = decoratorInput;
+          }
+
           const promise = formInfo.computeAsync(
             input,
             pathExecution,
@@ -405,7 +422,7 @@ export const runNode = <T>(
   loopIndex?: number,
   connection?: IConnectionNodeComponent<T>,
   scopeId?: string
-) => {
+): void => {
   const payload = getVariablePayload<T>(node, canvasApp);
 
   const formInfo = node.nodeInfo as unknown as any;
@@ -414,6 +431,20 @@ export const runNode = <T>(
   let previousOutput: any = undefined;
 
   if (formInfo && formInfo?.computeAsync) {
+    if (formInfo.decorators) {
+      const decoratorInput = handleDecoratrs(
+        formInfo.decorators,
+        'before',
+        input,
+        payload,
+        scopeId
+      );
+      if (decoratorInput === false) {
+        return;
+      }
+      input = decoratorInput;
+    }
+
     formInfo
       .computeAsync(
         input ?? '',
@@ -459,10 +490,7 @@ export const runNode = <T>(
         scopeId
       );
       if (decoratorInput === false) {
-        return {
-          result: false,
-          output: undefined,
-        };
+        return;
       }
       input = decoratorInput;
     }
@@ -495,10 +523,7 @@ export const runNode = <T>(
         scopeId
       );
       if (decoratorInput === false) {
-        return {
-          result: false,
-          output: undefined,
-        };
+        return;
       }
       input = decoratorInput;
     }
@@ -694,6 +719,22 @@ export const runNodeFromThumb = <T>(
       const formInfo = node.nodeInfo as unknown as any;
       console.log('runNodeFromThumb', loopIndex, node);
       if (formInfo && formInfo.computeAsync) {
+        if (formInfo.decorators) {
+          const decoratorInput = handleDecoratrs(
+            formInfo.decorators,
+            'before',
+            input,
+            undefined,
+            scopeId
+          );
+          if (decoratorInput === false) {
+            return {
+              result: false,
+              output: undefined,
+            };
+          }
+          input = decoratorInput;
+        }
         return new Promise((resolve, reject) => {
           formInfo
             .computeAsync(

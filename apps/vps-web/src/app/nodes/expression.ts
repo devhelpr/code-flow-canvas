@@ -21,6 +21,20 @@ import {
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { FormFieldType } from '../components/FormField';
 
+export const parseInput = (input: string, inputType: string) => {
+  if (inputType === 'number') {
+    return parseFloat(input) || 0;
+  } else if (inputType === 'integer') {
+    return parseInt(input) || 0;
+  } else if (inputType === 'boolean') {
+    return input === 'true' || input === '1' || Boolean(input) ? true : false;
+  } else if (inputType === 'array') {
+    return Array.isArray(input) ? input : [];
+  } else {
+    return (input ?? '').toString();
+  }
+};
+
 export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -41,12 +55,12 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     return;
   };
 
-  const compileExpression = () => {
-    const expression = node?.nodeInfo?.formValues?.['expression'] ?? '';
+  const compileExpression = (expression: string) => {
     if (!compiledExpressionInfo) {
       compiledExpressionInfo = compileExpressionAsInfo(expression);
     }
   };
+
   const compute = (
     input: string,
     pathExecution?: RunNodeResult<NodeInfo>[],
@@ -60,7 +74,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     }
     let result: any = false;
     try {
-      compileExpression();
+      compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
       if (!compiledExpressionInfo) {
         return {
           result: undefined,
@@ -77,34 +91,19 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       ).bind(compiledExpressionInfo.bindings);
 
       console.log(
-        'compiledExpressionInfo.scrip',
+        'compiledExpressionInfo.script',
         compiledExpressionInfo.script
       );
 
-      const parseInput = (input: string) => {
-        if (inputType === 'number') {
-          return parseFloat(input) || 0;
-        } else if (inputType === 'integer') {
-          return parseInt(input) || 0;
-        } else if (inputType === 'boolean') {
-          return input === 'true' || input === '1' || Boolean(input)
-            ? true
-            : false;
-        } else if (inputType === 'array') {
-          return Array.isArray(input) ? input : [];
-        } else {
-          return (input ?? '').toString();
-        }
-      };
-
-      let inputAsString = typeof input === 'object' ? '' : parseInput(input);
+      let inputAsString =
+        typeof input === 'object' ? '' : parseInput(input, inputType);
       let inputAsObject = {};
       if (Array.isArray(input)) {
         if (inputType === 'array') {
           inputAsString = input;
         } else {
           inputAsString = input.map((item) =>
-            parseInput(item)
+            parseInput(item, inputType)
           ) as unknown as string; // dirty hack
         }
       } else if (typeof input === 'object') {
@@ -180,7 +179,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
     const dependencies: { startNodeId: string; endNodeId: string }[] = [];
-    compileExpression();
+    compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
     if (compiledExpressionInfo?.payloadProperties && canvasAppInstance) {
       const variablesInExpression = [
         ...new Set(compiledExpressionInfo.payloadProperties),

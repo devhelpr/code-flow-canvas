@@ -71,12 +71,18 @@ export const getFunction =
           }
           payload[parameter] = inputObject[parameter];
         });
+        if (canvasAppInstance && scopeId) {
+          canvasAppInstance.registerTempVariable('scopeId', scopeId, scopeId);
+        }
         if (isError) {
           return {
             result: false,
             stop: true,
           };
         }
+        console.log('function called', node?.nodeInfo?.formValues?.['node'], {
+          ...payload,
+        });
         return {
           result: { ...payload },
         };

@@ -22,6 +22,7 @@ export interface ComputeResult {
   result: string | any[];
   output?: string | any[];
   followPath?: string;
+  stop?: boolean;
 }
 export const getCanvasNode =
   (animatePath: AnimatePathFunction<NodeInfo>) =>

@@ -22,6 +22,7 @@ import { INodeComponent, IRectNodeComponent, IThumb } from '../interfaces';
 import { setSelectNode } from '../reactivity';
 import { NodeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
+import { CommandHandler } from '../interfaces/command-handler';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -48,6 +49,8 @@ export const createCanvasApp = <T>(
     string,
     Map<string, (data: any) => void>
   > = new Map();
+
+  const commandHandlers: Record<string, CommandHandler> = {};
 
   const tempVariables: Record<string, any> = {};
 
@@ -1106,16 +1109,20 @@ export const createCanvasApp = <T>(
         }
       }
     },
-    // getCurrentScope: () => {
-    //   return getCurrentScope();
-    // },
-    // setScope: (scopeGuid: string) => {
-    //   if (scopeGuid) {
-    //     scopeStack.push(scopeGuid);
-    //   }
-    // },
-    // returnToPreviousScope: () => {
-    //   scopeStack.pop();
-    //},
+    registerCommandHandler: (name: string, handler: CommandHandler) => {
+      commandHandlers[name] = handler;
+    },
+    unregisterCommandHandler: (name: string) => {
+      delete commandHandlers[name];
+    },
+    executeCommandOnCommandHandler: (
+      name: string,
+      commandName: string,
+      data: any
+    ) => {
+      if (commandHandlers[name]) {
+        commandHandlers[name].execute(commandName, data);
+      }
+    },
   };
 };
