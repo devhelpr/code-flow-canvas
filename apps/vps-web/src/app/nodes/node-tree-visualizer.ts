@@ -32,7 +32,7 @@ export const getNodeTreeVisualizer = (
       if (htmlNode) {
         (
           htmlNode.domElement as unknown as HTMLElement
-        ).innerHTML = `<div class="grid justify-items-center justify-content-center items-start grid-3-columns gap-2"></div>`;
+        ).innerHTML = `<div class="grid justify-items-center justify-content-center items-start gap-2"></div>`;
       }
     }
 
@@ -48,7 +48,7 @@ export const getNodeTreeVisualizer = (
           {
             class: `row-0 ${
               data
-                ? 'border border-solid border-white rounded p-2  col-span-full'
+                ? 'border border-solid border-white rounded p-2  col-span-full whitespace-nowrap mb-4'
                 : ''
             }`,
           },
@@ -58,12 +58,24 @@ export const getNodeTreeVisualizer = (
         const element = createElement(
           'div',
           {
-            class:
-              'grid justify-items-center justify-content-center row-1 p-4 items-start grid-3-columns gap-2 mx-2',
-            id: `${node.id}-${payload?.childTreeNode || 'node'}`,
+            class: '',
+            //'grid justify-items-center justify-content-center row-1 p-4 items-start grid-3-columns',
+            //id: `${node.id}-${payload?.childTreeNode || 'node'}`,
           },
           undefined,
           contentElement.domElement as unknown as HTMLElement
+        );
+
+        // wrapperElement
+        createElement(
+          'div',
+          {
+            class:
+              'grid justify-items-center justify-content-center row-1 items-start grid-3-columns gap-2 mx-2',
+            id: `${node.id}-${payload?.childTreeNode || 'node'}`,
+          },
+          element.domElement,
+          undefined
         );
 
         let nodeElement = (
@@ -78,7 +90,7 @@ export const getNodeTreeVisualizer = (
             {
               id: `${node.id}-${payload?.parentTreeNode || 'node'}`,
               class:
-                'grid justify-items-center justify-content-center row-0 p-4 items-start grid-3-columns gap-2 mx-2',
+                'grid justify-items-center justify-content-center row-0 p-4 items-start  gap-2 mx-2',
             },
             undefined
           );
@@ -93,7 +105,7 @@ export const getNodeTreeVisualizer = (
       }
     }
     if (rect) {
-      rect.resize();
+      console.log('resize visualization', rect.resize());
     }
   };
 

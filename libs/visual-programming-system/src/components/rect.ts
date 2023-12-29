@@ -368,6 +368,10 @@ export class Rect<T> {
         this.nodeComponent
       );
     }
+    return {
+      width: this.nodeComponent.width,
+      height: this.nodeComponent.height,
+    };
   }
 
   public addUpdateEventListener = (
