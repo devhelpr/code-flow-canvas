@@ -390,7 +390,7 @@ export const getScopedVariable =
     const setData = (data: any, scopeId?: string) => {
       setDataForFieldType(data, scopeId);
 
-      const value = fieldType === 'value' ? currentValue : data.value;
+      const value = fieldType === 'value' ? data : data.value;
       if (htmlNode) {
         if (fieldType === 'dictionary') {
           const dictionary = getDataForFieldType(undefined, scopeId);

@@ -334,3 +334,90 @@ dialog[open]::backdrop {
   .grid-3-columns {
 	grid-template-columns: auto auto auto;
   }
+
+.node-tree__wrapper {
+position: relative;
+}
+/* .node-tree__row-wrapper:has(> .node-tree__wrapper  > .node-tree__row-wrapper) > .node-tree__wrapper:before {
+	content: "";
+	display: block;
+	height: 1px;
+	width: 50%;
+	background: white;
+	position:absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: -10px;
+} */
+
+.node-tree__wrapper:has(> .node-tree__row-wrapper) > .node-tree__row-wrapper:first-child:before {
+	content: "";
+	display: block;
+	height: 1px;
+	width: calc(50% + 10px);
+	background: white;
+	position:absolute;
+	left: 50%;
+	/* transform: translateX(50%); */
+	top: -10px;
+} 
+
+.node-tree__wrapper:has(> .node-tree__row-wrapper) > .node-tree__row-wrapper:nth-child(2):before {
+	content: "";
+	display: block;
+	height: 1px;
+	width: calc(100% + 20px);
+	background: white;
+	position:absolute;
+	left: 0%;
+	/* transform: translateX(-50%); */
+	top: -10px;
+} 
+
+.node-tree__wrapper:has(> .node-tree__row-wrapper) > .node-tree__row-wrapper:nth-child(3):before {
+	content: "";
+	display: block;
+	height: 1px;
+	width: calc(50% + 10px);
+	background: white;
+	position:absolute;
+	left: -10px;
+	/* transform: translateX(-50%); */
+	top: -10px;
+} 
+
+.node-tree__value {
+	position: relative;
+}
+.node-tree__row-wrapper:has(> .node-tree__wrapper > .node-tree__row-wrapper) > .node-tree__row > .node-tree__value:after {
+	content: "";
+	display: block;
+	height: 6px;
+	width: 1px;
+	background: white;
+	position:absolute;
+	left: 50%;
+	top: calc(100% + 1px);
+}
+
+.node-tree__row-wrapper {
+	position: relative;
+}
+.node-tree__row-wrapper:has(> .node-tree__wrapper) > .node-tree__row > .node-tree__value:before {
+	content: "";
+	display: block;
+	height: 11px;
+	width: 1px;
+	background: white;
+	position:absolute;
+	left: 50%;
+	top: -10px;
+	border-top: 1px solid white;
+}
+.node-tree__container > .node-tree__row-wrapper:first-child > .node-tree__row:first-child > .node-tree__value:first-child:before {
+	display: none;
+}
+.node-tree__pivot {
+	color: black;
+	@apply bg-slate-300;
+}

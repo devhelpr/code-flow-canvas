@@ -32,7 +32,7 @@ export const getNodeTreeVisualizer = (
       if (htmlNode) {
         (
           htmlNode.domElement as unknown as HTMLElement
-        ).innerHTML = `<div class="grid justify-items-center justify-content-center items-start gap-2"></div>`;
+        ).innerHTML = `<div class="node-tree grid justify-items-center justify-content-center items-start gap-2"></div>`;
       }
     }
 
@@ -41,24 +41,45 @@ export const getNodeTreeVisualizer = (
       if (payload?.label) {
         label = `${payload?.label?.toString()}: `;
       }
+      const nodeClass = payload?.nodeClass ?? '';
       const data = `${label}${(payload?.data ?? '').toString()}`;
       if (data) {
-        const contentElement = createElement(
+        const contentDataElement = createElement(
           'div',
           {
-            class: `row-0 ${
+            class: `row-0 node-tree__value ${
               data
-                ? 'border border-solid border-white rounded p-2  col-span-full whitespace-nowrap mb-4'
+                ? ' border border-solid border-white p-2 rounded inline-block'
                 : ''
-            }`,
+            } ${nodeClass}`,
           },
           undefined,
           `${data}`
         );
+
+        const contentElement = createElement(
+          'div',
+          {
+            class: `node-tree__row row-0 ${
+              data ? ' col-span-full whitespace-nowrap mb-4' : ''
+            }`,
+          },
+          undefined,
+          contentDataElement.domElement as unknown as HTMLElement
+        );
+
+        createElement(
+          'div',
+          {
+            class: `node-tree__value-helper`,
+          },
+          contentDataElement.domElement
+        );
+
         const element = createElement(
           'div',
           {
-            class: '',
+            class: 'node-tree__row-wrapper',
             //'grid justify-items-center justify-content-center row-1 p-4 items-start grid-3-columns',
             //id: `${node.id}-${payload?.childTreeNode || 'node'}`,
           },
@@ -71,7 +92,7 @@ export const getNodeTreeVisualizer = (
           'div',
           {
             class:
-              'grid justify-items-center justify-content-center row-1 items-start grid-3-columns gap-2 mx-2',
+              'node-tree__wrapper  grid justify-items-center justify-content-center row-1 items-start grid-3-columns gap-2 mx-2',
             id: `${node.id}-${payload?.childTreeNode || 'node'}`,
           },
           element.domElement,
@@ -90,7 +111,7 @@ export const getNodeTreeVisualizer = (
             {
               id: `${node.id}-${payload?.parentTreeNode || 'node'}`,
               class:
-                'grid justify-items-center justify-content-center row-0 p-4 items-start  gap-2 mx-2',
+                'node-tree__container grid justify-items-center justify-content-center row-0 p-4 items-start  gap-2 mx-2',
             },
             undefined
           );

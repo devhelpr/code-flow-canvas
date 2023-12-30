@@ -78,7 +78,7 @@ export const createRectNode = (
   const componentWrapper = createElement(
     'div',
     {
-      class: `relative flex flex-col`,
+      class: `relative flex flex-col bg-slate-500`,
     },
     undefined
   ) as unknown as INodeComponent<NodeInfo>;
@@ -98,7 +98,7 @@ export const createRectNode = (
             const decoratorWrapper = createElement(
               'div',
               {
-                class: `relative bg-slate-500 text-center py-2 min-h-[60px] h-[60px] ${
+                class: `relative text-center py-2 min-h-[60px] h-[60px] ${
                   firstBeforeDecorator ? 'rounded-t' : ''
                 }`,
               },
@@ -146,7 +146,7 @@ export const createRectNode = (
   const formWrapper = createElement(
     'div',
     {
-      class: `inner-node bg-slate-500 border-slate-500  ${
+      class: `inner-node border-slate-500  ${
         showTitlebar
           ? 'rounded-b'
           : !hasBeforeDecorator && !hasAfterDecorator
@@ -156,7 +156,7 @@ export const createRectNode = (
           : ''
       } min-h-auto flex-auto ${
         hasCenteredLabel
-          ? 'flex items-center bg-slate-500 border-slate-500 justify-center'
+          ? 'flex items-center border-slate-500 justify-center'
           : 'p-4 pt-4'
       }
       ${settings?.additionalClassNames ?? ''} 
@@ -211,7 +211,7 @@ export const createRectNode = (
             const decoratorWrapper = createElement(
               'div',
               {
-                class: `relative bg-slate-500 border-slate-500 text-center py-2 ${
+                class: `relative border-slate-500 text-center py-2 ${
                   firstAfterDecorator ? 'rounded-b' : ''
                 }`,
               },
@@ -328,13 +328,14 @@ export const visualNodeFactory = (
       rootElement?: HTMLElement
     ) => {
       const initialValue = initalValues?.[defaultValueFieldName] ?? '';
+      const caption = initalValues?.['caption'];
       const decoratorNode = createElement(
         'div',
         {
-          class: `decorator-node bg-slate-500 p-2 inline-block rounded text-center border-2 border-slate-600 border-solid`,
+          class: `decorator-node p-2 inline-block text-white rounded text-center border-2 border-slate-200 border-solid`,
         },
         rootElement,
-        settings?.decoratorTitle ?? initialValue
+        caption ?? settings?.decoratorTitle ?? initialValue
       ) as unknown as INodeComponent<NodeInfo>;
 
       decoratorNode.nodeInfo = {

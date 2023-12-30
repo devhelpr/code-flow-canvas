@@ -133,6 +133,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
             childTreeNode: childTreeNode,
             data: input,
             label: `${node?.nodeInfo?.formValues?.['label'] ?? ''}`,
+            nodeClass: `${node?.nodeInfo?.formValues?.['nodeClass'] ?? ''}`,
           }
         );
       }
