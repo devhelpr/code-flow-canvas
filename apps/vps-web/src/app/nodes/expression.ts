@@ -372,7 +372,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       const decoratorNode = createElement(
         'div',
         {
-          class: `decorator-node bg-slate-500 p-2 inline-block rounded text-center border-2 border-slate-600 border-solid`,
+          class: `decorator-node text-white p-2 inline-block rounded text-center border-2 border-slate-200 border-solid`,
         },
         rootElement,
         initialValue
