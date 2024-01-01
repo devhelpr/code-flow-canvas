@@ -4,7 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/vps-api/src",
   "targets": {
-    "_build": {
+    "build": {
       "executor": "@nx/deno:esbuild",
       "outputs": ["{workspaceRoot}/dist/apps/vps-api"],
       "options": {
