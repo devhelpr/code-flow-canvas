@@ -32,10 +32,10 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
+    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string,
+    _thumbName?: string,
     scopeId?: string
   ) => {
     console.log('Gate compute', loopIndex);
@@ -52,27 +52,12 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
       ).bind(compiledExpressionInfo.bindings);
 
       const parseInput = (input: string) => {
-        //if (inputType === 'number') {
         return parseFloat(input) || 0;
-        // } else if (inputType === 'integer') {
-        //   return parseInt(input) || 0;
-        // } else if (inputType === 'boolean') {
-        //   return input === 'true' || input === '1' || Boolean(input)
-        //     ? true
-        //     : false;
-        // } else if (inputType === 'array') {
-        //   return Array.isArray(input) ? input : [];
-        // } else {
-        //   return (input ?? '').toString();
-        // }
       };
 
       let inputAsString = typeof input === 'object' ? '' : parseInput(input);
       let inputAsObject = {};
       if (Array.isArray(input)) {
-        // if (inputType === 'array') {
-        //   inputAsString = input;
-        // } else
         {
           inputAsString = input.map((item) =>
             parseInput(item)
@@ -142,11 +127,6 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
       output: input,
       stop: !result,
     };
-    //}
-    // return {
-    //   result: input,
-    //   stop: Math.random() < 0.5,
-    // };
   };
   return {
     name: 'gate',

@@ -23,7 +23,6 @@ import {
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces/element';
-import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils';

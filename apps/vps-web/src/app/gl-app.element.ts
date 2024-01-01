@@ -10,7 +10,6 @@ import {
   createEffect,
   getSelectedNode,
   setSelectNode,
-  setupMarkupElement,
   CanvasAppInstance,
   IRectNodeComponent,
   Flow,
@@ -32,8 +31,6 @@ import { GLNavbarMenu } from './components/gl-navbar-components';
 import {
   menubarClasses,
   navBarButton,
-  navBarIconButton,
-  navBarIconButtonInnerElement,
   navBarWarningButton,
 } from './consts/classes';
 import { serializeElementsMap } from './storage/serialize-canvas';
@@ -235,7 +232,7 @@ export class GLAppElement extends AppElement<any> {
       this.isStoring = isStoring;
     };
 
-    this.canvasApp.setOnCanvasClick((x, y) => {
+    this.canvasApp.setOnCanvasClick(() => {
       console.log('OnCanvasClick');
       setSelectNode(undefined);
     });
@@ -274,29 +271,6 @@ export class GLAppElement extends AppElement<any> {
       return serializeElementsMap(this.canvasApp.elements);
     };
 
-    let speedMeter = 100;
-    createElement(
-      'input',
-      {
-        type: 'range',
-        class: 'p-2 m-2 relative ', //top-[60px]',
-        name: 'speed',
-        min: '0.1',
-        max: '100',
-        value: '100',
-        change: (event) => {
-          speedMeter = parseInt((event.target as HTMLInputElement).value);
-          //setSpeedMeter(speedMeter);
-          // const timerList = Array.from(timers ?? []);
-          // timerList.forEach((timer) => {
-          //   timer[1]();
-          // });
-        },
-      },
-      menubarElement.domElement,
-      ''
-    );
-
     const createOption = (
       selectElement: HTMLSelectElement,
       value: string,
@@ -319,7 +293,7 @@ export class GLAppElement extends AppElement<any> {
         type: 'select',
         class: 'p-2 m-2 relative ', //top-[60px]',
         name: 'select-node-type',
-        change: (event) => {
+        change: (_event) => {
           //
         },
       },

@@ -10,16 +10,16 @@ import {
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
-export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
+export const getBackgroundColorNode = (_updated: () => void): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
 
   const initializeCompute = () => {
     return;
   };
   const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<any>[],
-    loopIndex?: number,
+    _input: string,
+    _pathExecution?: RunNodeResult<any>[],
+    _loopIndex?: number,
     payload?: any
   ) => {
     let red_color = payload?.['r'] ?? '0.';
@@ -81,7 +81,7 @@ export const getBackgroundColorNode = (updated: () => void): NodeTask<any> => {
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      _initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<any>
     ) => {
       const jsxComponentWrapper = createElement(

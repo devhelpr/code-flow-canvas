@@ -6,12 +6,10 @@ import {
   ThumbType,
   createCanvasApp,
   IRectNodeComponent,
-  thumbRadius,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
 
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -177,11 +175,8 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   let stateMachine: StateMachine<NodeInfo> | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
-  let currentValue = 0;
-
   const initializeCompute = () => {
     stateMachine = undefined;
-    currentValue = 0;
 
     if (canvasAppInstance?.elements && !stateMachine) {
       stateMachine = undefined;
@@ -195,11 +190,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     }
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
-  ) => {
+  const compute = (input: string) => {
     if (!stateMachine && canvasAppInstance) {
       stateMachine = createStateMachine(canvasAppInstance);
       console.log('stateMachine', stateMachine);

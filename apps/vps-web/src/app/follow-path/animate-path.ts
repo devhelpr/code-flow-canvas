@@ -11,7 +11,6 @@ import {
   getNodeConnectionPairsFromThumb,
 } from './get-node-connection-pairs';
 import { getPointOnConnection } from './point-on-connection';
-import { NodeInfo } from '../types/node-info';
 import { followNodeExecution } from './followNodeExecution';
 
 function getSpeed(maxSpeed: number, speedMeter: number) {
@@ -132,12 +131,12 @@ export type FollowPathFunction = <T>(
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
 
-interface NodeAnimatonInfo {
-  node: IRectNodeComponent<NodeInfo>;
-  loopIndex: number;
-}
+// interface NodeAnimatonInfo {
+//   node: IRectNodeComponent<NodeInfo>;
+//   loopIndex: number;
+// }
 
-const nodeAnimationMap: Map<string, NodeAnimatonInfo> = new Map();
+// const nodeAnimationMap: Map<string, NodeAnimatonInfo> = new Map();
 
 let speedMeter = 1000;
 export const setSpeedMeter = (speed: number) => {
@@ -176,9 +175,7 @@ export function setPositionTargetCameraAnimation(
   }
 }
 
-let isCameraAnimationRunning = false;
 export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
-  isCameraAnimationRunning = true;
   const animateCamera = () => {
     if (targetX !== undefined && targetY !== undefined) {
       const canvasCamera = canvasApp.getCamera();
@@ -258,7 +255,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       }>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
-  followPathByName?: string,
+  _followPathByName?: string,
   animatedNodes?: {
     node1?: IElementNode<unknown>;
     node2?: IElementNode<unknown>;
@@ -266,7 +263,7 @@ export const animatePathForNodeConnectionPairs = <T>(
   },
   offsetX?: number,
   offsetY?: number,
-  followPathToEndThumb?: boolean,
+  _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string
 ) => {
@@ -308,31 +305,6 @@ export const animatePathForNodeConnectionPairs = <T>(
       }
       targetScale = 0.5;
       isTargetinCameraSpace = false;
-
-      // if (!isCameraAnimationRunning) {
-      //   isCameraAnimationRunning = true;
-      //   setCameraAnimation(canvasApp);
-      // }
-      // const canvasCamera = canvasApp.getCamera();
-      // const x = end.x; // canvasCamera.scale;
-      // const y = end.y; // canvasCamera.scale;
-      // const distance = Math.sqrt(
-      //   Math.pow(canvasCamera.x - x, 2) + Math.pow(canvasCamera.y - y, 2)
-      // );
-      // canvasApp.setCamera(
-      //   -x, // + distance * 0.001,
-      //   -y, // + distance * 0.001,
-      //   1.0 //canvasCamera.scale
-      // );
-
-      // const normalizedX = (x - canvasCamera.x) / distance;
-      // const normalizedY = (y - canvasCamera.y) / distance;
-
-      // canvasApp.setCamera(
-      //   canvasCamera.x + distance * 0.01 * normalizedX,
-      //   canvasCamera.y + distance * 0.01 * normalizedY,
-      //   0.5 //canvasCamera.scale
-      // );
     }
     // eslint-disable-next-line prefer-const
     let testCircle =

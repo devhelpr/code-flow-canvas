@@ -1,8 +1,4 @@
-import {
-  compileExpression,
-  compileExpressionAsInfo,
-  runExpression,
-} from '@devhelpr/expression-compiler';
+import { compileExpressionAsInfo } from '@devhelpr/expression-compiler';
 import {
   IASTTree as IASTMarkupTree,
   IASTTreeNode as IASTMarkupTreeNode,

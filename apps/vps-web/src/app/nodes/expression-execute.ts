@@ -6,7 +6,6 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent, FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   compileExpressionAsInfo,
@@ -20,7 +19,7 @@ import {
 } from '../node-task-registry';
 
 export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
@@ -32,7 +31,7 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
+    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
   ) => {

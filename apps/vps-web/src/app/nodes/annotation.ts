@@ -9,13 +9,13 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getAnnotation =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (_animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     const initializeCompute = () => {
       return;
     };
-    const compute = (input: string) => {
+    const compute = () => {
       return {
         result: true,
       };

@@ -122,7 +122,7 @@ export class Rect<T> {
       (
         thumbType: ThumbType,
         index?: number,
-        offsetY?: number,
+        _offsetY?: number,
         thumb?: IThumbNodeComponent<T>
       ) => {
         return thumbPosition<T>(this.nodeComponent!, thumbType, index, thumb);
@@ -184,7 +184,7 @@ export class Rect<T> {
       (
         thumbType: ThumbType,
         index?: number,
-        offsetY?: number,
+        _offsetY?: number,
         thumb?: IThumbNodeComponent<T>
       ) => {
         if (!this.nodeComponent) {
@@ -229,7 +229,7 @@ export class Rect<T> {
     const thumbConnectors: IThumbNodeComponent<T>[] = [];
 
     if (thumbs) {
-      thumbs.forEach((thumb, index) => {
+      thumbs.forEach((thumb) => {
         if (!this.nodeComponent) {
           return;
         }
@@ -683,10 +683,10 @@ export class Rect<T> {
     startY: number,
     width: number,
     height: number,
-    pathHiddenElement: IElementNode<T>,
-    text?: string,
+    _pathHiddenElement: IElementNode<T>,
+    _text?: string,
 
-    getThumbPosition?: (
+    _getThumbPosition?: (
       thumbType: ThumbType,
       index?: number,
       offsetY?: number,
@@ -696,9 +696,9 @@ export class Rect<T> {
     layoutProperties?: {
       classNames?: string;
     },
-    hasStaticWidthHeight?: boolean,
+    _hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
-    canvasUpdated?: () => void,
+    _canvasUpdated?: () => void,
     id?: string,
     parentNodeClassName?: string
   ) => {
@@ -801,7 +801,7 @@ export class Rect<T> {
     };
   };
 
-  protected onPointerDown = (e: PointerEvent) => {
+  protected onPointerDown = (_e: PointerEvent) => {
     return false;
   };
 
@@ -1031,9 +1031,7 @@ export class Rect<T> {
         if (startThumb && startNode && startNode.id === target.id) {
           const tx = calculateConnectorX(
             startThumb?.thumbType ?? ThumbType.None,
-            startNode?.width ?? 0,
-            startNode?.height ?? 0,
-            startThumb?.thumbIndex ?? 0
+            startNode?.width ?? 0
           );
           const ty = calculateConnectorY(
             startThumb?.thumbType ?? ThumbType.None,
@@ -1049,9 +1047,7 @@ export class Rect<T> {
         if (endThumb && endNode && endNode.id === target.id) {
           const tx = calculateConnectorX(
             endThumb?.thumbType ?? ThumbType.None,
-            endNode?.width ?? 0,
-            endNode?.height ?? 0,
-            endThumb?.thumbIndex ?? 0
+            endNode?.width ?? 0
           );
           const ty = calculateConnectorY(
             endThumb?.thumbType ?? ThumbType.None,

@@ -285,7 +285,7 @@ export class RectThumb<T> extends Rect<T> {
     connectionThumb: IThumbNodeComponent<T>,
     x: number,
     y: number,
-    connection: IConnectionNodeComponent<T>
+    _connection: IConnectionNodeComponent<T>
   ) => {
     if (!this.canvas) {
       return;
@@ -429,7 +429,7 @@ export class RectThumb<T> extends Rect<T> {
     }
   };
 
-  onPointerUp = (event: Event) => {
+  onPointerUp = (_event: Event) => {
     if (!this.nodeComponent) {
       return;
     }
@@ -466,7 +466,7 @@ export class RectThumb<T> extends Rect<T> {
     // this.interactionStateMachine.clearDropTarget(this.nodeComponent);
   };
 
-  onPointerLeave = (event: Event) => {
+  onPointerLeave = (_event: Event) => {
     if (!this.nodeComponent) {
       return;
     }

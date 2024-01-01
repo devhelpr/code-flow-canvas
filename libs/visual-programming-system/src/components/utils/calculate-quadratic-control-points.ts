@@ -1,8 +1,4 @@
-import {
-  connectionToThumbDistance,
-  controlPointCurvingDistance,
-  thumbRadius,
-} from '../../constants/measures';
+import { controlPointCurvingDistance } from '../../constants/measures';
 import {
   ControlAndEndPointNodeType,
   IRectNodeComponent,
@@ -51,9 +47,7 @@ export const onQuadraticCalculateControlPoints = <T>(
     (connectedNode
       ? calculateConnectorX(
           connectedNodeThumb?.thumbType ?? ThumbType.None,
-          connectedNode.width ?? 0,
-          connectedNode.height ?? 0,
-          connectedNodeThumb?.thumbIndex
+          connectedNode.width ?? 0
         )
       : 0);
   const connectedNodeY =
@@ -69,14 +63,7 @@ export const onQuadraticCalculateControlPoints = <T>(
       : 0);
 
   if (nodeType === ControlAndEndPointNodeType.start) {
-    const x =
-      rectNode.x +
-      calculateConnectorX(
-        thumbType,
-        rectNode.width ?? 0,
-        rectNode.height ?? 0,
-        index
-      );
+    const x = rectNode.x + calculateConnectorX(thumbType, rectNode.width ?? 0);
     const y =
       rectNode.y +
       calculateConnectorY(
@@ -126,7 +113,7 @@ export const onQuadraticCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.Center) {
-      const { distance, thumbFactor } = getFactor(
+      const { distance } = getFactor(
         x,
         y,
         connectedNodeX ?? 0,
@@ -193,14 +180,7 @@ export const onQuadraticCalculateControlPoints = <T>(
     };
   }
   if (nodeType === ControlAndEndPointNodeType.end) {
-    const x =
-      rectNode.x +
-      calculateConnectorX(
-        thumbType,
-        rectNode.width ?? 0,
-        rectNode.height ?? 0,
-        index
-      );
+    const x = rectNode.x + calculateConnectorX(thumbType, rectNode.width ?? 0);
 
     const y =
       rectNode.y +
@@ -230,7 +210,7 @@ export const onQuadraticCalculateControlPoints = <T>(
         nodeType,
       };
     } else if (thumbType === ThumbType.Center) {
-      const { distance, thumbFactor } = getFactor(
+      const { distance } = getFactor(
         x,
         y,
         connectedNodeX ?? 0,

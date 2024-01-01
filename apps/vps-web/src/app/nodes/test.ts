@@ -20,15 +20,13 @@ export const getTest: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let nodeComponent: INodeComponent<NodeInfo>;
-  let currentValue = 0;
   const initializeCompute = () => {
-    currentValue = 0;
     return;
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number
   ) => {
     return {
       result: input,

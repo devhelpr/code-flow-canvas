@@ -10,12 +10,12 @@ function createGridView(
   grid: any[][],
   htmlNode: IElementNode<NodeInfo>,
   structureInfo: StructureInfo,
-  isGlobal: boolean
+  _isGlobal: boolean
 ) {
   const asHtml = grid
     .map((data, index) => {
       const rowHtml = data
-        .map((data, index) => {
+        .map((data) => {
           return `<div class="border-1 border-white border-solid">${data}</div>`;
         })
         .join('');

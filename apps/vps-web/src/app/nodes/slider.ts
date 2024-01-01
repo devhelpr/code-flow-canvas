@@ -7,20 +7,13 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  runNode,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
+import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getSlider =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
@@ -70,7 +63,7 @@ export const getSlider =
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
-        const rangeInput = createElement(
+        createElement(
           'input',
           {
             type: 'range',

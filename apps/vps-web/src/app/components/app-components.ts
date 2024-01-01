@@ -7,7 +7,7 @@ export interface AppComponentsProps {
 // <div data-test="app-components">
 //   </div>
 
-export const AppComponents = (props: AppComponentsProps) => {
+export const AppComponents = (_props: AppComponentsProps) => {
   // <element:Fragment>
   //   <div class="fixed w-[50px] h-[calc(100%-135px)] top-[60px] right-0 left-auto z-50 p-2 bg-slate-400">
   //     <input

@@ -38,7 +38,7 @@ export const getEnd: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      _initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(

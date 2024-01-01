@@ -354,7 +354,7 @@ position: relative;
 	content: "";
 	display: block;
 	height: 1px;
-	width: calc(50% + 10px);
+	width: calc(50% + 8px);
 	background: white;
 	position:absolute;
 	left: 50%;
@@ -366,7 +366,7 @@ position: relative;
 	content: "";
 	display: block;
 	height: 1px;
-	width: calc(100% + 20px);
+	width: calc(100% + 18px);
 	background: white;
 	position:absolute;
 	left: 0%;
@@ -378,10 +378,10 @@ position: relative;
 	content: "";
 	display: block;
 	height: 1px;
-	width: calc(50% + 10px);
+	width: calc(50% - 9px);
 	background: white;
 	position:absolute;
-	left: -10px;
+	left: 10px;
 	/* transform: translateX(-50%); */
 	top: -10px;
 } 
@@ -406,7 +406,7 @@ position: relative;
 .node-tree__row-wrapper:has(> .node-tree__wrapper) > .node-tree__row > .node-tree__value:before {
 	content: "";
 	display: block;
-	height: 11px;
+	height: 10px;
 	width: 1px;
 	background: white;
 	position:absolute;
@@ -420,4 +420,8 @@ position: relative;
 .node-tree__pivot {
 	color: black;
 	@apply bg-slate-300;
+}
+
+.inner-node form input {
+	@apply text-black;
 }

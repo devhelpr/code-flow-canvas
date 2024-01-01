@@ -1,11 +1,7 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -35,19 +31,12 @@ const thumbs = [
 ];
 
 export const getTimeNode: NodeTaskFactory<any> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string) => {
     return {
       result: `u_time`,
       output: input,
@@ -70,12 +59,11 @@ export const getTimeNode: NodeTaskFactory<any> = (
     100,
     100,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

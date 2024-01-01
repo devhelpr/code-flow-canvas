@@ -8,7 +8,7 @@ import {
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '../interfaces/element';
-import { createEffect, getVisbility, setSelectNode } from '../reactivity';
+import { createEffect, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
@@ -183,8 +183,6 @@ export class CubicBezierConnection<T> extends Connection<T> {
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
 
     createEffect(() => {
-      const visibility = getVisbility();
-
       if (!this.nodeComponent) {
         return;
       }

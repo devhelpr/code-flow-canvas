@@ -8,15 +8,8 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
-import {
-  runNode,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { runNode } from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
@@ -34,14 +27,7 @@ export const observeVariable =
       }
       return;
     };
-    const compute = (
-      input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
-      loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
-      scopeId?: string
-    ) => {
+    const compute = (input: string) => {
       return {
         result: input,
         followPath: undefined,
@@ -78,7 +64,7 @@ export const observeVariable =
               node,
               canvasAppInstance,
               animatePath,
-              (input) => {
+              (_input) => {
                 //
               },
               value,

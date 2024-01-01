@@ -7,20 +7,13 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  runNode,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
+import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getCheckbox =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = false;
     let triggerButton = false;
@@ -55,7 +48,7 @@ export const getCheckbox =
         x: number,
         y: number,
         id?: string,
-        initalValues?: InitialValues,
+        _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         const componentWrapper = createElement(
@@ -66,7 +59,7 @@ export const getCheckbox =
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
-        const checkboxInput = createElement(
+        createElement(
           'input',
           {
             type: 'checkbox',

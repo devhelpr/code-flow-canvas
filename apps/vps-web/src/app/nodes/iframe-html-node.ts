@@ -52,12 +52,6 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     undefined;
   let variables: Record<string, string> = {};
   let oldHtml = '';
-  let structuredMarkup:
-    | {
-        expressions: Record<string, object>;
-        markup: string;
-      }
-    | undefined = undefined;
 
   const defaultHTML = `<div class="bg-sky-800 text-white 
     flex items-center justify-center
@@ -87,7 +81,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
         } else {
           (divNode.domElement as HTMLElement).innerHTML = '';
-          structuredMarkup = createStructuredExpressionsMarkup(htmlString);
+          createStructuredExpressionsMarkup(htmlString);
           htmlString = `${htmlString}
             <script>
               window["input"] = window["input"] || [];
@@ -246,7 +240,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           fieldName: 'execute',
           caption: 'Get HTML from AI',
           onButtonClick: (formContext: FormContext) => {
-            return new Promise<void>((resolve, reject) => {
+            return new Promise<void>((resolve, _reject) => {
               fetch('http://localhost:3000/create-ui', {
                 method: 'POST',
                 headers: {

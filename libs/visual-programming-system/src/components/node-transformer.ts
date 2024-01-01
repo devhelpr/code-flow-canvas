@@ -1,4 +1,3 @@
-import { execPath } from 'process';
 import { transformCameraSpaceToWorldSpace } from '../camera';
 import {
   InteractionEvent,
@@ -47,10 +46,10 @@ export class NodeTransformer<T> {
       rootElement
     );
     (this.nodeTransformElement as INodeComponent<T>).update = (
-      target?: INodeComponent<T> | undefined,
-      x?: number | undefined,
-      y?: number | undefined,
-      initiator?: INodeComponent<T> | undefined
+      _target?: INodeComponent<T> | undefined,
+      _x?: number | undefined,
+      _y?: number | undefined,
+      _initiator?: INodeComponent<T> | undefined
     ) => {
       console.log('update node-transformer');
       return true;
@@ -226,11 +225,11 @@ export class NodeTransformer<T> {
     (this.rightBottom?.domElement as HTMLElement).classList.remove(removeClass);
   }
 
-  onPointerOver = (event: PointerEvent) => {
+  onPointerOver = (_event: PointerEvent) => {
     //
   };
 
-  onPointerLeave = (event: PointerEvent) => {
+  onPointerLeave = (_event: PointerEvent) => {
     //this.detachNode();
   };
 
@@ -304,6 +303,7 @@ export class NodeTransformer<T> {
       event.stopPropagation();
       return false;
     }
+    return true;
   };
 
   orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
@@ -433,11 +433,11 @@ export class NodeTransformer<T> {
     }
   };
   onPointerUpHelper = <T>(
-    x: number,
-    y: number,
-    element: INodeComponent<T>,
-    canvasNode: IElementNode<T>,
-    interactionInfo: IPointerDownResult,
+    _x: number,
+    _y: number,
+    _element: INodeComponent<T>,
+    _canvasNode: IElementNode<T>,
+    _interactionInfo: IPointerDownResult,
     interactionStateMachine: InteractionStateMachine<T>
   ) => {
     this.attachedNode?.updateEnd?.();
@@ -457,7 +457,7 @@ export class NodeTransformer<T> {
     );
   };
 
-  onPointerUp = (event: PointerEvent) => {
+  onPointerUp = (_event: PointerEvent) => {
     //
   };
 }

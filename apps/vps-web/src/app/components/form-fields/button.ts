@@ -1,5 +1,4 @@
 import {
-  Component,
   BaseComponent,
   createTemplate,
   createElementFromTemplate,

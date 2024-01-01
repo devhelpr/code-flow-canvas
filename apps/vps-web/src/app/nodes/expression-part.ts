@@ -8,8 +8,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
-
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -22,25 +20,15 @@ export const getExpressionPart: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
 
-  let currentValue = 0;
   const initializeCompute = () => {
-    currentValue = 0;
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = () => {
     let result: any = false;
     try {
       result = node?.nodeInfo?.formValues?.['expression'] ?? '';
     } catch (error) {
       result = undefined;
-    }
-    if (result) {
-      currentValue = result;
     }
     return {
       result,

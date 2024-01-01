@@ -45,7 +45,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       .map((value) => parseInt(value) ?? 0)
       .reduce((a, b) => a + b, 0);
     if (htmlNode) {
-      const inputElement = createElement(
+      createElement(
         'div',
         {
           class:
@@ -79,7 +79,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      _initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       htmlNode = createElement(

@@ -63,10 +63,10 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
+    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
-    thumbName?: string,
+    _thumbName?: string,
     scopeId?: string
   ) => {
     if (errorNode) {

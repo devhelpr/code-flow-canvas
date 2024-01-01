@@ -8,11 +8,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import {
   runNode,
   RunNodeResult,
@@ -33,10 +29,10 @@ export const getTimer =
     };
     const compute = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
+      _pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       if ((input as any)?.trigger === 'TIMER') {

@@ -1,6 +1,4 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -54,10 +52,8 @@ const thumbs = [
 ];
 
 export const getInsersectSetsNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values.value1 = undefined;
     values.value2 = undefined;
@@ -74,9 +70,9 @@ export const getInsersectSetsNode: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
     thumbName?: string
   ) => {
     if (thumbName === 'a') {
@@ -123,12 +119,11 @@ export const getInsersectSetsNode: NodeTaskFactory<NodeInfo> = (
     200,
     320,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

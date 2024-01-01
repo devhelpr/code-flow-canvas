@@ -10,7 +10,6 @@ import {
   navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
-  navBarPrimaryButton,
   navBarPrimaryIconButton,
 } from '../consts/classes';
 

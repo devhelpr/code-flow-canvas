@@ -1,8 +1,4 @@
-import {
-  DOMElementNode,
-  IElementNode,
-  INodeComponent,
-} from '../interfaces/element';
+import { IElementNode, INodeComponent } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 
 export enum InteractionState {
@@ -24,7 +20,7 @@ export enum InteractionEvent {
   PointerClick = 5,
 }
 
-export interface InteractionTarget<T> {
+export interface InteractionTarget<_T> {
   id: string;
   type: string;
   pointerDown?: <T>(
@@ -234,8 +230,6 @@ export const createInteractionStateMachine = <
     interactionTarget = undefined;
     currentElement = undefined;
     currentCanvasNode = undefined;
-    const oldIsClicking = isClicking;
-    const oldIsMoving = isMoving;
     isClicking = false;
     isMoving = false;
   };

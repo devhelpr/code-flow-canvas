@@ -8,11 +8,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import {
   createElementFromTemplate,
   createTemplate,
@@ -28,12 +24,11 @@ import {
 
 export const getMultiTrigger =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
     let rect: Rect<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
@@ -43,15 +38,15 @@ export const getMultiTrigger =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       if (node.thumbConnectors && node.thumbConnectors.length > 2) {
         runNodeFromThumb(
           node.thumbConnectors[0],
           animatePathFromThumb,
-          (inputFromSecondRun: string | any[]) => {
+          () => {
             return;
           },
           input,
@@ -64,7 +59,7 @@ export const getMultiTrigger =
         runNodeFromThumb(
           node.thumbConnectors[1],
           animatePathFromThumb,
-          (inputFromSecondRun: string | any[]) => {
+          () => {
             return;
           },
           input,
@@ -89,7 +84,7 @@ export const getMultiTrigger =
         x: number,
         y: number,
         id?: string,
-        initalValues?: InitialValues,
+        _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         const template = createTemplate(
@@ -103,7 +98,7 @@ export const getMultiTrigger =
       </svg>`
         );
         const svgElement = createElementFromTemplate(template);
-        htmlNode = createElement(
+        createElement(
           'div',
           {
             class: 'icon icon-call_split text-white text-[32px]',
@@ -125,7 +120,7 @@ export const getMultiTrigger =
             },
           },
           undefined,
-          svgElement //htmlNode.domElement as unknown as HTMLElement
+          svgElement
         ) as unknown as INodeComponent<NodeInfo>;
 
         rect = canvasApp.createRect(

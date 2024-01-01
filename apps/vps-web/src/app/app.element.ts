@@ -148,7 +148,7 @@ export class AppElement<T> {
     );
   }
 
-  onPreRemoveElement = (element: IElementNode<T>) => {
+  onPreRemoveElement = (_element: IElementNode<T>) => {
     //
   };
 
@@ -180,11 +180,11 @@ export class AppElement<T> {
     this.canvasApp?.setCamera(0, 0, 1);
   };
 
-  onShouldPositionPopup = (node: IRectNodeComponent<T>) => {
+  onShouldPositionPopup = (_node: IRectNodeComponent<T>) => {
     return true;
   };
 
-  onCameraChanged = (camera: Camera) => {
+  onCameraChanged = (_camera: Camera) => {
     const selectedNodeInfo = getSelectedNode();
 
     if (selectedNodeInfo) {

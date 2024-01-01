@@ -17,7 +17,7 @@ const defaultFunctionColor = 'bg-yellow-400';
 const activeFunctionColor = 'bg-orange-400';
 
 export const getFunction =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (_animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
@@ -29,10 +29,10 @@ export const getFunction =
     };
     const compute = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
-      loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _pathExecution?: RunNodeResult<NodeInfo>[],
+      _loopIndex?: number,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       if (!node?.nodeInfo?.formValues?.['node']) {

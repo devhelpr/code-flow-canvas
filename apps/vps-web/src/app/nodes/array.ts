@@ -173,7 +173,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     loopIndex: number,
     scopeId?: string
   ) => {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve) => {
       const match = input.match(/([\w]+)\(([^()]*)\)/);
       if (match) {
         const command = match[1];
@@ -302,13 +302,13 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   };
   const computeAsync = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
+    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any,
-    thumbName?: string,
+    _payload?: any,
+    _thumbName?: string,
     scopeId?: string
   ) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (isCommmand(input)) {
         processCommand(input, loopIndex ?? 0, scopeId).then((result) => {
           if (result) {
@@ -341,10 +341,10 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   const getData = () => {
     return inputValues;
   };
-  const setData = (data: any) => {
+  const setData = (_data: any) => {
     //currentValue = data;
   };
-  const removeScope = (scopeId: string) => {
+  const removeScope = (_scopeId: string) => {
     //
   };
 

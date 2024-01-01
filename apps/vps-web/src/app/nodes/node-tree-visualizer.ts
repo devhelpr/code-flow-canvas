@@ -7,7 +7,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 const commandNameFieldName = 'commandHandlerName';
 
@@ -16,7 +15,6 @@ export const nodeTreeVisualizerNodeName = 'node-tree-visualizer';
 export const getNodeTreeVisualizer = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let canvasAppInstance: CanvasAppInstance<NodeInfo>;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let node: IRectNodeComponent<NodeInfo>;
@@ -26,7 +24,7 @@ export const getNodeTreeVisualizer = (
   let commandName = '';
   let timeout: any = undefined;
   let isInitialized = false;
-  const execute = (command: string, payload: any) => {
+  const execute = (_command: string, payload: any) => {
     if (isInitialized) {
       isInitialized = false;
       if (htmlNode) {
@@ -153,11 +151,7 @@ export const getNodeTreeVisualizer = (
     return;
   };
 
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
-  ) => {
+  const compute = () => {
     return {
       result: false,
       stop: true,
@@ -177,7 +171,6 @@ export const getNodeTreeVisualizer = (
       initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
-      canvasAppInstance = canvasApp;
       commandName = initalValues?.[commandNameFieldName] ?? '';
 
       if (id) {

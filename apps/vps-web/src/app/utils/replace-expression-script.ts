@@ -6,7 +6,7 @@ import {
 export const replaceExpressionScript = (
   content: string,
   payload: Record<string, string> = {},
-  keepUnknownFields = false
+  _keepUnknownFields = false
 ) => {
   let resultContent = content;
   try {

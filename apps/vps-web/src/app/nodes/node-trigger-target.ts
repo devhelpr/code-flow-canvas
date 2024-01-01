@@ -11,24 +11,16 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
 export const getNodeTriggerTarget =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (_animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
     const initializeCompute = () => {
       return;
     };
-    const compute = (
-      input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
-      loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
-      scopeId?: string
-    ) => {
+    const compute = (input: string) => {
       if (!node?.nodeInfo?.formValues?.['node']) {
         return {
           result: false,

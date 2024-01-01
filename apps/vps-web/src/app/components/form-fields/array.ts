@@ -90,7 +90,7 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
     this.isMounted = false;
   }
 
-  onAddButtonClick = (event: Event) => {
+  onAddButtonClick = (_event: Event) => {
     //
   };
   render() {

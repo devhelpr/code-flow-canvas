@@ -1,10 +1,7 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
@@ -18,18 +15,16 @@ import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 const fieldName = 'joinChar';
 export const reverseArrayNodeName = 'reverse-array';
 export const reverseArray: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<NodeInfo> => {
-  let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any
   ) => {
     if (!Array.isArray(input)) {
       return {
@@ -39,7 +34,7 @@ export const reverseArray: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-    const output = input.toReversed();
+    const output = (input as any).toReversed();
     return {
       result: output,
       output: output,
@@ -75,12 +70,11 @@ export const reverseArray: NodeTaskFactory<NodeInfo> = (
         thumbConstraint: thumbConstraints.array,
       },
     ],
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

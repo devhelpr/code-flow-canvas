@@ -1,11 +1,8 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -41,22 +38,13 @@ const thumbs = [
 ];
 
 export const getSetSizeNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
 
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
-    thumbName?: string,
-    scopeId?: string
-  ) => {
+  const compute = (input: string) => {
     if (
       input === undefined ||
       (typeof input === 'object' && !((input as any) instanceof Set))
@@ -88,12 +76,11 @@ export const getSetSizeNode: NodeTaskFactory<NodeInfo> = (
     150,
     320,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

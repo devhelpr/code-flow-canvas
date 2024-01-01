@@ -26,10 +26,10 @@ const title = 'sort';
 
 export const getSort =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
@@ -48,8 +48,8 @@ export const getSort =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       const forEachDomElement = foreachComponent?.domElement as HTMLElement;
@@ -111,16 +111,18 @@ export const getSort =
             forEachDomElement.classList.add('bg-slate-500');
             forEachDomElement.classList.remove(activeSortColor);
 
-            const sortedOutputList = output.toSorted((a, b) => {
-              if (a.sortValue < b.sortValue) {
-                return -1;
-              } else if (a.sortValue > b.sortValue) {
-                return 1;
+            const sortedOutputList = (output as any).toSorted(
+              (a: any, b: any) => {
+                if (a.sortValue < b.sortValue) {
+                  return -1;
+                } else if (a.sortValue > b.sortValue) {
+                  return 1;
+                }
+                return 0;
               }
-              return 0;
-            });
+            );
             const sortedList = sortedOutputList.map(
-              (item, _index) => values[item.index]
+              (item: any) => values[item.index]
             );
             runNodeFromThumb(
               node.thumbConnectors[0],
@@ -161,7 +163,7 @@ export const getSort =
         x: number,
         y: number,
         id?: string,
-        initalValues?: InitialValues,
+        _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         foreachComponent = createElement(

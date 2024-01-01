@@ -1,6 +1,5 @@
 import {
   CanvasAppInstance,
-  INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';

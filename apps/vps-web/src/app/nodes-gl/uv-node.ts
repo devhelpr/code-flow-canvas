@@ -1,10 +1,7 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
@@ -59,18 +56,16 @@ const thumbs = [
 ];
 
 export const getUVNode: NodeTaskFactory<any> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
     thumbName?: string
   ) => {
     if (thumbName === 'x') {
@@ -110,57 +105,14 @@ export const getUVNode: NodeTaskFactory<any> = (
     200,
     100,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance!;
-      node = nodeInstance.node!;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,
     }
   );
 };
-
-// export const getUVNodeY: NodeTaskFactory<any> = (
-//   updated: () => void
-// ): NodeTask<any> => {
-//   let node: IRectNodeComponent<any>;
-//   let contextInstance: CanvasAppInstance<any> | undefined = undefined;
-//   const initializeCompute = () => {
-//     return;
-//   };
-//   const compute = (
-//     input: string,
-//     pathExecution?: RunNodeResult<NodeInfo>[],
-//     loopIndex?: number,
-//     payload?: any
-//   ) => {
-//     return {
-//       result: `uv.y`,
-//       output: input,
-//       followPath: undefined,
-//     };
-//   };
-
-//   return visualNodeFactory(
-//     `${nodeName}-y`,
-//     `${labelName} Y`,
-//     familyName,
-//     fieldName,
-//     compute,
-//     initializeCompute,
-//     false,
-//     200,
-//     100,
-//     thumbs,
-//     (values?: InitialValues) => {
-//       return [];
-//     },
-//     (nodeInstance) => {
-//       contextInstance = nodeInstance.contextInstance!;
-//       node = nodeInstance.node!;
-//     }
-//   );
-// };

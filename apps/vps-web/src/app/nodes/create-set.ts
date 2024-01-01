@@ -1,11 +1,8 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -17,19 +14,12 @@ import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 const fieldName = 'splitBy';
 export const createSetNodeName = 'create-set';
 export const createSet: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<NodeInfo> => {
-  let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string) => {
     if (Array.isArray(input)) {
       const inputSet = new Set(input);
       return {
@@ -76,12 +66,11 @@ export const createSet: NodeTaskFactory<NodeInfo> = (
         thumbConstraint: thumbConstraints.array,
       },
     ],
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

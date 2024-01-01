@@ -24,10 +24,10 @@ export const whileNodeName = 'while';
 const whileTitle = 'while';
 export const getWhile =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let whileComponent: INodeComponent<NodeInfo> | undefined = undefined;
     const title = whileTitle;
@@ -45,8 +45,8 @@ export const getWhile =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
@@ -177,7 +177,7 @@ export const getWhile =
         x: number,
         y: number,
         id?: string,
-        initalValues?: InitialValues,
+        _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         whileComponent = createElement(

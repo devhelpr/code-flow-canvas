@@ -41,9 +41,9 @@ export const setGridRowVariable: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
     thumbName?: string,
     scopeId?: string
   ) => {
@@ -172,7 +172,6 @@ export const setGridRowVariable: NodeTaskFactory<NodeInfo> = (
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;
       }

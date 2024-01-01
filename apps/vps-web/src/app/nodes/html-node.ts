@@ -11,15 +11,8 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
-import {
-  createStructuredExpressionsMarkup,
-  replaceExpressionScript,
-} from '../utils/replace-expression-script';
-import {
-  compileMarkup,
-  IASTTreeNode,
-  IASTTreeProperty,
-} from '@devhelpr/markup-compiler';
+import { createStructuredExpressionsMarkup } from '../utils/replace-expression-script';
+import { compileMarkup } from '@devhelpr/markup-compiler';
 
 export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -37,45 +30,45 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   const defaultHTML = `<div class="bg-sky-800 text-white 
     flex items-center justify-center
     min-w-[200px] min-h-[200px]">Click to edit HTML</div>`;
-  const parseBody = (
-    body: IASTTreeNode,
-    expressions: Record<string, object>
-  ) => {
-    body.body?.forEach((childASTNode) => {
-      if (childASTNode.type === 'Markup') {
-        parseBody(childASTNode, expressions);
-      } else if (childASTNode.type === 'TEXT') {
-        const matches = (childASTNode.value ?? '')
-          .toString()
-          .match(/\[[\s\S]+?\]/gm);
-        if (matches) {
-          matches.map((match) => {
-            const expressionId = match.slice(1, -1);
-            const expression = expressions[expressionId] as any;
-            if (expression) {
-              expression.value = childASTNode.value ?? '';
-              expression.isTextNode = true;
-              expression.textNode = childASTNode;
-            }
-          });
-        }
-      }
-    });
-    body.properties?.forEach((propertyKeyValue) => {
-      const matches = propertyKeyValue.value.toString().match(/\[[\s\S]+?\]/gm);
-      if (matches) {
-        matches.map((match) => {
-          const expressionId = match.slice(1, -1);
-          const expression = expressions[expressionId] as any;
-          if (expression) {
-            expression.value = propertyKeyValue.value;
-            expression.isProperty = true;
-            expression.propertyNode = propertyKeyValue;
-          }
-        });
-      }
-    });
-  };
+  // const parseBody = (
+  //   body: IASTTreeNode,
+  //   expressions: Record<string, object>
+  // ) => {
+  //   body.body?.forEach((childASTNode) => {
+  //     if (childASTNode.type === 'Markup') {
+  //       parseBody(childASTNode, expressions);
+  //     } else if (childASTNode.type === 'TEXT') {
+  //       const matches = (childASTNode.value ?? '')
+  //         .toString()
+  //         .match(/\[[\s\S]+?\]/gm);
+  //       if (matches) {
+  //         matches.map((match) => {
+  //           const expressionId = match.slice(1, -1);
+  //           const expression = expressions[expressionId] as any;
+  //           if (expression) {
+  //             expression.value = childASTNode.value ?? '';
+  //             expression.isTextNode = true;
+  //             expression.textNode = childASTNode;
+  //           }
+  //         });
+  //       }
+  //     }
+  //   });
+  //   body.properties?.forEach((propertyKeyValue) => {
+  //     const matches = propertyKeyValue.value.toString().match(/\[[\s\S]+?\]/gm);
+  //     if (matches) {
+  //       matches.map((match) => {
+  //         const expressionId = match.slice(1, -1);
+  //         const expression = expressions[expressionId] as any;
+  //         if (expression) {
+  //           expression.value = propertyKeyValue.value;
+  //           expression.isProperty = true;
+  //           expression.propertyNode = propertyKeyValue;
+  //         }
+  //       });
+  //     }
+  //   });
+  // };
   const setHTML = (value: string) => {
     try {
       const splitted = (value ?? '').toString().split(':');

@@ -42,7 +42,7 @@ export const getSummingJunction: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      _initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       const template = createTemplate(

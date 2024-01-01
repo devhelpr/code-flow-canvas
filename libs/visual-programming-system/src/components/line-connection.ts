@@ -9,12 +9,7 @@ import {
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '../interfaces/element';
-import {
-  createEffect,
-  getVisbility,
-  getSelectedNode,
-  setSelectNode,
-} from '../reactivity';
+import { createEffect, getVisbility, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
@@ -73,11 +68,13 @@ export class LineConnection<T> extends Connection<T> {
         return;
       }
       console.log('connection click', this.nodeComponent.id);
-      setSelectNode({
-        id: this.nodeComponent.id,
-        containerNode: this.nodeComponent
-          .containerNode as unknown as INodeComponent<unknown>,
-      });
+      if (this.nodeComponent.containerNode) {
+        setSelectNode({
+          id: this.nodeComponent.id,
+          containerNode: this.nodeComponent
+            .containerNode as IRectNodeComponent<unknown>,
+        });
+      }
     };
 
     function setPosition(

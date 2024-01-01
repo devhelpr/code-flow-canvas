@@ -58,10 +58,10 @@ const isInputOfRangeValueType = (input: RangeValueType) => {
 
 export const getMap =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
@@ -78,8 +78,8 @@ export const getMap =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       const forEachDomElement = foreachComponent?.domElement as HTMLElement;
@@ -109,11 +109,6 @@ export const getMap =
           startIndex = rangeInput.min;
           step = rangeInput.step;
           forEachLength = rangeInput.max;
-
-          /*Math.floor(
-            (rangeInput.max - rangeInput.min) / rangeInput.step
-          );
-          */
         } else {
           if (!Array.isArray(input)) {
             values = [input];
@@ -133,7 +128,6 @@ export const getMap =
             foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
           }
           if (mapLoop < forEachLength) {
-            //console.log('runNext', mapLoop, values[mapLoop]);
             runNodeFromThumb(
               node.thumbConnectors[1],
               animatePathFromThumb,
@@ -164,8 +158,6 @@ export const getMap =
                 resolve({
                   result: inputFromSecondRun,
                   output: inputFromSecondRun,
-                  // result: output,
-                  // output: output,
                   followPath: undefined,
 
                   stop: true,
@@ -183,10 +175,6 @@ export const getMap =
         forEachDomElement.classList.remove('bg-slate-500');
         forEachDomElement.classList.add(activeMapColor);
         runNext(startIndex);
-        // resolve({
-        //   result: input,
-        //   stop: true,
-        // });
       });
     };
 
@@ -199,7 +187,7 @@ export const getMap =
         x: number,
         y: number,
         id?: string,
-        initalValues?: InitialValues,
+        _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         foreachComponent = createElement(

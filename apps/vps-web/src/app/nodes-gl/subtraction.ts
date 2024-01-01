@@ -1,6 +1,4 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -49,17 +47,15 @@ const thumbs = [
 ];
 
 export const getSubtractNode: NodeTaskFactory<any> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
     payload?: any
   ) => {
     const value1 = payload?.['value1'];
@@ -82,12 +78,11 @@ export const getSubtractNode: NodeTaskFactory<any> = (
     100,
     320,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

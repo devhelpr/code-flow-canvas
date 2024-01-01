@@ -7,11 +7,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { NodeTask, NodeTaskFactory } from '../node-task-registry';
 
 export const getShowInput: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
@@ -73,9 +69,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
-      id?: string,
-      initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      id?: string
     ) => {
       htmlNode = createElement(
         'div',

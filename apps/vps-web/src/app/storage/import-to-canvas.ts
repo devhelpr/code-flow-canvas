@@ -1,14 +1,11 @@
 import {
   CanvasAppInstance,
   ElementNodeMap,
-  Flow,
   FlowNode,
   IElementNode,
-  INodeComponent,
   IRectNodeComponent,
   LineType,
   NodeType,
-  createCanvasApp,
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
@@ -22,11 +19,8 @@ export const importToCanvas = (
   getNodeTaskFactory?: (name: string) => any
 ) => {
   console.log('importToCanvas', nestedLevel);
-  //   console.log('flow', flow);
-  //   const nodesList = flow.flows.flow.nodes;
   nodesList.forEach((node) => {
     if (getNodeTaskFactory && node.nodeType === NodeType.Shape) {
-      //node.nodeInfo?.type
       const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
       if (factory) {
         const nodeTask = factory(canvasUpdated);
@@ -82,7 +76,6 @@ export const importToCanvas = (
                       Array.isArray(element.elements) &&
                       child.nodeInfo?.canvasAppInstance
                     ) {
-                      // element.elements
                       importToCanvas(
                         element.elements as unknown as FlowNode<NodeInfo>[],
                         child.nodeInfo.canvasAppInstance,
@@ -243,7 +236,7 @@ export const importToCanvas = (
 
   const elementList = Array.from(canvasApp?.elements ?? []);
 
-  nodesList.forEach((node, index) => {
+  nodesList.forEach((node, _index) => {
     if (node.nodeType === NodeType.Connection) {
       let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
       let end: IRectNodeComponent<NodeInfo> | undefined = undefined;

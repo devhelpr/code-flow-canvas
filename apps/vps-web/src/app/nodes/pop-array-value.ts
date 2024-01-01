@@ -31,11 +31,11 @@ export const popArrayValue: NodeTaskFactory<NodeInfo> = (
   };
 
   const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
-    thumbName?: string,
+    _input: string,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
+    _thumbName?: string,
     scopeId?: string
   ) => {
     let data: any[] = [];
@@ -172,7 +172,7 @@ export const popArrayValue: NodeTaskFactory<NodeInfo> = (
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;
       }

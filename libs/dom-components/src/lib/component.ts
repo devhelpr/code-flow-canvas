@@ -60,10 +60,10 @@ export class Component<T> extends BaseComponent {
 
   getRenderableChildren(): HTMLElement[] {
     const childElements: HTMLElement[] = [];
-    this.components.forEach((component, index) => {
-      if (component.doRender) {
+    this.components.forEach((component) => {
+      if (component.doRender && component.element) {
         component.render();
-        childElements.push(component.element!);
+        childElements.push(component.element);
       }
     });
     return childElements;

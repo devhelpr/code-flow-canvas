@@ -1,6 +1,4 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -49,40 +47,23 @@ const thumbs = [
 ];
 
 export const getMultiplyNode: NodeTaskFactory<any> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
     payload?: any
   ) => {
-    const parsedValue1 = parseFloat(payload?.['value1']);
     let value1 = '';
-    // if (!isNaN(parsedValue1)) {
-    //   value1 = parseFloat(payload?.['value1'] ?? '0').toString();
-    //   if (value1.indexOf('.') < 0) {
-    //     value1 = `${value1}.0`;
-    //   }
-    // } else {
-    //   value1 = payload?.['value1'];
-    // }
+
     value1 = payload?.['value1'];
-    const parsedValue2 = parseFloat(payload?.['value2']);
+
     let value2 = '';
-    // if (!isNaN(parsedValue2)) {
-    //   value2 = parseFloat(payload?.['value2'] ?? '0').toString();
-    //   if (value2.indexOf('.') < 0) {
-    //     value2 = `${value2}.0`;
-    //   }
-    // } else {
-    //   value2 = payload?.['value2'];
-    // }
+
     value2 = payload?.['value2'];
     return {
       result: `${value1} * ${value2}`,
@@ -102,12 +83,11 @@ export const getMultiplyNode: NodeTaskFactory<any> = (
     100,
     320,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

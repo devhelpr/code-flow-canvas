@@ -23,17 +23,15 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
 
-  let currentValue = 0;
   const initializeCompute = () => {
-    currentValue = 0;
     return;
   };
   const computeAsync = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number
   ) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
       let result: any = false;
       try {

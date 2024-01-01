@@ -1,12 +1,9 @@
 import {
-  CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
-import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -18,16 +15,10 @@ export const getValueNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string) => {
     let value = parseFloat(
       node.nodeInfo?.formValues?.['value'] ?? 0
     ).toString();
@@ -92,8 +83,7 @@ export const getValueNode: NodeTaskFactory<any> = (
       return formElements;
     },
     (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+      node = nodeInstance.node as IRectNodeComponent<any>;
     }
   );
 };

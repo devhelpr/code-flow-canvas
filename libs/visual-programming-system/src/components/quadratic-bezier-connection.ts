@@ -3,18 +3,12 @@ import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
-  IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '../interfaces/element';
-import {
-  createEffect,
-  getVisbility,
-  getSelectedNode,
-  setSelectNode,
-} from '../reactivity';
+import { createEffect, getVisbility, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
@@ -85,7 +79,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       setSelectNode({
         id: this.nodeComponent.id,
         containerNode: this.nodeComponent
-          .containerNode as unknown as INodeComponent<unknown>,
+          .containerNode as unknown as IRectNodeComponent<unknown>,
       });
     };
 
@@ -258,7 +252,6 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
 
     const perpendicularVectorFactor = 1000;
     const spacingAABB = 10;
-    const circleSpacingFactor = 4;
     const circlePadding = 10;
     let t = 0;
     let intersections: Vector[] = [];
@@ -268,7 +261,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       intersections = intersectionCircleLine(
         {
           center: { x: x1, y: y1 },
-          radius: circleRadius, //thumbRadius * circleSpacingFactor,
+          radius: circleRadius,
         },
         { p1: { x: x1, y: y1 }, p2: { x: cx, y: cy } }
       );
@@ -393,8 +386,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
           { x: split1.curve2.c1x, y: split1.curve2.c1y },
           { x: split1.curve2.x2, y: split1.curve2.y2 },
           { x: pi1x, y: pi1y },
-          { x: pi2x, y: pi2y },
-          true
+          { x: pi2x, y: pi2y }
         );
 
         if (intersectionsEnd[0]?.t !== undefined) {

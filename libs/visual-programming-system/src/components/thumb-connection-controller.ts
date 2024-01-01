@@ -3,9 +3,6 @@ import {
   thumbRadius,
   thumbWidth,
   thumbHeight,
-  thumbFontSizeClass,
-  thumbInnerCircleSizeClasses,
-  thumbTextBaseSizeClass,
   paddingRect,
 } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
@@ -14,17 +11,14 @@ import {
   ElementNodeMap,
   IConnectionNodeComponent,
   IElementNode,
-  INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces/element';
-import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
-import { CubicBezierConnection } from './qubic-bezier-connection';
 import { ThumbNode } from './thumb';
 
 export class ThumbConnectionController<T> extends ThumbNode<T> {

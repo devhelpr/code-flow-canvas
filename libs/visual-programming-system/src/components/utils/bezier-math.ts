@@ -1,26 +1,3 @@
-export const getTValueOnQuadraticBezierCurveForPoint = (
-  x1: number,
-  y1: number,
-  c1x: number,
-  c1y: number,
-  x2: number,
-  y2: number,
-  px: number,
-  py: number
-) => {
-  /*
-	p = some point to project onto the curve
-	d = some initially huge value
-	i = 0
-	for (coordinate, index) in LUT:
-	q = distance(coordinate, p)
-	if q < d:
-		d = q
-		i = index	
-	*/
-  return 0;
-};
-
 const getCurveFirstHalf = (z: number, p1: number, p2: number, p3: number) => {
   return {
     p1: p1,
@@ -72,23 +49,6 @@ export const splitQuadraticBezierCurve = (
   };
 };
 
-// circle and bezier curver both start at x1, y1
-export const getIntersectionPointOfCircleAndQuadraticBezierCurve = (
-  x1: number,
-  y1: number,
-  c1x: number,
-  c1y: number,
-  x2: number,
-  y2: number,
-  r: number
-) => {
-  // calculate intersection point using c1x,c1y to x1,y1
-  return {
-    x: 0,
-    y: 0,
-  };
-};
-
 type Vector = {
   x: number;
   y: number;
@@ -108,8 +68,7 @@ export function calculateQuadraticBezierLineIntersections(
   p2: Vector,
   p3: Vector,
   a1: Vector,
-  a2: Vector,
-  isEnd?: boolean
+  a2: Vector
 ) {
   const intersections: VectorWithT[] = [];
 

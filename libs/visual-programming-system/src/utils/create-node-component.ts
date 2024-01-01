@@ -19,7 +19,6 @@ export const createNodeComponent = <T>(
     ...element,
     x: 0,
     y: 0,
-    components: [],
   };
 };
 
@@ -46,7 +45,6 @@ export const createSVGNodeComponent = <T>(
     ...element,
     x: 0,
     y: 0,
-    components: [],
     update: update,
   };
 };

@@ -14,7 +14,6 @@ import {
   getNodeConnectionPairByIdWhereNodeIsEndpoint,
 } from '../follow-path/get-node-connection-pairs';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
-import { exec } from 'child_process';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -46,7 +45,7 @@ const handleDecoratrs = (
         decoratorInput = decoratorResult.output;
       } else {
         // ? error handling decorators ?
-        return false;
+        //return false;
       }
     }
   });
@@ -183,7 +182,7 @@ const triggerExecution = <T>(
       node,
       'white',
       (
-        nodeId: string,
+        _nodeId: string,
         node: IRectNodeComponent<T>,
         input: string | any[],
         connection: IConnectionNodeComponent<T>,
@@ -228,11 +227,11 @@ const triggerExecution = <T>(
                   if (onStopped) {
                     onStopped(computeResult.output ?? '', undefined, scopeId);
                   }
-                  return {
-                    result: result,
-                    stop: true,
-                    output: result,
-                  };
+                  // return {
+                  //   result: result,
+                  //   stop: true,
+                  //   output: result,
+                  // };
                 } else {
                   result = computeResult.result;
                   sendData(node, canvasApp, result);
@@ -708,7 +707,7 @@ export const runNodeFromThumb = <T>(
     nodeThumb,
     'white',
     (
-      nodeId: string,
+      _nodeId: string,
       node: INodeComponent<T>,
       input: string | any[],
       connection: IConnectionNodeComponent<T>,

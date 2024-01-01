@@ -1,21 +1,18 @@
 import { compileMarkup } from '@devhelpr/markup-compiler';
 import {
-  DOMElementNode,
   ElementNodeMap,
+  IElementNode,
   INodeComponent,
 } from '../interfaces/element';
-import { IPointerDownResult } from '../interfaces/pointers';
-import { pointerDown } from './events/pointer-events';
 import { createNodeComponent } from '../utils/create-node-component';
-import { transformCameraSpaceToWorldSpace } from '../camera';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
 import { InteractionStateMachine } from '../interaction-state-machine';
 
 export const createMarkupElement = <T>(
   markup: string,
-  canvasElement: DOMElementNode,
+  canvasElement: IElementNode<T>,
   elements: ElementNodeMap<T>,
-  interactionStateMachine: InteractionStateMachine<T>
+  _interactionStateMachine: InteractionStateMachine<T>
 ) => {
   const compiledMarkup = compileMarkup(markup);
   if (!compiledMarkup) {
@@ -26,11 +23,6 @@ export const createMarkupElement = <T>(
       element.domElement as unknown as HTMLElement | SVGElement
     ).style.transform = `translate(${x}px, ${y}px)`;
   }
-
-  let interactionInfo: IPointerDownResult = {
-    xOffsetWithinElementOnFirstClick: 0,
-    yOffsetWithinElementOnFirstClick: 0,
-  };
 
   const nodeComponent: INodeComponent<T> = createNodeComponent(
     compiledMarkup.body.tagName || 'div',
@@ -44,34 +36,8 @@ export const createMarkupElement = <T>(
           Math.random() * 1024
         )}px, ${Math.floor(Math.random() * 500)}px)`,
       },
-      pointerdown: (e: PointerEvent) => {
-        if (nodeComponent) {
-          const domElement = nodeComponent.domElement as unknown as
-            | HTMLElement
-            | SVGElement;
-          const elementRect = domElement.getBoundingClientRect();
-
-          const { x, y } = transformCameraSpaceToWorldSpace(
-            e.clientX,
-            e.clientY
-          );
-          const rectCamera = transformCameraSpaceToWorldSpace(
-            elementRect.x,
-            elementRect.y
-          );
-
-          const helper = pointerDown(
-            x - rectCamera.x,
-            y - rectCamera.y,
-            nodeComponent,
-            canvasElement,
-            interactionStateMachine
-          );
-
-          if (helper) {
-            interactionInfo = helper;
-          }
-        }
+      pointerdown: (_e: PointerEvent) => {
+        //
       },
       /*pointermove: (e: PointerEvent) => {
         const canvasRect = (
@@ -109,11 +75,11 @@ export const createMarkupElement = <T>(
           }
         }
       },*/
-      pointerleave: (e: PointerEvent) => {
-        console.log('pointerleave element', event);
+      pointerleave: (_e: PointerEvent) => {
+        console.log('pointerleave element', _e);
       },
     },
-    canvasElement,
+    canvasElement.domElement as unknown as HTMLElement | SVGElement,
     ''
   );
   if (nodeComponent && nodeComponent.domElement) {

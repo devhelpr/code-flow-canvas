@@ -30,10 +30,10 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
-    thumbName?: string,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
+    _thumbName?: string,
     scopeId?: string
   ) => {
     if (contextInstance) {

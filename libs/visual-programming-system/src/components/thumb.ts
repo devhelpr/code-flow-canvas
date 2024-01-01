@@ -1,34 +1,22 @@
-import { connect } from 'http2';
-import { transformCameraSpaceToWorldSpace } from '../camera';
 import {
-  paddingRect,
-  thumbFontSizeClass,
   thumbHalfHeight,
   thumbHalfWidth,
   thumbHeight,
-  thumbInnerCircleSizeClasses,
-  thumbRadius,
-  thumbTextBaseSizeClass,
   thumbWidth,
 } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
-  IConnectionNodeComponent,
   IElementNode,
-  INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
-import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils/create-element';
-import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
-import { CubicBezierConnection } from './qubic-bezier-connection';
 
 export class ThumbNode<T> {
   nodeComponent?: IThumbNodeComponent<T>;
@@ -48,30 +36,30 @@ export class ThumbNode<T> {
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
-    elements: ElementNodeMap<T>,
-    thumbName: string,
-    thumbType: ThumbType,
-    connectionType?: ThumbConnectionType,
-    color?: string,
+    _elements: ElementNodeMap<T>,
+    _thumbName: string,
+    _thumbType: ThumbType,
+    _connectionType?: ThumbConnectionType,
+    _color?: string,
     xInitial?: string | number,
     yInitial?: string | number,
-    connectionControllerType?: ConnectionControllerType,
-    nodeType?: NodeType,
+    _connectionControllerType?: ConnectionControllerType,
+    _nodeType?: NodeType,
     additionalClasses?: string,
     width?: number,
     height?: number,
-    radius?: number,
-    isTransparent?: boolean,
-    borderColor?: string,
-    index?: number,
+    _radius?: number,
+    _isTransparent?: boolean,
+    _borderColor?: string,
+    _index?: number,
     relativePositioned?: boolean,
 
     canvasElements?: ElementNodeMap<T>,
     parentRectNode?: IRectNodeComponent<T>,
     pathHiddenElement?: IElementNode<T>,
     disableInteraction?: boolean,
-    label?: string,
-    thumbShape?: 'circle' | 'diamond',
+    _label?: string,
+    _thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
     containerNode?: IRectNodeComponent<T>
   ) {

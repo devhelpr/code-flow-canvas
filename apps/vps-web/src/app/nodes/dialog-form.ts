@@ -1,5 +1,4 @@
 import {
-  CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -10,11 +9,7 @@ import {
   RunNodeResult,
   runNodeFromThumb,
 } from '../simple-flow-engine/simple-flow-engine';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import {
   IComputeResult,
   visualNodeFactory,
@@ -36,12 +31,11 @@ export const dialogFormNodeName = 'dialog-form-node';
 
 export const dialogFormNode =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       return;
@@ -51,8 +45,8 @@ export const dialogFormNode =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       return new Promise<IComputeResult>((resolve, reject) => {
@@ -104,7 +98,7 @@ export const dialogFormNode =
           runNodeFromThumb(
             node.thumbConnectors[0],
             animatePathFromThumb,
-            (outputFromMap: string | any[]) => {
+            () => {
               if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
                 reject();
                 return;
@@ -142,7 +136,7 @@ export const dialogFormNode =
           runNodeFromThumb(
             node.thumbConnectors[1],
             animatePathFromThumb,
-            (outputFromMap: string | any[]) => {
+            () => {
               if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
                 reject();
                 return;
@@ -282,8 +276,7 @@ export const dialogFormNode =
         return formElements;
       },
       (nodeInstance) => {
-        contextInstance = nodeInstance.contextInstance;
-        node = nodeInstance.node;
+        node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
       },
       {
         hasTitlebar: false,

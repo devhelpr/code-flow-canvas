@@ -26,11 +26,11 @@ export const getNodeTrigger =
       return;
     };
     const compute = (
-      input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
-      loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _input: string,
+      _pathExecution?: RunNodeResult<NodeInfo>[],
+      _loopIndex?: number,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       const nodeName = node?.nodeInfo?.formValues['node'] || '';

@@ -3,11 +3,7 @@ import {
   InteractionEvent,
   InteractionStateMachine,
 } from '../../interaction-state-machine';
-import {
-  DOMElementNode,
-  IElementNode,
-  INodeComponent,
-} from '../../interfaces/element';
+import { IElementNode, INodeComponent } from '../../interfaces/element';
 import { IPointerDownResult } from '../../interfaces/pointers';
 import { NodeType } from '../../types';
 
@@ -139,7 +135,6 @@ export const pointerUp = <T>(
         element
       );
 
-    let handledAsClick = false;
     if (currentInteractionInfo) {
       if (
         (currentInteractionInfo.isClicking &&
@@ -155,7 +150,6 @@ export const pointerUp = <T>(
             element.id,
             currentInteractionInfo.timeSinceStart
           );
-          handledAsClick = true;
           element.onClick();
         }
       }

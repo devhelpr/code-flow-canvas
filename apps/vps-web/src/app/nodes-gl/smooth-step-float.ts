@@ -1,6 +1,4 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -64,17 +62,15 @@ const thumbs = [
 ];
 
 export const getSmoothStepFloatNode: NodeTaskFactory<any> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
     payload?: any
   ) => {
     const a = payload?.['a'];
@@ -98,12 +94,11 @@ export const getSmoothStepFloatNode: NodeTaskFactory<any> = (
     200,
     100,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

@@ -1,12 +1,10 @@
 import {
-  CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
-import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
+
 import {
   InitialValues,
   NodeTask,
@@ -36,16 +34,11 @@ export const getColorNode: NodeTaskFactory<any> = (
   updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
+
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string) => {
     const color = hexToRgb(node.nodeInfo?.formValues?.['color'] ?? '#000000', {
       r: 0,
       g: 0,
@@ -82,26 +75,6 @@ export const getColorNode: NodeTaskFactory<any> = (
     ],
     (values?: InitialValues) => {
       const formElements = [
-        // {
-        //   fieldType: FormFieldType.Slider,
-        //   fieldName: fieldName,
-        //   value: values?.[fieldName] ?? '',
-        //   settings: {
-        //     showLabel: false,
-        //   },
-        //   onChange: (value: string) => {
-        //     if (!node.nodeInfo) {
-        //       return;
-        //     }
-        //     node.nodeInfo.formValues = {
-        //       ...node.nodeInfo.formValues,
-        //       [fieldName]: value,
-        //     };
-        //     if (updated) {
-        //       updated();
-        //     }
-        //   },
-        // },
         {
           fieldType: FormFieldType.Color,
           fieldName: 'color',
@@ -127,8 +100,7 @@ export const getColorNode: NodeTaskFactory<any> = (
       return formElements;
     },
     (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+      node = nodeInstance.node as IRectNodeComponent<any>;
     }
   );
 };

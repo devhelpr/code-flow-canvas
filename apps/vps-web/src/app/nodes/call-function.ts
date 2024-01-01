@@ -1,12 +1,10 @@
 import {
   CanvasAppInstance,
-  createElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   compileExpressionAsInfo,
@@ -25,7 +23,6 @@ import {
   IComputeResult,
   visualNodeFactory,
 } from '../node-task-registry/createRectNode';
-import { ComputeResult } from './canvas-node';
 
 const defaultFunctionColor = 'bg-slate-500';
 const activeFunctionColor = 'bg-orange-400';
@@ -166,16 +163,16 @@ export const getCallFunction =
 
     const computeAsync = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
+      _pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       const componentDomElement = componentWrapper?.domElement as HTMLElement;
       componentDomElement.classList.remove(activeFunctionColor);
       componentDomElement.classList.add(defaultFunctionColor);
-      return new Promise<IComputeResult>((resolve, reject) => {
+      return new Promise<IComputeResult>((resolve) => {
         if (args === undefined || !commandName) {
           prepareFunctionCallParameters();
         }

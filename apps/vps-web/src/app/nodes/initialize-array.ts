@@ -14,7 +14,6 @@ import {
 } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
 const fieldName = 'variableName';
 export const initializeArrayariableNodeName = 'initialize-array-variable';
@@ -30,11 +29,11 @@ export const initializeArrayVariable: NodeTaskFactory<NodeInfo> = (
   };
 
   const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
-    thumbName?: string,
+    _input: string,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
+    _thumbName?: string,
     scopeId?: string
   ) => {
     if (contextInstance) {
@@ -125,7 +124,7 @@ export const initializeArrayVariable: NodeTaskFactory<NodeInfo> = (
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;
       }

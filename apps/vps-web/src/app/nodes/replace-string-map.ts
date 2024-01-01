@@ -1,12 +1,10 @@
 import {
-  CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -21,28 +19,20 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string) => {
     let output = (input ?? '').toString();
     let continueLoop = true;
     const stringMap = node?.nodeInfo?.formValues?.[fieldName] ?? '';
     const map = stringMap.split('\n');
     const mode = node?.nodeInfo?.formValues?.['replaceMode'] ?? '';
     if (mode === 'string') {
-      map.forEach((line: string, mapIndex: number) => {
+      map.forEach((line: string) => {
         const parts = line.split(':');
         if (parts.length === 2) {
-          //if (output === parts[0]) {
           output = output.replaceAll(parts[0], parts[1]);
-          //}
         }
       });
     } else {
@@ -50,7 +40,7 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
         let replaceIndex = -1;
         let findWord = '';
         let replaceBy = '';
-        map.forEach((line: string, mapIndex: number) => {
+        map.forEach((line: string) => {
           const parts = line.split(':');
           if (parts.length === 2) {
             const index = output.indexOf(parts[0]);
@@ -156,9 +146,7 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
       ];
       return formElements;
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
       if (node.nodeInfo) {
         node.nodeInfo.formValues = {
           ...node.nodeInfo.formValues,

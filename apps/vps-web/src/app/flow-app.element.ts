@@ -10,27 +10,18 @@ import {
   createEffect,
   getSelectedNode,
   setSelectNode,
-  setupMarkupElement,
-  createElementMap,
-  createCanvasApp,
   CanvasAppInstance,
-  ThumbType,
   IRectNodeComponent,
   IConnectionNodeComponent,
   IThumbNodeComponent,
   Flow,
   updateNamedSignal,
   NodeType,
-  ElementNodeMap,
-  LineType,
   SelectedNodeInfo,
-  createNSElement,
-  Camera,
   FlowNode,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
-import flowData from '../example-data/tiltest.json';
 
 import { FormComponent } from './components/form-component';
 
@@ -401,7 +392,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.isStoring = isStoring;
     };
 
-    this.canvasApp.setOnCanvasClick((x, y) => {
+    this.canvasApp.setOnCanvasClick(() => {
       console.log('OnCanvasClick');
       setSelectNode(undefined);
     });
@@ -537,7 +528,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         type: 'select',
         class: 'p-2 m-2 relative ', //top-[60px]',
         name: 'select-node-type',
-        change: (event) => {
+        change: (_event) => {
           //
         },
       },
@@ -665,7 +656,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         ).firstChild as HTMLElement;
         this.scopeNodeDomElement.classList.add('bg-blue-300');
       }
-      lastPathExecution.forEach((path, indexPath) => {
+      lastPathExecution.forEach((path) => {
         if (path.node && path.node.domElement) {
           (
             (path.node.domElement as HTMLElement).firstChild as HTMLElement

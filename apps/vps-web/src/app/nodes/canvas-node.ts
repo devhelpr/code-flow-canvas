@@ -10,13 +10,9 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
-import { RunNodeResult, run } from '../simple-flow-engine/simple-flow-engine';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
+import { run } from '../simple-flow-engine/simple-flow-engine';
 
 export interface ComputeResult {
   result: string | any[];
@@ -40,10 +36,7 @@ export const getCanvasNode =
       return;
     };
 
-    const computePromise = <T>(
-      input: string,
-      pathExecution?: RunNodeResult<T>[]
-    ) => {
+    const computePromise = <_T>(input: string) => {
       return (
         resolve: (result: ComputeResult) => void,
         reject: (error: string) => void
@@ -56,13 +49,8 @@ export const getCanvasNode =
           canvasAppInstance?.elements as ElementNodeMap<NodeInfo>,
           canvasAppInstance,
           animatePath,
-          (input, pathExecution) => {
+          (input) => {
             resolve({ result: input, output: input });
-            // if (pathExecution) {
-            //   (pathRange.domElement as HTMLInputElement).value = '0';
-            //   this.pathExecutions.push(pathExecution);
-            //   console.log('run finished', input, pathExecution);
-            // }
           },
           input,
           node.x,
@@ -70,13 +58,8 @@ export const getCanvasNode =
         );
       };
     };
-    const computeAsync = (
-      input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[]
-    ) => {
-      return new Promise<ComputeResult>(
-        computePromise<NodeInfo>(input, pathExecution)
-      );
+    const computeAsync = (input: string) => {
+      return new Promise<ComputeResult>(computePromise<NodeInfo>(input));
     };
 
     return {
@@ -95,7 +78,7 @@ export const getCanvasNode =
         x: number,
         y: number,
         id?: string,
-        initalValue?: InitialValues,
+        _initalValue?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>,
         width?: number,
         height?: number
@@ -277,7 +260,7 @@ export const getCanvasNode =
             updated?.();
           });
 
-          rect.addUpdateEventListener((target, x, y, initiator) => {
+          rect.addUpdateEventListener((target) => {
             if (target) {
               outputInstance.nodeComponent?.update?.(
                 outputInstance.nodeComponent,

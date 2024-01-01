@@ -10,7 +10,7 @@ import {
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
-export const getSplitColorsNode = (updated: () => void): NodeTask<any> => {
+export const getSplitColorsNode = (_updated: () => void): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
 
   const initializeCompute = () => {
@@ -18,8 +18,8 @@ export const getSplitColorsNode = (updated: () => void): NodeTask<any> => {
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<any>[],
-    loopIndex?: number,
+    _pathExecution?: RunNodeResult<any>[],
+    _loopIndex?: number,
     payload?: any,
     thumbName?: string
   ) => {
@@ -56,7 +56,7 @@ export const getSplitColorsNode = (updated: () => void): NodeTask<any> => {
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      _initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<any>
     ) => {
       const jsxComponentWrapper = createElement(

@@ -6,7 +6,6 @@ import {
   ThumbType,
   createCanvasApp,
   IRectNodeComponent,
-  thumbRadius,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
@@ -17,8 +16,6 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { createStateMachine } from './state-machine-node';
-import { StateMachine } from '../state-machine';
 
 export const createStateCompound: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -29,74 +26,16 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
     undefined;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
-  let stateMachine: StateMachine<NodeInfo> | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
-  let currentValue = 0;
   const initializeCompute = () => {
-    stateMachine = undefined;
-    currentValue = 0;
-
-    // if (canvasAppInstance?.elements && !stateMachine) {
-    //   stateMachine = undefined;
-    //   stateMachine = createStateMachine(canvasAppInstance);
-    //   if (stateMachine && stateMachine.currentState) {
-    //     (
-    //       stateMachine.currentState.nodeComponent.domElement as HTMLElement
-    //     )?.classList.add('state-active');
-    //   }
-    // }
     return;
   };
   const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number
+    _input: string,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number
   ) => {
-    // if (!stateMachine && canvasAppInstance) {
-    //   stateMachine = createStateMachine(canvasAppInstance);
-    //   if (stateMachine && stateMachine.currentState) {
-    //     (
-    //       stateMachine.currentState.nodeComponent.domElement as HTMLElement
-    //     )?.classList.add('state-active');
-    //   }
-    // }
-    // if (stateMachine) {
-    //   if (stateMachine.currentState) {
-    //     console.log(
-    //       'stateMachine.currentState',
-    //       stateMachine.currentState,
-    //       input
-    //     );
-    //     if (stateMachine.currentState.transitions.length > 0) {
-    //       const transition = stateMachine.currentState.transitions.find(
-    //         (transition) => transition.name === input
-    //       );
-    //       if (transition) {
-    //         (
-    //           stateMachine.currentState.nodeComponent.domElement as HTMLElement
-    //         )?.classList.remove('state-active');
-    //         const nextStateId = transition.to;
-    //         console.log('nextStateName', nextStateId);
-    //         const nextState = stateMachine.states.find(
-    //           (s) => s.id === nextStateId
-    //         );
-    //         if (nextState) {
-    //           stateMachine.currentState = nextState;
-    //           (
-    //             stateMachine.currentState.nodeComponent
-    //               .domElement as HTMLElement
-    //           )?.classList.add('state-active');
-
-    //           return {
-    //             result: nextState.name,
-    //             followPath: undefined,
-    //           };
-    //         }
-    //       }
-    //     }
-    //   }
-    //}
     return {
       result: undefined,
       stop: true,
@@ -113,10 +52,6 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
     childNodeTasks: ['state', 'state-transition', 'state-compound'],
     getConnectionInfo: () => {
       return { inputs: [], outputs: [] };
-      // if (!input || !output) {
-      //   return { inputs: [], outputs: [] };
-      // }
-      // return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
@@ -250,17 +185,11 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
 
         canvasAppInstance.setOnCanvasUpdated(() => {
           updated?.();
-          stateMachine = undefined;
         });
 
-        rect.addUpdateEventListener((target, x, y, initiator) => {
+        rect.addUpdateEventListener((target) => {
           if (target) {
-            // outputInstance.nodeComponent?.update?.(
-            //   outputInstance.nodeComponent,
-            //   target?.width,
-            //   0,
-            //   rect?.nodeComponent
-            // );
+            //
           }
         });
 

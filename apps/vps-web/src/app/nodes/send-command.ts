@@ -78,10 +78,10 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
+    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
-    payload?: any,
-    thumbName?: string,
+    _payload?: any,
+    _thumbName?: string,
     scopeId?: string
   ) => {
     const command = node?.nodeInfo?.formValues?.['command'] ?? '';

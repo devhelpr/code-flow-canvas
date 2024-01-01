@@ -1,6 +1,4 @@
 import {
-  CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
   createElement,
@@ -13,7 +11,6 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { parse } from 'path';
 
 const fieldName = 'rotate';
 const labelName = 'Rotate';
@@ -56,10 +53,8 @@ const thumbs = [
 ];
 
 export const getRotateNode: NodeTaskFactory<any> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
-  let contextInstance: CanvasAppInstance<any> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -69,8 +64,8 @@ export const getRotateNode: NodeTaskFactory<any> = (
   });
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
     payload?: any
   ) => {
     const vector = payload?.['vector'];
@@ -102,12 +97,11 @@ export const getRotateNode: NodeTaskFactory<any> = (
     200,
     100,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

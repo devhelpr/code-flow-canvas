@@ -12,23 +12,18 @@ import {
   RunNodeResult,
   runNodeFromThumb,
 } from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  animatePathFromThumb,
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
 
 export const getParallel =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
 
     const initializeCompute = () => {
@@ -38,8 +33,8 @@ export const getParallel =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
@@ -107,11 +102,9 @@ export const getParallel =
         x: number,
         y: number,
         id?: string,
-        initalValues?: InitialValues,
+        _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const initialValue = initalValues?.['expression'] ?? '';
-
         const jsxComponentWrapper = createElement(
           'div',
           {

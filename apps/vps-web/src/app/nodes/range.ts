@@ -1,5 +1,4 @@
 import {
-  CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -65,7 +64,7 @@ const thumbs = [
 ];
 
 export const getRangeNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<NodeInfo>;
   //let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
@@ -87,9 +86,9 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
     thumbName?: string
   ) => {
     const hasStepConnection =
@@ -155,12 +154,11 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
     150,
     320,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
-    (nodeInstance) => {
-      //contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node;
+    (_nodeInstance) => {
+      //
     },
     {
       hasTitlebar: false,

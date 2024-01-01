@@ -8,10 +8,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
-import {
-  compileExpressionAsInfo,
-  runExpression,
-} from '@devhelpr/expression-compiler';
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
@@ -31,7 +27,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
+    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
   ) => {

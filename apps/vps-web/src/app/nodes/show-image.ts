@@ -13,10 +13,9 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
-import { FormContext } from '../components/form-fields/field';
 
 const selectImage = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     const input = document.createElement('input') as HTMLInputElement & {
       files: FileList;
     };
@@ -81,7 +80,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>,
+      _containerNode?: IRectNodeComponent<NodeInfo>,
       width?: number,
       height?: number
     ) => {
@@ -90,7 +89,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.Button,
           fieldName: 'loadImage',
           caption: 'Load image',
-          onButtonClick: (formContext: FormContext) => {
+          onButtonClick: () => {
             return new Promise<void>((resolve, reject) => {
               selectImage().then((image) => {
                 if (

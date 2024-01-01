@@ -10,48 +10,24 @@ import {
 import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
-export const getCircleNode = (updated: () => void): NodeTask<any> => {
+export const getCircleNode = (_updated: () => void): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
 
   const initializeCompute = () => {
     return;
   };
   const compute = (
-    input: string,
-    pathExecution?: RunNodeResult<any>[],
+    _input: string,
+    _pathExecution?: RunNodeResult<any>[],
     loopIndex?: number,
     payload?: any
   ) => {
     const color = payload?.['color'] ?? 'vec3(1.,1.,1.)';
-    const factor = payload?.['factor'] ?? '0.0';
     const x = payload?.['x'] ?? '0.0';
     const y = payload?.['y'] ?? '0.0';
 
     const index = loopIndex ? loopIndex : 0;
-    // const x = Math.random() * 0.95 - 0.45;
-    // const y = Math.random() * 0.95 - 0.45;
-    const xsine = Math.random() * 2;
-    const ysine = Math.random() * 2;
-    //const factor = Math.random() * 2.0;
     const radius = 0.25;
-    // const shaderCode = `
-    //   float dist${index} = length(centeredCoord + vec2(${factor}*sin(u_time*${xsine})+${x}, ${factor}*cos(u_time*${xsine})+${y}) ) ;
-    //   dist${index} -= ${radius};
-    //   //dist${index} = ${radius} / dist${index};
-    //   dist${index} = abs(dist${index});
-    //   float distep${index} = dist${index};//smoothstep(0.10, 0.28, dist${index});
-
-    //   float colorhelper${index} = distep${index};//smoothstep(0.,1.,1.0 - distep${index});
-    //   vec3 color${index} = ${color};
-    //   vec3 colordist${index} = color${index} * vec3(distep${index});
-    //   finalColor = mix(finalColor, colordist${index}, dist${index} > 0.65 ? 0. : dist${index});
-    // `;
-    // float colorhelper${index} = smoothstep(0.7,1.,1.0 - dist${index} * 0.5);
-    // vec3 color${index} = vec3(0.5 * colorhelper${index},0., 1. * colorhelper${index});
-    //finalColor = mix(finalColor, color${index},dist${index});
-
-    //  vec2 center${index} = vec2(sin(u_time * ${factor})*${xsine}, cos(u_time * ${factor}) * ${ysine});
-    //vec2 center${index} = vec2(${x} + sin(u_time*${xsine})*${factor} , ${y} + cos(u_time*${ysine})*${factor});
 
     const shaderCode = `
       vec2 center${index} = vec2(${x} , ${y});
@@ -76,7 +52,7 @@ export const getCircleNode = (updated: () => void): NodeTask<any> => {
       x: number,
       y: number,
       id?: string,
-      initalValues?: InitialValues,
+      _initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<any>
     ) => {
       const jsxComponentWrapper = createElement(

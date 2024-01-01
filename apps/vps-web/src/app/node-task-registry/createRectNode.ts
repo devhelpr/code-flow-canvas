@@ -75,16 +75,28 @@ export const createRectNode = (
   nodeInfo?: NodeInfo,
   getNodeTaskFactory?: (name: string) => any
 ): CreateNodeInfo => {
+  const showTitlebar = settings ? settings?.hasTitlebar : true;
+  let hasBeforeDecorator = false;
+  let hasAfterDecorator = false;
+
+  if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
+    nodeInfo.decorators.forEach((decorator) => {
+      if (decorator.executeOrder === 'before') {
+        hasBeforeDecorator = true;
+      } else if (decorator.executeOrder === 'after') {
+        hasAfterDecorator = true;
+      }
+    });
+  }
+
   const componentWrapper = createElement(
     'div',
     {
-      class: `relative flex flex-col bg-slate-500 text-white`,
+      class: `relative flex flex-col bg-slate-500 text-white rounded py-2`,
     },
     undefined
   ) as unknown as INodeComponent<NodeInfo>;
 
-  let hasBeforeDecorator = false;
-  let hasAfterDecorator = false;
   // decorators before
   if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
     let firstBeforeDecorator = true;
@@ -117,7 +129,7 @@ export const createRectNode = (
       }
     });
   }
-  const showTitlebar = settings ? settings?.hasTitlebar : true;
+
   if (showTitlebar) {
     createElement(
       'div',
@@ -368,7 +380,7 @@ export const visualNodeFactory = (
       containerNode?: IRectNodeComponent<NodeInfo>,
       _width?: number,
       _height?: number,
-      nestedLevel?: number,
+      _nestedLevel?: number,
       nodeInfo?: NodeInfo,
       getNodeTaskFactory?: (name: string) => any
     ) => {

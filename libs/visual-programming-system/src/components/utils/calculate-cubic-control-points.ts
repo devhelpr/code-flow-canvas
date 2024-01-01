@@ -20,8 +20,7 @@ const interpolate = (
   highValue: number,
   minT: number,
   maxT: number,
-  t: number,
-  tag?: string
+  t: number
 ) => {
   if (t > maxT) {
     return highValue;
@@ -74,9 +73,7 @@ export const onCubicCalculateControlPoints = <T>(
     (connectedNode
       ? calculateConnectorX(
           connectedNodeThumb?.thumbType ?? ThumbType.StartConnectorCenter,
-          connectedNode.width ?? 0,
-          connectedNode.height ?? 0,
-          connectedNodeThumb?.thumbIndex
+          connectedNode.width ?? 0
         )
       : 0);
   const connectedNodeY =
@@ -94,14 +91,7 @@ export const onCubicCalculateControlPoints = <T>(
       : 0);
 
   if (nodeType === ControlAndEndPointNodeType.start) {
-    const x =
-      rectNode.x +
-      calculateConnectorX(
-        thumbType,
-        rectNode.width ?? 0,
-        rectNode.height ?? 0,
-        index
-      );
+    const x = rectNode.x + calculateConnectorX(thumbType, rectNode.width ?? 0);
     const y =
       rectNode.y +
       calculateConnectorY(
@@ -219,8 +209,7 @@ export const onCubicCalculateControlPoints = <T>(
             centerX,
             minDistance,
             minDistance + xInterpolateDistance,
-            xDistance,
-            'start'
+            xDistance
           );
         } else {
           cx = centerX;
@@ -237,14 +226,7 @@ export const onCubicCalculateControlPoints = <T>(
   }
 
   if (nodeType === ControlAndEndPointNodeType.end) {
-    const x =
-      rectNode.x +
-      calculateConnectorX(
-        thumbType,
-        rectNode.width ?? 0,
-        rectNode.height ?? 0,
-        index
-      );
+    const x = rectNode.x + calculateConnectorX(thumbType, rectNode.width ?? 0);
 
     const y =
       rectNode.y +
@@ -391,8 +373,7 @@ export const onCubicCalculateControlPoints = <T>(
             centerX,
             minDistance,
             minDistance + xInterpolateDistance,
-            xDistance,
-            'end'
+            xDistance
           );
         } else {
           cx = centerX;

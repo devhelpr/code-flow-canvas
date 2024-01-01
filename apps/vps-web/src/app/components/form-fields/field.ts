@@ -2,7 +2,7 @@ import { Component } from '@devhelpr/dom-components';
 
 export class FormFieldComponent<T> extends Component<T> {
   fieldName?: string;
-  public setValue(value: string): void {
+  public setValue(_value: string): void {
     //
   }
 }

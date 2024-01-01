@@ -1,7 +1,6 @@
 import {
   CanvasAppInstance,
   IConnectionNodeComponent,
-  INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';

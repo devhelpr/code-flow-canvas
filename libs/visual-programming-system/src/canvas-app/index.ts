@@ -1,4 +1,3 @@
-import { on } from 'events';
 import {
   Camera,
   getCamera,
@@ -288,12 +287,9 @@ export const createCanvasApp = <T>(
               setSelectNode(undefined);
             }
           } else {
-            const canvasRect = (
-              canvas.domElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
             const { x, y } = transformCameraSpaceToWorldSpace(
-              event.clientX, //- canvasRect.x,
-              event.clientY //- canvasRect.y
+              event.clientX,
+              event.clientY
             );
 
             currentState.target.pointerUp &&

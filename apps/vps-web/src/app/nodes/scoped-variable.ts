@@ -4,18 +4,10 @@ import {
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
-  Rect,
-  ThumbConnectionType,
-  ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import { showDictionaryData } from './data-viewers/dictionary';
 import { showArrayData } from './data-viewers/array';
 import { showGridData, StructureInfo } from './data-viewers/grid';
@@ -356,11 +348,7 @@ export const getScopedVariable =
       return;
     };
 
-    const compute = (
-      input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
-      loopIndex?: number
-    ) => {
+    const compute = () => {
       return {
         result: false,
         stop: true,

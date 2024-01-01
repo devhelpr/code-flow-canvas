@@ -1,6 +1,5 @@
 import {
   CanvasAppInstance,
-  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -17,7 +16,6 @@ const fieldName = 'merge';
 const labelName = 'Merge';
 export const mergeModeName = 'merge';
 const familyName = 'flow-canvas';
-const thumbConstraint = 'value';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -25,7 +23,6 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    //thumbConstraint: thumbConstraint,
     maxConnections: 1,
   },
   {
@@ -35,7 +32,6 @@ const thumbs = [
     color: 'white',
     label: ' ',
     name: 'a',
-    //thumbConstraint: thumbConstraint,
     maxConnections: 1,
     prefixLabel: 'a',
   },
@@ -46,16 +42,14 @@ const thumbs = [
     color: 'white',
     label: ' ',
     name: 'b',
-    //thumbConstraint: thumbConstraint,
     maxConnections: 1,
     prefixLabel: 'b',
   },
 ];
 
 export const getMergeNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<any> => {
-  let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values = { global: { value1: undefined, value2: undefined } };
@@ -77,9 +71,9 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any,
+    _pathExecution?: RunNodeResult<NodeInfo>[],
+    _loopIndex?: number,
+    _payload?: any,
     thumbName?: string,
     scopeId?: string
   ) => {
@@ -141,12 +135,11 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
     100,
     320,
     thumbs,
-    (values?: InitialValues) => {
+    (_values?: InitialValues) => {
       return [];
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
-      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
     {
       hasTitlebar: false,

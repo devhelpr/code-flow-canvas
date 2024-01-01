@@ -6,8 +6,7 @@ const getNewId = () => {
 };
 const defaultflowId = '00000000-0000-0000-0000-000000000000';
 
-let defaultFlow = '';
-let defaultFlowTitle = 'Example flow';
+const defaultFlowTitle = 'Example flow';
 let _flowName = 'flow';
 
 interface ITransaction {
@@ -63,11 +62,11 @@ function handleTransactions() {
 
     const getRequest = store.get(transaction?.flowId);
 
-    getRequest.onerror = function (event) {
+    getRequest.onerror = function (_event) {
       storeTransaction(store, transaction);
     };
 
-    getRequest.onsuccess = function (event) {
+    getRequest.onsuccess = function (_event) {
       if (getRequest.result) {
         transaction.name = getRequest.result.name;
       }
@@ -76,16 +75,8 @@ function handleTransactions() {
   }
 }
 
-function exampleFlow() {
-  if (defaultFlow !== '') {
-    return defaultFlow;
-  }
-
-  return `{}`;
-}
-
 function saveFlow(flowId: string, flow: Flow<NodeInfo>) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     console.log('Saving flow', flowId, flow);
 
     transactions.push({
@@ -111,11 +102,11 @@ function getFlows() {
     const objectStore = transaction.objectStore(flowStoreName);
     const objectRequest = objectStore.getAll();
 
-    objectRequest.onerror = function (event) {
+    objectRequest.onerror = function (_event) {
       reject(Error('Error text'));
     };
 
-    objectRequest.onsuccess = function (event) {
+    objectRequest.onsuccess = function (_event) {
       if (objectRequest.result) {
         console.log('getall', objectRequest.result);
         if (objectRequest.result.length > 0) {
@@ -154,10 +145,6 @@ function getFlows() {
 }
 */
 
-function getDefaultFlow() {
-  return exampleFlow();
-}
-
 function getFlow(flowId: string) {
   return new Promise<Flow<NodeInfo>>((resolve, reject) => {
     if (!database) {
@@ -169,27 +156,17 @@ function getFlow(flowId: string) {
     const objectStore = transaction.objectStore(flowStoreName);
     const objectRequest = objectStore.get(flowId);
 
-    objectRequest.onerror = function (event) {
+    objectRequest.onerror = function (_event) {
       reject(Error('Error text'));
     };
 
-    objectRequest.onsuccess = function (event) {
+    objectRequest.onsuccess = function (_event) {
       if (objectRequest.result) {
         _flowName = objectRequest.result.name;
         resolve(objectRequest.result.flow as unknown as Flow<NodeInfo>);
       } else {
         reject(Error('object not found'));
         return;
-        const flow = JSON.parse(getDefaultFlow()) as unknown as Flow<NodeInfo>;
-        transactions.push({
-          flowId: flow.id,
-          flow: flow,
-          name: defaultFlowTitle,
-        });
-
-        _flowName = defaultFlowTitle;
-
-        resolve(JSON.parse(getDefaultFlow()).flow as unknown as Flow<NodeInfo>);
       }
     };
     /*
@@ -226,7 +203,7 @@ function addFlow(name: string, flow: Flow<NodeInfo>) {
       console.log('handleTransactions error', event);
     };
 
-    objectRequest.onsuccess = function (event) {
+    objectRequest.onsuccess = function (_event) {
       if (objectRequest.result) {
         isProcessing = false;
         resolve({ id: flowId });
@@ -248,11 +225,11 @@ function setFlowName(flowId: string, flowName: string): Promise<string> {
     const objectStore = transaction.objectStore(flowStoreName);
     const objectRequest = objectStore.get(flowId);
 
-    objectRequest.onerror = function (event) {
+    objectRequest.onerror = function (_event) {
       reject(Error('Error text'));
     };
 
-    objectRequest.onsuccess = function (event) {
+    objectRequest.onsuccess = function (_event) {
       if (objectRequest.result) {
         const putObjectRequest = objectStore.put(
           {
@@ -267,7 +244,7 @@ function setFlowName(flowId: string, flowName: string): Promise<string> {
           console.log('handleTransactions error', event);
         };
 
-        putObjectRequest.onsuccess = function (event) {
+        putObjectRequest.onsuccess = function (_event) {
           _flowName = flowName;
           if (putObjectRequest.result) {
             resolve(flowId);
@@ -285,19 +262,6 @@ function setFlowName(flowId: string, flowName: string): Promise<string> {
 function getFlowName() {
   return _flowName;
 }
-
-export const setDefaultFlowTitle = (title: string) => {
-  defaultFlowTitle = title;
-};
-
-export const setDefaultFlow = (id: string, flow: any[]) => {
-  defaultFlow = JSON.stringify({
-    flow: flow,
-    name: id,
-    flowType: 'playground',
-    id: id,
-  });
-};
 
 export const flowrunnerIndexedDbStorageProvider = {
   getFlows: getFlows,
@@ -347,7 +311,7 @@ export const createIndexedDBStorageProvider = () => {
       resolve(flowrunnerIndexedDbStorageProvider);
     };
 
-    dbRequest.onerror = (event) => {
+    dbRequest.onerror = (_event) => {
       reject();
     };
   });

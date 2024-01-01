@@ -14,13 +14,8 @@ import {
   RunNodeResult,
   runNodeFromThumb,
 } from '../simple-flow-engine/simple-flow-engine';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  animatePathFromThumb,
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
@@ -28,7 +23,7 @@ import { FormFieldType } from '../components/FormField';
 
 export const getSplitByCase =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
+    _animatePath: AnimatePathFunction<NodeInfo>,
     animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
@@ -41,8 +36,8 @@ export const getSplitByCase =
       input: string,
       pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
-      payload?: any,
-      thumbName?: string,
+      _payload?: any,
+      _thumbName?: string,
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
@@ -83,7 +78,7 @@ export const getSplitByCase =
           runNodeFromThumb(
             thumbNode,
             animatePathFromThumb,
-            (input: string | any[]) => {
+            (_input: string | any[]) => {
               resolve({
                 result: true,
                 stop: true,
@@ -116,8 +111,6 @@ export const getSplitByCase =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const initialValue = initalValues?.['case1'] ?? '';
-
         const formElements = [
           {
             fieldType: FormFieldType.Text,

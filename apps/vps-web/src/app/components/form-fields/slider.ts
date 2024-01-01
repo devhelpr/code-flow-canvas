@@ -1,5 +1,4 @@
 import {
-  Component,
   BaseComponent,
   createTemplate,
   createElementFromTemplate,
@@ -185,7 +184,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
           return false;
         });
 
-        this.minInput.addEventListener('blur', (event: Event) => {
+        this.minInput.addEventListener('blur', (_event: Event) => {
           setMin();
         });
 
@@ -226,7 +225,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
           return false;
         });
 
-        this.stepInput.addEventListener('blur', (event: Event) => {
+        this.stepInput.addEventListener('blur', (_event: Event) => {
           setStep();
         });
 
@@ -268,7 +267,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
           return false;
         });
 
-        this.maxInput.addEventListener('blur', (event: Event) => {
+        this.maxInput.addEventListener('blur', (_event: Event) => {
           setMax();
         });
 

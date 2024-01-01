@@ -282,7 +282,7 @@ export const convertExpressionScriptToFlow = (expressionScript: string) => {
   };
 
   function createConnections(nodeId: string) {
-    connections.forEach((connectionId, index) => {
+    connections.forEach((connectionId, _index) => {
       const connectionNode: FlowNode<NodeInfo> = {
         id: crypto.randomUUID(),
         nodeType: 'Connection',

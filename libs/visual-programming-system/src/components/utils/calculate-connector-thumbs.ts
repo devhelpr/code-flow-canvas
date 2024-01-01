@@ -6,12 +6,7 @@ import {
 import { INodeComponent, IThumbNodeComponent } from '../../interfaces/element';
 import { ThumbType } from '../../types/thumb-type';
 
-export const calculateConnectorX = (
-  thumbType: ThumbType,
-  width: number,
-  height: number,
-  index?: number
-) => {
+export const calculateConnectorX = (thumbType: ThumbType, width: number) => {
   if (
     thumbType === ThumbType.StartConnectorCenter ||
     thumbType === ThumbType.StartConnectorRight
@@ -44,7 +39,7 @@ export const calculateConnectorX = (
 
 export const calculateConnectorY = <T>(
   thumbType: ThumbType,
-  width: number,
+  _width: number,
   height: number,
   index?: number,
   thumb?: IThumbNodeComponent<T>
@@ -121,12 +116,7 @@ export const thumbPosition = <T>(
 
   if (thumbType === ThumbType.EndConnectorTop) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,
@@ -138,12 +128,7 @@ export const thumbPosition = <T>(
 
   if (thumbType === ThumbType.EndConnectorLeft) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,
@@ -153,12 +138,7 @@ export const thumbPosition = <T>(
     };
   } else if (thumbType === ThumbType.EndConnectorCenter) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,
@@ -173,12 +153,7 @@ export const thumbPosition = <T>(
     thumbType === ThumbType.StartConnectorBottom
   ) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,
@@ -190,12 +165,7 @@ export const thumbPosition = <T>(
 
   if (thumbType === ThumbType.StartConnectorRight) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY<T>(
         thumbType,
         rectNode?.width ?? 0,
@@ -206,12 +176,7 @@ export const thumbPosition = <T>(
     };
   } else if (thumbType === ThumbType.StartConnectorCenter) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,
@@ -223,12 +188,7 @@ export const thumbPosition = <T>(
 
   if (thumbType === ThumbType.Center) {
     return {
-      x: calculateConnectorX(
-        thumbType,
-        rectNode?.width ?? 0,
-        rectNode?.height ?? 0,
-        index
-      ),
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
         thumbType,
         rectNode?.width ?? 0,

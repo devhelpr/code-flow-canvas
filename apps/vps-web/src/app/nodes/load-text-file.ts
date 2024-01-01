@@ -7,14 +7,8 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
-import { FormContext } from '../components/form-fields/field';
-import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
@@ -57,8 +51,8 @@ const selectFile = () => {
 export const loadTextFileNodeName = 'load-text-file';
 const fieldName = 'fileName';
 export const loadTextFile =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (_animatePath: AnimatePathFunction<NodeInfo>) =>
+  (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
     let hasInitialValue = true;
@@ -73,7 +67,7 @@ export const loadTextFile =
       }
       return;
     };
-    const compute = (input: string | any[]) => {
+    const compute = () => {
       if (htmlNode) {
         if (hasInitialValue) {
           hasInitialValue = false;
@@ -93,7 +87,7 @@ export const loadTextFile =
         y: number,
         id?: string,
         initalValues?: InitialValues,
-        containerNode?: IRectNodeComponent<NodeInfo>,
+        _containerNode?: IRectNodeComponent<NodeInfo>,
         width?: number,
         height?: number
       ) => {
@@ -102,8 +96,8 @@ export const loadTextFile =
             fieldType: FormFieldType.Button,
             fieldName: fieldName,
             caption: 'Load text file',
-            onButtonClick: (formContext: FormContext) => {
-              return new Promise<void>((resolve, reject) => {
+            onButtonClick: () => {
+              return new Promise<void>((resolve, _reject) => {
                 selectFile()
                   .then((fileInfo) => {
                     if (htmlNode && fileInfo && node) {
@@ -113,16 +107,6 @@ export const loadTextFile =
                       ).textContent = `${
                         fileInfo.fileName
                       }: ${lines.length.toString()}`;
-                      // runNode<NodeInfo>(
-                      //   containerNode ?? node,
-                      //   containerNode
-                      //     ? (containerNode.nodeInfo as any)?.canvasAppInstance
-                      //     : canvasApp,
-                      //   animatePath,
-                      //   undefined,
-                      //   '',
-                      //   []
-                      // );
                     }
                     resolve();
                   })

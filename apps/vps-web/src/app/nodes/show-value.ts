@@ -7,14 +7,10 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
+import { NodeTask, NodeTaskFactory } from '../node-task-registry';
 
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  _updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -56,9 +52,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
-      id?: string,
-      initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      id?: string
     ) => {
       htmlNode = createElement(
         'div',
