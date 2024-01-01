@@ -119,6 +119,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;
       }
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
     }
   );
 };
