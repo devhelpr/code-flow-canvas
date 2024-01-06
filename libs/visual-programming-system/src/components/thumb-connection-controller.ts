@@ -142,15 +142,22 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             : 'black',
         },
 
-        pointerover: this.onPointerOver,
-        pointerleave: this.onPointerLeave,
-        pointerdown: this.onPointerDown,
-        pointermove: this.onPointerMove,
-        pointerup: this.onPointerUp,
+        // pointerover: this.onPointerOver,
+        // pointerleave: this.onPointerLeave,
+        // pointerdown: this.onPointerDown,
+        // pointermove: this.onPointerMove,
+        // pointerup: this.onPointerUp,
       },
       this.nodeComponent.domElement
     );
-
+    const domElement = this.nodeComponent.domElement as HTMLElement;
+    domElement.addEventListener('pointerover', this.onPointerOver);
+    domElement.addEventListener('pointerleave', this.onPointerLeave);
+    domElement.addEventListener('pointerdown', this.onPointerDown);
+    domElement.addEventListener('pointermove', this.onPointerMove);
+    domElement.addEventListener('pointerup', this.onPointerUp);
+    domElement.classList.remove('pointer-events-none');
+    domElement.classList.add('pointer-events-auto');
     if (!this.circleElement) throw new Error('circleElement is undefined');
 
     elements.set(this.nodeComponent.id, this.nodeComponent);
