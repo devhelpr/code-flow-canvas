@@ -134,7 +134,6 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           //   ? 'transparent'
           //   : color ?? '#' + Math.floor(Math.random() * 16777215).toString(16),
         },
-
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
         pointerdown: this.onPointerDown,
@@ -142,6 +141,10 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         pointerup: this.onPointerUp,
       },
       this.nodeComponent.domElement
+    );
+    (this.circleElement.domElement as HTMLElement).setAttribute(
+      'data-nodecomponent',
+      'true'
     );
 
     if (!this.circleElement) throw new Error('circleElement is undefined');

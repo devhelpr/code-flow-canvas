@@ -232,11 +232,19 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     );
   };
 
-  onPointerLeave = (_e: PointerEvent) => {
+  onPointerLeave = (event: PointerEvent) => {
     if (this.disableInteraction) {
       return;
     }
-    if (!this.nodeComponent) {
+    const element = document.elementFromPoint(event.clientX, event.clientY);
+
+    if (
+      !this.nodeComponent ||
+      (element && element !== event.target && element.id !== 'root')
+    ) {
+      if (element) {
+        element.dispatchEvent(new PointerEvent('pointerleave', event));
+      }
       return;
     }
 
@@ -343,7 +351,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (this.disableInteraction) {
       return;
     }
-
+    this.oldElement = null;
     if (this.nodeComponent) {
       if (this.nodeComponent.parent) {
         if (
@@ -546,17 +554,59 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       }
     }
   };
-
-  onPointerMove = (e: PointerEvent) => {
+  oldElement: Element | null = null;
+  onPointerMove = (event: PointerEvent) => {
     if (this.disableInteraction) {
       return;
     }
     if (!this.nodeComponent) {
       return;
     }
+    let element = document.elementFromPoint(event.clientX, event.clientY);
+    let dispatchEventToNode = false;
+    if (element && element !== event.target && element.id !== 'root') {
+      if (element.getAttribute('data-nodecomponent')) {
+        dispatchEventToNode = true;
+      } else if (
+        element.parentElement &&
+        element.parentElement.getAttribute('data-nodecomponent')
+      ) {
+        element = element.parentElement;
+        dispatchEventToNode = true;
+      } else if (
+        element.parentElement &&
+        element.parentElement.parentElement &&
+        element.parentElement.parentElement.getAttribute('data-nodecomponent')
+      ) {
+        element = element.parentElement.parentElement;
+        dispatchEventToNode = true;
+      }
+      if (dispatchEventToNode) {
+        if (this.oldElement !== element) {
+          if (this.oldElement !== null) {
+            this.oldElement.dispatchEvent(
+              new PointerEvent('pointerleave', event)
+            );
+          }
+          console.log('dispatchEventToNode', element);
+          element.dispatchEvent(new PointerEvent('pointerover', event));
+        }
+        this.oldElement = element;
 
-    if (this.nodeComponent && this.nodeComponent.domElement) {
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+        element.dispatchEvent(new PointerEvent('pointermove', event));
+      }
+    }
+
+    if (
+      !dispatchEventToNode &&
+      this.nodeComponent &&
+      this.nodeComponent.domElement
+    ) {
+      this.oldElement = null;
+      const { x, y } = transformCameraSpaceToWorldSpace(
+        event.clientX,
+        event.clientY
+      );
       pointerMove(
         x,
         y,
@@ -568,28 +618,53 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     }
   };
 
-  onPointerUp = (e: PointerEvent) => {
+  onPointerUp = (event: PointerEvent) => {
     console.log('connection-controller onPointerUp', this.nodeComponent?.id);
     if (this.disableInteraction) {
       return;
     }
+    const element = document.elementFromPoint(event.clientX, event.clientY);
+
     if (!this.nodeComponent) {
       return;
+    }
+    // if (!this.nodeComponent || (element && element !== event.target)) {
+    //   if (element) {
+    //     console.log(
+    //       'connection-controller onPointerUp (element)',
+    //       this.nodeComponent?.id,
+    //       element
+    //     );
+    //     element.dispatchEvent(new PointerEvent('pointerup', event));
+    //   }
+    //   return;
+    // }
+
+    let skipevent = false;
+    if (element && element !== event.target) {
+      console.log('connection-controller onPointerUp (element)', element);
+      element.dispatchEvent(new PointerEvent('pointerup', event));
+      element.dispatchEvent(new PointerEvent('pointerleave', event));
+      skipevent = true;
     }
 
     if (this.nodeComponent.domElement) {
       (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
         'none';
-
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
-      pointerUp(
-        x,
-        y,
-        this.nodeComponent,
-        this.canvas as IElementNode<T>,
-        this.interactionInfo,
-        this.interactionStateMachine
-      );
+      if (!skipevent) {
+        const { x, y } = transformCameraSpaceToWorldSpace(
+          event.clientX,
+          event.clientY
+        );
+        pointerUp(
+          x,
+          y,
+          this.nodeComponent,
+          this.canvas as IElementNode<T>,
+          this.interactionInfo,
+          this.interactionStateMachine
+        );
+      }
       const circleDomElement = this.circleElement?.domElement as unknown as
         | HTMLElement
         | SVGElement;
