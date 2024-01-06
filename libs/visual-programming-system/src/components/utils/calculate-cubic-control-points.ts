@@ -115,7 +115,7 @@ export const onCubicCalculateControlPoints = <T>(
         cx: x,
         cy:
           y +
-          (controlPointDistance ?? distance ?? 0) +
+          (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
@@ -132,7 +132,7 @@ export const onCubicCalculateControlPoints = <T>(
         cx: x,
         cy:
           y -
-          (controlPointDistance ?? distance ?? 0) -
+          (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
@@ -155,7 +155,7 @@ export const onCubicCalculateControlPoints = <T>(
       );
       let cx =
         x +
-        (controlPointDistance ?? distance ?? 0) +
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
         controlPointCurvingDistance * thumbFactor;
       const cy = y;
       if (cx > connectedNodeX) {
@@ -181,7 +181,7 @@ export const onCubicCalculateControlPoints = <T>(
     const yHelper = interpolate(0, 1, 0, 20, yDistance) + 0.5;
     let cx =
       x +
-      (controlPointDistance ?? distance ?? 0) * yHelper +
+      (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) * yHelper +
       controlPointCurvingDistance * thumbFactor * yHelper;
     let cy = y;
 
@@ -251,7 +251,7 @@ export const onCubicCalculateControlPoints = <T>(
         cx: x,
         cy:
           y -
-          (controlPointDistance ?? distance ?? 0) -
+          (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
@@ -318,7 +318,7 @@ export const onCubicCalculateControlPoints = <T>(
       );
       const cx =
         x -
-        (controlPointDistance ?? distance ?? 0) -
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
         controlPointCurvingDistance * thumbFactor;
 
       let cy = y;
@@ -351,7 +351,7 @@ export const onCubicCalculateControlPoints = <T>(
 
     let cx =
       x -
-      (controlPointDistance ?? distance ?? 0) * yHelper -
+      (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) * yHelper -
       controlPointCurvingDistance * thumbFactor * yHelper;
 
     let cy = y;
@@ -397,6 +397,19 @@ export const onGetConnectionToThumbOffset = (
   thumbType: ThumbType
 ) => {
   if (thumbType === ThumbType.None) {
+    // HACK: this seems to fix the bug when a connection without start node is clicked and the end node jumps
+    if (nodeType === ControlAndEndPointNodeType.start) {
+      return {
+        offsetX: connectionToThumbDistance * 3,
+        offsetY: 0,
+      };
+    }
+    if (nodeType === ControlAndEndPointNodeType.end) {
+      return {
+        offsetX: -connectionToThumbDistance * 3,
+        offsetY: 0,
+      };
+    }
     return {
       offsetX: 0,
       offsetY: 0,

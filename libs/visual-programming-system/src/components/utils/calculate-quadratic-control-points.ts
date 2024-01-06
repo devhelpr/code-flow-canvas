@@ -84,7 +84,7 @@ export const onQuadraticCalculateControlPoints = <T>(
       );
       const cy =
         y +
-        (controlPointDistance ?? distance ?? 0) +
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
         controlPointCurvingDistance * thumbFactor;
 
       return {
@@ -108,7 +108,7 @@ export const onQuadraticCalculateControlPoints = <T>(
         cx: x,
         cy:
           y -
-          (controlPointDistance ?? distance ?? 0) -
+          (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
@@ -150,7 +150,7 @@ export const onQuadraticCalculateControlPoints = <T>(
       );
       const cx =
         x +
-        (controlPointDistance ?? distance ?? 0) +
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
         controlPointCurvingDistance * thumbFactor;
       return {
         x: x,
@@ -168,7 +168,7 @@ export const onQuadraticCalculateControlPoints = <T>(
     );
     const cx =
       x +
-      (controlPointDistance ?? distance ?? 0) +
+      (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
       controlPointCurvingDistance * thumbFactor;
 
     return {
@@ -205,7 +205,7 @@ export const onQuadraticCalculateControlPoints = <T>(
         cx: x,
         cy:
           y -
-          (controlPointDistance ?? distance ?? 0) -
+          (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
@@ -242,7 +242,7 @@ export const onQuadraticCalculateControlPoints = <T>(
     );
     const cx =
       x -
-      (controlPointDistance ?? distance ?? 0) -
+      (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
       controlPointCurvingDistance * thumbFactor;
     return {
       x: x,

@@ -22,6 +22,8 @@ import {
   onGetConnectionToThumbOffset,
 } from './utils/calculate-cubic-control-points';
 
+const standardControlPointDistance = 150;
+
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
   points = {
@@ -391,7 +393,7 @@ export class Connection<T> {
         skipChecks = true;
         updateThumbs = true;
       } else {
-        this.points.cx1 = this.points.beginX + 150;
+        this.points.cx1 = this.points.beginX + standardControlPointDistance;
         this.points.cy1 = this.points.beginY;
       }
 
@@ -417,7 +419,7 @@ export class Connection<T> {
         skipChecks = true;
         updateThumbs = true;
       } else {
-        this.points.cx2 = this.points.endX - 150;
+        this.points.cx2 = this.points.endX - standardControlPointDistance;
         this.points.cy2 = this.points.endY;
 
         if (this.nodeComponent?.startNode) {
@@ -513,6 +515,13 @@ export class Connection<T> {
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
       } else {
+        if (initiator.nodeType === NodeType.Connection) {
+          if (!connection.startNode && connection.endNode) {
+            console.log('CONNECTion without startNode with endNode');
+          } else if (connection.startNode && connection.endNode) {
+            console.log('CONNECTion with startNode with endNode');
+          }
+        }
         const isStaticStart = connection.startNode?.isStaticPosition ?? false;
         const isStaticEnd = connection.endNode?.isStaticPosition ?? false;
         const diffC1x = this.points.cx1 - this.points.beginX;
@@ -663,13 +672,13 @@ export class Connection<T> {
           this.points.beginY = y - startOffsetY;
 
           if (!this.nodeComponent?.startNode) {
-            this.points.cx1 = this.points.beginX + 150;
+            this.points.cx1 = this.points.beginX + standardControlPointDistance;
             this.points.cy1 = this.points.beginY;
 
             if (this.nodeComponent) {
               this.nodeComponent.connectionStartNodeThumb?.update?.(
                 this.nodeComponent.connectionStartNodeThumb,
-                this.points.beginX,
+                this.points.beginX + startOffsetX,
                 this.points.beginY,
                 this.nodeComponent
               );
@@ -692,14 +701,14 @@ export class Connection<T> {
           this.points.endY = y - endOffsetY;
 
           if (!this.nodeComponent?.endNode) {
-            this.points.cx2 = this.points.endX - 150;
+            this.points.cx2 = this.points.endX - standardControlPointDistance;
             this.points.cy2 = this.points.endY;
           }
 
           if (this.nodeComponent) {
             this.nodeComponent.connectionEndNodeThumb?.update?.(
               this.nodeComponent.connectionEndNodeThumb,
-              this.points.endX,
+              this.points.endX + (this.nodeComponent?.endNode ? 0 : endOffsetX),
               this.points.endY,
               this.nodeComponent
             );
