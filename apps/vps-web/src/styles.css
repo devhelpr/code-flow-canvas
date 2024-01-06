@@ -44,13 +44,16 @@
 	border-radius: 4px;
 }
 
+.rect-node:has(.hover) > .inner-node,
 .selected > .inner-node {
 	@apply outline-indigo-300 outline-offset-[-4px] outline-dashed outline-4;
 }
+.rect-node:has(.hover) > .inner-node.select-outline-within,
 .selected > .inner-node.select-outline-within {
   @apply outline-offset-[0px]
 }
 
+rect-node:has(.hover) > .shape-circle,
 .selected >.shape-circle {
 	border-radius: 50%;
 }
