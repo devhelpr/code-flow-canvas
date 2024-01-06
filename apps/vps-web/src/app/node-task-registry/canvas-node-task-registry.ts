@@ -3,14 +3,10 @@ import {
   AnimatePathFromThumbFunction,
 } from '../follow-path/animate-path';
 import { getStateTransition } from '../nodes/state-transition';
-import { getAnnotation } from '../nodes/annotation';
 import { getArray } from '../nodes/array';
 import { getButton } from '../nodes/button';
-import { getCanvasNode } from '../nodes/canvas-node';
 import { getCheckbox } from '../nodes/checkbox';
 import { getExpression } from '../nodes/expression';
-import { getExpressionExecute } from '../nodes/expression-execute';
-import { getExpressionPart } from '../nodes/expression-part';
 import { getFetch } from '../nodes/fetch';
 import { getIfCondition } from '../nodes/if-condition';
 import { getShowInput } from '../nodes/show-input';
@@ -26,7 +22,6 @@ import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
 import { getSequential } from '../nodes/sequential';
 import { createStateCompound } from '../nodes/state-compound';
 import { getStyledNode } from '../nodes/styled-node';
-import { getLayoutNode } from '../nodes/layout-node';
 import { getTimer } from '../nodes/timer';
 import { getValue } from '../nodes/value';
 import { getSplitByCase } from '../nodes/split-by-case';
@@ -39,7 +34,6 @@ import { getForEach } from '../nodes/foreach';
 import { getSendCommand } from '../nodes/send-command';
 import { getFunction } from '../nodes/function';
 import { getCallFunction } from '../nodes/call-function';
-import { getTest } from '../nodes/test';
 import { getStart } from '../nodes/start-node';
 import { getEnd } from '../nodes/end-node';
 import { getMultiTrigger } from '../nodes/multi-trigger';
@@ -173,8 +167,8 @@ export const setupCanvasNodeTaskRegistry = (
   );
 
   registerNodeFactory('expression', getExpression);
-  registerNodeFactory('expression-part', getExpressionPart);
-  registerNodeFactory('expression-execute', getExpressionExecute);
+  // registerNodeFactory('expression-part', getExpressionPart);
+  // registerNodeFactory('expression-execute', getExpressionExecute);
   registerNodeFactory('value', getValue);
 
   registerNodeFactory('send-command', getSendCommand);
@@ -190,8 +184,8 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('state', getState);
   registerNodeFactory('state-transition', getStateTransition);
   registerNodeFactory('fetch', getFetch);
-  registerNodeFactory('canvas-node', getCanvasNode(animatePath));
-  registerNodeFactory('layout-node', getLayoutNode(animatePath));
+  //registerNodeFactory('canvas-node', getCanvasNode(animatePath));
+  //registerNodeFactory('layout-node', getLayoutNode(animatePath));
   registerNodeFactory('state-machine', createStateMachineNode);
   registerNodeFactory('state-compound', createStateCompound);
   registerNodeFactory('variable', getVariable);
@@ -203,7 +197,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('styled-node', getStyledNode(animatePath));
   registerNodeFactory('html-node', getHtmlNode);
   registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
-  registerNodeFactory('annotation', getAnnotation(animatePath));
+  //registerNodeFactory('annotation', getAnnotation(animatePath));
 
   registerNodeFactory('node-trigger', getNodeTrigger(animatePath));
   registerNodeFactory('node-trigger-target', getNodeTriggerTarget(animatePath));
@@ -226,8 +220,6 @@ export const setupCanvasNodeTaskRegistry = (
     'split-by-case',
     getSplitByCase(animatePath, animatePathFromThumb)
   );
-
-  registerNodeFactory('test', getTest);
 
   registerNodeFactory('multiply-node', getMultiplyNode);
   registerNodeFactory(loadTextFileNodeName, loadTextFile(animatePath));

@@ -52,9 +52,9 @@ import { NavbarComponents } from './components/navbar-components';
 import {
   menubarClasses,
   navBarButton,
-  navBarIconButton,
   navBarIconButtonInnerElement,
-  navBarWarningButton,
+  navBarPrimaryIconButton,
+  navBarOutlineButton,
 } from './consts/classes';
 import {
   getNodeFactoryNames,
@@ -279,7 +279,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           createElement(
             'button',
             {
-              class: navBarWarningButton,
+              class: navBarOutlineButton,
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -438,7 +438,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const runButton = createElement(
       'button',
       {
-        class: `${navBarIconButton}`,
+        class: `${navBarPrimaryIconButton}`,
         click: (event) => {
           event.preventDefault();
           (runButton.domElement as HTMLButtonElement).disabled = true;
