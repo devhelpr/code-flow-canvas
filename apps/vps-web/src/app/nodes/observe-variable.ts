@@ -67,8 +67,7 @@ export const observeVariable =
               (_input) => {
                 //
               },
-              value,
-              []
+              value
             );
           }
         });
@@ -78,6 +77,7 @@ export const observeVariable =
     return {
       name: 'observe-variable',
       family: 'flow-canvas',
+      category: 'variables',
       isContainer: false,
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,

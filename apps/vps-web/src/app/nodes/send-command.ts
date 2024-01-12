@@ -12,7 +12,6 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -78,7 +77,6 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
@@ -111,6 +109,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'send-command',
     family: 'flow-canvas',
+    category: 'deprecated',
     isContainer: false,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,

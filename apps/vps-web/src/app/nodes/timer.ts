@@ -9,10 +9,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import {
-  runNode,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
@@ -29,7 +26,6 @@ export const getTimer =
     };
     const compute = (
       input: string,
-      _pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -54,7 +50,6 @@ export const getTimer =
               trigger: 'TIMER',
               input,
             } as unknown as string,
-            [],
             undefined,
             undefined,
             loopIndex,
@@ -85,6 +80,7 @@ export const getTimer =
       name: 'timer',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'flow-control',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

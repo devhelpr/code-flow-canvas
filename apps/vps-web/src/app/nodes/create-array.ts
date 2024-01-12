@@ -64,6 +64,7 @@ export const createArray: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'variables-array',
     }
   );
 };

@@ -3,8 +3,6 @@ import {
   ThumbType,
   createElement,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -62,12 +60,7 @@ export const getRotateNode: NodeTaskFactory<any> = (
   const element = createElement('div', {
     class: 'block',
   });
-  const compute = (
-    input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    _loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string, _loopIndex?: number, payload?: any) => {
     const vector = payload?.['vector'];
 
     const degree = payload?.['degree'];

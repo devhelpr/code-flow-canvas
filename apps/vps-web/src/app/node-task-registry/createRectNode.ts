@@ -8,7 +8,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormComponent, FormValues } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues } from '../node-task-registry';
 import { FormField } from '../components/FormField';
 
@@ -29,7 +28,6 @@ export interface CreateNodeInfo {
 export abstract class BaseNodeCompute<T> {
   abstract compute: (
     input: T,
-    pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: { [key: string]: any }
   ) => ComputeResult<T>;
@@ -53,7 +51,6 @@ export const createRectNode = (
   height: number,
   compute: (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
   ) => IComputeResult | Promise<IComputeResult>,
@@ -274,7 +271,6 @@ export const createRectNode = (
     if (isAsyncCompute) {
       node.nodeInfo.computeAsync = compute as (
         input: any,
-        pathExecution?: RunNodeResult<NodeInfo>[],
         loopIndex?: number,
         payload?: any,
         thumbName?: string,
@@ -302,7 +298,6 @@ export const visualNodeFactory = (
   defaultValueFieldName: string,
   compute: (
     input: string,
-    pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any
   ) => IComputeResult | Promise<IComputeResult>,
@@ -321,6 +316,7 @@ export const visualNodeFactory = (
     hasFormInPopup?: boolean;
     hasStaticWidthHeight?: boolean;
     decoratorTitle?: string;
+    category?: string;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -371,6 +367,7 @@ export const visualNodeFactory = (
     family: nodeFamily,
     isContainer: isContainer,
     canBeUsedAsDecorator,
+    category: settings?.category,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

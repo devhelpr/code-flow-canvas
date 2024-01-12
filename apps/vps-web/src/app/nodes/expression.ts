@@ -12,7 +12,6 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -63,7 +62,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
     _thumbName?: string,
@@ -206,6 +204,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'expression',
     family: 'flow-canvas',
+    category: 'expression',
     isContainer: false,
     canBeUsedAsDecorator: true,
     createVisualNode: (

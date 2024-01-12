@@ -2,14 +2,12 @@ import {
   CanvasAppInstance,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from '../types/node-info';
 
 export abstract class BaseNode<T, X> {
   abstract compute: (
     input: string | X[],
-    loopIndex?: number,
-    pathExecution?: RunNodeResult<T>[]
+    loopIndex?: number
   ) => {
     result: boolean;
     followPath?: string;

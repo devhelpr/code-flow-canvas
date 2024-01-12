@@ -108,6 +108,9 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
     },
     (_nodeInstance) => {
       //
+    },
+    {
+      category: 'string',
     }
   );
 };

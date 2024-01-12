@@ -74,6 +74,7 @@ export const createSet: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'variables-set',
     }
   );
 };

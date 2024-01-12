@@ -8,7 +8,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -25,12 +24,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string, loopIndex?: number, payload?: any) => {
     const result = replaceValues(node?.nodeInfo?.formValues?.['value'] ?? '', {
       value: input,
       currentValue: input,

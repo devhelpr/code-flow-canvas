@@ -74,6 +74,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'show-image',
     family: 'flow-canvas',
+    category: 'UI',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

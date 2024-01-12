@@ -13,10 +13,7 @@ import {
   createElementFromTemplate,
   createTemplate,
 } from '@devhelpr/dom-components';
-import {
-  runNodeFromThumb,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
@@ -36,7 +33,6 @@ export const getMultiTrigger =
     };
     const compute = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -50,7 +46,6 @@ export const getMultiTrigger =
             return;
           },
           input,
-          pathExecution,
           node,
           loopIndex,
           scopeId
@@ -63,7 +58,6 @@ export const getMultiTrigger =
             return;
           },
           input,
-          pathExecution,
           node,
           loopIndex,
           scopeId
@@ -79,6 +73,7 @@ export const getMultiTrigger =
     return {
       name: 'multi-trigger',
       family: 'flow-canvas',
+      category: 'flow-control',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -173,6 +168,9 @@ export const getMultiTrigger =
           undefined
         );
 
+        if (!rect) {
+          throw new Error('rect is undefined');
+        }
         if (!rect.nodeComponent) {
           throw new Error('rect.nodeComponent is undefined');
         }

@@ -48,6 +48,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'show-value',
     family: 'flow-canvas',
+    category: 'debug',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

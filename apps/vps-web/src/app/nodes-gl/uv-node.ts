@@ -2,8 +2,6 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -63,7 +61,6 @@ export const getUVNode: NodeTaskFactory<any> = (
   };
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     _loopIndex?: number,
     _payload?: any,
     thumbName?: string
@@ -96,7 +93,6 @@ export const getUVNode: NodeTaskFactory<any> = (
     fieldName,
     compute as unknown as (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       payload?: any
     ) => IComputeResult,

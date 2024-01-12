@@ -65,6 +65,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'show-input',
     family: 'flow-canvas',
+    category: 'debug',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

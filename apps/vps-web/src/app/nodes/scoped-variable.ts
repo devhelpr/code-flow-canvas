@@ -527,6 +527,7 @@ export const getScopedVariable =
       name: isGlobal ? 'variable' : scopeVariableNodeName,
       family: 'flow-canvas',
       isContainer: false,
+      category: 'variables',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

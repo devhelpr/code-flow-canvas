@@ -6,7 +6,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -31,7 +30,6 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     _loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
@@ -154,6 +152,7 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
       hasTitlebar: false,
       hasFormInPopup: true,
       additionalClassNames: 'text-center',
+      category: 'variables-dictionary',
     }
   );
 };

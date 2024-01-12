@@ -56,6 +56,7 @@ export const getStyledNode =
       name: 'styled-node',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'html',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

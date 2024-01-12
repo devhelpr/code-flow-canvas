@@ -10,7 +10,6 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
@@ -163,7 +162,6 @@ export const getCallFunction =
 
     const computeAsync = (
       input: string,
-      _pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -257,7 +255,6 @@ export const getCallFunction =
                     ...payload,
                     trigger: 'TRIGGER',
                   } as unknown as string, // TODO : improve this!
-                  [],
                   undefined,
                   undefined,
                   undefined,
@@ -454,6 +451,7 @@ export const getCallFunction =
       },
       {
         hasTitlebar: false,
+        category: 'functions',
         childNodeWrapperClass:
           'border-2 border-slate-500 transition-colors duration-200',
       },

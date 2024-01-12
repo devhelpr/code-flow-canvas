@@ -14,10 +14,18 @@ import {
   getNodeConnectionPairByIdWhereNodeIsEndpoint,
 } from '../follow-path/get-node-connection-pairs';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
+import { NodeInfo } from '../types/node-info';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
 });
+
+export interface ConnectionExecute<T> {
+  connection: IConnectionNodeComponent<T>;
+  connectionValue: any;
+}
+
+export let connectionExecuteHistory: ConnectionExecute<NodeInfo>[] = [];
 
 const handleDecoratrs = (
   decorators: any[],
@@ -104,19 +112,21 @@ const sendData = <T>(
   }
 };
 
-export interface RunNodeResult<T> {
-  input: string | any[];
-  previousOutput: string | any[];
-  output: string | any[];
-  result: boolean;
-  nodeId: string;
-  nodeType: string;
-  path: string;
-  scopeNode?: IRectNodeComponent<T>;
-  node: IRectNodeComponent<T>;
-  endNode?: IRectNodeComponent<T>;
-  connection?: IConnectionNodeComponent<T>;
-}
+// export interface RunNodeResult<T> {
+//   input: string | any[];
+//   previousOutput: string | any[];
+//   output: string | any[];
+//   result: boolean;
+//   nodeId: string;
+//   nodeType: string;
+//   path: string;
+//   scopeNode?: IRectNodeComponent<T>;
+//   node: IRectNodeComponent<T>;
+//   endNode?: IRectNodeComponent<T>;
+//   connection?: IConnectionNodeComponent<T>;
+//   previousNode?: IRectNodeComponent<T>;
+//   nextNode?: IRectNodeComponent<T>;
+// }
 
 const triggerExecution = <T>(
   node: IRectNodeComponent<T>,
@@ -150,49 +160,51 @@ const triggerExecution = <T>(
     followThumb?: string,
     scopeId?: string
   ) => void,
-  onStopped:
-    | undefined
-    | ((
-        input: string | any[],
-        pathExecution?: RunNodeResult<T>[],
-        scopeId?: string
-      ) => void),
+  onStopped: undefined | ((input: string | any[], scopeId?: string) => void),
   followPath: string | undefined,
-  pathExecution?: RunNodeResult<T>[],
   input?: string,
   previousOutput?: any,
   offsetX?: number,
   offsetY?: number,
-  scopeId?: string
+  scopeId?: string,
+  previousNode?: IRectNodeComponent<T>
 ) => {
   if (result !== undefined) {
-    if (pathExecution) {
-      pathExecution.push({
-        input: input ?? '',
-        output: result,
-        previousOutput: previousOutput,
-        result: !!result,
-        nodeId: node.id,
-        path: followPath ?? '',
-        node: node,
-        nodeType: (node.nodeInfo as any)?.type ?? '',
-      });
-    }
+    // if (pathExecution) {
+    //   pathExecution.push({
+    //     input: input ?? '',
+    //     output: result,
+    //     previousOutput: previousOutput,
+    //     result: !!result,
+    //     nodeId: node.id,
+    //     path: followPath ?? '',
+    //     node: node,
+    //     nodeType: (node.nodeInfo as any)?.type ?? '',
+    //   });
+    // }
     animatePath(
       node,
       'white',
       (
         _nodeId: string,
-        node: IRectNodeComponent<T>,
+        nextNode: IRectNodeComponent<T>,
         input: string | any[],
         connection: IConnectionNodeComponent<T>,
         scopeId?: string
+
+        // TODO : fromNode toevoegen incl compute resultaat ??
       ) => {
         let result: any = false;
         let previousOutput: any = undefined;
-        const formInfo = node.nodeInfo as unknown as any;
+        const formInfo = nextNode.nodeInfo as unknown as any;
 
-        const payload = getVariablePayload<T>(node, canvasApp, scopeId);
+        connectionExecuteHistory.push({
+          connection:
+            connection as unknown as IConnectionNodeComponent<NodeInfo>,
+          connectionValue: input,
+        });
+
+        const payload = getVariablePayload<T>(nextNode, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
           if (formInfo.decorators) {
             const decoratorInput = handleDecoratrs(
@@ -213,7 +225,6 @@ const triggerExecution = <T>(
 
           const promise = formInfo.computeAsync(
             input,
-            pathExecution,
             runIndex,
             payload,
             connection?.endNodeThumb?.thumbName,
@@ -225,7 +236,7 @@ const triggerExecution = <T>(
               .then((computeResult: any) => {
                 if (computeResult.stop) {
                   if (onStopped) {
-                    onStopped(computeResult.output ?? '', undefined, scopeId);
+                    onStopped(computeResult.output ?? '', scopeId);
                   }
                   // return {
                   //   result: result,
@@ -234,21 +245,22 @@ const triggerExecution = <T>(
                   // };
                 } else {
                   result = computeResult.result;
-                  sendData(node, canvasApp, result);
+                  sendData(nextNode, canvasApp, result);
                   followPath = computeResult.followPath;
 
-                  if (pathExecution) {
-                    pathExecution.push({
-                      input: input ?? '',
-                      previousOutput: computeResult.previousOutput,
-                      output: computeResult.output ?? input,
-                      result: result,
-                      nodeId: node.id,
-                      path: followPath ?? '',
-                      node: node,
-                      nodeType: (node.nodeInfo as any)?.type ?? '',
-                    });
-                  }
+                  // if (pathExecution) {
+                  //   pathExecution.push({
+                  //     input: input ?? '',
+                  //     previousOutput: computeResult.previousOutput,
+                  //     output: computeResult.output ?? input,
+                  //     result: result,
+                  //     nodeId: nextNode.id,
+                  //     path: followPath ?? '',
+                  //     node: nextNode,
+                  //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
+                  //     previousNode,
+                  //   });
+                  // }
 
                   resolve({
                     result: true,
@@ -281,20 +293,19 @@ const triggerExecution = <T>(
           }
           const computeResult = formInfo.compute(
             input,
-            pathExecution,
             runIndex,
             payload,
             connection?.endNodeThumb?.thumbName,
             scopeId
           );
           result = computeResult.result;
-          sendData(node, canvasApp, result);
+          sendData(nextNode, canvasApp, result);
           followPath = computeResult.followPath;
           previousOutput = computeResult.previousOutput;
 
           if (computeResult.stop) {
             if (onStopped) {
-              onStopped(computeResult.output ?? '', undefined, scopeId);
+              onStopped(computeResult.output ?? '', scopeId);
             }
             return {
               result: result,
@@ -332,18 +343,19 @@ const triggerExecution = <T>(
           };
         }
 
-        if (pathExecution) {
-          pathExecution.push({
-            input: input ?? '',
-            output: result,
-            previousOutput: previousOutput,
-            result: !!result,
-            nodeId: node.id,
-            path: followPath ?? '',
-            node: node,
-            nodeType: (node.nodeInfo as any)?.type ?? '',
-          });
-        }
+        // if (pathExecution) {
+        //   pathExecution.push({
+        //     input: input ?? '',
+        //     output: result,
+        //     previousOutput: previousOutput,
+        //     result: !!result,
+        //     nodeId: nextNode.id,
+        //     path: followPath ?? '',
+        //     node: nextNode,
+        //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
+        //     previousNode,
+        //   });
+        // }
 
         return {
           result: true,
@@ -353,7 +365,7 @@ const triggerExecution = <T>(
       },
       (input: string | any[]) => {
         if (onStopped) {
-          onStopped(input, pathExecution, scopeId);
+          onStopped(input, scopeId);
         }
       },
       result,
@@ -409,13 +421,8 @@ export const runNode = <T>(
     _singleStep?: boolean,
     followThumb?: string
   ) => void,
-  onStopped?: (
-    input: string | any[],
-    pathExecution?: RunNodeResult<T>[],
-    scopeId?: string
-  ) => void,
+  onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string,
-  pathExecution?: RunNodeResult<T>[],
   offsetX?: number,
   offsetY?: number,
   loopIndex?: number,
@@ -447,7 +454,6 @@ export const runNode = <T>(
     formInfo
       .computeAsync(
         input ?? '',
-        pathExecution,
         loopIndex === undefined ? runIndex : loopIndex,
         payload,
         connection?.endNodeThumb?.thumbName,
@@ -460,7 +466,7 @@ export const runNode = <T>(
         previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
           if (onStopped) {
-            onStopped(computeResult.output ?? '', undefined, scopeId);
+            onStopped(computeResult.output ?? '', scopeId);
           }
           return;
         }
@@ -471,12 +477,12 @@ export const runNode = <T>(
           animatePath,
           onStopped,
           followPath,
-          pathExecution,
           input,
           previousOutput,
           offsetX,
           offsetY,
-          scopeId
+          scopeId,
+          node
         );
       });
   } else if (formInfo && formInfo?.compute) {
@@ -495,7 +501,6 @@ export const runNode = <T>(
     }
     const computeResult = formInfo.compute(
       input ?? '',
-      pathExecution,
       loopIndex === undefined ? runIndex : loopIndex,
       payload,
       connection?.endNodeThumb?.thumbName,
@@ -508,7 +513,7 @@ export const runNode = <T>(
     previousOutput = computeResult.previousOutput;
     if (computeResult.stop) {
       if (onStopped) {
-        onStopped(computeResult.output ?? '', undefined, scopeId);
+        onStopped(computeResult.output ?? '', scopeId);
       }
       return;
     }
@@ -534,12 +539,12 @@ export const runNode = <T>(
       animatePath,
       onStopped,
       followPath,
-      pathExecution,
       input,
       previousOutput,
       offsetX,
       offsetY,
-      scopeId
+      scopeId,
+      node
     );
   } else {
     result = false;
@@ -581,10 +586,7 @@ export const run = <T>(
     _singleStep?: boolean,
     followThumb?: string
   ) => void,
-  onFinishRun?: (
-    input: string | any[],
-    pathExecution?: RunNodeResult<T>[]
-  ) => void,
+  onFinishRun?: (input: string | any[]) => void,
   input?: string,
   offsetX?: number,
   offsetY?: number
@@ -600,6 +602,8 @@ export const run = <T>(
       .. it errors .. stop the flow
 
   */
+
+  connectionExecuteHistory = [];
 
   const nodeList = Array.from(nodes);
   let isRunning = false;
@@ -635,13 +639,12 @@ export const run = <T>(
         nodeComponent,
         canvasApp,
         animatePath,
-        (input: string | any[], pathExecution?: RunNodeResult<T>[]) => {
+        (input: string | any[]) => {
           if (onFinishRun) {
-            onFinishRun(input, pathExecution);
+            onFinishRun(input);
           }
         },
         input,
-        [],
         offsetX,
         offsetY
       );
@@ -649,7 +652,7 @@ export const run = <T>(
   });
   if (!isRunning) {
     if (onFinishRun) {
-      onFinishRun('', []);
+      onFinishRun('');
     }
   }
   return true;
@@ -695,7 +698,6 @@ export const runNodeFromThumb = <T>(
   ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
-  pathExecution?: RunNodeResult<T>[],
   scopeNode?: IRectNodeComponent<T>,
   loopIndex?: number,
   scopeId?: string
@@ -708,15 +710,20 @@ export const runNodeFromThumb = <T>(
     'white',
     (
       _nodeId: string,
-      node: INodeComponent<T>,
+      nextNode: INodeComponent<T>,
       input: string | any[],
       connection: IConnectionNodeComponent<T>,
       scopeId?: string
     ) => {
+      connectionExecuteHistory.push({
+        connection: connection as unknown as IConnectionNodeComponent<NodeInfo>,
+        connectionValue: input,
+      });
+
       let result: any = false;
       let previousOutput: any = undefined;
-      const formInfo = node.nodeInfo as unknown as any;
-      console.log('runNodeFromThumb', loopIndex, node);
+      const formInfo = nextNode.nodeInfo as unknown as any;
+      console.log('runNodeFromThumb', loopIndex, nextNode);
       if (formInfo && formInfo.computeAsync) {
         if (formInfo.decorators) {
           const decoratorInput = handleDecoratrs(
@@ -738,7 +745,6 @@ export const runNodeFromThumb = <T>(
           formInfo
             .computeAsync(
               input,
-              pathExecution,
               loopIndex,
               undefined,
               connection?.endNodeThumb?.thumbName,
@@ -755,19 +761,21 @@ export const runNodeFromThumb = <T>(
                   output: result,
                 });
               } else {
-                if (pathExecution) {
-                  pathExecution.push({
-                    input: input ?? '',
-                    scopeNode,
-                    output: computeResult.output ?? input,
-                    previousOutput: computeResult.previousOutput,
-                    result: result,
-                    nodeId: node.id,
-                    path: followPath ?? '',
-                    node: node as unknown as IRectNodeComponent<T>,
-                    nodeType: (node.nodeInfo as any)?.type ?? '',
-                  });
-                }
+                // if (pathExecution) {
+                //   pathExecution.push({
+                //     input: input ?? '',
+                //     scopeNode,
+                //     output: computeResult.output ?? input,
+                //     previousOutput: computeResult.previousOutput,
+                //     result: result,
+                //     nodeId: nextNode.id,
+                //     path: followPath ?? '',
+                //     node: nextNode as unknown as IRectNodeComponent<T>,
+                //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
+                //     previousNode:
+                //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<T>,
+                //   });
+                // }
 
                 resolve({
                   result: true,
@@ -801,7 +809,6 @@ export const runNodeFromThumb = <T>(
 
         const computeResult = formInfo.compute(
           input,
-          pathExecution,
           loopIndex,
           undefined,
           connection?.endNodeThumb?.thumbName,
@@ -829,19 +836,21 @@ export const runNodeFromThumb = <T>(
         };
       }
 
-      if (pathExecution) {
-        pathExecution.push({
-          input: input ?? '',
-          output: result,
-          previousOutput: previousOutput,
-          result: !!result,
-          nodeId: node.id,
-          scopeNode,
-          path: followPath ?? '',
-          node: node as unknown as IRectNodeComponent<T>,
-          nodeType: (node.nodeInfo as any)?.type ?? '',
-        });
-      }
+      // if (pathExecution) {
+      //   pathExecution.push({
+      //     input: input ?? '',
+      //     output: result,
+      //     previousOutput: previousOutput,
+      //     result: !!result,
+      //     nodeId: nextNode.id,
+      //     scopeNode,
+      //     path: followPath ?? '',
+      //     node: nextNode as unknown as IRectNodeComponent<T>,
+      //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
+      //     previousNode:
+      //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<T>,
+      //   });
+      // }
 
       if (formInfo.decorators) {
         const decoratorInput = handleDecoratrs(

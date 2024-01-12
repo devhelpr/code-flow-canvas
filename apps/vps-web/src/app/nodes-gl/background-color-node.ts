@@ -7,7 +7,6 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
 export const getBackgroundColorNode = (_updated: () => void): NodeTask<any> => {
@@ -16,12 +15,7 @@ export const getBackgroundColorNode = (_updated: () => void): NodeTask<any> => {
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    _input: string,
-    _pathExecution?: RunNodeResult<any>[],
-    _loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     let red_color = payload?.['r'] ?? '0.';
     let green_color = payload?.['g'] ?? '0.';
     let blue_color = payload?.['b'] ?? '0.';

@@ -74,6 +74,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'sum',
     family: 'flow-canvas',
+    category: 'variables-array',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

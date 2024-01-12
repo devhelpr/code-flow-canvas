@@ -6,7 +6,6 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
@@ -23,11 +22,7 @@ export const getTest: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    _loopIndex?: number
-  ) => {
+  const compute = (input: string, _loopIndex?: number) => {
     return {
       result: input,
       followPath: undefined,

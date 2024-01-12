@@ -9,10 +9,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import {
-  runNode,
-  RunNodeResult,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
@@ -27,7 +24,6 @@ export const getNodeTrigger =
     };
     const compute = (
       _input: string,
-      _pathExecution?: RunNodeResult<NodeInfo>[],
       _loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -51,7 +47,6 @@ export const getNodeTrigger =
             animatePath,
             undefined,
             'TRIGGER',
-            [],
             undefined,
             undefined,
             undefined,
@@ -70,6 +65,7 @@ export const getNodeTrigger =
       name: 'node-trigger',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'flow-control',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

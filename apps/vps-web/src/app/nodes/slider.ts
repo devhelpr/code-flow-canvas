@@ -44,6 +44,7 @@ export const getSlider =
       name: 'slider',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'UI',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -84,8 +85,7 @@ export const getSlider =
                 canvasAppInstance,
                 animatePath,
                 undefined,
-                currentValue.toString(),
-                []
+                currentValue.toString()
               );
               return false;
             },

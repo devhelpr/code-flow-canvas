@@ -179,6 +179,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     name: 'iframe-html-node',
     family: 'flow-canvas',
     isContainer: false,
+    category: 'html',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

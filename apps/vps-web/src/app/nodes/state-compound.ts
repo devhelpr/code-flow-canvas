@@ -10,7 +10,6 @@ import {
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
 
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -31,11 +30,7 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    _input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    _loopIndex?: number
-  ) => {
+  const compute = (_input: string, _loopIndex?: number) => {
     return {
       result: undefined,
       stop: true,

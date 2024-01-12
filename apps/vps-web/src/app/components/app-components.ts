@@ -1,5 +1,4 @@
 export interface AppComponentsProps {
-  setExecutionPath: (value: number) => void;
   rootElement: HTMLElement;
 }
 

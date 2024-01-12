@@ -7,7 +7,6 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
 export const getSplitColorsNode = (_updated: () => void): NodeTask<any> => {
@@ -18,7 +17,6 @@ export const getSplitColorsNode = (_updated: () => void): NodeTask<any> => {
   };
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<any>[],
     _loopIndex?: number,
     payload?: any,
     thumbName?: string

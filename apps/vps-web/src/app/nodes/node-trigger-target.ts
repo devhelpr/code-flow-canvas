@@ -42,6 +42,7 @@ export const getNodeTriggerTarget =
       name: 'node-trigger-target',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'flow-control',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

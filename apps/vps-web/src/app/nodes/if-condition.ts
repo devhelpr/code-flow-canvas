@@ -12,7 +12,6 @@ import {
   trackNamedSignal,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
@@ -33,7 +32,6 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     payload?: any,
     _thumbName?: string,

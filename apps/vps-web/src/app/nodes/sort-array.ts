@@ -81,6 +81,7 @@ export const getSortArrayNode: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'variables-array',
     }
   );
 };

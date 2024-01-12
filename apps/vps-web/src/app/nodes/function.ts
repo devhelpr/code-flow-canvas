@@ -11,7 +11,6 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 
 const defaultFunctionColor = 'bg-yellow-400';
 const activeFunctionColor = 'bg-orange-400';
@@ -29,7 +28,6 @@ export const getFunction =
     };
     const compute = (
       input: string,
-      _pathExecution?: RunNodeResult<NodeInfo>[],
       _loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -124,6 +122,7 @@ export const getFunction =
       name: 'function',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'functions',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

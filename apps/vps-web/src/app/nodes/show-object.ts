@@ -55,6 +55,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'show-object',
     family: 'flow-canvas',
+    category: 'debug',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

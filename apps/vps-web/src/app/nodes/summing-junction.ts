@@ -37,6 +37,7 @@ export const getSummingJunction: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'summing-junction',
     family: 'flow-canvas',
+    category: 'flow-control',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

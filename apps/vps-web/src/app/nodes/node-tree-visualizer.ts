@@ -163,6 +163,7 @@ export const getNodeTreeVisualizer = (
     name: nodeTreeVisualizerNodeName,
     family: 'flow-canvas',
     isContainer: false,
+    category: 'visualization',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

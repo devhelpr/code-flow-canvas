@@ -4,7 +4,6 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -86,7 +85,6 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     _loopIndex?: number,
     _payload?: any,
     thumbName?: string
@@ -162,6 +160,7 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'variables-array',
     }
   );
 };

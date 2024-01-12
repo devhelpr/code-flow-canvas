@@ -49,6 +49,7 @@ export const getButton =
       name: 'button',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'UI',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -112,8 +113,7 @@ export const getButton =
                 undefined,
                 containerNode
                   ? node.nodeInfo.formValues['caption'] || 'Button'
-                  : currentValue.toString(),
-                []
+                  : currentValue.toString()
               );
               return false;
             },

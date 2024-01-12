@@ -81,6 +81,7 @@ export const loadTextFile =
     return {
       name: loadTextFileNodeName,
       family: 'flow-canvas',
+      category: 'data',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

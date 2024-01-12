@@ -8,10 +8,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
-import {
-  RunNodeResult,
-  runNodeFromThumb,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import {
   AnimatePathFromThumbFunction,
@@ -73,7 +70,6 @@ export const getForEach =
     };
     const computeAsync = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -143,7 +139,6 @@ export const getForEach =
                 runNext(mapLoop + step);
               },
               isRange ? mapLoop : values[mapLoop],
-              pathExecution,
               node,
               mapLoop,
               scopeId
@@ -166,7 +161,6 @@ export const getForEach =
                 });
               },
               isRange ? [] : input,
-              pathExecution,
               node,
               loopIndex,
               scopeId
@@ -188,6 +182,7 @@ export const getForEach =
       name: 'foreach',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'iterators',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

@@ -11,7 +11,6 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -29,12 +28,7 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
     currentValue = 0;
     return;
   };
-  const compute = (
-    input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (input: string, loopIndex?: number, payload?: any) => {
     (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     let result: any = false;
     try {

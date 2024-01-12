@@ -7,7 +7,6 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 
 export const getCircleNode = (_updated: () => void): NodeTask<any> => {
@@ -16,12 +15,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<any> => {
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    _input: string,
-    _pathExecution?: RunNodeResult<any>[],
-    loopIndex?: number,
-    payload?: any
-  ) => {
+  const compute = (_input: string, loopIndex?: number, payload?: any) => {
     const color = payload?.['color'] ?? 'vec3(1.,1.,1.)';
     const x = payload?.['x'] ?? '0.0';
     const y = payload?.['y'] ?? '0.0';

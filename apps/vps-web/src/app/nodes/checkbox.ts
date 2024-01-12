@@ -43,6 +43,7 @@ export const getCheckbox =
       name: 'checkbox',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'UI',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -78,8 +79,7 @@ export const getCheckbox =
                 canvasApp,
                 animatePath,
                 undefined,
-                currentValue.toString(),
-                []
+                currentValue.toString()
               );
               return false;
             },

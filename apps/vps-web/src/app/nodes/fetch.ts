@@ -9,7 +9,6 @@ import {
 import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -26,11 +25,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const computeAsync = (
-    input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    _loopIndex?: number
-  ) => {
+  const computeAsync = (input: string, _loopIndex?: number) => {
     return new Promise((resolve, _reject) => {
       (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
       let result: any = false;

@@ -106,6 +106,9 @@ export const joinArray: NodeTaskFactory<NodeInfo> = (
     },
     (_nodeInstance) => {
       //
+    },
+    {
+      category: 'variables-array',
     }
   );
 };

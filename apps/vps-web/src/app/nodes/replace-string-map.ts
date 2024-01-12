@@ -157,6 +157,7 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
     {
       hasTitlebar: true,
       hasFormInPopup: true,
+      category: 'string',
     }
   );
 };

@@ -3,7 +3,6 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import {
   InitialValues,
   NodeTask,
@@ -20,12 +19,7 @@ export const reverseArray: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (
-    input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
-    _loopIndex?: number,
-    _payload?: any
-  ) => {
+  const compute = (input: string, _loopIndex?: number, _payload?: any) => {
     if (!Array.isArray(input)) {
       return {
         result: undefined,
@@ -78,6 +72,7 @@ export const reverseArray: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'variables-array',
     }
   );
 };

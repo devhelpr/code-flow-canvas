@@ -10,10 +10,7 @@ import {
 import { FormComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 
-import {
-  RunNodeResult,
-  runNodeFromThumb,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import {
   AnimatePathFromThumbFunction,
@@ -34,7 +31,6 @@ export const getSplitByCase =
     };
     const computeAsync = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -85,7 +81,6 @@ export const getSplitByCase =
               });
             },
             input,
-            pathExecution,
             node,
             loopIndex,
             scopeId
@@ -103,6 +98,7 @@ export const getSplitByCase =
       name: 'split-by-case',
       family: 'flow-canvas',
       isContainer: false,
+      category: 'flow-control',
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,

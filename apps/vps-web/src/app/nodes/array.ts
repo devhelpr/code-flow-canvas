@@ -18,7 +18,6 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { RunNodeResult } from '../simple-flow-engine/simple-flow-engine';
 import { FormFieldType } from '../components/FormField';
 
 export const getArray: NodeTaskFactory<NodeInfo> = (
@@ -302,7 +301,6 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   };
   const computeAsync = (
     input: string,
-    _pathExecution?: RunNodeResult<NodeInfo>[],
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
@@ -351,6 +349,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'array',
     family: 'flow-canvas',
+    category: 'variables-array',
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

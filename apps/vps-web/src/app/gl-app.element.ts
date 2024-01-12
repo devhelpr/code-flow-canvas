@@ -854,7 +854,7 @@ export class GLAppElement extends AppElement<any> {
       }
     });
 
-    const result = node?.nodeInfo?.compute(0, [], 0, inputs, thumbName);
+    const result = node?.nodeInfo?.compute(0, 0, inputs, thumbName);
     return result.result;
   };
 
@@ -888,7 +888,7 @@ export class GLAppElement extends AppElement<any> {
             const inputs = this.getInputsForNode(
               node as IRectNodeComponent<any>
             );
-            const result = node.nodeInfo?.compute(0, [], sdfIndex, inputs);
+            const result = node.nodeInfo?.compute(0, sdfIndex, inputs);
             this.shaderStatements += result?.result ?? '';
             this.shaderStatements += `
 `;

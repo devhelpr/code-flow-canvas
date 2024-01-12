@@ -5,10 +5,7 @@ import {
   createElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import {
-  RunNodeResult,
-  runNodeFromThumb,
-} from '../simple-flow-engine/simple-flow-engine';
+import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import {
   IComputeResult,
@@ -43,7 +40,6 @@ export const dialogFormNode =
 
     const computeAsync = (
       input: string,
-      pathExecution?: RunNodeResult<NodeInfo>[],
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
@@ -112,7 +108,6 @@ export const dialogFormNode =
               });
             },
             input,
-            pathExecution,
             node,
             loopIndex,
             scopeId
@@ -150,7 +145,6 @@ export const dialogFormNode =
               });
             },
             input,
-            pathExecution,
             node,
             loopIndex,
             scopeId

@@ -84,6 +84,7 @@ export const getSetSizeNode: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'variables-set',
     }
   );
 };

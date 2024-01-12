@@ -17,7 +17,6 @@ import {
   Camera,
 } from '@devhelpr/visual-programming-system';
 
-import { RunNodeResult } from './simple-flow-engine/simple-flow-engine';
 import {
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
@@ -43,10 +42,7 @@ export class AppElement<T> {
   canvasApp?: CanvasAppInstance<T> = undefined;
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
-  pathExecutions: RunNodeResult<T>[][] = [];
   scopeNodeDomElement: HTMLElement | undefined = undefined;
-
-  currentPathUnderInspection: RunNodeResult<T>[] | undefined = undefined;
 
   formElement: INodeComponent<T> | undefined = undefined;
   editPopupContainer: IElementNode<T> | undefined = undefined;
