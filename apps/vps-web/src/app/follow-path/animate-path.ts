@@ -15,10 +15,10 @@ import { followNodeExecution } from './followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 
-function getSpeed(maxSpeed: number, speedMeter: number) {
-  //return 1;
-  return (maxSpeed * (1000 - speedMeter)) / 1000;
-}
+// function getSpeed(maxSpeed: number, speedMeter: number) {
+//   //return 1;
+//   return (maxSpeed * (1000 - speedMeter)) / 1000;
+// }
 function getLoopIncrement() {
   return 0.25;
   //return 0.1;
@@ -275,6 +275,10 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
             loop = 0;
 
             nodeAnimationMap.delete(key);
+            if (runCounter > 0) {
+              runCounter--;
+              updateRunCounterElement();
+            }
 
             const onNextOrPromise = singleStep ??
               nodeAnimation.onNextNode?.(
@@ -305,6 +309,7 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
             //
             const resolver = (result: any) => {
               console.log('animatePath onNextNode result', input, result);
+
               if (!result.stop && result.result !== undefined) {
                 animatePath(
                   canvasApp,
@@ -332,6 +337,14 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
                   nodeAnimation.onStopped(result.output ?? input ?? '');
                 }
               }
+
+              if (
+                runCounter <= 0 &&
+                runCounterResetHandler &&
+                nodeAnimationMap.size === 0
+              ) {
+                runCounterResetHandler();
+              }
             };
 
             Promise.resolve(onNextOrPromise)
@@ -341,6 +354,10 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
               });
           }
         } else {
+          if (runCounter > 0) {
+            runCounter--;
+            updateRunCounterElement();
+          }
           if (start) {
             nodeAnimation.onNextNode &&
               nodeAnimation.onNextNode(
@@ -361,6 +378,14 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
           if (nodeAnimation.onStopped) {
             nodeAnimation.onStopped(nodeAnimation.input ?? '');
           }
+
+          if (
+            runCounter <= 0 &&
+            runCounterResetHandler &&
+            nodeAnimationMap.size === 0
+          ) {
+            runCounterResetHandler();
+          }
         }
       }
     });
@@ -368,6 +393,25 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
   };
   requestAnimationFrame(animateCamera);
 }
+
+export let runCounter = 0;
+export const resetRunCounter = () => {
+  runCounter = 0;
+};
+let runCounterResetHandler: undefined | (() => void) = undefined;
+export const setRunCounterResetHandler = (handler: () => void) => {
+  runCounterResetHandler = handler;
+};
+
+let runCounterUpdateElement: undefined | HTMLElement = undefined;
+export const setRunCounterUpdateElement = (domElement: HTMLElement) => {
+  runCounterUpdateElement = domElement;
+};
+const updateRunCounterElement = () => {
+  if (runCounterUpdateElement) {
+    runCounterUpdateElement.textContent = `${runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
+  }
+};
 
 export const animatePathForNodeConnectionPairs = (
   canvasApp: CanvasAppInstance<NodeInfo>,
@@ -408,8 +452,8 @@ export const animatePathForNodeConnectionPairs = (
     }
     return;
   }
-  const maxSpeed = 500;
-  const currentSpeed = speedMeter;
+  // const maxSpeed = 500;
+  // const currentSpeed = speedMeter;
   nodeConnectionPairs.forEach((nodeConnectionPair, index) => {
     const start = nodeConnectionPair.start;
     const connection = nodeConnectionPair.connection;
@@ -515,6 +559,9 @@ export const animatePathForNodeConnectionPairs = (
       domMessage.classList.remove('layer-2');
     }
 
+    runCounter++;
+    updateRunCounterElement();
+
     nodeAnimationMap.set(nodeAnimationId, {
       start: start as unknown as IRectNodeComponent<NodeInfo>,
       connection: connection as unknown as IConnectionNodeComponent<NodeInfo>,
@@ -531,151 +578,154 @@ export const animatePathForNodeConnectionPairs = (
       testCircle,
       message,
       messageText,
+      singleStep,
+      offsetX,
+      offsetY,
     });
     nodeAnimationId++;
 
-    let loop = 0;
-    const onInterval = () => {
-      if (
-        start &&
-        end &&
-        connection &&
-        connection.controlPoints &&
-        connection.controlPoints.length >= 1
-      ) {
-        const bezierCurvePoints = getPointOnConnection<NodeInfo>(
-          loop,
-          connection,
-          start,
-          end
-        );
+    //   let loop = 0;
+    //   const onInterval = () => {
+    //     if (
+    //       start &&
+    //       end &&
+    //       connection &&
+    //       connection.controlPoints &&
+    //       connection.controlPoints.length >= 1
+    //     ) {
+    //       const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+    //         loop,
+    //         connection,
+    //         start,
+    //         end
+    //       );
 
-        if (!animatedNodes?.node1) {
-          domCircle.style.display = 'flex';
-        }
-        domCircle.style.transform = `translate(${
-          bezierCurvePoints.x + (offsetX ?? 0)
-        }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
-        if (!animatedNodes?.node1) {
-          domMessage.style.display = 'flex';
-        }
-        domMessage.style.transform = `translate(${
-          bezierCurvePoints.x + (offsetX ?? 0)
-        }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
+    //       if (!animatedNodes?.node1) {
+    //         domCircle.style.display = 'flex';
+    //       }
+    //       domCircle.style.transform = `translate(${
+    //         bezierCurvePoints.x + (offsetX ?? 0)
+    //       }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
+    //       if (!animatedNodes?.node1) {
+    //         domMessage.style.display = 'flex';
+    //       }
+    //       domMessage.style.transform = `translate(${
+    //         bezierCurvePoints.x + (offsetX ?? 0)
+    //       }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
-        // loop += 0.015;
-        loop += getLoopIncrement(); //0.1;
-        if (loop > getMaxLoop()) {
-          //  1.015
-          loop = 0;
+    //       // loop += 0.015;
+    //       loop += getLoopIncrement(); //0.1;
+    //       if (loop > getMaxLoop()) {
+    //         //  1.015
+    //         loop = 0;
 
-          clearInterval(cancel);
-          timers.delete(cancel);
+    //         clearInterval(cancel);
+    //         timers.delete(cancel);
 
-          const onNextOrPromise = singleStep ??
-            onNextNode?.(end.id, end, input ?? '', connection, scopeId) ?? {
-              result: true,
-              output: '',
-              followPathByName: undefined,
-            };
+    //         const onNextOrPromise = singleStep ??
+    //           onNextNode?.(end.id, end, input ?? '', connection, scopeId) ?? {
+    //             result: true,
+    //             output: '',
+    //             followPathByName: undefined,
+    //           };
 
-          if (
-            Array.isArray(onNextOrPromise) ||
-            (onNextOrPromise as unknown as Promise<unknown>).then
-          ) {
-            testCircle && canvasApp?.elements.delete(testCircle.id);
-            testCircle?.domElement?.remove();
+    //         if (
+    //           Array.isArray(onNextOrPromise) ||
+    //           (onNextOrPromise as unknown as Promise<unknown>).then
+    //         ) {
+    //           testCircle && canvasApp?.elements.delete(testCircle.id);
+    //           testCircle?.domElement?.remove();
 
-            message && canvasApp?.elements.delete(message.id);
-            message?.domElement?.remove();
-            (testCircle as unknown as undefined) = undefined;
-            (message as unknown as undefined) = undefined;
-            (messageText as unknown as undefined) = undefined;
-          }
-          //
-          const resolver = (result: any) => {
-            console.log('animatePath onNextNode result', input, result);
-            if (!result.stop && result.result !== undefined) {
-              animatePath(
-                canvasApp,
-                end,
-                color,
-                onNextNode,
-                onStopped,
-                result.output,
-                result.followPathByName,
-                { node1: testCircle, node2: message, node3: messageText },
-                offsetX,
-                offsetY,
-                undefined,
-                undefined,
-                result.followThumb,
-                scopeId
-              );
-            } else {
-              testCircle && canvasApp?.elements.delete(testCircle.id);
-              testCircle?.domElement?.remove();
+    //           message && canvasApp?.elements.delete(message.id);
+    //           message?.domElement?.remove();
+    //           (testCircle as unknown as undefined) = undefined;
+    //           (message as unknown as undefined) = undefined;
+    //           (messageText as unknown as undefined) = undefined;
+    //         }
+    //         //
+    //         const resolver = (result: any) => {
+    //           console.log('animatePath onNextNode result', input, result);
+    //           if (!result.stop && result.result !== undefined) {
+    //             animatePath(
+    //               canvasApp,
+    //               end,
+    //               color,
+    //               onNextNode,
+    //               onStopped,
+    //               result.output,
+    //               result.followPathByName,
+    //               { node1: testCircle, node2: message, node3: messageText },
+    //               offsetX,
+    //               offsetY,
+    //               undefined,
+    //               undefined,
+    //               result.followThumb,
+    //               scopeId
+    //             );
+    //           } else {
+    //             testCircle && canvasApp?.elements.delete(testCircle.id);
+    //             testCircle?.domElement?.remove();
 
-              message && canvasApp?.elements.delete(message.id);
-              message?.domElement?.remove();
-              if (onStopped) {
-                console.log(
-                  'animatePath onStopped1',
-                  nodeConnectionPairs,
-                  input,
-                  result.output
-                );
-                onStopped(result.output ?? input ?? '');
-              }
-            }
-          };
+    //             message && canvasApp?.elements.delete(message.id);
+    //             message?.domElement?.remove();
+    //             if (onStopped) {
+    //               console.log(
+    //                 'animatePath onStopped1',
+    //                 nodeConnectionPairs,
+    //                 input,
+    //                 result.output
+    //               );
+    //               onStopped(result.output ?? input ?? '');
+    //             }
+    //           }
+    //         };
 
-          Promise.resolve(onNextOrPromise)
-            .then(resolver)
-            .catch((err) => {
-              console.log('animatePath onNextNode error', err);
-            });
-        } else {
-          if (speedMeter !== currentSpeed) {
-            clearInterval(cancel);
-            timers.delete(cancel);
-            cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
-            //setCanceler();
-          }
-        }
-      } else {
-        if (start) {
-          onNextNode && onNextNode(start.id, start, input ?? '', connection);
-        }
-        testCircle && canvasApp?.elements.delete(testCircle.id);
-        testCircle?.domElement?.remove();
+    //         Promise.resolve(onNextOrPromise)
+    //           .then(resolver)
+    //           .catch((err) => {
+    //             console.log('animatePath onNextNode error', err);
+    //           });
+    //       } else {
+    //         if (speedMeter !== currentSpeed) {
+    //           clearInterval(cancel);
+    //           timers.delete(cancel);
+    //           cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
+    //           //setCanceler();
+    //         }
+    //       }
+    //     } else {
+    //       if (start) {
+    //         onNextNode && onNextNode(start.id, start, input ?? '', connection);
+    //       }
+    //       testCircle && canvasApp?.elements.delete(testCircle.id);
+    //       testCircle?.domElement?.remove();
 
-        canvasApp?.elements.delete(message.id);
-        message?.domElement?.remove();
+    //       canvasApp?.elements.delete(message.id);
+    //       message?.domElement?.remove();
 
-        // clearInterval(cancel);
-        // timers.delete(cancel);
+    //       // clearInterval(cancel);
+    //       // timers.delete(cancel);
 
-        if (onStopped) {
-          console.log('animatePath onStopped3', nodeConnectionPairs, input);
-          onStopped(input ?? '');
-        }
-      }
-    };
-    let cancel: NodeJS.Timer = 0 as unknown as NodeJS.Timer;
-    // console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
-    // let cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
+    //       if (onStopped) {
+    //         console.log('animatePath onStopped3', nodeConnectionPairs, input);
+    //         onStopped(input ?? '');
+    //       }
+    //     }
+    //   };
+    //   let cancel: NodeJS.Timer = 0 as unknown as NodeJS.Timer;
+    //   // console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+    //   // let cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
 
-    // const setCanceler = () => {
-    //   timers.set(cancel, () => {
-    //     clearInterval(cancel);
-    //     timers.delete(cancel);
-    //     //console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
-    //     cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
-    //     setCanceler();
-    //   });
-    // };
-    // setCanceler();
+    //   // const setCanceler = () => {
+    //   //   timers.set(cancel, () => {
+    //   //     clearInterval(cancel);
+    //   //     timers.delete(cancel);
+    //   //     //console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+    //   //     cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
+    //   //     setCanceler();
+    //   //   });
+    //   // };
+    //   // setCanceler();
   });
 };
 

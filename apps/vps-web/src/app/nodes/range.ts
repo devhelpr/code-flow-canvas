@@ -66,7 +66,6 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<NodeInfo>;
-  //let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values.min = undefined;
     values.max = undefined;

@@ -465,7 +465,6 @@ export const getScopedVariable =
     };
 
     const getNodeStatedHandler = () => {
-      console.log('getNodeStatedHandler', variableName, lastStoredDataState);
       return {
         data: structuredClone(lastStoredDataState),
         id: node.id,

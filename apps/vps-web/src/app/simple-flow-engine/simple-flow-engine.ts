@@ -298,7 +298,6 @@ const triggerExecution = (
               output: result,
             };
           }
-
           if (formInfo.decorators) {
             if (formInfo.decorators) {
               const decoratorInput = handleDecoratrs(
@@ -341,7 +340,6 @@ const triggerExecution = (
         //     previousNode,
         //   });
         // }
-
         return {
           result: true,
           output: result ?? input,
@@ -549,12 +547,13 @@ export const run = (
       .. it errors .. stop the flow
 
   */
-
   connectionExecuteHistory = [];
 
   const nodeList = Array.from(nodes);
   let isRunning = false;
   let cameraSet = false;
+  const executeNodes: IRectNodeComponent<NodeInfo>[] = [];
+
   nodes.forEach((node) => {
     const nodeComponent = node as unknown as IRectNodeComponent<NodeInfo>;
     const connectionsFromEndNode = nodeList.filter((e) => {
@@ -581,21 +580,24 @@ export const run = (
         cameraSet = true;
         canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
       }
-      isRunning = true;
-      runNode(
-        nodeComponent,
-        canvasApp,
-        animatePath,
-        (input: string | any[]) => {
-          if (onFinishRun) {
-            onFinishRun(input);
-          }
-        },
-        input,
-        offsetX,
-        offsetY
-      );
+      executeNodes.push(nodeComponent);
     }
+  });
+  executeNodes.forEach((nodeComponent) => {
+    isRunning = true;
+    runNode(
+      nodeComponent,
+      canvasApp,
+      animatePath,
+      (input: string | any[]) => {
+        if (onFinishRun) {
+          onFinishRun(input);
+        }
+      },
+      input,
+      offsetX,
+      offsetY
+    );
   });
   if (!isRunning) {
     if (onFinishRun) {
@@ -634,7 +636,6 @@ export const runNodeFromThumb = (
 ) => {
   //let result: any = false;
   let followPath: string | undefined = undefined;
-
   animatePathFromThumb(
     nodeThumb,
     'white',
@@ -798,7 +799,6 @@ export const runNodeFromThumb = (
         }
         input = decoratorInput;
       }
-
       return {
         result: true,
         output: result ?? input,

@@ -39,6 +39,10 @@ import {
   setCameraAnimation,
   setTargetCameraAnimation,
   setPositionTargetCameraAnimation,
+  runCounter,
+  resetRunCounter,
+  setRunCounterResetHandler,
+  setRunCounterUpdateElement,
 } from './follow-path/animate-path';
 import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
@@ -407,6 +411,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       return serializeElementsMap(this.canvasApp.elements);
     };
 
+    const runCounterElement = createElement(
+      'div',
+      {
+        class:
+          'absolute z-[10000] top-0 right-0 text-white px-2 py-1 m-2 bg-slate-900',
+      },
+      this.rootElement,
+      ''
+    );
     const runButton = createElement(
       'button',
       {
@@ -415,11 +428,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           event.preventDefault();
           (runButton.domElement as HTMLButtonElement).disabled = true;
           this.clearPathExecution();
-
+          setRunCounterUpdateElement(
+            runCounterElement.domElement as HTMLElement
+          );
           removeFormElement();
-
+          resetRunCounter();
           if (this.canvasApp?.elements) {
-            this.canvasApp?.elements.forEach((node) => {
+            this.canvasApp?.elements.forEach((node: IElementNode<NodeInfo>) => {
               if (
                 node &&
                 node.nodeInfo &&
@@ -428,12 +443,19 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 node.nodeInfo?.initializeCompute?.();
               }
             });
+            (pathRange.domElement as HTMLButtonElement).disabled = true;
             run(
               this.canvasApp?.elements,
               this.canvasApp,
               animatePath,
               (input) => {
                 console.log('run finished', input);
+              }
+            );
+
+            setRunCounterResetHandler(() => {
+              if (runCounter === 0) {
+                (pathRange.domElement as HTMLButtonElement).disabled = false;
                 (runButton.domElement as HTMLButtonElement).disabled = false;
                 increaseRunIndex();
                 (pathRange.domElement as HTMLElement).setAttribute(
@@ -445,7 +467,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   (connectionExecuteHistory.length * 1000).toString()
                 );
               }
-            );
+            });
           }
           return false;
         },
