@@ -13,6 +13,7 @@ import { showArrayData } from './data-viewers/array';
 import { showGridData, StructureInfo } from './data-viewers/grid';
 
 export const scopeVariableNodeName = 'scope-variable';
+type FieldTypes = 'value' | 'dictionary' | 'array' | 'grid';
 
 export const getScopedVariable =
   (isGlobal = false) =>
@@ -29,9 +30,11 @@ export const getScopedVariable =
     let currentValue: any = 0;
     let timeout: any = undefined;
 
-    let fieldType = 'value';
+    let fieldType: FieldTypes = 'value';
     let fieldValueType = 'number';
     let scopedData: Record<string, any> = {};
+
+    let lastStoredDataState: any = undefined;
 
     const getDefaultValue = () => {
       switch (fieldValueType) {
@@ -286,6 +289,7 @@ export const getScopedVariable =
     }
     const initializeCompute = () => {
       const variableName = node?.nodeInfo?.formValues?.['variableName'] ?? '';
+      lastStoredDataState = undefined;
 
       scopedData = {};
       currentValue = undefined;
@@ -375,42 +379,63 @@ export const getScopedVariable =
       }, 250);
       return getDataForFieldType(parameter, scopeId);
     };
+
     const setData = (data: any, scopeId?: string) => {
       setDataForFieldType(data, scopeId);
 
-      const value = fieldType === 'value' ? data : data.value;
+      if (fieldType === 'value') {
+        const value = fieldType === 'value' ? data : data.value;
+        lastStoredDataState = value;
+      } else {
+        const dataToVisualize = getDataForFieldType(undefined, scopeId);
+        lastStoredDataState = dataToVisualize;
+      }
+
+      visualizeData(data);
+    };
+
+    const visualizeData = (lastStoredDataState: any) => {
       if (htmlNode) {
-        if (fieldType === 'dictionary') {
-          const dictionary = getDataForFieldType(undefined, scopeId);
-          if (dictionary) {
-            showDictionaryData(dictionary, htmlNode, isGlobal);
-            if (rect) {
-              rect.resize(240);
-            }
+        if (fieldType === 'value') {
+          (htmlNode.domElement as unknown as HTMLElement).textContent =
+            getLabel(lastStoredDataState.toString());
+
+          if (rect) {
+            rect.resize(120);
           }
-        } else if (fieldType === 'array') {
-          const array = getDataForFieldType(undefined, scopeId);
-          if (array && Array.isArray(array)) {
-            showArrayData(array, htmlNode, isGlobal);
-            if (rect) {
-              rect.resize(240);
+        } else {
+          const dataToVisualize = lastStoredDataState;
+          if (fieldType === 'dictionary') {
+            if (dataToVisualize) {
+              showDictionaryData(dataToVisualize || {}, htmlNode, isGlobal);
+              if (rect) {
+                rect.resize(240);
+              }
             }
-          }
-        } else if (fieldType === 'grid') {
-          const grid = getDataForFieldType(undefined, scopeId);
-          if (grid && Array.isArray(grid.data)) {
-            if (grid.data.length > 0) {
+          } else if (fieldType === 'array') {
+            if (Array.isArray(dataToVisualize ?? [])) {
+              showArrayData(dataToVisualize || [], htmlNode, isGlobal);
+              if (rect) {
+                rect.resize(240);
+              }
+            }
+          } else if (fieldType === 'grid') {
+            if (
+              dataToVisualize &&
+              Array.isArray(dataToVisualize.data) &&
+              dataToVisualize.data.length > 0
+            ) {
               showGridData(
-                grid.data,
+                dataToVisualize.data,
                 {
-                  rowCount: grid.data.length,
-                  columnCount: grid.data[0].length,
+                  rowCount: dataToVisualize.data.length,
+                  columnCount: dataToVisualize.data[0].length,
                 },
                 htmlNode,
                 isGlobal
               );
               if (rect) {
-                rect.resize(grid.data[0].length * 32);
+                rect.resize(dataToVisualize.data[0].length * 32);
               }
             } else {
               (htmlNode.domElement as unknown as HTMLElement).textContent =
@@ -419,13 +444,6 @@ export const getScopedVariable =
                 rect.resize(120);
               }
             }
-          }
-        } else {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel(value.toString());
-
-          if (rect) {
-            rect.resize(120);
           }
         }
         if (timeout) {
@@ -444,6 +462,18 @@ export const getScopedVariable =
           ).classList.remove('border-orange-200');
         }, 250);
       }
+    };
+
+    const getNodeStatedHandler = () => {
+      console.log('getNodeStatedHandler', variableName, lastStoredDataState);
+      return {
+        data: structuredClone(lastStoredDataState),
+        id: node.id,
+      };
+    };
+
+    const setNodeStatedHandler = (_id: string, data: any) => {
+      visualizeData(data);
     };
     const initializeDataStructure = (
       structureInfo: StructureInfo,
@@ -547,6 +577,8 @@ export const getScopedVariable =
             initializeDataStructure,
             removeScope,
           });
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
         }
         const formElements = [
           {
@@ -570,6 +602,12 @@ export const getScopedVariable =
                 setData,
                 removeScope,
               });
+              if (id) {
+                canvasApp.unRegisteGetNodeStateHandler(id);
+                canvasApp.unRegisteSetNodeStateHandler(id);
+                canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+                canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+              }
               console.log('onChange', node.nodeInfo);
               if (updated) {
                 updated();
@@ -600,19 +638,19 @@ export const getScopedVariable =
             value: initalValues?.['fieldType'] ?? 'value',
             options: [
               {
-                value: 'value',
+                value: 'value' as FieldTypes,
                 label: 'Value',
               },
               {
-                value: 'dictionary',
+                value: 'dictionary' as FieldTypes,
                 label: 'Dictionary',
               },
               {
-                value: 'array',
+                value: 'array' as FieldTypes,
                 label: 'Array',
               },
               {
-                value: 'grid',
+                value: 'grid' as FieldTypes,
                 label: 'Grid/Matrix',
               },
               // {
@@ -620,7 +658,7 @@ export const getScopedVariable =
               //   label: 'DataTable',
               // },
             ],
-            onChange: (value: string) => {
+            onChange: (value: FieldTypes) => {
               if (!node.nodeInfo) {
                 return;
               }
@@ -767,6 +805,11 @@ export const getScopedVariable =
           node.nodeInfo.initializeCompute = initializeCompute;
           node.nodeInfo.delete = () => {
             canvasApp.unregisterVariable(variableName, node.id ?? '');
+            if (node.id) {
+              canvasApp.unRegisteGetNodeStateHandler(node.id);
+              canvasApp.unRegisteSetNodeStateHandler(node.id);
+            }
+
             (
               componentWrapper?.domElement as unknown as HTMLElement
             ).classList.remove('border-green-200');

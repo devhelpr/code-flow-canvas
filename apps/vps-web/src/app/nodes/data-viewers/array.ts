@@ -8,7 +8,7 @@ function createArrayView(
   pageSize: number,
   isGlobal: boolean
 ) {
-  let asHtml = array
+  let asHtml = (array ?? [])
     .map((data, index) => {
       if (index >= pageIndex * pageSize && index < (pageIndex + 1) * pageSize) {
         return `
@@ -20,7 +20,7 @@ function createArrayView(
     })
     .join('');
   asHtml += `<div class="flex flex-row items-center"><div>Size: ${
-    array.length
+    (array ?? []).length
   } page: ${pageIndex + 1}</div>
 		<button class="previous-page icon icon-arrow_left text-3xl disabled:text-gray-800"></button>
 		<button class="next-page icon icon-arrow_right text-3xl disabled:text-gray-800"></button>
@@ -54,7 +54,7 @@ export function showArrayData(
         previousPageButton.removeAttribute('disabled');
       }
 
-      if (pageIndex >= Math.ceil(array.length / pageSize) - 1) {
+      if (pageIndex >= Math.ceil((array ?? []).length / pageSize) - 1) {
         nextPageButton.classList.add('disabled');
         nextPageButton.setAttribute('disabled', 'disabled');
       } else {
@@ -76,7 +76,7 @@ export function showArrayData(
     }
     if (nextPageButton) {
       nextPageButton.addEventListener('click', () => {
-        if (pageIndex < Math.ceil(array.length / pageSize) - 1) {
+        if (pageIndex < Math.ceil((array ?? []).length / pageSize) - 1) {
           pageIndex++;
           createArrayView(array, htmlNode, pageIndex, pageSize, isGlobal);
           setEvents();
