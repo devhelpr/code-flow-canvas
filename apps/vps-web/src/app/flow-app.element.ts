@@ -176,6 +176,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (this.isStoring) {
         return;
       }
+      resetConnectionSlider();
       store();
     };
     this.canvasApp.setOnCanvasUpdated(() => {
@@ -390,6 +391,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       });
       resetRunIndex();
       (runButton.domElement as HTMLButtonElement).disabled = false;
+      resetConnectionSlider();
+    };
+
+    const resetConnectionSlider = () => {
+      (pathRange.domElement as HTMLElement).setAttribute('value', '0');
+      (pathRange.domElement as HTMLElement).setAttribute('max', '0');
+      connectionExecuteHistory.length = 0;
     };
 
     const serializeFlow = () => {
@@ -428,6 +436,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 console.log('run finished', input);
                 (runButton.domElement as HTMLButtonElement).disabled = false;
                 increaseRunIndex();
+                (pathRange.domElement as HTMLElement).setAttribute(
+                  'value',
+                  '0'
+                );
+                (pathRange.domElement as HTMLElement).setAttribute(
+                  'max',
+                  (connectionExecuteHistory.length * 1000).toString()
+                );
               }
             );
           }
@@ -656,8 +672,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.scopeNodeDomElement.classList.remove('bg-blue-300');
         this.scopeNodeDomElement = undefined;
       }
-
-      const stepSize = 100000 / connectionExecuteHistory.length;
+      const max = connectionExecuteHistory.length * 1000;
+      const stepSize = max / connectionExecuteHistory.length;
       const step = Math.floor(sliderValue / stepSize);
 
       if (step >= connectionExecuteHistory.length) {
@@ -773,7 +789,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     };
 
-    createElement(
+    const pathRange = createElement(
       'input',
       {
         type: 'range',
