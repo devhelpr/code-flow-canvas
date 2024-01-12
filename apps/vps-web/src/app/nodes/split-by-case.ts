@@ -20,8 +20,8 @@ import { FormFieldType } from '../components/FormField';
 
 export const getSplitByCase =
   (
-    _animatePath: AnimatePathFunction<NodeInfo>,
-    animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
+    _animatePath: AnimatePathFunction,
+    animatePathFromThumb: AnimatePathFromThumbFunction
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;

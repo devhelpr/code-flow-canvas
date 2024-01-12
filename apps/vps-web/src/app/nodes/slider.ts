@@ -12,7 +12,7 @@ import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getSlider =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
@@ -80,7 +80,7 @@ export const getSlider =
               }
               triggerButton = true;
               currentValue = parseInt((event.target as HTMLInputElement).value);
-              runNode<NodeInfo>(
+              runNode(
                 node as unknown as IRectNodeComponent<NodeInfo>,
                 canvasAppInstance,
                 animatePath,

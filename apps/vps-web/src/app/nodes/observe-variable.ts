@@ -15,7 +15,7 @@ import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
 export const observeVariable =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let variableName = '';
@@ -60,7 +60,7 @@ export const observeVariable =
         canvasAppInstance.observeVariable(node.id, variableName, (value) => {
           console.log('observeVariable', value);
           if (canvasAppInstance) {
-            runNode<NodeInfo>(
+            runNode(
               node,
               canvasAppInstance,
               animatePath,

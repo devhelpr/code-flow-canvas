@@ -28,7 +28,7 @@ const activeFunctionColor = 'bg-orange-400';
 const fieldName = 'functionCall';
 
 export const getCallFunction =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let componentWrapper: INodeComponent<NodeInfo> | undefined;
@@ -216,7 +216,7 @@ export const getCallFunction =
                   input
                 );
 
-                runNode<NodeInfo>(
+                runNode(
                   element as IRectNodeComponent<NodeInfo>,
                   canvasAppInstance,
                   animatePath,

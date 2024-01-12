@@ -15,17 +15,18 @@ import {
 } from '../follow-path/get-node-connection-pairs';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
+import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
 });
 
-export interface ConnectionExecute<T> {
-  connection: IConnectionNodeComponent<T>;
+export interface ConnectionExecute {
+  connection: IConnectionNodeComponent<NodeInfo>;
   connectionValue: any;
 }
 
-export let connectionExecuteHistory: ConnectionExecute<NodeInfo>[] = [];
+export let connectionExecuteHistory: ConnectionExecute[] = [];
 
 const handleDecoratrs = (
   decorators: any[],
@@ -59,13 +60,13 @@ const handleDecoratrs = (
   return decoratorInput;
 };
 
-const getVariablePayload = <T>(
-  node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance<T>,
+const getVariablePayload = (
+  node: IRectNodeComponent<NodeInfo>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   scopeId?: string
 ) => {
   const dataNodesConnectionPairs =
-    getNodeConnectionPairByIdWhereNodeIsEndpoint<T>(
+    getNodeConnectionPairByIdWhereNodeIsEndpoint<NodeInfo>(
       canvasApp,
       node,
       undefined,
@@ -86,13 +87,13 @@ const getVariablePayload = <T>(
   return payload;
 };
 
-const sendData = <T>(
-  node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance<T>,
+const sendData = (
+  node: IRectNodeComponent<NodeInfo>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   data: string,
   scopeId?: string
 ) => {
-  const dataNodesConnectionPairs = getNodeConnectionPairById<T>(
+  const dataNodesConnectionPairs = getNodeConnectionPairById<NodeInfo>(
     canvasApp,
     node,
     undefined,
@@ -111,7 +112,7 @@ const sendData = <T>(
   }
 };
 
-// export interface RunNodeResult<T> {
+// export interface RunNodeResult<NodeInfo> {
 //   input: string | any[];
 //   previousOutput: string | any[];
 //   output: string | any[];
@@ -119,35 +120,22 @@ const sendData = <T>(
 //   nodeId: string;
 //   nodeType: string;
 //   path: string;
-//   scopeNode?: IRectNodeComponent<T>;
-//   node: IRectNodeComponent<T>;
-//   endNode?: IRectNodeComponent<T>;
-//   connection?: IConnectionNodeComponent<T>;
-//   previousNode?: IRectNodeComponent<T>;
-//   nextNode?: IRectNodeComponent<T>;
+//   scopeNode?: IRectNodeComponent<NodeInfo>;
+//   node: IRectNodeComponent<NodeInfo>;
+//   endNode?: IRectNodeComponent<NodeInfo>;
+//   connection?: IConnectionNodeComponent<NodeInfo>;
+//   previousNode?: IRectNodeComponent<NodeInfo>;
+//   nextNode?: IRectNodeComponent<NodeInfo>;
 // }
 
-const triggerExecution = <T>(
-  node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance<T>,
+const triggerExecution = (
+  node: IRectNodeComponent<NodeInfo>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   result: any,
   animatePath: (
-    node: IRectNodeComponent<T>,
+    node: IRectNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: (
-      nodeId: string,
-      node: IRectNodeComponent<T>,
-      input: string | any[],
-      connection: IConnectionNodeComponent<T>,
-      scopeId?: string
-    ) =>
-      | { result: boolean; output: string | any[]; followPathByName?: string }
-      | Promise<{
-          result: boolean;
-          output: string | any[];
-          followPathByName?: string;
-          followThumb?: string;
-        }>,
+    onNextNode?: OnNextNodeFunction,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -181,14 +169,12 @@ const triggerExecution = <T>(
     animatePath(
       node,
       'white',
-      (
+      ((
         _nodeId: string,
-        nextNode: IRectNodeComponent<T>,
+        nextNode: IRectNodeComponent<NodeInfo>,
         input: string | any[],
-        connection: IConnectionNodeComponent<T>,
+        connection: IConnectionNodeComponent<NodeInfo>,
         scopeId?: string
-
-        // TODO : fromNode toevoegen incl compute resultaat ??
       ) => {
         let result: any = false;
         const formInfo = nextNode.nodeInfo as unknown as any;
@@ -199,7 +185,7 @@ const triggerExecution = <T>(
           connectionValue: input,
         });
 
-        const payload = getVariablePayload<T>(nextNode, canvasApp, scopeId);
+        const payload = getVariablePayload(nextNode, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
           if (formInfo.decorators) {
             const decoratorInput = handleDecoratrs(
@@ -357,7 +343,7 @@ const triggerExecution = <T>(
           output: result ?? input,
           followPathByName: followPath,
         };
-      },
+      }) as OnNextNodeFunction,
       (input: string | any[]) => {
         if (onStopped) {
           onStopped(input, scopeId);
@@ -386,26 +372,13 @@ export const increaseRunIndex = () => {
   runIndex++;
 };
 
-export const runNode = <T>(
-  node: IRectNodeComponent<T>,
-  canvasApp: CanvasAppInstance<T>,
+export const runNode = (
+  node: IRectNodeComponent<NodeInfo>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   animatePath: (
-    node: IRectNodeComponent<T>,
+    node: IRectNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: (
-      nodeId: string,
-      node: IRectNodeComponent<T>,
-      input: string | any[],
-      connection: IConnectionNodeComponent<T>,
-      scopeId?: string
-    ) =>
-      | { result: boolean; output: string | any[]; followPathByName?: string }
-      | Promise<{
-          result: boolean;
-          output: string | any[];
-          followPathByName?: string;
-          followThumb?: string;
-        }>,
+    onNextNode?: OnNextNodeFunction,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -421,10 +394,10 @@ export const runNode = <T>(
   offsetX?: number,
   offsetY?: number,
   loopIndex?: number,
-  connection?: IConnectionNodeComponent<T>,
+  connection?: IConnectionNodeComponent<NodeInfo>,
   scopeId?: string
 ): void => {
-  const payload = getVariablePayload<T>(node, canvasApp);
+  const payload = getVariablePayload(node, canvasApp);
 
   const formInfo = node.nodeInfo as unknown as any;
   let result: any = false;
@@ -539,31 +512,13 @@ export const runNode = <T>(
     followPath = undefined;
   }
 };
-export const run = <T>(
-  nodes: ElementNodeMap<T>,
-  canvasApp: CanvasAppInstance<T>,
+export const run = (
+  nodes: ElementNodeMap<NodeInfo>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   animatePath: (
-    node: IRectNodeComponent<T>,
+    node: IRectNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: (
-      nodeId: string,
-      node: IRectNodeComponent<T>,
-      input: string | any[],
-      connection: IConnectionNodeComponent<T>,
-      scopeId?: string
-    ) =>
-      | {
-          result: boolean;
-          output: string | any[];
-          followPathByName?: string;
-          followPath?: string;
-        }
-      | Promise<{
-          result: boolean;
-          output: string | any[];
-          followPathByName?: string;
-          followPath?: string;
-        }>,
+    onNextNode?: OnNextNodeFunction,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -597,11 +552,11 @@ export const run = <T>(
   let isRunning = false;
   let cameraSet = false;
   nodes.forEach((node) => {
-    const nodeComponent = node as unknown as IRectNodeComponent<T>;
+    const nodeComponent = node as unknown as IRectNodeComponent<NodeInfo>;
     const connectionsFromEndNode = nodeList.filter((e) => {
-      const eNode = e[1] as INodeComponent<T>;
+      const eNode = e[1] as INodeComponent<NodeInfo>;
       if (eNode.nodeType === NodeType.Connection) {
-        const element = e[1] as IConnectionNodeComponent<T>;
+        const element = e[1] as IConnectionNodeComponent<NodeInfo>;
         return (
           element.endNode?.id === node.id &&
           !element.isData &&
@@ -623,7 +578,7 @@ export const run = <T>(
         canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
       }
       isRunning = true;
-      runNode<T>(
+      runNode(
         nodeComponent,
         canvasApp,
         animatePath,
@@ -646,30 +601,12 @@ export const run = <T>(
   return true;
 };
 
-export const runNodeFromThumb = <T>(
-  nodeThumb: IThumbNodeComponent<T>,
+export const runNodeFromThumb = (
+  nodeThumb: IThumbNodeComponent<NodeInfo>,
   animatePathFromThumb: (
-    node: IThumbNodeComponent<T>,
+    node: IThumbNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: (
-      nodeId: string,
-      node: INodeComponent<T>,
-      input: string | any[],
-      connection: IConnectionNodeComponent<T>,
-      scopeId?: string
-    ) =>
-      | {
-          result: boolean;
-          stop?: boolean;
-          output: string | any[];
-          followPathByName?: string;
-        }
-      | Promise<{
-          result: boolean;
-          stop?: boolean;
-          output: string | any[];
-          followPathByName?: string;
-        }>,
+    onNextNode?: OnNextNodeFunction,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -686,7 +623,7 @@ export const runNodeFromThumb = <T>(
   ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
-  _scopeNode?: IRectNodeComponent<T>,
+  _scopeNode?: IRectNodeComponent<NodeInfo>,
   loopIndex?: number,
   scopeId?: string
 ) => {
@@ -698,9 +635,9 @@ export const runNodeFromThumb = <T>(
     'white',
     (
       _nodeId: string,
-      nextNode: INodeComponent<T>,
+      nextNode: INodeComponent<NodeInfo>,
       input: string | any[],
-      connection: IConnectionNodeComponent<T>,
+      connection: IConnectionNodeComponent<NodeInfo>,
       scopeId?: string
     ) => {
       connectionExecuteHistory.push({
@@ -757,10 +694,10 @@ export const runNodeFromThumb = <T>(
                 //     result: result,
                 //     nodeId: nextNode.id,
                 //     path: followPath ?? '',
-                //     node: nextNode as unknown as IRectNodeComponent<T>,
+                //     node: nextNode as unknown as IRectNodeComponent<NodeInfo>,
                 //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
                 //     previousNode:
-                //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<T>,
+                //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<NodeInfo>,
                 //   });
                 // }
 
@@ -832,10 +769,10 @@ export const runNodeFromThumb = <T>(
       //     nodeId: nextNode.id,
       //     scopeNode,
       //     path: followPath ?? '',
-      //     node: nextNode as unknown as IRectNodeComponent<T>,
+      //     node: nextNode as unknown as IRectNodeComponent<NodeInfo>,
       //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
       //     previousNode:
-      //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<T>,
+      //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<NodeInfo>,
       //   });
       // }
 

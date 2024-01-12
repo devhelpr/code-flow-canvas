@@ -20,7 +20,7 @@ export interface ComputeResult {
   followPath?: string;
 }
 export const getLayoutNode =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -44,7 +44,7 @@ export const getLayoutNode =
           reject('canvasAppInstance is not defined');
           return;
         }
-        run<NodeInfo>(
+        run(
           canvasAppInstance?.elements as ElementNodeMap<NodeInfo>,
           canvasAppInstance,
           animatePath,

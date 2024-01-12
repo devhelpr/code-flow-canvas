@@ -16,7 +16,7 @@ const defaultFunctionColor = 'bg-yellow-400';
 const activeFunctionColor = 'bg-orange-400';
 
 export const getFunction =
-  (_animatePath: AnimatePathFunction<NodeInfo>) =>
+  (_animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;

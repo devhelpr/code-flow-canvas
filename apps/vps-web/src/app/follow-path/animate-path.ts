@@ -12,6 +12,8 @@ import {
 } from './get-node-connection-pairs';
 import { getPointOnConnection } from './point-on-connection';
 import { followNodeExecution } from './followNodeExecution';
+import { NodeInfo } from '../types/node-info';
+import { OnNextNodeFunction } from './OnNextNodeFunction';
 
 function getSpeed(maxSpeed: number, speedMeter: number) {
   //return 1;
@@ -26,23 +28,10 @@ function getMaxLoop() {
   return 1.015;
 }
 
-export type AnimatePathFunction<T> = (
-  node: IRectNodeComponent<T>,
+export type AnimatePathFunction = (
+  node: IRectNodeComponent<NodeInfo>,
   color: string,
-  onNextNode?: (
-    nodeId: string,
-    node: IRectNodeComponent<T>,
-    input: string | any[],
-    connection: IConnectionNodeComponent<T>,
-    scopeId?: string
-  ) =>
-    | { result: boolean; output: string | any[]; followPathByName?: string }
-    | Promise<{
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followThumb?: string;
-      }>,
+  onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
@@ -59,22 +48,10 @@ export type AnimatePathFunction<T> = (
   scopeId?: string
 ) => void;
 
-export type AnimatePathFromThumbFunction<T> = (
-  node: IThumbNodeComponent<T>,
+export type AnimatePathFromThumbFunction = (
+  node: IThumbNodeComponent<NodeInfo>,
   color: string,
-  onNextNode?: (
-    nodeId: string,
-    node: IRectNodeComponent<T>,
-    input: string | any[],
-    connection: IConnectionNodeComponent<T>,
-    scopeId?: string
-  ) =>
-    | { result: boolean; output: string | any[]; followPathByName?: string }
-    | Promise<{
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-      }>,
+  onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
@@ -90,29 +67,11 @@ export type AnimatePathFromThumbFunction<T> = (
   scopeId?: string
 ) => void;
 
-export type FollowPathFunction = <T>(
-  canvasApp: CanvasAppInstance<T>,
-  node: IRectNodeComponent<T>,
+export type FollowPathFunction = (
+  canvasApp: CanvasAppInstance<NodeInfo>,
+  node: IRectNodeComponent<NodeInfo>,
   color: string,
-  onNextNode?: (
-    nodeId: string,
-    node: IRectNodeComponent<T>,
-    input: string | any[],
-    connection: IConnectionNodeComponent<T>,
-    scopeId?: string
-  ) =>
-    | {
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followThumb?: string;
-      }
-    | Promise<{
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followThumb?: string;
-      }>,
+  onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
@@ -131,12 +90,56 @@ export type FollowPathFunction = <T>(
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
 
-// interface NodeAnimatonInfo {
-//   node: IRectNodeComponent<NodeInfo>;
-//   loopIndex: number;
-// }
+type NodeAnimationNextNode = (
+  nodeId: string,
+  node: IRectNodeComponent<NodeInfo>,
+  input: string | any[],
+  connection: IConnectionNodeComponent<NodeInfo>,
+  scopeId?: string
+) =>
+  | {
+      result: boolean;
+      output: string | any[];
+      followPathByName?: string;
+      followPath?: string;
+    }
+  | Promise<{
+      result: boolean;
+      output: string | any[];
+      followPathByName?: string;
+      followPath?: string;
+    }>;
 
-// const nodeAnimationMap: Map<string, NodeAnimatonInfo> = new Map();
+interface NodeAnimatonInfo {
+  start: IRectNodeComponent<NodeInfo>;
+  connection: IConnectionNodeComponent<NodeInfo>;
+  end: IRectNodeComponent<NodeInfo>;
+  animationLoop: number;
+  animatedNodes?: {
+    node1?: IElementNode<unknown>;
+    node2?: IElementNode<unknown>;
+    node3?: IElementNode<unknown>;
+  };
+  onNextNode?: NodeAnimationNextNode;
+  onStopped?: (input: string | any[], scopeId?: string) => void;
+  scopeId?: string;
+  input?: string | any[];
+  singleStep?: boolean;
+
+  domCircle: HTMLElement;
+  domMessage: HTMLElement;
+  offsetX?: number;
+  offsetY?: number;
+
+  testCircle: IElementNode<unknown>;
+  message: IElementNode<unknown>;
+  messageText: IElementNode<unknown>;
+
+  color: string;
+}
+
+const nodeAnimationMap: Map<number, NodeAnimatonInfo> = new Map();
+let nodeAnimationId = 1;
 
 let speedMeter = 1000;
 export const setSpeedMeter = (speed: number) => {
@@ -174,9 +177,14 @@ export function setPositionTargetCameraAnimation(
     targetScale = scale;
   }
 }
+let lastTime: number | undefined = undefined;
+export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
+  const animateCamera = (time: number) => {
+    if (!lastTime) {
+      lastTime = time;
+    }
+    const elapsed = time - lastTime;
 
-export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
-  const animateCamera = () => {
     if (targetX !== undefined && targetY !== undefined) {
       const canvasCamera = canvasApp.getCamera();
       let x = 600 - targetX * targetScale;
@@ -190,11 +198,6 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
       const distance = Math.sqrt(
         Math.pow(canvasCamera.x - x, 2) + Math.pow(canvasCamera.y - y, 2)
       );
-      // canvasApp.setCamera(
-      //   -x, // + distance * 0.001,
-      //   -y, // + distance * 0.001,
-      //   1.0 //canvasCamera.scale
-      // );
 
       const scaleDiff = targetScale - canvasCamera.scale;
       if (distance < 0.001) {
@@ -214,45 +217,169 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
         );
       }
     }
+
+    nodeAnimationMap.forEach((nodeAnimation, key) => {
+      if (nodeAnimation.start && nodeAnimation.end) {
+        const start = nodeAnimation.start;
+        const connection = nodeAnimation.connection;
+        const end = nodeAnimation.end;
+        const animatedNodes = nodeAnimation.animatedNodes;
+
+        const testCircle = nodeAnimation.testCircle;
+        const message = nodeAnimation.message;
+        const messageText = nodeAnimation.messageText;
+
+        let loop = nodeAnimation.animationLoop;
+
+        if (
+          start &&
+          end &&
+          connection &&
+          connection.controlPoints &&
+          connection.controlPoints.length >= 1
+        ) {
+          const domCircle = nodeAnimation.domCircle;
+          const domMessage = nodeAnimation.domMessage;
+          const offsetX = nodeAnimation.offsetX;
+          const offsetY = nodeAnimation.offsetY;
+          const singleStep = nodeAnimation.singleStep;
+          const input = nodeAnimation.input;
+
+          const color = nodeAnimation.color;
+
+          const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+            loop,
+            connection,
+            start,
+            end
+          );
+
+          if (!animatedNodes?.node1) {
+            domCircle.style.display = 'flex';
+          }
+          domCircle.style.transform = `translate(${
+            bezierCurvePoints.x + (offsetX ?? 0)
+          }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
+          if (!animatedNodes?.node1) {
+            domMessage.style.display = 'flex';
+          }
+          domMessage.style.transform = `translate(${
+            bezierCurvePoints.x + (offsetX ?? 0)
+          }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
+
+          // loop += 0.015;
+          loop += (getLoopIncrement() * elapsed) / (5000 * (1001 - speedMeter)); //0.1;
+          nodeAnimation.animationLoop = loop;
+          if (loop > getMaxLoop()) {
+            //  1.015
+            loop = 0;
+
+            nodeAnimationMap.delete(key);
+
+            const onNextOrPromise = singleStep ??
+              nodeAnimation.onNextNode?.(
+                end.id,
+                end,
+                input ?? '',
+                connection,
+                nodeAnimation.scopeId
+              ) ?? {
+                result: true,
+                output: '',
+                followPathByName: undefined,
+              };
+
+            if (
+              Array.isArray(onNextOrPromise) ||
+              (onNextOrPromise as unknown as Promise<unknown>).then
+            ) {
+              testCircle && canvasApp?.elements.delete(testCircle.id);
+              testCircle?.domElement?.remove();
+
+              message && canvasApp?.elements.delete(message.id);
+              message?.domElement?.remove();
+              // (testCircle as unknown as undefined) = undefined;
+              // (message as unknown as undefined) = undefined;
+              // (messageText as unknown as undefined) = undefined;
+            }
+            //
+            const resolver = (result: any) => {
+              console.log('animatePath onNextNode result', input, result);
+              if (!result.stop && result.result !== undefined) {
+                animatePath(
+                  canvasApp,
+                  end as unknown as IRectNodeComponent<NodeInfo>,
+                  color,
+                  nodeAnimation.onNextNode as OnNextNodeFunction,
+                  nodeAnimation.onStopped,
+                  result.output,
+                  result.followPathByName,
+                  { node1: testCircle, node2: message, node3: messageText },
+                  offsetX,
+                  offsetY,
+                  undefined,
+                  undefined,
+                  result.followThumb,
+                  nodeAnimation.scopeId
+                );
+              } else {
+                testCircle && canvasApp?.elements.delete(testCircle.id);
+                testCircle?.domElement?.remove();
+
+                message && canvasApp?.elements.delete(message.id);
+                message?.domElement?.remove();
+                if (nodeAnimation.onStopped) {
+                  nodeAnimation.onStopped(result.output ?? input ?? '');
+                }
+              }
+            };
+
+            Promise.resolve(onNextOrPromise)
+              .then(resolver)
+              .catch((err) => {
+                console.log('animatePath onNextNode error', err);
+              });
+          }
+        } else {
+          if (start) {
+            nodeAnimation.onNextNode &&
+              nodeAnimation.onNextNode(
+                start.id,
+                start,
+                nodeAnimation.input ?? '',
+                connection
+              );
+          }
+          testCircle && canvasApp?.elements.delete(testCircle.id);
+          testCircle?.domElement?.remove();
+
+          canvasApp?.elements.delete(message.id);
+          message?.domElement?.remove();
+
+          nodeAnimationMap.delete(key);
+
+          if (nodeAnimation.onStopped) {
+            nodeAnimation.onStopped(nodeAnimation.input ?? '');
+          }
+        }
+      }
+    });
     requestAnimationFrame(animateCamera);
   };
   requestAnimationFrame(animateCamera);
 }
 
-// TODO : alt : animatePathFromThumb
-// TODO : rename node1,node2,node3 and put in object
-// TODO : what parameters put together in "options" parameter?
-// TODO : build different variations of this function for the different use-cases
-
-export const animatePathForNodeConnectionPairs = <T>(
-  canvasApp: CanvasAppInstance<T>,
+export const animatePathForNodeConnectionPairs = (
+  canvasApp: CanvasAppInstance<NodeInfo>,
   nodeConnectionPairs:
     | false
     | {
-        start: IRectNodeComponent<T>;
-        end: IRectNodeComponent<T>;
-        connection: IConnectionNodeComponent<T>;
+        start: IRectNodeComponent<NodeInfo>;
+        end: IRectNodeComponent<NodeInfo>;
+        connection: IConnectionNodeComponent<NodeInfo>;
       }[],
   color: string,
-  onNextNode?: (
-    nodeId: string,
-    node: IRectNodeComponent<T>,
-    input: string | any[],
-    connection: IConnectionNodeComponent<T>,
-    scopeId?: string
-  ) =>
-    | {
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followPath?: string;
-      }
-    | Promise<{
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followPath?: string;
-      }>,
+  onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   _followPathByName?: string,
@@ -387,17 +514,36 @@ export const animatePathForNodeConnectionPairs = <T>(
       domCircle.classList.remove('layer-2');
       domMessage.classList.remove('layer-2');
     }
+
+    nodeAnimationMap.set(nodeAnimationId, {
+      start: start as unknown as IRectNodeComponent<NodeInfo>,
+      connection: connection as unknown as IConnectionNodeComponent<NodeInfo>,
+      end: end as unknown as IRectNodeComponent<NodeInfo>,
+      animationLoop: 0,
+      animatedNodes,
+      onNextNode: onNextNode as unknown as NodeAnimationNextNode,
+      onStopped,
+      scopeId,
+      input,
+      domCircle,
+      domMessage,
+      color,
+      testCircle,
+      message,
+      messageText,
+    });
+    nodeAnimationId++;
+
     let loop = 0;
     const onInterval = () => {
       if (
         start &&
         end &&
-        //connection.onCalculateControlPoints &&
         connection &&
         connection.controlPoints &&
         connection.controlPoints.length >= 1
       ) {
-        const bezierCurvePoints = getPointOnConnection<T>(
+        const bezierCurvePoints = getPointOnConnection<NodeInfo>(
           loop,
           connection,
           start,
@@ -423,97 +569,78 @@ export const animatePathForNodeConnectionPairs = <T>(
           //  1.015
           loop = 0;
 
-          // canvasApp?.elements.delete(testCircle.id);
-          // testCircle?.domElement?.remove();
-
-          // canvasApp?.elements.delete(message.id);
-          // message?.domElement?.remove();
-
           clearInterval(cancel);
           timers.delete(cancel);
 
-          if (!onNextNode || onNextNode) {
-            const onNextOrPromise = singleStep ??
-              onNextNode?.(end.id, end, input ?? '', connection, scopeId) ?? {
-                result: true,
-                output: '',
-                followPathByName: undefined,
-              };
+          const onNextOrPromise = singleStep ??
+            onNextNode?.(end.id, end, input ?? '', connection, scopeId) ?? {
+              result: true,
+              output: '',
+              followPathByName: undefined,
+            };
 
-            if (
-              Array.isArray(onNextOrPromise) ||
-              (onNextOrPromise as unknown as Promise<unknown>).then
-            ) {
+          if (
+            Array.isArray(onNextOrPromise) ||
+            (onNextOrPromise as unknown as Promise<unknown>).then
+          ) {
+            testCircle && canvasApp?.elements.delete(testCircle.id);
+            testCircle?.domElement?.remove();
+
+            message && canvasApp?.elements.delete(message.id);
+            message?.domElement?.remove();
+            (testCircle as unknown as undefined) = undefined;
+            (message as unknown as undefined) = undefined;
+            (messageText as unknown as undefined) = undefined;
+          }
+          //
+          const resolver = (result: any) => {
+            console.log('animatePath onNextNode result', input, result);
+            if (!result.stop && result.result !== undefined) {
+              animatePath(
+                canvasApp,
+                end,
+                color,
+                onNextNode,
+                onStopped,
+                result.output,
+                result.followPathByName,
+                { node1: testCircle, node2: message, node3: messageText },
+                offsetX,
+                offsetY,
+                undefined,
+                undefined,
+                result.followThumb,
+                scopeId
+              );
+            } else {
               testCircle && canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
 
               message && canvasApp?.elements.delete(message.id);
               message?.domElement?.remove();
-              (testCircle as unknown as undefined) = undefined;
-              (message as unknown as undefined) = undefined;
-              (messageText as unknown as undefined) = undefined;
-            }
-            //
-            const resolver = (result: any) => {
-              //const result =
-              console.log('animatePath onNextNode result', input, result);
-              if (!result.stop && result.result !== undefined) {
-                animatePath<T>(
-                  canvasApp,
-                  end,
-                  color,
-                  onNextNode,
-                  onStopped,
-                  result.output,
-                  result.followPathByName,
-                  { node1: testCircle, node2: message, node3: messageText },
-                  offsetX,
-                  offsetY,
-                  undefined,
-                  undefined,
-                  result.followThumb,
-                  scopeId
+              if (onStopped) {
+                console.log(
+                  'animatePath onStopped1',
+                  nodeConnectionPairs,
+                  input,
+                  result.output
                 );
-              } else {
-                testCircle && canvasApp?.elements.delete(testCircle.id);
-                testCircle?.domElement?.remove();
-
-                message && canvasApp?.elements.delete(message.id);
-                message?.domElement?.remove();
-                if (onStopped) {
-                  console.log(
-                    'animatePath onStopped1',
-                    nodeConnectionPairs,
-                    input,
-                    result.output
-                  );
-                  onStopped(result.output ?? input ?? '');
-                }
+                onStopped(result.output ?? input ?? '');
               }
-            };
-
-            Promise.resolve(onNextOrPromise)
-              .then(resolver)
-              .catch((err) => {
-                console.log('animatePath onNextNode error', err);
-              });
-          } else {
-            testCircle && canvasApp?.elements.delete(testCircle.id);
-            testCircle?.domElement?.remove();
-
-            canvasApp?.elements.delete(message.id);
-            message?.domElement?.remove();
-            if (onStopped) {
-              console.log('animatePath onStopped2', nodeConnectionPairs, input);
-              onStopped(input ?? '');
             }
-          }
+          };
+
+          Promise.resolve(onNextOrPromise)
+            .then(resolver)
+            .catch((err) => {
+              console.log('animatePath onNextNode error', err);
+            });
         } else {
           if (speedMeter !== currentSpeed) {
             clearInterval(cancel);
             timers.delete(cancel);
             cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
-            setCanceler();
+            //setCanceler();
           }
         }
       } else {
@@ -526,8 +653,8 @@ export const animatePathForNodeConnectionPairs = <T>(
         canvasApp?.elements.delete(message.id);
         message?.domElement?.remove();
 
-        clearInterval(cancel);
-        timers.delete(cancel);
+        // clearInterval(cancel);
+        // timers.delete(cancel);
 
         if (onStopped) {
           console.log('animatePath onStopped3', nodeConnectionPairs, input);
@@ -535,45 +662,28 @@ export const animatePathForNodeConnectionPairs = <T>(
         }
       }
     };
+    let cancel: NodeJS.Timer = 0 as unknown as NodeJS.Timer;
     // console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
-    let cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
+    // let cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
 
-    const setCanceler = () => {
-      timers.set(cancel, () => {
-        clearInterval(cancel);
-        timers.delete(cancel);
-        //console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
-        cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
-        setCanceler();
-      });
-    };
-    setCanceler();
+    // const setCanceler = () => {
+    //   timers.set(cancel, () => {
+    //     clearInterval(cancel);
+    //     timers.delete(cancel);
+    //     //console.log('animate speed', (maxSpeed * (1000 - speedMeter)) / 1000);
+    //     cancel = setInterval(onInterval, getSpeed(maxSpeed, speedMeter));
+    //     setCanceler();
+    //   });
+    // };
+    // setCanceler();
   });
 };
 
-export const animatePath: FollowPathFunction = <T>(
-  canvasApp: CanvasAppInstance<T>,
-  node: IRectNodeComponent<T>,
+export const animatePath: FollowPathFunction = (
+  canvasApp: CanvasAppInstance<NodeInfo>,
+  node: IRectNodeComponent<NodeInfo>,
   color: string,
-  onNextNode?: (
-    nodeId: string,
-    node: IRectNodeComponent<T>,
-    input: string | any[],
-    connection: IConnectionNodeComponent<T>,
-    scopeId?: string
-  ) =>
-    | {
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followThumb?: string;
-      }
-    | Promise<{
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-        followThumb?: string;
-      }>,
+  onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string,
@@ -589,7 +699,7 @@ export const animatePath: FollowPathFunction = <T>(
   followThumb?: string,
   scopeId?: string
 ) => {
-  const nodeConnectionPairs = getNodeConnectionPairById<T>(
+  const nodeConnectionPairs = getNodeConnectionPairById<NodeInfo>(
     canvasApp,
     node,
     followPathByName,
@@ -615,23 +725,11 @@ export const animatePath: FollowPathFunction = <T>(
   );
 };
 
-export const animatePathFromThumb = <T>(
-  canvasApp: CanvasAppInstance<T>,
-  node: IThumbNodeComponent<T>,
+export const animatePathFromThumb = (
+  canvasApp: CanvasAppInstance<NodeInfo>,
+  node: IThumbNodeComponent<NodeInfo>,
   color: string,
-  onNextNode?: (
-    nodeId: string,
-    node: IRectNodeComponent<T>,
-    input: string | any[],
-    connection: IConnectionNodeComponent<T>,
-    scopeId?: string
-  ) =>
-    | { result: boolean; output: string | any[]; followPathByName?: string }
-    | Promise<{
-        result: boolean;
-        output: string | any[];
-        followPathByName?: string;
-      }>,
+  onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string,
@@ -647,7 +745,10 @@ export const animatePathFromThumb = <T>(
 
   scopeId?: string
 ) => {
-  const connectionsPairs = getNodeConnectionPairsFromThumb<T>(canvasApp, node);
+  const connectionsPairs = getNodeConnectionPairsFromThumb<NodeInfo>(
+    canvasApp,
+    node
+  );
 
   animatePathForNodeConnectionPairs(
     canvasApp,

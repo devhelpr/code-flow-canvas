@@ -12,7 +12,7 @@ import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getCheckbox =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = false;
@@ -74,7 +74,7 @@ export const getCheckbox =
               triggerButton = true;
               currentValue =
                 Boolean((event.target as HTMLInputElement).value) || false;
-              runNode<NodeInfo>(
+              runNode(
                 node,
                 canvasApp,
                 animatePath,

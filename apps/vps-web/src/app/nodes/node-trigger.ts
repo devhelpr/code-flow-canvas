@@ -14,7 +14,7 @@ import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
 export const getNodeTrigger =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
@@ -41,7 +41,7 @@ export const getNodeTrigger =
           }
         }
         if (triggerNode) {
-          runNode<NodeInfo>(
+          runNode(
             triggerNode as IRectNodeComponent<NodeInfo>,
             canvasAppInstance,
             animatePath,

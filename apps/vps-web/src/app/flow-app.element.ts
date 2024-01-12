@@ -12,7 +12,6 @@ import {
   setSelectNode,
   CanvasAppInstance,
   IRectNodeComponent,
-  IConnectionNodeComponent,
   IThumbNodeComponent,
   Flow,
   updateNamedSignal,
@@ -41,6 +40,7 @@ import {
   setTargetCameraAnimation,
   setPositionTargetCameraAnimation,
 } from './follow-path/animate-path';
+import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
 import {
   createIndexedDBStorageProvider,
@@ -98,24 +98,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const animatePath = (
       node: IRectNodeComponent<NodeInfo>,
       color: string,
-      onNextNode?: (
-        nodeId: string,
-        node: IRectNodeComponent<NodeInfo>,
-        input: string | any[],
-        connection: IConnectionNodeComponent<NodeInfo>
-      ) =>
-        | {
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-            followPath?: string;
-          }
-        | Promise<{
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-            followPath?: string;
-          }>,
+      onNextNode?: OnNextNodeFunction,
       onStopped?: (input: string | any[]) => void,
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
@@ -134,7 +117,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
       }
-      return _animatePath<NodeInfo>(
+      return _animatePath(
         this.canvasApp,
         node,
         color,
@@ -155,19 +138,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const animatePathFromThumb = (
       node: IThumbNodeComponent<NodeInfo>,
       color: string,
-      onNextNode?: (
-        nodeId: string,
-        node: IRectNodeComponent<NodeInfo>,
-        input: string | any[],
-        connection: IConnectionNodeComponent<NodeInfo>,
-        scopeId?: string
-      ) =>
-        | { result: boolean; output: string | any[]; followPathByName?: string }
-        | Promise<{
-            result: boolean;
-            output: string | any[];
-            followPathByName?: string;
-          }>,
+      onNextNode?: OnNextNodeFunction,
       onStopped?: (input: string | any[], scopeId?: string) => void,
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
@@ -185,7 +156,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
       }
-      return _animatePathFromThumb<NodeInfo>(
+      return _animatePathFromThumb(
         this.canvasApp,
         node,
         color,
@@ -449,7 +420,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 node.nodeInfo?.initializeCompute?.();
               }
             });
-            run<NodeInfo>(
+            run(
               this.canvasApp?.elements,
               this.canvasApp,
               animatePath,
@@ -488,7 +459,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           setSpeedMeter(speedMeter);
           const timerList = Array.from(timers ?? []);
           timerList.forEach((timer) => {
-            timer[1]();
+            timer[1](); // call timer canceler
           });
         },
       },

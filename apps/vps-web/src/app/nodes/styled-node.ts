@@ -14,7 +14,7 @@ import { FormFieldType } from '../components/FormField';
 import { replaceValues } from '../utils/replace-values';
 
 export const getStyledNode =
-  (_animatePath: AnimatePathFunction<NodeInfo>) =>
+  (_animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divNode: IElementNode<NodeInfo>;

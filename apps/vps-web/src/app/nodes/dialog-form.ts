@@ -28,8 +28,8 @@ export const dialogFormNodeName = 'dialog-form-node';
 
 export const dialogFormNode =
   (
-    _animatePath: AnimatePathFunction<NodeInfo>,
-    animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
+    _animatePath: AnimatePathFunction,
+    animatePathFromThumb: AnimatePathFromThumbFunction
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;

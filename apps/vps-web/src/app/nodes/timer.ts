@@ -14,7 +14,7 @@ import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
 export const getTimer =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IElementNode<NodeInfo>;
@@ -41,7 +41,7 @@ export const getTimer =
           node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
         (divElement.domElement as HTMLElement).classList.remove('loader');
         if (canvasAppInstance && node) {
-          runNode<NodeInfo>(
+          runNode(
             node,
             canvasAppInstance,
             animatePath,

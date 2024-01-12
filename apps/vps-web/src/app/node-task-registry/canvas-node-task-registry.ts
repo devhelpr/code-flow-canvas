@@ -146,8 +146,8 @@ export const getNodeFactoryNames = () => {
 };
 
 export const setupCanvasNodeTaskRegistry = (
-  animatePath: AnimatePathFunction<NodeInfo>,
-  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
+  animatePath: AnimatePathFunction,
+  animatePathFromThumb: AnimatePathFromThumbFunction
 ) => {
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
