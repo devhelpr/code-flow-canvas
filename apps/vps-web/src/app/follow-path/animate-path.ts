@@ -267,18 +267,12 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
             bezierCurvePoints.x + (offsetX ?? 0)
           }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
-          // loop += 0.015;
-          loop += (getLoopIncrement() * elapsed) / (5000 * (1001 - speedMeter)); //0.1;
+          loop += (getLoopIncrement() * elapsed) / (5000 * (1001 - speedMeter));
           nodeAnimation.animationLoop = loop;
           if (loop > getMaxLoop()) {
-            //  1.015
             loop = 0;
 
             nodeAnimationMap.delete(key);
-            if (runCounter > 0) {
-              runCounter--;
-              updateRunCounterElement();
-            }
 
             const onNextOrPromise = singleStep ??
               nodeAnimation.onNextNode?.(
@@ -306,10 +300,13 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
               // (message as unknown as undefined) = undefined;
               // (messageText as unknown as undefined) = undefined;
             }
-            //
+
             const resolver = (result: any) => {
               console.log('animatePath onNextNode result', input, result);
-
+              if (runCounter > 0) {
+                runCounter--;
+                updateRunCounterElement();
+              }
               if (!result.stop && result.result !== undefined) {
                 animatePath(
                   canvasApp,
@@ -336,14 +333,6 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
                 if (nodeAnimation.onStopped) {
                   nodeAnimation.onStopped(result.output ?? input ?? '');
                 }
-              }
-
-              if (
-                runCounter <= 0 &&
-                runCounterResetHandler &&
-                nodeAnimationMap.size === 0
-              ) {
-                runCounterResetHandler();
               }
             };
 
@@ -377,14 +366,6 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
 
           if (nodeAnimation.onStopped) {
             nodeAnimation.onStopped(nodeAnimation.input ?? '');
-          }
-
-          if (
-            runCounter <= 0 &&
-            runCounterResetHandler &&
-            nodeAnimationMap.size === 0
-          ) {
-            runCounterResetHandler();
           }
         }
       }
@@ -449,6 +430,18 @@ export const animatePathForNodeConnectionPairs = (
     if (onStopped) {
       console.log('animatePath onStopped4', input);
       onStopped(input ?? '', scopeId);
+    }
+    if (runCounter > 0) {
+      runCounter--;
+      updateRunCounterElement();
+    }
+
+    if (
+      runCounter <= 0 &&
+      runCounterResetHandler &&
+      nodeAnimationMap.size === 0
+    ) {
+      runCounterResetHandler();
     }
     return;
   }
