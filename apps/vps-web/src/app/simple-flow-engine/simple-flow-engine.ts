@@ -43,7 +43,6 @@ const handleDecoratrs = (
     if (decoratorNode && decoratorNode.nodeInfo?.compute) {
       const decoratorResult = decoratorNode.nodeInfo?.compute(
         decoratorInput,
-        undefined,
         runIndex,
         payload,
         undefined,
