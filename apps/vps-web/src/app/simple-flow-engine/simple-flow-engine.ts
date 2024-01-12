@@ -162,12 +162,9 @@ const triggerExecution = <T>(
   ) => void,
   onStopped: undefined | ((input: string | any[], scopeId?: string) => void),
   followPath: string | undefined,
-  input?: string,
-  previousOutput?: any,
   offsetX?: number,
   offsetY?: number,
-  scopeId?: string,
-  previousNode?: IRectNodeComponent<T>
+  scopeId?: string
 ) => {
   if (result !== undefined) {
     // if (pathExecution) {
@@ -195,7 +192,6 @@ const triggerExecution = <T>(
         // TODO : fromNode toevoegen incl compute resultaat ??
       ) => {
         let result: any = false;
-        let previousOutput: any = undefined;
         const formInfo = nextNode.nodeInfo as unknown as any;
 
         connectionExecuteHistory.push({
@@ -301,7 +297,7 @@ const triggerExecution = <T>(
           result = computeResult.result;
           sendData(nextNode, canvasApp, result);
           followPath = computeResult.followPath;
-          previousOutput = computeResult.previousOutput;
+          //previousOutput = computeResult.previousOutput;
 
           if (computeResult.stop) {
             if (onStopped) {
@@ -434,7 +430,6 @@ export const runNode = <T>(
   const formInfo = node.nodeInfo as unknown as any;
   let result: any = false;
   let followPath: string | undefined = undefined;
-  let previousOutput: any = undefined;
 
   if (formInfo && formInfo?.computeAsync) {
     if (formInfo.decorators) {
@@ -463,7 +458,7 @@ export const runNode = <T>(
         sendData(node, canvasApp, computeResult.result);
         result = computeResult.result;
         followPath = computeResult.followPath;
-        previousOutput = computeResult.previousOutput;
+        //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
           if (onStopped) {
             onStopped(computeResult.output ?? '', scopeId);
@@ -477,12 +472,9 @@ export const runNode = <T>(
           animatePath,
           onStopped,
           followPath,
-          input,
-          previousOutput,
           offsetX,
           offsetY,
-          scopeId,
-          node
+          scopeId
         );
       });
   } else if (formInfo && formInfo?.compute) {
@@ -510,7 +502,7 @@ export const runNode = <T>(
     sendData(node, canvasApp, computeResult.result);
     result = computeResult.result;
     followPath = computeResult.followPath;
-    previousOutput = computeResult.previousOutput;
+    //previousOutput = computeResult.previousOutput;
     if (computeResult.stop) {
       if (onStopped) {
         onStopped(computeResult.output ?? '', scopeId);
@@ -539,12 +531,9 @@ export const runNode = <T>(
       animatePath,
       onStopped,
       followPath,
-      input,
-      previousOutput,
       offsetX,
       offsetY,
-      scopeId,
-      node
+      scopeId
     );
   } else {
     result = false;
@@ -698,7 +687,7 @@ export const runNodeFromThumb = <T>(
   ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
-  scopeNode?: IRectNodeComponent<T>,
+  _scopeNode?: IRectNodeComponent<T>,
   loopIndex?: number,
   scopeId?: string
 ) => {
@@ -721,7 +710,6 @@ export const runNodeFromThumb = <T>(
       });
 
       let result: any = false;
-      let previousOutput: any = undefined;
       const formInfo = nextNode.nodeInfo as unknown as any;
       console.log('runNodeFromThumb', loopIndex, nextNode);
       if (formInfo && formInfo.computeAsync) {
@@ -816,7 +804,7 @@ export const runNodeFromThumb = <T>(
         );
         result = computeResult.result;
         followPath = computeResult.followPath;
-        previousOutput = computeResult.previousOutput;
+        //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
           return {
             result: result,

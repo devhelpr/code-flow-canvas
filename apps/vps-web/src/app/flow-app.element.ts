@@ -802,7 +802,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     };
 
-    const pathRange = createElement(
+    createElement(
       'input',
       {
         type: 'range',
