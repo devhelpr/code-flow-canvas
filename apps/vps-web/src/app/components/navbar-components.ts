@@ -40,21 +40,23 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   deleteButton: HTMLButtonElement | null = null;
   exportButton: HTMLButtonElement | null = null;
   importButton: HTMLButtonElement | null = null;
-  importScriptButton: HTMLButtonElement | null = null;
+  //importScriptButton: HTMLButtonElement | null = null;
 
   rootAppElement: HTMLElement | null = null;
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
     super(parent, props);
 
+    // <button class="${navBarButton}">Import script</button>
+
     this.template = createTemplate(
       `<div class="inline-flex items-center content-center">
         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
-        <button class="${navBarButton}">Export</button>
-        <button class="${navBarButton}">Import</button>
-        <button class="${navBarButton}">Import script</button>
+        <button class="${navBarButton}">Save</button>
+        <button class="${navBarButton}">Load</button>
+       
         <children></children>
       </div>`
     );
@@ -78,18 +80,18 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
-        this.importScriptButton = this.importButton
-          ?.nextSibling as HTMLButtonElement;
+        // this.importScriptButton = this.importButton
+        //   ?.nextSibling as HTMLButtonElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
         this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
-        this.importScriptButton.addEventListener(
-          'click',
-          this.onClickImportScript
-        );
+        // this.importScriptButton.addEventListener(
+        //   'click',
+        //   this.onClickImportScript
+        // );
 
         this.renderList.push(
           this.addNodeButton,
