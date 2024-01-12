@@ -22,6 +22,7 @@ export const getParallel =
   ) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       return;
@@ -34,7 +35,11 @@ export const getParallel =
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 2 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
@@ -42,6 +47,7 @@ export const getParallel =
         let seq2Ran = false;
         runNodeFromThumb(
           node.thumbConnectors[0],
+          canvasAppInstance,
           animatePathFromThumb,
           (inputFromFirstRun: string | any[]) => {
             console.log('Parallel inputFromFirstRun', inputFromFirstRun);
@@ -66,6 +72,7 @@ export const getParallel =
 
         runNodeFromThumb(
           node.thumbConnectors[1],
+          canvasAppInstance,
           animatePathFromThumb,
           (inputFromSecondRun: string | any[]) => {
             seq2Ran = true;
@@ -100,6 +107,7 @@ export const getParallel =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const jsxComponentWrapper = createElement(
           'div',
           {

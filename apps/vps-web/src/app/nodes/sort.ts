@@ -29,6 +29,7 @@ export const getSort =
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       if (foreachComponent && foreachComponent.domElement) {
@@ -53,7 +54,11 @@ export const getSort =
       forEachDomElement.classList.remove(activeSortColor);
 
       return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 2 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
@@ -72,7 +77,11 @@ export const getSort =
         }
         const output: any[] = [];
         const runNext = (mapLoop: number) => {
-          if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+          if (
+            !node.thumbConnectors ||
+            node.thumbConnectors.length < 2 ||
+            !canvasAppInstance
+          ) {
             reject();
             return;
           }
@@ -83,6 +92,7 @@ export const getSort =
             //console.log('runNext', mapLoop, values[mapLoop]);
             runNodeFromThumb(
               node.thumbConnectors[1],
+              canvasAppInstance,
               animatePathFromThumb,
               (outputFromMap: string | any[]) => {
                 if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -121,6 +131,7 @@ export const getSort =
             );
             runNodeFromThumb(
               node.thumbConnectors[0],
+              canvasAppInstance,
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
                 resolve({
@@ -161,6 +172,7 @@ export const getSort =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         foreachComponent = createElement(
           'div',
           {

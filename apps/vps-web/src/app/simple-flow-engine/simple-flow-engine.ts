@@ -24,6 +24,7 @@ registerCustomFunction('random', [], () => {
 export interface ConnectionExecute {
   connection: IConnectionNodeComponent<NodeInfo>;
   connectionValue: any;
+  nodeStates: Map<string, any>;
 }
 
 export let connectionExecuteHistory: ConnectionExecute[] = [];
@@ -179,10 +180,13 @@ const triggerExecution = (
         let result: any = false;
         const formInfo = nextNode.nodeInfo as unknown as any;
 
+        const nodeStates = canvasApp.getNodeStates();
+
         connectionExecuteHistory.push({
           connection:
             connection as unknown as IConnectionNodeComponent<NodeInfo>,
           connectionValue: input,
+          nodeStates: nodeStates,
         });
 
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
@@ -603,6 +607,7 @@ export const run = (
 
 export const runNodeFromThumb = (
   nodeThumb: IThumbNodeComponent<NodeInfo>,
+  canvasApp: CanvasAppInstance<NodeInfo>,
   animatePathFromThumb: (
     node: IThumbNodeComponent<NodeInfo>,
     color: string,
@@ -643,6 +648,7 @@ export const runNodeFromThumb = (
       connectionExecuteHistory.push({
         connection: connection as unknown as IConnectionNodeComponent<NodeInfo>,
         connectionValue: input,
+        nodeStates: canvasApp.getNodeStates(),
       });
 
       let result: any = false;

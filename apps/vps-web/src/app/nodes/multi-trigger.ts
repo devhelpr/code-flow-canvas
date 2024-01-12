@@ -27,6 +27,7 @@ export const getMultiTrigger =
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let rect: Rect<NodeInfo> | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       return;
@@ -38,9 +39,14 @@ export const getMultiTrigger =
       _thumbName?: string,
       scopeId?: string
     ) => {
-      if (node.thumbConnectors && node.thumbConnectors.length > 2) {
+      if (
+        node.thumbConnectors &&
+        node.thumbConnectors.length > 2 &&
+        canvasAppInstance
+      ) {
         runNodeFromThumb(
           node.thumbConnectors[0],
+          canvasAppInstance,
           animatePathFromThumb,
           () => {
             return;
@@ -53,6 +59,7 @@ export const getMultiTrigger =
 
         runNodeFromThumb(
           node.thumbConnectors[1],
+          canvasAppInstance,
           animatePathFromThumb,
           () => {
             return;
@@ -82,6 +89,7 @@ export const getMultiTrigger =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const template = createTemplate(
           // `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" class="scale-[2.5]" width="24" height="24" viewBox="0 0 24 24">
           // <title>call_split</title>

@@ -61,7 +61,7 @@ export const getMap =
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
-
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const initializeCompute = () => {
       if (foreachComponent && foreachComponent.domElement) {
         foreachComponent.domElement.textContent = `${title}`;
@@ -116,7 +116,11 @@ export const getMap =
         }
         const output: any[] = [];
         const runNext = (mapLoop: number) => {
-          if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+          if (
+            !node.thumbConnectors ||
+            node.thumbConnectors.length < 2 ||
+            !canvasAppInstance
+          ) {
             reject();
             return;
           }
@@ -126,6 +130,7 @@ export const getMap =
           if (mapLoop < forEachLength) {
             runNodeFromThumb(
               node.thumbConnectors[1],
+              canvasAppInstance,
               animatePathFromThumb,
               (outputFromMap: string | any[]) => {
                 if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -148,6 +153,7 @@ export const getMap =
 
             runNodeFromThumb(
               node.thumbConnectors[0],
+              canvasAppInstance,
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
                 resolve({
@@ -185,6 +191,7 @@ export const getMap =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         foreachComponent = createElement(
           'div',
           {

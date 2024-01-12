@@ -684,31 +684,33 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         return;
       }
       const node = pathStep.connection.startNode;
+      this.canvasApp?.setNodeStates(pathStep.nodeStates);
+
       // if (pathStep.scopeNode) {
       //   this.scopeNodeDomElement = (
       //     pathStep.scopeNode.domElement as HTMLElement
       //   ).firstChild as HTMLElement;
       //   this.scopeNodeDomElement.classList.add('bg-blue-300');
       // }
-      connectionExecuteHistory.forEach((path) => {
-        const connection = path.connection;
-        if (connection.startNode && connection.startNode.domElement) {
-          (
-            (connection.startNode.domElement as HTMLElement)
-              .firstChild as HTMLElement
-          ).classList.remove('bg-blue-400');
-        }
-        if (connection.endNode && connection.endNode.domElement) {
-          (
-            (connection.endNode.domElement as HTMLElement)
-              .firstChild as HTMLElement
-          ).classList.remove('bg-blue-400');
-        }
-      });
+      // connectionExecuteHistory.forEach((path) => {
+      //   const connection = path.connection;
+      //   if (connection.startNode && connection.startNode.domElement) {
+      //     (
+      //       (connection.startNode.domElement as HTMLElement)
+      //         .firstChild as HTMLElement
+      //     ).classList.remove('bg-blue-400');
+      //   }
+      //   if (connection.endNode && connection.endNode.domElement) {
+      //     (
+      //       (connection.endNode.domElement as HTMLElement)
+      //         .firstChild as HTMLElement
+      //     ).classList.remove('bg-blue-400');
+      //   }
+      // });
       if (node && node.domElement) {
-        (
-          (node.domElement as HTMLElement).firstChild as HTMLElement
-        ).classList.add('bg-blue-400');
+        // (
+        //   (node.domElement as HTMLElement).firstChild as HTMLElement
+        // ).classList.add('bg-blue-400');
 
         const pointValue = sliderValue - step * stepSize;
         const percentage = pointValue / stepSize;
@@ -1147,14 +1149,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (this.scopeNodeDomElement) {
       this.scopeNodeDomElement.classList.remove('bg-blue-300');
     }
-    connectionExecuteHistory.forEach((connectionExecute) => {
-      const connection = connectionExecute.connection;
-      if (connection.startNode && connection.startNode.domElement) {
-        (
-          connection.startNode.domElement.firstChild as HTMLElement
-        )?.classList.remove('bg-blue-400');
-      }
-    });
+    // connectionExecuteHistory.forEach((connectionExecute) => {
+    //   const connection = connectionExecute.connection;
+    //   if (connection.startNode && connection.startNode.domElement) {
+    //     (
+    //       connection.startNode.domElement.firstChild as HTMLElement
+    //     )?.classList.remove('bg-blue-400');
+    //   }
+    // });
     const domCircle = this.testCircle?.domElement as HTMLElement;
     const domMessage = this.message?.domElement as HTMLElement;
     domCircle.style.display = 'none';

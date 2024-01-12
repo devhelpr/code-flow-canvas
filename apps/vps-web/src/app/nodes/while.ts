@@ -27,6 +27,7 @@ export const getWhile =
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let whileComponent: INodeComponent<NodeInfo> | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const title = whileTitle;
     const initializeCompute = () => {
       if (whileComponent && whileComponent.domElement) {
@@ -46,7 +47,11 @@ export const getWhile =
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 4) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 4 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
@@ -64,7 +69,11 @@ export const getWhile =
           ).innerHTML = `${title}<br />${1}`;
         }
         const runNext = (mapLoop: number) => {
-          if (!node.thumbConnectors || node.thumbConnectors.length < 4) {
+          if (
+            !node.thumbConnectors ||
+            node.thumbConnectors.length < 4 ||
+            !canvasAppInstance
+          ) {
             reject();
             return;
           }
@@ -72,9 +81,14 @@ export const getWhile =
           // perform test condition
           runNodeFromThumb(
             node.thumbConnectors[2],
+            canvasAppInstance,
             animatePathFromThumb,
             (resultFromTestRun: string | any[]) => {
-              if (!node.thumbConnectors || node.thumbConnectors.length < 4) {
+              if (
+                !node.thumbConnectors ||
+                node.thumbConnectors.length < 4 ||
+                !canvasAppInstance
+              ) {
                 reject();
                 return;
               }
@@ -102,6 +116,7 @@ export const getWhile =
 
                 runNodeFromThumb(
                   node.thumbConnectors[3],
+                  canvasAppInstance,
                   animatePathFromThumb,
                   (resultFromLoopBlock: string | any[]) => {
                     if (
@@ -132,6 +147,7 @@ export const getWhile =
 
                 runNodeFromThumb(
                   node.thumbConnectors[1],
+                  canvasAppInstance,
                   animatePathFromThumb,
                   (resultFromContinueNodeRun: string | any[]) => {
                     resolve({
@@ -174,6 +190,7 @@ export const getWhile =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         whileComponent = createElement(
           'div',
           {

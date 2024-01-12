@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -33,6 +34,7 @@ export const dialogFormNode =
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       return;
@@ -46,7 +48,7 @@ export const dialogFormNode =
       scopeId?: string
     ) => {
       return new Promise<IComputeResult>((resolve, reject) => {
-        if (!node) {
+        if (!node || !canvasAppInstance) {
           reject();
           return;
         }
@@ -85,7 +87,8 @@ export const dialogFormNode =
           if (
             !node ||
             !node.thumbConnectors ||
-            node.thumbConnectors.length < 2
+            node.thumbConnectors.length < 2 ||
+            !canvasAppInstance
           ) {
             reject();
             return;
@@ -93,6 +96,7 @@ export const dialogFormNode =
 
           runNodeFromThumb(
             node.thumbConnectors[0],
+            canvasAppInstance,
             animatePathFromThumb,
             () => {
               if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -123,13 +127,15 @@ export const dialogFormNode =
           if (
             !node ||
             !node.thumbConnectors ||
-            node.thumbConnectors.length < 2
+            node.thumbConnectors.length < 2 ||
+            !canvasAppInstance
           ) {
             reject();
             return;
           }
           runNodeFromThumb(
             node.thumbConnectors[1],
+            canvasAppInstance,
             animatePathFromThumb,
             () => {
               if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -271,6 +277,7 @@ export const dialogFormNode =
       },
       (nodeInstance) => {
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+        canvasAppInstance = nodeInstance.contextInstance;
       },
       {
         hasTitlebar: false,

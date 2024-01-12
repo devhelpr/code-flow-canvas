@@ -22,6 +22,7 @@ export const getSequential =
   ) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       return;
@@ -34,21 +35,31 @@ export const getSequential =
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 2 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
         runNodeFromThumb(
           node.thumbConnectors[0],
+          canvasAppInstance,
           animatePathFromThumb,
           (inputFromFirstRun: string | any[]) => {
             console.log('Sequential inputFromFirstRun', inputFromFirstRun);
-            if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+            if (
+              !node.thumbConnectors ||
+              node.thumbConnectors.length < 2 ||
+              !canvasAppInstance
+            ) {
               reject();
               return;
             }
             runNodeFromThumb(
               node.thumbConnectors[1],
+              canvasAppInstance,
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
                 console.log(
@@ -88,6 +99,7 @@ export const getSequential =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const jsxComponentWrapper = createElement(
           'div',
           {

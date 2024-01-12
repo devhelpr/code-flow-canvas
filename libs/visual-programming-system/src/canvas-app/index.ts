@@ -22,6 +22,10 @@ import { setSelectNode } from '../reactivity';
 import { NodeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
 import { CommandHandler } from '../interfaces/command-handler';
+import {
+  SetNodeStatedHandler,
+  GetNodeStatedHandler,
+} from '../interfaces/node-state-handlers';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -50,6 +54,8 @@ export const createCanvasApp = <T>(
   > = new Map();
 
   const commandHandlers: Record<string, CommandHandler> = {};
+  const nodeSetStateHandlers: Record<string, SetNodeStatedHandler> = {};
+  const nodeGetStateHandlers: Record<string, GetNodeStatedHandler> = {};
 
   const tempVariables: Record<string, any> = {};
 
@@ -1111,6 +1117,43 @@ export const createCanvasApp = <T>(
     unregisterCommandHandler: (name: string) => {
       delete commandHandlers[name];
     },
+    registeGetNodeStateHandler: (
+      name: string,
+      handler: GetNodeStatedHandler
+    ) => {
+      nodeGetStateHandlers[name] = handler;
+    },
+    unRegisteGetNodeStateHandler: (name: string) => {
+      delete nodeGetStateHandlers[name];
+    },
+    registeSetNodeStateHandler: (
+      name: string,
+      handler: SetNodeStatedHandler
+    ) => {
+      nodeSetStateHandlers[name] = handler;
+    },
+    unRegisteSetNodeStateHandler: (name: string) => {
+      delete nodeSetStateHandlers[name];
+    },
+    getNodeStates: () => {
+      const result: Map<string, any> = new Map();
+      Object.entries(nodeGetStateHandlers).forEach(([key, getHandler]) => {
+        if (key) {
+          const nodeState = getHandler();
+          result.set(nodeState.id, nodeState.data);
+        }
+      });
+      return result;
+    },
+    setNodeStates: (nodeStates: Map<string, any>) => {
+      nodeStates.forEach((data, id) => {
+        const setHandler = nodeSetStateHandlers[id];
+        if (setHandler) {
+          setHandler(id, data);
+        }
+      });
+    },
+
     executeCommandOnCommandHandler: (
       name: string,
       commandName: string,

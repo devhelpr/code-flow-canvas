@@ -57,6 +57,7 @@ export const getForEach =
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const title = 'foreach';
     const initializeCompute = () => {
       if (foreachComponent && foreachComponent.domElement) {
@@ -76,7 +77,11 @@ export const getForEach =
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 2 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
@@ -117,7 +122,11 @@ export const getForEach =
           foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
         }
         const runNext = (mapLoop: number) => {
-          if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+          if (
+            !node.thumbConnectors ||
+            node.thumbConnectors.length < 2 ||
+            !canvasAppInstance
+          ) {
             reject();
             return;
           }
@@ -128,6 +137,7 @@ export const getForEach =
             //console.log('runNext', mapLoop, values[mapLoop]);
             runNodeFromThumb(
               node.thumbConnectors[1],
+              canvasAppInstance,
               animatePathFromThumb,
               (inputFromFirstRun: string | any[]) => {
                 if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -149,6 +159,7 @@ export const getForEach =
 
             runNodeFromThumb(
               node.thumbConnectors[0],
+              canvasAppInstance,
               animatePathFromThumb,
               (inputFromSecondRun: string | any[]) => {
                 resolve({
@@ -191,6 +202,7 @@ export const getForEach =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         foreachComponent = createElement(
           'div',
           {

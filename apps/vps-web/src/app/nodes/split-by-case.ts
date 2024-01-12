@@ -25,6 +25,7 @@ export const getSplitByCase =
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
     const initializeCompute = () => {
       return;
@@ -37,7 +38,11 @@ export const getSplitByCase =
       scopeId?: string
     ) => {
       return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 3) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 3 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
@@ -73,6 +78,7 @@ export const getSplitByCase =
         if (thumbNode) {
           runNodeFromThumb(
             thumbNode,
+            canvasAppInstance,
             animatePathFromThumb,
             (_input: string | any[]) => {
               resolve({
@@ -107,6 +113,7 @@ export const getSplitByCase =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const formElements = [
           {
             fieldType: FormFieldType.Text,

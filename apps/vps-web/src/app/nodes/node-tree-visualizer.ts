@@ -128,6 +128,25 @@ export const getNodeTreeVisualizer = (
     }
   };
 
+  const getNodeStatedHandler = () => {
+    if (!htmlNode) {
+      return {
+        data: '',
+        id: node.id,
+      };
+    }
+    return {
+      data: (htmlNode.domElement as unknown as HTMLElement).innerHTML,
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    if (htmlNode) {
+      (htmlNode.domElement as unknown as HTMLElement).innerHTML = data;
+    }
+  };
+
   const initializeCompute = () => {
     if (htmlNode) {
       (
@@ -178,6 +197,8 @@ export const getNodeTreeVisualizer = (
         canvasApp.registerCommandHandler(commandName, {
           execute,
         });
+        canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+        canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
       }
       const formElements = [
         {
@@ -198,6 +219,12 @@ export const getNodeTreeVisualizer = (
             canvasApp.registerCommandHandler(commandName, {
               execute,
             });
+            if (id) {
+              canvasApp.unRegisteGetNodeStateHandler(id);
+              canvasApp.unRegisteSetNodeStateHandler(id);
+              canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+              canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+            }
             console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
@@ -276,6 +303,10 @@ export const getNodeTreeVisualizer = (
           if (timeout) {
             clearTimeout(timeout);
             timeout = undefined;
+          }
+          if (node.id) {
+            canvasApp.unRegisteGetNodeStateHandler(node.id);
+            canvasApp.unRegisteSetNodeStateHandler(node.id);
           }
         };
         node.nodeInfo.showFormOnlyInPopup = true;
