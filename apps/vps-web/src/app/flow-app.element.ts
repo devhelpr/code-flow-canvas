@@ -43,6 +43,7 @@ import {
   resetRunCounter,
   setRunCounterResetHandler,
   setRunCounterUpdateElement,
+  setOnFrame,
 } from './follow-path/animate-path';
 import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
@@ -69,6 +70,7 @@ import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
+import path from 'path';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -310,6 +312,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }) as unknown as HTMLElement;
         }
         this.clearCanvas();
+
+        setOnFrame((_elapsed) => {
+          if (connectionExecuteHistory.length > 0) {
+            const value = parseInt(
+              (pathRange.domElement as HTMLInputElement).value
+            );
+            if (!isNaN(value)) {
+              showProgressOnPathExecution(value);
+            }
+          }
+        });
         storageProvider
           .getFlow('1234')
           .then((flow) => {
@@ -393,6 +406,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         }
       });
+
       resetRunIndex();
       (runButton.domElement as HTMLButtonElement).disabled = false;
       resetConnectionSlider();
@@ -401,7 +415,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const resetConnectionSlider = () => {
       (pathRange.domElement as HTMLElement).setAttribute('value', '0');
       (pathRange.domElement as HTMLElement).setAttribute('max', '0');
+      (pathRange.domElement as HTMLElement).setAttribute(
+        'disabled',
+        'disabled'
+      );
       connectionExecuteHistory.length = 0;
+      this.clearPathExecution();
     };
 
     const serializeFlow = () => {

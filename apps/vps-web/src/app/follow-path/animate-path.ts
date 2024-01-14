@@ -177,6 +177,11 @@ export function setPositionTargetCameraAnimation(
     targetScale = scale;
   }
 }
+
+let onFrame: undefined | ((elapsed: number) => void) = undefined;
+export function setOnFrame(handler: (elapsed: number) => void) {
+  onFrame = handler;
+}
 let lastTime: number | undefined = undefined;
 export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
   const animateCamera = (time: number) => {
@@ -184,7 +189,9 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
       lastTime = time;
     }
     const elapsed = time - lastTime;
-
+    if (onFrame) {
+      onFrame(elapsed);
+    }
     if (targetX !== undefined && targetY !== undefined) {
       const canvasCamera = canvasApp.getCamera();
       let x = 600 - targetX * targetScale;
