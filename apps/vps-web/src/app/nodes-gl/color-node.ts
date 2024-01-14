@@ -101,6 +101,9 @@ export const getColorNode: NodeTaskFactory<any> = (
     },
     (nodeInstance) => {
       node = nodeInstance.node as IRectNodeComponent<any>;
+    },
+    {
+      category: 'UI',
     }
   );
 };
