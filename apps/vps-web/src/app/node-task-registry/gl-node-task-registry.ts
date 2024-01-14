@@ -6,7 +6,7 @@ import { getSineNode } from '../nodes-gl/sine';
 import { getCosineNode } from '../nodes-gl/cosine';
 import { getTimeNode } from '../nodes-gl/time';
 import { getMultiplyNode } from '../nodes-gl/multiply';
-import { getBackgroundColorNode } from '../nodes-gl/background-color-node';
+import { getOutputColorNode } from '../nodes-gl/output-color-node';
 import { getUVNode } from '../nodes-gl/uv-node';
 import { getAdditionNode } from '../nodes-gl/addition';
 import { getLengthNode } from '../nodes-gl/length';
@@ -45,7 +45,7 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('absolute-node', getAbsoluteNode);
   registerGLNodeFactory('multiply-node', getMultiplyNode);
   registerGLNodeFactory('multiply-color-node', getMultiplyColorNode);
-  registerGLNodeFactory('background-color-node', getBackgroundColorNode);
+  registerGLNodeFactory('output-color-node', getOutputColorNode);
   registerGLNodeFactory('uv-node', getUVNode);
   registerGLNodeFactory('addition-node', getAdditionNode);
   registerGLNodeFactory('subtract-node', getSubtractNode);

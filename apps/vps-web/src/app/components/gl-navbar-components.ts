@@ -57,8 +57,8 @@ export class GLNavbarComponent extends Component<
         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
-        <button class="${navBarButton}">Export</button>
-        <button class="${navBarButton}">Import</button>
+        <button class="${navBarButton}">Save</button>
+        <button class="${navBarButton}">Load</button>
         <children></children>
       </div>`
     );

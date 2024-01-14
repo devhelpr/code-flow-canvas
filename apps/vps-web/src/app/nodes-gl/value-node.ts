@@ -84,6 +84,9 @@ export const getValueNode: NodeTaskFactory<any> = (
     },
     (nodeInstance) => {
       node = nodeInstance.node as IRectNodeComponent<any>;
+    },
+    {
+      category: 'UI',
     }
   );
 };

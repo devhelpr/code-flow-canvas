@@ -274,14 +274,29 @@ export class GLAppElement extends AppElement<any> {
     const createOption = (
       selectElement: HTMLSelectElement,
       value: string,
-      text: string
+      text: string,
+      categoryName: string
     ) => {
+      let category = selectElement.querySelector(
+        "[data-category='" + categoryName + "']"
+      );
+      if (!category) {
+        const optgroup = createElement(
+          'optgroup',
+          {
+            label: categoryName,
+            'data-category': categoryName,
+          },
+          selectElement
+        );
+        category = optgroup.domElement as HTMLElement;
+      }
       const option = createElement(
         'option',
         {
           value: value,
         },
-        selectElement,
+        category as HTMLElement,
         text
       );
       return option;
@@ -306,14 +321,31 @@ export class GLAppElement extends AppElement<any> {
           .value;
         let isPreviouslySelectedNodeTypeInDropdown = false;
         (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
+
+        const createOptgroup = (categoryName: string) =>
+          createElement(
+            'optgroup',
+            {
+              label: categoryName,
+              'data-category': categoryName,
+            },
+            selectNodeType.domElement as HTMLSelectElement
+          );
+        createOptgroup('input');
+        createOptgroup('output');
+        createOptgroup('UI');
+        createOptgroup('uncategorized');
+
         const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
           const factory = getGLNodeTaskFactory(nodeTask);
+          let categoryName = 'Default';
           if (factory) {
             const node = factory(canvasUpdated);
             if (node.isContained) {
               return;
             }
+            categoryName = node.category || 'uncategorized';
           }
           if (nodeTask === nodeType) {
             isPreviouslySelectedNodeTypeInDropdown = true;
@@ -321,11 +353,25 @@ export class GLAppElement extends AppElement<any> {
           createOption(
             selectNodeType.domElement as HTMLSelectElement,
             nodeTask,
-            nodeTask
+            nodeTask,
+            categoryName
           );
         });
         if (isPreviouslySelectedNodeTypeInDropdown) {
           (selectNodeType?.domElement as HTMLSelectElement).value = nodeType;
+        } else {
+          const firstNodeOfFirstOptgroupElement = (
+            selectNodeType?.domElement as HTMLSelectElement
+          ).querySelector('optgroup')?.firstChild;
+          if (firstNodeOfFirstOptgroupElement) {
+            const defaultSelectedNodeType = (
+              firstNodeOfFirstOptgroupElement as HTMLElement
+            ).getAttribute('value');
+            if (defaultSelectedNodeType) {
+              (selectNodeType?.domElement as HTMLSelectElement).value =
+                defaultSelectedNodeType;
+            }
+          }
         }
       }
     };
@@ -334,6 +380,7 @@ export class GLAppElement extends AppElement<any> {
     ) => {
       if (selectNodeType?.domElement) {
         (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
+
         const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
           const factory = getGLNodeTaskFactory(nodeTask);
@@ -346,7 +393,8 @@ export class GLAppElement extends AppElement<any> {
           createOption(
             selectNodeType.domElement as HTMLSelectElement,
             nodeTask,
-            nodeTask
+            nodeTask,
+            ''
           );
         });
       }
@@ -883,7 +931,7 @@ export class GLAppElement extends AppElement<any> {
         if (node.nodeType === NodeType.Shape) {
           if (
             node.nodeInfo?.type === 'circle-node' ||
-            node.nodeInfo?.type === 'background-color-node'
+            node.nodeInfo?.type === 'output-color-node'
           ) {
             const inputs = this.getInputsForNode(
               node as IRectNodeComponent<any>

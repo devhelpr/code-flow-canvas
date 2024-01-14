@@ -9,7 +9,7 @@ import {
 
 import { InitialValues, NodeTask } from '../node-task-registry';
 
-export const getBackgroundColorNode = (_updated: () => void): NodeTask<any> => {
+export const getOutputColorNode = (_updated: () => void): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
 
   const initializeCompute = () => {
@@ -64,12 +64,13 @@ export const getBackgroundColorNode = (_updated: () => void): NodeTask<any> => {
     };
   };
 
-  const nodeName = 'background-color-node';
-  const nodeTitle = 'Background Color';
+  const nodeName = 'output-color-node';
+  const nodeTitle = 'Output Color';
   return {
     name: nodeName,
     family: 'flow-canvas',
     isContainer: false,
+    category: 'output',
     createVisualNode: (
       canvasApp: CanvasAppInstance<any>,
       x: number,

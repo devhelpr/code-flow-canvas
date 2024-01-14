@@ -192,7 +192,7 @@
           "height": 165,
           "nodeType": "Shape",
           "nodeInfo": {
-            "type": "background-color-node",
+            "type": "output-color-node",
             "formValues": {}
           }
         },

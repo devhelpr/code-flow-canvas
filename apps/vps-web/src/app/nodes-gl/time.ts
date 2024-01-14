@@ -69,6 +69,7 @@ export const getTimeNode: NodeTaskFactory<any> = (
       hasTitlebar: false,
       additionalClassNames: 'flex-wrap flex-col',
       childNodeWrapperClass: 'w-full block text-center',
+      category: 'input',
     },
     element
   );

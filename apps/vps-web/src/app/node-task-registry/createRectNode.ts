@@ -89,7 +89,9 @@ export const createRectNode = (
   const componentWrapper = createElement(
     'div',
     {
-      class: `relative flex flex-col bg-slate-500 text-white rounded py-2`,
+      class: `relative flex flex-col bg-slate-500 text-white rounded ${
+        showTitlebar ? '' : 'py-2'
+      }`,
     },
     undefined
   ) as unknown as INodeComponent<NodeInfo>;
@@ -107,7 +109,7 @@ export const createRectNode = (
             const decoratorWrapper = createElement(
               'div',
               {
-                class: `relative text-center px-2 py-2  ${
+                class: `relative text-center px-2 py-2 ${
                   firstBeforeDecorator ? 'rounded-t' : ''
                 }`,
               },

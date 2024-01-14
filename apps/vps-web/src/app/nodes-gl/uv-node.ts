@@ -109,6 +109,7 @@ export const getUVNode: NodeTaskFactory<any> = (
     },
     {
       hasTitlebar: false,
+      category: 'input',
     }
   );
 };
