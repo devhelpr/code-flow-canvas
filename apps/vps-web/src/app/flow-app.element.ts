@@ -69,7 +69,6 @@ import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
-import { create } from 'domain';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
