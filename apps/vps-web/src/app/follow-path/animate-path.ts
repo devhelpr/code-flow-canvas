@@ -267,7 +267,8 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
             bezierCurvePoints.x + (offsetX ?? 0)
           }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
-          loop += (getLoopIncrement() * elapsed) / (5000 * (1001 - speedMeter));
+          loop +=
+            (getLoopIncrement() * elapsed) / (10000 * (1001 - speedMeter));
           nodeAnimation.animationLoop = loop;
           if (loop > getMaxLoop()) {
             loop = 0;
