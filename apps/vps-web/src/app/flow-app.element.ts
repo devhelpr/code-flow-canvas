@@ -69,6 +69,7 @@ import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
+import { create } from 'domain';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -821,6 +822,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         name: 'path-track',
         min: '0',
         max: '100000',
+        disabled: 'disabled',
         value: 1,
         input: (event) => {
           const value = parseInt((event.target as HTMLInputElement).value);
@@ -832,6 +834,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       bgRange.domElement,
       ''
     );
+    const labelPathRange = createElement(
+      'label',
+      {
+        class: ' whitespace-nowrap text-black p-2',
+        for: pathRange.id,
+      },
+      bgRange.domElement,
+      'Timeline'
+    );
+    pathRange.domElement.before(labelPathRange.domElement);
 
     AppComponents({
       rootElement: this.rootElement,
