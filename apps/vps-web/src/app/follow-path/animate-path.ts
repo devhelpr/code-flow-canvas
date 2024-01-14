@@ -180,7 +180,7 @@ export function setPositionTargetCameraAnimation(
 let lastTime: number | undefined = undefined;
 export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
   const animateCamera = (time: number) => {
-    if (!lastTime) {
+    if (lastTime === undefined) {
       lastTime = time;
     }
     const elapsed = time - lastTime;
