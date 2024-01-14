@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
+  getCamera,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -24,6 +25,8 @@ export const getNodeTreeVisualizer = (
   let commandName = '';
   let timeout: any = undefined;
   let isInitialized = false;
+  let rootNode: IElementNode<unknown> | undefined = undefined;
+  let initialDistance = 0;
   const execute = (_command: string, payload: any) => {
     if (isInitialized) {
       isInitialized = false;
@@ -54,7 +57,9 @@ export const getNodeTreeVisualizer = (
           undefined,
           `${data}`
         );
-
+        if (!rootNode) {
+          rootNode = contentDataElement;
+        }
         const contentElement = createElement(
           'div',
           {
@@ -121,6 +126,30 @@ export const getNodeTreeVisualizer = (
           nodeElement = treeNode.domElement as unknown as HTMLElement;
         }
         nodeElement.appendChild(element.domElement as unknown as HTMLElement);
+        if (rootNode) {
+          const boundingBox = (
+            rootNode.domElement as HTMLElement
+          ).getBoundingClientRect();
+          const nodeBoundngBox = (
+            node.domElement as HTMLElement
+          ).getBoundingClientRect();
+          if (boundingBox && node && nodeBoundngBox) {
+            const camera = getCamera();
+            console.log(
+              'boundingBox.left',
+              // boundingBox.left,
+              // nodeBoundngBox.left,
+              camera.scale,
+              boundingBox.left / camera.scale -
+                nodeBoundngBox.left / camera.scale
+            );
+            (node.domElement as HTMLElement).style.left = `-${
+              boundingBox.left / camera.scale -
+              nodeBoundngBox.left / camera.scale +
+              initialDistance
+            }px`;
+          }
+        }
       }
     }
     if (rect) {
@@ -154,8 +183,24 @@ export const getNodeTreeVisualizer = (
       ).innerHTML = `<div>-----</div>`;
     }
     isInitialized = true;
+    rootNode = undefined;
     if (rect) {
       rect.resize(120);
+    }
+
+    if (htmlNode) {
+      (node.domElement as HTMLElement).style.left = `0px`;
+      const boundingBox = (
+        htmlNode.domElement as HTMLElement
+      ).getBoundingClientRect();
+      const nodeBoundngBox = (
+        node.domElement as HTMLElement
+      ).getBoundingClientRect();
+      if (boundingBox && node && nodeBoundngBox) {
+        const camera = getCamera();
+        initialDistance =
+          boundingBox.left / camera.scale - nodeBoundngBox.left / camera.scale;
+      }
     }
 
     if (timeout) {
