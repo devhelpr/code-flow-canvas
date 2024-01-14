@@ -318,7 +318,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               (pathRange.domElement as HTMLInputElement).value
             );
             if (!isNaN(value)) {
-              showProgressOnPathExecution(value);
+              updateMessageBubble(value);
             }
           }
         });
@@ -707,22 +707,64 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       ''
     );
 
-    const showProgressOnPathExecution = (sliderValue: number) => {
-      if (this.scopeNodeDomElement) {
-        this.scopeNodeDomElement.classList.remove('bg-blue-300');
-        this.scopeNodeDomElement = undefined;
-      }
+    const getSliderNodeByPosition = (sliderValue: number) => {
       const max = connectionExecuteHistory.length * 1000;
       const stepSize = max / connectionExecuteHistory.length;
       const step = Math.floor(sliderValue / stepSize);
 
       if (step >= connectionExecuteHistory.length) {
-        return;
+        return false;
       }
       const pathStep = connectionExecuteHistory[step];
       if (!pathStep.connection.startNode || !pathStep.connection.endNode) {
+        return false;
+      }
+      return { step, pathStep, stepSize };
+    };
+
+    const updateMessageBubble = (sliderValue: number) => {
+      const result = getSliderNodeByPosition(sliderValue);
+      if (result === false) {
         return;
       }
+      const step = result.step;
+      const stepSize = result.stepSize;
+      const pathStep = result.pathStep;
+      const node = pathStep.connection.startNode;
+      if (
+        node &&
+        pathStep.connection.endNode &&
+        sliderValue % stepSize !== 0 &&
+        step < connectionExecuteHistory.length
+      ) {
+        const pointValue = sliderValue - step * stepSize;
+        const percentage = pointValue / stepSize;
+        const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+          percentage,
+          pathStep.connection,
+          node,
+          pathStep.connection.endNode
+        );
+        const domCircle = this.testCircle?.domElement as HTMLElement;
+        const domMessage = this.message?.domElement as HTMLElement;
+        domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+        domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+      }
+    };
+
+    const showProgressOnPathExecution = (sliderValue: number) => {
+      if (this.scopeNodeDomElement) {
+        this.scopeNodeDomElement.classList.remove('bg-blue-300');
+        this.scopeNodeDomElement = undefined;
+      }
+      const result = getSliderNodeByPosition(sliderValue);
+      if (result === false) {
+        return;
+      }
+      const step = result.step;
+      const stepSize = result.stepSize;
+      const pathStep = result.pathStep;
+
       const node = pathStep.connection.startNode;
       this.canvasApp?.setNodeStates(pathStep.nodeStates);
 
