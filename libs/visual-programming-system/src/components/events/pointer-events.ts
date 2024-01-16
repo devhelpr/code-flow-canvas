@@ -16,6 +16,17 @@ export const pointerDown = <T>(
 ): IPointerDownResult | false => {
   let xOffsetWithinElementOnFirstClick = 0;
   let yOffsetWithinElementOnFirstClick = 0;
+  let offsetXhelper = 0;
+
+  // this fixes moving elements that have a xOffset (like the node-tree-visualizer)
+  if (element && element.domElement) {
+    const offsetX =
+      (element.domElement as HTMLElement).getAttribute &&
+      (element.domElement as HTMLElement).getAttribute('data-xoffset');
+    if (offsetX) {
+      offsetXhelper = parseFloat(offsetX);
+    }
+  }
 
   if (
     element &&
@@ -28,7 +39,7 @@ export const pointerDown = <T>(
         pointerMove,
         pointerUp,
         interactionInfo: {
-          xOffsetWithinElementOnFirstClick: x,
+          xOffsetWithinElementOnFirstClick: x + offsetXhelper,
           yOffsetWithinElementOnFirstClick: y,
         },
       },
@@ -37,8 +48,9 @@ export const pointerDown = <T>(
       canvasNode
     )
   ) {
-    xOffsetWithinElementOnFirstClick = x;
+    xOffsetWithinElementOnFirstClick = x + offsetXhelper;
     yOffsetWithinElementOnFirstClick = y;
+
     if (element?.nodeType === NodeType.Shape) {
       // .. this is a hack to make sure that the element is always on top
       // .. this causes a refresh of the iframe-html-node

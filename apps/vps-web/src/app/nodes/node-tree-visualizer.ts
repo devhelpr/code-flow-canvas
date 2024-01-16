@@ -143,11 +143,16 @@ export const getNodeTreeVisualizer = (
               boundingBox.left / camera.scale -
                 nodeBoundngBox.left / camera.scale
             );
-            (node.domElement as HTMLElement).style.left = `-${
+            const offsetX =
               boundingBox.left / camera.scale -
               nodeBoundngBox.left / camera.scale +
-              initialDistance
-            }px`;
+              initialDistance;
+            (node.domElement as HTMLElement).style.left = `-${offsetX}px`;
+
+            (node.domElement as HTMLElement).setAttribute(
+              'data-xoffset',
+              `${-offsetX}`
+            );
           }
         }
       }
@@ -190,6 +195,7 @@ export const getNodeTreeVisualizer = (
 
     if (htmlNode) {
       (node.domElement as HTMLElement).style.left = `0px`;
+      (node.domElement as HTMLElement).setAttribute('data-xoffset', '0');
       const boundingBox = (
         htmlNode.domElement as HTMLElement
       ).getBoundingClientRect();
