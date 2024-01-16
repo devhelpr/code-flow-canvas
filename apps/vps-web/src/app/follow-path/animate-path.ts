@@ -141,7 +141,7 @@ interface NodeAnimatonInfo {
 const nodeAnimationMap: Map<number, NodeAnimatonInfo> = new Map();
 let nodeAnimationId = 1;
 
-let speedMeter = 1000;
+let speedMeter = 500;
 export const setSpeedMeter = (speed: number) => {
   speedMeter = speed;
 };
@@ -189,9 +189,11 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
       lastTime = time;
     }
     const elapsed = time - lastTime;
+    lastTime = time;
     if (onFrame) {
       onFrame(elapsed);
     }
+    //updateElapsedCounterElement(elapsed, lastTime, time);
     if (targetX !== undefined && targetY !== undefined) {
       const canvasCamera = canvasApp.getCamera();
       let x = 600 - targetX * targetScale;
@@ -274,8 +276,7 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
             bezierCurvePoints.x + (offsetX ?? 0)
           }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
 
-          loop +=
-            (getLoopIncrement() * elapsed) / (10000 * (1001 - speedMeter));
+          loop += getLoopIncrement() * elapsed * (0.0001 * speedMeter); //1001 - speedMeter
           nodeAnimation.animationLoop = loop;
           if (loop > getMaxLoop()) {
             loop = 0;
@@ -401,6 +402,20 @@ const updateRunCounterElement = () => {
     runCounterUpdateElement.textContent = `${runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
   }
 };
+
+// const updateElapsedCounterElement = (
+//   elapsed: number,
+//   lastTime: number,
+//   time: number
+// ) => {
+//   // if (runCounterUpdateElement) {
+//   //   runCounterUpdateElement.textContent = `${Math.floor(
+//   //     elapsed
+//   //   ).toString()} - ${Math.floor(lastTime).toString()} - ${Math.floor(
+//   //     time
+//   //   ).toString()}`;
+//   // }
+// };
 
 export const animatePathForNodeConnectionPairs = (
   canvasApp: CanvasAppInstance<NodeInfo>,

@@ -509,7 +509,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         name: 'speed',
         min: '0.1',
         max: '1000',
-        value: '1000',
+        value: '500',
         change: (event) => {
           speedMeter = parseInt((event.target as HTMLInputElement).value);
           setSpeedMeter(speedMeter);
