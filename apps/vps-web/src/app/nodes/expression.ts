@@ -223,6 +223,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         {
           fieldType: FormFieldType.Text,
           fieldName: 'expression',
+          label: 'Expression',
           value: initialValue ?? '',
           onChange: (value: string) => {
             if (!node.nodeInfo) {

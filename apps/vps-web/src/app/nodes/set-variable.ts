@@ -91,10 +91,8 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         {
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
+          label: 'Set variable',
           value: values?.[fieldName] ?? '',
-          settings: {
-            showLabel: false,
-          },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
