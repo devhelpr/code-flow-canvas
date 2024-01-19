@@ -208,6 +208,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           } else {
             tabKeyWasUsed = false;
           }
+
+          // if (event.key === 'Insert') {
+          //   alert('Insert pressed');
+          // }
+          if (event.ctrlKey && event.key === 'Enter') {
+            (runButton.domElement as HTMLElement).click();
+          }
         });
 
         window.addEventListener('pointerdown', (_event) => {
