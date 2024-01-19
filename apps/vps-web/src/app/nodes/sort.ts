@@ -142,6 +142,7 @@ export const getSort =
                   followPath: undefined,
 
                   stop: true,
+                  dummyEndpoint: true,
                 });
               },
               sortedList,

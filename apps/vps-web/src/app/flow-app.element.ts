@@ -602,7 +602,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             );
 
             setRunCounterResetHandler(() => {
-              if (runCounter === 0) {
+              if (runCounter <= 0) {
                 (pathRange.domElement as HTMLButtonElement).disabled = false;
                 (runButton.domElement as HTMLButtonElement).disabled = false;
                 increaseRunIndex();

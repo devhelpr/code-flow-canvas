@@ -169,6 +169,7 @@ export const getForEach =
                   // output: isRange ? [] : input,
                   followPath: undefined,
                   stop: true,
+                  dummyEndpoint: true,
                 });
               },
               isRange ? [] : input,

@@ -318,10 +318,13 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
 
             const resolver = (result: any) => {
               console.log('animatePath onNextNode result', input, result);
-              if (runCounter > 0) {
-                runCounter--;
-                updateRunCounterElement();
-              }
+              runCounter--;
+              updateRunCounterElement();
+
+              // uncomment the following line during debugging when a breakpoint is above here
+              // .. this causes the message-bubble animation to continue after continuing
+              //lastTime = undefined;
+
               if (!result.stop && result.result !== undefined) {
                 animatePath(
                   canvasApp,
@@ -348,6 +351,13 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
                 if (nodeAnimation.onStopped) {
                   nodeAnimation.onStopped(result.output ?? input ?? '');
                 }
+                if (
+                  runCounter <= 0 &&
+                  runCounterResetHandler &&
+                  nodeAnimationMap.size === 0
+                ) {
+                  runCounterResetHandler();
+                }
               }
             };
 
@@ -358,10 +368,9 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
               });
           }
         } else {
-          if (runCounter > 0) {
-            runCounter--;
-            updateRunCounterElement();
-          }
+          runCounter--;
+          updateRunCounterElement();
+
           if (start) {
             nodeAnimation.onNextNode &&
               nodeAnimation.onNextNode(
@@ -446,24 +455,41 @@ export const animatePathForNodeConnectionPairs = (
   offsetY?: number,
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
-  scopeId?: string
+  scopeId?: string,
+  fromNode?: IRectNodeComponent<NodeInfo>
 ) => {
+  if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
+    canvasApp?.elements.delete(animatedNodes?.node1.id);
+    animatedNodes.node1.domElement?.remove();
+    animatedNodes.node1 = undefined;
+    canvasApp?.elements.delete(animatedNodes?.node2.id);
+    animatedNodes.node2.domElement?.remove();
+    animatedNodes.node2 = undefined;
+    animatedNodes.node3.domElement?.remove();
+    animatedNodes.node3 = undefined;
+  }
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
-    if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
-      canvasApp?.elements.delete(animatedNodes?.node1.id);
-      animatedNodes?.node1?.domElement?.remove();
-
-      canvasApp?.elements.delete(animatedNodes?.node2.id);
-      animatedNodes?.node2?.domElement?.remove();
-    }
+    // if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
+    //   canvasApp?.elements.delete(animatedNodes?.node1.id);
+    //   animatedNodes.node1.domElement?.remove();
+    //   animatedNodes.node1 = undefined;
+    //   canvasApp?.elements.delete(animatedNodes?.node2.id);
+    //   animatedNodes.node2.domElement?.remove();
+    //   animatedNodes.node2 = undefined;
+    // }
     if (onStopped) {
       console.log('animatePath onStopped4', input);
       onStopped(input ?? '', scopeId);
     }
-    if (runCounter > 0) {
-      runCounter--;
-      updateRunCounterElement();
-    }
+
+    console.log(
+      'animatePathForNodeConnectionPairs runCounter',
+      runCounter,
+      scopeId,
+      input,
+      fromNode?.nodeInfo?.type
+    );
+    //}
 
     if (
       runCounter <= 0 &&
@@ -793,7 +819,8 @@ export const animatePath: FollowPathFunction = (
     offsetY,
     followPathToEndThumb,
     singleStep,
-    scopeId
+    scopeId,
+    node
   );
 };
 
@@ -835,6 +862,7 @@ export const animatePathFromThumb = (
     offsetY,
     followPathToEndThumb,
     singleStep,
-    scopeId
+    scopeId,
+    node?.thumbLinkedToNode
   );
 };

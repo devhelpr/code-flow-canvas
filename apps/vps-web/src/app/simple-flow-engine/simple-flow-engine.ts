@@ -219,7 +219,7 @@ const triggerExecution = (
           return new Promise((resolve, reject) => {
             promise
               .then((computeResult: any) => {
-                if (computeResult.stop) {
+                if (computeResult.stop && !computeResult.dummyEndpoint) {
                   if (onStopped) {
                     onStopped(computeResult.output ?? '', scopeId);
                   }
@@ -229,6 +229,14 @@ const triggerExecution = (
                   //   output: result,
                   // };
                 } else {
+                  if (computeResult.stop && computeResult.dummyEndpoint) {
+                    resolve({
+                      result: false,
+                      output: '',
+                      stop: true,
+                    });
+                    return;
+                  }
                   result = computeResult.result;
                   sendData(nextNode, canvasApp, result);
                   followPath = computeResult.followPath;
@@ -433,6 +441,9 @@ export const runNode = (
         result = computeResult.result;
         followPath = computeResult.followPath;
         //previousOutput = computeResult.previousOutput;
+        if (computeResult.dummyEndpoint) {
+          return;
+        }
         if (computeResult.stop) {
           if (onStopped) {
             onStopped(computeResult.output ?? '', scopeId);

@@ -154,7 +154,9 @@ export const getWhile =
                       result: resultFromContinueNodeRun,
                       output: resultFromContinueNodeRun,
                       followPath: undefined,
+
                       stop: true,
+                      dummyEndpoint: true,
                     });
                   },
                   input,

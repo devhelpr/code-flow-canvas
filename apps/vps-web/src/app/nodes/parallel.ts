@@ -61,6 +61,7 @@ export const getParallel =
                 result: inputFromFirstRun,
                 output: inputFromFirstRun,
                 stop: true,
+                dummyEndpoint: true,
               });
             }
           },
@@ -83,6 +84,7 @@ export const getParallel =
                 result: inputFromSecondRun,
                 output: inputFromSecondRun,
                 stop: true,
+                dummyEndpoint: true,
               });
             }
           },

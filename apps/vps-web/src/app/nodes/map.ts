@@ -162,6 +162,7 @@ export const getMap =
                   followPath: undefined,
 
                   stop: true,
+                  dummyEndpoint: true,
                 });
               },
               output,
