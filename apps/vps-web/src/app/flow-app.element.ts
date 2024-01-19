@@ -500,16 +500,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       runButton.domElement
     );
 
-    let speedMeter = 500;
-    createElement(
+    let speedMeter = 375;
+    const speedMeterElement = createElement(
       'input',
       {
         type: 'range',
         class: 'p-2 m-2 relative ', //top-[60px]',
         name: 'speed',
-        min: '0.1',
-        max: '1000',
-        value: '500',
+        min: '1',
+        max: '750',
+        value: '375',
         change: (event) => {
           speedMeter = parseInt((event.target as HTMLInputElement).value);
           setSpeedMeter(speedMeter);
@@ -522,6 +522,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       menubarElement.domElement,
       ''
     );
+
+    speedMeter = parseInt(
+      (speedMeterElement.domElement as HTMLInputElement).value
+    );
+    setSpeedMeter(speedMeter);
 
     const createOption = (
       selectElement: HTMLSelectElement,
