@@ -16,6 +16,7 @@ import {
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
+import { start } from 'repl';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -514,6 +515,38 @@ export const runNode = (
     followPath = undefined;
   }
 };
+
+export const getStartNodes = (nodes: ElementNodeMap<NodeInfo>) => {
+  const startNodes: IRectNodeComponent<NodeInfo>[] = [];
+  const nodeList = Array.from(nodes);
+  nodes.forEach((node) => {
+    const nodeComponent = node as unknown as IRectNodeComponent<NodeInfo>;
+    const connectionsFromEndNode = nodeList.filter((e) => {
+      const eNode = e[1] as INodeComponent<NodeInfo>;
+      if (eNode.nodeType === NodeType.Connection) {
+        const element = e[1] as IConnectionNodeComponent<NodeInfo>;
+        return (
+          element.endNode?.id === node.id &&
+          !element.isData &&
+          !element.isAnnotationConnection
+        );
+      }
+      return false;
+    });
+    const nodeInfo = nodeComponent.nodeInfo as any;
+    if (
+      !(nodeComponent.nodeInfo as any)?.isVariable &&
+      nodeComponent.nodeType !== NodeType.Connection &&
+      (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
+      nodeInfo?.type !== 'node-trigger-target' &&
+      nodeInfo?.type !== 'function'
+    ) {
+      startNodes.push(nodeComponent);
+    }
+  });
+  return startNodes;
+};
+
 export const run = (
   nodes: ElementNodeMap<NodeInfo>,
   canvasApp: CanvasAppInstance<NodeInfo>,
@@ -549,42 +582,16 @@ export const run = (
   */
   connectionExecuteHistory = [];
 
-  const nodeList = Array.from(nodes);
   let isRunning = false;
   let cameraSet = false;
-  const executeNodes: IRectNodeComponent<NodeInfo>[] = [];
+  const executeNodes: IRectNodeComponent<NodeInfo>[] = getStartNodes(nodes);
 
-  nodes.forEach((node) => {
-    const nodeComponent = node as unknown as IRectNodeComponent<NodeInfo>;
-    const connectionsFromEndNode = nodeList.filter((e) => {
-      const eNode = e[1] as INodeComponent<NodeInfo>;
-      if (eNode.nodeType === NodeType.Connection) {
-        const element = e[1] as IConnectionNodeComponent<NodeInfo>;
-        return (
-          element.endNode?.id === node.id &&
-          !element.isData &&
-          !element.isAnnotationConnection
-        );
-      }
-      return false;
-    });
-    const nodeInfo = nodeComponent.nodeInfo as any;
-    if (
-      !(nodeComponent.nodeInfo as any)?.isVariable &&
-      nodeComponent.nodeType !== NodeType.Connection &&
-      (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
-      nodeInfo?.type !== 'node-trigger-target' &&
-      nodeInfo?.type !== 'function'
-    ) {
-      if (!cameraSet && getFollowNodeExecution()) {
-        cameraSet = true;
-        canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
-      }
-      executeNodes.push(nodeComponent);
-    }
-  });
   executeNodes.forEach((nodeComponent) => {
     isRunning = true;
+    if (!cameraSet && getFollowNodeExecution()) {
+      cameraSet = true;
+      canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
+    }
     runNode(
       nodeComponent,
       canvasApp,

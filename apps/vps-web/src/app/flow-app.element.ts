@@ -26,6 +26,7 @@ import { FormComponent } from './components/form-component';
 
 import {
   connectionExecuteHistory,
+  getStartNodes,
   increaseRunIndex,
   resetRunIndex,
   run,
@@ -183,6 +184,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
       resetConnectionSlider();
       store();
+      setTabOrderOfNodes();
     };
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
@@ -338,6 +340,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             );
             this.canvasApp.centerCamera();
             initializeNodes();
+            setTabOrderOfNodes();
             this.isStoring = false;
           })
           .catch((error) => {
@@ -387,6 +390,63 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       },
       this.rootElement
     );
+
+    const setTabOrderForNode = (
+      node: IRectNodeComponent<NodeInfo>,
+      incomingTabIndex: number
+    ) => {
+      let tabIndex = incomingTabIndex;
+      if (node && node.domElement) {
+        const inputs = (node.domElement as HTMLElement).querySelectorAll(
+          'input'
+        );
+        console.log('inputs', inputs);
+        inputs.forEach((element, index) => {
+          console.log('tab for node input', index, element, tabIndex);
+          (element as HTMLElement).setAttribute(
+            'tabindex',
+            tabIndex.toString()
+          );
+          tabIndex++;
+        });
+
+        if (node.connections) {
+          node.connections.forEach((connection) => {
+            if (connection.startNode?.id === node.id && connection.endNode) {
+              tabIndex = setTabOrderForNode(connection.endNode, tabIndex);
+            }
+          });
+        }
+      }
+      return tabIndex;
+    };
+    const setTabOrderOfNodes = () => {
+      if (!this.canvasApp) {
+        return;
+      }
+      const nodes = getStartNodes(this.canvasApp.elements).toSorted((a, b) => {
+        const aHelper = `${a.x.toFixed(2).padStart(8, '0')}_${a.y
+          .toFixed(2)
+          .padStart(8, '0')}`;
+        const bHelper = `${b.x.toFixed(2).padStart(8, '0')}_${b.y
+          .toFixed(2)
+          .padStart(8, '0')}`;
+        if (aHelper < bHelper) {
+          return -1;
+        }
+        if (aHelper > bHelper) {
+          return 1;
+        }
+        return 0;
+      });
+      let tabIndex = 1;
+      nodes.forEach((node, index) => {
+        console.log('tab for node', index, node);
+        tabIndex = setTabOrderForNode(node, tabIndex);
+
+        tabIndex++;
+      });
+    };
 
     const initializeNodes = () => {
       if (!this.rootElement) {
