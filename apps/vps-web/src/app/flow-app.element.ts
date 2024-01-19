@@ -424,23 +424,25 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (!this.canvasApp) {
         return;
       }
-      const nodes = getStartNodes(this.canvasApp.elements).toSorted((a, b) => {
-        const aHelper = `${a.x.toFixed(2).padStart(8, '0')}_${a.y
-          .toFixed(2)
-          .padStart(8, '0')}`;
-        const bHelper = `${b.x.toFixed(2).padStart(8, '0')}_${b.y
-          .toFixed(2)
-          .padStart(8, '0')}`;
-        if (aHelper < bHelper) {
-          return -1;
+      const nodes = (getStartNodes(this.canvasApp.elements) as any).toSorted(
+        (a: IRectNodeComponent<NodeInfo>, b: IRectNodeComponent<NodeInfo>) => {
+          const aHelper = `${a.x.toFixed(2).padStart(8, '0')}_${a.y
+            .toFixed(2)
+            .padStart(8, '0')}`;
+          const bHelper = `${b.x.toFixed(2).padStart(8, '0')}_${b.y
+            .toFixed(2)
+            .padStart(8, '0')}`;
+          if (aHelper < bHelper) {
+            return -1;
+          }
+          if (aHelper > bHelper) {
+            return 1;
+          }
+          return 0;
         }
-        if (aHelper > bHelper) {
-          return 1;
-        }
-        return 0;
-      });
+      );
       let tabIndex = 1;
-      nodes.forEach((node, index) => {
+      nodes.forEach((node: IRectNodeComponent<NodeInfo>, index: number) => {
         console.log('tab for node', index, node);
         tabIndex = setTabOrderForNode(node, tabIndex);
 

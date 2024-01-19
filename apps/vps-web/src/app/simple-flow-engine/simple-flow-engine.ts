@@ -16,7 +16,6 @@ import {
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
-import { start } from 'repl';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);

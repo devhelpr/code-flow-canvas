@@ -2,6 +2,11 @@
 @tailwind base;
 @tailwind utilities;
 
+input::selection {
+    @apply bg-slate-500;
+	@apply text-white;
+}
+
 .connection {
   color: white;
 }
