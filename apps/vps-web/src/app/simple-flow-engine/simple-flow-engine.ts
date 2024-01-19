@@ -515,7 +515,10 @@ export const runNode = (
   }
 };
 
-export const getStartNodes = (nodes: ElementNodeMap<NodeInfo>) => {
+export const getStartNodes = (
+  nodes: ElementNodeMap<NodeInfo>,
+  includeFunctionNodes = false
+) => {
   const startNodes: IRectNodeComponent<NodeInfo>[] = [];
   const nodeList = Array.from(nodes);
   nodes.forEach((node) => {
@@ -537,8 +540,10 @@ export const getStartNodes = (nodes: ElementNodeMap<NodeInfo>) => {
       !(nodeComponent.nodeInfo as any)?.isVariable &&
       nodeComponent.nodeType !== NodeType.Connection &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
-      nodeInfo?.type !== 'node-trigger-target' &&
-      nodeInfo?.type !== 'function'
+      ((!includeFunctionNodes &&
+        nodeInfo?.type !== 'node-trigger-target' &&
+        nodeInfo?.type !== 'function') ||
+        includeFunctionNodes)
     ) {
       startNodes.push(nodeComponent);
     }

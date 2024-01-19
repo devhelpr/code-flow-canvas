@@ -18,6 +18,7 @@ import {
   NodeType,
   SelectedNodeInfo,
   FlowNode,
+  IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -198,6 +199,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         console.log('storageProvider', storageProvider);
         this.isStoring = true;
         this.storageProvider = storageProvider;
+
+        document.addEventListener('focus', (_event) => {
+          document.body.scrollTop = 0;
+          document.body.scrollLeft = 0;
+        });
 
         if (this.storageProvider && this.canvasApp && this.rootElement) {
           NavbarComponents({
@@ -411,11 +417,38 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         });
 
         if (node.connections) {
-          node.connections.forEach((connection) => {
-            if (connection.startNode?.id === node.id && connection.endNode) {
-              tabIndex = setTabOrderForNode(connection.endNode, tabIndex);
-            }
-          });
+          (node.connections as any)
+            .toSorted(
+              (
+                aConnection: IConnectionNodeComponent<NodeInfo>,
+                bConnection: IConnectionNodeComponent<NodeInfo>
+              ) => {
+                const a =
+                  aConnection.startNodeThumb as IThumbNodeComponent<NodeInfo>;
+                const b =
+                  bConnection.startNodeThumb as IThumbNodeComponent<NodeInfo>;
+                if (a && b) {
+                  const aHelper = `${Math.floor(a.y)
+                    .toFixed(2)
+                    .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
+                  const bHelper = `${Math.floor(b.y)
+                    .toFixed(2)
+                    .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
+                  if (aHelper < bHelper) {
+                    return -1;
+                  }
+                  if (aHelper > bHelper) {
+                    return 1;
+                  }
+                }
+                return 0;
+              }
+            )
+            .forEach((connection: IConnectionNodeComponent<NodeInfo>) => {
+              if (connection.startNode?.id === node.id && connection.endNode) {
+                tabIndex = setTabOrderForNode(connection.endNode, tabIndex);
+              }
+            });
         }
       }
       return tabIndex;
@@ -424,14 +457,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (!this.canvasApp) {
         return;
       }
-      const nodes = (getStartNodes(this.canvasApp.elements) as any).toSorted(
+      const nodes = (
+        getStartNodes(this.canvasApp.elements, true) as any
+      ).toSorted(
         (a: IRectNodeComponent<NodeInfo>, b: IRectNodeComponent<NodeInfo>) => {
-          const aHelper = `${a.x.toFixed(2).padStart(8, '0')}_${a.y
+          const aHelper = `${Math.floor(a.y / 200)
             .toFixed(2)
-            .padStart(8, '0')}`;
-          const bHelper = `${b.x.toFixed(2).padStart(8, '0')}_${b.y
+            .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
+          const bHelper = `${Math.floor(b.y / 200)
             .toFixed(2)
-            .padStart(8, '0')}`;
+            .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
           if (aHelper < bHelper) {
             return -1;
           }
@@ -767,7 +802,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       'div',
       {
         class:
-          'p-2 absolute bottom-[20px] w-full h-[50px] bg-slate-200 items-center z-[1050] flex', //flex',
+          'p-2 absolute bottom-[0px] w-full h-[50px] bg-slate-200 items-center z-[1050] flex', //flex',
         name: 'path-track-bg',
       },
       this.rootElement,
