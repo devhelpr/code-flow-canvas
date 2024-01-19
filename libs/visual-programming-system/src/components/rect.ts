@@ -731,7 +731,8 @@ export class Rect<T> {
       {
         class: `${
           parentNodeClassName ?? 'rect-node'
-        } absolute top-0 left-0 select-none `, //will-change-transform
+        } absolute top-0 left-0 select-none `, //will-change-transform,
+        ['data-node-id']: id ?? '',
       },
       canvasElement,
       undefined,

@@ -200,9 +200,44 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.isStoring = true;
         this.storageProvider = storageProvider;
 
-        document.addEventListener('focus', (_event) => {
+        let tabKeyWasUsed = false;
+        window.addEventListener('keyup', (event) => {
+          if (event.key === 'Tab') {
+            tabKeyWasUsed = true;
+            console.log('TAB KEY WAS USED');
+          } else {
+            tabKeyWasUsed = false;
+          }
+        });
+
+        window.addEventListener('pointerdown', (_event) => {
+          tabKeyWasUsed = false;
+        });
+
+        document.addEventListener('focusin', (_event) => {
+          console.log('FOCUS');
           document.body.scrollTop = 0;
           document.body.scrollLeft = 0;
+          if (this.rootElement) {
+            this.rootElement.scrollTop = 0;
+            this.rootElement.scrollLeft = 0;
+          }
+          const activeElement = document.activeElement;
+          if (activeElement && tabKeyWasUsed) {
+            const closestRectNode = activeElement.closest('.rect-node');
+            if (closestRectNode) {
+              const id = closestRectNode.getAttribute('data-node-id');
+              if (id) {
+                const node = this.canvasApp?.elements.get(
+                  id
+                ) as IRectNodeComponent<NodeInfo>;
+                if (node && node.x && node.y) {
+                  setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
+                }
+              }
+            }
+          }
+          tabKeyWasUsed = false;
         });
 
         if (this.storageProvider && this.canvasApp && this.rootElement) {
@@ -407,8 +442,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           'input'
         );
         console.log('inputs', inputs);
-        inputs.forEach((element, index) => {
-          console.log('tab for node input', index, element, tabIndex);
+        inputs.forEach((element, _index) => {
           (element as HTMLElement).setAttribute(
             'tabindex',
             tabIndex.toString()
@@ -461,10 +495,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         getStartNodes(this.canvasApp.elements, true) as any
       ).toSorted(
         (a: IRectNodeComponent<NodeInfo>, b: IRectNodeComponent<NodeInfo>) => {
-          const aHelper = `${Math.floor(a.y / 200)
+          const aHelper = `${Math.floor(a.y / 100)
             .toFixed(2)
             .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
-          const bHelper = `${Math.floor(b.y / 200)
+          const bHelper = `${Math.floor(b.y / 100)
             .toFixed(2)
             .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
           if (aHelper < bHelper) {
@@ -477,8 +511,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         }
       );
       let tabIndex = 1;
-      nodes.forEach((node: IRectNodeComponent<NodeInfo>, index: number) => {
-        console.log('tab for node', index, node);
+      nodes.forEach((node: IRectNodeComponent<NodeInfo>, _index: number) => {
         tabIndex = setTabOrderForNode(node, tabIndex);
 
         tabIndex++;

@@ -151,11 +151,13 @@ let targetY: number | undefined = undefined;
 let nodeId = '';
 let targetScale = 1.0;
 let isTargetinCameraSpace = false;
+let useFastTransition = false;
 export function setTargetCameraAnimation(
   x: number,
   y: number,
   id: string,
-  scale: number
+  scale: number,
+  fastTransition = false
 ) {
   console.log('setTargetCameraAnimation', x, y, id, scale);
   targetX = x;
@@ -163,6 +165,7 @@ export function setTargetCameraAnimation(
   nodeId = id;
   targetScale = scale;
   isTargetinCameraSpace = false;
+  useFastTransition = fastTransition;
 }
 
 export function setPositionTargetCameraAnimation(
@@ -203,6 +206,8 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
         x = targetX;
         y = targetY;
         factor = 0.3;
+      } else {
+        factor = useFastTransition ? 0.1 : 0.005;
       }
       const distance = Math.sqrt(
         Math.pow(canvasCamera.x - x, 2) + Math.pow(canvasCamera.y - y, 2)
@@ -215,6 +220,7 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
           canvasCamera.y,
           canvasCamera.scale + scaleDiff * factor
         );
+        useFastTransition = false;
       } else {
         const normalizedX = (x - canvasCamera.x) / distance;
         const normalizedY = (y - canvasCamera.y) / distance;
