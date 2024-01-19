@@ -585,6 +585,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       'button',
       {
         class: `${navBarPrimaryIconButton}`,
+        title: 'Run | Ctrl + Enter',
         click: (event) => {
           event.preventDefault();
           (runButton.domElement as HTMLButtonElement).disabled = true;
