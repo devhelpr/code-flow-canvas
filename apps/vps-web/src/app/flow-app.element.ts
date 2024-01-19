@@ -438,6 +438,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     ) => {
       let tabIndex = incomingTabIndex;
       if (node && node.domElement) {
+        (node.domElement as HTMLElement).setAttribute(
+          'tabindex',
+          tabIndex.toString()
+        );
+        tabIndex++;
+
         const inputs = (node.domElement as HTMLElement).querySelectorAll(
           'input'
         );
