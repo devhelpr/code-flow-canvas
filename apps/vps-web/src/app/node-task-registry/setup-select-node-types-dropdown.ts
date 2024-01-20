@@ -1,0 +1,100 @@
+import { createElement } from '@devhelpr/visual-programming-system';
+import {
+  getNodeFactoryNames,
+  getNodeTaskFactory,
+} from './canvas-node-task-registry';
+
+export const createOption = (
+  selectElement: HTMLSelectElement,
+  value: string,
+  text: string,
+  categoryName: string
+) => {
+  let category = selectElement.querySelector(
+    "[data-category='" + categoryName + "']"
+  );
+  if (!category) {
+    const optgroup = createElement(
+      'optgroup',
+      {
+        label: categoryName,
+        'data-category': categoryName,
+      },
+      selectElement
+    );
+    category = optgroup.domElement as HTMLElement;
+  }
+  const option = createElement(
+    'option',
+    {
+      value: value,
+    },
+    category as HTMLElement,
+    text
+  );
+  return option;
+};
+
+export const setupTasksInDropdown = (
+  selectNodeTypeHTMLElement: HTMLSelectElement
+) => {
+  if (selectNodeTypeHTMLElement) {
+    const nodeType = selectNodeTypeHTMLElement.value;
+    let isPreviouslySelectedNodeTypeInDropdown = false;
+    selectNodeTypeHTMLElement.innerHTML = '';
+
+    const createOptgroup = (categoryName: string) =>
+      createElement(
+        'optgroup',
+        {
+          label: categoryName,
+          'data-category': categoryName,
+        },
+        selectNodeTypeHTMLElement
+      );
+    createOptgroup('expression');
+    createOptgroup('flow-control');
+    createOptgroup('iterators');
+    createOptgroup('variables');
+    createOptgroup('connectivity');
+    createOptgroup('functions');
+    createOptgroup('string');
+    createOptgroup('variables-array');
+    createOptgroup('variables-dictionary');
+    createOptgroup('variables-grid');
+    createOptgroup('variables-set');
+
+    const nodeTasks = getNodeFactoryNames();
+    nodeTasks.forEach((nodeTask) => {
+      const factory = getNodeTaskFactory(nodeTask);
+      let categoryName = 'Default';
+      if (factory) {
+        const node = factory(() => {
+          //
+        });
+        if (node.isContained) {
+          return;
+        }
+        categoryName = node.category || 'uncategorized';
+      }
+      if (nodeTask === nodeType) {
+        isPreviouslySelectedNodeTypeInDropdown = true;
+      }
+      createOption(selectNodeTypeHTMLElement, nodeTask, nodeTask, categoryName);
+    });
+    if (isPreviouslySelectedNodeTypeInDropdown) {
+      selectNodeTypeHTMLElement.value = nodeType;
+    } else {
+      const firstNodeOfFirstOptgroupElement =
+        selectNodeTypeHTMLElement.querySelector('optgroup')?.firstChild;
+      if (firstNodeOfFirstOptgroupElement) {
+        const defaultSelectedNodeType = (
+          firstNodeOfFirstOptgroupElement as HTMLElement
+        ).getAttribute('value');
+        if (defaultSelectedNodeType) {
+          selectNodeTypeHTMLElement.value = defaultSelectedNodeType;
+        }
+      }
+    }
+  }
+};

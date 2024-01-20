@@ -739,6 +739,21 @@ export const createCanvasApp = <T>(
         onWheelEvent(xCamera, yCamera, scaleCamera);
       }
     },
+    selectNode: (nodeComponent: IRectNodeComponent<T>) => {
+      if (!nodeComponent) {
+        return;
+      }
+      setSelectNode({
+        id: nodeComponent.id,
+        containerNode:
+          nodeComponent.containerNode as unknown as IRectNodeComponent<unknown>,
+      });
+      nodeTransformer.attachNode(nodeComponent);
+    },
+    deselectNode: () => {
+      setSelectNode(undefined);
+      nodeTransformer.detachNode();
+    },
     createRect: (
       x: number,
       y: number,

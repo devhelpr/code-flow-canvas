@@ -1,15 +1,17 @@
-export const navBarButton = `rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap
- disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+export const navBarButton = `rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap 
+disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 
-export const navBarWarningButton = `rounded-md bg-orange-500 text-white p-2 m-2 hover:bg-orange-600 select-none whitespace-nowrap
- disabled:bg-orange-700 disabled:hover:bg-orange-700 disabled:text-white`;
+export const navbarButtonWithoutMargin = navBarButton.replace('m-2', '');
 
-export const navBarOutlineButton = `rounded-md bg-transparant border border-white border-solid text-white p-2 m-2 hover:bg-white hover:text-slate-600 select-none whitespace-nowrap
- disabled:border-slate-700 disabled:hover:border-slate-700 disabled:text-border-slate-700`;
+export const navBarWarningButton = `rounded-md bg-orange-500 text-white p-2 m-2 hover:bg-orange-600 select-none whitespace-nowrap 
+disabled:bg-orange-700 disabled:hover:bg-orange-700 disabled:text-white`;
+
+export const navBarOutlineButton = `rounded-md bg-transparant border border-white border-solid text-white p-2 m-2 hover:bg-white hover:text-slate-600 select-none whitespace-nowrap 
+disabled:border-slate-700 disabled:hover:border-slate-700 disabled:text-border-slate-700`;
 
 export const navBarIconButton = `inline-flex items-center justify-center min-h-[40px]
-rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap
- disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white
+rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap 
+disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white
 `;
 
 export const navBarPrimaryButton = `rounded-md bg-blue-500 text-white p-2 m-2 hover:bg-blue-600 select-none whitespace-nowrap

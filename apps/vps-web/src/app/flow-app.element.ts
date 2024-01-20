@@ -72,6 +72,14 @@ import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
+import {
+  executeCommand,
+  registerCommands,
+} from './command-handlers/register-commands';
+import {
+  createOption,
+  setupTasksInDropdown,
+} from './node-task-registry/setup-select-node-types-dropdown';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -209,9 +217,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             tabKeyWasUsed = false;
           }
 
-          // if (event.key === 'Insert') {
-          //   alert('Insert pressed');
-          // }
+          if (
+            event.key === 'Insert' ||
+            (event.ctrlKey && event.shiftKey && event.key === 'A')
+          ) {
+            const selectedNodeInfo = getSelectedNode();
+            executeCommand(
+              'add-node',
+              (selectNodeType.domElement as HTMLSelectElement).value,
+              selectedNodeInfo?.id
+            );
+          }
           if (event.ctrlKey && event.key === 'Enter') {
             (runButton.domElement as HTMLElement).click();
           }
@@ -238,8 +254,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 const node = this.canvasApp?.elements.get(
                   id
                 ) as IRectNodeComponent<NodeInfo>;
-                if (node && node.x && node.y) {
+                if (node && node.x && node.y && this.canvasApp) {
                   setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
+                  this.canvasApp.selectNode(node);
                 }
               }
             }
@@ -359,8 +376,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               canvasUpdated();
             },
           }) as unknown as HTMLElement;
+
+          registerCommands(this.rootElement, this.canvasApp, canvasUpdated);
+          this.clearCanvas();
         }
-        this.clearCanvas();
 
         setOnFrame((_elapsed) => {
           if (connectionExecuteHistory.length > 0) {
@@ -454,7 +473,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         const inputs = (node.domElement as HTMLElement).querySelectorAll(
           'input'
         );
-        console.log('inputs', inputs);
         inputs.forEach((element, _index) => {
           (element as HTMLElement).setAttribute(
             'tabindex',
@@ -672,37 +690,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
     setSpeedMeter(speedMeter);
 
-    const createOption = (
-      selectElement: HTMLSelectElement,
-      value: string,
-      text: string,
-      categoryName: string
-    ) => {
-      let category = selectElement.querySelector(
-        "[data-category='" + categoryName + "']"
-      );
-      if (!category) {
-        const optgroup = createElement(
-          'optgroup',
-          {
-            label: categoryName,
-            'data-category': categoryName,
-          },
-          selectElement
-        );
-        category = optgroup.domElement as HTMLElement;
-      }
-      const option = createElement(
-        'option',
-        {
-          value: value,
-        },
-        category as HTMLElement,
-        text
-      );
-      return option;
-    };
-
     const selectNodeType = createElement(
       'select',
       {
@@ -716,73 +703,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       menubarElement.domElement,
       ''
     );
-    const setupTasksInDropdown = () => {
-      if (selectNodeType?.domElement) {
-        const nodeType = (selectNodeType?.domElement as HTMLSelectElement)
-          .value;
-        let isPreviouslySelectedNodeTypeInDropdown = false;
-        (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
-
-        const createOptgroup = (categoryName: string) =>
-          createElement(
-            'optgroup',
-            {
-              label: categoryName,
-              'data-category': categoryName,
-            },
-            selectNodeType.domElement as HTMLSelectElement
-          );
-        createOptgroup('expression');
-        createOptgroup('flow-control');
-        createOptgroup('iterators');
-        createOptgroup('variables');
-        createOptgroup('connectivity');
-        createOptgroup('functions');
-        createOptgroup('string');
-        createOptgroup('variables-array');
-        createOptgroup('variables-dictionary');
-        createOptgroup('variables-grid');
-        createOptgroup('variables-set');
-
-        const nodeTasks = getNodeFactoryNames();
-        nodeTasks.forEach((nodeTask) => {
-          const factory = getNodeTaskFactory(nodeTask);
-          let categoryName = 'Default';
-          if (factory) {
-            const node = factory(canvasUpdated);
-            if (node.isContained) {
-              return;
-            }
-            categoryName = node.category || 'uncategorized';
-          }
-          if (nodeTask === nodeType) {
-            isPreviouslySelectedNodeTypeInDropdown = true;
-          }
-          createOption(
-            selectNodeType.domElement as HTMLSelectElement,
-            nodeTask,
-            nodeTask,
-            categoryName
-          );
-        });
-        if (isPreviouslySelectedNodeTypeInDropdown) {
-          (selectNodeType?.domElement as HTMLSelectElement).value = nodeType;
-        } else {
-          const firstNodeOfFirstOptgroupElement = (
-            selectNodeType?.domElement as HTMLSelectElement
-          ).querySelector('optgroup')?.firstChild;
-          if (firstNodeOfFirstOptgroupElement) {
-            const defaultSelectedNodeType = (
-              firstNodeOfFirstOptgroupElement as HTMLElement
-            ).getAttribute('value');
-            if (defaultSelectedNodeType) {
-              (selectNodeType?.domElement as HTMLSelectElement).value =
-                defaultSelectedNodeType;
-            }
-          }
-        }
-      }
-    };
 
     const setupTasksForContainerTaskInDropdown = (
       allowedNodeTasks: string[]
@@ -808,7 +728,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         });
       }
     };
-    setupTasksInDropdown();
+    setupTasksInDropdown(selectNodeType?.domElement as HTMLSelectElement);
 
     this.testCircle = createElement(
       'div',
@@ -1171,7 +1091,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           if ((nodeTask.childNodeTasks || []).length > 0) {
             setupTasksForContainerTaskInDropdown(nodeTask.childNodeTasks ?? []);
           } else {
-            setupTasksInDropdown();
+            setupTasksInDropdown(
+              selectNodeType?.domElement as HTMLSelectElement
+            );
           }
         }
 
@@ -1303,7 +1225,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             ?.domElement as unknown as HTMLElement
         ).classList.remove('editing-node-indicator');
 
-        setupTasksInDropdown();
+        setupTasksInDropdown(selectNodeType?.domElement as HTMLSelectElement);
         if (getSelectedNode()) {
           setSelectNode(undefined);
         }

@@ -6,6 +6,9 @@ input::selection {
     @apply bg-slate-500;
 	@apply text-white;
 }
+.rect-node:focus {
+	@apply outline-none;
+}
 
 .connection {
   color: white;
@@ -432,4 +435,17 @@ position: relative;
 
 .inner-node form input {
 	@apply text-black;
+}
+
+.add-node-dialog-container {
+	grid-template-rows: min-content 1fr;
+}
+
+.add-node-dialog-container .form {
+	@apply mt-4;
+	grid-template-rows: 1fr min-content;
+}
+
+.add-node-dialog-container .form select {
+	@apply border border-gray-300 p-2;
 }
