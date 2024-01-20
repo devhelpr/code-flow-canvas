@@ -217,10 +217,19 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             tabKeyWasUsed = false;
           }
 
+          if (event.key === 'Backspace' || event.key === 'Delete') {
+            removeFormElement();
+            const selectedNodeInfo = getSelectedNode();
+            if (selectedNodeInfo) {
+              executeCommand('delete-node', selectedNodeInfo.id);
+            }
+          }
+
           if (
             event.key === 'Insert' ||
             (event.ctrlKey && event.shiftKey && event.key === 'A')
           ) {
+            removeFormElement();
             const selectedNodeInfo = getSelectedNode();
             executeCommand(
               'add-node',
@@ -257,6 +266,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 if (node && node.x && node.y && this.canvasApp) {
                   setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
                   this.canvasApp.selectNode(node);
+                  removeFormElement();
                 }
               }
             }
@@ -377,7 +387,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             },
           }) as unknown as HTMLElement;
 
-          registerCommands(this.rootElement, this.canvasApp, canvasUpdated);
+          registerCommands(
+            this.rootElement,
+            this.canvasApp,
+            canvasUpdated,
+            this.removeElement
+          );
           this.clearCanvas();
         }
 

@@ -743,6 +743,12 @@ export class Rect<T> {
       throw new Error('rectContainerElement is undefined');
 
     rectContainerElement.nodeType = NodeType.Shape;
+    if (!id && rectContainerElement.id) {
+      (rectContainerElement.domElement as HTMLElement).setAttribute(
+        'data-node-id',
+        rectContainerElement.id
+      );
+    }
 
     let astElement: any;
 

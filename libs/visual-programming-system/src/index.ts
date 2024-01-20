@@ -16,3 +16,4 @@ export { getLinePoints } from './components/line-connection';
 export { Rect } from './components/rect';
 export { RectThumb } from './components/rect-thumb';
 export * from './canvas-app/CanvasAppInstance';
+export * from './components/utils/calculate-connector-thumbs';

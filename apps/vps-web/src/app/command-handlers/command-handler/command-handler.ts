@@ -1,11 +1,15 @@
-import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
+import {
+  CanvasAppInstance,
+  IElementNode,
+} from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../../types/node-info';
 
 export class CommandHandler {
   constructor(
     _rootElement: HTMLElement,
     _canvasApp: CanvasAppInstance<NodeInfo>,
-    _canvasUpdated: () => void
+    _canvasUpdated: () => void,
+    _removeElement: (element: IElementNode<NodeInfo>) => void
   ) {
     //
   }

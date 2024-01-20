@@ -1,9 +1,11 @@
 import {
   CanvasAppInstance,
-  INodeComponent,
+  IElementNode,
   IRectNodeComponent,
+  ThumbType,
+  calculateConnectorY,
   createElement,
-  getSelectedNode,
+  getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
 import { NodeInfo } from '../../types/node-info';
@@ -19,9 +21,10 @@ export class AddNodeCommand extends CommandHandler {
   constructor(
     rootElement: HTMLElement,
     canvasApp: CanvasAppInstance<NodeInfo>,
-    canvasUpdated: () => void
+    canvasUpdated: () => void,
+    removeElement: (element: IElementNode<NodeInfo>) => void
   ) {
-    super(rootElement, canvasApp, canvasUpdated);
+    super(rootElement, canvasApp, canvasUpdated, removeElement);
     this.canvasApp = canvasApp;
     this.canvasUpdated = canvasUpdated;
     this.rootElement = rootElement;
@@ -30,11 +33,14 @@ export class AddNodeCommand extends CommandHandler {
   canvasApp: CanvasAppInstance<NodeInfo>;
   canvasUpdated: () => void;
 
-  addNodeType = (nodeType: string) => {
+  addNodeType = (
+    nodeType: string,
+    connectToNode?: IRectNodeComponent<NodeInfo>
+  ) => {
     this.canvasApp?.resetNodeTransform();
     if (!nodeType) {
       console.log('addNodeType: no nodeType given');
-      return;
+      return false;
     }
     let halfWidth = 0;
     let halfHeight = 0;
@@ -47,92 +53,120 @@ export class AddNodeCommand extends CommandHandler {
       halfWidth,
       halfHeight
     );
-    const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
-    const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
-
+    let startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
+    let startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
+    if (connectToNode) {
+      startX = connectToNode.x + (connectToNode.width ?? 100) + 100;
+      startY = connectToNode.y;
+    }
     const factory = getNodeTaskFactory(nodeType);
 
     if (factory) {
       const nodeTask = factory(this.canvasUpdated);
 
-      const selectedNodeInfo = getSelectedNode();
-      if (selectedNodeInfo) {
-        let node = this.canvasApp?.elements?.get(
-          selectedNodeInfo.id
-        ) as INodeComponent<NodeInfo>;
-
-        if (!node) {
-          console.log('node not found in canvas'); // is the selected node in a container?
-          //selectedNodeInfo.containerNode ...
-          const canvasAppInstance = (
-            selectedNodeInfo.containerNode?.nodeInfo as any
-          )?.canvasAppInstance;
-          node = canvasAppInstance?.elements?.get(
-            selectedNodeInfo.id
-          ) as INodeComponent<NodeInfo>;
-          if (!node) {
-            console.log('node not found in direct container');
-            return;
-          }
-        }
-        if (node.nodeInfo?.taskType) {
-          const selectedNodeTaskFactory = getNodeTaskFactory(
-            node.nodeInfo.taskType
-          );
-          if (node && selectedNodeTaskFactory) {
-            const selectedNodeTask = selectedNodeTaskFactory(
-              this.canvasUpdated
-            );
-            if (
-              node.nodeInfo.canvasAppInstance &&
-              selectedNodeTask.isContainer &&
-              (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
-            ) {
-              nodeTask.createVisualNode(
-                node.nodeInfo.canvasAppInstance,
-                50,
-                50,
-                undefined,
-                undefined,
-                node as IRectNodeComponent<NodeInfo>,
-                undefined,
-                undefined,
-                (node.nestedLevel ?? 0) + 1
-              );
-
-              return;
-            } else if (selectedNodeTask.isContainer) {
-              console.log('onClickAddNode: selectedNodeTask isContainer');
-              return;
-            }
-          }
-        }
-      }
-      //factory.createVisualNode(props.canvasApp, startX, startY);
-      //} else if (factory) {
-      //const nodeTask = factory(props.canvasUpdated);
       const node = nodeTask.createVisualNode(this.canvasApp, startX, startY);
       if (node && node.nodeInfo) {
         node.nodeInfo.taskType = nodeType;
+
+        if (connectToNode) {
+          const connection = this.canvasApp?.createCubicBezier(
+            connectToNode.x,
+            connectToNode.y,
+            startX,
+            startY,
+            connectToNode.x,
+            connectToNode.y,
+            startX,
+            startY,
+            false,
+            undefined,
+            undefined,
+            undefined
+          );
+          if (connection && connection.nodeComponent) {
+            connection.nodeComponent.isControlled = true;
+            connection.nodeComponent.nodeInfo = {};
+            connection.nodeComponent.layer = 1;
+
+            connection.nodeComponent.startNode = connectToNode;
+            connection.nodeComponent.startNodeThumb =
+              getThumbNodeByName<NodeInfo>('', connectToNode, {
+                start: true,
+                end: false,
+              }) || undefined;
+
+            connection.nodeComponent.endNode = node;
+            connection.nodeComponent.endNodeThumb =
+              getThumbNodeByName<NodeInfo>('', node, {
+                start: false,
+                end: true,
+              }) || undefined;
+
+            const connectiondStartThumbY = calculateConnectorY(
+              connection.nodeComponent.startNodeThumb?.thumbType ??
+                ThumbType.None,
+              connection.nodeComponent.startNode?.width ?? 0,
+              connection.nodeComponent.startNode?.height ?? 0,
+              connection.nodeComponent.startNodeThumb?.thumbIndex,
+              connection.nodeComponent.startNodeThumb
+            );
+
+            const connectiondEndThumbY = calculateConnectorY(
+              connection.nodeComponent.endNodeThumb?.thumbType ??
+                ThumbType.None,
+              connection.nodeComponent.endNode?.width ?? 0,
+              connection.nodeComponent.endNode?.height ?? 0,
+              connection.nodeComponent.endNodeThumb?.thumbIndex,
+              connection.nodeComponent.endNodeThumb
+            );
+            node.y =
+              connectToNode.y + connectiondStartThumbY - connectiondEndThumbY;
+
+            if (connectToNode) {
+              connectToNode.connections?.push(connection.nodeComponent);
+            }
+
+            node.connections?.push(connection.nodeComponent);
+
+            if (connection.nodeComponent.update) {
+              connection.nodeComponent.update();
+            }
+
+            if (node.update) {
+              node.update(node, node.x, node.y, node);
+            }
+          }
+        }
+        return node;
       }
     }
+    return false;
   };
 
   // parameter1 is the nodeType
   // parameter2 is the id of a selected node
   execute(parameter1?: any, parameter2?: any): void {
-    console.log('onClickAddNode flow-app');
+    console.log('AddNode flow-app');
     if (typeof parameter1 !== 'string') {
       return;
     }
     if (typeof parameter2 === 'string') {
-      this.showSelectNodeTypeDialog();
+      const node = this.canvasApp?.elements.get(
+        parameter2
+      ) as IRectNodeComponent<NodeInfo>;
+      if (!node) {
+        console.log('node not found in canvas');
+        return;
+      }
+      this.showSelectNodeTypeDialog(node);
       return;
     }
-    this.addNodeType(parameter1);
+    if (this.addNodeType(parameter1)) {
+      this.canvasUpdated();
+    }
   }
 
-  private showSelectNodeTypeDialog() {
+  private showSelectNodeTypeDialog(attachToNode: IRectNodeComponent<NodeInfo>) {
     const template = createTemplate(
       `
 		<div class="add-node-dialog-container h-full grid">
@@ -175,7 +209,9 @@ export class AddNodeCommand extends CommandHandler {
     okButton?.addEventListener('click', (event) => {
       event.preventDefault();
       const nodeType = (selectNodeTypeElement as HTMLSelectElement).value;
-      this.addNodeType(nodeType);
+      if (this.addNodeType(nodeType, attachToNode)) {
+        this.canvasUpdated();
+      }
       (dialogElement?.domElement as HTMLDialogElement).close();
     });
     const cancelButton = form?.querySelector('.form-cancel');
