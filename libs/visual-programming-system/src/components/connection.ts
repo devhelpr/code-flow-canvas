@@ -810,7 +810,9 @@ export class Connection<T> {
         this.points.endY + endOffsetY,
         this.nodeComponent
       );
+    }
 
+    if (this.nodeComponent) {
       this.nodeComponent.x = this.points.beginX;
       this.nodeComponent.y = this.points.beginY;
       this.nodeComponent.endX = this.points.endX;

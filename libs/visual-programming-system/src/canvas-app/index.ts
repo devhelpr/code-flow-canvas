@@ -964,13 +964,14 @@ export const createCanvasApp = <T>(
     },
     deleteElementFromNode: (
       element: INodeComponent<T>,
-      child: INodeComponent<T>
+      child: INodeComponent<T>,
+      noCanvasUpdated = false
     ) => {
       if (element && child) {
         element.elements.delete(child.id);
         element.domElement.removeChild(child.domElement);
 
-        if (onCanvasUpdated) {
+        if (onCanvasUpdated && !noCanvasUpdated) {
           onCanvasUpdated();
         }
       }

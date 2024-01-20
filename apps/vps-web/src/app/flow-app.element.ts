@@ -512,37 +512,34 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 aConnection: IConnectionNodeComponent<NodeInfo>,
                 bConnection: IConnectionNodeComponent<NodeInfo>
               ) => {
-                const a =
-                  aConnection.startNodeThumb as IThumbNodeComponent<NodeInfo>;
-                const b =
-                  bConnection.startNodeThumb as IThumbNodeComponent<NodeInfo>;
+                // instead of tbumbs .. use the connection start and position?
 
-                const aEnd =
-                  aConnection.endNodeThumb as IThumbNodeComponent<NodeInfo>;
-                const bEnd =
-                  bConnection.endNodeThumb as IThumbNodeComponent<NodeInfo>;
-                if (a && b && aEnd && bEnd) {
-                  const aHelper = `${Math.floor(a.y)
-                    .toFixed(2)
-                    .padStart(8, '0')}_${a.x
-                    .toFixed(2)
-                    .padStart(8, '0')}_${Math.floor(aEnd.y)
-                    .toFixed(2)
-                    .padStart(8, '0')}_${aEnd.x.toFixed(2).padStart(8, '0')}`;
-                  const bHelper = `${Math.floor(b.y)
-                    .toFixed(2)
-                    .padStart(8, '0')}_${b.x
-                    .toFixed(2)
-                    .padStart(8, '0')}_${Math.floor(bEnd.y)
-                    .toFixed(2)
-                    .padStart(8, '0')}_${bEnd.x.toFixed(2).padStart(8, '0')}`;
-                  if (aHelper < bHelper) {
-                    return -1;
-                  }
-                  if (aHelper > bHelper) {
-                    return 1;
-                  }
+                const aHelper = `${Math.floor(aConnection.y)
+                  .toFixed(2)
+                  .padStart(8, '0')}_${Math.floor(aConnection.x)
+                  .toFixed(2)
+                  .padStart(8, '0')}_${Math.floor(aConnection.endY)
+                  .toFixed(2)
+                  .padStart(8, '0')}_${Math.floor(aConnection.endX)
+                  .toFixed(2)
+                  .padStart(8, '0')}`;
+                const bHelper = `${Math.floor(bConnection.y)
+                  .toFixed(2)
+                  .padStart(8, '0')}_${Math.floor(bConnection.x)
+                  .toFixed(2)
+                  .padStart(8, '0')}_${Math.floor(bConnection.endY)
+                  .toFixed(2)
+                  .padStart(8, '0')}_${Math.floor(bConnection.endX)
+                  .toFixed(2)
+                  .padStart(8, '0')}`;
+                console.log('aHelper', aHelper, 'bHelper', bHelper);
+                if (aHelper < bHelper) {
+                  return -1;
                 }
+                if (aHelper > bHelper) {
+                  return 1;
+                }
+
                 return 0;
               }
             )
@@ -1024,7 +1021,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (this.formElement) {
         this.canvasApp?.deleteElementFromNode(
           this.editPopupContainer as INodeComponent<NodeInfo>,
-          this.formElement
+          this.formElement,
+          true
         );
         this.formElement = undefined;
       }
