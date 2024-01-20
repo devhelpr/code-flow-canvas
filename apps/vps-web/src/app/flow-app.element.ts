@@ -188,11 +188,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       );
     };
     const canvasUpdated = () => {
+      console.log('canvasUpdated');
       if (this.isStoring) {
         return;
       }
       resetConnectionSlider();
       store();
+      console.log('canvasUpdated before setTabOrderOfNodes');
       setTabOrderOfNodes();
     };
     this.canvasApp.setOnCanvasUpdated(() => {
@@ -218,6 +220,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
 
           if (event.key === 'Backspace' || event.key === 'Delete') {
+            if (
+              ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+                (event.target as HTMLElement)?.tagName
+              ) >= 0
+            ) {
+              return;
+            }
             removeFormElement();
             const selectedNodeInfo = getSelectedNode();
             if (selectedNodeInfo) {
@@ -507,13 +516,26 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   aConnection.startNodeThumb as IThumbNodeComponent<NodeInfo>;
                 const b =
                   bConnection.startNodeThumb as IThumbNodeComponent<NodeInfo>;
-                if (a && b) {
+
+                const aEnd =
+                  aConnection.endNodeThumb as IThumbNodeComponent<NodeInfo>;
+                const bEnd =
+                  bConnection.endNodeThumb as IThumbNodeComponent<NodeInfo>;
+                if (a && b && aEnd && bEnd) {
                   const aHelper = `${Math.floor(a.y)
                     .toFixed(2)
-                    .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
+                    .padStart(8, '0')}_${a.x
+                    .toFixed(2)
+                    .padStart(8, '0')}_${Math.floor(aEnd.y)
+                    .toFixed(2)
+                    .padStart(8, '0')}_${aEnd.x.toFixed(2).padStart(8, '0')}`;
                   const bHelper = `${Math.floor(b.y)
                     .toFixed(2)
-                    .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
+                    .padStart(8, '0')}_${b.x
+                    .toFixed(2)
+                    .padStart(8, '0')}_${Math.floor(bEnd.y)
+                    .toFixed(2)
+                    .padStart(8, '0')}_${bEnd.x.toFixed(2).padStart(8, '0')}`;
                   if (aHelper < bHelper) {
                     return -1;
                   }
