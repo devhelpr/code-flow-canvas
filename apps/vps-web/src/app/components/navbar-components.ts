@@ -41,7 +41,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   exportButton: HTMLButtonElement | null = null;
   importButton: HTMLButtonElement | null = null;
   //importScriptButton: HTMLButtonElement | null = null;
-
+  selectExampleFlow: HTMLSelectElement | null = null;
   rootAppElement: HTMLElement | null = null;
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
@@ -56,7 +56,10 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <button class="${navBarButton}">Save</button>
         <button class="${navBarButton}">Load</button>
-       
+        <select type="select" name="example-flows" class="p-2 m-2 relative ">
+        <option value="">Select example flow</option>
+        <option value="quicksort-flow.json">Quicksort</option>
+      </select>
         <children></children>
       </div>`
     );
@@ -80,6 +83,8 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
+        this.selectExampleFlow = this.importButton
+          ?.nextSibling as HTMLSelectElement;
         // this.importScriptButton = this.importButton
         //   ?.nextSibling as HTMLButtonElement;
 
@@ -88,6 +93,11 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
         this.deleteButton.addEventListener('click', this.onClickDelete);
         this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
+        this.selectExampleFlow.addEventListener(
+          'change',
+          this.onClickImportExample
+        );
+
         // this.importScriptButton.addEventListener(
         //   'click',
         //   this.onClickImportScript
@@ -98,7 +108,8 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
           this.centerButton,
           this.deleteButton,
           this.exportButton,
-          this.importButton
+          this.importButton,
+          this.selectExampleFlow
         );
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
@@ -405,6 +416,28 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
     };
     input.click();
 
+    return false;
+  };
+  onClickImportExample = (event: Event) => {
+    event.preventDefault();
+    const example = (event.target as HTMLSelectElement).value;
+    if (example && confirm(`Are you sure you want to load ${example}?`)) {
+      fetch(`/example-flows/${example}`)
+        .then((response) => response.json())
+        .then((data) => {
+          this.props.clearCanvas();
+          this.props.importToCanvas(
+            data.flows.flow.nodes,
+            this.props.canvasApp,
+            this.props.canvasUpdated,
+            undefined,
+            0,
+            getNodeTaskFactory
+          );
+          this.props.canvasApp.centerCamera();
+          this.props.initializeNodes();
+        });
+    }
     return false;
   };
 
