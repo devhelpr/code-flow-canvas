@@ -211,14 +211,20 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.storageProvider = storageProvider;
 
         let tabKeyWasUsed = false;
-        window.addEventListener('keyup', (event) => {
+        window.addEventListener('keydown', (event) => {
           if (event.key === 'Tab') {
             tabKeyWasUsed = true;
             console.log('TAB KEY WAS USED');
           } else {
-            tabKeyWasUsed = false;
-          }
+            // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
+            if (event.key !== 'Shift') {
+              tabKeyWasUsed = false;
 
+              console.log('TAB KEY WAS NOT USED', event.key);
+            }
+          }
+        });
+        window.addEventListener('keyup', (event) => {
           if (event.key === 'Backspace' || event.key === 'Delete') {
             if (
               ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
@@ -256,7 +262,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         });
 
         document.addEventListener('focusin', (_event) => {
-          console.log('FOCUS');
           document.body.scrollTop = 0;
           document.body.scrollLeft = 0;
           if (this.rootElement) {
@@ -273,12 +278,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   id
                 ) as IRectNodeComponent<NodeInfo>;
                 if (node && node.x && node.y && this.canvasApp) {
+                  console.log('focusin node found', node);
                   setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
                   this.canvasApp.selectNode(node);
                   removeFormElement();
                 }
               }
             }
+          } else {
+            console.log(
+              'FOCUSIN activeElement not found or tabKeyWasUsed is false',
+              tabKeyWasUsed
+            );
           }
           tabKeyWasUsed = false;
         });
