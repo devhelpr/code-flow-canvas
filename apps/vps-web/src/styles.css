@@ -306,11 +306,12 @@ input {
 
 dialog {
 	position: absolute;
-    top: 0;
+    top: 50%;
     left: 50%;
     z-index: 100000;
-    width: 50%;
-    height: min-content;
+	width: fit-content;
+    height: fit-content;
+	margin: 0;
 	transform: translate(-50%, -50%);
 }
 

@@ -272,19 +272,34 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 (event.target as HTMLElement)?.tagName
               ) >= 0
             ) {
-              return;
+              return true;
             }
             if (this.canvasApp) {
+              event.preventDefault();
               this.canvasApp.centerCamera();
+              return false;
             }
           }
 
           if (event.ctrlKey && key === 'i') {
             console.log('ctrl + i', this.focusedNode);
-            const currentFocusedNode = this.focusedNode;
+            let currentFocusedNode = this.focusedNode;
             this.popupNode = this.focusedNode;
             if (this.focusedNode && this.canvasApp) {
               this.canvasApp.selectNode(this.focusedNode);
+            } else {
+              const selectedNodeInfo = getSelectedNode();
+              if (selectedNodeInfo) {
+                const node = this.canvasApp?.elements.get(
+                  selectedNodeInfo.id
+                ) as IRectNodeComponent<NodeInfo>;
+                if (node && this.canvasApp) {
+                  this.focusedNode = node;
+                  this.popupNode = this.focusedNode;
+                  currentFocusedNode = node;
+                  this.canvasApp.selectNode(this.focusedNode);
+                }
+              }
             }
 
             this.positionPopup(
@@ -300,6 +315,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               this.focusedNode = currentFocusedNode;
             }
           }
+          return true;
         });
 
         window.addEventListener('pointerdown', (_event) => {

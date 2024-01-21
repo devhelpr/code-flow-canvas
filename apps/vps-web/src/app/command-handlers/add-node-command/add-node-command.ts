@@ -183,7 +183,7 @@ export class AddNodeCommand extends CommandHandler {
   private showSelectNodeTypeDialog(attachToNode: IRectNodeComponent<NodeInfo>) {
     const template = createTemplate(
       `
-		<div class="add-node-dialog-container h-full grid">
+		<div class="add-node-dialog-container flex flex-col">
 		  <p class="row-0">Select node type</p>	
 		  
 		  <form cmethod="dialog" class="form row-1">
