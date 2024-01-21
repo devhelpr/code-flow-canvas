@@ -377,6 +377,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             rootElement: menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
+            showPopup: this.positionPopup,
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
               canvasApp: CanvasAppInstance<NodeInfo>,
@@ -454,6 +455,27 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             rootElement: this.rootElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
+            showPopup: (node: IRectNodeComponent<NodeInfo>) => {
+              this.popupNode = node;
+
+              if (this.canvasApp) {
+                this.focusedNode = node;
+                this.popupNode = this.focusedNode;
+                this.canvasApp.selectNode(this.focusedNode);
+              }
+
+              this.positionPopup(
+                this.focusedNode as IRectNodeComponent<NodeInfo>
+              );
+              const inputInPopup = document.querySelector(
+                '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
+              );
+              if (inputInPopup) {
+                (inputInPopup as HTMLInputElement).focus();
+              }
+
+              this.focusedNode = node;
+            },
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
               canvasApp: CanvasAppInstance<NodeInfo>,

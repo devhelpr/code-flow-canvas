@@ -443,5 +443,6 @@ export const NavbarComponents = (props: AppNavComponentsProps) => {
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,
+    showPopup: props.showPopup,
   });
 };

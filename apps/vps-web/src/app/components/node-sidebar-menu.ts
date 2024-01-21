@@ -29,7 +29,7 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   previousDoRenderChildren: boolean | null = null;
   doRenderChildren: boolean | null = true;
 
-  testNodeButton: HTMLButtonElement | null = null;
+  settingsNodeButton: HTMLButtonElement | null = null;
   rootAppElement: HTMLElement | null = null;
 
   placeOnLayer1Button: HTMLButtonElement | null = null;
@@ -38,12 +38,12 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   toggleDependencyConnections: HTMLButtonElement | null = null;
   followNodeExecution: HTMLButtonElement | null = null;
   showDependencyConnections = false;
-  //		  <button class="${navBarButtonNomargin} flex  w-[32px] h-[32px] mb-1"><span class="icon icon-tune text-[16px]"></span></button>
 
   constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
     super(parent, props);
     this.template = createTemplate(
       `<div class="z-10 flex flex-col absolute right-0 top-1/2 bg-slate-700 -translate-y-1/2 p-[4px] rounded-l-lg">
+      <button class="${navBarButtonNomargin} flex  w-[32px] h-[32px] mb-1"><span class="icon icon-tune text-[16px]"></span></button>
       <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L1</button>
       <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L2</button>
       <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-layers text-[22px]"></span></button>
@@ -67,9 +67,10 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
 
       if (this.element) {
         this.element.remove();
-        //this.testNodeButton = this.element.firstChild as HTMLButtonElement;
+        this.settingsNodeButton = this.element.firstChild as HTMLButtonElement;
 
-        this.placeOnLayer1Button = this.element.firstChild as HTMLButtonElement;
+        this.placeOnLayer1Button = this.settingsNodeButton
+          ?.nextSibling as HTMLButtonElement;
         this.placeOnLayer2Button = this.placeOnLayer1Button
           ?.nextSibling as HTMLButtonElement;
         this.switchLayerButton = this.placeOnLayer2Button
@@ -79,7 +80,10 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
         this.followNodeExecution = this.toggleDependencyConnections
           ?.nextSibling as HTMLButtonElement;
 
-        //this.testNodeButton.addEventListener('click', this.onClickAddNode);
+        this.settingsNodeButton.addEventListener(
+          'click',
+          this.onClickSettingsNode
+        );
 
         this.placeOnLayer1Button.addEventListener(
           'click',
@@ -105,6 +109,7 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
         );
 
         this.renderList.push(
+          this.settingsNodeButton,
           this.placeOnLayer1Button,
           this.placeOnLayer2Button,
           this.switchLayerButton,
@@ -125,9 +130,16 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
     this.isMounted = false;
   }
 
-  onClickAddNode = (event: Event) => {
+  onClickSettingsNode = (event: Event) => {
     event.preventDefault();
-    //
+    const nodeInfo = this.getSelectedNodeInfo();
+    if (
+      nodeInfo &&
+      nodeInfo.node &&
+      nodeInfo.node.nodeType === NodeType.Shape
+    ) {
+      this.props.showPopup(nodeInfo.node as IRectNodeComponent<NodeInfo>);
+    }
 
     return false;
   };
@@ -359,5 +371,6 @@ export const NodeSidebarMenuComponents = (props: AppNavComponentsProps) => {
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,
+    showPopup: props.showPopup,
   });
 };

@@ -32,6 +32,7 @@ export interface AppNavComponentsProps {
     nestedLevel?: number,
     getNodeTaskFactory?: (name: string) => any
   ) => void;
+  showPopup: (node: IRectNodeComponent<NodeInfo>) => void;
 }
 
 export interface GenericAppNavComponentsProps<T> {
