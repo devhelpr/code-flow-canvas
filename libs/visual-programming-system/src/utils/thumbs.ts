@@ -26,6 +26,31 @@ export const getThumbNodeByName = <T>(
   return false;
 };
 
+export const getThumbNodeById = <T>(
+  id: string,
+  node: INodeComponent<T>,
+  takeDefaultThumb = {
+    start: false,
+    end: false,
+  }
+) => {
+  if (node.thumbConnectors) {
+    const thumbNode = node.thumbConnectors.find((thumbNode) => {
+      if (!id && takeDefaultThumb) {
+        if (takeDefaultThumb.start) {
+          return thumbNode.thumbConnectionType === ThumbConnectionType.start;
+        }
+        if (takeDefaultThumb.end) {
+          return thumbNode.thumbConnectionType === ThumbConnectionType.end;
+        }
+      }
+      return thumbNode.id === id;
+    });
+    return thumbNode;
+  }
+  return false;
+};
+
 export const getThumbNode = <T>(
   thumbType: ThumbType,
   node: INodeComponent<T>

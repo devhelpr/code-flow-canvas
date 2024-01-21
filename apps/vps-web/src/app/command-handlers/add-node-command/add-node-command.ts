@@ -2,9 +2,12 @@ import {
   CanvasAppInstance,
   IElementNode,
   IRectNodeComponent,
+  IThumbNodeComponent,
+  ThumbConnectionType,
   ThumbType,
   calculateConnectorY,
   createElement,
+  getThumbNodeById,
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
@@ -35,7 +38,8 @@ export class AddNodeCommand extends CommandHandler {
 
   addNodeType = (
     nodeType: string,
-    connectToNode?: IRectNodeComponent<NodeInfo>
+    connectToNode?: IRectNodeComponent<NodeInfo>,
+    thumbId?: string
   ) => {
     this.canvasApp?.resetNodeTransform();
     if (!nodeType) {
@@ -90,7 +94,7 @@ export class AddNodeCommand extends CommandHandler {
 
             connection.nodeComponent.startNode = connectToNode;
             connection.nodeComponent.startNodeThumb =
-              getThumbNodeByName<NodeInfo>('', connectToNode, {
+              getThumbNodeById<NodeInfo>(thumbId ?? '', connectToNode, {
                 start: true,
                 end: false,
               }) || undefined;
@@ -159,6 +163,7 @@ export class AddNodeCommand extends CommandHandler {
         return;
       }
       this.showSelectNodeTypeDialog(node);
+
       return;
     }
     if (this.addNodeType(parameter1)) {
@@ -172,8 +177,8 @@ export class AddNodeCommand extends CommandHandler {
 		<div class="add-node-dialog-container h-full grid">
 		  <p class="row-0">Select node type</p>	
 		  
-		  <form cmethod="dialog" class="form row-1 grid">
-		      <div class="flex flex-col w-full">
+		  <form cmethod="dialog" class="form row-1">
+		      <div class="flex flex-col w-full add-node-select-node-type-container my-2">
 			  	<select id="add-node-select-node-type" class="form-select w-full" name="nodeType">					
 				</select>
 			  </div>	
@@ -199,17 +204,39 @@ export class AddNodeCommand extends CommandHandler {
     );
     const selectNodeTypeElement = (
       dialogElement.domElement as HTMLElement
-    ).querySelector('#add-node-select-node-type');
+    ).querySelector('#add-node-select-node-type') as HTMLSelectElement;
     if (!selectNodeTypeElement) {
       return;
     }
-    setupTasksInDropdown(selectNodeTypeElement as HTMLSelectElement);
+    setupTasksInDropdown(selectNodeTypeElement);
+
+    const nodeType = selectNodeTypeElement.value;
+    this.getThumbNodes(
+      nodeType,
+      attachToNode,
+      dialogElement.domElement as HTMLElement
+    );
+
+    selectNodeTypeElement.addEventListener('change', (_event) => {
+      const nodeType = selectNodeTypeElement.value;
+      this.getThumbNodes(
+        nodeType,
+        attachToNode,
+        dialogElement.domElement as HTMLElement
+      );
+    });
     (dialogElement.domElement as HTMLDialogElement).showModal();
     const okButton = form?.querySelector('.form-ok');
     okButton?.addEventListener('click', (event) => {
       event.preventDefault();
-      const nodeType = (selectNodeTypeElement as HTMLSelectElement).value;
-      if (this.addNodeType(nodeType, attachToNode)) {
+      const nodeType = selectNodeTypeElement.value;
+
+      const thumbSelect = (
+        dialogElement.domElement as HTMLDialogElement
+      ).querySelector('.thumb-selector-container select') as HTMLSelectElement;
+      const thumbId = thumbSelect?.value ?? '';
+      console.log('thumbId', thumbId);
+      if (this.addNodeType(nodeType, attachToNode, thumbId)) {
         this.canvasUpdated();
       }
       (dialogElement?.domElement as HTMLDialogElement).close();
@@ -219,5 +246,50 @@ export class AddNodeCommand extends CommandHandler {
       event.preventDefault();
       (dialogElement?.domElement as HTMLDialogElement).close();
     });
+  }
+  private getThumbNodes(
+    _nodeType: string,
+    attachToNode: IRectNodeComponent<NodeInfo>,
+    dialogElement: HTMLElement
+  ) {
+    const selectNodeThumbElement = dialogElement.querySelector(
+      '.thumb-selector-container'
+    ) as HTMLSelectElement;
+    if (selectNodeThumbElement) {
+      selectNodeThumbElement.remove();
+    }
+    const thumbs: IThumbNodeComponent<NodeInfo>[] = [];
+
+    const template = createTemplate(
+      `<div class="flex flex-col w-full thumb-selector-container my-2">
+			<select id="thumb-select-node-type" class="form-select w-full" name="thumb">					
+		</select>`
+    );
+    const thumbSelectElemetContainer = createElementFromTemplate(template);
+    const thumbSelect = thumbSelectElemetContainer.querySelector(
+      'select'
+    ) as HTMLSelectElement;
+
+    attachToNode.thumbConnectors?.forEach((thumb) => {
+      if (thumb.thumbConnectionType === ThumbConnectionType.start) {
+        thumbs.push(thumb);
+
+        createElement(
+          'option',
+          {
+            value: thumb.id,
+          },
+          thumbSelect,
+          thumb.thumbName || `thumb ${thumb.thumbIndex}`
+        );
+      }
+    });
+    const selectNodeTypeElement = dialogElement.querySelector(
+      '.add-node-select-node-type-container'
+    ) as HTMLSelectElement;
+    if (!selectNodeTypeElement) {
+      return;
+    }
+    selectNodeTypeElement.after(thumbSelectElemetContainer);
   }
 }
