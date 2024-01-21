@@ -2,7 +2,6 @@ import {
   CanvasAppInstance,
   IElementNode,
   IRectNodeComponent,
-  IThumbNodeComponent,
   ThumbConnectionType,
   ThumbType,
   calculateConnectorY,
@@ -39,7 +38,8 @@ export class AddNodeCommand extends CommandHandler {
   addNodeType = (
     nodeType: string,
     connectToNode?: IRectNodeComponent<NodeInfo>,
-    thumbId?: string
+    thumbId?: string,
+    inputThumbName?: string
   ) => {
     this.canvasApp?.resetNodeTransform();
     if (!nodeType) {
@@ -100,11 +100,20 @@ export class AddNodeCommand extends CommandHandler {
               }) || undefined;
 
             connection.nodeComponent.endNode = node;
-            connection.nodeComponent.endNodeThumb =
-              getThumbNodeByName<NodeInfo>('', node, {
-                start: false,
-                end: true,
-              }) || undefined;
+
+            if (inputThumbName) {
+              connection.nodeComponent.endNodeThumb =
+                getThumbNodeByName<NodeInfo>(inputThumbName, node, {
+                  start: false,
+                  end: true,
+                }) || undefined;
+            } else {
+              connection.nodeComponent.endNodeThumb =
+                getThumbNodeByName<NodeInfo>('', node, {
+                  start: false,
+                  end: true,
+                }) || undefined;
+            }
 
             const connectiondStartThumbY = calculateConnectorY(
               connection.nodeComponent.startNodeThumb?.thumbType ??
@@ -236,7 +245,18 @@ export class AddNodeCommand extends CommandHandler {
       ).querySelector('.thumb-selector-container select') as HTMLSelectElement;
       const thumbId = thumbSelect?.value ?? '';
       console.log('thumbId', thumbId);
-      if (this.addNodeType(nodeType, attachToNode, thumbId)) {
+
+      const inputSelectNodeTypeElement = (
+        dialogElement.domElement as HTMLDialogElement
+      ).querySelector(
+        '.thumb-input-selector-container select'
+      ) as HTMLSelectElement;
+      let inputThumbName: string | undefined = undefined;
+      if (inputSelectNodeTypeElement) {
+        inputThumbName = inputSelectNodeTypeElement.value;
+      }
+
+      if (this.addNodeType(nodeType, attachToNode, thumbId, inputThumbName)) {
         this.canvasUpdated();
       }
       (dialogElement?.domElement as HTMLDialogElement).close();
@@ -248,7 +268,7 @@ export class AddNodeCommand extends CommandHandler {
     });
   }
   private getThumbNodes(
-    _nodeType: string,
+    nodeType: string,
     attachToNode: IRectNodeComponent<NodeInfo>,
     dialogElement: HTMLElement
   ) {
@@ -258,7 +278,13 @@ export class AddNodeCommand extends CommandHandler {
     if (selectNodeThumbElement) {
       selectNodeThumbElement.remove();
     }
-    const thumbs: IThumbNodeComponent<NodeInfo>[] = [];
+
+    const inputSelectNodeThumbElement = dialogElement.querySelector(
+      '.thumb-input-selector-container'
+    ) as HTMLSelectElement;
+    if (inputSelectNodeThumbElement) {
+      inputSelectNodeThumbElement.remove();
+    }
 
     const template = createTemplate(
       `<div class="flex flex-col w-full thumb-selector-container my-2">
@@ -272,7 +298,7 @@ export class AddNodeCommand extends CommandHandler {
 
     attachToNode.thumbConnectors?.forEach((thumb) => {
       if (thumb.thumbConnectionType === ThumbConnectionType.start) {
-        thumbs.push(thumb);
+        //thumbs.push(thumb);
 
         createElement(
           'option',
@@ -291,5 +317,42 @@ export class AddNodeCommand extends CommandHandler {
       return;
     }
     selectNodeTypeElement.after(thumbSelectElemetContainer);
+
+    const factory = getNodeTaskFactory(nodeType);
+
+    if (factory) {
+      const nodeTask = factory(this.canvasUpdated);
+      if (nodeTask.thumbs) {
+        const template = createTemplate(
+          `<div class="flex flex-col w-full thumb-input-selector-container my-2">
+					  <select id="thumb-input-select-node-type" class="form-select w-full" name="thumb-input">					
+				  </select>`
+        );
+        const thumbSelectElemetContainer = createElementFromTemplate(template);
+        const thumbSelect = thumbSelectElemetContainer.querySelector(
+          'select'
+        ) as HTMLSelectElement;
+
+        nodeTask.thumbs.forEach((thumb) => {
+          if (thumb.connectionType === ThumbConnectionType.end) {
+            createElement(
+              'option',
+              {
+                value: thumb.name || ``,
+              },
+              thumbSelect,
+              thumb.name || `thumb ${thumb.thumbIndex}`
+            );
+          }
+        });
+        const selectNodeTypeElement = dialogElement.querySelector(
+          '.thumb-selector-container'
+        ) as HTMLSelectElement;
+        if (!selectNodeTypeElement) {
+          return;
+        }
+        selectNodeTypeElement.after(thumbSelectElemetContainer);
+      }
+    }
   }
 }

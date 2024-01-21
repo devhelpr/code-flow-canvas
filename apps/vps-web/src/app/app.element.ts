@@ -202,7 +202,11 @@ export class AppElement<T> {
     }
   };
 
-  positionPopup = (node: IRectNodeComponent<T>) => {
+  popupNode: IRectNodeComponent<T> | undefined = undefined;
+  positionPopup = (_node: IRectNodeComponent<T>) => {
+    if (!this.popupNode) {
+      return;
+    }
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
@@ -212,14 +216,17 @@ export class AppElement<T> {
 
     const sidebar = this.editPopupContainer
       ?.domElement as unknown as HTMLElement;
-    const nodeComponent = node as INodeComponent<T>;
+    const nodeComponent = this.popupNode as INodeComponent<T>;
 
     let parentX = 0;
     let parentY = 0;
-    if (node.containerNode) {
-      if (node.containerNode && node.containerNode?.getParentedCoordinates) {
+    if (this.popupNode.containerNode) {
+      if (
+        this.popupNode.containerNode &&
+        this.popupNode.containerNode?.getParentedCoordinates
+      ) {
         const parentCoordinates =
-          node.containerNode?.getParentedCoordinates() ?? {
+          this.popupNode.containerNode?.getParentedCoordinates() ?? {
             x: 0,
             y: 0,
           };

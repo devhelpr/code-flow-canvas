@@ -370,6 +370,7 @@ export const visualNodeFactory = (
     isContainer: isContainer,
     canBeUsedAsDecorator,
     category: settings?.category,
+    thumbs,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,

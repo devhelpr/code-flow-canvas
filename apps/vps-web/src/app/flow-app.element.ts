@@ -100,6 +100,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   testCircle: IElementNode<NodeInfo> | undefined = undefined;
   message: IElementNode<NodeInfo> | undefined = undefined;
   messageText: IElementNode<NodeInfo> | undefined = undefined;
+  focusedNode: IRectNodeComponent<NodeInfo> | undefined = undefined;
 
   constructor(appRootSelector: string) {
     super(appRootSelector);
@@ -211,6 +212,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.storageProvider = storageProvider;
 
         let tabKeyWasUsed = false;
+
         window.addEventListener('keydown', (event) => {
           if (event.key === 'Tab') {
             tabKeyWasUsed = true;
@@ -225,7 +227,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         });
         window.addEventListener('keyup', (event) => {
-          if (event.key === 'Backspace' || event.key === 'Delete') {
+          console.log('keyup', event.key, event.ctrlKey);
+          const key = event.key.toLowerCase();
+          if (key === 'backspace' || key === 'delete') {
             if (
               ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
                 (event.target as HTMLElement)?.tagName
@@ -240,10 +244,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             }
           }
 
-          if (
-            event.key === 'Insert' ||
-            (event.ctrlKey && event.shiftKey && event.key === 'A')
-          ) {
+          if (event.key === 'insert' || (event.ctrlKey && key === 'a')) {
             removeFormElement();
             const selectedNodeInfo = getSelectedNode();
             executeCommand(
@@ -252,8 +253,52 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               selectedNodeInfo?.id
             );
           }
-          if (event.ctrlKey && event.key === 'Enter') {
+          if (event.ctrlKey && key === 'enter') {
             (runButton.domElement as HTMLElement).click();
+          }
+
+          if (key === 'escape') {
+            const currentFocusedNode = this.focusedNode;
+            removeFormElement();
+            this.popupNode = undefined;
+            if (currentFocusedNode) {
+              (currentFocusedNode.domElement as HTMLElement).focus();
+            }
+          }
+
+          if (event.shiftKey && key === '!') {
+            if (
+              ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+                (event.target as HTMLElement)?.tagName
+              ) >= 0
+            ) {
+              return;
+            }
+            if (this.canvasApp) {
+              this.canvasApp.centerCamera();
+            }
+          }
+
+          if (event.ctrlKey && key === 'i') {
+            console.log('ctrl + i', this.focusedNode);
+            const currentFocusedNode = this.focusedNode;
+            this.popupNode = this.focusedNode;
+            if (this.focusedNode && this.canvasApp) {
+              this.canvasApp.selectNode(this.focusedNode);
+            }
+
+            this.positionPopup(
+              this.focusedNode as IRectNodeComponent<NodeInfo>
+            );
+            const inputInPopup = document.querySelector(
+              '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
+            );
+            if (inputInPopup) {
+              (inputInPopup as HTMLInputElement).focus();
+            }
+            if (currentFocusedNode) {
+              this.focusedNode = currentFocusedNode;
+            }
           }
         });
 
@@ -261,7 +306,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           tabKeyWasUsed = false;
         });
 
+        document.addEventListener('focusout', (_event) => {
+          console.log('focusout');
+          this.focusedNode = undefined;
+        });
         document.addEventListener('focusin', (_event) => {
+          console.log('focusin');
           document.body.scrollTop = 0;
           document.body.scrollLeft = 0;
           if (this.rootElement) {
@@ -277,6 +327,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 const node = this.canvasApp?.elements.get(
                   id
                 ) as IRectNodeComponent<NodeInfo>;
+                if (node) {
+                  this.focusedNode = node;
+                }
                 if (node && node.x && node.y && this.canvasApp) {
                   console.log('focusin node found', node);
                   setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
@@ -1176,7 +1229,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           undefined
         );
         this.formElement = formElementInstance as INodeComponent<NodeInfo>;
-
+        const currentFocusNode = this.focusedNode;
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
           id: selectedNodeInfo.id,
@@ -1237,6 +1290,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               this.editPopupEditingNodeIndicator
                 ?.domElement as unknown as HTMLElement
             ).classList.remove('editing-node-indicator');
+
+            console.log('onsave this.focusedNode', this.focusedNode);
+            if (currentFocusNode) {
+              (currentFocusNode.domElement as HTMLElement).focus();
+            }
           },
           formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
             (item: any) => {

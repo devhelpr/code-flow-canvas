@@ -7,6 +7,7 @@ import {
   createElement,
   INodeComponent,
   IRectNodeComponent,
+  IThumb,
   ThumbConnectionType,
   ThumbType,
   trackNamedSignal,
@@ -19,6 +20,37 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 
+const thumbs: IThumb[] = [
+  {
+    thumbType: ThumbType.StartConnectorTop,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    pathName: 'success',
+    color: 'rgba(95,204,37,1)',
+    label: '#',
+    thumbConstraint: 'value',
+    name: 'success',
+  },
+  {
+    thumbType: ThumbType.StartConnectorBottom,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    pathName: 'failure',
+    color: 'rgba(204,37,37,1)',
+    label: '#',
+    thumbConstraint: 'value',
+    name: 'failure',
+  },
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    //thumbConstraint: 'value',
+    name: 'input',
+  },
+];
 export const getIfCondition: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -155,6 +187,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
     name: 'if-condition',
     family: 'flow-canvas',
     category: 'flow-control',
+    thumbs,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
@@ -189,6 +222,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               Mode: value,
             };
             console.log('onChange', node.nodeInfo);
+
             if (updated) {
               updated();
             }
@@ -206,6 +240,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               expression: value,
             };
+            jsxComponentWrapper.domElement.textContent = value;
             console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
@@ -286,37 +321,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         150,
         150,
         undefined,
-        [
-          {
-            thumbType: ThumbType.StartConnectorTop,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            pathName: 'success',
-            color: 'rgba(95,204,37,1)',
-            label: '#',
-            thumbConstraint: 'value',
-            name: 'success',
-          },
-          {
-            thumbType: ThumbType.StartConnectorBottom,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            pathName: 'failure',
-            color: 'rgba(204,37,37,1)',
-            label: '#',
-            thumbConstraint: 'value',
-            name: 'failure',
-          },
-          {
-            thumbType: ThumbType.EndConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            color: 'white',
-            label: ' ',
-            //thumbConstraint: 'value',
-            name: 'input',
-          },
-        ],
+        thumbs,
         jsxComponentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,

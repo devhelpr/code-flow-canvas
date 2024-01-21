@@ -2,6 +2,7 @@ import {
   CanvasAppInstance,
   INodeComponent,
   IRectNodeComponent,
+  IThumb,
 } from '@devhelpr/visual-programming-system';
 
 export type InitialValues = Record<string, any>;
@@ -14,6 +15,7 @@ export type NodeTask<T> = {
   isContained?: boolean;
   canBeUsedAsDecorator?: boolean;
   childNodeTasks?: string[];
+  thumbs?: IThumb[];
   createVisualNode: (
     canvasApp: CanvasAppInstance<T>,
     x: number,
