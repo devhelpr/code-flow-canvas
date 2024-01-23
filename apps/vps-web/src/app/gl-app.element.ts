@@ -67,7 +67,7 @@ export class GLAppElement extends AppElement<any> {
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
     template.innerHTML = `<div>
-  <div class="h-screen w-1/2 bg-slate-800 overflow-hidden touch-none" id="root" >
+  <div class="min-h-dvh w-1/2 bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
   <canvas id="glcanvas" class="gl-canvas"></canvas></div>
 `;

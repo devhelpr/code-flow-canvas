@@ -25,7 +25,7 @@ import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <div class="h-screen w-full bg-slate-800 overflow-hidden touch-none" id="root" >
+  <div class="min-h-dvh w-full bg-slate-800 overflow-hidden touch-none" id="root" >
   </div>
 `;
 
