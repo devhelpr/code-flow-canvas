@@ -2,6 +2,12 @@
 @tailwind base;
 @tailwind utilities;
 
+.menu {
+	
+	scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
 input::selection {
     @apply bg-slate-500;
 	@apply text-white;

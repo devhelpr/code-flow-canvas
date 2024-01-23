@@ -175,6 +175,7 @@ export const createCanvasApp = <T>(
       if (disableInteraction) {
         return;
       }
+
       //const canvasRect = canvas.domElement.getBoundingClientRect();
       if (
         ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
@@ -411,6 +412,15 @@ export const createCanvasApp = <T>(
     let wheelTime = -1;
     if (!disableZoom) {
       rootElement.addEventListener('wheel', (event: WheelEvent) => {
+        if (
+          event.target &&
+          (event.target as any).closest &&
+          ((event.target as any).closest('.menu') ||
+            (event.target as any).closest('.menu-container'))
+        ) {
+          return;
+        }
+
         if (disableInteraction) {
           return;
         }

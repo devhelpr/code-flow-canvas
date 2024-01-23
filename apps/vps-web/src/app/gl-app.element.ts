@@ -30,6 +30,7 @@ import {
 import { GLNavbarMenu } from './components/gl-navbar-components';
 import {
   menubarClasses,
+  menubarContainerClasses,
   navBarButton,
   navBarWarningButton,
 } from './consts/classes';
@@ -237,12 +238,20 @@ export class GLAppElement extends AppElement<any> {
       setSelectNode(undefined);
     });
 
-    const menubarElement = createElement(
+    const menubarContainerElement = createElement(
       'div',
       {
         class: menubarClasses,
       },
       this.rootElement
+    );
+
+    const menubarElement = createElement(
+      'div',
+      {
+        class: menubarContainerClasses,
+      },
+      menubarContainerElement.domElement
     );
 
     const initializeNodes = () => {

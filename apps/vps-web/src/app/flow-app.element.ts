@@ -62,6 +62,7 @@ import {
   navBarIconButtonInnerElement,
   navBarPrimaryIconButton,
   navBarOutlineButton,
+  menubarContainerClasses,
 } from './consts/classes';
 import {
   getNodeFactoryNames,
@@ -576,12 +577,20 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       setSelectNode(undefined);
     });
 
-    const menubarElement = createElement(
+    const menubarContainerElement = createElement(
       'div',
       {
         class: menubarClasses,
       },
       this.rootElement
+    );
+
+    const menubarElement = createElement(
+      'div',
+      {
+        class: menubarContainerClasses,
+      },
+      menubarContainerElement.domElement
     );
 
     const setTabOrderForNode = (
