@@ -841,7 +841,7 @@ export class Rect<T> {
       //  .. if window.visualViewport.offsetTop gebruiken??
       const { x, y } = transformCameraSpaceToWorldSpace(
         event.clientX,
-        event.clientY + (window?.visualViewport?.offsetTop ?? 0)
+        event.clientY - (window?.visualViewport?.offsetTop ?? 0)
       );
       const rect = transformCameraSpaceToWorldSpace(
         elementRect.x,
