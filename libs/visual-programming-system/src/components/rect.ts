@@ -837,9 +837,11 @@ export class Rect<T> {
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
+      // todo : use offsetY ?? because of mobile keyboard?
+      //  .. if window.visualViewport.offsetTop gebruiken??
       const { x, y } = transformCameraSpaceToWorldSpace(
         event.clientX,
-        event.clientY
+        event.clientY + (window?.visualViewport?.offsetTop ?? 0)
       );
       const rect = transformCameraSpaceToWorldSpace(
         elementRect.x,
