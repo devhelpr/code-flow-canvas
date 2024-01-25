@@ -65,7 +65,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
       `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
       }">
-        <label for="${props.fieldName}" class="block  mb-2 ${
+        <label for="${props.formId}_${props.fieldName}" class="block  mb-2 ${
         props.settings?.showLabel === false ? 'hidden' : ''
       } 
         text-white ${props.isRow ? 'mr-2' : ''}">${

@@ -26,9 +26,9 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full mb-2">
-        <label for="${props.fieldName}" class="block mb-2 text-white">${
-        props.label || props.fieldName
-      }</label>
+        <label for="${props.formId}_${
+        props.fieldName
+      }" class="block mb-2 text-white">${props.label || props.fieldName}</label>
         <textarea class="block w-full p-1" 
           rows="10"
           name="${props.fieldName}"

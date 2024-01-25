@@ -1107,6 +1107,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       bgRange.domElement,
       ''
     );
+    (pathRange.domElement as HTMLElement).setAttribute('id', pathRange.id);
     const labelPathRange = createElement(
       'label',
       {
