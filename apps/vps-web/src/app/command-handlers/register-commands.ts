@@ -1,30 +1,44 @@
 import {
   CanvasAppInstance,
+  ICommandHandler,
   IElementNode,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import { AddNodeCommand } from './add-node-command/add-node-command';
-import { CommandHandler } from './command-handler/command-handler';
 import { DeleteNodeCommand } from './delete-node-command/delete-node-command';
-const commandRegistry = new Map<string, CommandHandler>();
+import { NodeTaskFactory } from '../node-task-registry';
 
-export const registerCommands = (
+export const registerCommands = <T>(
   rootElement: HTMLElement,
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  canvasApp: CanvasAppInstance<T>,
   canvasUpdated: () => void,
-  removeElement: (element: IElementNode<NodeInfo>) => void
+  removeElement: (element: IElementNode<T>) => void,
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
+  commandRegistry: Map<string, ICommandHandler>
 ) => {
   commandRegistry.set(
     'add-node',
-    new AddNodeCommand(rootElement, canvasApp, canvasUpdated, removeElement)
+    new AddNodeCommand<T>(
+      rootElement,
+      canvasApp,
+      canvasUpdated,
+      removeElement,
+      getNodeTaskFactory
+    )
   );
   commandRegistry.set(
     'delete-node',
-    new DeleteNodeCommand(rootElement, canvasApp, canvasUpdated, removeElement)
+    new DeleteNodeCommand<T>(
+      rootElement,
+      canvasApp,
+      canvasUpdated,
+      removeElement,
+      getNodeTaskFactory
+    )
   );
 };
 
 export const executeCommand = (
+  commandRegistry: Map<string, ICommandHandler>,
   commandName: string,
   parameter1?: any,
   parameter2?: any

@@ -6,26 +6,33 @@ import {
   NodeType,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../../types/node-info';
 import { CommandHandler } from '../command-handler/command-handler';
+import { NodeTaskFactory } from '../../node-task-registry';
 
-export class DeleteNodeCommand extends CommandHandler {
+export class DeleteNodeCommand<T> extends CommandHandler<T> {
   constructor(
     rootElement: HTMLElement,
-    canvasApp: CanvasAppInstance<NodeInfo>,
+    canvasApp: CanvasAppInstance<T>,
     canvasUpdated: () => void,
-    removeElement: (element: IElementNode<NodeInfo>) => void
+    removeElement: (element: IElementNode<T>) => void,
+    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>
   ) {
-    super(rootElement, canvasApp, canvasUpdated, removeElement);
+    super(
+      rootElement,
+      canvasApp,
+      canvasUpdated,
+      removeElement,
+      getNodeTaskFactory
+    );
     this.canvasApp = canvasApp;
     this.canvasUpdated = canvasUpdated;
     this.rootElement = rootElement;
     this.removeElement = removeElement;
   }
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<NodeInfo>;
+  canvasApp: CanvasAppInstance<T>;
   canvasUpdated: () => void;
-  removeElement: (element: IElementNode<NodeInfo>) => void;
+  removeElement: (element: IElementNode<T>) => void;
   // parameter1 is the id of a selected node
   execute(parameter1?: any, _parameter2?: any): void {
     console.log('AddNode flow-app');
@@ -34,7 +41,7 @@ export class DeleteNodeCommand extends CommandHandler {
     }
     const node = this.canvasApp?.elements.get(
       parameter1
-    ) as IRectNodeComponent<NodeInfo>;
+    ) as IRectNodeComponent<T>;
     if (!node) {
       console.log('node not found in canvas');
       return;
@@ -43,12 +50,12 @@ export class DeleteNodeCommand extends CommandHandler {
     if (node.nodeType === NodeType.Shape) {
       //does the shape have connections? yes.. remove the link between the connection and the node
       // OR .. remove the connection as well !?
-      const shapeNode = node as IRectNodeComponent<NodeInfo>;
+      const shapeNode = node as IRectNodeComponent<T>;
       if (shapeNode.connections) {
         shapeNode.connections.forEach((c) => {
           const connection = this.canvasApp?.elements?.get(
             c.id
-          ) as IConnectionNodeComponent<NodeInfo>;
+          ) as IConnectionNodeComponent<T>;
           if (connection) {
             if (connection.startNode?.id === node.id) {
               connection.startNode = undefined;

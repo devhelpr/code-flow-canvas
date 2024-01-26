@@ -17,11 +17,15 @@ import {
   InteractionStateMachine,
   createInteractionStateMachine,
 } from '../interaction-state-machine';
-import { INodeComponent, IRectNodeComponent, IThumb } from '../interfaces';
+import {
+  ICommandHandler,
+  INodeComponent,
+  IRectNodeComponent,
+  IThumb,
+} from '../interfaces';
 import { setSelectNode } from '../reactivity';
 import { NodeType } from '../types';
 import { createElement, createElementMap, createNSElement } from '../utils';
-import { CommandHandler } from '../interfaces/command-handler';
 import {
   SetNodeStatedHandler,
   GetNodeStatedHandler,
@@ -53,7 +57,7 @@ export const createCanvasApp = <T>(
     Map<string, (data: any) => void>
   > = new Map();
 
-  const commandHandlers: Record<string, CommandHandler> = {};
+  const commandHandlers: Record<string, ICommandHandler> = {};
   const nodeSetStateHandlers: Record<string, SetNodeStatedHandler> = {};
   const nodeGetStateHandlers: Record<string, GetNodeStatedHandler> = {};
 
@@ -1137,7 +1141,7 @@ export const createCanvasApp = <T>(
         }
       }
     },
-    registerCommandHandler: (name: string, handler: CommandHandler) => {
+    registerCommandHandler: (name: string, handler: ICommandHandler) => {
       commandHandlers[name] = handler;
     },
     unregisterCommandHandler: (name: string) => {

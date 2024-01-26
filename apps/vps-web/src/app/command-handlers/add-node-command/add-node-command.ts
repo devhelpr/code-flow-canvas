@@ -10,8 +10,7 @@ import {
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
-import { NodeInfo } from '../../types/node-info';
-import { getNodeTaskFactory } from '../../node-task-registry';
+import { NodeTaskFactory, getNodeTaskFactory } from '../../node-task-registry';
 import {
   createTemplate,
   createElementFromTemplate,
@@ -19,25 +18,34 @@ import {
 import { navbarButtonWithoutMargin } from '../../consts/classes';
 import { setupTasksInDropdown } from '../../node-task-registry/setup-select-node-types-dropdown';
 
-export class AddNodeCommand extends CommandHandler {
+export class AddNodeCommand<T> extends CommandHandler<T> {
   constructor(
     rootElement: HTMLElement,
-    canvasApp: CanvasAppInstance<NodeInfo>,
+    canvasApp: CanvasAppInstance<T>,
     canvasUpdated: () => void,
-    removeElement: (element: IElementNode<NodeInfo>) => void
+    removeElement: (element: IElementNode<T>) => void,
+    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>
   ) {
-    super(rootElement, canvasApp, canvasUpdated, removeElement);
+    super(
+      rootElement,
+      canvasApp,
+      canvasUpdated,
+      removeElement,
+      getNodeTaskFactory
+    );
+    this.getNodeTaskFactory = getNodeTaskFactory;
     this.canvasApp = canvasApp;
     this.canvasUpdated = canvasUpdated;
     this.rootElement = rootElement;
   }
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<NodeInfo>;
+  canvasApp: CanvasAppInstance<T>;
   canvasUpdated: () => void;
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
 
   addNodeType = (
     nodeType: string,
-    connectToNode?: IRectNodeComponent<NodeInfo>,
+    connectToNode?: IRectNodeComponent<T>,
     thumbId?: string,
     inputThumbName?: string
   ) => {
@@ -63,14 +71,15 @@ export class AddNodeCommand extends CommandHandler {
       startX = connectToNode.x + (connectToNode.width ?? 100) + 100;
       startY = connectToNode.y;
     }
-    const factory = getNodeTaskFactory(nodeType);
+    const factory = this.getNodeTaskFactory(nodeType);
 
     if (factory) {
       const nodeTask = factory(this.canvasUpdated);
 
       const node = nodeTask.createVisualNode(this.canvasApp, startX, startY);
       if (node && node.nodeInfo) {
-        node.nodeInfo.taskType = nodeType;
+        // TODO : IMPROVE THIS
+        (node.nodeInfo as any).taskType = nodeType;
 
         if (connectToNode) {
           const connection = this.canvasApp?.createCubicBezier(
@@ -89,12 +98,12 @@ export class AddNodeCommand extends CommandHandler {
           );
           if (connection && connection.nodeComponent) {
             connection.nodeComponent.isControlled = true;
-            connection.nodeComponent.nodeInfo = {};
+            connection.nodeComponent.nodeInfo = {} as T;
             connection.nodeComponent.layer = 1;
 
             connection.nodeComponent.startNode = connectToNode;
             connection.nodeComponent.startNodeThumb =
-              getThumbNodeById<NodeInfo>(thumbId ?? '', connectToNode, {
+              getThumbNodeById<T>(thumbId ?? '', connectToNode, {
                 start: true,
                 end: false,
               }) || undefined;
@@ -103,13 +112,13 @@ export class AddNodeCommand extends CommandHandler {
 
             if (inputThumbName) {
               connection.nodeComponent.endNodeThumb =
-                getThumbNodeByName<NodeInfo>(inputThumbName, node, {
+                getThumbNodeByName<T>(inputThumbName, node, {
                   start: false,
                   end: true,
                 }) || undefined;
             } else {
               connection.nodeComponent.endNodeThumb =
-                getThumbNodeByName<NodeInfo>('', node, {
+                getThumbNodeByName<T>('', node, {
                   start: false,
                   end: true,
                 }) || undefined;
@@ -166,7 +175,7 @@ export class AddNodeCommand extends CommandHandler {
     if (typeof parameter2 === 'string') {
       const node = this.canvasApp?.elements.get(
         parameter2
-      ) as IRectNodeComponent<NodeInfo>;
+      ) as IRectNodeComponent<T>;
       if (!node) {
         console.log('node not found in canvas');
         return;
@@ -180,7 +189,7 @@ export class AddNodeCommand extends CommandHandler {
     }
   }
 
-  private showSelectNodeTypeDialog(attachToNode: IRectNodeComponent<NodeInfo>) {
+  private showSelectNodeTypeDialog(attachToNode: IRectNodeComponent<T>) {
     const template = createTemplate(
       `
 		<div class="add-node-dialog-container flex flex-col">
@@ -270,7 +279,7 @@ export class AddNodeCommand extends CommandHandler {
   }
   private getThumbNodes(
     nodeType: string,
-    attachToNode: IRectNodeComponent<NodeInfo>,
+    attachToNode: IRectNodeComponent<T>,
     dialogElement: HTMLElement
   ) {
     const selectNodeThumbElement =

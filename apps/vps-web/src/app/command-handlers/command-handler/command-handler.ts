@@ -2,14 +2,15 @@ import {
   CanvasAppInstance,
   IElementNode,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../../types/node-info';
+import { NodeTaskFactory } from '../../node-task-registry';
 
-export class CommandHandler {
+export class CommandHandler<T> {
   constructor(
     _rootElement: HTMLElement,
-    _canvasApp: CanvasAppInstance<NodeInfo>,
+    _canvasApp: CanvasAppInstance<T>,
     _canvasUpdated: () => void,
-    _removeElement: (element: IElementNode<NodeInfo>) => void
+    _removeElement: (element: IElementNode<T>) => void,
+    _getNodeTaskFactory: (name: string) => NodeTaskFactory<T>
   ) {
     //
   }

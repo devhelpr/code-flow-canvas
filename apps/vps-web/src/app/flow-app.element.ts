@@ -19,6 +19,7 @@ import {
   SelectedNodeInfo,
   FlowNode,
   IConnectionNodeComponent,
+  ICommandHandler,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -102,6 +103,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   message: IElementNode<NodeInfo> | undefined = undefined;
   messageText: IElementNode<NodeInfo> | undefined = undefined;
   focusedNode: IRectNodeComponent<NodeInfo> | undefined = undefined;
+  commandRegistry = new Map<string, ICommandHandler>();
 
   constructor(appRootSelector: string) {
     super(appRootSelector);
@@ -241,7 +243,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             removeFormElement();
             const selectedNodeInfo = getSelectedNode();
             if (selectedNodeInfo) {
-              executeCommand('delete-node', selectedNodeInfo.id);
+              executeCommand(
+                this.commandRegistry,
+                'delete-node',
+                selectedNodeInfo.id
+              );
             }
           }
 
@@ -249,6 +255,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             removeFormElement();
             const selectedNodeInfo = getSelectedNode();
             executeCommand(
+              this.commandRegistry,
               'add-node',
               (selectNodeType.domElement as HTMLSelectElement).value,
               selectedNodeInfo?.id
@@ -499,11 +506,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             },
           }) as unknown as HTMLElement;
 
-          registerCommands(
+          registerCommands<NodeInfo>(
             this.rootElement,
             this.canvasApp,
             canvasUpdated,
-            this.removeElement
+            this.removeElement,
+            getNodeTaskFactory,
+            this.commandRegistry
           );
           this.clearCanvas();
         }
