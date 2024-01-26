@@ -3,7 +3,7 @@ name: Deploy to Cloudflare Pages
 on:
   push:
     branches:
-      - demo
+      - demo-deploy
 
 jobs:
   publish:
