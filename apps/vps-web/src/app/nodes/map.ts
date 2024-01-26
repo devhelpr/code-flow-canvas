@@ -32,6 +32,37 @@ export type SubOutputActionType =
 
 */
 
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: '[]',
+    thumbConstraint: 'array',
+    name: 'output1',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: '#',
+    thumbConstraint: 'value',
+    name: 'output2',
+    prefixIcon: 'icon icon-refresh',
+  },
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: '[]',
+    name: 'input',
+    thumbConstraint: ['array', 'range'],
+  },
+];
+
 const activeMapColor = 'bg-blue-400';
 export const mapNodeName = 'map';
 const title = 'map';
@@ -184,6 +215,7 @@ export const getMap =
       family: 'flow-canvas',
       isContainer: false,
       category: 'iterators',
+      thumbs,
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -213,35 +245,7 @@ export const getMap =
           110,
           110,
           undefined,
-          [
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: '[]',
-              thumbConstraint: 'array',
-              name: 'output1',
-            },
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 1,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: '#',
-              thumbConstraint: 'value',
-              name: 'output2',
-              prefixIcon: 'icon icon-refresh',
-            },
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              color: 'white',
-              label: '[]',
-              thumbConstraint: ['array', 'range'],
-            },
-          ],
+          thumbs,
           foreachComponent,
           {
             classNames: `bg-slate-500 p-4 rounded`,

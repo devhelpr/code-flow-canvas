@@ -15,6 +15,46 @@ import {
   AnimatePathFunction,
 } from '../follow-path/animate-path';
 
+const thumbs = [
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'input1',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+
+    name: 'output1',
+  },
+
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    prefixLabel: 'test',
+    thumbConstraint: ['value'],
+    name: 'test',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 2,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: '#',
+    name: 'output2',
+    prefixIcon: 'icon icon-refresh',
+  },
+];
+
 const activeWhileColor = 'bg-blue-500';
 
 export const whileNodeName = 'while';
@@ -184,6 +224,7 @@ export const getWhile =
       family: 'flow-canvas',
       isContainer: false,
       category: 'iterators',
+      thumbs,
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -213,45 +254,7 @@ export const getWhile =
           140,
           110,
           undefined,
-          [
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              color: 'white',
-              label: ' ',
-              name: 'input1',
-            },
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: ' ',
-
-              name: 'output1',
-            },
-
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 1,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: ' ',
-              prefixLabel: 'test',
-              thumbConstraint: ['value'],
-              name: 'test',
-            },
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 2,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: '#',
-              name: 'output2',
-              prefixIcon: 'icon icon-refresh',
-            },
-          ],
+          thumbs,
           whileComponent,
           {
             classNames: `bg-slate-500 p-4 rounded`,

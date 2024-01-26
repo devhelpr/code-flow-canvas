@@ -20,6 +20,26 @@ import {
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { FormFieldType } from '../components/FormField';
 
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: '#',
+    maxConnections: -1,
+    name: 'output',
+  },
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'input',
+  },
+];
+
 export const parseInput = (input: string, inputType: string) => {
   if (inputType === 'number') {
     return parseFloat(input) || 0;
@@ -206,6 +226,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'expression',
     isContainer: false,
+    thumbs,
     canBeUsedAsDecorator: true,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
@@ -266,25 +287,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         200,
         100,
         undefined,
-        [
-          {
-            thumbType: ThumbType.StartConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            color: 'white',
-            label: '#',
-            //thumbConstraint: 'value', // TODO : do this dynamically based on the expression result
-            maxConnections: -1,
-          },
-          {
-            thumbType: ThumbType.EndConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            color: 'white',
-            label: ' ',
-            //thumbConstraint: 'value',
-          },
-        ],
+        thumbs,
         componentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,

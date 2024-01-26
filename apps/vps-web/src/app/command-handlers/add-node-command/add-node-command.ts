@@ -188,9 +188,10 @@ export class AddNodeCommand extends CommandHandler {
 		  
 		  <form cmethod="dialog" class="form row-1">
 		      <div class="flex flex-col w-full add-node-select-node-type-container my-2">
-			  	<select id="add-node-select-node-type" class="form-select w-full" name="nodeType">					
-				</select>
-			  </div>	
+          <label for="add-node-select-node-type">Node type</label>
+			    	<select id="add-node-select-node-type" class="form-select w-full" name="nodeType">					
+				    </select>
+			    </div>	
               <div class="flex w-full flex-row justify-end gap-2">
                 <button type="submit" class="${navbarButtonWithoutMargin} m-0 form-ok">OK</button>
                 <button type="button" class="${navbarButtonWithoutMargin} m-0 form-cancel mr-0">Cancel</button>
@@ -272,29 +273,32 @@ export class AddNodeCommand extends CommandHandler {
     attachToNode: IRectNodeComponent<NodeInfo>,
     dialogElement: HTMLElement
   ) {
-    const selectNodeThumbElement = dialogElement.querySelector(
-      '.thumb-selector-container'
-    ) as HTMLSelectElement;
+    const selectNodeThumbElement =
+      dialogElement.querySelector<HTMLSelectElement>(
+        '.thumb-selector-container'
+      );
     if (selectNodeThumbElement) {
       selectNodeThumbElement.remove();
     }
 
-    const inputSelectNodeThumbElement = dialogElement.querySelector(
-      '.thumb-input-selector-container'
-    ) as HTMLSelectElement;
+    const inputSelectNodeThumbElement =
+      dialogElement.querySelector<HTMLSelectElement>(
+        '.thumb-input-selector-container'
+      );
     if (inputSelectNodeThumbElement) {
       inputSelectNodeThumbElement.remove();
     }
 
     const template = createTemplate(
       `<div class="flex flex-col w-full thumb-selector-container my-2">
-			<select id="thumb-select-node-type" class="form-select w-full" name="thumb">					
-		</select>`
+         <label for="thumb-select-node-type">Output</label>
+		     <select id="thumb-select-node-type" class="form-select w-full" name="thumb">					
+		     </select>
+      </div>`
     );
     const thumbSelectElemetContainer = createElementFromTemplate(template);
-    const thumbSelect = thumbSelectElemetContainer.querySelector(
-      'select'
-    ) as HTMLSelectElement;
+    const thumbSelect =
+      thumbSelectElemetContainer.querySelector<HTMLSelectElement>('select');
 
     attachToNode.thumbConnectors?.forEach((thumb) => {
       if (thumb.thumbConnectionType === ThumbConnectionType.start) {
@@ -305,14 +309,15 @@ export class AddNodeCommand extends CommandHandler {
           {
             value: thumb.id,
           },
-          thumbSelect,
+          thumbSelect as HTMLElement,
           thumb.thumbName || `thumb ${thumb.thumbIndex}`
         );
       }
     });
-    const selectNodeTypeElement = dialogElement.querySelector(
-      '.add-node-select-node-type-container'
-    ) as HTMLSelectElement;
+    const selectNodeTypeElement =
+      dialogElement.querySelector<HTMLSelectElement>(
+        '.add-node-select-node-type-container'
+      );
     if (!selectNodeTypeElement) {
       return;
     }
@@ -325,8 +330,10 @@ export class AddNodeCommand extends CommandHandler {
       if (nodeTask.thumbs) {
         const template = createTemplate(
           `<div class="flex flex-col w-full thumb-input-selector-container my-2">
-					  <select id="thumb-input-select-node-type" class="form-select w-full" name="thumb-input">					
-				  </select>`
+             <label for="thumb-input-select-node-type">Input</label>
+					   <select id="thumb-input-select-node-type" class="form-select w-full" name="thumb-input">					
+				     </select>
+          </div>`
         );
         const thumbSelectElemetContainer = createElementFromTemplate(template);
         const thumbSelect = thumbSelectElemetContainer.querySelector(

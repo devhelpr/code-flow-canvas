@@ -15,6 +15,32 @@ import {
   AnimatePathFunction,
 } from '../follow-path/animate-path';
 
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    name: 'output1',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    name: 'output2',
+  },
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+  },
+];
+
 export const getParallel =
   (
     _animatePath: AnimatePathFunction,
@@ -101,6 +127,7 @@ export const getParallel =
       family: 'flow-canvas',
       category: 'flow-control',
       isContainer: false,
+      thumbs,
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -128,31 +155,7 @@ export const getParallel =
           110,
           110,
           undefined,
-          [
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: ' ',
-              name: 'output1',
-            },
-            {
-              thumbType: ThumbType.StartConnectorRight,
-              thumbIndex: 1,
-              connectionType: ThumbConnectionType.start,
-              color: 'white',
-              label: ' ',
-              name: 'output2',
-            },
-            {
-              thumbType: ThumbType.EndConnectorCenter,
-              thumbIndex: 0,
-              connectionType: ThumbConnectionType.end,
-              color: 'white',
-              label: ' ',
-            },
-          ],
+          thumbs,
           jsxComponentWrapper,
           {
             classNames: `bg-slate-500 p-4 rounded`,

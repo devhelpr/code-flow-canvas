@@ -77,6 +77,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.start,
         color: 'white',
         label: ' ',
+        name: 'output',
       },
       {
         thumbType: ThumbType.EndConnectorCenter,
@@ -84,6 +85,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
+        name: 'input',
       },
     ],
     (values?: InitialValues) => {
