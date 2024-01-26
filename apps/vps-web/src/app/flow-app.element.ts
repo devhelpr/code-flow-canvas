@@ -19,7 +19,6 @@ import {
   SelectedNodeInfo,
   FlowNode,
   IConnectionNodeComponent,
-  ICommandHandler,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -74,10 +73,7 @@ import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
-import {
-  executeCommand,
-  registerCommands,
-} from './command-handlers/register-commands';
+import { registerCommands } from './command-handlers/register-commands';
 import {
   createOption,
   setupTasksInDropdown,
@@ -103,7 +99,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   message: IElementNode<NodeInfo> | undefined = undefined;
   messageText: IElementNode<NodeInfo> | undefined = undefined;
   focusedNode: IRectNodeComponent<NodeInfo> | undefined = undefined;
-  commandRegistry = new Map<string, ICommandHandler>();
+  runButton: IElementNode<unknown> | undefined = undefined;
+  selectNodeType: IElementNode<unknown> | undefined = undefined;
 
   constructor(appRootSelector: string) {
     super(appRootSelector);
@@ -214,169 +211,172 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.isStoring = true;
         this.storageProvider = storageProvider;
 
-        let tabKeyWasUsed = false;
+        this.initializeCommandHandlers();
 
-        window.addEventListener('keydown', (event) => {
-          if (event.key === 'Tab') {
-            tabKeyWasUsed = true;
-            console.log('TAB KEY WAS USED');
-          } else {
-            // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
-            if (event.key !== 'Shift') {
-              tabKeyWasUsed = false;
+        // let tabKeyWasUsed = false;
 
-              console.log('TAB KEY WAS NOT USED', event.key);
-            }
-          }
-        });
-        window.addEventListener('keyup', (event) => {
-          console.log('keyup', event.key, event.ctrlKey);
-          const key = event.key.toLowerCase();
-          if (key === 'backspace' || key === 'delete') {
-            if (
-              ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-                (event.target as HTMLElement)?.tagName
-              ) >= 0
-            ) {
-              return;
-            }
-            removeFormElement();
-            const selectedNodeInfo = getSelectedNode();
-            if (selectedNodeInfo) {
-              executeCommand(
-                this.commandRegistry,
-                'delete-node',
-                selectedNodeInfo.id
-              );
-            }
-          }
+        // window.addEventListener('keydown', (event) => {
+        //   if (event.key === 'Tab') {
+        //     tabKeyWasUsed = true;
+        //     console.log('TAB KEY WAS USED');
+        //   } else {
+        //     // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
+        //     if (event.key !== 'Shift') {
+        //       tabKeyWasUsed = false;
 
-          if (event.key === 'insert' || (event.ctrlKey && key === 'a')) {
-            removeFormElement();
-            const selectedNodeInfo = getSelectedNode();
-            executeCommand(
-              this.commandRegistry,
-              'add-node',
-              (selectNodeType.domElement as HTMLSelectElement).value,
-              selectedNodeInfo?.id
-            );
-          }
-          if (event.ctrlKey && key === 'enter') {
-            (runButton.domElement as HTMLElement).click();
-          }
+        //       console.log('TAB KEY WAS NOT USED', event.key);
+        //     }
+        //   }
+        // });
+        // window.addEventListener('keyup', (event) => {
+        //   console.log('keyup', event.key, event.ctrlKey);
+        //   const key = event.key.toLowerCase();
+        //   if (key === 'backspace' || key === 'delete') {
+        //     if (
+        //       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        //         (event.target as HTMLElement)?.tagName
+        //       ) >= 0
+        //     ) {
+        //       return;
+        //     }
+        //     removeFormElement();
+        //     const selectedNodeInfo = getSelectedNode();
+        //     if (selectedNodeInfo) {
+        //       executeCommand(
+        //         this.commandRegistry,
+        //         'delete-node',
+        //         selectedNodeInfo.id
+        //       );
+        //     }
+        //   }
 
-          if (key === 'escape') {
-            const currentFocusedNode = this.focusedNode;
-            removeFormElement();
-            this.popupNode = undefined;
-            if (currentFocusedNode) {
-              (currentFocusedNode.domElement as HTMLElement).focus();
-            }
-          }
+        //   if (event.key === 'insert' || (event.ctrlKey && key === 'a')) {
+        //     removeFormElement();
+        //     const selectedNodeInfo = getSelectedNode();
+        //     executeCommand(
+        //       this.commandRegistry,
+        //       'add-node',
+        //       (selectNodeType.domElement as HTMLSelectElement).value,
+        //       selectedNodeInfo?.id
+        //     );
+        //   }
+        //   if (event.ctrlKey && key === 'enter') {
+        //     (this.runButton?.domElement as HTMLElement).click();
+        //   }
 
-          if (event.shiftKey && key === '!') {
-            if (
-              ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-                (event.target as HTMLElement)?.tagName
-              ) >= 0
-            ) {
-              return true;
-            }
-            if (this.canvasApp) {
-              event.preventDefault();
-              this.canvasApp.centerCamera();
-              return false;
-            }
-          }
+        //   if (key === 'escape') {
+        //     const currentFocusedNode = this.focusedNode;
+        //     removeFormElement();
+        //     this.popupNode = undefined;
+        //     if (currentFocusedNode) {
+        //       (currentFocusedNode.domElement as HTMLElement).focus();
+        //     }
+        //   }
 
-          if (event.ctrlKey && key === 'i') {
-            console.log('ctrl + i', this.focusedNode);
-            let currentFocusedNode = this.focusedNode;
-            this.popupNode = this.focusedNode;
-            if (this.focusedNode && this.canvasApp) {
-              this.canvasApp.selectNode(this.focusedNode);
-            } else {
-              const selectedNodeInfo = getSelectedNode();
-              if (selectedNodeInfo) {
-                const node = this.canvasApp?.elements.get(
-                  selectedNodeInfo.id
-                ) as IRectNodeComponent<NodeInfo>;
-                if (node && this.canvasApp) {
-                  this.focusedNode = node;
-                  this.popupNode = this.focusedNode;
-                  currentFocusedNode = node;
-                  this.canvasApp.selectNode(this.focusedNode);
-                }
-              }
-            }
+        //   if (event.shiftKey && key === '!') {
+        //     if (
+        //       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        //         (event.target as HTMLElement)?.tagName
+        //       ) >= 0
+        //     ) {
+        //       return true;
+        //     }
+        //     if (this.canvasApp) {
+        //       event.preventDefault();
+        //       this.canvasApp.centerCamera();
+        //       return false;
+        //     }
+        //   }
 
-            this.positionPopup(
-              this.focusedNode as IRectNodeComponent<NodeInfo>
-            );
-            const inputInPopup = document.querySelector(
-              '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
-            );
-            if (inputInPopup) {
-              (inputInPopup as HTMLInputElement).focus();
-            }
-            if (currentFocusedNode) {
-              this.focusedNode = currentFocusedNode;
-            }
-          }
-          return true;
-        });
+        //   if (event.ctrlKey && key === 'i') {
+        //     console.log('ctrl + i', this.focusedNode);
+        //     let currentFocusedNode = this.focusedNode;
+        //     this.popupNode = this.focusedNode;
+        //     if (this.focusedNode && this.canvasApp) {
+        //       this.canvasApp.selectNode(this.focusedNode);
+        //     } else {
+        //       const selectedNodeInfo = getSelectedNode();
+        //       if (selectedNodeInfo) {
+        //         const node = this.canvasApp?.elements.get(
+        //           selectedNodeInfo.id
+        //         ) as IRectNodeComponent<NodeInfo>;
+        //         if (node && this.canvasApp) {
+        //           this.focusedNode = node;
+        //           this.popupNode = this.focusedNode;
+        //           currentFocusedNode = node;
+        //           this.canvasApp.selectNode(this.focusedNode);
+        //         }
+        //       }
+        //     }
 
-        window.addEventListener('pointerdown', (_event) => {
-          tabKeyWasUsed = false;
-        });
+        //     this.positionPopup(
+        //       this.focusedNode as IRectNodeComponent<NodeInfo>
+        //     );
+        //     const inputInPopup = document.querySelector(
+        //       '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
+        //     );
+        //     if (inputInPopup) {
+        //       (inputInPopup as HTMLInputElement).focus();
+        //     }
+        //     if (currentFocusedNode) {
+        //       this.focusedNode = currentFocusedNode;
+        //     }
+        //   }
+        //   return true;
+        // });
 
-        document.addEventListener('focusout', (_event) => {
-          console.log('focusout');
-          this.focusedNode = undefined;
-        });
-        document.addEventListener('focusin', (_event) => {
-          console.log('focusin');
-          document.body.scrollTop = 0;
-          document.body.scrollLeft = 0;
-          if (this.rootElement) {
-            this.rootElement.scrollTop = 0;
-            this.rootElement.scrollLeft = 0;
-          }
-          const activeElement = document.activeElement;
-          if (activeElement && tabKeyWasUsed) {
-            const closestRectNode = activeElement.closest('.rect-node');
-            if (closestRectNode) {
-              const id = closestRectNode.getAttribute('data-node-id');
-              if (id) {
-                const node = this.canvasApp?.elements.get(
-                  id
-                ) as IRectNodeComponent<NodeInfo>;
-                if (node) {
-                  this.focusedNode = node;
-                }
-                if (node && node.x && node.y && this.canvasApp) {
-                  console.log('focusin node found', node);
-                  setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
-                  this.canvasApp.selectNode(node);
-                  removeFormElement();
-                }
-              }
-            }
-          } else {
-            console.log(
-              'FOCUSIN activeElement not found or tabKeyWasUsed is false',
-              tabKeyWasUsed
-            );
-          }
-          tabKeyWasUsed = false;
-        });
+        // window.addEventListener('pointerdown', (_event) => {
+        //   tabKeyWasUsed = false;
+        // });
+
+        // document.addEventListener('focusout', (_event) => {
+        //   console.log('focusout');
+        //   this.focusedNode = undefined;
+        // });
+        // document.addEventListener('focusin', (_event) => {
+        //   console.log('focusin');
+        //   document.body.scrollTop = 0;
+        //   document.body.scrollLeft = 0;
+        //   if (this.rootElement) {
+        //     this.rootElement.scrollTop = 0;
+        //     this.rootElement.scrollLeft = 0;
+        //   }
+        //   const activeElement = document.activeElement;
+        //   if (activeElement && tabKeyWasUsed) {
+        //     const closestRectNode = activeElement.closest('.rect-node');
+        //     if (closestRectNode) {
+        //       const id = closestRectNode.getAttribute('data-node-id');
+        //       if (id) {
+        //         const node = this.canvasApp?.elements.get(
+        //           id
+        //         ) as IRectNodeComponent<NodeInfo>;
+        //         if (node) {
+        //           this.focusedNode = node;
+        //         }
+        //         if (node && node.x && node.y && this.canvasApp) {
+        //           console.log('focusin node found', node);
+        //           setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
+        //           this.canvasApp.selectNode(node);
+        //           removeFormElement();
+        //         }
+        //       }
+        //     }
+        //   } else {
+        //     console.log(
+        //       'FOCUSIN activeElement not found or tabKeyWasUsed is false',
+        //       tabKeyWasUsed
+        //     );
+        //   }
+        //   tabKeyWasUsed = false;
+        // });
 
         if (this.storageProvider && this.canvasApp && this.rootElement) {
           NavbarComponents({
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
-            selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+            selectNodeType: this.selectNodeType
+              ?.domElement as HTMLSelectElement,
             animatePath: animatePath,
             animatePathFromThumb: animatePathFromThumb,
             canvasUpdated: canvasUpdated,
@@ -454,7 +454,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
-            selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+            selectNodeType: this.selectNodeType
+              ?.domElement as HTMLSelectElement,
             animatePath: animatePath,
             animatePathFromThumb: animatePathFromThumb,
             canvasUpdated: canvasUpdated,
@@ -722,7 +723,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       });
 
       resetRunIndex();
-      (runButton.domElement as HTMLButtonElement).disabled = false;
+      (this.runButton?.domElement as HTMLButtonElement).disabled = false;
       resetConnectionSlider();
     };
 
@@ -753,14 +754,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.rootElement,
       ''
     );
-    const runButton = createElement(
+    this.runButton = createElement(
       'button',
       {
         class: `${navBarPrimaryIconButton}`,
         title: 'Run | Ctrl + Enter',
         click: (event) => {
           event.preventDefault();
-          (runButton.domElement as HTMLButtonElement).disabled = true;
+          (this.runButton?.domElement as HTMLButtonElement).disabled = true;
           this.clearPathExecution();
           setRunCounterUpdateElement(
             runCounterElement.domElement as HTMLElement
@@ -790,7 +791,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             setRunCounterResetHandler(() => {
               if (runCounter <= 0) {
                 (pathRange.domElement as HTMLButtonElement).disabled = false;
-                (runButton.domElement as HTMLButtonElement).disabled = false;
+                (this.runButton?.domElement as HTMLButtonElement).disabled =
+                  false;
                 increaseRunIndex();
                 (pathRange.domElement as HTMLElement).setAttribute(
                   'value',
@@ -813,7 +815,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       {
         class: `${navBarIconButtonInnerElement} icon-play_arrow`,
       },
-      runButton.domElement
+      this.runButton?.domElement
     );
 
     let speedMeter = 375;
@@ -844,7 +846,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
     setSpeedMeter(speedMeter);
 
-    const selectNodeType = createElement(
+    this.selectNodeType = createElement(
       'select',
       {
         type: 'select',
@@ -861,8 +863,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const setupTasksForContainerTaskInDropdown = (
       allowedNodeTasks: string[]
     ) => {
-      if (selectNodeType?.domElement) {
-        (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
+      if (this.selectNodeType?.domElement) {
+        (this.selectNodeType?.domElement as HTMLSelectElement).innerHTML = '';
 
         const nodeTasks = getNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
@@ -874,7 +876,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             }
           }
           createOption(
-            selectNodeType.domElement as HTMLSelectElement,
+            this.selectNodeType?.domElement as HTMLSelectElement,
             nodeTask,
             nodeTask,
             'Contained nodes'
@@ -882,7 +884,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         });
       }
     };
-    setupTasksInDropdown(selectNodeType?.domElement as HTMLSelectElement);
+    setupTasksInDropdown(this.selectNodeType?.domElement as HTMLSelectElement);
 
     this.testCircle = createElement(
       'div',
@@ -1248,7 +1250,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             setupTasksForContainerTaskInDropdown(nodeTask.childNodeTasks ?? []);
           } else {
             setupTasksInDropdown(
-              selectNodeType?.domElement as HTMLSelectElement
+              this.selectNodeType?.domElement as HTMLSelectElement
             );
           }
         }
@@ -1386,7 +1388,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             ?.domElement as unknown as HTMLElement
         ).classList.remove('editing-node-indicator');
 
-        setupTasksInDropdown(selectNodeType?.domElement as HTMLSelectElement);
+        setupTasksInDropdown(
+          this.selectNodeType?.domElement as HTMLSelectElement
+        );
         if (getSelectedNode()) {
           setSelectNode(undefined);
         }
@@ -1444,6 +1448,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       setPositionTargetCameraAnimation(x, y);
     });
   }
+
+  run = () => {
+    (this.runButton?.domElement as HTMLElement).click();
+  };
+
+  getSelectTaskElement = () => {
+    return this.selectNodeType?.domElement as HTMLSelectElement;
+  };
+
+  setCameraTargetOnNode = (node: IRectNodeComponent<NodeInfo>) => {
+    setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
+  };
 
   onShouldPositionPopup = (node: IRectNodeComponent<NodeInfo>) => {
     const nodeInfo = node?.nodeInfo ?? {};

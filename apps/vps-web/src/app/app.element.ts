@@ -15,6 +15,7 @@ import {
   IRectNodeComponent,
   createNSElement,
   Camera,
+  ICommandHandler,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -22,6 +23,7 @@ import {
   animatePathFromThumb as _animatePathFromThumb,
 } from './follow-path/animate-path';
 import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-provider';
+import { executeCommand } from './command-handlers/register-commands';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -54,6 +56,7 @@ export class AppElement<T> {
   rootElement: HTMLElement | undefined = undefined;
 
   appRootElement: Element | null;
+  commandRegistry = new Map<string, ICommandHandler>();
 
   constructor(appRootSelector: string, customTemplate?: HTMLTemplateElement) {
     // NOTE : on http instead of https, crypto is not available...
@@ -143,6 +146,201 @@ export class AppElement<T> {
       this.rootElement
     );
   }
+
+  focusedNode: IRectNodeComponent<T> | undefined = undefined;
+  removeFormElement = () => {
+    if (this.formElement) {
+      this.canvasApp?.deleteElementFromNode(
+        this.editPopupContainer as INodeComponent<T>,
+        this.formElement,
+        true
+      );
+      this.formElement = undefined;
+    }
+    (
+      this.editPopupContainer?.domElement as unknown as HTMLElement
+    ).classList.add('hidden');
+    (
+      this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    ).classList.add('hidden');
+
+    (
+      this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
+    ).classList.add('hidden');
+
+    (
+      this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
+    ).classList.remove('editing-node-indicator');
+  };
+
+  protected run = () => {
+    //
+  };
+
+  getSelectTaskElement = (): HTMLSelectElement => {
+    return undefined as unknown as HTMLSelectElement;
+  };
+
+  initializeCommandHandlers = () => {
+    let tabKeyWasUsed = false;
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Tab') {
+        tabKeyWasUsed = true;
+        console.log('TAB KEY WAS USED');
+      } else {
+        // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
+        if (event.key !== 'Shift') {
+          tabKeyWasUsed = false;
+
+          console.log('TAB KEY WAS NOT USED', event.key);
+        }
+      }
+    });
+    window.addEventListener('keyup', (event) => {
+      console.log('keyup', event.key, event.ctrlKey);
+      const key = event.key.toLowerCase();
+      if (key === 'backspace' || key === 'delete') {
+        if (
+          ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+            (event.target as HTMLElement)?.tagName
+          ) >= 0
+        ) {
+          return;
+        }
+        this.removeFormElement();
+        const selectedNodeInfo = getSelectedNode();
+        if (selectedNodeInfo) {
+          executeCommand(
+            this.commandRegistry,
+            'delete-node',
+            selectedNodeInfo.id
+          );
+        }
+      }
+
+      if (event.key === 'insert' || (event.ctrlKey && key === 'a')) {
+        this.removeFormElement();
+        const selectedNodeInfo = getSelectedNode();
+        executeCommand(
+          this.commandRegistry,
+          'add-node',
+          this.getSelectTaskElement().value,
+          selectedNodeInfo?.id
+        );
+      }
+      if (event.ctrlKey && key === 'enter') {
+        this.run();
+      }
+
+      if (key === 'escape') {
+        const currentFocusedNode = this.focusedNode;
+        this.removeFormElement();
+        this.popupNode = undefined;
+        if (currentFocusedNode) {
+          (currentFocusedNode.domElement as HTMLElement).focus();
+        }
+      }
+
+      if (event.shiftKey && key === '!') {
+        if (
+          ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+            (event.target as HTMLElement)?.tagName
+          ) >= 0
+        ) {
+          return true;
+        }
+        if (this.canvasApp) {
+          event.preventDefault();
+          this.canvasApp.centerCamera();
+          return false;
+        }
+      }
+
+      if (event.ctrlKey && key === 'i') {
+        console.log('ctrl + i', this.focusedNode);
+        let currentFocusedNode = this.focusedNode;
+        this.popupNode = this.focusedNode;
+        if (this.focusedNode && this.canvasApp) {
+          this.canvasApp.selectNode(this.focusedNode);
+        } else {
+          const selectedNodeInfo = getSelectedNode();
+          if (selectedNodeInfo) {
+            const node = this.canvasApp?.elements.get(
+              selectedNodeInfo.id
+            ) as IRectNodeComponent<T>;
+            if (node && this.canvasApp) {
+              this.focusedNode = node;
+              this.popupNode = this.focusedNode;
+              currentFocusedNode = node;
+              this.canvasApp.selectNode(this.focusedNode);
+            }
+          }
+        }
+
+        this.positionPopup(this.focusedNode as IRectNodeComponent<T>);
+        const inputInPopup = document.querySelector(
+          '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
+        );
+        if (inputInPopup) {
+          (inputInPopup as HTMLInputElement).focus();
+        }
+        if (currentFocusedNode) {
+          this.focusedNode = currentFocusedNode;
+        }
+      }
+      return true;
+    });
+
+    window.addEventListener('pointerdown', (_event) => {
+      tabKeyWasUsed = false;
+    });
+
+    document.addEventListener('focusout', (_event) => {
+      console.log('focusout');
+      this.focusedNode = undefined;
+    });
+    document.addEventListener('focusin', (_event) => {
+      console.log('focusin');
+      document.body.scrollTop = 0;
+      document.body.scrollLeft = 0;
+      if (this.rootElement) {
+        this.rootElement.scrollTop = 0;
+        this.rootElement.scrollLeft = 0;
+      }
+      const activeElement = document.activeElement;
+      if (activeElement && tabKeyWasUsed) {
+        const closestRectNode = activeElement.closest('.rect-node');
+        if (closestRectNode) {
+          const id = closestRectNode.getAttribute('data-node-id');
+          if (id) {
+            const node = this.canvasApp?.elements.get(
+              id
+            ) as IRectNodeComponent<T>;
+            if (node) {
+              this.focusedNode = node;
+            }
+            if (node && node.x && node.y && this.canvasApp) {
+              console.log('focusin node found', node);
+              this.setCameraTargetOnNode(node);
+              this.canvasApp.selectNode(node);
+              this.removeFormElement();
+            }
+          }
+        }
+      } else {
+        console.log(
+          'FOCUSIN activeElement not found or tabKeyWasUsed is false',
+          tabKeyWasUsed
+        );
+      }
+      tabKeyWasUsed = false;
+    });
+  };
+
+  setCameraTargetOnNode = (_node: IRectNodeComponent<T>) => {
+    //
+  };
 
   onPreRemoveElement = (_element: IElementNode<T>) => {
     //
