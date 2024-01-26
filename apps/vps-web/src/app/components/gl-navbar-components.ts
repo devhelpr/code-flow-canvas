@@ -43,6 +43,7 @@ export class GLNavbarComponent extends Component<
   exportButton: HTMLButtonElement | null = null;
   importButton: HTMLButtonElement | null = null;
   importScriptButton: HTMLButtonElement | null = null;
+  selectExampleFlow: HTMLSelectElement | null = null;
 
   rootAppElement: HTMLElement | null = null;
 
@@ -59,6 +60,10 @@ export class GLNavbarComponent extends Component<
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <button class="${navBarButton}">Save</button>
         <button class="${navBarButton}">Load</button>
+        <select type="select" name="example-flows" class="p-2 m-2 relative ">
+          <option value="">Select example flow</option>
+          <option value="hello-world-gl-flow.json">Hello gl</option>
+        </select>
         <children></children>
       </div>`
     );
@@ -82,19 +87,25 @@ export class GLNavbarComponent extends Component<
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
+        this.selectExampleFlow = this.importButton
+          ?.nextSibling as HTMLSelectElement;
 
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
         this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
-
+        this.selectExampleFlow.addEventListener(
+          'change',
+          this.onClickImportExample
+        );
         this.renderList.push(
           this.addNodeButton,
           this.centerButton,
           this.deleteButton,
           this.exportButton,
-          this.importButton
+          this.importButton,
+          this.selectExampleFlow
         );
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
@@ -375,6 +386,29 @@ export class GLNavbarComponent extends Component<
       }
     };
     input.click();
+    return false;
+  };
+
+  onClickImportExample = (event: Event) => {
+    event.preventDefault();
+    const example = (event.target as HTMLSelectElement).value;
+    if (example && confirm(`Are you sure you want to load ${example}?`)) {
+      fetch(`/example-flows-gl/${example}`)
+        .then((response) => response.json())
+        .then((data) => {
+          this.props.clearCanvas();
+          this.props.importToCanvas(
+            data.flows.flow.nodes,
+            this.props.canvasApp,
+            this.props.canvasUpdated,
+            undefined,
+            0,
+            getGLNodeTaskFactory
+          );
+          this.props.canvasApp.centerCamera();
+          this.props.initializeNodes();
+        });
+    }
     return false;
   };
 

@@ -293,10 +293,10 @@ input {
 
 
 .gl-canvas {
-	height: 100vh;
+	height: calc(100dvh - 50px);
 	width: 50vw;
 	position: absolute;
-    top: 0;
+    top: 50px;
     right: 0;
 }
 

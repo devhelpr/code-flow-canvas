@@ -32,7 +32,7 @@ import {
   menubarClasses,
   menubarContainerClasses,
   navBarButton,
-  navBarWarningButton,
+  navBarOutlineButton,
 } from './consts/classes';
 import { serializeElementsMap } from './storage/serialize-canvas';
 import { importToCanvas } from './storage/import-to-canvas';
@@ -154,7 +154,7 @@ export class GLAppElement extends AppElement<any> {
           createElement(
             'button',
             {
-              class: navBarWarningButton,
+              class: navBarOutlineButton,
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();
