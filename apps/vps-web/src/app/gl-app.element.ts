@@ -2,7 +2,6 @@ import './app.element.css';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import styles from '../styles.css?inline';
-//import iconStyles from '../../public/icon-styles.css?inline';
 import {
   createElement,
   IElementNode,
@@ -759,9 +758,6 @@ export class GLAppElement extends AppElement<any> {
       }          
     }
     `;
-    //vec3 color = vec3(0.5, 0.7, 0.);
-    //color *= uv.x + uv.y;
-    //color *= smoothstep(0.2,0.3,length(uv-vec2(0.5,0.5)));
   };
 
   vsSource = `
@@ -822,14 +818,6 @@ export class GLAppElement extends AppElement<any> {
     return;
   };
 
-  /*
-  float dist1 = length(centeredCoord + vec2(sin(u_time*2.), cos(u_time*1.) ) ) ;
-      dist1 -= 0.5;
-      dist1 = abs(dist1);
-      dist1 = smoothstep(0.01, 0.05, dist1);
-
-      finalColor += vec3(0.,0., smoothstep(0.6,1.,1.0 - dist1 * 0.5));
-  */
   setupShader = (gl: WebGLRenderingContext) => {
     const fsSource = this.createFragmentShader(`
       ${this.shaderStatements}
@@ -970,13 +958,9 @@ export class GLAppElement extends AppElement<any> {
     ) {
       return;
     }
-    // if (this.timerCount === 0) {
-    //   this.timerCount = performance.now();
-    // } else {
-    //   this.timerCount = performance.now() - this.timerCount;
-    // }
+
     const time = performance.now() * 0.001; // time in seconds
-    //console.log('time', time);
+
     this.drawScene(
       this.gl,
       this.shaderProgram,
@@ -999,9 +983,6 @@ export class GLAppElement extends AppElement<any> {
 
     gl.useProgram(shaderProgram);
     gl.uniform1f(this.u_timeUniformLocation, time);
-    // gl.uniform1f(u_CanvasWidthUniformLocation, canvas.width);
-    // gl.uniform1f(u_CanvasHeightUniformLocation, canvas.height);
-    // gl.uniform1f(u_TestUniformLocation, testHelper);
     gl.uniform1f(this.u_CanvasWidthUniformLocation, glcanvas.width);
     gl.uniform1f(this.u_CanvasHeightUniformLocation, glcanvas.height);
     gl.uniform1f(this.u_TestUniformLocation, this.test);

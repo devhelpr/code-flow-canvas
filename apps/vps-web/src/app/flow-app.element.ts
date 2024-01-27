@@ -837,56 +837,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       const node = pathStep.connection.startNode;
       this.canvasApp?.setNodeStates(pathStep.nodeStates);
 
-      // if (pathStep.scopeNode) {
-      //   this.scopeNodeDomElement = (
-      //     pathStep.scopeNode.domElement as HTMLElement
-      //   ).firstChild as HTMLElement;
-      //   this.scopeNodeDomElement.classList.add('bg-blue-300');
-      // }
-      // connectionExecuteHistory.forEach((path) => {
-      //   const connection = path.connection;
-      //   if (connection.startNode && connection.startNode.domElement) {
-      //     (
-      //       (connection.startNode.domElement as HTMLElement)
-      //         .firstChild as HTMLElement
-      //     ).classList.remove('bg-blue-400');
-      //   }
-      //   if (connection.endNode && connection.endNode.domElement) {
-      //     (
-      //       (connection.endNode.domElement as HTMLElement)
-      //         .firstChild as HTMLElement
-      //     ).classList.remove('bg-blue-400');
-      //   }
-      // });
       if (node && node.domElement) {
-        // (
-        //   (node.domElement as HTMLElement).firstChild as HTMLElement
-        // ).classList.add('bg-blue-400');
-
         const pointValue = sliderValue - step * stepSize;
         const percentage = pointValue / stepSize;
 
-        // let loop = 0;
-        // while (loop < connectionExecuteHistory.length) {
-        //   const connectionExecute = connectionExecuteHistory[loop];
-        //   const connection = connectionExecute.connection;
-        //   if (connection?.startNode) {
-        //     if (
-        //       connection.startNode &&
-        //       connection.startNode.nodeInfo &&
-        //       connection.startNode.nodeInfo.setValue
-        //     ) {
-        //       if (loop > step) {
-        //         connection.startNode.nodeInfo.setValue(
-        //           connectionExecute.connectionValue
-        //         );
-        //       } else {
-        //         //connection.startNode.nodeInfo.setValue(connectionExecute.output);
-        //       }
-        //     }
-        //   }
-        //   loop++;
-        // }
         if (
           sliderValue % stepSize !== 0 &&
           step < connectionExecuteHistory.length
@@ -912,32 +866,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
             domMessageText.textContent = pathStep.connectionValue.toString();
             domMessage.title = pathStep.connectionValue.toString();
-          } else {
-            // pathStep.connection.startNode.connections.forEach((connection) => {
-            //   if (
-            //     connection.endNode?.id === pathStep.nodeId &&
-            //     connection.startNode?.id === nextNodeId
-            //   ) {
-            //     const bezierCurvePoints = getPointOnConnection<NodeInfo>(
-            //       percentage,
-            //       connection,
-            //       connection.startNode,
-            //       connection.endNode
-            //     );
-            //     const domCircle = this.testCircle?.domElement as HTMLElement;
-            //     const domMessage = this.message?.domElement as HTMLElement;
-            //     const domMessageText = this.messageText
-            //       ?.domElement as HTMLElement;
-            //     domCircle.style.display = 'flex';
-            //     domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-            //     domMessage.style.display = 'flex';
-            //     domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-            //     domMessageText.textContent = pathStep.output.toString();
-            //     domMessage.title = pathStep.output.toString();
-            //   }
-            // });
           }
-          //}
         }
       }
     };
@@ -946,7 +875,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       'input',
       {
         type: 'range',
-        class: 'p-2 m-2 relative w-full', //top-[60px]',
+        class: 'p-2 m-2 relative w-full',
         name: 'path-track',
         min: '0',
         max: '100000',
@@ -977,10 +906,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     AppComponents({
       rootElement: this.rootElement,
     }) as unknown as HTMLElement;
-
-    //);
-    // let raf = -1;
-    // let inputTimeout = -1;
 
     let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
@@ -1243,16 +1168,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       currentSelectedNode = selectedNodeInfo;
     });
 
-    // setupMarkupElement(
-    //   `
-    //   function Test() {
-    //     return <div class="bg-black"><div class="p-4">test{2*3}</div></div>;
-    //   }
-    //   return Test();
-    // `,
-    //   this.rootElement
-    // );
-
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
     });
@@ -1334,14 +1249,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (this.scopeNodeDomElement) {
       this.scopeNodeDomElement.classList.remove('bg-blue-300');
     }
-    // connectionExecuteHistory.forEach((connectionExecute) => {
-    //   const connection = connectionExecute.connection;
-    //   if (connection.startNode && connection.startNode.domElement) {
-    //     (
-    //       connection.startNode.domElement.firstChild as HTMLElement
-    //     )?.classList.remove('bg-blue-400');
-    //   }
-    // });
+
     const domCircle = this.testCircle?.domElement as HTMLElement;
     const domMessage = this.message?.domElement as HTMLElement;
     domCircle.style.display = 'none';
