@@ -15,14 +15,16 @@ export class DeleteNodeCommand<T> extends CommandHandler<T> {
     canvasApp: CanvasAppInstance<T>,
     canvasUpdated: () => void,
     removeElement: (element: IElementNode<T>) => void,
-    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>
+    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
+    setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void
   ) {
     super(
       rootElement,
       canvasApp,
       canvasUpdated,
       removeElement,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      setupTasksInDropdown
     );
     this.canvasApp = canvasApp;
     this.canvasUpdated = canvasUpdated;

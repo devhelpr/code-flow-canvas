@@ -13,7 +13,8 @@ export const registerCommands = <T>(
   canvasUpdated: () => void,
   removeElement: (element: IElementNode<T>) => void,
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
-  commandRegistry: Map<string, ICommandHandler>
+  commandRegistry: Map<string, ICommandHandler>,
+  setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void
 ) => {
   commandRegistry.set(
     'add-node',
@@ -22,7 +23,8 @@ export const registerCommands = <T>(
       canvasApp,
       canvasUpdated,
       removeElement,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      setupTasksInDropdown
     )
   );
   commandRegistry.set(
@@ -32,7 +34,8 @@ export const registerCommands = <T>(
       canvasApp,
       canvasUpdated,
       removeElement,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      setupTasksInDropdown
     )
   );
 };

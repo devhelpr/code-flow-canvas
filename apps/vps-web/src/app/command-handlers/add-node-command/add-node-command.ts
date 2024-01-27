@@ -10,13 +10,12 @@ import {
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
-import { NodeTaskFactory, getNodeTaskFactory } from '../../node-task-registry';
+import { NodeTaskFactory } from '../../node-task-registry';
 import {
   createTemplate,
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { navbarButtonWithoutMargin } from '../../consts/classes';
-import { setupTasksInDropdown } from '../../node-task-registry/setup-select-node-types-dropdown';
 
 export class AddNodeCommand<T> extends CommandHandler<T> {
   constructor(
@@ -24,24 +23,28 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
     canvasApp: CanvasAppInstance<T>,
     canvasUpdated: () => void,
     removeElement: (element: IElementNode<T>) => void,
-    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>
+    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
+    setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void
   ) {
     super(
       rootElement,
       canvasApp,
       canvasUpdated,
       removeElement,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      setupTasksInDropdown
     );
     this.getNodeTaskFactory = getNodeTaskFactory;
     this.canvasApp = canvasApp;
     this.canvasUpdated = canvasUpdated;
     this.rootElement = rootElement;
+    this.setupTasksInDropdown = setupTasksInDropdown;
   }
   rootElement: HTMLElement;
   canvasApp: CanvasAppInstance<T>;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
+  setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
 
   addNodeType = (
     nodeType: string,
@@ -227,22 +230,23 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
     if (!selectNodeTypeElement) {
       return;
     }
-    setupTasksInDropdown(selectNodeTypeElement);
+    this.setupTasksInDropdown(selectNodeTypeElement);
 
     const nodeType = selectNodeTypeElement.value;
-    this.getThumbNodes(
-      nodeType,
-      attachToNode,
-      dialogElement.domElement as HTMLElement
-    );
 
     selectNodeTypeElement.addEventListener('change', (_event) => {
       const nodeType = selectNodeTypeElement.value;
-      this.getThumbNodes(
-        nodeType,
-        attachToNode,
-        dialogElement.domElement as HTMLElement
-      );
+      if (
+        this.getThumbNodes(
+          nodeType,
+          attachToNode,
+          dialogElement.domElement as HTMLElement
+        )
+      ) {
+        okButton?.classList.remove('disabled');
+      } else {
+        okButton?.setAttribute('disabled', 'disabled');
+      }
     });
     (dialogElement.domElement as HTMLDialogElement).showModal();
     const okButton = form?.querySelector('.form-ok');
@@ -276,12 +280,24 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
       event.preventDefault();
       (dialogElement?.domElement as HTMLDialogElement).close();
     });
+
+    if (
+      this.getThumbNodes(
+        nodeType,
+        attachToNode,
+        dialogElement.domElement as HTMLElement
+      )
+    ) {
+      okButton?.classList.remove('disabled');
+    } else {
+      okButton?.setAttribute('disabled', 'disabled');
+    }
   }
   private getThumbNodes(
     nodeType: string,
     attachToNode: IRectNodeComponent<T>,
     dialogElement: HTMLElement
-  ) {
+  ): boolean {
     const selectNodeThumbElement =
       dialogElement.querySelector<HTMLSelectElement>(
         '.thumb-selector-container'
@@ -328,11 +344,11 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
         '.add-node-select-node-type-container'
       );
     if (!selectNodeTypeElement) {
-      return;
+      return false;
     }
     selectNodeTypeElement.after(thumbSelectElemetContainer);
 
-    const factory = getNodeTaskFactory(nodeType);
+    const factory = this.getNodeTaskFactory(nodeType);
 
     if (factory) {
       const nodeTask = factory(this.canvasUpdated);
@@ -348,7 +364,7 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
         const thumbSelect = thumbSelectElemetContainer.querySelector(
           'select'
         ) as HTMLSelectElement;
-
+        let hasInputThumbs = false;
         nodeTask.thumbs.forEach((thumb) => {
           if (thumb.connectionType === ThumbConnectionType.end) {
             createElement(
@@ -359,16 +375,22 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
               thumbSelect,
               thumb.name || `thumb ${thumb.thumbIndex}`
             );
+            hasInputThumbs = true;
           }
         });
+        if (!hasInputThumbs) {
+          return false;
+        }
         const selectNodeTypeElement = dialogElement.querySelector(
           '.thumb-selector-container'
         ) as HTMLSelectElement;
         if (!selectNodeTypeElement) {
-          return;
+          return false;
         }
         selectNodeTypeElement.after(thumbSelectElemetContainer);
+        return true;
       }
     }
+    return false;
   }
 }

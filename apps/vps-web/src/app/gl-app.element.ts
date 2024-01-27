@@ -47,6 +47,8 @@ import {
   setCameraAnimation,
   setPositionTargetCameraAnimation,
 } from './follow-path/animate-path';
+import { registerCommands } from './command-handlers/register-commands';
+import { setupGLTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
 
 export class GLAppElement extends AppElement<any> {
   public static observedAttributes = [];
@@ -63,6 +65,10 @@ export class GLAppElement extends AppElement<any> {
 
   formElement: INodeComponent<any> | undefined = undefined;
   selectedNodeLabel: IElementNode<any> | undefined = undefined;
+
+  focusedNode: IRectNodeComponent<any> | undefined = undefined;
+  runButton: IElementNode<unknown> | undefined = undefined;
+  selectNodeType: IElementNode<unknown> | undefined = undefined;
 
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
@@ -102,12 +108,15 @@ export class GLAppElement extends AppElement<any> {
         this.isStoring = true;
         this.storageProvider = storageProvider;
 
+        this.initializeCommandHandlers();
+
         if (this.storageProvider && this.canvasApp && this.rootElement) {
           GLNavbarMenu({
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
-            selectNodeType: selectNodeType.domElement as HTMLSelectElement,
+            selectNodeType: this.selectNodeType
+              ?.domElement as HTMLSelectElement,
             canvasUpdated: canvasUpdated,
             canvasApp: this.canvasApp,
             removeElement: this.removeElement,
@@ -177,7 +186,18 @@ export class GLAppElement extends AppElement<any> {
             },
             menubarElement.domElement
           );
+
+          registerCommands<any>(
+            this.rootElement,
+            this.canvasApp,
+            canvasUpdated,
+            this.removeElement,
+            getGLNodeTaskFactory,
+            this.commandRegistry,
+            setupGLTasksInDropdown
+          );
         }
+
         this.clearCanvas();
         storageProvider
           .getFlow('gl')
@@ -311,7 +331,7 @@ export class GLAppElement extends AppElement<any> {
       return option;
     };
 
-    const selectNodeType = createElement(
+    this.selectNodeType = createElement(
       'select',
       {
         type: 'select',
@@ -324,71 +344,12 @@ export class GLAppElement extends AppElement<any> {
       menubarElement.domElement,
       ''
     );
-    const setupTasksInDropdown = () => {
-      if (selectNodeType?.domElement) {
-        const nodeType = (selectNodeType?.domElement as HTMLSelectElement)
-          .value;
-        let isPreviouslySelectedNodeTypeInDropdown = false;
-        (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
 
-        const createOptgroup = (categoryName: string) =>
-          createElement(
-            'optgroup',
-            {
-              label: categoryName,
-              'data-category': categoryName,
-            },
-            selectNodeType.domElement as HTMLSelectElement
-          );
-        createOptgroup('input');
-        createOptgroup('output');
-        createOptgroup('UI');
-        createOptgroup('uncategorized');
-
-        const nodeTasks = getGLNodeFactoryNames();
-        nodeTasks.forEach((nodeTask) => {
-          const factory = getGLNodeTaskFactory(nodeTask);
-          let categoryName = 'Default';
-          if (factory) {
-            const node = factory(canvasUpdated);
-            if (node.isContained) {
-              return;
-            }
-            categoryName = node.category || 'uncategorized';
-          }
-          if (nodeTask === nodeType) {
-            isPreviouslySelectedNodeTypeInDropdown = true;
-          }
-          createOption(
-            selectNodeType.domElement as HTMLSelectElement,
-            nodeTask,
-            nodeTask,
-            categoryName
-          );
-        });
-        if (isPreviouslySelectedNodeTypeInDropdown) {
-          (selectNodeType?.domElement as HTMLSelectElement).value = nodeType;
-        } else {
-          const firstNodeOfFirstOptgroupElement = (
-            selectNodeType?.domElement as HTMLSelectElement
-          ).querySelector('optgroup')?.firstChild;
-          if (firstNodeOfFirstOptgroupElement) {
-            const defaultSelectedNodeType = (
-              firstNodeOfFirstOptgroupElement as HTMLElement
-            ).getAttribute('value');
-            if (defaultSelectedNodeType) {
-              (selectNodeType?.domElement as HTMLSelectElement).value =
-                defaultSelectedNodeType;
-            }
-          }
-        }
-      }
-    };
     const setupTasksForContainerTaskInDropdown = (
       allowedNodeTasks: string[]
     ) => {
-      if (selectNodeType?.domElement) {
-        (selectNodeType.domElement as HTMLSelectElement).innerHTML = '';
+      if (this.selectNodeType?.domElement) {
+        (this.selectNodeType?.domElement as HTMLSelectElement).innerHTML = '';
 
         const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
@@ -400,7 +361,7 @@ export class GLAppElement extends AppElement<any> {
             }
           }
           createOption(
-            selectNodeType.domElement as HTMLSelectElement,
+            this.selectNodeType?.domElement as HTMLSelectElement,
             nodeTask,
             nodeTask,
             ''
@@ -408,7 +369,9 @@ export class GLAppElement extends AppElement<any> {
         });
       }
     };
-    setupTasksInDropdown();
+    setupGLTasksInDropdown(
+      this.selectNodeType?.domElement as HTMLSelectElement
+    );
 
     let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
@@ -503,7 +466,9 @@ export class GLAppElement extends AppElement<any> {
           if ((nodeTask.childNodeTasks || []).length > 0) {
             setupTasksForContainerTaskInDropdown(nodeTask.childNodeTasks ?? []);
           } else {
-            setupTasksInDropdown();
+            setupGLTasksInDropdown(
+              this.selectNodeType?.domElement as HTMLSelectElement
+            );
           }
         }
 
@@ -629,7 +594,10 @@ export class GLAppElement extends AppElement<any> {
             ?.domElement as unknown as HTMLElement
         ).classList.remove('editing-node-indicator');
 
-        setupTasksInDropdown();
+        setupGLTasksInDropdown(
+          this.selectNodeType?.domElement as HTMLSelectElement
+        );
+
         if (getSelectedNode()) {
           setSelectNode(undefined);
         }
@@ -650,7 +618,9 @@ export class GLAppElement extends AppElement<any> {
       setPositionTargetCameraAnimation(x, y);
     });
   }
-
+  getSelectTaskElement = () => {
+    return this.selectNodeType?.domElement as HTMLSelectElement;
+  };
   onShouldPositionPopup = (node: IRectNodeComponent<any>) => {
     const nodeInfo = node?.nodeInfo ?? {};
     if (node && node.nodeType === NodeType.Connection) {

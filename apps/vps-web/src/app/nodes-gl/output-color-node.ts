@@ -9,6 +9,49 @@ import {
 
 import { InitialValues, NodeTask } from '../node-task-registry';
 
+const thumbs = [
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'red',
+    label: ' ',
+    thumbConstraint: 'value',
+    name: 'r',
+    prefixLabel: 'r',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'green',
+    label: ' ',
+    thumbConstraint: 'value',
+    name: 'g',
+    prefixLabel: 'g',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 2,
+    connectionType: ThumbConnectionType.end,
+    color: 'blue',
+    label: ' ',
+    thumbConstraint: 'value',
+    name: 'b',
+    prefixLabel: 'b',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 3,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    thumbConstraint: 'vec3',
+    name: 'vector',
+    prefixLabel: 'vector',
+  },
+];
+
 export const getOutputColorNode = (_updated: () => void): NodeTask<any> => {
   let node: IRectNodeComponent<any>;
 
@@ -71,6 +114,7 @@ export const getOutputColorNode = (_updated: () => void): NodeTask<any> => {
     family: 'flow-canvas',
     isContainer: false,
     category: 'output',
+    thumbs,
     createVisualNode: (
       canvasApp: CanvasAppInstance<any>,
       x: number,
@@ -94,48 +138,7 @@ export const getOutputColorNode = (_updated: () => void): NodeTask<any> => {
         220,
         100,
         undefined,
-        [
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            color: 'red',
-            label: ' ',
-            thumbConstraint: 'value',
-            name: 'r',
-            prefixLabel: 'r',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 1,
-            connectionType: ThumbConnectionType.end,
-            color: 'green',
-            label: ' ',
-            thumbConstraint: 'value',
-            name: 'g',
-            prefixLabel: 'g',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 2,
-            connectionType: ThumbConnectionType.end,
-            color: 'blue',
-            label: ' ',
-            thumbConstraint: 'value',
-            name: 'b',
-            prefixLabel: 'b',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 3,
-            connectionType: ThumbConnectionType.end,
-            color: 'white',
-            label: ' ',
-            thumbConstraint: 'vec3',
-            name: 'vector',
-            prefixLabel: 'vector',
-          },
-        ],
+        thumbs,
         jsxComponentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,

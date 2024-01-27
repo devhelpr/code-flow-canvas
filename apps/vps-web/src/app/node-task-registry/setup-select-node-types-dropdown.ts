@@ -3,6 +3,10 @@ import {
   getNodeFactoryNames,
   getNodeTaskFactory,
 } from './canvas-node-task-registry';
+import {
+  getGLNodeFactoryNames,
+  getGLNodeTaskFactory,
+} from './gl-node-task-registry';
 
 export const createOption = (
   selectElement: HTMLSelectElement,
@@ -70,7 +74,64 @@ export const setupTasksInDropdown = (
       let categoryName = 'Default';
       if (factory) {
         const node = factory(() => {
-          //
+          // dummy canvasUpdated function
+        });
+        if (node.isContained) {
+          return;
+        }
+        categoryName = node.category || 'uncategorized';
+      }
+      if (nodeTask === nodeType) {
+        isPreviouslySelectedNodeTypeInDropdown = true;
+      }
+      createOption(selectNodeTypeHTMLElement, nodeTask, nodeTask, categoryName);
+    });
+    if (isPreviouslySelectedNodeTypeInDropdown) {
+      selectNodeTypeHTMLElement.value = nodeType;
+    } else {
+      const firstNodeOfFirstOptgroupElement =
+        selectNodeTypeHTMLElement.querySelector('optgroup')?.firstChild;
+      if (firstNodeOfFirstOptgroupElement) {
+        const defaultSelectedNodeType = (
+          firstNodeOfFirstOptgroupElement as HTMLElement
+        ).getAttribute('value');
+        if (defaultSelectedNodeType) {
+          selectNodeTypeHTMLElement.value = defaultSelectedNodeType;
+        }
+      }
+    }
+  }
+};
+
+export const setupGLTasksInDropdown = (
+  selectNodeTypeHTMLElement: HTMLSelectElement
+) => {
+  if (selectNodeTypeHTMLElement) {
+    const nodeType = selectNodeTypeHTMLElement.value;
+    let isPreviouslySelectedNodeTypeInDropdown = false;
+    selectNodeTypeHTMLElement.innerHTML = '';
+
+    const createOptgroup = (categoryName: string) =>
+      createElement(
+        'optgroup',
+        {
+          label: categoryName,
+          'data-category': categoryName,
+        },
+        selectNodeTypeHTMLElement
+      );
+    createOptgroup('input');
+    createOptgroup('output');
+    createOptgroup('UI');
+    createOptgroup('uncategorized');
+
+    const nodeTasks = getGLNodeFactoryNames();
+    nodeTasks.forEach((nodeTask) => {
+      const factory = getGLNodeTaskFactory(nodeTask);
+      let categoryName = 'Default';
+      if (factory) {
+        const node = factory(() => {
+          // dummy canvasUpdated function
         });
         if (node.isContained) {
           return;

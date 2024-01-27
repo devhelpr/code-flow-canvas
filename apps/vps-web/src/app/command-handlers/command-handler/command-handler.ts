@@ -10,7 +10,10 @@ export class CommandHandler<T> {
     _canvasApp: CanvasAppInstance<T>,
     _canvasUpdated: () => void,
     _removeElement: (element: IElementNode<T>) => void,
-    _getNodeTaskFactory: (name: string) => NodeTaskFactory<T>
+    _getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
+    _setupTasksInDropdown: (
+      selectNodeTypeHTMLElement: HTMLSelectElement
+    ) => void
   ) {
     //
   }

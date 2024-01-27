@@ -1,5 +1,5 @@
 export const navBarButton = `rounded-md bg-slate-500 text-white p-2 m-2 hover:bg-slate-600 select-none whitespace-nowrap 
-disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+disabled:bg-slate-400 disabled:hover:bg-slate-400 disabled:text-white`;
 
 export const navbarButtonWithoutMargin = navBarButton.replace('m-2', '');
 
