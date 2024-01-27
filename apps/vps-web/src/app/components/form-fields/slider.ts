@@ -79,11 +79,13 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
           max="${this.max}"
           step="${this.step}"
           type="range"></input>
-          <div class="flex w-full justify-center relative">
+          <div class="flex w-full justify-center relative h-[18px]">
             <button class="absolute left-0 text-xs cursor-pointer">${
               this.min
             }</button>
-            <input name="${props.formId}_${
+            <input id=${props.formId}_${props.fieldName}_min" name="${
+        props.formId
+      }_${
         props.fieldName
       }_min" class="absolute left-0 text-xs w-[40px] appearance-none hidden"></input>
             <span class="slider-value-bubble text-sm absolute text-center origin-center px-2 -top-[50px] left-0 -translate-x-1/2 bg-white rounded text-black">${
@@ -92,15 +94,30 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
             <button class="absolute text-xs cursor-pointer">${
               this.step
             }</button>
-            <input name="${props.formId}_${
+            <input id="${props.formId}_${props.fieldName}_step" name="${
+        props.formId
+      }_${
         props.fieldName
       }_step" class="text-xs w-[40px] appearance-none hidden"></input>
             <button class="absolute right-0 text-xs cursor-pointer">${
               this.max
             }</button>
-            <input name="${props.formId}_${
+            <input id="${props.formId}_${props.fieldName}_max" name="${
+        props.formId
+      }_${
         props.fieldName
       }_max" class="absolute right-0 text-xs w-[40px] appearance-none hidden"></input>
+          </div>
+          <div class="flex w-full justify-center relative">
+            <label class="absolute left-0 text-xs" for=${props.formId}_${
+        props.fieldName
+      }_min">min</label>
+            <label class="absolute text-xs" for="${props.formId}_${
+        props.fieldName
+      }_step">step</label>
+            <label class="absolute right-0 text-xs" for="${props.formId}_${
+        props.fieldName
+      }_max">max</label>
           </div>
         </div>`
     );
