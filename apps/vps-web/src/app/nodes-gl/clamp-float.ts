@@ -8,6 +8,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'clamp-float';
 const labelName = 'Clamp';
@@ -59,9 +60,9 @@ const thumbs = [
   },
 ];
 
-export const getClampFloatNode: NodeTaskFactory<any> = (
+export const getClampFloatNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

@@ -48,8 +48,9 @@ import {
 } from './follow-path/animate-path';
 import { registerCommands } from './command-handlers/register-commands';
 import { setupGLTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
+import { GLNodeInfo } from './types/gl-node-info';
 
-export class GLAppElement extends AppElement<any> {
+export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -62,10 +63,10 @@ export class GLAppElement extends AppElement<any> {
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
-  formElement: INodeComponent<any> | undefined = undefined;
-  selectedNodeLabel: IElementNode<any> | undefined = undefined;
+  formElement: INodeComponent<GLNodeInfo> | undefined = undefined;
+  selectedNodeLabel: IElementNode<GLNodeInfo> | undefined = undefined;
 
-  focusedNode: IRectNodeComponent<any> | undefined = undefined;
+  focusedNode: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   runButton: IElementNode<unknown> | undefined = undefined;
   selectNodeType: IElementNode<unknown> | undefined = undefined;
 
@@ -123,10 +124,10 @@ export class GLAppElement extends AppElement<any> {
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             importToCanvas: (
-              nodesList: FlowNode<any>[],
-              canvasApp: CanvasAppInstance<any>,
+              nodesList: FlowNode<GLNodeInfo>[],
+              canvasApp: CanvasAppInstance<GLNodeInfo>,
               canvasUpdated: () => void,
-              containerNode?: IRectNodeComponent<any>,
+              containerNode?: IRectNodeComponent<GLNodeInfo>,
               nestedLevel?: number,
               getGLNodeTaskFactory?: (name: string) => any
             ) => {
@@ -186,7 +187,7 @@ export class GLAppElement extends AppElement<any> {
             menubarElement.domElement
           );
 
-          registerCommands<any>(
+          registerCommands<GLNodeInfo>(
             this.rootElement,
             this.canvasApp,
             canvasUpdated,
@@ -233,7 +234,7 @@ export class GLAppElement extends AppElement<any> {
           return;
         }
         console.log('nodesList', nodesList);
-        const flow: Flow<any> = {
+        const flow: Flow<GLNodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
           id: 'gl',
@@ -283,7 +284,7 @@ export class GLAppElement extends AppElement<any> {
       });
 
       this.canvasApp?.elements.forEach((node) => {
-        const nodeComponent = node as unknown as INodeComponent<any>;
+        const nodeComponent = node as unknown as INodeComponent<GLNodeInfo>;
         if (nodeComponent.nodeType !== NodeType.Connection) {
           if (nodeComponent?.nodeInfo?.initializeCompute) {
             nodeComponent.nodeInfo.initializeCompute();
@@ -377,7 +378,7 @@ export class GLAppElement extends AppElement<any> {
     const removeFormElement = () => {
       if (this.formElement) {
         this.canvasApp?.deleteElementFromNode(
-          this.editPopupContainer as INodeComponent<any>,
+          this.editPopupContainer as INodeComponent<GLNodeInfo>,
           this.formElement
         );
         this.formElement = undefined;
@@ -435,7 +436,7 @@ export class GLAppElement extends AppElement<any> {
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
           node &&
-          (node as INodeComponent<any>).nodeType === NodeType.Connection
+          (node as INodeComponent<GLNodeInfo>).nodeType === NodeType.Connection
         ) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
@@ -497,7 +498,7 @@ export class GLAppElement extends AppElement<any> {
           this.editPopupContainer?.domElement,
           undefined
         );
-        this.formElement = formElementInstance as INodeComponent<any>;
+        this.formElement = formElementInstance as INodeComponent<GLNodeInfo>;
 
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
@@ -620,7 +621,7 @@ export class GLAppElement extends AppElement<any> {
   getSelectTaskElement = () => {
     return this.selectNodeType?.domElement as HTMLSelectElement;
   };
-  onShouldPositionPopup = (node: IRectNodeComponent<any>) => {
+  onShouldPositionPopup = (node: IRectNodeComponent<GLNodeInfo>) => {
     const nodeInfo = node?.nodeInfo ?? {};
     if (node && node.nodeType === NodeType.Connection) {
       return false;
@@ -635,7 +636,7 @@ export class GLAppElement extends AppElement<any> {
     return true;
   };
 
-  onPreRemoveElement = (element: IElementNode<any>) => {
+  onPreRemoveElement = (element: IElementNode<GLNodeInfo>) => {
     if (element.nodeInfo?.delete) {
       element.nodeInfo.delete();
     }
@@ -850,7 +851,7 @@ export class GLAppElement extends AppElement<any> {
     );
   };
 
-  getNodeOutput = (node: IRectNodeComponent<any>, thumbName: string) => {
+  getNodeOutput = (node: IRectNodeComponent<GLNodeInfo>, thumbName: string) => {
     const inputs: Record<string, string> = {};
 
     node.connections.forEach((connection) => {
@@ -862,18 +863,18 @@ export class GLAppElement extends AppElement<any> {
         // );
         if (connection.endNodeThumb?.thumbName) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
-            connection.startNode as IRectNodeComponent<any>,
+            connection.startNode as IRectNodeComponent<GLNodeInfo>,
             connection.startNodeThumb?.thumbName ?? ''
           );
         }
       }
     });
 
-    const result = node?.nodeInfo?.compute(0, 0, inputs, thumbName);
-    return result.result;
+    const result = node?.nodeInfo?.compute?.(0, 0, inputs, thumbName);
+    return result?.result ?? '';
   };
 
-  getInputsForNode = (node: IRectNodeComponent<any>) => {
+  getInputsForNode = (node: IRectNodeComponent<GLNodeInfo>) => {
     const inputs: Record<string, string> = {};
     node.connections.forEach((connection) => {
       if (connection.endNode?.id === node.id) {
@@ -894,16 +895,16 @@ export class GLAppElement extends AppElement<any> {
     this.shaderStatements = '';
     if (this.canvasApp) {
       this.canvasApp.elements.forEach((element) => {
-        const node = element as unknown as INodeComponent<any>;
+        const node = element as unknown as INodeComponent<GLNodeInfo>;
         if (node.nodeType === NodeType.Shape) {
           if (
             node.nodeInfo?.type === 'circle-node' ||
             node.nodeInfo?.type === 'output-color-node'
           ) {
             const inputs = this.getInputsForNode(
-              node as IRectNodeComponent<any>
+              node as IRectNodeComponent<GLNodeInfo>
             );
-            const result = node.nodeInfo?.compute(0, sdfIndex, inputs);
+            const result = node.nodeInfo?.compute?.(0, sdfIndex, inputs);
             this.shaderStatements += result?.result ?? '';
             this.shaderStatements += `
 `;

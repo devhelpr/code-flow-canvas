@@ -9,7 +9,7 @@ import { getMultiplyNode } from '../nodes-gl/multiply';
 import { getOutputColorNode } from '../nodes-gl/output-color-node';
 import { getUVNode } from '../nodes-gl/uv-node';
 import { getAdditionNode } from '../nodes-gl/addition';
-import { getLengthNode } from '../nodes-gl/length';
+import { getVectorLengthNode } from '../nodes-gl/vector-length';
 import { getNoiseNode } from '../nodes-gl/noise';
 import { getSplitColorsNode } from '../nodes-gl/split-colors';
 import { getPaletteNode } from '../nodes-gl/palette';
@@ -49,7 +49,7 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('uv-node', getUVNode);
   registerGLNodeFactory('addition-node', getAdditionNode);
   registerGLNodeFactory('subtract-node', getSubtractNode);
-  registerGLNodeFactory('length-node', getLengthNode);
+  registerGLNodeFactory('vector-length', getVectorLengthNode);
   registerGLNodeFactory('noise-node', getNoiseNode);
   registerGLNodeFactory('split-colors-node', getSplitColorsNode);
   registerGLNodeFactory('palette', getPaletteNode);

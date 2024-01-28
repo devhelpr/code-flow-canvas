@@ -12,6 +12,7 @@ import {
   createElementFromTemplate,
   createTemplate,
 } from '@devhelpr/dom-components';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'time';
 const labelName = 'Time';
@@ -30,9 +31,9 @@ const thumbs = [
   },
 ];
 
-export const getTimeNode: NodeTaskFactory<any> = (
+export const getTimeNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

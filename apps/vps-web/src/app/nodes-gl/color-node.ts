@@ -11,6 +11,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 function hexToRgb(
   hex: string,
@@ -30,10 +31,10 @@ function hexToRgb(
       };
 }
 
-export const getColorNode: NodeTaskFactory<any> = (
+export const getColorNode: NodeTaskFactory<GLNodeInfo> = (
   updated: () => void
-): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
+): NodeTask<GLNodeInfo> => {
+  let node: IRectNodeComponent<GLNodeInfo>;
 
   const initializeCompute = () => {
     return;
@@ -100,7 +101,7 @@ export const getColorNode: NodeTaskFactory<any> = (
       return formElements;
     },
     (nodeInstance) => {
-      node = nodeInstance.node as IRectNodeComponent<any>;
+      node = nodeInstance.node as IRectNodeComponent<GLNodeInfo>;
     },
     {
       category: 'UI',

@@ -8,6 +8,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'smooth-step-float';
 const labelName = 'Smooth Step';
@@ -59,9 +60,9 @@ const thumbs = [
   },
 ];
 
-export const getSmoothStepFloatNode: NodeTaskFactory<any> = (
+export const getSmoothStepFloatNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

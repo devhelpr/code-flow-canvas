@@ -8,6 +8,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'modulo-float';
 const labelName = 'Modulo';
@@ -48,9 +49,9 @@ const thumbs = [
   },
 ];
 
-export const getModuloFloatNode: NodeTaskFactory<any> = (
+export const getModuloFloatNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

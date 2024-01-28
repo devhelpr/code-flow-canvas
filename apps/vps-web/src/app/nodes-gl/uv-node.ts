@@ -11,6 +11,7 @@ import {
   IComputeResult,
   visualNodeFactory,
 } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'uv';
 const labelName = 'UV';
@@ -53,9 +54,9 @@ const thumbs = [
   },
 ];
 
-export const getUVNode: NodeTaskFactory<any> = (
+export const getUVNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

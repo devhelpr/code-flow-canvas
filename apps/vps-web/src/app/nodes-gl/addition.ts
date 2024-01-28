@@ -8,6 +8,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'addition';
 const labelName = 'Addition';
@@ -44,9 +45,9 @@ const thumbs = [
   },
 ];
 
-export const getAdditionNode: NodeTaskFactory<any> = (
+export const getAdditionNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

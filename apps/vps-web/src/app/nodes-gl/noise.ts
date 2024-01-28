@@ -8,6 +8,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'noise';
 const labelName = 'Noise';
@@ -56,9 +57,9 @@ const thumbs = [
   },
 ];
 
-export const getNoiseNode: NodeTaskFactory<any> = (
+export const getNoiseNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

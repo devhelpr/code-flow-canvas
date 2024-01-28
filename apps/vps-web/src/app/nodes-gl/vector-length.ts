@@ -8,10 +8,11 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'length';
-const labelName = 'Length';
-const nodeName = 'length-node';
+const labelName = 'Vector length';
+const nodeName = 'vector-length';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
@@ -33,13 +34,13 @@ const thumbs = [
 
     name: 'vector',
     thumbConstraint: 'vec2',
-    prefixLabel: 'vector',
+    prefixLabel: '',
   },
 ];
 
-export const getLengthNode: NodeTaskFactory<any> = (
+export const getVectorLengthNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

@@ -8,9 +8,10 @@ import {
 } from '@devhelpr/visual-programming-system';
 
 import { InitialValues, NodeTask } from '../node-task-registry';
+import { GLNodeInfo } from '../types/gl-node-info';
 
-export const getCircleNode = (_updated: () => void): NodeTask<any> => {
-  let node: IRectNodeComponent<any>;
+export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
+  let node: IRectNodeComponent<GLNodeInfo>;
 
   const initializeCompute = () => {
     return;
@@ -42,12 +43,12 @@ export const getCircleNode = (_updated: () => void): NodeTask<any> => {
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<any>,
+      canvasApp: CanvasAppInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,
       _initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<any>
+      containerNode?: IRectNodeComponent<GLNodeInfo>
     ) => {
       const jsxComponentWrapper = createElement(
         'div',
@@ -56,7 +57,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<any> => {
         },
         undefined,
         'circle'
-      ) as unknown as INodeComponent<any>;
+      ) as unknown as INodeComponent<GLNodeInfo>;
 
       const rect = canvasApp.createRect(
         x,

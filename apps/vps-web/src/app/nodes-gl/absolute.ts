@@ -8,6 +8,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'absolute';
 const labelName = 'Absolute';
@@ -35,9 +36,9 @@ const thumbs = [
   },
 ];
 
-export const getAbsoluteNode: NodeTaskFactory<any> = (
+export const getAbsoluteNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };

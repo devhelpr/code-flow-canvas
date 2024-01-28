@@ -12,6 +12,7 @@ import {
   createElementFromTemplate,
   createTemplate,
 } from '@devhelpr/dom-components';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'sine';
 const labelName = 'Sine';
@@ -41,9 +42,9 @@ const thumbs = [
   },
 ];
 
-export const getSineNode: NodeTaskFactory<any> = (
+export const getSineNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
-): NodeTask<any> => {
+): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };
