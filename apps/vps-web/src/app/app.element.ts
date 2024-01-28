@@ -17,6 +17,9 @@ import {
   Camera,
   ICommandHandler,
   IDOMElement,
+  IConnectionNodeComponent,
+  ElementNodeMap,
+  NodeType,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -506,6 +509,172 @@ export class AppElement<T> {
         (yLine < y ? y - yLine : 0) + 170 + 5
       }`
     );
+  };
+
+  setTabOrderForNode = (
+    node: IRectNodeComponent<T>,
+    incomingTabIndex: number
+  ) => {
+    let tabIndex = incomingTabIndex;
+    if (node && node.domElement) {
+      (node.domElement as HTMLElement).setAttribute(
+        'tabindex',
+        tabIndex.toString()
+      );
+      tabIndex++;
+
+      const inputs = (node.domElement as HTMLElement).querySelectorAll('input');
+      inputs.forEach((element, _index) => {
+        (element as HTMLElement).setAttribute('tabindex', tabIndex.toString());
+        tabIndex++;
+      });
+
+      if (node.connections) {
+        (node.connections as any)
+          .toSorted(
+            (
+              aConnection: IConnectionNodeComponent<T>,
+              bConnection: IConnectionNodeComponent<T>
+            ) => {
+              // instead of tbumbs .. use the connection start and position?
+
+              const aHelper = `${Math.floor(aConnection.y)
+                .toFixed(2)
+                .padStart(8, '0')}_${Math.floor(aConnection.x)
+                .toFixed(2)
+                .padStart(8, '0')}_${Math.floor(aConnection.endY)
+                .toFixed(2)
+                .padStart(8, '0')}_${Math.floor(aConnection.endX)
+                .toFixed(2)
+                .padStart(8, '0')}`;
+              const bHelper = `${Math.floor(bConnection.y)
+                .toFixed(2)
+                .padStart(8, '0')}_${Math.floor(bConnection.x)
+                .toFixed(2)
+                .padStart(8, '0')}_${Math.floor(bConnection.endY)
+                .toFixed(2)
+                .padStart(8, '0')}_${Math.floor(bConnection.endX)
+                .toFixed(2)
+                .padStart(8, '0')}`;
+              if (aHelper < bHelper) {
+                return -1;
+              }
+              if (aHelper > bHelper) {
+                return 1;
+              }
+
+              return 0;
+            }
+          )
+          .forEach((connection: IConnectionNodeComponent<T>) => {
+            if (connection.startNode?.id === node.id && connection.endNode) {
+              tabIndex = this.setTabOrderForNode(connection.endNode, tabIndex);
+            }
+          });
+      }
+    }
+    return tabIndex;
+  };
+
+  getStartNodes = (nodes: ElementNodeMap<T>, includeFunctionNodes = false) => {
+    const startNodes: IRectNodeComponent<T>[] = [];
+    const nodeList = Array.from(nodes);
+    nodes.forEach((node) => {
+      const nodeComponent = node as unknown as IRectNodeComponent<T>;
+      const connectionsFromEndNode = nodeList.filter((e) => {
+        const eNode = e[1] as INodeComponent<T>;
+        if (eNode.nodeType === NodeType.Connection) {
+          const element = e[1] as IConnectionNodeComponent<T>;
+          return (
+            element.endNode?.id === node.id &&
+            !element.isData &&
+            !element.isAnnotationConnection
+          );
+        }
+        return false;
+      });
+      const nodeInfo = nodeComponent.nodeInfo as any;
+      if (
+        !(nodeComponent.nodeInfo as any)?.isVariable &&
+        nodeComponent.nodeType !== NodeType.Connection &&
+        (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
+        ((!includeFunctionNodes &&
+          nodeInfo?.type !== 'node-trigger-target' &&
+          nodeInfo?.type !== 'function') ||
+          includeFunctionNodes)
+      ) {
+        startNodes.push(nodeComponent);
+      }
+    });
+
+    return startNodes;
+  };
+  setTabOrderOfNodes = () => {
+    if (!this.canvasApp) {
+      return;
+    }
+    const nodes = (
+      this.getStartNodes(this.canvasApp.elements, true) as any
+    ).toSorted((a: IRectNodeComponent<T>, b: IRectNodeComponent<T>) => {
+      const aHelper = `${Math.floor(a.y / 100)
+        .toFixed(2)
+        .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
+      const bHelper = `${Math.floor(b.y / 100)
+        .toFixed(2)
+        .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
+      if (aHelper < bHelper) {
+        return -1;
+      }
+      if (aHelper > bHelper) {
+        return 1;
+      }
+      return 0;
+    });
+
+    nodes.sort((a: IRectNodeComponent<T>, b: IRectNodeComponent<T>) => {
+      const aNodeInfo = a.nodeInfo as any;
+      const bNodeInfo = b.nodeInfo as any;
+
+      if (
+        aNodeInfo.type !== 'node-trigger-target' &&
+        aNodeInfo.type !== 'function' &&
+        (bNodeInfo.type === 'node-trigger-target' ||
+          bNodeInfo.type === 'function')
+      ) {
+        return -1;
+      }
+      if (
+        bNodeInfo.type !== 'node-trigger-target' &&
+        bNodeInfo.type !== 'function' &&
+        (aNodeInfo.type === 'node-trigger-target' ||
+          aNodeInfo.type === 'function')
+      ) {
+        return 1;
+      }
+
+      if (
+        aNodeInfo.type !== 'uv-node' &&
+        aNodeInfo.type !== 'time-node' &&
+        (bNodeInfo.type === 'uv-node' || bNodeInfo.type === 'time-node')
+      ) {
+        return 1;
+      }
+      if (
+        bNodeInfo.type !== 'uv-node' &&
+        bNodeInfo.type !== 'time-node' &&
+        (aNodeInfo.type === 'uv-node' || aNodeInfo.type === 'time-node')
+      ) {
+        return -1;
+      }
+      return 0;
+    });
+    console.log('tab nodes', nodes);
+    let tabIndex = 1;
+    nodes.forEach((node: IRectNodeComponent<T>, _index: number) => {
+      tabIndex = this.setTabOrderForNode(node, tabIndex);
+
+      tabIndex++;
+    });
   };
 }
 

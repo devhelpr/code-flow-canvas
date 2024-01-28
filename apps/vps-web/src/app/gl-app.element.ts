@@ -46,6 +46,7 @@ import { noise } from './gl-functions/noise';
 import {
   setCameraAnimation,
   setPositionTargetCameraAnimation,
+  setTargetCameraAnimation,
 } from './follow-path/animate-path';
 import { registerCommands } from './command-handlers/register-commands';
 import { setupGLTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
@@ -95,6 +96,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       }
       this.flowTOGLCanvas();
       store();
+      this.setTabOrderOfNodes();
     };
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
@@ -217,6 +219,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             this.canvasApp.centerCamera();
             initializeNodes();
             this.flowTOGLCanvas();
+            this.setTabOrderOfNodes();
             this.isStoring = false;
           })
           .catch((error) => {
@@ -646,6 +649,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   onPreclearCanvas = () => {
     //
+  };
+  setCameraTargetOnNode = (node: IRectNodeComponent<GLNodeInfo>) => {
+    setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
   };
 
   updateGLCanvasParameters = () => {

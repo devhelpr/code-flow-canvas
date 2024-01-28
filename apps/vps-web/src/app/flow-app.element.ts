@@ -18,7 +18,6 @@ import {
   NodeType,
   SelectedNodeInfo,
   FlowNode,
-  IConnectionNodeComponent,
   IDOMElement,
 } from '@devhelpr/visual-programming-system';
 
@@ -28,7 +27,6 @@ import { FormComponent } from './components/form-component';
 
 import {
   connectionExecuteHistory,
-  getStartNodes,
   increaseRunIndex,
   resetRunIndex,
   run,
@@ -197,7 +195,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       resetConnectionSlider();
       store();
       console.log('canvasUpdated before setTabOrderOfNodes');
-      setTabOrderOfNodes();
+      this.setTabOrderOfNodes();
     };
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
@@ -389,7 +387,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             );
             this.canvasApp.centerCamera();
             initializeNodes();
-            setTabOrderOfNodes();
+            this.setTabOrderOfNodes();
             this.isStoring = false;
           })
           .catch((error) => {
@@ -447,107 +445,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       },
       menubarContainerElement.domElement
     );
-
-    const setTabOrderForNode = (
-      node: IRectNodeComponent<NodeInfo>,
-      incomingTabIndex: number
-    ) => {
-      let tabIndex = incomingTabIndex;
-      if (node && node.domElement) {
-        (node.domElement as HTMLElement).setAttribute(
-          'tabindex',
-          tabIndex.toString()
-        );
-        tabIndex++;
-
-        const inputs = (node.domElement as HTMLElement).querySelectorAll(
-          'input'
-        );
-        inputs.forEach((element, _index) => {
-          (element as HTMLElement).setAttribute(
-            'tabindex',
-            tabIndex.toString()
-          );
-          tabIndex++;
-        });
-
-        if (node.connections) {
-          (node.connections as any)
-            .toSorted(
-              (
-                aConnection: IConnectionNodeComponent<NodeInfo>,
-                bConnection: IConnectionNodeComponent<NodeInfo>
-              ) => {
-                // instead of tbumbs .. use the connection start and position?
-
-                const aHelper = `${Math.floor(aConnection.y)
-                  .toFixed(2)
-                  .padStart(8, '0')}_${Math.floor(aConnection.x)
-                  .toFixed(2)
-                  .padStart(8, '0')}_${Math.floor(aConnection.endY)
-                  .toFixed(2)
-                  .padStart(8, '0')}_${Math.floor(aConnection.endX)
-                  .toFixed(2)
-                  .padStart(8, '0')}`;
-                const bHelper = `${Math.floor(bConnection.y)
-                  .toFixed(2)
-                  .padStart(8, '0')}_${Math.floor(bConnection.x)
-                  .toFixed(2)
-                  .padStart(8, '0')}_${Math.floor(bConnection.endY)
-                  .toFixed(2)
-                  .padStart(8, '0')}_${Math.floor(bConnection.endX)
-                  .toFixed(2)
-                  .padStart(8, '0')}`;
-                console.log('aHelper', aHelper, 'bHelper', bHelper);
-                if (aHelper < bHelper) {
-                  return -1;
-                }
-                if (aHelper > bHelper) {
-                  return 1;
-                }
-
-                return 0;
-              }
-            )
-            .forEach((connection: IConnectionNodeComponent<NodeInfo>) => {
-              if (connection.startNode?.id === node.id && connection.endNode) {
-                tabIndex = setTabOrderForNode(connection.endNode, tabIndex);
-              }
-            });
-        }
-      }
-      return tabIndex;
-    };
-    const setTabOrderOfNodes = () => {
-      if (!this.canvasApp) {
-        return;
-      }
-      const nodes = (
-        getStartNodes(this.canvasApp.elements, true) as any
-      ).toSorted(
-        (a: IRectNodeComponent<NodeInfo>, b: IRectNodeComponent<NodeInfo>) => {
-          const aHelper = `${Math.floor(a.y / 100)
-            .toFixed(2)
-            .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
-          const bHelper = `${Math.floor(b.y / 100)
-            .toFixed(2)
-            .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
-          if (aHelper < bHelper) {
-            return -1;
-          }
-          if (aHelper > bHelper) {
-            return 1;
-          }
-          return 0;
-        }
-      );
-      let tabIndex = 1;
-      nodes.forEach((node: IRectNodeComponent<NodeInfo>, _index: number) => {
-        tabIndex = setTabOrderForNode(node, tabIndex);
-
-        tabIndex++;
-      });
-    };
 
     const initializeNodes = () => {
       if (!this.rootElement) {
