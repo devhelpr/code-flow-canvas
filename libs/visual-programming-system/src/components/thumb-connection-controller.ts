@@ -161,7 +161,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (!this.circleElement) throw new Error('circleElement is undefined');
 
     elements.set(this.nodeComponent.id, this.nodeComponent);
-    this.nodeComponent.elements.set(this.circleElement.id, this.circleElement);
+    //this.nodeComponent.elements.set(this.circleElement.id, this.circleElement);
     this.nodeComponent.connectionControllerType = connectionControllerType;
     this.nodeComponent.x = xInitial ? parseInt(xInitial.toString()) : 0;
     this.nodeComponent.y = yInitial ? parseInt(yInitial.toString()) : 0;

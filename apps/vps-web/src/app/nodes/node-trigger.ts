@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
+  IDOMElement,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -17,7 +18,7 @@ export const getNodeTrigger =
   (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let divElement: IElementNode<NodeInfo>;
+    let divElement: IDOMElement;
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const initializeCompute = () => {
       return;

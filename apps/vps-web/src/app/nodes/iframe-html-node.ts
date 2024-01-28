@@ -1,7 +1,8 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
+  createNodeElement,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -47,7 +48,7 @@ function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
 export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let currentInput = '';
   let node: IRectNodeComponent<NodeInfo>;
-  let divNode: IElementNode<NodeInfo>;
+  let divNode: IDOMElement;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
@@ -280,7 +281,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         },
       ];
 
-      const componentWrapper = createElement(
+      const componentWrapper = createNodeElement(
         'div',
         {
           id: id ?? '',

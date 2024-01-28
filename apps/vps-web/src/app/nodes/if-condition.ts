@@ -4,7 +4,7 @@ import {
 } from '@devhelpr/expression-compiler';
 import {
   CanvasAppInstance,
-  createElement,
+  createNodeElement,
   INodeComponent,
   IRectNodeComponent,
   IThumb,
@@ -275,7 +275,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
-      const jsxComponentWrapper = createElement(
+      const jsxComponentWrapper = createNodeElement(
         'div',
         {
           class:

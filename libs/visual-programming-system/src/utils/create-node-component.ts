@@ -1,5 +1,9 @@
 import { DOMElementNode, INodeComponent } from '../interfaces/element';
-import { createElement, createNSElement, EventHandler } from './create-element';
+import {
+  createNodeElement,
+  createNSElement,
+  EventHandler,
+} from './create-element';
 
 export const createNodeComponent = <T>(
   elementName: string,
@@ -8,7 +12,7 @@ export const createNodeComponent = <T>(
   content?: string,
   id?: string
 ): INodeComponent<T> => {
-  const element = createElement<T>(
+  const element = createNodeElement<T>(
     elementName,
     attributes,
     parent,

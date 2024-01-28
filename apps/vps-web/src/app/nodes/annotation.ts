@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
+  createNodeElement,
   INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
@@ -33,7 +34,7 @@ export const getAnnotation =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const componentWrapper = createElement(
+        const componentWrapper = createNodeElement(
           'div',
           {
             class: `relative

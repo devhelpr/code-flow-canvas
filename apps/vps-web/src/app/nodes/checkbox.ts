@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
+  createNodeElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -52,7 +53,7 @@ export const getCheckbox =
         _initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
-        const componentWrapper = createElement(
+        const componentWrapper = createNodeElement(
           'div',
           {
             class: `inner-node bg-sky-900 py-4 px-8 rounded text-center`,

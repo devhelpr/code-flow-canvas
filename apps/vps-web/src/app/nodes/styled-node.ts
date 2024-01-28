@@ -1,7 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -17,7 +17,7 @@ export const getStyledNode =
   (_animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let divNode: IElementNode<NodeInfo>;
+    let divNode: IDOMElement;
 
     const defaultStyling = `{
       display:"block"

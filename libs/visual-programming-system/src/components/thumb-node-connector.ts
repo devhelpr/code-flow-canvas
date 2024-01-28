@@ -239,22 +239,11 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         text-black h-[20px] w-[12px] pb-[1.5px] ${
           this.containerNode ? 'top-[2px]' : ''
         }`;
-        //clipPath = 'circle(50% at 50% 50%)';
         clipPath = 'none';
-        //innerLabelClasses = innerLabelClasses.replace('bg-black', 'bg-white');
       }
 
-      // if (this.containerNode && connectionType === ThumbConnectionType.start) {
-      //   innerLabelClasses = innerLabelClasses.replace(
-      //     'bg-white',
-      //     'bg-transparent'
-      //   );
-      // }
-      // if (!connectionControllerType) {
-
-      // }
       createElement(
-        'div', //'circle',
+        'div',
         {
           class: innerLabelClasses,
           style: {
@@ -266,7 +255,6 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       );
     }
     elements.set(this.nodeComponent.id, this.nodeComponent);
-    this.nodeComponent.elements.set(this.circleElement.id, this.circleElement);
     this.nodeComponent.connectionControllerType = connectionControllerType;
     this.nodeComponent.x = xInitial ? parseInt(xInitial.toString()) : 0;
     this.nodeComponent.y = yInitial ? parseInt(yInitial.toString()) : 0;
@@ -288,9 +276,6 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       ).style.display = `${visible ? 'block' : 'none'}`;
 
       if (visible && !disableInteraction) {
-        // console.log(
-        //   'THUMB SET VISIBILITY  (BEFORE remove pointer-events-none)'
-        // );
         const circleDomElement = this.circleElement
           ?.domElement as unknown as SVGElement;
         circleDomElement.classList.remove('pointer-events-none');

@@ -1,7 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -17,7 +17,7 @@ export const getTimer =
   (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let divElement: IElementNode<NodeInfo>;
+    let divElement: IDOMElement;
     let interval: any = undefined;
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const initialTimer = 1000;

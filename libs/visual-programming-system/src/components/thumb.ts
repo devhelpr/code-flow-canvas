@@ -8,6 +8,7 @@ import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
   ElementNodeMap,
+  IDOMElement,
   IElementNode,
   IRectNodeComponent,
   IThumbNodeComponent,
@@ -16,7 +17,7 @@ import {
 import { IPointerDownResult } from '../interfaces/pointers';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
-import { createElement } from '../utils/create-element';
+import { createNodeElement } from '../utils/create-element';
 
 export class ThumbNode<T> {
   nodeComponent?: IThumbNodeComponent<T>;
@@ -28,7 +29,7 @@ export class ThumbNode<T> {
   canvasElements?: ElementNodeMap<T>;
   pathHiddenElement?: IElementNode<T>;
   canvasUpdated?: () => void;
-  circleElement: IElementNode<T> | undefined;
+  circleElement: IDOMElement | undefined;
   interactionInfo: IPointerDownResult;
   containerNode?: IRectNodeComponent<T>;
 
@@ -83,7 +84,7 @@ export class ThumbNode<T> {
     const initialY =
       yInitial !== undefined ? yInitial : Math.floor(Math.random() * 500);
 
-    this.nodeComponent = createElement(
+    this.nodeComponent = createNodeElement(
       'div',
       {
         // will-change-transform

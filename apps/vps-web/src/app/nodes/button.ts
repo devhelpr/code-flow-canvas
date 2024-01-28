@@ -1,7 +1,8 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
+  createNodeElement,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -17,7 +18,7 @@ export const getButton =
   (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let button: IElementNode<NodeInfo>;
+    let button: IDOMElement;
     let currentValue = 0;
     let triggerButton = false;
     const initializeCompute = () => {
@@ -85,7 +86,7 @@ export const getButton =
           },
         ];
 
-        const componentWrapper = createElement(
+        const componentWrapper = createNodeElement(
           'div',
           {
             class: `inner-node bg-sky-900 p-4 rounded`,

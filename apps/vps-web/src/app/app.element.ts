@@ -16,6 +16,7 @@ import {
   createNSElement,
   Camera,
   ICommandHandler,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -46,13 +47,13 @@ export class AppElement<T> {
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
-  formElement: INodeComponent<T> | undefined = undefined;
-  editPopupContainer: IElementNode<T> | undefined = undefined;
-  editPopupLineContainer: IElementNode<T> | undefined = undefined;
-  editPopupLinePath: IElementNode<T> | undefined = undefined;
-  editPopupLineEndPath: IElementNode<T> | undefined = undefined;
-  editPopupEditingNodeIndicator: IElementNode<T> | undefined = undefined;
-  selectedNodeLabel: IElementNode<T> | undefined = undefined;
+  formElement: IDOMElement | undefined = undefined;
+  editPopupContainer: IDOMElement | undefined = undefined;
+  editPopupLineContainer: IDOMElement | undefined = undefined;
+  editPopupLinePath: IDOMElement | undefined = undefined;
+  editPopupLineEndPath: IDOMElement | undefined = undefined;
+  editPopupEditingNodeIndicator: IDOMElement | undefined = undefined;
+  selectedNodeLabel: IDOMElement | undefined = undefined;
   rootElement: HTMLElement | undefined = undefined;
 
   appRootElement: Element | null;
@@ -150,11 +151,12 @@ export class AppElement<T> {
   focusedNode: IRectNodeComponent<T> | undefined = undefined;
   removeFormElement = () => {
     if (this.formElement) {
-      this.canvasApp?.deleteElementFromNode(
-        this.editPopupContainer as INodeComponent<T>,
-        this.formElement,
-        true
-      );
+      // this.canvasApp?.deleteElementFromNode(
+      //   this.editPopupContainer as INodeComponent<T>,
+      //   this.formElement,
+      //   true
+      // );
+      this.formElement.domElement.remove();
       this.formElement = undefined;
     }
     (
@@ -353,10 +355,12 @@ export class AppElement<T> {
     if (node && node.delete) {
       node.delete();
     }
-    element.elements.forEach((element: IElementNode<T>) => {
-      this.removeElement(element as unknown as IElementNode<T>);
-    });
-    element.elements = createElementMap<T>();
+    if (element.elements) {
+      element.elements.forEach((element: IElementNode<T>) => {
+        this.removeElement(element as unknown as IElementNode<T>);
+      });
+      element.elements = createElementMap<T>();
+    }
   };
   onPreclearCanvas = () => {
     //
@@ -368,7 +372,7 @@ export class AppElement<T> {
     this.canvasApp?.resetNodeTransform();
     this.canvasApp?.elements.forEach((element) => {
       element.domElement.remove();
-      this.removeElement(element as unknown as IElementNode<T>);
+      this.removeElement(element);
     });
     this.canvasApp?.elements.clear();
     this.canvasApp?.setCamera(0, 0, 1);

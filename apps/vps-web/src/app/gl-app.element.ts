@@ -16,6 +16,7 @@ import {
   NodeType,
   SelectedNodeInfo,
   FlowNode,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -63,12 +64,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
-  formElement: INodeComponent<GLNodeInfo> | undefined = undefined;
-  selectedNodeLabel: IElementNode<GLNodeInfo> | undefined = undefined;
+  formElement: IDOMElement | undefined = undefined;
+  selectedNodeLabel: IDOMElement | undefined = undefined;
 
   focusedNode: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
-  runButton: IElementNode<unknown> | undefined = undefined;
-  selectNodeType: IElementNode<unknown> | undefined = undefined;
+  runButton: IDOMElement | undefined = undefined;
+  selectNodeType: IDOMElement | undefined = undefined;
 
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
@@ -377,10 +378,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     const removeFormElement = () => {
       if (this.formElement) {
-        this.canvasApp?.deleteElementFromNode(
-          this.editPopupContainer as INodeComponent<GLNodeInfo>,
-          this.formElement
-        );
+        // this.canvasApp?.deleteElementFromNode(
+        //   this.editPopupContainer as INodeComponent<GLNodeInfo>,
+        //   this.formElement
+        // );
+        this.formElement.domElement.remove();
         this.formElement = undefined;
       }
     };
@@ -498,7 +500,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           this.editPopupContainer?.domElement,
           undefined
         );
-        this.formElement = formElementInstance as INodeComponent<GLNodeInfo>;
+        this.formElement = formElementInstance;
 
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,

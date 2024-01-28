@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
+  createNodeElement,
   INodeComponent,
   IRectNodeComponent,
   IThumb,
@@ -86,7 +87,7 @@ export const createRectNode = (
     });
   }
 
-  const componentWrapper = createElement(
+  const componentWrapper = createNodeElement<NodeInfo>(
     'div',
     {
       class: `relative flex flex-col bg-slate-500 text-white rounded ${
@@ -106,7 +107,7 @@ export const createRectNode = (
         if (factory) {
           const nodeTask = factory();
           if (nodeTask) {
-            const decoratorWrapper = createElement(
+            const decoratorWrapper = createNodeElement(
               'div',
               {
                 class: `relative text-center px-2 py-2 ${
@@ -175,7 +176,7 @@ export const createRectNode = (
     },
     componentWrapper.domElement,
     hasCenteredLabel ? nodeTitle : undefined
-  ) as unknown as INodeComponent<NodeInfo>;
+  );
 
   if (formElements.length > 0 && !settings?.hasFormInPopup) {
     FormComponent({
@@ -219,7 +220,7 @@ export const createRectNode = (
         if (factory) {
           const nodeTask = factory();
           if (nodeTask) {
-            const decoratorWrapper = createElement(
+            const decoratorWrapper = createNodeElement(
               'div',
               {
                 class: `relative border-slate-500 text-center py-2 ${
@@ -339,7 +340,7 @@ export const visualNodeFactory = (
     ) => {
       const initialValue = initalValues?.[defaultValueFieldName] ?? '';
       const caption = initalValues?.['caption'];
-      const decoratorNode = createElement(
+      const decoratorNode = createNodeElement(
         'div',
         {
           class: `decorator-node p-2 inline-block text-white rounded text-center border-2 border-slate-200 border-solid`,

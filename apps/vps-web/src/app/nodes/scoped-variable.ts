@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   createElement,
+  createNodeElement,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -744,7 +745,7 @@ export const getScopedVariable =
           '-'
         ) as unknown as INodeComponent<NodeInfo>;
 
-        componentWrapper = createElement(
+        componentWrapper = createNodeElement(
           'div',
           {
             class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node bg-slate-600 text-white p-4 rounded text-center`,

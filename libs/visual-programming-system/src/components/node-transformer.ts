@@ -5,6 +5,7 @@ import {
 } from '../interaction-state-machine';
 import {
   DOMElementNode,
+  IDOMElement,
   IElementNode,
   INodeComponent,
   IPointerDownResult,
@@ -66,7 +67,7 @@ export class NodeTransformer<T> {
         pointermove: this.onPointerMove,
         pointerup: this.onPointerUp,
       },
-      this.nodeTransformElement.domElement
+      this.nodeTransformElement?.domElement
     );
 
     this.rightTop = createElement(
@@ -80,7 +81,7 @@ export class NodeTransformer<T> {
         pointermove: this.onPointerMove,
         pointerup: this.onPointerUp,
       },
-      this.nodeTransformElement.domElement
+      this.nodeTransformElement?.domElement
     );
 
     this.leftBottom = createElement(
@@ -94,7 +95,7 @@ export class NodeTransformer<T> {
         pointermove: this.onPointerMove,
         pointerup: this.onPointerUp,
       },
-      this.nodeTransformElement.domElement
+      this.nodeTransformElement?.domElement
     );
 
     this.rightBottom = createElement(
@@ -108,7 +109,7 @@ export class NodeTransformer<T> {
         pointermove: this.onPointerMove,
         pointerup: this.onPointerUp,
       },
-      this.nodeTransformElement.domElement
+      this.nodeTransformElement?.domElement
     );
 
     this.moveNodesPanel = createElement(
@@ -120,7 +121,7 @@ export class NodeTransformer<T> {
         w-[96px] h-[32px] 
         -translate-x-[50%] gap-[8px] flex-grow flex-shrink-0`,
       },
-      this.nodeTransformElement.domElement
+      this.nodeTransformElement?.domElement
     );
 
     this.downstreamNodesMover = createElement(
@@ -162,18 +163,18 @@ export class NodeTransformer<T> {
     );
   }
 
-  nodeTransformElement: IElementNode<T> | undefined;
+  nodeTransformElement: IDOMElement | undefined;
   interactionStateMachine: InteractionStateMachine<T> | undefined;
-  leftTop: IElementNode<T> | undefined;
-  rightTop: IElementNode<T> | undefined;
-  leftBottom: IElementNode<T> | undefined;
-  rightBottom: IElementNode<T> | undefined;
+  leftTop: IDOMElement | undefined;
+  rightTop: IDOMElement | undefined;
+  leftBottom: IDOMElement | undefined;
+  rightBottom: IDOMElement | undefined;
 
-  moveNodesPanel: IElementNode<T> | undefined;
+  moveNodesPanel: IDOMElement | undefined;
 
-  upstreamNodesMover: IElementNode<T> | undefined;
-  downstreamNodesMover: IElementNode<T> | undefined;
-  inividualNodeMover: IElementNode<T> | undefined;
+  upstreamNodesMover: IDOMElement | undefined;
+  downstreamNodesMover: IDOMElement | undefined;
+  inividualNodeMover: IDOMElement | undefined;
 
   previouslyAttachedNode: IRectNodeComponent<T> | undefined;
   attachedNode: IRectNodeComponent<T> | undefined;

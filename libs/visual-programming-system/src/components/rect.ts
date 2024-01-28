@@ -15,7 +15,7 @@ import {
 } from '../interfaces/element';
 import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
-import { createASTNodeElement, createElement } from '../utils';
+import { createASTNodeElement, createNodeElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
 import {
   calculateConnectorX,
@@ -726,7 +726,7 @@ export class Rect<T> {
       height: this.points.height,
     };
 
-    const rectContainerElement = createElement(
+    const rectContainerElement = createNodeElement(
       'div',
       {
         class: `${

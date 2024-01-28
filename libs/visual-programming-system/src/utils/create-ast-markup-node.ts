@@ -8,7 +8,7 @@ import {
   ElementNodeMap,
   IElementNode,
 } from '../interfaces/element';
-import { createElement } from './create-element';
+import { createNodeElement } from './create-element';
 
 /**
  * This function, `createASTNodeElement`, creates an AST node element from a given AST node,
@@ -80,7 +80,7 @@ export const createASTNodeElement = <T>(
         ${astNode.body?.[0].value ?? ''}
     }`;
   }
-  element = createElement(
+  element = createNodeElement(
     astNode.tagName || 'div',
     elementProperties,
     parentElement,

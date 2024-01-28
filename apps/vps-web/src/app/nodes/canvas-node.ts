@@ -7,6 +7,8 @@ import {
   createCanvasApp,
   IRectNodeComponent,
   ElementNodeMap,
+  createNodeElement,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
@@ -24,7 +26,7 @@ export const getCanvasNode =
   (animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+    let htmlNode: IDOMElement | undefined = undefined;
     let rect:
       | ReturnType<CanvasAppInstance<NodeInfo>['createRect']>
       | undefined = undefined;
@@ -90,9 +92,9 @@ export const getCanvasNode =
           },
           undefined,
           ''
-        ) as unknown as INodeComponent<NodeInfo>;
+        );
 
-        const wrapper = createElement(
+        const wrapper = createNodeElement(
           'div',
           {
             class: `bg-slate-400 rounded opacity-90 relative z-[1151]`,

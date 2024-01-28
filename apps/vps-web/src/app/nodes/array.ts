@@ -2,8 +2,8 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
-  INodeComponent,
+  createNodeElement,
+  IDOMElement,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -24,12 +24,12 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let canvasAppInstance: CanvasAppInstance<NodeInfo>;
-  let tagNode: IElementNode<NodeInfo> | undefined = undefined;
+  let tagNode: IDOMElement | undefined = undefined;
   let wrapper: IRectNodeComponent<NodeInfo>;
   let variableName = '';
   let inputValues: any[] = [];
   let node: IRectNodeComponent<NodeInfo>;
-  let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+  let htmlNode: IDOMElement | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
@@ -143,7 +143,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           },
           undefined,
           value.toString()
-        ) as unknown as INodeComponent<NodeInfo>;
+        );
 
         if (htmlNode) {
           htmlNode.domElement.appendChild(
@@ -403,9 +403,9 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         },
         undefined,
         'Array'
-      ) as unknown as INodeComponent<NodeInfo>;
+      );
 
-      wrapper = createElement(
+      wrapper = createNodeElement(
         'div',
         {
           class: `bg-slate-500 p-4 rounded max-w-[240px] min-h-[110px]`,
@@ -479,7 +479,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         },
         rect.nodeComponent.domElement as unknown as HTMLElement,
         variableName
-      ) as unknown as INodeComponent<NodeInfo>;
+      );
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {

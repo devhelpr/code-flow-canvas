@@ -1,6 +1,6 @@
 import {
   CanvasAppInstance,
-  createElement,
+  createNodeElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -137,7 +137,7 @@ export const getParallel =
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         canvasAppInstance = canvasApp;
-        const jsxComponentWrapper = createElement(
+        const jsxComponentWrapper = createNodeElement(
           'div',
           {
             class: `inner-node bg-slate-500 p-4 pl-8 rounded flex flex-row justify-center items-center`,

@@ -1,7 +1,8 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
+  createNodeElement,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -21,8 +22,8 @@ export const getFunction =
     let node: IRectNodeComponent<NodeInfo>;
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let componentWrapper: INodeComponent<NodeInfo> | undefined;
-    let divElement: IElementNode<NodeInfo>;
-    let parametersContainer: IElementNode<NodeInfo>;
+    let divElement: IDOMElement;
+    let parametersContainer: IDOMElement;
     const initializeCompute = () => {
       return;
     };
@@ -177,7 +178,7 @@ export const getFunction =
           },
         ];
 
-        componentWrapper = createElement(
+        componentWrapper = createNodeElement(
           'div',
           {
             class: `inner-node ${defaultFunctionColor} p-4 rounded flex flex-row justify-center items-center transition-colors duration-200`,

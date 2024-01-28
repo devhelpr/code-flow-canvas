@@ -25,7 +25,7 @@ import {
 } from '../interfaces';
 import { setSelectNode } from '../reactivity';
 import { NodeType } from '../types';
-import { createElement, createElementMap, createNSElement } from '../utils';
+import { createElementMap, createNSElement, createNodeElement } from '../utils';
 import {
   SetNodeStatedHandler,
   GetNodeStatedHandler,
@@ -90,7 +90,7 @@ export const createCanvasApp = <T>(
   let onDragCanvasEvent: ((x: number, y: number) => void) | undefined =
     undefined;
 
-  const canvas = createElement<T>(
+  const canvas = createNodeElement<T>(
     'div',
     {
       id: 'canvas',
@@ -982,7 +982,9 @@ export const createCanvasApp = <T>(
       noCanvasUpdated = false
     ) => {
       if (element && child) {
-        element.elements.delete(child.id);
+        if (element.elements) {
+          element.elements.delete(child.id);
+        }
         element.domElement.removeChild(child.domElement);
 
         if (onCanvasUpdated && !noCanvasUpdated) {

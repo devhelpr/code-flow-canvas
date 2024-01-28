@@ -3,6 +3,11 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
 
+export interface IDOMElement {
+  id: string;
+  domElement: DOMElementNode;
+}
+
 export interface IElementNode<T> {
   id: string;
   domElement: DOMElementNode;

@@ -1,6 +1,8 @@
 import {
   CanvasAppInstance,
   createElement,
+  createNodeElement,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -58,7 +60,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let errorNode: INodeComponent<NodeInfo>;
+  let errorNode: IDOMElement | undefined = undefined;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let currentValue = 0;
   let compiledExpressionInfo:
@@ -263,7 +265,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
-      const componentWrapper = createElement(
+      const componentWrapper = createNodeElement(
         'div',
         {
           class: `inner-node bg-slate-500 p-4 rounded`,
@@ -323,7 +325,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         },
         rect.nodeComponent.domElement,
         'error'
-      ) as unknown as INodeComponent<NodeInfo>;
+      );
 
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
@@ -372,7 +374,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       canvasAppInstance = canvasApp;
       compiledExpressionInfo = undefined;
       const initialValue = initalValues?.['expression'] ?? '';
-      const decoratorNode = createElement(
+      const decoratorNode = createNodeElement(
         'div',
         {
           class: `decorator-node text-white p-2 inline-block rounded text-center border-2 border-slate-200 border-solid`,

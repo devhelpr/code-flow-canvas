@@ -19,6 +19,7 @@ import {
   SelectedNodeInfo,
   FlowNode,
   IConnectionNodeComponent,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -92,15 +93,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
-  formElement: INodeComponent<NodeInfo> | undefined = undefined;
-  selectedNodeLabel: IElementNode<NodeInfo> | undefined = undefined;
+  formElement: IDOMElement | undefined = undefined;
+  selectedNodeLabel: IDOMElement | undefined = undefined;
 
-  testCircle: IElementNode<NodeInfo> | undefined = undefined;
-  message: IElementNode<NodeInfo> | undefined = undefined;
-  messageText: IElementNode<NodeInfo> | undefined = undefined;
+  testCircle: IDOMElement | undefined = undefined;
+  message: IDOMElement | undefined = undefined;
+  messageText: IDOMElement | undefined = undefined;
   focusedNode: IRectNodeComponent<NodeInfo> | undefined = undefined;
-  runButton: IElementNode<unknown> | undefined = undefined;
-  selectNodeType: IElementNode<unknown> | undefined = undefined;
+  runButton: IDOMElement | undefined = undefined;
+  selectNodeType: IDOMElement | undefined = undefined;
 
   constructor(appRootSelector: string) {
     super(appRootSelector);
@@ -119,9 +120,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
       animatedNodes?: {
-        node1?: IElementNode<unknown>;
-        node2?: IElementNode<unknown>;
-        node3?: IElementNode<unknown>;
+        node1?: IDOMElement;
+        node2?: IDOMElement;
+        node3?: IDOMElement;
       },
       offsetX?: number,
       offsetY?: number,
@@ -159,9 +160,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
       animatedNodes?: {
-        node1?: IElementNode<unknown>;
-        node2?: IElementNode<unknown>;
-        node3?: IElementNode<unknown>;
+        node1?: IDOMElement;
+        node2?: IDOMElement;
+        node3?: IDOMElement;
       },
       offsetX?: number,
       offsetY?: number,
@@ -610,7 +611,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           setRunCounterUpdateElement(
             runCounterElement.domElement as HTMLElement
           );
-          removeFormElement();
+          this.removeFormElement();
           resetRunCounter();
           if (this.canvasApp?.elements) {
             this.canvasApp?.elements.forEach((node: IElementNode<NodeInfo>) => {
@@ -909,30 +910,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     let currentSelectedNode: SelectedNodeInfo | undefined = undefined;
 
-    const removeFormElement = () => {
-      if (this.formElement) {
-        this.canvasApp?.deleteElementFromNode(
-          this.editPopupContainer as INodeComponent<NodeInfo>,
-          this.formElement,
-          true
-        );
-        this.formElement = undefined;
-      }
-      (
-        this.editPopupContainer?.domElement as unknown as HTMLElement
-      ).classList.add('hidden');
-      (
-        this.editPopupLineContainer?.domElement as unknown as HTMLElement
-      ).classList.add('hidden');
+    // const removeFormElement = () => {
+    //   if (this.formElement) {
+    //     this.canvasApp?.deleteElementFromNode(
+    //       this.editPopupContainer as INodeComponent<NodeInfo>,
+    //       this.formElement,
+    //       true
+    //     );
+    //     this.formElement = undefined;
+    //   }
+    //   (
+    //     this.editPopupContainer?.domElement as unknown as HTMLElement
+    //   ).classList.add('hidden');
+    //   (
+    //     this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    //   ).classList.add('hidden');
 
-      (
-        this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
-      ).classList.add('hidden');
+    //   (
+    //     this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
+    //   ).classList.add('hidden');
 
-      (
-        this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
-      ).classList.remove('editing-node-indicator');
-    };
+    //   (
+    //     this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
+    //   ).classList.remove('editing-node-indicator');
+    // };
 
     createEffect(() => {
       const selectedNodeInfo = getSelectedNode();
@@ -963,7 +964,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         }
       }
 
-      removeFormElement();
+      this.removeFormElement();
       if (selectedNodeInfo && this.selectedNodeLabel) {
         this.selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
         const node = (
@@ -1056,7 +1057,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           this.editPopupContainer?.domElement,
           undefined
         );
-        this.formElement = formElementInstance as INodeComponent<NodeInfo>;
+        this.formElement = formElementInstance;
         const currentFocusNode = this.focusedNode;
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
@@ -1096,7 +1097,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               }
             }
 
-            removeFormElement();
+            this.removeFormElement();
             currentSelectedNode = undefined;
 
             if (this.selectedNodeLabel) {

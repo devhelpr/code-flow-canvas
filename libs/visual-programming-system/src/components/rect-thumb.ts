@@ -4,6 +4,7 @@ import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
   IConnectionNodeComponent,
+  IDOMElement,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -24,7 +25,7 @@ import { Rect } from './rect';
 
 export class RectThumb<T> extends Rect<T> {
   createStraightLineConnection = false;
-  toolTipUseShiftToDragConnection: INodeComponent<T> | undefined = undefined;
+  toolTipUseShiftToDragConnection: IDOMElement | undefined = undefined;
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -89,7 +90,7 @@ export class RectThumb<T> extends Rect<T> {
       },
       this.nodeComponent.domElement,
       'Hold shift to drag connections'
-    ) as unknown as INodeComponent<T>;
+    );
 
     this.nodeComponent.domElement?.addEventListener(
       'pointerup',

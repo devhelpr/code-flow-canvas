@@ -2,6 +2,7 @@ import {
   CanvasAppInstance,
   createASTNodeElement,
   createElement,
+  createNodeElement,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -235,7 +236,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
 
-      divNode = createElement('div', {}, componentWrapper.domElement);
+      divNode = createNodeElement('div', {}, componentWrapper.domElement);
       rect = canvasApp.createRect(
         x,
         y,

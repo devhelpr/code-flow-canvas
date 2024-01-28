@@ -1,6 +1,6 @@
 import {
   CanvasAppInstance,
-  createElement,
+  createNodeElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -225,7 +225,7 @@ export const getMap =
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         canvasAppInstance = canvasApp;
-        foreachComponent = createElement(
+        foreachComponent = createNodeElement(
           'div',
           {
             class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center text-center

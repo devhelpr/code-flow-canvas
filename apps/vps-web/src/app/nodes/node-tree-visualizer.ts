@@ -1,8 +1,9 @@
 import {
   CanvasAppInstance,
   createElement,
+  createNodeElement,
   getCamera,
-  IElementNode,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
@@ -19,13 +20,13 @@ export const getNodeTreeVisualizer = (
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let node: IRectNodeComponent<NodeInfo>;
-  let componentWrapper: IRectNodeComponent<NodeInfo>;
-  let htmlNode: IElementNode<NodeInfo> | undefined = undefined;
-  let tagNode: IElementNode<NodeInfo> | undefined = undefined;
+  let componentWrapper: INodeComponent<NodeInfo> | undefined = undefined;
+  let htmlNode: IDOMElement | undefined = undefined;
+  let tagNode: IDOMElement | undefined = undefined;
   let commandName = '';
   let timeout: any = undefined;
   let isInitialized = false;
-  let rootNode: IElementNode<unknown> | undefined = undefined;
+  let rootNode: IDOMElement | undefined = undefined;
   let initialDistance = 0;
   const execute = (_command: string, payload: any) => {
     if (isInitialized) {
@@ -214,7 +215,7 @@ export const getNodeTreeVisualizer = (
       timeout = undefined;
     }
 
-    (componentWrapper.domElement as unknown as HTMLElement).classList.remove(
+    (componentWrapper?.domElement as unknown as HTMLElement).classList.remove(
       'border-green-200'
     );
 
@@ -291,16 +292,16 @@ export const getNodeTreeVisualizer = (
         },
         undefined,
         '-'
-      ) as unknown as INodeComponent<NodeInfo>;
+      );
 
-      componentWrapper = createElement(
+      componentWrapper = createNodeElement(
         'div',
         {
           class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node bg-slate-600 text-white p-4 rounded text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
-      ) as unknown as IRectNodeComponent<NodeInfo>;
+      ) as unknown as INodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(
         x,
@@ -337,7 +338,7 @@ export const getNodeTreeVisualizer = (
         },
         rect.nodeComponent.domElement as unknown as HTMLElement,
         commandName
-      ) as unknown as INodeComponent<NodeInfo>;
+      );
 
       node = rect.nodeComponent;
 

@@ -2,7 +2,7 @@ import {
   CanvasAppInstance,
   createElement,
   IConnectionNodeComponent,
-  IElementNode,
+  IDOMElement,
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
@@ -36,9 +36,9 @@ export type AnimatePathFunction = (
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   },
   offsetX?: number,
   offsetY?: number,
@@ -56,9 +56,9 @@ export type AnimatePathFromThumbFunction = (
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   },
   offsetX?: number,
   offsetY?: number,
@@ -76,9 +76,9 @@ export type FollowPathFunction = (
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   },
   offsetX?: number,
   offsetY?: number,
@@ -116,9 +116,9 @@ interface NodeAnimatonInfo {
   end: IRectNodeComponent<NodeInfo>;
   animationLoop: number;
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   };
   onNextNode?: NodeAnimationNextNode;
   onStopped?: (input: string | any[], scopeId?: string) => void;
@@ -131,9 +131,9 @@ interface NodeAnimatonInfo {
   offsetX?: number;
   offsetY?: number;
 
-  testCircle: IElementNode<unknown>;
-  message: IElementNode<unknown>;
-  messageText: IElementNode<unknown>;
+  testCircle: IDOMElement;
+  message: IDOMElement;
+  messageText: IDOMElement;
 
   color: string;
 }
@@ -447,9 +447,9 @@ export const animatePathForNodeConnectionPairs = (
   input?: string | any[],
   _followPathByName?: string,
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   },
   offsetX?: number,
   offsetY?: number,
@@ -786,9 +786,9 @@ export const animatePath: FollowPathFunction = (
   input?: string | any[],
   followPathByName?: string,
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   },
   offsetX?: number,
   offsetY?: number,
@@ -833,9 +833,9 @@ export const animatePathFromThumb = (
   input?: string | any[],
   followPathByName?: string,
   animatedNodes?: {
-    node1?: IElementNode<unknown>;
-    node2?: IElementNode<unknown>;
-    node3?: IElementNode<unknown>;
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
   },
   offsetX?: number,
   offsetY?: number,

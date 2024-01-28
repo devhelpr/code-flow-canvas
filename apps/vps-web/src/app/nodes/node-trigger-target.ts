@@ -1,7 +1,8 @@
 import {
   CanvasAppInstance,
   createElement,
-  IElementNode,
+  createNodeElement,
+  IDOMElement,
   INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -16,7 +17,7 @@ export const getNodeTriggerTarget =
   (_animatePath: AnimatePathFunction) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let divElement: IElementNode<NodeInfo>;
+    let divElement: IDOMElement;
     const initializeCompute = () => {
       return;
     };
@@ -76,7 +77,7 @@ export const getNodeTriggerTarget =
           },
         ];
 
-        const componentWrapper = createElement(
+        const componentWrapper = createNodeElement(
           'div',
           {
             class: `inner-node bg-sky-900 p-4 rounded flex flex-row justify-center items-center`,
