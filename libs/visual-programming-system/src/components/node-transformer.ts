@@ -346,22 +346,13 @@ export class NodeTransformer<T> {
   onPointerMoveHelper = <T>(
     x: number,
     y: number,
-    element: INodeComponent<T>,
-    canvasNode: IElementNode<T>,
+    _element: INodeComponent<T>,
+    _canvasNode: IElementNode<T>,
     interactionInfo: IPointerDownResult,
-    interactionStateMachine: InteractionStateMachine<T>
+    _interactionStateMachine: InteractionStateMachine<T>
   ) => {
     const offsetX = x - interactionInfo.xOffsetWithinElementOnFirstClick;
     const offsetY = y - interactionInfo.yOffsetWithinElementOnFirstClick;
-    console.log(
-      'onPointerMoveHelper',
-      offsetX,
-      offsetY,
-      element,
-      canvasNode,
-      interactionInfo,
-      interactionStateMachine
-    );
 
     // TODO : check if bounds are ok
     if (this.attachedNode) {

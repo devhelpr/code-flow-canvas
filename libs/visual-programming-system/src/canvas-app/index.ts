@@ -30,6 +30,7 @@ import {
   SetNodeStatedHandler,
   GetNodeStatedHandler,
 } from '../interfaces/node-state-handlers';
+import { NodeSelector } from '../components/node-selector';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -106,6 +107,11 @@ export const createCanvasApp = <T>(
     interactionStateMachine
   );
 
+  const nodeSelector = new NodeSelector(
+    canvas.domElement,
+    interactionStateMachine
+  );
+
   const setCameraPosition = (x: number, y: number) => {
     if (canvas.domElement) {
       const diffX = x - startClientDragX;
@@ -116,6 +122,7 @@ export const createCanvasApp = <T>(
 
       setCamera(xCamera, yCamera, scaleCamera);
       nodeTransformer.updateCamera();
+      nodeSelector.updateCamera();
       if (onCameraChanged) {
         onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
       }
@@ -166,6 +173,11 @@ export const createCanvasApp = <T>(
         wasMoved = false;
         return;
       }
+    }
+
+    if (event.shiftKey) {
+      nodeSelector.onPointerDown(event);
+      return;
     }
 
     isClicking = true;
@@ -240,6 +252,7 @@ export const createCanvasApp = <T>(
         );
 
         if (interactionState) {
+          //console.log('pointermove canvas', interactionState);
           if (interactionState.target?.id === canvas.id) {
             setCameraPosition(event.clientX, event.clientY);
             if (onDragCanvasEvent) {
@@ -555,6 +568,7 @@ export const createCanvasApp = <T>(
           };
           onClickCanvas(mousePointTo.x, mousePointTo.y);
           nodeTransformer.detachNode();
+          nodeSelector.removeSelector();
 
           return false;
         }
@@ -631,6 +645,7 @@ export const createCanvasApp = <T>(
 
       setCamera(xCamera, yCamera, scaleCamera);
       nodeTransformer.updateCamera();
+      nodeSelector.updateCamera();
 
       if (onCameraChanged) {
         onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
