@@ -193,7 +193,11 @@ export class AppElement<T> {
       if (event.key === 'Tab') {
         tabKeyWasUsed = true;
         console.log('TAB KEY WAS USED');
-        if (!document.activeElement) {
+        if (
+          !document.activeElement ||
+          document.activeElement === document.body
+        ) {
+          console.log('TAB KEY WAS USED but no activeElement');
           const element = document.querySelector(
             "[tabindex='1']"
           ) as HTMLElement;
@@ -216,6 +220,11 @@ export class AppElement<T> {
               }
             }
           }
+        } else {
+          console.log(
+            'TAB KEY WAS USED and activeElement found',
+            document.activeElement
+          );
         }
       } else {
         // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
