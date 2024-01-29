@@ -193,6 +193,30 @@ export class AppElement<T> {
       if (event.key === 'Tab') {
         tabKeyWasUsed = true;
         console.log('TAB KEY WAS USED');
+        if (!document.activeElement) {
+          const element = document.querySelector(
+            "[tabindex='1']"
+          ) as HTMLElement;
+          if (element) {
+            element.focus();
+
+            const id = element.getAttribute('data-node-id');
+            if (id) {
+              const node = this.canvasApp?.elements.get(
+                id
+              ) as IRectNodeComponent<T>;
+              if (node) {
+                this.focusedNode = node;
+              }
+              if (node && node.x && node.y && this.canvasApp) {
+                console.log('focusin node found', node);
+                this.setCameraTargetOnNode(node);
+                this.canvasApp.selectNode(node);
+                this.removeFormElement();
+              }
+            }
+          }
+        }
       } else {
         // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
         if (event.key !== 'Shift') {
@@ -513,16 +537,20 @@ export class AppElement<T> {
 
   setTabOrderForNode = (
     node: IRectNodeComponent<T>,
-    incomingTabIndex: number
+    incomingTabIndex: number,
+    wasVisited: Map<string, boolean>
   ) => {
     let tabIndex = incomingTabIndex;
+    if (wasVisited.has(node.id)) {
+      return tabIndex;
+    }
     if (node && node.domElement) {
       (node.domElement as HTMLElement).setAttribute(
         'tabindex',
         tabIndex.toString()
       );
       tabIndex++;
-
+      wasVisited.set(node.id, true);
       const inputs = (node.domElement as HTMLElement).querySelectorAll('input');
       inputs.forEach((element, _index) => {
         (element as HTMLElement).setAttribute('tabindex', tabIndex.toString());
@@ -568,7 +596,14 @@ export class AppElement<T> {
           )
           .forEach((connection: IConnectionNodeComponent<T>) => {
             if (connection.startNode?.id === node.id && connection.endNode) {
-              tabIndex = this.setTabOrderForNode(connection.endNode, tabIndex);
+              if (wasVisited.has(connection.endNode.id)) {
+                return;
+              }
+              tabIndex = this.setTabOrderForNode(
+                connection.endNode,
+                tabIndex,
+                wasVisited
+              );
             }
           });
       }
@@ -670,8 +705,9 @@ export class AppElement<T> {
     });
     console.log('tab nodes', nodes);
     let tabIndex = 1;
+    const wasVisited = new Map<string, boolean>();
     nodes.forEach((node: IRectNodeComponent<T>, _index: number) => {
-      tabIndex = this.setTabOrderForNode(node, tabIndex);
+      tabIndex = this.setTabOrderForNode(node, tabIndex, wasVisited);
 
       tabIndex++;
     });
