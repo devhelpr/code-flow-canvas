@@ -20,17 +20,17 @@ export enum InteractionEvent {
   PointerClick = 5,
 }
 
-export interface InteractionTarget<_T> {
+export interface InteractionTarget<T> {
   id: string;
   type: string;
-  pointerDown?: <T>(
+  pointerDown?: (
     x: number,
     y: number,
     element: INodeComponent<T>,
     canvasNode: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>
   ) => IPointerDownResult | false;
-  pointerMove?: <T>(
+  pointerMove?: (
     x: number,
     y: number,
     element: INodeComponent<T>,
@@ -38,7 +38,7 @@ export interface InteractionTarget<_T> {
     interactionInfo: IPointerDownResult,
     interactionStateMachine: InteractionStateMachine<T>
   ) => void;
-  pointerUp?: <T>(
+  pointerUp?: (
     x: number,
     y: number,
     element: INodeComponent<T>,

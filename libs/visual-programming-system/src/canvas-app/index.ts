@@ -107,9 +107,10 @@ export const createCanvasApp = <T>(
     interactionStateMachine
   );
 
-  const nodeSelector = new NodeSelector(
+  const nodeSelector = new NodeSelector<T>(
     canvas.domElement,
-    interactionStateMachine
+    interactionStateMachine,
+    elements
   );
 
   const setCameraPosition = (x: number, y: number) => {
@@ -153,7 +154,7 @@ export const createCanvasApp = <T>(
   );
 
   rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
-    console.log('pointerdown canvas', event.target, canvas.domElement);
+    //console.log('pointerdown canvas', event.target, canvas.domElement);
     if (disableInteraction) {
       return;
     }
@@ -225,7 +226,7 @@ export const createCanvasApp = <T>(
         startClientDragY = event.clientY;
         startDragX = xCamera;
         startDragY = yCamera;
-        console.log('dragging canvas', canvas.id, event.target);
+        //console.log('dragging canvas', canvas.id, event.target);
         interactionStateMachine.interactionEventState(
           InteractionEvent.PointerDown,
           {
@@ -265,7 +266,7 @@ export const createCanvasApp = <T>(
             );
 
             currentState.target.pointerMove &&
-              currentState.target.pointerMove<T>(
+              currentState.target.pointerMove(
                 x,
                 y,
                 currentState.element,
@@ -317,7 +318,7 @@ export const createCanvasApp = <T>(
             );
 
             currentState.target.pointerUp &&
-              currentState.target.pointerUp<T>(
+              currentState.target.pointerUp(
                 x,
                 y,
                 currentState.element,
@@ -413,7 +414,7 @@ export const createCanvasApp = <T>(
             );
 
             currentState.target.pointerUp &&
-              currentState.target.pointerUp<T>(
+              currentState.target.pointerUp(
                 x,
                 y,
                 currentState.element,

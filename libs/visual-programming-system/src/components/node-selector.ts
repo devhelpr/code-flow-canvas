@@ -5,11 +5,14 @@ import {
 } from '../interaction-state-machine';
 import {
   DOMElementNode,
+  ElementNodeMap,
   IDOMElement,
   IElementNode,
   INodeComponent,
   IPointerDownResult,
+  IRectNodeComponent,
 } from '../interfaces';
+import { NodeType } from '../types';
 import { createElement } from '../utils';
 
 const pointerCursor = 'pointer-events-auto';
@@ -30,11 +33,17 @@ export class NodeSelector<T> {
 
   resizeMode = 'right-bottom';
 
+  selectedNodes: IRectNodeComponent<T>[] = [];
+  elements: ElementNodeMap<T> = new Map();
+  orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
+
   constructor(
     rootElement: DOMElementNode,
-    interactionStateMachine: InteractionStateMachine<T>
+    interactionStateMachine: InteractionStateMachine<T>,
+    elements: ElementNodeMap<T>
   ) {
     this.interactionStateMachine = interactionStateMachine;
+    this.elements = elements;
     this.nodeSelectorElement = createElement(
       'div',
       {
@@ -126,6 +135,7 @@ export class NodeSelector<T> {
         event.clientX,
         event.clientY
       );
+      this.selectedNodes = [];
 
       this.resizeMode = 'right-bottom';
       this.orgX = x;
@@ -183,7 +193,6 @@ export class NodeSelector<T> {
   };
 
   onPointerDownSelector = (event: PointerEvent) => {
-    console.log('onPointerDownSelector');
     if (this.interactionStateMachine && this.nodeSelectorElement) {
       const { x, y } = transformCameraSpaceToWorldSpace(
         event.clientX,
@@ -192,6 +201,14 @@ export class NodeSelector<T> {
       this.selectionWasPlacedOrMoved = true;
 
       this.resizeMode = 'move';
+
+      this.orgPositionMoveNodes = {};
+      this.selectedNodes.forEach((node) => {
+        this.orgPositionMoveNodes[node.id] = {
+          x: node.x,
+          y: node.y,
+        };
+      });
 
       this.interactionStateMachine.interactionEventState(
         InteractionEvent.PointerDown,
@@ -211,7 +228,7 @@ export class NodeSelector<T> {
     }
   };
 
-  onPointerMoveHelper = <T>(
+  onPointerMoveHelper = (
     x: number,
     y: number,
     _element: INodeComponent<T>,
@@ -219,24 +236,22 @@ export class NodeSelector<T> {
     interactionInfo: IPointerDownResult,
     _interactionStateMachine: InteractionStateMachine<T>
   ) => {
-    // console.log(
-    //   'onPointerMoveHelper',
-    //   this.orgX,
-    //   this.orgY,
-    //   x,
-    //   y,
-    //   interactionInfo.xOffsetWithinElementOnFirstClick,
-    //   interactionInfo.yOffsetWithinElementOnFirstClick
-    // );
-
     if (this.nodeSelectorElement) {
       if (this.resizeMode == 'move') {
         const domElement = this.nodeSelectorElement.domElement as HTMLElement;
-        domElement.style.transform = `translate(${
-          this.orgX + x - interactionInfo.xOffsetWithinElementOnFirstClick
-        }px, ${
-          this.orgY + y - interactionInfo.yOffsetWithinElementOnFirstClick
+
+        const offsetX = x - interactionInfo.xOffsetWithinElementOnFirstClick;
+        const offsetY = y - interactionInfo.yOffsetWithinElementOnFirstClick;
+
+        domElement.style.transform = `translate(${this.orgX + offsetX}px, ${
+          this.orgY + offsetY
         }px)`;
+
+        this.selectedNodes.forEach((node) => {
+          node.x = this.orgPositionMoveNodes[node.id].x + offsetX;
+          node.y = this.orgPositionMoveNodes[node.id].y + offsetY;
+          node.update?.(node, node.x, node.y, node);
+        });
       } else if (this.resizeMode == 'right-bottom') {
         const newWidth = x - interactionInfo.xOffsetWithinElementOnFirstClick;
         const newHeight = y - interactionInfo.yOffsetWithinElementOnFirstClick;
@@ -251,7 +266,7 @@ export class NodeSelector<T> {
   };
 
   selectionWasPlacedOrMoved = false;
-  onPointerUpHelper = <T>(
+  onPointerUpHelper = (
     x: number,
     y: number,
     _element: INodeComponent<T>,
@@ -263,18 +278,40 @@ export class NodeSelector<T> {
     this.selectionWasPlacedOrMoved = true;
 
     if (this.resizeMode == 'move') {
-      this.orgX =
-        this.orgX + x - interactionInfo.xOffsetWithinElementOnFirstClick;
-      this.orgY =
-        this.orgY + y - interactionInfo.yOffsetWithinElementOnFirstClick;
+      const offsetX = x - interactionInfo.xOffsetWithinElementOnFirstClick;
+      const offsetY = y - interactionInfo.yOffsetWithinElementOnFirstClick;
+
+      this.orgX = this.orgX + offsetX;
+      this.orgY = this.orgY + offsetY;
+
+      this.selectedNodes.forEach((node) => {
+        node.x = this.orgPositionMoveNodes[node.id].x + offsetX;
+        node.y = this.orgPositionMoveNodes[node.id].y + offsetY;
+        node.update?.(node, node.x, node.y, node);
+      });
+
+      this.selectedNodes[0]?.updateEnd?.();
+    } else {
+      this.elements.forEach((element) => {
+        const nodeComponent = element as unknown as IRectNodeComponent<T>;
+        if (nodeComponent.nodeType === NodeType.Shape) {
+          if (
+            nodeComponent.x > this.orgX &&
+            nodeComponent.x + (nodeComponent.width ?? 0) <
+              this.orgX + this.orgWidth &&
+            nodeComponent.y > this.orgY &&
+            nodeComponent.y + (nodeComponent.height ?? 0) <
+              this.orgY + this.orgHeight
+          ) {
+            this.selectedNodes.push(nodeComponent);
+          }
+        }
+      });
     }
   };
 
-  onPointerMove = (event: PointerEvent) => {
-    console.log(
-      'pointerMove nodetransformer',
-      (event.target as HTMLElement).getAttribute('data-ResizeMode')
-    );
+  onPointerMove = (_event: PointerEvent) => {
+    //
   };
 
   onPointerUp = (_event: PointerEvent) => {
@@ -325,6 +362,7 @@ export class NodeSelector<T> {
   removeSelector = () => {
     if (!this.selectionWasPlacedOrMoved) {
       this.visibilityResizeControls(false);
+      this.selectedNodes = [];
     }
     this.selectionWasPlacedOrMoved = false;
   };
