@@ -22,6 +22,7 @@ import { getScaleNode } from '../nodes-gl/scale';
 import { getMultiplyColorNode } from '../nodes-gl/multiplyColor';
 import { getAbsoluteNode } from '../nodes-gl/absolute';
 import { getSubtractNode } from '../nodes-gl/subtraction';
+import { getCreateVector2Node } from '../nodes-gl/create-vector2';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 
@@ -59,6 +60,7 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('smooth-step-float-node', getSmoothStepFloatNode);
   registerGLNodeFactory('clamp-float-node', getClampFloatNode);
   registerGLNodeFactory('modulo-float-node', getModuloFloatNode);
+  registerGLNodeFactory('create-vector2', getCreateVector2Node);
 };
 
 export const getGLNodeTaskFactory = (name: string) => {

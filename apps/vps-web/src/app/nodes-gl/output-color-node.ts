@@ -49,7 +49,7 @@ const thumbs = [
     label: ' ',
     thumbConstraint: 'vec3',
     name: 'vector',
-    prefixLabel: 'vector',
+    prefixLabel: 'vector3',
   },
 ];
 
