@@ -1,5 +1,6 @@
 import {
   CanvasAppInstance,
+  Composition,
   FlowNode,
   IThumb,
   NodeType,
@@ -29,6 +30,7 @@ export const getCreateCompositionNode =
     let canvasApp: CanvasAppInstance<GLNodeInfo> | undefined = undefined;
     let nodes: FlowNode<GLNodeInfo>[] = [];
     let compositionThumbs: IThumb[] = [];
+    let composition: Composition<GLNodeInfo> | undefined = undefined;
     const getNodeOutput = (
       node: FlowNode<GLNodeInfo>,
       thumbName: string,
@@ -67,7 +69,7 @@ export const getCreateCompositionNode =
 
             if (connection.startNodeId) {
               startNode = nodes.find(
-                (node) => node.id === connection.startNodeId
+                (nodeEval) => nodeEval.id === connection.startNodeId
               );
             }
             if (startNode) {
@@ -84,7 +86,7 @@ export const getCreateCompositionNode =
       const factory = getGLNodeFactory(node?.nodeInfo?.type ?? '');
       if (factory) {
         const instance = factory(() => {
-          // do nothing
+          return false;
         });
 
         const helper = instance.getCompute?.();
@@ -96,12 +98,16 @@ export const getCreateCompositionNode =
           thumbName,
           thumbIdentifierWithinNode
         );
+
         return result?.result ?? '';
       }
+
       return '';
     };
 
     const initializeCompute = () => {
+      console.log('initializeCompute composition');
+      composition = undefined;
       return;
     };
     const compute = (
@@ -111,36 +117,52 @@ export const getCreateCompositionNode =
       _thumbName?: string,
       thumbIdentifierWithinNode?: string
     ) => {
-      console.log('compute', input, thumbIdentifierWithinNode, payload);
       let result: undefined | string = undefined;
       if (thumbIdentifierWithinNode && canvasApp) {
-        const composition = canvasApp.compositons.getComposition(compositionId);
-        if (composition) {
-          nodes = composition.nodes;
-          compositionThumbs = composition.thumbs;
-          composition.nodes.forEach((node) => {
-            if (node.nodeType === NodeType.Shape) {
-              composition.nodes.forEach((connection) => {
-                if (connection.nodeType === NodeType.Connection) {
-                  if (connection.startNodeId === node.id) {
-                    if (!node.connections) {
-                      node.connections = [];
+        if (!composition) {
+          composition = canvasApp.compositons.getComposition(compositionId);
+          if (composition) {
+            nodes = composition.nodes;
+            compositionThumbs = composition.thumbs;
+            composition.nodes.forEach((node) => {
+              node.connections = [];
+              if (composition && node.nodeType === NodeType.Shape) {
+                composition.nodes.forEach((connection) => {
+                  if (connection.nodeType === NodeType.Connection) {
+                    if (connection.startNodeId === node.id) {
+                      if (!node.connections) {
+                        node.connections = [];
+                      }
+                      if (
+                        !node.connections.find((c) => c.id === connection.id)
+                      ) {
+                        node.connections.push(connection);
+                      }
+                    } else if (connection.endNodeId === node.id) {
+                      if (!node.connections) {
+                        node.connections = [];
+                      }
+                      if (
+                        !node.connections.find((c) => c.id === connection.id)
+                      ) {
+                        node.connections.push(connection);
+                      }
                     }
-                    node.connections.push(connection);
-                  } else if (connection.endNodeId === node.id) {
-                    if (!node.connections) {
-                      node.connections = [];
-                    }
-                    node.connections.push(connection);
                   }
-                }
-              });
-            }
-          });
+                });
+              }
+            });
+          }
+        }
+
+        if (composition) {
           thumbs.forEach((thumb) => {
-            if (thumb.thumbIdentifierWithinNode === thumbIdentifierWithinNode) {
+            if (
+              composition &&
+              thumb.thumbIdentifierWithinNode === thumbIdentifierWithinNode
+            ) {
               const startNode = composition.nodes.find(
-                (node) => node.id === thumb.nodeId
+                (nodeEval) => nodeEval.id === thumb.nodeId
               );
               if (startNode && !result) {
                 result = getNodeOutput(
@@ -149,23 +171,11 @@ export const getCreateCompositionNode =
                   thumbIdentifierWithinNode,
                   payload
                 );
-                // return {
-                //   result: result,
-                //   output: input,
-                //   followPath: undefined,
-                // };
               }
-              // return {
-              //   result: ``,
-              //   output: input,
-              //   followPath: undefined,
-              // };
             }
           });
         }
       }
-      // const x = payload?.['x'];
-      // const y = payload?.['y'];
       return {
         result: result ?? '',
         output: input,
