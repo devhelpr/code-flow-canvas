@@ -85,7 +85,13 @@ export class AppElement<T> {
       return;
     }
 
-    const canvasApp = createCanvasApp<T>(this.rootElement);
+    const canvasApp = createCanvasApp<T>(
+      this.rootElement,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
 

@@ -31,10 +31,8 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-
     name: 'vector',
     thumbConstraint: 'vec2',
-    prefixLabel: '',
   },
 ];
 

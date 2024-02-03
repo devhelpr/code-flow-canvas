@@ -16,6 +16,14 @@ export type NodeTask<T> = {
   canBeUsedAsDecorator?: boolean;
   childNodeTasks?: string[];
   thumbs?: IThumb[];
+  hideFromNodeTypeSelector?: boolean;
+  getCompute?: () => (
+    input: any,
+    loopIndex?: number,
+    payload?: any,
+    thumbName?: string,
+    thumbIdentifierWithinNode?: string
+  ) => { result: string | undefined };
   createVisualNode: (
     canvasApp: CanvasAppInstance<T>,
     x: number,
@@ -25,7 +33,9 @@ export type NodeTask<T> = {
     containerNode?: IRectNodeComponent<T>,
     width?: number,
     height?: number,
-    nestedLevel?: number
+    nestedLevel?: number,
+    dummy?: any,
+    dummy2?: any
   ) => IRectNodeComponent<T>;
   getConnectionInfo?: () => {
     inputs: IRectNodeComponent<T>[];

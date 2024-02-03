@@ -1,4 +1,5 @@
 import { LineType } from '../types';
+import { Composition } from './composition';
 
 export interface Flow<T> {
   schemaType: string;
@@ -10,6 +11,7 @@ export interface Flow<T> {
       nodes: FlowNode<T>[];
     };
   };
+  compositions: Record<string, Composition<T>>;
 }
 
 export interface FlowNode<T> {
@@ -44,6 +46,9 @@ export interface FlowNode<T> {
   endNodeId?: string;
   startThumbName?: string;
   endThumbName?: string;
+  startThumbIdentifierWithinNode?: string;
+  endThumbIdentifierWithinNode?: string;
 
   elements?: FlowNode<T>[];
+  connections?: FlowNode<T>[];
 }

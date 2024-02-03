@@ -23,8 +23,10 @@ import {
   setFollowNodeExecution,
 } from '../follow-path/followNodeExecution';
 
-export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
-  oldProps: AppNavComponentsProps | null = null;
+export class NodeSidebarMenuComponent extends Component<
+  AppNavComponentsProps<NodeInfo>
+> {
+  oldProps: AppNavComponentsProps<NodeInfo> | null = null;
 
   previousDoRenderChildren: boolean | null = null;
   doRenderChildren: boolean | null = true;
@@ -39,7 +41,10 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   followNodeExecution: HTMLButtonElement | null = null;
   showDependencyConnections = false;
 
-  constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
+  constructor(
+    parent: BaseComponent | null,
+    props: AppNavComponentsProps<NodeInfo>
+  ) {
     super(parent, props);
     this.template = createTemplate(
       `<div class="z-10 flex flex-col absolute right-0 top-1/2 bg-slate-700 -translate-y-1/2 p-[4px] rounded-l-lg">
@@ -356,7 +361,9 @@ export class NodeSidebarMenuComponent extends Component<AppNavComponentsProps> {
   }
 }
 
-export const NodeSidebarMenuComponents = (props: AppNavComponentsProps) => {
+export const NodeSidebarMenuComponents = (
+  props: AppNavComponentsProps<NodeInfo>
+) => {
   new NodeSidebarMenuComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,

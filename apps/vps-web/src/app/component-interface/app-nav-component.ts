@@ -3,6 +3,7 @@ import {
   IElementNode,
   FlowNode,
   IRectNodeComponent,
+  Composition,
 } from '@devhelpr/visual-programming-system';
 import {
   AnimatePathFunction,
@@ -11,7 +12,7 @@ import {
 import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
 import { NodeInfo } from '../types/node-info';
 
-export interface AppNavComponentsProps {
+export interface AppNavComponentsProps<T> {
   rootAppElement: HTMLElement;
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
@@ -30,7 +31,8 @@ export interface AppNavComponentsProps {
     canvasUpdated: () => void,
     containerNode?: IRectNodeComponent<NodeInfo>,
     nestedLevel?: number,
-    getNodeTaskFactory?: (name: string) => any
+    getNodeTaskFactory?: (name: string) => any,
+    compositions?: Record<string, Composition<T>>
   ) => void;
   showPopup: (node: IRectNodeComponent<NodeInfo>) => void;
 }
@@ -52,6 +54,7 @@ export interface GenericAppNavComponentsProps<T> {
     canvasUpdated: () => void,
     containerNode?: IRectNodeComponent<T>,
     nestedLevel?: number,
-    getNodeTaskFactory?: (name: string) => any
+    getNodeTaskFactory?: (name: string) => any,
+    compositions?: Record<string, Composition<T>>
   ) => void;
 }

@@ -91,7 +91,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       label,
       thumbShape,
       canvasUpdated,
-      containerNode
+      containerNode,
+      thumb?.thumbIdentifierWithinNode
     );
 
     if (!this.nodeComponent) {
@@ -103,6 +104,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     this.nodeComponent.thumbName = thumbName;
     this.nodeComponent.x = 0;
     this.nodeComponent.y = 0;
+    this.nodeComponent.thumbIdentifierWithinNode =
+      thumb?.thumbIdentifierWithinNode;
 
     (this.nodeComponent.domElement as unknown as HTMLElement | SVGElement).id =
       this.nodeComponent.id;
@@ -162,7 +165,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       createElement(
         'div',
         {
-          class: `thumb-prefix-label relative text-white pointer-events-none select-none ${
+          class: `thumb-prefix-label whitespace-nowrap relative text-white pointer-events-none select-none ${
             thumb.connectionType === ThumbConnectionType.end
               ? '-right-[30px] block'
               : 'origin-right -translate-x-[100%] text-right flex justify-end '

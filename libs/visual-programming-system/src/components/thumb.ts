@@ -62,7 +62,8 @@ export class ThumbNode<T> {
     _label?: string,
     _thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
-    containerNode?: IRectNodeComponent<T>
+    containerNode?: IRectNodeComponent<T>,
+    _thumbIdentifierWithinNode?: string
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.disableInteraction = disableInteraction ?? false;
@@ -114,7 +115,8 @@ export class ThumbNode<T> {
           return false;
         },
       },
-      this.canvasElement
+      this.canvasElement,
+      undefined
     ) as IThumbNodeComponent<T>;
   }
 

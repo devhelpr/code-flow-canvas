@@ -19,6 +19,7 @@ import {
 } from '../interaction-state-machine';
 import {
   ICommandHandler,
+  IConnectionNodeComponent,
   INodeComponent,
   IRectNodeComponent,
   IThumb,
@@ -31,6 +32,8 @@ import {
   GetNodeStatedHandler,
 } from '../interfaces/node-state-handlers';
 import { NodeSelector } from '../components/node-selector';
+import { Compositions } from '../compositions/compositions';
+import { Composition } from '../interfaces/composition';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -107,10 +110,14 @@ export const createCanvasApp = <T>(
     interactionStateMachine
   );
 
+  const compositons = new Compositions<T>();
+
   const nodeSelector = new NodeSelector<T>(
     canvas.domElement,
     interactionStateMachine,
-    elements
+    elements,
+    true,
+    compositons
   );
 
   const setCameraPosition = (x: number, y: number) => {
@@ -609,6 +616,18 @@ export const createCanvasApp = <T>(
     rootElement,
     interactionStateMachine,
     nodeTransformer,
+    compositons,
+    setOnAddcomposition: (
+      onAddComposition: (
+        composition: Composition<T>,
+        connections: {
+          thumbIdentifierWithinNode: string;
+          connection: IConnectionNodeComponent<T>;
+        }[]
+      ) => void
+    ) => {
+      nodeSelector.onAddComposition = onAddComposition;
+    },
     getOnCanvasUpdated: () => {
       return onCanvasUpdated;
     },

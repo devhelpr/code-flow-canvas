@@ -17,6 +17,9 @@ import {
   SelectedNodeInfo,
   FlowNode,
   IDOMElement,
+  Composition,
+  IConnectionNodeComponent,
+  getThumbNodeByIdentifierWithinNode,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -34,12 +37,18 @@ import {
   navBarButton,
   navBarOutlineButton,
 } from './consts/classes';
-import { serializeElementsMap } from './storage/serialize-canvas';
-import { importToCanvas } from './storage/import-to-canvas';
+import {
+  serializeCompositions,
+  serializeElementsMap,
+} from './storage/serialize-canvas';
+import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { AppElement } from './app.element';
 import {
   getGLNodeFactoryNames,
   getGLNodeTaskFactory,
+  registerComposition,
+  registerCompositionNodes,
+  removeAllCompositions,
   setupGLNodeTaskRegistry,
 } from './node-task-registry/gl-node-task-registry';
 import { noise } from './gl-functions/noise';
@@ -75,12 +84,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
     template.innerHTML = `<div>
-  <div class="min-h-dvh w-1/2 bg-slate-800 overflow-hidden touch-none" id="root" >
-  </div>
-  <canvas id="glcanvas" class="gl-canvas"></canvas></div>
-`;
+      <div class="min-h-dvh w-1/2 bg-slate-800 overflow-hidden touch-none" id="root" >
+      </div>
+      <canvas id="glcanvas" class="gl-canvas"></canvas></div>
+    `;
 
     super(appRootSelector, template);
+
     if (!this.rootElement) {
       return;
     }
@@ -89,7 +99,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     }
     this.setupWindowResize();
     this.setupGLCanvas();
-
+    this.canvasApp.setOnAddcomposition(this.onAddComposition);
     const canvasUpdated = () => {
       if (this.isStoring) {
         return;
@@ -132,9 +142,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<GLNodeInfo>,
               nestedLevel?: number,
-              getGLNodeTaskFactory?: (name: string) => any
+              getGLNodeTaskFactory?: (name: string) => any,
+              compositions: Record<string, Composition<GLNodeInfo>> = {}
             ) => {
               this.isStoring = true;
+              removeAllCompositions();
+              importCompositions<GLNodeInfo>(compositions, canvasApp);
+              registerCompositionNodes(
+                this.canvasApp?.compositons?.getAllCompositions() ?? {}
+              );
               importToCanvas(
                 nodesList,
                 canvasApp,
@@ -208,6 +224,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
             }
+            removeAllCompositions();
+            importCompositions<GLNodeInfo>(flow.compositions, this.canvasApp);
+            registerCompositionNodes(
+              this.canvasApp.compositons.getAllCompositions()
+            );
             importToCanvas(
               flow.flows.flow.nodes,
               this.canvasApp,
@@ -238,6 +259,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           return;
         }
         console.log('nodesList', nodesList);
+        const compositions = getSerializeCompositions() || {};
+        console.log('compositions', compositions);
         const flow: Flow<GLNodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
@@ -248,6 +271,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               nodes: nodesList,
             },
           },
+          compositions: compositions,
         };
         this.storageProvider.saveFlow('gl', flow);
       }
@@ -302,6 +326,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         return;
       }
       return serializeElementsMap(this.canvasApp.elements);
+    };
+
+    const getSerializeCompositions = () => {
+      if (!this.canvasApp) {
+        return;
+      }
+      return serializeCompositions<GLNodeInfo>(
+        this.canvasApp.compositons.getAllCompositions()
+      );
     };
 
     const createOption = (
@@ -623,6 +656,94 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       setPositionTargetCameraAnimation(x, y);
     });
   }
+
+  onAddComposition = (
+    composition: Composition<GLNodeInfo>,
+    connections: {
+      thumbIdentifierWithinNode: string;
+      connection: IConnectionNodeComponent<GLNodeInfo>;
+    }[]
+  ) => {
+    if (!this.canvasApp) {
+      return;
+    }
+    console.log('REGISTER COMPOSITION', composition);
+    registerComposition(composition);
+
+    const nodeType = `composition-${composition.id}`;
+
+    let minX = -1;
+    let minY = -1;
+    let maxX = -1;
+    let maxY = -1;
+    composition.nodes.forEach((node) => {
+      if (node.x < minX || minX === -1) {
+        minX = node.x;
+      }
+      if (node.y < minY || minY === -1) {
+        minY = node.y;
+      }
+      if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
+        maxX = node.x;
+      }
+      if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
+        maxY = node.y;
+      }
+    });
+    minX = minX === -1 ? minX : composition.nodes[0]?.x ?? 0;
+    minY = minY === -1 ? minY : composition.nodes[0]?.y ?? 0;
+    const x = (minX + maxX) / 2 - 100;
+    const y = (minY + maxY) / 2 - 100;
+
+    const factory = getGLNodeTaskFactory(nodeType);
+
+    if (factory) {
+      const nodeTask = factory(() => undefined);
+
+      const node = nodeTask.createVisualNode(this.canvasApp, x, y);
+      if (node && node.nodeInfo) {
+        // TODO : IMPROVE THIS
+        (node.nodeInfo as any).taskType = nodeType;
+      }
+
+      connections.forEach((connection) => {
+        if (!connection.connection.startNode) {
+          connection.connection.startNode = node;
+
+          connection.connection.startNodeThumb =
+            getThumbNodeByIdentifierWithinNode<GLNodeInfo>(
+              connection.thumbIdentifierWithinNode,
+              node,
+              {
+                start: true,
+                end: false,
+              }
+            ) || undefined;
+
+          node.connections.push(connection.connection);
+          connection.connection.update?.();
+        }
+        if (!connection.connection.endNode) {
+          connection.connection.endNode = node;
+
+          connection.connection.endNodeThumb =
+            getThumbNodeByIdentifierWithinNode<GLNodeInfo>(
+              connection.thumbIdentifierWithinNode,
+              node,
+              {
+                start: false,
+                end: true,
+              }
+            ) || undefined;
+          node.connections.push(connection.connection);
+          connection.connection.update?.();
+        }
+      });
+
+      node?.update?.();
+    }
+  };
+
   getSelectTaskElement = () => {
     return this.selectNodeType?.domElement as HTMLSelectElement;
   };
@@ -859,37 +980,71 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     );
   };
 
-  getNodeOutput = (node: IRectNodeComponent<GLNodeInfo>, thumbName: string) => {
+  getNodeOutput = (
+    node: IRectNodeComponent<GLNodeInfo>,
+    thumbName: string,
+    thumbIdentifierWithinNode?: string
+  ) => {
     const inputs: Record<string, string> = {};
-
-    node.connections.forEach((connection) => {
+    if (node?.nodeInfo?.isComposite) {
+      console.log('Composite node in getNodeOutput', node);
+    }
+    (node?.connections ?? []).forEach((connection) => {
       if (connection.endNode?.id === node.id) {
         // console.log(
         //   'getNodeOutput',
         //   connection.startNodeThumb?.thumbName ?? '',
         //   connection.startNodeThumb
         // );
-        if (connection.endNodeThumb?.thumbName) {
+
+        if (
+          connection.endNodeThumb?.thumbIdentifierWithinNode &&
+          node.nodeInfo?.isComposite
+        ) {
+          inputs[connection.endNodeThumb.thumbIdentifierWithinNode] =
+            this.getNodeOutput(
+              connection.startNode as IRectNodeComponent<GLNodeInfo>,
+              connection.startNodeThumb?.thumbName ?? '',
+              connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
+            );
+        } else if (connection.endNodeThumb?.thumbName) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
             connection.startNode as IRectNodeComponent<GLNodeInfo>,
-            connection.startNodeThumb?.thumbName ?? ''
+            connection.startNodeThumb?.thumbName ?? '',
+            connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
           );
         }
       }
     });
 
-    const result = node?.nodeInfo?.compute?.(0, 0, inputs, thumbName);
+    const result = node?.nodeInfo?.compute?.(
+      0,
+      0,
+      inputs,
+      thumbName,
+      thumbIdentifierWithinNode
+    );
     return result?.result ?? '';
   };
 
   getInputsForNode = (node: IRectNodeComponent<GLNodeInfo>) => {
     const inputs: Record<string, string> = {};
-    node.connections.forEach((connection) => {
+    (node?.connections ?? []).forEach((connection) => {
       if (connection.endNode?.id === node.id) {
-        if (connection.endNodeThumb?.thumbName && connection.startNode) {
+        if (
+          connection.endNodeThumb?.thumbIdentifierWithinNode &&
+          connection.startNode
+        ) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
             connection.startNode,
-            connection.startNodeThumb?.thumbName ?? ''
+            connection.startNodeThumb?.thumbName ?? '',
+            connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
+          );
+        } else if (connection.endNodeThumb?.thumbName && connection.startNode) {
+          inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
+            connection.startNode,
+            connection.startNodeThumb?.thumbName ?? '',
+            connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
           );
         }
       }

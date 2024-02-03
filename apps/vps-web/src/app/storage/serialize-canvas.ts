@@ -4,39 +4,10 @@ import {
   IConnectionNodeComponent,
   INodeComponent,
   NodeType,
+  Composition,
+  cleanupNodeInfoForSerializing,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-
-export const cleanupNodeInfoForSerializing = (
-  nodeInfo: NodeInfo | undefined
-) => {
-  const nodeInfoCopy: any = {};
-  if (nodeInfo) {
-    for (const key in nodeInfo) {
-      if (
-        typeof (nodeInfo as any)[key] !== 'function' &&
-        key !== 'formElements' &&
-        key !== 'canvasAppInstance' &&
-        key !== 'stateMachine'
-      ) {
-        let value = (nodeInfo as any)[key];
-        if (key === 'decorators' && value) {
-          const decorators: any[] = [];
-          for (const decorator of value) {
-            decorators.push({
-              taskType: decorator.taskType,
-              formValues: decorator.formValues,
-              executeOrder: decorator.executeOrder,
-            });
-          }
-          value = decorators;
-        }
-        nodeInfoCopy[key] = value;
-      }
-    }
-  }
-  return nodeInfoCopy;
-};
 
 export const serializeElementsMap = (elements: ElementNodeMap<NodeInfo>) => {
   const filteredElements = Array.from(elements).filter((entry) => {
@@ -65,6 +36,10 @@ export const serializeElementsMap = (elements: ElementNodeMap<NodeInfo>) => {
         endNodeId: connection.endNode?.id,
         startThumbName: connection.startNodeThumb?.thumbName,
         endThumbName: connection.endNodeThumb?.thumbName,
+        startThumbIdentifierWithinNode:
+          connection.startNodeThumb?.thumbIdentifierWithinNode,
+        endThumbIdentifierWithinNode:
+          connection.endNodeThumb?.thumbIdentifierWithinNode,
         lineType: connection.lineType,
         nodeType: obj.nodeType,
         layer: connection.layer ?? 1,
@@ -92,11 +67,12 @@ export const serializeElementsMap = (elements: ElementNodeMap<NodeInfo>) => {
   return nodesList;
 };
 
-export const exportFlowToJson = (
+export const exportFlowToJson = <T>(
   id: string,
-  nodesList: ReturnType<typeof serializeElementsMap>
+  nodesList: ReturnType<typeof serializeElementsMap>,
+  compositions: Record<string, Composition<T>>
 ) => {
-  const flow: Flow<NodeInfo> = {
+  const flow: Flow<T> = {
     schemaType: 'flow',
     schemaVersion: '0.0.1',
     id: id,
@@ -106,6 +82,82 @@ export const exportFlowToJson = (
         nodes: nodesList,
       },
     },
+    compositions: compositions,
   };
   return JSON.stringify(flow, null, 2);
+};
+
+export const serializeCompositions = <T>(
+  compositions: Record<string, Composition<T>>
+) => {
+  const compositionsMap: Record<string, Composition<T>> = {};
+  Object.entries(compositions).forEach(([_id, composition]) => {
+    compositionsMap[composition.id] = {
+      id: composition.id,
+      name: composition.name,
+      nodes: composition.nodes.map((node) => {
+        return node;
+        // if (node.nodeType === NodeType.Connection) {
+        //   const connection =
+        //     node as unknown as IConnectionNodeComponent<NodeInfo>;
+        //   return {
+        //     id: connection.id,
+        //     x: connection.x,
+        //     y: connection.y,
+        //     endX: connection.endX,
+        //     endY: connection.endY,
+        //     startNodeId: connection.startNode?.id,
+        //     endNodeId: connection.endNode?.id,
+        //     startThumbName: connection.startNodeThumb?.thumbName,
+        //     endThumbName: connection.endNodeThumb?.thumbName,
+        //     startThumbIdentifierWithinNode:
+        //       connection.startNodeThumb?.thumbIdentifierWithinNode,
+        //     endThumbIdentifierWithinNode:
+        //       connection.endNodeThumb?.thumbIdentifierWithinNode,
+        //     lineType: connection.lineType,
+        //     nodeType: node.nodeType,
+        //     layer: connection.layer ?? 1,
+        //     nodeInfo: cleanupNodeInfoForSerializing(connection.nodeInfo),
+        //   };
+        // }
+        // return {
+        //   id: node.id,
+        //   x: node.x,
+        //   y: node.y,
+        //   width: node.width,
+        //   height: node.height,
+        //   nodeType: node.nodeType,
+        //   nodeInfo: cleanupNodeInfoForSerializing(node.nodeInfo as NodeInfo),
+        // };
+      }),
+      thumbs: composition.thumbs,
+      inputNodes:
+        composition.inputNodes?.map((node) => {
+          return node;
+          // return {
+          //   id: node.id,
+          //   x: node.x,
+          //   y: node.y,
+          //   width: node.width,
+          //   height: node.height,
+          //   nodeType: node.nodeType,
+          //   nodeInfo: cleanupNodeInfoForSerializing(node.nodeInfo as NodeInfo),
+          // };
+        }) ?? [],
+      outputNodes:
+        composition.outputNodes?.map((node) => {
+          return node;
+          // return {
+          //   id: node.id,
+          //   x: node.x,
+          //   y: node.y,
+          //   width: node.width,
+          //   height: node.height,
+          //   nodeType: node.nodeType,
+          //   nodeInfo: cleanupNodeInfoForSerializing(node.nodeInfo as NodeInfo),
+          // };
+        }) ?? [],
+    };
+  });
+  return compositionsMap;
 };

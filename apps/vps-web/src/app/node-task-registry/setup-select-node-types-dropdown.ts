@@ -79,6 +79,9 @@ export const setupTasksInDropdown = (
         if (node.isContained) {
           return;
         }
+        if (node.hideFromNodeTypeSelector) {
+          return;
+        }
         categoryName = node.category || 'uncategorized';
       }
       if (nodeTask === nodeType) {
@@ -134,6 +137,9 @@ export const setupGLTasksInDropdown = (
           // dummy canvasUpdated function
         });
         if (node.isContained) {
+          return;
+        }
+        if (node.hideFromNodeTypeSelector) {
           return;
         }
         categoryName = node.category || 'uncategorized';

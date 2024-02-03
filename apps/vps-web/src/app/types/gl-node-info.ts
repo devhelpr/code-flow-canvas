@@ -1,4 +1,4 @@
-import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
+import { CanvasAppInstance, IThumb } from '@devhelpr/visual-programming-system';
 
 export interface GLNodeInfo {
   taskType?: string;
@@ -6,7 +6,8 @@ export interface GLNodeInfo {
     input: any,
     loopIndex?: number,
     payload?: any,
-    thumbName?: string
+    thumbName?: string,
+    thumbIdentifierWithinNode?: string
   ) => {
     result: string | undefined;
   };
@@ -18,4 +19,8 @@ export interface GLNodeInfo {
   delete?: () => void;
   formValues?: any;
   type?: string;
+
+  compositionId?: string;
+  thumbs?: IThumb[];
+  isComposite?: boolean;
 }

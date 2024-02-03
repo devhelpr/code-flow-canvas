@@ -24,10 +24,12 @@ import {
 import {
   serializeElementsMap,
   exportFlowToJson,
+  serializeCompositions,
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
 import { GenericAppNavComponentsProps } from '../component-interface/app-nav-component';
 import { getGLNodeTaskFactory } from '../node-task-registry/gl-node-task-registry';
+import { GLNodeInfo } from '../types/gl-node-info';
 
 export class GLNavbarComponent extends Component<
   GenericAppNavComponentsProps<any>
@@ -345,8 +347,17 @@ export class GLNavbarComponent extends Component<
   onClickExport = (event: Event) => {
     event.preventDefault();
     const data = serializeElementsMap(this.props.canvasApp.elements);
-    console.log('EXPORT DATA', exportFlowToJson('1234', data));
-    downloadJSON(exportFlowToJson('1234', data), 'vps-flow.json');
+    const compositions = serializeCompositions<GLNodeInfo>(
+      this.props.canvasApp.compositons.getAllCompositions()
+    );
+    console.log(
+      'EXPORT DATA',
+      exportFlowToJson<GLNodeInfo>('1234', data, compositions)
+    );
+    downloadJSON(
+      exportFlowToJson<GLNodeInfo>('1234', data, compositions),
+      'vps-flow.json'
+    );
     return false;
   };
 
@@ -376,7 +387,8 @@ export class GLNavbarComponent extends Component<
               this.props.canvasUpdated,
               undefined,
               0,
-              getGLNodeTaskFactory
+              getGLNodeTaskFactory,
+              data.compositions
             );
             this.props.canvasApp.centerCamera();
             this.props.initializeNodes();

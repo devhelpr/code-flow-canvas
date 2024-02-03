@@ -40,6 +40,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
   containerNode?: IRectNodeComponent<T>;
   nestedLevel?: number;
 
+  label?: string;
+
   getParentedCoordinates?: () => { x: number; y: number };
   update?: (
     target?: INodeComponent<T>,
@@ -113,6 +115,7 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
   thumbIndex?: number;
   thumbType?: ThumbType;
   thumbName: string;
+  thumbIdentifierWithinNode?: string;
   thumbLinkedToNode?: IRectNodeComponent<T>;
 
   thumbControlPointDistance?: number;
@@ -164,6 +167,7 @@ export type ThumbConnectionType =
   (typeof ThumbConnectionType)[keyof typeof ThumbConnectionType];
 
 export type IThumb = {
+  thumbIdentifierWithinNode?: string;
   name?: string;
   thumbType: ThumbType;
   thumbIndex: number;
@@ -182,4 +186,5 @@ export type IThumb = {
   formFieldName?: string;
   prefixIcon?: string;
   prefixLabel?: string;
+  nodeId?: string;
 };

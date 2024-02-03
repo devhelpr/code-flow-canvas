@@ -29,8 +29,10 @@ import { downloadJSON } from '../utils/create-download-link';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
 import { AppNavComponentsProps } from '../component-interface/app-nav-component';
 
-export class NavbarComponent extends Component<AppNavComponentsProps> {
-  oldProps: AppNavComponentsProps | null = null;
+export class NavbarComponent extends Component<
+  AppNavComponentsProps<NodeInfo>
+> {
+  oldProps: AppNavComponentsProps<NodeInfo> | null = null;
 
   previousDoRenderChildren: boolean | null = null;
   doRenderChildren: boolean | null = true;
@@ -44,7 +46,10 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   selectExampleFlow: HTMLSelectElement | null = null;
   rootAppElement: HTMLElement | null = null;
 
-  constructor(parent: BaseComponent | null, props: AppNavComponentsProps) {
+  constructor(
+    parent: BaseComponent | null,
+    props: AppNavComponentsProps<NodeInfo>
+  ) {
     super(parent, props);
 
     // <button class="${navBarButton}">Import script</button>
@@ -322,8 +327,8 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   onClickExport = (event: Event) => {
     event.preventDefault();
     const data = serializeElementsMap(this.props.canvasApp.elements);
-    console.log('EXPORT DATA', exportFlowToJson('1234', data));
-    downloadJSON(exportFlowToJson('1234', data), 'vps-flow.json');
+    console.log('EXPORT DATA', exportFlowToJson<NodeInfo>('1234', data, {}));
+    downloadJSON(exportFlowToJson<NodeInfo>('1234', data, {}), 'vps-flow.json');
     return false;
   };
 
@@ -461,7 +466,7 @@ export class NavbarComponent extends Component<AppNavComponentsProps> {
   }
 }
 
-export const NavbarComponents = (props: AppNavComponentsProps) => {
+export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
   new NavbarComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,

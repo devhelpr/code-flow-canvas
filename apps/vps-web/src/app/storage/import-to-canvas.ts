@@ -1,11 +1,13 @@
 import {
   CanvasAppInstance,
+  Composition,
   ElementNodeMap,
   FlowNode,
   IElementNode,
   IRectNodeComponent,
   LineType,
   NodeType,
+  getThumbNodeByIdentifierWithinNode,
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
@@ -180,27 +182,45 @@ export const importToCanvas = (
                   if (start && curve.nodeComponent) {
                     curve.nodeComponent.startNode = start;
                     curve.nodeComponent.startNodeThumb =
-                      getThumbNodeByName<NodeInfo>(
-                        node.startThumbName ?? '',
-                        start,
-                        {
-                          start: true,
-                          end: false,
-                        }
-                      ) || undefined;
+                      node.startThumbIdentifierWithinNode
+                        ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+                            node.startThumbIdentifierWithinNode,
+                            start,
+                            {
+                              start: true,
+                              end: false,
+                            }
+                          )
+                        : getThumbNodeByName<NodeInfo>(
+                            node.startThumbName ?? '',
+                            start,
+                            {
+                              start: true,
+                              end: false,
+                            }
+                          ) || undefined;
                   }
 
                   if (end && curve.nodeComponent) {
                     curve.nodeComponent.endNode = end;
                     curve.nodeComponent.endNodeThumb =
-                      getThumbNodeByName<NodeInfo>(
-                        node.endThumbName ?? '',
-                        end,
-                        {
-                          start: false,
-                          end: true,
-                        }
-                      ) || undefined;
+                      node.endThumbIdentifierWithinNode
+                        ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+                            node.endThumbIdentifierWithinNode,
+                            end,
+                            {
+                              start: false,
+                              end: true,
+                            }
+                          )
+                        : getThumbNodeByName<NodeInfo>(
+                            node.endThumbName ?? '',
+                            end,
+                            {
+                              start: false,
+                              end: true,
+                            }
+                          ) || undefined;
                   }
                   if (start) {
                     start.connections?.push(curve.nodeComponent);
@@ -337,14 +357,19 @@ export const importToCanvas = (
 
       if (start && curve.nodeComponent) {
         curve.nodeComponent.startNode = start;
-        const thumb = getThumbNodeByName<NodeInfo>(
-          node.startThumbName ?? '',
-          start,
-          {
-            start: true,
-            end: false,
-          }
-        );
+        const thumb = node.startThumbIdentifierWithinNode
+          ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+              node.startThumbIdentifierWithinNode ?? '',
+              start,
+              {
+                start: true,
+                end: false,
+              }
+            )
+          : getThumbNodeByName<NodeInfo>(node.startThumbName ?? '', start, {
+              start: true,
+              end: false,
+            });
         if (thumb) {
           curve.nodeComponent.startNodeThumb = thumb;
           if (curve.nodeComponent.startNodeThumb?.isDataPort) {
@@ -355,14 +380,19 @@ export const importToCanvas = (
 
       if (end && curve.nodeComponent) {
         curve.nodeComponent.endNode = end;
-        const thumb = getThumbNodeByName<NodeInfo>(
-          node.endThumbName ?? '',
-          end,
-          {
-            start: false,
-            end: true,
-          }
-        );
+        const thumb = node.endThumbIdentifierWithinNode
+          ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+              node.endThumbIdentifierWithinNode ?? '',
+              end,
+              {
+                start: false,
+                end: true,
+              }
+            )
+          : getThumbNodeByName<NodeInfo>(node.endThumbName ?? '', end, {
+              start: false,
+              end: true,
+            });
         if (thumb) {
           curve.nodeComponent.endNodeThumb = thumb;
           if (curve.nodeComponent.endNodeThumb?.isDataPort) {
@@ -380,5 +410,15 @@ export const importToCanvas = (
         curve.nodeComponent.update();
       }
     }
+  });
+};
+
+export const importCompositions = <T>(
+  compositions: Record<string, Composition<T>>,
+  canvasApp: CanvasAppInstance<T>
+) => {
+  canvasApp.compositons.clearCompositions();
+  Object.entries(compositions).forEach(([_id, composition]) => {
+    canvasApp.compositons.addComposition(composition);
   });
 };

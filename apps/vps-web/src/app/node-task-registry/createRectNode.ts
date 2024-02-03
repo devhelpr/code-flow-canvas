@@ -67,6 +67,8 @@ export const createRectNode = (
     additionalClassNames?: string;
     hasFormInPopup?: boolean;
     hasStaticWidthHeight?: boolean;
+    hideFromNodeTypeSelector?: boolean;
+    hideTitle?: boolean;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -137,7 +139,7 @@ export const createRectNode = (
         class: `flex items-center bg-slate-600 border-slate-500 text-white p-1 px-3 rounded-t pointer-events-none`,
       },
       componentWrapper.domElement,
-      nodeTitle
+      settings?.hideTitle ? '' : nodeTitle
     ) as unknown as INodeComponent<NodeInfo>;
   } else {
     createElement(
@@ -175,7 +177,7 @@ export const createRectNode = (
       `,
     },
     componentWrapper.domElement,
-    hasCenteredLabel ? nodeTitle : undefined
+    hasCenteredLabel && !settings?.hideTitle ? nodeTitle : undefined
   );
 
   if (formElements.length > 0 && !settings?.hasFormInPopup) {
@@ -320,6 +322,8 @@ export const visualNodeFactory = (
     hasStaticWidthHeight?: boolean;
     decoratorTitle?: string;
     category?: string;
+    hideFromNodeTypeSelector?: boolean;
+    hideTitle?: boolean;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -371,7 +375,16 @@ export const visualNodeFactory = (
     isContainer: isContainer,
     canBeUsedAsDecorator,
     category: settings?.category,
+    hideFromNodeTypeSelector: settings?.hideFromNodeTypeSelector ?? false,
     thumbs,
+    getCompute: () =>
+      compute as unknown as (
+        input: any,
+        loopIndex?: number,
+        payload?: any,
+        thumbName?: string,
+        thumbIdentifierWithinNode?: string
+      ) => { result: string | undefined },
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
@@ -409,6 +422,8 @@ export const visualNodeFactory = (
         getNodeTaskFactory
       );
       onCreatedNode(nodeInstance);
+      console.log('nodeTitle', nodeTitle);
+      nodeInstance.node.label = nodeTitle;
       return nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
     createDecoratorNode,

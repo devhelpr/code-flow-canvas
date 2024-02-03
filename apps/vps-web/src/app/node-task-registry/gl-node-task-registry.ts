@@ -23,6 +23,9 @@ import { getMultiplyColorNode } from '../nodes-gl/multiplyColor';
 import { getAbsoluteNode } from '../nodes-gl/absolute';
 import { getSubtractNode } from '../nodes-gl/subtraction';
 import { getCreateVector2Node } from '../nodes-gl/create-vector2';
+import { GLNodeInfo } from '../types/gl-node-info';
+import { Composition } from '@devhelpr/visual-programming-system';
+import { getCreateCompositionNode } from '../nodes-gl/composition';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 
@@ -65,4 +68,36 @@ export const setupGLNodeTaskRegistry = () => {
 
 export const getGLNodeTaskFactory = (name: string) => {
   return glNodeTaskRegistry[name] ?? false;
+};
+
+export const removeAllCompositions = () => {
+  Object.keys(glNodeTaskRegistry).forEach((key) => {
+    if (key.startsWith('composition-')) {
+      delete glNodeTaskRegistry[key];
+    }
+  });
+};
+
+export const registerCompositionNodes = (
+  compositions: Record<string, Composition<GLNodeInfo>>
+) => {
+  Object.entries(compositions).forEach(([key, composition]) => {
+    const node = getCreateCompositionNode(
+      composition.thumbs,
+      key,
+      composition.name,
+      getGLNodeTaskFactory
+    );
+    registerGLNodeFactory(`composition-${key}`, node);
+  });
+};
+
+export const registerComposition = (composition: Composition<GLNodeInfo>) => {
+  const node = getCreateCompositionNode(
+    composition.thumbs,
+    composition.id,
+    composition.name,
+    getGLNodeTaskFactory
+  );
+  registerGLNodeFactory(`composition-${composition.id}`, node);
 };

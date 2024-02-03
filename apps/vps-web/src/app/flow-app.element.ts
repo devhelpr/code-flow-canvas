@@ -416,6 +416,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               nodes: nodesList,
             },
           },
+          compositions: {},
         };
         this.storageProvider.saveFlow('1234', flow);
       }
