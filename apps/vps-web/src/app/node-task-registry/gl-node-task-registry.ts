@@ -26,6 +26,7 @@ import { getCreateVector2Node } from '../nodes-gl/create-vector2';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { Composition } from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes-gl/composition';
+import { getAtanNode } from '../nodes-gl/atan';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 
@@ -45,6 +46,7 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('value-node', getValueNode);
   registerGLNodeFactory('sine-node', getSineNode);
   registerGLNodeFactory('cosine-node', getCosineNode);
+  registerGLNodeFactory('atan-node', getAtanNode);
   registerGLNodeFactory('time-node', getTimeNode);
   registerGLNodeFactory('absolute-node', getAbsoluteNode);
   registerGLNodeFactory('multiply-node', getMultiplyNode);
