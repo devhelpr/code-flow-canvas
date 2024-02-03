@@ -372,7 +372,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       'select',
       {
         type: 'select',
-        class: 'p-2 m-2 relative ', //top-[60px]',
+        class: 'p-2 m-2 relative max-w-[220px]', //top-[60px]',
         name: 'select-node-type',
         change: (_event) => {
           //
