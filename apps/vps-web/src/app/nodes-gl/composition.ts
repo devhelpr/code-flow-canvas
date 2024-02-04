@@ -206,6 +206,7 @@ export const getCreateCompositionNode =
       {
         hasTitlebar: false,
         hideTitle: true,
+        category: 'Compositions',
       }
     );
   };

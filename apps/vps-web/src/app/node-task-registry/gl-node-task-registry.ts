@@ -29,43 +29,78 @@ import { getCreateCompositionNode } from '../nodes-gl/composition';
 import { getAtanNode } from '../nodes-gl/atan';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
-
+export const glNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerGLNodeFactory = (
   name: string,
-  nodeFactory: NodeTaskFactory<any>
+  nodeFactory: NodeTaskFactory<any>,
+  label?: string
 ) => {
   glNodeTaskRegistry[name] = nodeFactory;
+  if (label) {
+    glNodeTaskRegistryLabels[name] = label;
+  }
 };
 export const getGLNodeFactoryNames = () => {
   return Object.keys(glNodeTaskRegistry).sort();
 };
 
 export const setupGLNodeTaskRegistry = () => {
-  registerGLNodeFactory('color-node', getColorNode);
-  registerGLNodeFactory('circle-node', getCircleNode);
-  registerGLNodeFactory('value-node', getValueNode);
-  registerGLNodeFactory('sine-node', getSineNode);
-  registerGLNodeFactory('cosine-node', getCosineNode);
-  registerGLNodeFactory('atan-node', getAtanNode);
-  registerGLNodeFactory('time-node', getTimeNode);
-  registerGLNodeFactory('absolute-node', getAbsoluteNode);
-  registerGLNodeFactory('multiply-node', getMultiplyNode);
-  registerGLNodeFactory('multiply-color-node', getMultiplyColorNode);
-  registerGLNodeFactory('output-color-node', getOutputColorNode);
-  registerGLNodeFactory('uv-node', getUVNode);
-  registerGLNodeFactory('addition-node', getAdditionNode);
-  registerGLNodeFactory('subtract-node', getSubtractNode);
-  registerGLNodeFactory('vector-length', getVectorLengthNode);
-  registerGLNodeFactory('noise-node', getNoiseNode);
-  registerGLNodeFactory('split-colors-node', getSplitColorsNode);
-  registerGLNodeFactory('palette', getPaletteNode);
-  registerGLNodeFactory('rotate-node', getRotateNode);
-  registerGLNodeFactory('scale-node', getScaleNode);
-  registerGLNodeFactory('split-vector2-node', getSplitVector2dNode);
-  registerGLNodeFactory('smooth-step-float-node', getSmoothStepFloatNode);
-  registerGLNodeFactory('clamp-float-node', getClampFloatNode);
-  registerGLNodeFactory('modulo-float-node', getModuloFloatNode);
-  registerGLNodeFactory('create-vector2', getCreateVector2Node);
+  registerGLNodeFactory(
+    'output-color-node',
+    getOutputColorNode,
+    'Output Color'
+  );
+  registerGLNodeFactory('uv-node', getUVNode, 'UV');
+
+  registerGLNodeFactory('color-node', getColorNode, 'Color');
+  registerGLNodeFactory('value-node', getValueNode, 'Value');
+
+  registerGLNodeFactory('sine-node', getSineNode, 'Sine');
+  registerGLNodeFactory('cosine-node', getCosineNode, 'Cosine');
+  registerGLNodeFactory('atan-node', getAtanNode, 'Atan');
+  registerGLNodeFactory('time-node', getTimeNode, 'Time');
+  registerGLNodeFactory('absolute-node', getAbsoluteNode, 'Absolute');
+  registerGLNodeFactory('multiply-node', getMultiplyNode, 'Multiply');
+  registerGLNodeFactory(
+    'multiply-color-node',
+    getMultiplyColorNode,
+    'Multiply Color'
+  );
+  registerGLNodeFactory('addition-node', getAdditionNode, 'Addition');
+  registerGLNodeFactory('subtract-node', getSubtractNode, 'Subtraction');
+  registerGLNodeFactory('modulo-float-node', getModuloFloatNode, 'Modulo');
+
+  registerGLNodeFactory('noise-node', getNoiseNode, 'Noise');
+
+  registerGLNodeFactory('rotate-node', getRotateNode, 'Rotate');
+  registerGLNodeFactory('scale-node', getScaleNode, 'Scale');
+
+  registerGLNodeFactory(
+    'smooth-step-float-node',
+    getSmoothStepFloatNode,
+    'Smooth Step'
+  );
+  registerGLNodeFactory('clamp-float-node', getClampFloatNode, 'Clamp');
+
+  registerGLNodeFactory('vector-length', getVectorLengthNode, 'Vector Length');
+  registerGLNodeFactory(
+    'create-vector2',
+    getCreateVector2Node,
+    'Create Vector2'
+  );
+  registerGLNodeFactory(
+    'split-vector2-node',
+    getSplitVector2dNode,
+    'Split Vector2'
+  );
+
+  registerGLNodeFactory(
+    'split-colors-node',
+    getSplitColorsNode,
+    'Split Colors'
+  );
+  registerGLNodeFactory('palette', getPaletteNode, 'Palette');
+  registerGLNodeFactory('circle-node', getCircleNode, 'Metaball(2d)');
 };
 
 export const getGLNodeTaskFactory = (name: string) => {

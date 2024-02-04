@@ -6,6 +6,7 @@ import {
 import {
   getGLNodeFactoryNames,
   getGLNodeTaskFactory,
+  glNodeTaskRegistryLabels,
 } from './gl-node-task-registry';
 
 export const createOption = (
@@ -127,6 +128,7 @@ export const setupGLTasksInDropdown = (
     createOptgroup('output');
     createOptgroup('UI');
     createOptgroup('Math');
+    createOptgroup('Compositions');
     createOptgroup('uncategorized');
 
     const nodeTasks = getGLNodeFactoryNames();
@@ -148,7 +150,8 @@ export const setupGLTasksInDropdown = (
       if (nodeTask === nodeType) {
         isPreviouslySelectedNodeTypeInDropdown = true;
       }
-      createOption(selectNodeTypeHTMLElement, nodeTask, nodeTask, categoryName);
+      const label = glNodeTaskRegistryLabels[nodeTask] || nodeTask;
+      createOption(selectNodeTypeHTMLElement, nodeTask, label, categoryName);
     });
     if (isPreviouslySelectedNodeTypeInDropdown) {
       selectNodeTypeHTMLElement.value = nodeType;

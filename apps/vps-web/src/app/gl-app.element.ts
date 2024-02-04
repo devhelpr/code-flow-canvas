@@ -161,6 +161,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               );
               this.isStoring = false;
               canvasUpdated();
+
+              setupGLTasksInDropdown(
+                this.selectNodeType?.domElement as HTMLSelectElement
+              );
             },
           }) as unknown as HTMLElement;
 
@@ -241,6 +245,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             initializeNodes();
             this.flowTOGLCanvas();
             this.setTabOrderOfNodes();
+
+            setupGLTasksInDropdown(
+              this.selectNodeType?.domElement as HTMLSelectElement
+            );
             this.isStoring = false;
           })
           .catch((error) => {
