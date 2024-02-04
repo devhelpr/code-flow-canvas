@@ -126,6 +126,7 @@ export const setupGLTasksInDropdown = (
     createOptgroup('input');
     createOptgroup('output');
     createOptgroup('UI');
+    createOptgroup('Math');
     createOptgroup('uncategorized');
 
     const nodeTasks = getGLNodeFactoryNames();

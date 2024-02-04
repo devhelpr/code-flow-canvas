@@ -80,6 +80,7 @@ export const getSubtractNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'Math',
     }
   );
 };

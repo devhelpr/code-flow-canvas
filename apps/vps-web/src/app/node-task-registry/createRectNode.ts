@@ -11,6 +11,7 @@ import { FormComponent, FormValues } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues } from '../node-task-registry';
 import { FormField } from '../components/FormField';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export interface ComputeResult<T> {
   result: T;
@@ -18,11 +19,11 @@ export interface ComputeResult<T> {
   output: T;
 }
 
-export interface CreateNodeInfo {
-  node: INodeComponent<NodeInfo>;
-  rect?: Rect<NodeInfo>;
-  componentWrapper?: INodeComponent<NodeInfo>;
-  contextInstance: CanvasAppInstance<NodeInfo>;
+export interface CreateNodeInfo<T extends BaseNodeInfo = NodeInfo> {
+  node: INodeComponent<T>;
+  rect?: Rect<T>;
+  componentWrapper?: INodeComponent<T>;
+  contextInstance: CanvasAppInstance<T>;
   isDecoratorNode: boolean;
 }
 
@@ -42,7 +43,7 @@ export interface IComputeResult {
   stop?: boolean;
 }
 
-export const createRectNode = (
+export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
   nodeTypeName: string,
   nodeTitle: string,
   formElements: FormField[],
@@ -57,9 +58,9 @@ export const createRectNode = (
   ) => IComputeResult | Promise<IComputeResult>,
   initializeCompute: () => void,
   thumbs: IThumb[],
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  canvasApp: CanvasAppInstance<T>,
   id?: string,
-  containerNode?: IRectNodeComponent<NodeInfo>,
+  containerNode?: IRectNodeComponent<T>,
   initialValues?: InitialValues,
   settings?: {
     hasTitlebar?: boolean;
@@ -72,9 +73,9 @@ export const createRectNode = (
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
-  nodeInfo?: NodeInfo,
+  nodeInfo?: T,
   getNodeTaskFactory?: (name: string) => any
-): CreateNodeInfo => {
+): CreateNodeInfo<T> => {
   const showTitlebar = settings ? settings?.hasTitlebar : true;
   let hasBeforeDecorator = false;
   let hasAfterDecorator = false;
@@ -89,7 +90,7 @@ export const createRectNode = (
     });
   }
 
-  const componentWrapper = createNodeElement<NodeInfo>(
+  const componentWrapper = createNodeElement<T>(
     'div',
     {
       class: `relative flex flex-col bg-slate-500 text-white rounded ${
@@ -97,7 +98,7 @@ export const createRectNode = (
       }`,
     },
     undefined
-  ) as unknown as INodeComponent<NodeInfo>;
+  ) as unknown as INodeComponent<T>;
 
   // decorators before
   if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
@@ -262,7 +263,7 @@ export const createRectNode = (
       type: nodeTypeName,
       formValues: initialValues ?? {},
       decorators: nodeInfo?.decorators,
-    },
+    } as T,
     containerNode
   );
 
@@ -274,7 +275,7 @@ export const createRectNode = (
   if (node.nodeInfo) {
     node.nodeInfo.formElements = formElements;
     if (isAsyncCompute) {
-      node.nodeInfo.computeAsync = compute as (
+      (node.nodeInfo as NodeInfo).computeAsync = compute as (
         input: any,
         loopIndex?: number,
         payload?: any,
@@ -282,7 +283,7 @@ export const createRectNode = (
         scopeId?: string
       ) => Promise<any>;
     } else {
-      node.nodeInfo.compute = compute;
+      (node.nodeInfo as NodeInfo).compute = compute;
     }
     node.nodeInfo.initializeCompute = initializeCompute;
     node.nodeInfo.showFormOnlyInPopup = settings?.hasFormInPopup ?? false;
@@ -296,7 +297,7 @@ export const createRectNode = (
   };
 };
 
-export const visualNodeFactory = (
+export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
   nodeTypeName: string,
   nodeTitle: string,
   nodeFamily: string,
@@ -313,7 +314,7 @@ export const visualNodeFactory = (
   height: number,
   thumbs: IThumb[],
   onGetFormElements: (values?: InitialValues) => FormField[],
-  onCreatedNode: (nodeInfo: CreateNodeInfo) => void,
+  onCreatedNode: (nodeInfo: CreateNodeInfo<T>) => void,
   settings?: {
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
@@ -332,13 +333,13 @@ export const visualNodeFactory = (
   let createDecoratorNode:
     | undefined
     | ((
-        canvasApp: CanvasAppInstance<NodeInfo>,
+        canvasApp: CanvasAppInstance<T>,
         initalValues?: InitialValues,
         rootElement?: HTMLElement
-      ) => INodeComponent<NodeInfo>) = undefined;
+      ) => INodeComponent<T>) = undefined;
   if (canBeUsedAsDecorator) {
     createDecoratorNode = (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: CanvasAppInstance<T>,
       initalValues?: InitialValues,
       rootElement?: HTMLElement
     ) => {
@@ -351,14 +352,15 @@ export const visualNodeFactory = (
         },
         rootElement,
         caption ?? settings?.decoratorTitle ?? initialValue
-      ) as unknown as INodeComponent<NodeInfo>;
+      ) as unknown as INodeComponent<T>;
 
       decoratorNode.nodeInfo = {
         compute,
         initializeCompute,
         formValues: initalValues,
         canvasAppInstance: canvasApp,
-      };
+      } as unknown as T;
+
       if (onCreatedNode) {
         onCreatedNode({
           contextInstance: canvasApp,
@@ -386,12 +388,12 @@ export const visualNodeFactory = (
         thumbIdentifierWithinNode?: string
       ) => { result: string | undefined },
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: CanvasAppInstance<T>,
       x: number,
       y: number,
       id?: string,
       initialValues?: InitialValues, // this can be the values imported from storage..
-      containerNode?: IRectNodeComponent<NodeInfo>,
+      containerNode?: IRectNodeComponent<T>,
       _width?: number,
       _height?: number,
       _nestedLevel?: number,
@@ -399,7 +401,7 @@ export const visualNodeFactory = (
       getNodeTaskFactory?: (name: string) => any
     ) => {
       const formElements = onGetFormElements(initialValues);
-      const nodeInstance = createRectNode(
+      const nodeInstance = createRectNode<T>(
         nodeTypeName,
         nodeTitle,
 
@@ -418,13 +420,13 @@ export const visualNodeFactory = (
         settings,
         childNode,
         isAsyncCompute,
-        nodeInfo,
+        nodeInfo as unknown as T,
         getNodeTaskFactory
       );
       onCreatedNode(nodeInstance);
       console.log('nodeTitle', nodeTitle);
       nodeInstance.node.label = nodeTitle;
-      return nodeInstance.node as IRectNodeComponent<NodeInfo>;
+      return nodeInstance.node as IRectNodeComponent<T>;
     },
     createDecoratorNode,
   };

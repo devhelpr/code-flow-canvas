@@ -1,6 +1,7 @@
 import { CanvasAppInstance, IThumb } from '@devhelpr/visual-programming-system';
+import { BaseNodeInfo } from './base-node-info';
 
-export interface GLNodeInfo {
+export interface GLNodeInfo extends BaseNodeInfo {
   taskType?: string;
   compute?: (
     input: any,
@@ -12,15 +13,7 @@ export interface GLNodeInfo {
     result: string | undefined;
   };
 
-  initializeCompute?: () => void;
-  showFormOnlyInPopup?: boolean;
-  formElements?: any[];
   canvasAppInstance?: CanvasAppInstance<GLNodeInfo>;
-  delete?: () => void;
-  formValues?: any;
-  type?: string;
 
-  compositionId?: string;
   thumbs?: IThumb[];
-  isComposite?: boolean;
 }

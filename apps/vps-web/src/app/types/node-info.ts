@@ -1,26 +1,8 @@
 import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
 import { StateMachine } from '../state-machine';
+import { BaseNodeInfo } from './base-node-info';
 
-export interface INodeDecorator {
-  taskType: string;
-  formValues?: any;
-  executeOrder?: 'before' | 'after';
-  decoratorNode?: {
-    nodeInfo: {
-      compute?: (
-        input: any,
-        loopIndex?: number,
-        payload?: any,
-        thumbName?: string,
-        scopeId?: string
-      ) => any;
-      initializeCompute?: () => void;
-    };
-  };
-}
-
-export interface NodeInfo {
-  taskType?: string;
+export interface NodeInfo extends BaseNodeInfo {
   compute?: (
     input: any,
     loopIndex?: number,
@@ -35,13 +17,7 @@ export interface NodeInfo {
     thumbName?: string,
     scopeId?: string
   ) => Promise<any>;
-  initializeCompute?: () => void;
-  showFormOnlyInPopup?: boolean;
-  formElements?: any[];
   canvasAppInstance?: CanvasAppInstance<NodeInfo>;
-  delete?: () => void;
-  formValues?: any;
-  type?: string;
   setValue?: ((values: any[]) => void) | ((values: string) => void);
   stateMachine?: StateMachine<NodeInfo>;
   isVariable?: boolean;
@@ -49,7 +25,7 @@ export interface NodeInfo {
   getData?: (parameter?: any, scope?: string) => any;
   getDependencies?: () => { startNodeId: string; endNodeId: string }[];
   supportsDecorators?: boolean;
-  decorators?: INodeDecorator[];
+
   initializeOnStartFlow?: boolean;
 }
 

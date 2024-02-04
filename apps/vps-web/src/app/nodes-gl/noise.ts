@@ -9,6 +9,8 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { noise } from '../gl-functions/noise';
+import { registerGLSLFunction } from './custom-glsl-functions-registry';
 
 const fieldName = 'noise';
 const labelName = 'Noise';
@@ -56,6 +58,8 @@ const thumbs = [
     thumbConstraint: 'value',
   },
 ];
+
+registerGLSLFunction(nodeName, noise());
 
 export const getNoiseNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void

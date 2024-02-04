@@ -10,6 +10,7 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { registerGLSLFunction } from './custom-glsl-functions-registry';
 
 const fieldName = 'rotate';
 const labelName = 'Rotate';
@@ -51,6 +52,13 @@ const thumbs = [
   },
 ];
 
+registerGLSLFunction(
+  nodeName,
+  `vec2 rotate(vec2 v, float a) {
+    float degreeToRad = a * 0.017453292519943295;
+    return vec2(sin(degreeToRad) * v.x + cos(degreeToRad) * v.y, cos(degreeToRad) * v.x - sin(degreeToRad) * v.y);
+  }`
+);
 export const getRotateNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
 ): NodeTask<GLNodeInfo> => {
@@ -79,7 +87,6 @@ export const getRotateNode: NodeTaskFactory<GLNodeInfo> = (
       followPath: undefined,
     };
   };
-
   return visualNodeFactory(
     nodeName,
     labelName,

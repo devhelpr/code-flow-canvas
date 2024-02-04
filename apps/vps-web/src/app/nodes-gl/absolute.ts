@@ -71,6 +71,7 @@ export const getAbsoluteNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'Math',
     }
   );
 };

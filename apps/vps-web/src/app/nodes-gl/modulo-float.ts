@@ -85,6 +85,7 @@ export const getModuloFloatNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'Math',
     }
   );
 };

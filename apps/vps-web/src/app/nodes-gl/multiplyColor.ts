@@ -82,6 +82,7 @@ export const getMultiplyColorNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'Math',
     }
   );
 };

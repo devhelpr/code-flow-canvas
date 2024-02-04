@@ -51,7 +51,6 @@ import {
   removeAllCompositions,
   setupGLNodeTaskRegistry,
 } from './node-task-registry/gl-node-task-registry';
-import { noise } from './gl-functions/noise';
 import {
   setCameraAnimation,
   setPositionTargetCameraAnimation,
@@ -60,6 +59,7 @@ import {
 import { registerCommands } from './command-handlers/register-commands';
 import { setupGLTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
 import { GLNodeInfo } from './types/gl-node-info';
+import { getGLSLFunctions } from './nodes-gl/custom-glsl-functions-registry';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -826,6 +826,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   u_TestUniformLocation: WebGLUniformLocation | null = null;
   vertexPositionAttribute = 0;
 
+  shaderExtensions = '';
   createFragmentShader = (statements: string) => {
     return `
     precision mediump float;
@@ -853,12 +854,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       return palette(paletteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.33,0.67));
     }
     
-    vec2 rotate(vec2 v, float a) {
-      float degreeToRad = a * 0.017453292519943295;
-      return vec2(sin(degreeToRad) * v.x + cos(degreeToRad) * v.y, cos(degreeToRad) * v.x - sin(degreeToRad) * v.y);
-    }
+   
 
-    ${noise()}
+    ${this.shaderExtensions}
 	
   
     void main() {
@@ -1056,10 +1054,33 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     console.log('flowTOGLCanvas');
     let sdfIndex = 1;
     this.shaderStatements = '';
+    this.shaderExtensions = '';
+    const nodeVisited: string[] = [];
+    const glslFunctions = getGLSLFunctions();
     if (this.canvasApp) {
+      const compositions = this.canvasApp.compositons.getAllCompositions();
+      Object.entries(compositions).forEach(([_key, composition]) => {
+        composition.nodes.forEach((node) => {
+          if (node.nodeInfo?.type && glslFunctions[node.nodeInfo?.type]) {
+            if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+              nodeVisited.push(node.nodeType ?? '');
+              const glslFunction = glslFunctions[node.nodeInfo?.type];
+              this.shaderExtensions += glslFunction;
+            }
+          }
+        });
+      });
+
       this.canvasApp.elements.forEach((element) => {
         const node = element as unknown as INodeComponent<GLNodeInfo>;
         if (node.nodeType === NodeType.Shape) {
+          if (node.nodeType && glslFunctions[node.nodeType]) {
+            if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+              nodeVisited.push(node.nodeType ?? '');
+              const glslFunction = glslFunctions[node.nodeType];
+              this.shaderExtensions += glslFunction;
+            }
+          }
           if (
             node.nodeInfo?.type === 'circle-node' ||
             node.nodeInfo?.type === 'output-color-node'

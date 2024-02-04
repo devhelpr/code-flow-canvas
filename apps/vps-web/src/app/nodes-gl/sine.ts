@@ -91,6 +91,7 @@ export const getSineNode: NodeTaskFactory<GLNodeInfo> = (
       hasTitlebar: false,
       additionalClassNames: 'flex-wrap flex-col py-5',
       childNodeWrapperClass: 'w-full flex justify-center text-center',
+      category: 'Math',
     },
     element
   );
