@@ -20,6 +20,7 @@ import {
   Composition,
   IConnectionNodeComponent,
   getThumbNodeByIdentifierWithinNode,
+  createCanvasApp,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -80,6 +81,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   focusedNode: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   runButton: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
+  compositionEditButton: IDOMElement | undefined = undefined;
+  compositionEditExitButton: IDOMElement | undefined = undefined;
 
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
@@ -110,6 +113,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     };
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
+    });
+    this.canvasApp?.setOnWheelEvent((x, y, scale) => {
+      setPositionTargetCameraAnimation(x, y, scale);
+    });
+
+    this.canvasApp?.setonDragCanvasEvent((x, y) => {
+      setPositionTargetCameraAnimation(x, y);
     });
 
     setCameraAnimation(this.canvasApp);
@@ -199,6 +209,30 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             },
             menubarElement.domElement,
             'Clear canvas'
+          );
+
+          this.compositionEditButton = createElement(
+            'button',
+            {
+              class: `${navBarButton} hidden`,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.editComposition();
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Edit composition'
+          );
+
+          this.compositionEditExitButton = createElement(
+            'button',
+            {
+              class: `${navBarButton} hidden`,
+            },
+            menubarElement.domElement,
+            'Exit Edit composition'
           );
 
           this.selectedNodeLabel = createElement(
@@ -437,6 +471,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       if (!this.rootElement) {
         return;
       }
+
+      (
+        this.compositionEditButton?.domElement as HTMLButtonElement
+      ).classList.add('hidden');
+
       this.rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
       });
@@ -473,6 +512,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         if (!node) {
           return;
         }
+
+        if (node.nodeInfo?.isComposition) {
+          (
+            this.compositionEditButton?.domElement as HTMLButtonElement
+          ).classList.remove('hidden');
+        }
+
         if (node.nodeType === NodeType.Connection) {
           console.log('selected connection', node);
           node.connectorWrapper?.domElement?.classList?.add('selected');
@@ -655,14 +701,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     registerCustomFunction('log', [], (message: any) => {
       console.log('log', message);
     });
-
-    this.canvasApp?.setOnWheelEvent((x, y, scale) => {
-      setPositionTargetCameraAnimation(x, y, scale);
-    });
-
-    this.canvasApp?.setonDragCanvasEvent((x, y) => {
-      setPositionTargetCameraAnimation(x, y);
-    });
   }
 
   onAddComposition = (
@@ -749,6 +787,108 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       });
 
       node?.update?.();
+    }
+  };
+
+  editComposition = () => {
+    const selectedNodeInfo = getSelectedNode();
+    if (!selectedNodeInfo) {
+      return;
+    }
+    const node = (
+      selectedNodeInfo?.containerNode
+        ? (selectedNodeInfo?.containerNode?.nodeInfo as any)?.canvasAppInstance
+            ?.elements
+        : this.canvasApp?.elements
+    )?.get(selectedNodeInfo.id);
+
+    if (!node) {
+      return;
+    }
+
+    if (
+      node.nodeInfo?.isComposition &&
+      this.rootElement &&
+      node.nodeInfo.compositionId
+    ) {
+      (this.compositionEditButton?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+      (
+        this.compositionEditExitButton?.domElement as HTMLElement
+      ).classList.remove('hidden');
+
+      this.canvasApp?.setDisableInteraction(true);
+
+      (this.canvas?.domElement as HTMLElement).classList.add('hidden');
+      (this.canvas?.domElement as HTMLElement).classList.add(
+        'pointer-events-none'
+      );
+      const composition = this.canvasApp?.compositons?.getComposition(
+        node.nodeInfo.compositionId
+      );
+      if (!composition) {
+        return;
+      }
+
+      const canvasApp = createCanvasApp<GLNodeInfo>(
+        this.rootElement,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'composition-canvas-' + node.nodeInfo.compositionId
+      );
+      canvasApp?.setCamera(0, 0, 1);
+
+      importToCanvas(
+        composition.nodes,
+        canvasApp,
+        () => {
+          //
+        },
+        undefined,
+        0,
+        getGLNodeTaskFactory
+      );
+
+      const quitCameraSubscribtion = setCameraAnimation(canvasApp);
+      canvasApp.setOnWheelEvent((x, y, scale) => {
+        setPositionTargetCameraAnimation(x, y, scale);
+      });
+
+      canvasApp.centerCamera();
+      const handler = () => {
+        quitCameraSubscribtion();
+
+        canvasApp?.elements.forEach((element) => {
+          element.domElement.remove();
+          this.removeElement(element);
+        });
+        canvasApp?.elements.clear();
+        canvasApp?.setDisableInteraction(true);
+        canvasApp.removeEvents();
+        canvasApp.canvas?.domElement.remove();
+
+        (this.canvas?.domElement as HTMLElement).classList.remove('hidden');
+        (this.canvas?.domElement as HTMLElement).classList.remove(
+          'pointer-events-none'
+        );
+        this.canvasApp?.setDisableInteraction(false);
+        this.canvasApp?.centerCamera();
+
+        (
+          this.compositionEditExitButton?.domElement as HTMLElement
+        ).removeEventListener('click', handler);
+
+        (
+          this.compositionEditExitButton?.domElement as HTMLElement
+        ).classList.add('hidden');
+      };
+      (
+        this.compositionEditExitButton?.domElement as HTMLElement
+      ).addEventListener('click', handler);
+      //
     }
   };
 
@@ -992,7 +1132,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     thumbIdentifierWithinNode?: string
   ) => {
     const inputs: Record<string, string> = {};
-    if (node?.nodeInfo?.isComposite) {
+    if (node?.nodeInfo?.isComposition) {
       console.log('Composite node in getNodeOutput', node);
     }
     (node?.connections ?? []).forEach((connection) => {
@@ -1005,7 +1145,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
         if (
           connection.endNodeThumb?.thumbIdentifierWithinNode &&
-          node.nodeInfo?.isComposite
+          node.nodeInfo?.isComposition
         ) {
           inputs[connection.endNodeThumb.thumbIdentifierWithinNode] =
             this.getNodeOutput(

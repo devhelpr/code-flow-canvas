@@ -40,7 +40,8 @@ export const createCanvasApp = <T>(
   disableInteraction?: boolean,
   disableZoom?: boolean,
   backgroundColor?: string,
-  interactionStateMachineInstance?: InteractionStateMachine<T>
+  interactionStateMachineInstance?: InteractionStateMachine<T>,
+  canvasId?: string
 ) => {
   const interactionStateMachine =
     interactionStateMachineInstance ?? createInteractionStateMachine<T>();
@@ -97,7 +98,7 @@ export const createCanvasApp = <T>(
   const canvas = createNodeElement<T>(
     'div',
     {
-      id: 'canvas',
+      id: canvasId ?? 'canvas',
       class: `w-full h-full origin-top-left ${
         backgroundColor ?? 'bg-slate-800'
       } flex-auto relative z-10 transition-none transform-gpu`,
@@ -148,19 +149,13 @@ export const createCanvasApp = <T>(
         ') ';
     }
   };
+  const onContextMenu = (event: Event) => {
+    console.log('contextmenu canvas', event.target, canvas.domElement);
+    interactionStateMachine.reset();
+  };
+  rootElement.addEventListener('contextmenu', onContextMenu, false);
 
-  rootElement.addEventListener(
-    'contextmenu',
-    function (event) {
-      //event.preventDefault();
-      console.log('contextmenu canvas', event.target, canvas.domElement);
-      interactionStateMachine.reset();
-      //return false;
-    },
-    false
-  );
-
-  rootElement.addEventListener('pointerdown', (event: PointerEvent) => {
+  const onPointerDown = (event: PointerEvent) => {
     //console.log('pointerdown canvas', event.target, canvas.domElement);
     if (disableInteraction) {
       return;
@@ -174,7 +169,7 @@ export const createCanvasApp = <T>(
     ) {
       if (
         !(event.target as unknown as any).closest ||
-        !(event.target as unknown as any).closest('#canvas')
+        !(event.target as unknown as any).closest(`#${canvasId ?? 'canvas'}`)
       ) {
         isClicking = false;
         isMoving = false;
@@ -192,398 +187,353 @@ export const createCanvasApp = <T>(
     isMoving = false;
     wasMoved = false;
     startTime = Date.now();
-  });
+  };
+  rootElement.addEventListener('pointerdown', onPointerDown);
 
-  if (!disableInteraction) {
-    rootElement.addEventListener('pointermove', (event: PointerEvent) => {
-      if (disableInteraction) {
-        return;
-      }
+  let wheelTime = -1;
 
-      //const canvasRect = canvas.domElement.getBoundingClientRect();
-      if (
-        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-          (event.target as HTMLElement)?.tagName
-        ) >= 0 ||
-        (event.target !== rootElement && event.target !== canvas.domElement)
-      ) {
-        if (
-          !(event.target as unknown as any).closest ||
-          !(event.target as unknown as any).closest('#canvas')
-        ) {
-          return;
-        }
-      }
-
-      if (isClicking) {
-        isMoving = true;
-        wasMoved = true;
-      }
-      if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
-        //return;
-      }
-      let currentState = interactionStateMachine.getCurrentInteractionState();
-
-      if (
-        currentState.state === InteractionState.Idle &&
-        isClicking &&
-        !disableZoom
-      ) {
-        startClientDragX = event.clientX;
-        startClientDragY = event.clientY;
-        startDragX = xCamera;
-        startDragY = yCamera;
-        //console.log('dragging canvas', canvas.id, event.target);
-        interactionStateMachine.interactionEventState(
-          InteractionEvent.PointerDown,
-          {
-            id: canvas.id,
-            type: 'Canvas',
-            interactionInfo: {
-              xOffsetWithinElementOnFirstClick: 0,
-              yOffsetWithinElementOnFirstClick: 0,
-            },
-          },
-          canvas as unknown as INodeComponent<T>
-        );
-        currentState = interactionStateMachine.getCurrentInteractionState();
-      }
-      if (
-        currentState.state === InteractionState.Moving &&
-        currentState.element &&
-        currentState.target
-      ) {
-        const interactionState = interactionStateMachine.interactionEventState(
-          InteractionEvent.PointerMove,
-          currentState.target,
-          currentState.element
-        );
-
-        if (interactionState) {
-          //console.log('pointermove canvas', interactionState);
-          if (interactionState.target?.id === canvas.id) {
-            setCameraPosition(event.clientX, event.clientY);
-            if (onDragCanvasEvent) {
-              onDragCanvasEvent(xCamera, yCamera);
-            }
-          } else {
-            const { x, y } = transformCameraSpaceToWorldSpace(
-              event.clientX,
-              event.clientY
-            );
-
-            currentState.target.pointerMove &&
-              currentState.target.pointerMove(
-                x,
-                y,
-                currentState.element,
-                canvas,
-                currentState.target.interactionInfo,
-                interactionStateMachine
-              );
-
-            if (onCameraChanged) {
-              onCameraChanged(getCamera());
-            }
-          }
-        }
-      }
-    });
-    rootElement.addEventListener('pointerup', (event: PointerEvent) => {
-      if (disableInteraction) {
-        return;
-      }
-      const currentState = interactionStateMachine.getCurrentInteractionState();
-      if (
-        currentState.state === InteractionState.Moving &&
-        currentState.element &&
-        currentState.target
-      ) {
-        const interactionState = interactionStateMachine.interactionEventState(
-          InteractionEvent.PointerUp,
-          currentState.target,
-          currentState.element,
-          true
-        );
-        if (interactionState) {
-          if (currentState.target?.id === canvas.id) {
-            setCameraPosition(event.clientX, event.clientY);
-
-            interactionStateMachine.interactionEventState(
-              InteractionEvent.PointerUp,
-              currentState.target,
-              currentState.element
-            );
-            console.log('pointerup canvas', isMoving, wasMoved);
-            if (!wasMoved) {
-              setSelectNode(undefined);
-            }
-          } else {
-            const { x, y } = transformCameraSpaceToWorldSpace(
-              event.clientX,
-              event.clientY
-            );
-
-            currentState.target.pointerUp &&
-              currentState.target.pointerUp(
-                x,
-                y,
-                currentState.element,
-                canvas,
-                currentState.target.interactionInfo,
-                interactionStateMachine
-              );
-          }
-        }
-      } else {
-        if (
-          !isMoving &&
-          isClicking
-          // ||
-          // (isClicking &&
-          //   isMoving &&
-          //   Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD)
-        ) {
-          console.log(
-            'click canvas',
-            event.target,
-            isMoving,
-            Date.now() - startTime
-          );
-
-          // comment this to keep the selected id after clicking in the menu .. side effects?
-          //setSelectNode(undefined);
-
-          // if (onClickCanvas) {
-          //   const mousePointTo = {
-          //     x: event.clientX / scaleCamera - xCamera / scaleCamera,
-          //     y: event.clientY / scaleCamera - yCamera / scaleCamera,
-          //   };
-          //   onClickCanvas(mousePointTo.x, mousePointTo.y);
-          // }
-        }
-      }
-      isMoving = false;
-      isClicking = false;
-    });
-    rootElement.addEventListener('pointerleave', (event: PointerEvent) => {
-      if (disableInteraction) {
-        return;
-      }
-
-      isMoving = false;
-      isClicking = false;
-      wasMoved = false;
-
-      const currentState = interactionStateMachine.getCurrentInteractionState();
-      console.log('pointerleave canvas', event, currentState, canvas.id);
-      if (currentState?.canvasNode?.id === undefined || !event.target) {
-        console.log('pointerleave reset');
-        interactionStateMachine.reset();
-      } else if (currentState.canvasNode?.id !== canvas.id) {
-        return;
-      }
-      if (
-        currentState.state === InteractionState.Moving &&
-        currentState.element &&
-        currentState.target
-      ) {
-        const interactionState = interactionStateMachine.interactionEventState(
-          InteractionEvent.PointerLeave,
-          currentState.target,
-          currentState.element
-        );
-
-        if (interactionState) {
-          if (currentState.target?.id === canvas.id) {
-            //
-          } else if (
-            currentState.element?.parent?.containerNode?.domElement ===
-            event.target
-          ) {
-            //
-          } else {
-            const canvasRect = (
-              canvas.domElement as unknown as HTMLElement | SVGElement
-            ).getBoundingClientRect();
-            const { x, y } = transformCameraSpaceToWorldSpace(
-              event.clientX - canvasRect.x,
-              event.clientY - canvasRect.y
-            );
-            console.log(
-              'POINTER LEAVE CANVAS',
-              event,
-              currentState.target,
-              currentState.element,
-              'Ids',
-              currentState.element?.parent?.containerNode?.id,
-              currentState.target?.id
-            );
-
-            currentState.target.pointerUp &&
-              currentState.target.pointerUp(
-                x,
-                y,
-                currentState.element,
-                canvas,
-                currentState.target.interactionInfo,
-                interactionStateMachine
-              );
-          }
-        }
-      }
-    });
-
-    let wheelTime = -1;
-    if (!disableZoom) {
-      rootElement.addEventListener('wheel', (event: WheelEvent) => {
-        if (
-          event.target &&
-          (event.target as any).closest &&
-          ((event.target as any).closest('.menu') ||
-            (event.target as any).closest('.menu-container'))
-        ) {
-          return;
-        }
-
-        if (disableInteraction) {
-          return;
-        }
-        event.preventDefault();
-
-        if (wheelTime === -1) {
-          wheelTime = event.timeStamp;
-        }
-        let timeDiff = event.timeStamp - wheelTime;
-        if (event.shiftKey) {
-          timeDiff = timeDiff * 16;
-        }
-        //isMacOs
-
-        // const delta = Math.max(
-        //   -1,
-        //   Math.min(1, (event as unknown as any).wheelDelta || -event.detail)
-        // );
-
-        const factor = event.ctrlKey
-          ? isMacOs
-            ? 350
-            : 50
-          : isMacOs
-          ? 150
-          : 20;
-
-        const delta =
-          -event.deltaY *
-          (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
-          factor;
-
-        // Determine the scale factor for the zoom
-        const scaleFactor = 1 + delta * 0.05;
-
-        const scaleBy = scaleFactor;
-
-        if (canvas.domElement) {
-          const mousePointTo = {
-            x: event.clientX / scaleCamera - xCamera / scaleCamera,
-            y: event.clientY / scaleCamera - yCamera / scaleCamera,
-          };
-
-          let newScale = scaleCamera * scaleBy;
-          if (newScale < 0.05) {
-            newScale = 0.05;
-          } else if (newScale > 5) {
-            newScale = 5;
-          }
-
-          const newPos = {
-            x: -(mousePointTo.x - event.clientX / newScale) * newScale,
-            y: -(mousePointTo.y - event.clientY / newScale) * newScale,
-          };
-
-          // scaleCamera = scaleCamera * scaleBy;
-          // if (scaleCamera < 0.05) {
-          //   scaleCamera = 0.05;
-          // } else if (scaleCamera > 5) {
-          //   scaleCamera = 5;
-          // }
-
-          // const newPos = {
-          //   x: -(mousePointTo.x - event.clientX / scaleCamera) * scaleCamera,
-          //   y: -(mousePointTo.y - event.clientY / scaleCamera) * scaleCamera,
-          // };
-
-          // xCamera = newPos.x;
-          // yCamera = newPos.y;
-
-          // setCamera(xCamera, yCamera, scaleCamera);
-          // nodeTransformer.updateCamera();
-          // if (onCameraChanged) {
-          //   onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
-          // }
-
-          // (canvas.domElement as unknown as HTMLElement).style.transform =
-          //   'translate(' +
-          //   xCamera +
-          //   'px,' +
-          //   yCamera +
-          //   'px) ' +
-          //   'scale(' +
-          //   scaleCamera +
-          //   ',' +
-          //   scaleCamera +
-          //   ') ';
-
-          // if (onWheelEvent) {
-          //   onWheelEvent(xCamera, yCamera, scaleCamera);
-          // }
-
-          if (onWheelEvent) {
-            onWheelEvent(newPos.x, newPos.y, newScale);
-          }
-        }
-        return false;
-      });
+  const wheelEvent = (event: WheelEvent) => {
+    if (
+      event.target &&
+      (event.target as any).closest &&
+      ((event.target as any).closest('.menu') ||
+        (event.target as any).closest('.menu-container'))
+    ) {
+      return;
     }
 
-    rootElement.addEventListener('click', (event: MouseEvent) => {
-      console.log(
-        'click canvas (click event)',
-        wasMoved,
-        isMoving,
-        event.target
-      );
-      if (disableInteraction) {
-        return false;
+    if (disableInteraction) {
+      return;
+    }
+    event.preventDefault();
+    if (wheelTime === -1) {
+      wheelTime = event.timeStamp;
+    }
+    let timeDiff = event.timeStamp - wheelTime;
+    if (event.shiftKey) {
+      timeDiff = timeDiff * 16;
+    }
+
+    const factor = event.ctrlKey ? (isMacOs ? 350 : 50) : isMacOs ? 150 : 20;
+
+    const delta =
+      -event.deltaY *
+      (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
+      factor;
+
+    // Determine the scale factor for the zoom
+    const scaleFactor = 1 + delta * 0.05;
+
+    const scaleBy = scaleFactor;
+
+    if (canvas.domElement) {
+      const mousePointTo = {
+        x: event.clientX / scaleCamera - xCamera / scaleCamera,
+        y: event.clientY / scaleCamera - yCamera / scaleCamera,
+      };
+
+      let newScale = scaleCamera * scaleBy;
+      if (newScale < 0.05) {
+        newScale = 0.05;
+      } else if (newScale > 5) {
+        newScale = 5;
       }
-      const tagName = (event.target as HTMLElement)?.tagName;
 
+      const newPos = {
+        x: -(mousePointTo.x - event.clientX / newScale) * newScale,
+        y: -(mousePointTo.y - event.clientY / newScale) * newScale,
+      };
+
+      if (onWheelEvent) {
+        onWheelEvent(newPos.x, newPos.y, newScale);
+      }
+    }
+    return false;
+  };
+
+  const onPointerMove = (event: PointerEvent) => {
+    if (disableInteraction) {
+      return;
+    }
+
+    //const canvasRect = canvas.domElement.getBoundingClientRect();
+    if (
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0 ||
+      (event.target !== rootElement && event.target !== canvas.domElement)
+    ) {
       if (
-        !wasMoved &&
-        onClickCanvas &&
-        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(tagName) < 0
+        !(event.target as unknown as any).closest ||
+        !(event.target as unknown as any).closest(`#${canvasId ?? 'canvas'}`)
       ) {
-        if (
-          // isClicking
-          (!wasMoved && event.target === rootElement) ||
-          event.target === canvas.domElement
-        ) {
-          console.log('rootElement click', event.target, tagName);
-          event.preventDefault();
-          const mousePointTo = {
-            x: event.clientX / scaleCamera - xCamera / scaleCamera,
-            y: event.clientY / scaleCamera - yCamera / scaleCamera,
-          };
-          onClickCanvas(mousePointTo.x, mousePointTo.y);
-          nodeTransformer.detachNode();
-          nodeSelector.removeSelector();
+        return;
+      }
+    }
 
-          return false;
+    if (isClicking) {
+      isMoving = true;
+      wasMoved = true;
+    }
+    if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
+      //return;
+    }
+    let currentState = interactionStateMachine.getCurrentInteractionState();
+
+    if (
+      currentState.state === InteractionState.Idle &&
+      isClicking &&
+      !disableZoom
+    ) {
+      startClientDragX = event.clientX;
+      startClientDragY = event.clientY;
+      startDragX = xCamera;
+      startDragY = yCamera;
+      //console.log('dragging canvas', canvas.id, event.target);
+      interactionStateMachine.interactionEventState(
+        InteractionEvent.PointerDown,
+        {
+          id: canvas.id,
+          type: 'Canvas',
+          interactionInfo: {
+            xOffsetWithinElementOnFirstClick: 0,
+            yOffsetWithinElementOnFirstClick: 0,
+          },
+        },
+        canvas as unknown as INodeComponent<T>
+      );
+      currentState = interactionStateMachine.getCurrentInteractionState();
+    }
+    if (
+      currentState.state === InteractionState.Moving &&
+      currentState.element &&
+      currentState.target
+    ) {
+      const interactionState = interactionStateMachine.interactionEventState(
+        InteractionEvent.PointerMove,
+        currentState.target,
+        currentState.element
+      );
+
+      if (interactionState) {
+        //console.log('pointermove canvas', interactionState);
+        if (interactionState.target?.id === canvas.id) {
+          setCameraPosition(event.clientX, event.clientY);
+          if (onDragCanvasEvent) {
+            onDragCanvasEvent(xCamera, yCamera);
+          }
+        } else {
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            event.clientX,
+            event.clientY
+          );
+
+          currentState.target.pointerMove &&
+            currentState.target.pointerMove(
+              x,
+              y,
+              currentState.element,
+              canvas,
+              currentState.target.interactionInfo,
+              interactionStateMachine
+            );
+
+          if (onCameraChanged) {
+            onCameraChanged(getCamera());
+          }
         }
       }
+    }
+  };
 
-      return true;
-    });
+  const onPointerUp = (event: PointerEvent) => {
+    if (disableInteraction) {
+      return;
+    }
+    const currentState = interactionStateMachine.getCurrentInteractionState();
+    if (
+      currentState.state === InteractionState.Moving &&
+      currentState.element &&
+      currentState.target
+    ) {
+      const interactionState = interactionStateMachine.interactionEventState(
+        InteractionEvent.PointerUp,
+        currentState.target,
+        currentState.element,
+        true
+      );
+      if (interactionState) {
+        if (currentState.target?.id === canvas.id) {
+          setCameraPosition(event.clientX, event.clientY);
+
+          interactionStateMachine.interactionEventState(
+            InteractionEvent.PointerUp,
+            currentState.target,
+            currentState.element
+          );
+          console.log('pointerup canvas', isMoving, wasMoved);
+          if (!wasMoved) {
+            setSelectNode(undefined);
+          }
+        } else {
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            event.clientX,
+            event.clientY
+          );
+
+          currentState.target.pointerUp &&
+            currentState.target.pointerUp(
+              x,
+              y,
+              currentState.element,
+              canvas,
+              currentState.target.interactionInfo,
+              interactionStateMachine
+            );
+        }
+      }
+    } else {
+      if (
+        !isMoving &&
+        isClicking
+        // ||
+        // (isClicking &&
+        //   isMoving &&
+        //   Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD)
+      ) {
+        console.log(
+          'click canvas',
+          event.target,
+          isMoving,
+          Date.now() - startTime
+        );
+
+        // comment this to keep the selected id after clicking in the menu .. side effects?
+        //setSelectNode(undefined);
+
+        // if (onClickCanvas) {
+        //   const mousePointTo = {
+        //     x: event.clientX / scaleCamera - xCamera / scaleCamera,
+        //     y: event.clientY / scaleCamera - yCamera / scaleCamera,
+        //   };
+        //   onClickCanvas(mousePointTo.x, mousePointTo.y);
+        // }
+      }
+    }
+    isMoving = false;
+    isClicking = false;
+  };
+  const onPointerLeave = (event: PointerEvent) => {
+    if (disableInteraction) {
+      return;
+    }
+
+    isMoving = false;
+    isClicking = false;
+    wasMoved = false;
+
+    const currentState = interactionStateMachine.getCurrentInteractionState();
+    console.log('pointerleave canvas', event, currentState, canvas.id);
+    if (currentState?.canvasNode?.id === undefined || !event.target) {
+      console.log('pointerleave reset');
+      interactionStateMachine.reset();
+    } else if (currentState.canvasNode?.id !== canvas.id) {
+      return;
+    }
+    if (
+      currentState.state === InteractionState.Moving &&
+      currentState.element &&
+      currentState.target
+    ) {
+      const interactionState = interactionStateMachine.interactionEventState(
+        InteractionEvent.PointerLeave,
+        currentState.target,
+        currentState.element
+      );
+
+      if (interactionState) {
+        if (currentState.target?.id === canvas.id) {
+          //
+        } else if (
+          currentState.element?.parent?.containerNode?.domElement ===
+          event.target
+        ) {
+          //
+        } else {
+          const canvasRect = (
+            canvas.domElement as unknown as HTMLElement | SVGElement
+          ).getBoundingClientRect();
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            event.clientX - canvasRect.x,
+            event.clientY - canvasRect.y
+          );
+          console.log(
+            'POINTER LEAVE CANVAS',
+            event,
+            currentState.target,
+            currentState.element,
+            'Ids',
+            currentState.element?.parent?.containerNode?.id,
+            currentState.target?.id
+          );
+
+          currentState.target.pointerUp &&
+            currentState.target.pointerUp(
+              x,
+              y,
+              currentState.element,
+              canvas,
+              currentState.target.interactionInfo,
+              interactionStateMachine
+            );
+        }
+      }
+    }
+  };
+  const onClick = (event: MouseEvent) => {
+    console.log('click canvas (click event)', wasMoved, isMoving, event.target);
+    if (disableInteraction) {
+      return false;
+    }
+    const tagName = (event.target as HTMLElement)?.tagName;
+
+    if (
+      !wasMoved &&
+      onClickCanvas &&
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(tagName) < 0
+    ) {
+      if (
+        // isClicking
+        (!wasMoved && event.target === rootElement) ||
+        event.target === canvas.domElement
+      ) {
+        console.log('rootElement click', event.target, tagName);
+        event.preventDefault();
+        const mousePointTo = {
+          x: event.clientX / scaleCamera - xCamera / scaleCamera,
+          y: event.clientY / scaleCamera - yCamera / scaleCamera,
+        };
+        onClickCanvas(mousePointTo.x, mousePointTo.y);
+        nodeTransformer.detachNode();
+        nodeSelector.removeSelector();
+
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  if (!disableInteraction) {
+    rootElement.addEventListener('pointermove', onPointerMove);
+    rootElement.addEventListener('pointerup', onPointerUp);
+    rootElement.addEventListener('pointerleave', onPointerLeave);
+
+    if (!disableZoom) {
+      rootElement.addEventListener('wheel', wheelEvent);
+    }
+
+    rootElement.addEventListener('click', onClick);
   }
 
   const hiddenSVG = createNSElement(
@@ -606,6 +556,15 @@ export const createCanvasApp = <T>(
     },
     hiddenSVG.domElement
   );
+
+  const removeEvents = () => {
+    rootElement.removeEventListener('wheel', wheelEvent);
+    rootElement.removeEventListener('pointerdown', onPointerDown);
+    rootElement.removeEventListener('pointermove', onPointerMove);
+    rootElement.removeEventListener('pointerup', onPointerUp);
+    rootElement.removeEventListener('pointerleave', onPointerLeave);
+    rootElement.removeEventListener('contextmenu', onContextMenu, false);
+  };
 
   // const getCurrentScope = () => {
   //   return scopeStack.length > 0 ? scopeStack[scopeStack.length - 1] : '';
@@ -685,6 +644,12 @@ export const createCanvasApp = <T>(
     },
     transformCameraSpaceToWorldSpace: (x: number, y: number) => {
       return transformCameraSpaceToWorldSpace(x, y);
+    },
+    setDisableInteraction: (disable: boolean) => {
+      disableInteraction = disable;
+    },
+    removeEvents: () => {
+      removeEvents();
     },
     centerCamera: () => {
       console.log('centerCamera');

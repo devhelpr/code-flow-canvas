@@ -20,7 +20,7 @@ export interface BaseNodeInfo {
   taskType?: string;
   type?: string;
   compositionId?: string;
-  isComposite?: boolean;
+  isComposition?: boolean;
 
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;

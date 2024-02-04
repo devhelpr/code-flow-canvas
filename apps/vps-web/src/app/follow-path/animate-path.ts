@@ -188,7 +188,11 @@ export function setOnFrame(handler: (elapsed: number) => void) {
 
 let lastTime: number | undefined = undefined;
 export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
+  let quit = false;
   const animateCamera = (time: number) => {
+    if (quit) {
+      return;
+    }
     if (lastTime === undefined) {
       lastTime = time;
     }
@@ -399,6 +403,9 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
     requestAnimationFrame(animateCamera);
   };
   requestAnimationFrame(animateCamera);
+  return () => {
+    quit = true;
+  };
 }
 
 export let runCounter = 0;

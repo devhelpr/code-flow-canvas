@@ -200,7 +200,9 @@ export const getCreateCompositionNode =
       (nodeInstance) => {
         canvasApp = nodeInstance.contextInstance;
         if (nodeInstance.node?.nodeInfo) {
-          (nodeInstance.node.nodeInfo as GLNodeInfo).isComposite = true;
+          (nodeInstance.node.nodeInfo as GLNodeInfo).isComposition = true;
+          (nodeInstance.node.nodeInfo as GLNodeInfo).compositionId =
+            compositionId;
         }
       },
       {
