@@ -417,6 +417,7 @@ export class AppElement<T> {
       this.removeElement(element);
     });
     this.canvasApp?.elements.clear();
+    this.canvasApp?.compositons.clearCompositions();
     this.canvasApp?.setCamera(0, 0, 1);
   };
 

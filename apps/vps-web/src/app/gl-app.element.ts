@@ -830,6 +830,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       if (!composition) {
         return;
       }
+      this.canvasApp?.setIsCameraFollowingPaused(true);
 
       const canvasApp = createCanvasApp<GLNodeInfo>(
         this.rootElement,
@@ -856,6 +857,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       canvasApp.setOnWheelEvent((x, y, scale) => {
         setPositionTargetCameraAnimation(x, y, scale);
       });
+      canvasApp.setonDragCanvasEvent((x, y) => {
+        setPositionTargetCameraAnimation(x, y);
+      });
 
       canvasApp.centerCamera();
       const handler = () => {
@@ -874,6 +878,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         (this.canvas?.domElement as HTMLElement).classList.remove(
           'pointer-events-none'
         );
+        this.canvasApp?.setIsCameraFollowingPaused(false);
         this.canvasApp?.setDisableInteraction(false);
         this.canvasApp?.centerCamera();
 
@@ -991,6 +996,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     }
 
     vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
+      return a + b*cos( 6.28318*(c*t+d) );  
+    }
+
+    vec3 palette2(float t) {
+      vec3 a = vec3(0.5, 0.5, 0.5);
+      vec3 b = vec3(0.5, 0.5, 0.5);
+      vec3 c = vec3(1.0, 1.0, 1.0);
+      vec3 d = vec3(0.263,0.416,0.557);
+
       return a + b*cos( 6.28318*(c*t+d) );
     }
 

@@ -94,7 +94,9 @@ export const getCreateCompositionNode =
         const result = helper?.(
           0,
           0,
-          hasInputBeenSet ? inputs : payload,
+          hasInputBeenSet
+            ? { ...inputs, nodeInfo: node?.nodeInfo }
+            : { ...payload, nodeInfo: node?.nodeInfo },
           thumbName,
           thumbIdentifierWithinNode
         );

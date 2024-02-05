@@ -289,7 +289,7 @@ export const createCanvasApp = <T>(
       startClientDragY = event.clientY;
       startDragX = xCamera;
       startDragY = yCamera;
-      //console.log('dragging canvas', canvas.id, event.target);
+      console.log('dragging canvas', canvas.id, event.target);
       interactionStateMachine.interactionEventState(
         InteractionEvent.PointerDown,
         {
@@ -491,11 +491,18 @@ export const createCanvasApp = <T>(
     }
   };
   const onClick = (event: MouseEvent) => {
-    console.log('click canvas (click event)', wasMoved, isMoving, event.target);
+    const tagName = (event.target as HTMLElement)?.tagName;
+    console.log(
+      'click canvas (click event)',
+      wasMoved,
+      isMoving,
+      tagName,
+      disableInteraction,
+      event.target
+    );
     if (disableInteraction) {
       return false;
     }
-    const tagName = (event.target as HTMLElement)?.tagName;
 
     if (
       !wasMoved &&
@@ -569,6 +576,8 @@ export const createCanvasApp = <T>(
   // const getCurrentScope = () => {
   //   return scopeStack.length > 0 ? scopeStack[scopeStack.length - 1] : '';
   // };
+
+  let isCameraFollowingPaused = false;
   return {
     elements,
     canvas,
@@ -586,6 +595,12 @@ export const createCanvasApp = <T>(
       ) => void
     ) => {
       nodeSelector.onAddComposition = onAddComposition;
+    },
+    getIsCameraFollowingPaused: () => {
+      return isCameraFollowingPaused;
+    },
+    setIsCameraFollowingPaused: (paused: boolean) => {
+      isCameraFollowingPaused = paused;
     },
     getOnCanvasUpdated: () => {
       return onCanvasUpdated;

@@ -11,7 +11,7 @@ import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'create-vector2';
-const labelName = 'Create vecto2';
+const labelName = 'Create vector';
 const nodeName = 'create-vector2';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'vec2';

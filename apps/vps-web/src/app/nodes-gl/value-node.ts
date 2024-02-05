@@ -19,9 +19,9 @@ export const getValueNode: NodeTaskFactory<GLNodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (input: string) => {
+  const compute = (input: string, _loopIndex?: number, payload?: any) => {
     let value = parseFloat(
-      node.nodeInfo?.formValues?.['value'] ?? 0
+      (node || payload)?.nodeInfo?.formValues?.['value'] ?? 0
     ).toString();
     if (value.indexOf('.') < 0) {
       value = `${value}.0`;

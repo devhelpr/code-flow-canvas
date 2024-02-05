@@ -27,6 +27,16 @@ import { GLNodeInfo } from '../types/gl-node-info';
 import { Composition } from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes-gl/composition';
 import { getAtanNode } from '../nodes-gl/atan';
+import { getExpNode } from '../nodes-gl/exp';
+import { getFractNode } from '../nodes-gl/fract';
+import { getAdditiveInverseNode } from '../nodes-gl/additive-inverse';
+import { getPowNode } from '../nodes-gl/pow';
+import { getScaleColorNode } from '../nodes-gl/scaleColor';
+import { getDivideNode } from '../nodes-gl/divide';
+import { getFractVectorNode } from '../nodes-gl/fract-vector';
+import { getAdditionVectorNode } from '../nodes-gl/add-vectors';
+import { getMixVectorColorNode } from '../nodes-gl/mix-color-vectors';
+import { getAdditionVectorColorNode } from '../nodes-gl/add-color-vectors';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -55,12 +65,27 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('color-node', getColorNode, 'Color');
   registerGLNodeFactory('value-node', getValueNode, 'Value');
 
+  registerGLNodeFactory(
+    'additive-inverse-node',
+    getAdditiveInverseNode,
+    'Additive Inverse'
+  );
   registerGLNodeFactory('sine-node', getSineNode, 'Sine');
   registerGLNodeFactory('cosine-node', getCosineNode, 'Cosine');
   registerGLNodeFactory('atan-node', getAtanNode, 'Atan');
+  registerGLNodeFactory('exp-node', getExpNode, 'Exp');
+  registerGLNodeFactory('fract-node', getFractNode, 'Fract');
+  registerGLNodeFactory(
+    'fract-vector-node',
+    getFractVectorNode,
+    'Fract vector'
+  );
+  registerGLNodeFactory('pow-node', getPowNode, 'Pow');
+
   registerGLNodeFactory('time-node', getTimeNode, 'Time');
   registerGLNodeFactory('absolute-node', getAbsoluteNode, 'Absolute');
   registerGLNodeFactory('multiply-node', getMultiplyNode, 'Multiply');
+  registerGLNodeFactory('divide-node', getDivideNode, 'Divide');
   registerGLNodeFactory(
     'multiply-color-node',
     getMultiplyColorNode,
@@ -70,10 +95,17 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('subtract-node', getSubtractNode, 'Subtraction');
   registerGLNodeFactory('modulo-float-node', getModuloFloatNode, 'Modulo');
 
+  registerGLNodeFactory(
+    'addition-vector-node',
+    getAdditionVectorNode,
+    'Add Vectors'
+  );
+
   registerGLNodeFactory('noise-node', getNoiseNode, 'Noise');
 
   registerGLNodeFactory('rotate-node', getRotateNode, 'Rotate');
   registerGLNodeFactory('scale-node', getScaleNode, 'Scale');
+  registerGLNodeFactory('scale-color-node', getScaleColorNode, 'Scale color');
 
   registerGLNodeFactory(
     'smooth-step-float-node',
@@ -86,12 +118,12 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory(
     'create-vector2',
     getCreateVector2Node,
-    'Create Vector2'
+    'Create Vector'
   );
   registerGLNodeFactory(
     'split-vector2-node',
     getSplitVector2dNode,
-    'Split Vector2'
+    'Split Vector'
   );
 
   registerGLNodeFactory(
@@ -99,6 +131,15 @@ export const setupGLNodeTaskRegistry = () => {
     getSplitColorsNode,
     'Split Colors'
   );
+
+  registerGLNodeFactory('mix-color-vector-node', getMixVectorColorNode, 'Mix');
+
+  registerGLNodeFactory(
+    'addition-color-vector-node',
+    getAdditionVectorColorNode,
+    'Add colors'
+  );
+
   registerGLNodeFactory('palette', getPaletteNode, 'Palette');
   registerGLNodeFactory('circle-node', getCircleNode, 'Metaball(2d)');
 };

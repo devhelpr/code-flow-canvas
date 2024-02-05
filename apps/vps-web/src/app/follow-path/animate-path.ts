@@ -202,7 +202,11 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
       onFrame(elapsed);
     }
     //updateElapsedCounterElement(elapsed, lastTime, time);
-    if (targetX !== undefined && targetY !== undefined) {
+    if (
+      !canvasApp.getIsCameraFollowingPaused() &&
+      targetX !== undefined &&
+      targetY !== undefined
+    ) {
       const rootRect = canvasApp.rootElement.getBoundingClientRect();
       const canvasCamera = canvasApp.getCamera();
       let x = rootRect.width / 2 - 80 - targetX * targetScale; // 600

@@ -10,9 +10,9 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
-const fieldName = 'palette';
-const labelName = 'Palette';
-const nodeName = 'palette';
+const fieldName = 'additive-inverse';
+const labelName = 'Additive Inverse';
+const nodeName = 'additive-inverse-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
@@ -22,9 +22,8 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    thumbConstraint: 'vec3',
+    thumbConstraint: thumbConstraint,
     maxConnections: -1,
-    prefixLabel: 'vector3',
   },
   {
     thumbType: ThumbType.EndConnectorCenter,
@@ -33,22 +32,22 @@ const thumbs = [
     color: 'white',
     label: ' ',
 
-    name: 'index',
+    name: 'value',
     thumbConstraint: thumbConstraint,
-    prefixLabel: 'index',
+    prefixLabel: ' ',
   },
 ];
 
-export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
+export const getAdditiveInverseNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    const value = payload?.['index'];
+    const value = payload?.['value'];
     return {
-      result: `palette2(${value})`,
+      result: `-(${value})`,
       output: input,
       followPath: undefined,
     };
@@ -73,6 +72,7 @@ export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'Math',
     }
   );
 };

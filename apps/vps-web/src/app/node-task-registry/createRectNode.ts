@@ -171,7 +171,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
           : ''
       } min-h-auto flex-auto ${
         hasCenteredLabel
-          ? 'flex items-center border-slate-500 justify-center'
+          ? 'flex items-center border-slate-500 justify-center text-center'
           : 'p-4 pt-4'
       }
       ${settings?.additionalClassNames ?? ''} 

@@ -10,11 +10,11 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
-const fieldName = 'palette';
-const labelName = 'Palette';
-const nodeName = 'palette';
+const fieldName = 'scale-color';
+const labelName = 'Scale color';
+const nodeName = 'scale-color-node';
 const familyName = 'flow-canvas';
-const thumbConstraint = 'value';
+const thumbConstraint = 'vec3';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -22,33 +22,45 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    thumbConstraint: 'vec3',
+    thumbConstraint: thumbConstraint,
     maxConnections: -1,
-    prefixLabel: 'vector3',
+    prefixLabel: 'color',
   },
   {
-    thumbType: ThumbType.EndConnectorCenter,
+    thumbType: ThumbType.EndConnectorLeft,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
 
-    name: 'index',
+    name: 'color',
     thumbConstraint: thumbConstraint,
-    prefixLabel: 'index',
+    prefixLabel: 'color',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+
+    name: 'scale',
+    thumbConstraint: 'value',
+    prefixLabel: 'scale',
   },
 ];
 
-export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
+export const getScaleColorNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    const value = payload?.['index'];
+    const vector = payload?.['color'];
+    const scale = payload?.['scale'];
     return {
-      result: `palette2(${value})`,
+      result: `${vector} * ${scale}`,
       output: input,
       followPath: undefined,
     };

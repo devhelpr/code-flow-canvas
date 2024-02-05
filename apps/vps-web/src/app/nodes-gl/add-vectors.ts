@@ -10,11 +10,11 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
-const fieldName = 'palette';
-const labelName = 'Palette';
-const nodeName = 'palette';
+const fieldName = 'addition-vector';
+const labelName = 'Add vectors';
+const nodeName = 'addition-vector-node';
 const familyName = 'flow-canvas';
-const thumbConstraint = 'value';
+const thumbConstraint = 'vec2';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -22,33 +22,40 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    thumbConstraint: 'vec3',
+    thumbConstraint: thumbConstraint,
     maxConnections: -1,
-    prefixLabel: 'vector3',
   },
   {
-    thumbType: ThumbType.EndConnectorCenter,
+    thumbType: ThumbType.EndConnectorLeft,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-
-    name: 'index',
+    name: 'vector1',
     thumbConstraint: thumbConstraint,
-    prefixLabel: 'index',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'vector2',
+    thumbConstraint: thumbConstraint,
   },
 ];
 
-export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
+export const getAdditionVectorNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    const value = payload?.['index'];
+    const value1 = payload?.['vector1'];
+    const value2 = payload?.['vector2'];
     return {
-      result: `palette2(${value})`,
+      result: `${value1} + ${value2}`,
       output: input,
       followPath: undefined,
     };
@@ -62,8 +69,8 @@ export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
     compute,
     initializeCompute,
     false,
-    200,
     100,
+    320,
     thumbs,
     (_values?: InitialValues) => {
       return [];
@@ -73,6 +80,7 @@ export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      category: 'Math',
     }
   );
 };
