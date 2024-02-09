@@ -6,8 +6,11 @@ import {
 import { AddNodeCommand } from './add-node-command/add-node-command';
 import { DeleteNodeCommand } from './delete-node-command/delete-node-command';
 import { NodeTaskFactory } from '../node-task-registry';
+import { PasteNodeCommand } from './paste-node-command/paste-node-command';
+import { CopyNodeCommand } from './copy-node-command/copy-node-command';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const registerCommands = <T>(
+export const registerCommands = <T extends BaseNodeInfo>(
   rootElement: HTMLElement,
   canvasApp: CanvasAppInstance<T>,
   canvasUpdated: () => void,
@@ -24,7 +27,8 @@ export const registerCommands = <T>(
       canvasUpdated,
       removeElement,
       getNodeTaskFactory,
-      setupTasksInDropdown
+      setupTasksInDropdown,
+      commandRegistry
     )
   );
   commandRegistry.set(
@@ -35,7 +39,32 @@ export const registerCommands = <T>(
       canvasUpdated,
       removeElement,
       getNodeTaskFactory,
-      setupTasksInDropdown
+      setupTasksInDropdown,
+      commandRegistry
+    )
+  );
+  commandRegistry.set(
+    'copy-node',
+    new CopyNodeCommand<T>(
+      rootElement,
+      canvasApp,
+      canvasUpdated,
+      removeElement,
+      getNodeTaskFactory,
+      setupTasksInDropdown,
+      commandRegistry
+    )
+  );
+  commandRegistry.set(
+    'paste-node',
+    new PasteNodeCommand<T>(
+      rootElement,
+      canvasApp,
+      canvasUpdated,
+      removeElement,
+      getNodeTaskFactory,
+      setupTasksInDropdown,
+      commandRegistry
     )
   );
 };

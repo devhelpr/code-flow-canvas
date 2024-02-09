@@ -28,6 +28,7 @@ import {
 } from './follow-path/animate-path';
 import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-provider';
 import { executeCommand } from './command-handlers/register-commands';
+import { getSortedNodes } from './utils/sort-nodes';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -192,11 +193,17 @@ export class AppElement<T> {
     return undefined as unknown as HTMLSelectElement;
   };
 
+  metaKeyDown = false;
+
   initializeCommandHandlers = () => {
     let tabKeyWasUsed = false;
 
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'Tab') {
+      const cmdKey = 91;
+      this.metaKeyDown = false;
+      if (event.keyCode === cmdKey) {
+        this.metaKeyDown = true;
+      } else if (event.key === 'Tab') {
         tabKeyWasUsed = true;
         console.log('TAB KEY WAS USED');
         if (
@@ -240,16 +247,55 @@ export class AppElement<T> {
           console.log('TAB KEY WAS NOT USED', event.key);
         }
       }
+
+      const key = event.key.toLowerCase();
+      const inInputControle =
+        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+          (event.target as HTMLElement)?.tagName
+        ) >= 0;
+      if (!inInputControle) {
+        if (
+          (event.ctrlKey || event.metaKey || this.metaKeyDown) &&
+          key === 'c'
+        ) {
+          event.preventDefault();
+          this.removeFormElement();
+          const selectedNodeInfo = getSelectedNode();
+          executeCommand(
+            this.commandRegistry,
+            'copy-node',
+            this.getSelectTaskElement().value,
+            selectedNodeInfo?.id
+          );
+          return false;
+        }
+        if (
+          (event.ctrlKey || event.metaKey || this.metaKeyDown) &&
+          key === 'v'
+        ) {
+          event.preventDefault();
+          this.removeFormElement();
+          const selectedNodeInfo = getSelectedNode();
+          executeCommand(
+            this.commandRegistry,
+            'paste-node',
+            this.getSelectTaskElement().value,
+            selectedNodeInfo?.id
+          );
+          return false;
+        }
+      }
+      return true;
     });
     window.addEventListener('keyup', (event) => {
       console.log('keyup', event.key, event.ctrlKey);
       const key = event.key.toLowerCase();
+      const inInputControle =
+        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+          (event.target as HTMLElement)?.tagName
+        ) >= 0;
       if (key === 'backspace' || key === 'delete') {
-        if (
-          ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-            (event.target as HTMLElement)?.tagName
-          ) >= 0
-        ) {
+        if (inInputControle) {
           return;
         }
         this.removeFormElement();
@@ -273,6 +319,7 @@ export class AppElement<T> {
           selectedNodeInfo?.id
         );
       }
+
       if (event.ctrlKey && key === 'enter') {
         this.run();
       }
@@ -664,23 +711,9 @@ export class AppElement<T> {
     if (!this.canvasApp) {
       return;
     }
-    const nodes = (
+    const nodes = getSortedNodes(
       this.getStartNodes(this.canvasApp.elements, true) as any
-    ).toSorted((a: IRectNodeComponent<T>, b: IRectNodeComponent<T>) => {
-      const aHelper = `${Math.floor(a.y / 100)
-        .toFixed(2)
-        .padStart(8, '0')}_${a.x.toFixed(2).padStart(8, '0')}`;
-      const bHelper = `${Math.floor(b.y / 100)
-        .toFixed(2)
-        .padStart(8, '0')}_${b.x.toFixed(2).padStart(8, '0')}`;
-      if (aHelper < bHelper) {
-        return -1;
-      }
-      if (aHelper > bHelper) {
-        return 1;
-      }
-      return 0;
-    });
+    ) as IRectNodeComponent<T>[];
 
     nodes.sort((a: IRectNodeComponent<T>, b: IRectNodeComponent<T>) => {
       const aNodeInfo = a.nodeInfo as any;

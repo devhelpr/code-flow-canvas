@@ -13,6 +13,7 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { getSortedNodes } from '../utils/sort-nodes';
 
 const familyName = 'flow-canvas';
 
@@ -119,6 +120,7 @@ export const getCreateCompositionNode =
       _thumbName?: string,
       thumbIdentifierWithinNode?: string
     ) => {
+      let shader = '';
       let result: undefined | string = undefined;
       if (thumbIdentifierWithinNode && canvasApp) {
         if (!composition) {
@@ -158,6 +160,30 @@ export const getCreateCompositionNode =
         }
 
         if (composition) {
+          // const thumb = compositionThumbs.find(
+          //   (thumbEval) =>
+          //     thumbEval.thumbIdentifierWithinNode === thumbIdentifierWithinNode
+          // );
+
+          (
+            getSortedNodes(
+              composition.nodes
+            ) as unknown as FlowNode<GLNodeInfo>[]
+          ).forEach((node) => {
+            if (
+              node.nodeInfo?.type === 'set-vec2-variable-node' ||
+              node.nodeInfo?.type === 'set-color-variable-node' ||
+              node.nodeInfo?.type === 'set-and-add-color-variable-node'
+            ) {
+              shader += getNodeOutput(
+                node,
+                '',
+                thumbIdentifierWithinNode,
+                payload
+              );
+            }
+          });
+
           thumbs.forEach((thumb) => {
             if (
               composition &&
@@ -179,8 +205,9 @@ export const getCreateCompositionNode =
         }
       }
       return {
-        result: result ?? '',
+        result: thumbIdentifierWithinNode === 'test' ? shader : result ?? '',
         output: input,
+        preoutput: shader,
         followPath: undefined,
       };
     };

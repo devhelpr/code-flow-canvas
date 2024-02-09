@@ -1,5 +1,6 @@
 import {
   CanvasAppInstance,
+  ICommandHandler,
   IElementNode,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -16,15 +17,19 @@ import {
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { navbarButtonWithoutMargin } from '../../consts/classes';
+import { BaseNodeInfo } from '../../types/base-node-info';
 
-export class AddNodeCommand<T> extends CommandHandler<T> {
+export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
   constructor(
     rootElement: HTMLElement,
     canvasApp: CanvasAppInstance<T>,
     canvasUpdated: () => void,
     removeElement: (element: IElementNode<T>) => void,
     getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
-    setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void
+    setupTasksInDropdown: (
+      selectNodeTypeHTMLElement: HTMLSelectElement
+    ) => void,
+    commandRegistry: Map<string, ICommandHandler>
   ) {
     super(
       rootElement,
@@ -32,7 +37,8 @@ export class AddNodeCommand<T> extends CommandHandler<T> {
       canvasUpdated,
       removeElement,
       getNodeTaskFactory,
-      setupTasksInDropdown
+      setupTasksInDropdown,
+      commandRegistry
     );
     this.getNodeTaskFactory = getNodeTaskFactory;
     this.canvasApp = canvasApp;

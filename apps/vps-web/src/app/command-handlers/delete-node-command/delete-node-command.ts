@@ -1,5 +1,6 @@
 import {
   CanvasAppInstance,
+  ICommandHandler,
   IConnectionNodeComponent,
   IElementNode,
   IRectNodeComponent,
@@ -8,15 +9,21 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
 import { NodeTaskFactory } from '../../node-task-registry';
+import { BaseNodeInfo } from '../../types/base-node-info';
 
-export class DeleteNodeCommand<T> extends CommandHandler<T> {
+export class DeleteNodeCommand<
+  T extends BaseNodeInfo
+> extends CommandHandler<T> {
   constructor(
     rootElement: HTMLElement,
     canvasApp: CanvasAppInstance<T>,
     canvasUpdated: () => void,
     removeElement: (element: IElementNode<T>) => void,
     getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
-    setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void
+    setupTasksInDropdown: (
+      selectNodeTypeHTMLElement: HTMLSelectElement
+    ) => void,
+    commandRegistry: Map<string, ICommandHandler>
   ) {
     super(
       rootElement,
@@ -24,7 +31,8 @@ export class DeleteNodeCommand<T> extends CommandHandler<T> {
       canvasUpdated,
       removeElement,
       getNodeTaskFactory,
-      setupTasksInDropdown
+      setupTasksInDropdown,
+      commandRegistry
     );
     this.canvasApp = canvasApp;
     this.canvasUpdated = canvasUpdated;

@@ -1,10 +1,12 @@
 import {
   CanvasAppInstance,
+  ICommandHandler,
   IElementNode,
 } from '@devhelpr/visual-programming-system';
 import { NodeTaskFactory } from '../../node-task-registry';
+import { BaseNodeInfo } from '../../types/base-node-info';
 
-export class CommandHandler<T> {
+export class CommandHandler<T extends BaseNodeInfo> {
   constructor(
     _rootElement: HTMLElement,
     _canvasApp: CanvasAppInstance<T>,
@@ -13,7 +15,8 @@ export class CommandHandler<T> {
     _getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
     _setupTasksInDropdown: (
       selectNodeTypeHTMLElement: HTMLSelectElement
-    ) => void
+    ) => void,
+    _commandRegistry: Map<string, ICommandHandler>
   ) {
     //
   }

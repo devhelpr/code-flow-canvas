@@ -37,6 +37,13 @@ import { getFractVectorNode } from '../nodes-gl/fract-vector';
 import { getAdditionVectorNode } from '../nodes-gl/add-vectors';
 import { getMixVectorColorNode } from '../nodes-gl/mix-color-vectors';
 import { getAdditionVectorColorNode } from '../nodes-gl/add-color-vectors';
+import { getDefineVectorVariableNode } from '../nodes-gl/define-vec2-variable';
+import { getSetVectorVariableNode } from '../nodes-gl/set-vec2-variable';
+import { getGetVectorVariableNode } from '../nodes-gl/get-vec2-variable';
+import { getDefineColorVariableNode } from '../nodes-gl/define-vec3-variable';
+import { getGetColorVariableNode } from '../nodes-gl/get-vec3-variable';
+import { getSetColorVariableNode } from '../nodes-gl/set-vec3-variable';
+import { getSetAndAddColorVariableNode } from '../nodes-gl/set-and-add-vec3-variable';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -142,6 +149,46 @@ export const setupGLNodeTaskRegistry = () => {
 
   registerGLNodeFactory('palette', getPaletteNode, 'Palette');
   registerGLNodeFactory('circle-node', getCircleNode, 'Metaball(2d)');
+
+  registerGLNodeFactory(
+    'define-vec2-variable-node',
+    getDefineVectorVariableNode,
+    'Define vector variable'
+  );
+  registerGLNodeFactory(
+    'set-vec2-variable-node',
+    getSetVectorVariableNode,
+    'Set vector variable'
+  );
+
+  registerGLNodeFactory(
+    'get-vec2-variable-node',
+    getGetVectorVariableNode,
+    'Get vector variable'
+  );
+
+  registerGLNodeFactory(
+    'define-color-variable-node',
+    getDefineColorVariableNode,
+    'Define color variable'
+  );
+  registerGLNodeFactory(
+    'set-color-variable-node',
+    getSetColorVariableNode,
+    'Set color variable'
+  );
+
+  registerGLNodeFactory(
+    'get-color-variable-node',
+    getGetColorVariableNode,
+    'Get color variable'
+  );
+
+  registerGLNodeFactory(
+    'set-and-add-color-variable-node',
+    getSetAndAddColorVariableNode,
+    'Add and set color variable'
+  );
 };
 
 export const getGLNodeTaskFactory = (name: string) => {

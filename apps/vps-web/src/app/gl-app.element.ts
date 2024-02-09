@@ -472,9 +472,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         return;
       }
 
-      (
-        this.compositionEditButton?.domElement as HTMLButtonElement
-      ).classList.add('hidden');
+      if (this.compositionEditButton?.domElement) {
+        (
+          this.compositionEditButton?.domElement as HTMLButtonElement
+        ).classList.add('hidden');
+      }
 
       this.rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
@@ -1140,6 +1142,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     );
   };
 
+  shaderNodePreoutput = '';
+
   getNodeOutput = (
     node: IRectNodeComponent<GLNodeInfo>,
     thumbName: string,
@@ -1184,6 +1188,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       thumbName,
       thumbIdentifierWithinNode
     );
+    if ((result as any).preoutput) {
+      this.shaderNodePreoutput += (result as any).preoutput;
+    }
     return result?.result ?? '';
   };
 
@@ -1195,11 +1202,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           connection.endNodeThumb?.thumbIdentifierWithinNode &&
           connection.startNode
         ) {
-          inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
-            connection.startNode,
-            connection.startNodeThumb?.thumbName ?? '',
-            connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
-          );
+          inputs[connection.endNodeThumb.thumbIdentifierWithinNode] =
+            this.getNodeOutput(
+              connection.startNode,
+              connection.startNodeThumb?.thumbName ?? '',
+              connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
+            );
         } else if (connection.endNodeThumb?.thumbName && connection.startNode) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
             connection.startNode,
@@ -1232,6 +1240,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           }
         });
       });
+      const visitedNodes: string[] = [];
 
       this.canvasApp.elements.forEach((element) => {
         const node = element as unknown as INodeComponent<GLNodeInfo>;
@@ -1244,17 +1253,94 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             }
           }
           if (
-            node.nodeInfo?.type === 'circle-node' ||
-            node.nodeInfo?.type === 'output-color-node'
+            node.nodeInfo?.type === 'define-vec2-variable-node' ||
+            node.nodeInfo?.type === 'define-color-variable-node'
           ) {
             const inputs = this.getInputsForNode(
               node as IRectNodeComponent<GLNodeInfo>
             );
+            visitedNodes.push(node.id);
             const result = node.nodeInfo?.compute?.(0, sdfIndex, inputs);
             this.shaderStatements += result?.result ?? '';
             this.shaderStatements += `
 `;
             sdfIndex++;
+          }
+        }
+      });
+      this.canvasApp.elements.forEach((element) => {
+        this.shaderNodePreoutput = '';
+        const node = element as unknown as INodeComponent<GLNodeInfo>;
+        if (node.nodeType === NodeType.Shape) {
+          if (visitedNodes.indexOf(node.id) < 0) {
+            if (node.nodeType && glslFunctions[node.nodeType]) {
+              if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+                nodeVisited.push(node.nodeType ?? '');
+                const glslFunction = glslFunctions[node.nodeType];
+                this.shaderExtensions += glslFunction;
+              }
+            }
+
+            if (
+              node.nodeInfo?.type === 'set-vec2-variable-node' ||
+              node.nodeInfo?.type === 'set-color-variable-node' ||
+              node.nodeInfo?.type === 'set-and-add-color-variable-node' ||
+              node.nodeInfo?.isComposition
+            ) {
+              const inputs = this.getInputsForNode(
+                node as IRectNodeComponent<GLNodeInfo>
+              );
+              const result = node.nodeInfo?.compute?.(
+                0,
+                sdfIndex,
+                inputs,
+                {} as any,
+                node.nodeInfo?.isComposition ? 'test' : undefined
+              );
+
+              this.shaderStatements +=
+                this.shaderNodePreoutput + result?.result ?? '';
+              this.shaderStatements += `
+`;
+              sdfIndex++;
+            }
+          }
+        }
+      });
+
+      this.canvasApp.elements.forEach((element) => {
+        this.shaderNodePreoutput = '';
+        const node = element as unknown as INodeComponent<GLNodeInfo>;
+        if (node.nodeType === NodeType.Shape) {
+          if (visitedNodes.indexOf(node.id) < 0) {
+            if (node.nodeType && glslFunctions[node.nodeType]) {
+              if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+                nodeVisited.push(node.nodeType ?? '');
+                const glslFunction = glslFunctions[node.nodeType];
+                this.shaderExtensions += glslFunction;
+              }
+            }
+            if (
+              node.nodeInfo?.type === 'circle-node' ||
+              node.nodeInfo?.type === 'output-color-node'
+            ) {
+              const inputs = this.getInputsForNode(
+                node as IRectNodeComponent<GLNodeInfo>
+              );
+              const result = node.nodeInfo?.compute?.(
+                0,
+                sdfIndex,
+                inputs,
+                {} as any,
+                node.nodeInfo?.isComposition ? 'test' : undefined
+              );
+
+              this.shaderStatements +=
+                this.shaderNodePreoutput + result?.result ?? '';
+              this.shaderStatements += `
+`;
+              sdfIndex++;
+            }
           }
         }
       });
