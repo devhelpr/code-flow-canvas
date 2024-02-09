@@ -19,4 +19,8 @@ export class Compositions<T> {
   public clearCompositions() {
     this.compositions = {};
   }
+
+  public setComposition(composition: Composition<T>) {
+    this.addComposition(composition);
+  }
 }

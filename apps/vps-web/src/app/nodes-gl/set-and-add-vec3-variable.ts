@@ -36,7 +36,7 @@ export const getSetAndAddColorVariableNode = (
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     const variableName =
       (node ?? payload)?.nodeInfo?.formValues?.variableName ?? '';
-    const vector = payload?.['vector'] ?? 'vec2(0., 0., 0.)';
+    const vector = payload?.['vector'] ?? 'vec3(0., 0., 0.)';
     const shaderCode = `${variableName} += ${vector};`;
     return {
       result: shaderCode,

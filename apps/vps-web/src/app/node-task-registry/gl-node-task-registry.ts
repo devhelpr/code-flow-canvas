@@ -44,6 +44,8 @@ import { getDefineColorVariableNode } from '../nodes-gl/define-vec3-variable';
 import { getGetColorVariableNode } from '../nodes-gl/get-vec3-variable';
 import { getSetColorVariableNode } from '../nodes-gl/set-vec3-variable';
 import { getSetAndAddColorVariableNode } from '../nodes-gl/set-and-add-vec3-variable';
+import { getThumbInputNode } from '../nodes-gl/thumb-input';
+import { getThumbOutputNode } from '../nodes-gl/thumb-output';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -149,6 +151,9 @@ export const setupGLNodeTaskRegistry = () => {
 
   registerGLNodeFactory('palette', getPaletteNode, 'Palette');
   registerGLNodeFactory('circle-node', getCircleNode, 'Metaball(2d)');
+
+  registerGLNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
+  registerGLNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
 
   registerGLNodeFactory(
     'define-vec2-variable-node',

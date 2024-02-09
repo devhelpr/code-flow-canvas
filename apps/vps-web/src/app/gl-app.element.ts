@@ -21,6 +21,10 @@ import {
   IConnectionNodeComponent,
   getThumbNodeByIdentifierWithinNode,
   createCanvasApp,
+  ThumbConnectionType,
+  getThumbNodeByName,
+  mapConnectionToFlowNode,
+  mapShapeNodeToFlowNode,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -83,6 +87,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   selectNodeType: IDOMElement | undefined = undefined;
   compositionEditButton: IDOMElement | undefined = undefined;
   compositionEditExitButton: IDOMElement | undefined = undefined;
+  canvasUpdated: (() => void) | undefined = undefined;
 
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
@@ -111,6 +116,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       store();
       this.setTabOrderOfNodes();
     };
+    this.canvasUpdated = canvasUpdated;
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
     });
@@ -855,8 +861,160 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         getGLNodeTaskFactory
       );
 
+      let minX = -1;
+      let minY = -1;
+      let maxX = -1;
+      let maxY = -1;
+      composition.nodes.forEach((node) => {
+        if (node.x < minX || minX === -1) {
+          minX = node.x;
+        }
+        if (node.y < minY || minY === -1) {
+          minY = node.y;
+        }
+        if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
+          maxX = node.x;
+        }
+        if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
+          maxY = node.y;
+        }
+      });
+
+      const nodesIdsToIgnore: string[] = [];
+
+      // inputs
+      composition.thumbs?.forEach((thumb, index) => {
+        if (thumb.connectionType === ThumbConnectionType.end && thumb.nodeId) {
+          const factory = getGLNodeTaskFactory('thumb-input');
+          const node = canvasApp?.elements.get(
+            thumb.nodeId
+          ) as IRectNodeComponent<GLNodeInfo>;
+          if (factory && this.canvasUpdated && node && thumb.name) {
+            const nodeTask = factory(() => {
+              //
+            });
+            const thumbInput = nodeTask.createVisualNode(
+              canvasApp,
+              minX - 100,
+              minY - 100 + index * 75
+            );
+            nodesIdsToIgnore.push(thumbInput.id);
+            const connection = canvasApp.createCubicBezier(
+              thumbInput.x,
+              thumbInput.y,
+              thumbInput.x,
+              thumbInput.y,
+              thumbInput.x,
+              thumbInput.y,
+              thumbInput.x,
+              thumbInput.y,
+              false,
+              undefined,
+              undefined,
+              undefined
+            );
+            if (connection && connection.nodeComponent) {
+              nodesIdsToIgnore.push(connection.nodeComponent.id);
+              connection.nodeComponent.isControlled = true;
+              connection.nodeComponent.nodeInfo = {} as GLNodeInfo;
+              connection.nodeComponent.layer = 1;
+
+              connection.nodeComponent.startNode = thumbInput;
+              connection.nodeComponent.startNodeThumb =
+                getThumbNodeByName<GLNodeInfo>('output', thumbInput, {
+                  start: true,
+                  end: false,
+                }) || undefined;
+
+              connection.nodeComponent.endNode = node;
+
+              connection.nodeComponent.endNodeThumb =
+                getThumbNodeByName<GLNodeInfo>(thumb.name, node, {
+                  start: false,
+                  end: true,
+                }) || undefined;
+
+              node.connections?.push(connection.nodeComponent);
+
+              if (connection.nodeComponent.update) {
+                connection.nodeComponent.update();
+              }
+
+              if (node.update) {
+                node.update(node, node.x, node.y, node);
+              }
+            }
+          }
+        }
+      });
+
+      // outputs
+      composition.thumbs?.forEach((thumb, index) => {
+        if (thumb.connectionType === ThumbConnectionType.start) {
+          const factory = getGLNodeTaskFactory('thumb-output');
+          if (factory && this.canvasUpdated && node && thumb.name) {
+            const nodeTask = factory(() => {
+              //
+            });
+            const thumbOutput = nodeTask.createVisualNode(
+              canvasApp,
+              maxX + 100,
+              minY - 100 + index * 75
+            );
+
+            nodesIdsToIgnore.push(thumbOutput.id);
+
+            const connection = canvasApp.createCubicBezier(
+              thumbOutput.x,
+              thumbOutput.y,
+              thumbOutput.x,
+              thumbOutput.y,
+              thumbOutput.x,
+              thumbOutput.y,
+              thumbOutput.x,
+              thumbOutput.y,
+              false,
+              undefined,
+              undefined,
+              undefined
+            );
+            if (connection && connection.nodeComponent) {
+              nodesIdsToIgnore.push(connection.nodeComponent.id);
+              connection.nodeComponent.isControlled = true;
+              connection.nodeComponent.nodeInfo = {} as GLNodeInfo;
+              connection.nodeComponent.layer = 1;
+
+              connection.nodeComponent.startNode = node;
+
+              connection.nodeComponent.startNodeThumb =
+                getThumbNodeByName<GLNodeInfo>(thumb.name, node, {
+                  start: false,
+                  end: true,
+                }) || undefined;
+
+              connection.nodeComponent.endNode = thumbOutput;
+              connection.nodeComponent.endNodeThumb =
+                getThumbNodeByName<GLNodeInfo>('input', thumbOutput, {
+                  start: true,
+                  end: false,
+                }) || undefined;
+
+              node.connections?.push(connection.nodeComponent);
+
+              if (connection.nodeComponent.update) {
+                connection.nodeComponent.update();
+              }
+
+              if (node.update) {
+                node.update(node, node.x, node.y, node);
+              }
+            }
+          }
+        }
+      });
+
       const quitCameraSubscribtion = setCameraAnimation(canvasApp);
-      canvasApp.setOnWheelEvent((x, y, scale) => {
+      canvasApp.setOnWheelEvent((x: number, y: number, scale: number) => {
         setPositionTargetCameraAnimation(x, y, scale);
       });
       canvasApp.setonDragCanvasEvent((x, y) => {
@@ -866,7 +1024,52 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       canvasApp.centerCamera();
       const handler = () => {
         quitCameraSubscribtion();
+        canvasApp?.elements.forEach((element) => {
+          if (nodesIdsToIgnore.indexOf(element.id) >= 0) {
+            const nodeHelper = element as unknown as INodeComponent<GLNodeInfo>;
+            if (nodeHelper.nodeType === NodeType.Connection) {
+              const connectionHelper =
+                element as unknown as IConnectionNodeComponent<GLNodeInfo>;
+              if (connectionHelper.startNode) {
+                connectionHelper.startNode.connections =
+                  connectionHelper.startNode?.connections?.filter(
+                    (c) => c.id !== connectionHelper.id
+                  );
+              }
+              if (connectionHelper.endNode) {
+                connectionHelper.endNode.connections =
+                  connectionHelper.endNode?.connections?.filter(
+                    (c) => c.id !== connectionHelper.id
+                  );
+              }
+            }
 
+            element.domElement.remove();
+            this.removeElement(element);
+          }
+        });
+        nodesIdsToIgnore.forEach((id) => {
+          canvasApp?.elements.delete(id);
+        });
+
+        // store changes to composition
+        const nodesToStore = Array.from(canvasApp?.elements).map((element) => {
+          const nodeToToConvert =
+            element[1] as unknown as INodeComponent<GLNodeInfo>;
+          if (nodeToToConvert.nodeType === NodeType.Connection) {
+            return mapConnectionToFlowNode(
+              nodeToToConvert as IConnectionNodeComponent<GLNodeInfo>
+            );
+          } else {
+            return mapShapeNodeToFlowNode(
+              nodeToToConvert as IRectNodeComponent<GLNodeInfo>
+            );
+          }
+        });
+        composition.nodes = nodesToStore;
+        this.canvasApp?.compositons.setComposition(composition);
+
+        // remove and cleanup temp canvas
         canvasApp?.elements.forEach((element) => {
           element.domElement.remove();
           this.removeElement(element);
@@ -875,6 +1078,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         canvasApp?.setDisableInteraction(true);
         canvasApp.removeEvents();
         canvasApp.canvas?.domElement.remove();
+        this.canvasApp?.elements.forEach((element) => {
+          const node = element as INodeComponent<GLNodeInfo>;
+          if (node.nodeInfo?.isComposition) {
+            node.nodeInfo?.initializeCompute?.();
+          }
+        });
+        //node.nodeInfo.initializeCompute();
 
         (this.canvas?.domElement as HTMLElement).classList.remove('hidden');
         (this.canvas?.domElement as HTMLElement).classList.remove(
@@ -883,6 +1093,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         this.canvasApp?.setIsCameraFollowingPaused(false);
         this.canvasApp?.setDisableInteraction(false);
         this.canvasApp?.centerCamera();
+
+        this.canvasUpdated?.();
 
         (
           this.compositionEditExitButton?.domElement as HTMLElement

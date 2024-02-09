@@ -70,6 +70,8 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     hasStaticWidthHeight?: boolean;
     hideFromNodeTypeSelector?: boolean;
     hideTitle?: boolean;
+    backgroundColorClassName?: string;
+    textColorClassName?: string;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -93,7 +95,9 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
   const componentWrapper = createNodeElement<T>(
     'div',
     {
-      class: `relative flex flex-col bg-slate-500 text-white rounded ${
+      class: `relative flex flex-col ${
+        settings?.backgroundColorClassName ?? 'bg-slate-500'
+      } ${settings?.textColorClassName ?? 'text-white'} rounded ${
         showTitlebar ? '' : 'py-2'
       }`,
     },
@@ -325,6 +329,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
     category?: string;
     hideFromNodeTypeSelector?: boolean;
     hideTitle?: boolean;
+    backgroundColorClassName?: string;
+    textColorClassName?: string;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,

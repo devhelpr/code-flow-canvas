@@ -1,4 +1,5 @@
 import {
+  Flow,
   IConnectionNodeComponent,
   INodeComponent,
   IRectNodeComponent,
@@ -65,6 +66,7 @@ export class GLNavbarComponent extends Component<
         <select type="select" name="example-flows" class="p-2 m-2 relative ">
           <option value="">Select example flow</option>
           <option value="hello-world-gl-flow.json">Hello gl</option>
+          <option value="creative-shader-flow.json">Creative shader</option>
         </select>
         <children></children>
       </div>`
@@ -407,7 +409,7 @@ export class GLNavbarComponent extends Component<
     if (example && confirm(`Are you sure you want to load ${example}?`)) {
       fetch(`/example-flows-gl/${example}`)
         .then((response) => response.json())
-        .then((data) => {
+        .then((data: Flow<GLNodeInfo>) => {
           this.props.clearCanvas();
           this.props.importToCanvas(
             data.flows.flow.nodes,
@@ -415,7 +417,8 @@ export class GLNavbarComponent extends Component<
             this.props.canvasUpdated,
             undefined,
             0,
-            getGLNodeTaskFactory
+            getGLNodeTaskFactory,
+            data.compositions
           );
           this.props.canvasApp.centerCamera();
           this.props.initializeNodes();
