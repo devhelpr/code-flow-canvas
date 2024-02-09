@@ -1,17 +1,21 @@
 import {
-  CanvasAppInstance,
-  createElement,
-  INodeComponent,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-
-import { InitialValues, NodeTask } from '../node-task-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-task-registry';
+import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { FormFieldType } from '../components/FormField';
-import { FormComponent } from '../components/form-component';
 
+const fieldName = 'variableName';
+const labelName = 'Variable';
+const nodeName = 'define-vec2-variable-node';
+const familyName = 'flow-canvas';
 const thumbs = [
   {
     thumbType: ThumbType.EndConnectorCenter,
@@ -25,11 +29,10 @@ const thumbs = [
   },
 ];
 
-export const getDefineVectorVariableNode = (
+export const getDefineVectorVariableNode: NodeTaskFactory<GLNodeInfo> = (
   updated: () => void
 ): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
-
   const initializeCompute = () => {
     return;
   };
@@ -44,29 +47,27 @@ export const getDefineVectorVariableNode = (
     };
   };
 
-  const nodeName = 'define-vec2-variable-node';
-  return {
-    name: nodeName,
-    family: 'flow-canvas',
-    isContainer: false,
-    category: 'variables',
+  return visualNodeFactory(
+    nodeName,
+    'Define vector variable',
+    familyName,
+    fieldName,
+    compute,
+    initializeCompute,
+    false,
+    200,
+    150,
     thumbs,
-    getCompute: () => compute,
-    createVisualNode: (
-      canvasApp: CanvasAppInstance<GLNodeInfo>,
-      x: number,
-      y: number,
-      id?: string,
-      initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<GLNodeInfo>
-    ) => {
-      const initialValue = initalValues?.['variableName'] ?? '';
-      const formElements = [
+    (values?: InitialValues) => {
+      return [
         {
           fieldType: FormFieldType.Text,
-          fieldName: 'variableName',
-          label: 'Variable',
-          value: initialValue ?? '',
+          fieldName: fieldName,
+          settings: {
+            showLabel: false,
+          },
+          label: labelName,
+          value: values?.['variableName'] ?? '',
           onChange: (value: string) => {
             if (!node?.nodeInfo) {
               return;
@@ -82,60 +83,13 @@ export const getDefineVectorVariableNode = (
           },
         },
       ];
-      const jsxComponentWrapper = createElement(
-        'div',
-        {
-          class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center`,
-        },
-        undefined,
-        ''
-      ) as unknown as INodeComponent<GLNodeInfo>;
-
-      FormComponent({
-        rootElement: jsxComponentWrapper.domElement as HTMLElement,
-        id: id ?? '',
-        formElements,
-        hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
-        },
-      }) as unknown as HTMLElement;
-
-      const rect = canvasApp.createRect(
-        x,
-        y,
-        220,
-        100,
-        undefined,
-        thumbs,
-        jsxComponentWrapper,
-        {
-          classNames: `bg-slate-500 p-4 rounded`,
-        },
-        true,
-        undefined,
-        true,
-        id,
-        {
-          type: nodeName,
-          formValues: {
-            variableName: initialValue ?? '',
-          },
-          compute: compute,
-        },
-        containerNode
-      );
-      if (!rect.nodeComponent) {
-        throw new Error('rect.nodeComponent is undefined');
-      }
-
-      node = rect.nodeComponent;
-      if (node.nodeInfo) {
-        node.nodeInfo.formElements = formElements;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
-      }
-      return node;
     },
-  };
+    (nodeInstance) => {
+      node = nodeInstance.node as IRectNodeComponent<GLNodeInfo>;
+    },
+    {
+      hasTitlebar: true,
+      category: 'variables',
+    }
+  );
 };
