@@ -317,7 +317,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
 
   onInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
-    console.log(input.value);
+    // console.log(input.value);
     if (this.valueLabel) {
       this.valueLabel.textContent = input.value;
       const value = Number(input.value);

@@ -99,7 +99,8 @@ export const getCreateCompositionNode =
             ? { ...inputs, nodeInfo: node?.nodeInfo }
             : { ...payload, nodeInfo: node?.nodeInfo },
           thumbName,
-          thumbIdentifierWithinNode
+          thumbIdentifierWithinNode,
+          true
         );
 
         return result?.result ?? '';

@@ -1179,6 +1179,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.u_CanvasWidthUniformLocation = null;
       this.u_CanvasHeightUniformLocation = null;
       this.u_TestUniformLocation = null;
+
       this.setupShader(this.gl);
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       this.pauseRender = false;
@@ -1210,8 +1211,24 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   u_TestUniformLocation: WebGLUniformLocation | null = null;
   vertexPositionAttribute = 0;
 
+  valueParameterUniforms: {
+    uniform?: WebGLUniformLocation | null;
+    id: string;
+    uniformName: string;
+    value: number;
+    node: IRectNodeComponent<GLNodeInfo>;
+  }[] = [];
+
   shaderExtensions = '';
   createFragmentShader = (statements: string) => {
+    let shaderDynamicUniforms = '';
+    this.valueParameterUniforms.forEach((uniform) => {
+      shaderDynamicUniforms += `uniform float ${uniform.uniformName.replaceAll(
+        '-',
+        ''
+      )};\n`;
+    });
+
     return `
     precision mediump float;
     uniform float u_time;
@@ -1219,6 +1236,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     uniform float u_height;
     uniform float u_test;
     
+    ${shaderDynamicUniforms}
     #define PI = 3.1415926535897932384626433832795;
     float metaball(vec2 p, vec2 center, float radius) {
       float r = radius * radius;
@@ -1369,6 +1387,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.shaderProgram,
       'aVertexPosition'
     );
+
+    this.valueParameterUniforms.forEach((uniform) => {
+      if (this.shaderProgram) {
+        uniform.uniform = gl.getUniformLocation(
+          this.shaderProgram,
+          uniform.uniformName.replaceAll('-', '')
+        );
+      }
+    });
   };
 
   shaderNodePreoutput = '';
@@ -1450,6 +1477,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   };
   shaderStatements = '';
   flowTOGLCanvas = () => {
+    this.valueParameterUniforms.forEach((uniform) => {
+      if (this.shaderProgram) {
+        uniform.uniform = null;
+      }
+    });
+    this.valueParameterUniforms = [];
     console.log('flowTOGLCanvas');
     let sdfIndex = 1;
     this.shaderStatements = '';
@@ -1474,6 +1507,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.canvasApp.elements.forEach((element) => {
         const node = element as unknown as INodeComponent<GLNodeInfo>;
         if (node.nodeType === NodeType.Shape) {
+          if (node?.nodeInfo?.type === 'value-node') {
+            this.valueParameterUniforms.push({
+              uniform: undefined,
+              id: node.id,
+              uniformName: `value_${node.id}`,
+              value: 0,
+              node: node as unknown as IRectNodeComponent<GLNodeInfo>,
+            });
+          }
           if (node.nodeType && glslFunctions[node.nodeType]) {
             if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
               nodeVisited.push(node.nodeType ?? '');
@@ -1585,7 +1627,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.canvasSize = this.glcanvas.getBoundingClientRect();
     this.glcanvas.width = this.canvasSize.width;
     this.glcanvas.height = this.canvasSize.height;
-
+    this.valueParameterUniforms = [];
     const gl = this.glcanvas.getContext('webgl');
     this.gl?.viewport(0, 0, this.canvasSize.width, this.canvasSize.height);
 
@@ -1648,6 +1690,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     gl.uniform1f(this.u_CanvasWidthUniformLocation, glcanvas.width);
     gl.uniform1f(this.u_CanvasHeightUniformLocation, glcanvas.height);
     gl.uniform1f(this.u_TestUniformLocation, this.test);
+
+    this.valueParameterUniforms.forEach((uniform) => {
+      if (uniform.uniform) {
+        gl.uniform1f(
+          uniform.uniform,
+          parseFloat(uniform.node.nodeInfo?.formValues.value ?? '0')
+        );
+      }
+    });
 
     gl.enableVertexAttribArray(this.vertexPositionAttribute);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);

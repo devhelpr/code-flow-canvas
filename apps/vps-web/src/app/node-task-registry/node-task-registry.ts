@@ -22,7 +22,8 @@ export type NodeTask<T> = {
     loopIndex?: number,
     payload?: any,
     thumbName?: string,
-    thumbIdentifierWithinNode?: string
+    thumbIdentifierWithinNode?: string,
+    isInComposition?: boolean
   ) => { result: string | undefined };
   createVisualNode: (
     canvasApp: CanvasAppInstance<T>,

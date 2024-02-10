@@ -19,11 +19,21 @@ export const getValueNode: NodeTaskFactory<GLNodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    let value = parseFloat(
-      (node || payload)?.nodeInfo?.formValues?.['value'] ?? 0
-    ).toString();
-    if (value.indexOf('.') < 0) {
+  const compute = (
+    input: string,
+    _loopIndex?: number,
+    payload?: any,
+    _thumbName?: string,
+    _thumbIdentifierWithinNode?: string,
+    isInComposition?: boolean
+  ) => {
+    let value = isInComposition
+      ? parseFloat(
+          (node || payload)?.nodeInfo?.formValues?.['value'] ?? 0
+        ).toString()
+      : `value_${node.id.replace(/-/g, '')}`;
+
+    if (isInComposition && value.indexOf('.') < 0) {
       value = `${value}.0`;
     }
     return {
