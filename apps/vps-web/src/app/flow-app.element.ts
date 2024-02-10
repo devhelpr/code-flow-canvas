@@ -349,15 +349,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             },
           }) as unknown as HTMLElement;
 
-          registerCommands<NodeInfo>(
-            this.rootElement,
-            this.canvasApp,
-            canvasUpdated,
-            this.removeElement,
+          registerCommands<NodeInfo>({
+            rootElement: this.rootElement,
+            canvasApp: this.canvasApp,
+            canvasUpdated: canvasUpdated,
+            removeElement: this.removeElement,
             getNodeTaskFactory,
-            this.commandRegistry,
-            setupTasksInDropdown
-          );
+            commandRegistry: this.commandRegistry,
+            setupTasksInDropdown,
+          });
           this.clearCanvas();
         }
 

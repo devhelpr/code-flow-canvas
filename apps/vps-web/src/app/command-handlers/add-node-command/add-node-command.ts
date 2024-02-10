@@ -1,7 +1,5 @@
 import {
   CanvasAppInstance,
-  ICommandHandler,
-  IElementNode,
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
@@ -18,33 +16,16 @@ import {
 } from '@devhelpr/dom-components';
 import { navbarButtonWithoutMargin } from '../../consts/classes';
 import { BaseNodeInfo } from '../../types/base-node-info';
+import { ICommandContext } from '../command-context';
 
 export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
-  constructor(
-    rootElement: HTMLElement,
-    canvasApp: CanvasAppInstance<T>,
-    canvasUpdated: () => void,
-    removeElement: (element: IElementNode<T>) => void,
-    getNodeTaskFactory: (name: string) => NodeTaskFactory<T>,
-    setupTasksInDropdown: (
-      selectNodeTypeHTMLElement: HTMLSelectElement
-    ) => void,
-    commandRegistry: Map<string, ICommandHandler>
-  ) {
-    super(
-      rootElement,
-      canvasApp,
-      canvasUpdated,
-      removeElement,
-      getNodeTaskFactory,
-      setupTasksInDropdown,
-      commandRegistry
-    );
-    this.getNodeTaskFactory = getNodeTaskFactory;
-    this.canvasApp = canvasApp;
-    this.canvasUpdated = canvasUpdated;
-    this.rootElement = rootElement;
-    this.setupTasksInDropdown = setupTasksInDropdown;
+  constructor(commandContext: ICommandContext<T>) {
+    super(commandContext);
+    this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
+    this.canvasApp = commandContext.canvasApp;
+    this.canvasUpdated = commandContext.canvasUpdated;
+    this.rootElement = commandContext.rootElement;
+    this.setupTasksInDropdown = commandContext.setupTasksInDropdown;
   }
   rootElement: HTMLElement;
   canvasApp: CanvasAppInstance<T>;

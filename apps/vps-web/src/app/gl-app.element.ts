@@ -252,15 +252,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             menubarElement.domElement
           );
 
-          registerCommands<GLNodeInfo>(
-            this.rootElement,
-            this.canvasApp,
+          registerCommands<GLNodeInfo>({
+            rootElement: this.rootElement,
+            canvasApp: this.canvasApp,
             canvasUpdated,
-            this.removeElement,
-            getGLNodeTaskFactory,
-            this.commandRegistry,
-            setupGLTasksInDropdown
-          );
+            removeElement: this.removeElement,
+            getNodeTaskFactory: getGLNodeTaskFactory,
+            commandRegistry: this.commandRegistry,
+            setupTasksInDropdown: setupGLTasksInDropdown,
+          });
         }
 
         this.clearCanvas();
