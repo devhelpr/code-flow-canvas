@@ -18,8 +18,6 @@ import {
   ICommandHandler,
   IDOMElement,
   IConnectionNodeComponent,
-  ElementNodeMap,
-  NodeType,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -29,6 +27,7 @@ import {
 import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-provider';
 import { executeCommand } from './command-handlers/register-commands';
 import { getSortedNodes } from './utils/sort-nodes';
+import { getStartNodes } from './utils/start-nodes';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -284,6 +283,21 @@ export class AppElement<T> {
           );
           return false;
         }
+        if (
+          (event.ctrlKey || event.metaKey || this.metaKeyDown) &&
+          key === 'l'
+        ) {
+          event.preventDefault();
+          this.removeFormElement();
+          const selectedNodeInfo = getSelectedNode();
+          executeCommand(
+            this.commandRegistry,
+            'auto-align',
+            this.getSelectTaskElement().value,
+            selectedNodeInfo?.id
+          );
+          return false;
+        }
       }
       return true;
     });
@@ -380,6 +394,7 @@ export class AppElement<T> {
           this.focusedNode = currentFocusedNode;
         }
       }
+
       return true;
     });
 
@@ -674,45 +689,12 @@ export class AppElement<T> {
     return tabIndex;
   };
 
-  getStartNodes = (nodes: ElementNodeMap<T>, includeFunctionNodes = false) => {
-    const startNodes: IRectNodeComponent<T>[] = [];
-    const nodeList = Array.from(nodes);
-    nodes.forEach((node) => {
-      const nodeComponent = node as unknown as IRectNodeComponent<T>;
-      const connectionsFromEndNode = nodeList.filter((e) => {
-        const eNode = e[1] as INodeComponent<T>;
-        if (eNode.nodeType === NodeType.Connection) {
-          const element = e[1] as IConnectionNodeComponent<T>;
-          return (
-            element.endNode?.id === node.id &&
-            !element.isData &&
-            !element.isAnnotationConnection
-          );
-        }
-        return false;
-      });
-      const nodeInfo = nodeComponent.nodeInfo as any;
-      if (
-        //!(nodeComponent.nodeInfo as any)?.isVariable &&
-        nodeComponent.nodeType !== NodeType.Connection &&
-        (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
-        ((!includeFunctionNodes &&
-          nodeInfo?.type !== 'node-trigger-target' &&
-          nodeInfo?.type !== 'function') ||
-          includeFunctionNodes)
-      ) {
-        startNodes.push(nodeComponent);
-      }
-    });
-
-    return startNodes;
-  };
   setTabOrderOfNodes = () => {
     if (!this.canvasApp) {
       return;
     }
     const nodes = getSortedNodes(
-      this.getStartNodes(this.canvasApp.elements, true) as any
+      getStartNodes(this.canvasApp.elements, true)
     ) as IRectNodeComponent<T>[];
 
     nodes.sort((a: IRectNodeComponent<T>, b: IRectNodeComponent<T>) => {
