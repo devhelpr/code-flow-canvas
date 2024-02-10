@@ -89,7 +89,24 @@ export class AutoAlignCommand<
     const visitedNodes: string[] = [];
     const revisitNodes: IRectNodeComponent<T>[] = [];
     this.isRevisiting = false;
-    const nodes = getStartNodes<T>(this.canvasApp.elements);
+    const nodes = getStartNodes<T>(this.canvasApp.elements).toSorted((a, b) => {
+      if (['uv-node', 'value-node'].indexOf(a.nodeInfo?.type ?? '') >= 0) {
+        if (
+          a.nodeInfo?.type === 'uv-node' &&
+          b.nodeInfo?.type === 'value-node'
+        ) {
+          return -1;
+        }
+        if (
+          b.nodeInfo?.type === 'uv-node' &&
+          a.nodeInfo?.type === 'value-node'
+        ) {
+          return 1;
+        }
+        return -1;
+      }
+      return 1;
+    });
     const columnX = this.x ?? nodes[0].x ?? 0;
     nodes.forEach((node) => {
       this.visitNode(node, visitedNodes, revisitNodes, 0, columnX);

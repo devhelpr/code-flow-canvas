@@ -218,7 +218,7 @@ export const registerCompositionNodes = (
       composition.name,
       getGLNodeTaskFactory
     );
-    registerGLNodeFactory(`composition-${key}`, node);
+    registerGLNodeFactory(`composition-${key}`, node, composition.name);
   });
 };
 
