@@ -85,6 +85,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   focusedNode: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   runButton: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
+  resetStateButton: IDOMElement | undefined = undefined;
+  clearCanvasButton: IDOMElement | undefined = undefined;
   compositionEditButton: IDOMElement | undefined = undefined;
   compositionEditExitButton: IDOMElement | undefined = undefined;
   canvasUpdated: (() => void) | undefined = undefined;
@@ -184,7 +186,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             },
           }) as unknown as HTMLElement;
 
-          createElement(
+          this.resetStateButton = createElement(
             'button',
             {
               class: navBarButton,
@@ -199,7 +201,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             'Reset state'
           );
 
-          createElement(
+          this.clearCanvasButton = createElement(
             'button',
             {
               class: navBarOutlineButton,
@@ -826,6 +828,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         this.compositionEditExitButton?.domElement as HTMLElement
       ).classList.remove('hidden');
 
+      (this.clearCanvasButton?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+      (this.resetStateButton?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+
       this.canvasApp?.setDisableInteraction(true);
 
       (this.canvas?.domElement as HTMLElement).classList.add('hidden');
@@ -893,6 +902,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             const nodeTask = factory(() => {
               //
             });
+            nodeTask.setTitle?.(thumb.name);
             const thumbInput = nodeTask.createVisualNode(
               canvasApp,
               minX - 100,
@@ -1103,6 +1113,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         (
           this.compositionEditExitButton?.domElement as HTMLElement
         ).classList.add('hidden');
+
+        (this.clearCanvasButton?.domElement as HTMLElement).classList.remove(
+          'hidden'
+        );
+        (this.resetStateButton?.domElement as HTMLElement).classList.remove(
+          'hidden'
+        );
       };
       (
         this.compositionEditExitButton?.domElement as HTMLElement

@@ -693,7 +693,7 @@ export class AppElement<T> {
       });
       const nodeInfo = nodeComponent.nodeInfo as any;
       if (
-        !(nodeComponent.nodeInfo as any)?.isVariable &&
+        //!(nodeComponent.nodeInfo as any)?.isVariable &&
         nodeComponent.nodeType !== NodeType.Connection &&
         (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
         ((!includeFunctionNodes &&

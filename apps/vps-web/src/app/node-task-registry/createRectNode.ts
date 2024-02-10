@@ -377,6 +377,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
       return decoratorNode;
     };
   }
+  let title = nodeTitle;
   return {
     name: nodeTypeName,
     family: nodeFamily,
@@ -409,7 +410,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
       const formElements = onGetFormElements(initialValues);
       const nodeInstance = createRectNode<T>(
         nodeTypeName,
-        nodeTitle,
+        title,
 
         formElements,
         x,
@@ -435,5 +436,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
       return nodeInstance.node as IRectNodeComponent<T>;
     },
     createDecoratorNode,
+    setTitle: (newTitle: string) => {
+      title = newTitle;
+    },
   };
 };

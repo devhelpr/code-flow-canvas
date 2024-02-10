@@ -45,6 +45,7 @@ export type NodeTask<T> = {
     canvasApp: CanvasAppInstance<T>,
     initalValues?: InitialValues
   ) => INodeComponent<T>;
+  setTitle?: (newTitle: string) => void;
 };
 
 export type NodeTypeRegistry<T> = Record<string, NodeTaskFactory<T>>;
