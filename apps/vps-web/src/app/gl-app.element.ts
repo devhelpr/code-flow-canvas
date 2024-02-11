@@ -1244,26 +1244,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       return r / (d * d);
     }
 
-    vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
-      return a + b*cos( 6.28318*(c*t+d) );  
-    }
-
-    vec3 palette2(float t) {
-      vec3 a = vec3(0.5, 0.5, 0.5);
-      vec3 b = vec3(0.5, 0.5, 0.5);
-      vec3 c = vec3(1.0, 1.0, 1.0);
-      vec3 d = vec3(0.263,0.416,0.557);
-
-      return a + b*cos( 6.28318*(c*t+d) );
-    }
-
-    vec3 chooseColor(in float paletteOffset) {
-      return palette(paletteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(2.0,1.0,0.0), vec3(0.5,0.20,0.25));
-    }
-
-    vec3 chooseColor2(in float paletteOffset) {
-      return palette(paletteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.33,0.67));
-    }
+    
     
    
 
