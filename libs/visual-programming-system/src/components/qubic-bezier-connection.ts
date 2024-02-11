@@ -329,7 +329,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
         const filteredConnections = connections.filter(
           (c) =>
             c.startNode &&
-            c.startNode?.id === this.nodeComponent?.startNode?.id &&
+            c.startNodeThumb &&
+            c.startNodeThumb?.id === this.nodeComponent?.startNodeThumb?.id &&
             c.startNodeThumb?.thumbType !== ThumbType.StartConnectorBottom &&
             c.startNodeThumb?.thumbType !== ThumbType.StartConnectorTop
         );
@@ -345,7 +346,9 @@ export class CubicBezierConnection<T> extends Connection<T> {
       if (connections) {
         const filteredConnections = connections.filter(
           (c) =>
-            c.startNode && c.startNode?.id === this.nodeComponent?.startNode?.id
+            c.startNode &&
+            c.startNodeThumb &&
+            c.startNodeThumb?.id === this.nodeComponent?.startNodeThumb?.id
         );
         let distance = 0;
         filteredConnections.forEach((c) => {

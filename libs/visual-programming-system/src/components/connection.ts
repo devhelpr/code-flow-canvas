@@ -333,7 +333,9 @@ export class Connection<T> {
       if (connections) {
         const filteredConnections = connections.filter(
           (c) =>
-            c.startNode && c.startNode?.id === this.nodeComponent?.startNode?.id
+            c.startNode &&
+            c.startNodeThumb &&
+            c.startNodeThumb?.id === this.nodeComponent?.startNodeThumb?.id
         );
         return filteredConnections.length > 1 ? filteredConnections : [];
       }
