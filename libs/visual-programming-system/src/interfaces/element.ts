@@ -47,7 +47,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
     target?: INodeComponent<T>,
     x?: number,
     y?: number,
-    initiator?: INodeComponent<T>
+    initiator?: INodeComponent<T>,
+    inUpdateLoop?: boolean
   ) => boolean;
   updateEnd?: () => void;
   initPointerDown?: (initialXOffset: number, initialYOffset: number) => void;

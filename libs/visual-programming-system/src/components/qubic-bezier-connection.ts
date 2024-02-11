@@ -265,6 +265,27 @@ export class CubicBezierConnection<T> extends Connection<T> {
           L${this.points.endX + endOffsetX} 
           ${this.points.endY + endOffsetY}`
         );
+      } else if (
+        this.hasMultipleConnectionsFromSameOutput() &&
+        !isConnectingToRectThumb
+      ) {
+        const minDistance =
+          this.lowestDistanceWhenMultipleConnectionsFromSameOutput() / 2;
+        (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+          'd',
+          `
+            M${this.points.beginX + startOffsetX} ${
+            this.points.beginY + startOffsetY
+          }
+            L${this.points.beginX + startOffsetX + minDistance} ${
+            this.points.beginY + startOffsetY
+          }
+            L${this.points.beginX + startOffsetX + minDistance} ${
+            this.points.endY + endOffsetY
+          }
+            ${this.points.endX + endOffsetX} ${this.points.endY + endOffsetY}
+          `
+        );
       } else {
         (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
           'd',
@@ -301,6 +322,48 @@ export class CubicBezierConnection<T> extends Connection<T> {
     return y;
   }
 
+  hasMultipleConnectionsFromSameOutput() {
+    if (this.nodeComponent?.startNode) {
+      const connections = this.nodeComponent.startNode.connections;
+      if (connections) {
+        const filteredConnections = connections.filter(
+          (c) =>
+            c.startNode &&
+            c.startNode?.id === this.nodeComponent?.startNode?.id &&
+            c.startNodeThumb?.thumbType !== ThumbType.StartConnectorBottom &&
+            c.startNodeThumb?.thumbType !== ThumbType.StartConnectorTop
+        );
+        return filteredConnections.length > 1;
+      }
+    }
+    return false;
+  }
+
+  lowestDistanceWhenMultipleConnectionsFromSameOutput() {
+    if (this.nodeComponent?.startNode) {
+      const connections = this.nodeComponent.startNode.connections;
+      if (connections) {
+        const filteredConnections = connections.filter(
+          (c) =>
+            c.startNode && c.startNode?.id === this.nodeComponent?.startNode?.id
+        );
+        let distance = 0;
+        filteredConnections.forEach((c) => {
+          if (c.startNode && c.endNode) {
+            const d = Math.abs(
+              c.startNode.x + (c.startNode.width ?? 0) - c.endNode.x
+            );
+            if (d < distance || distance === 0) {
+              distance = d;
+            }
+          }
+        });
+        return distance;
+      }
+    }
+    return 0;
+  }
+
   protected override setPath(
     bbox: { x: number; y: number; width: number; height: number },
     startOffsetX: number,
@@ -328,8 +391,6 @@ export class CubicBezierConnection<T> extends Connection<T> {
     this.nodeComponent.isLoopBack = false;
 
     const isConnectingToRectThumb = false;
-    //this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center;
-
     if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
       this.nodeComponent.isLoopBack = true;
       const bottomY = this.getLowestYPosition() + 40;
@@ -398,6 +459,27 @@ export class CubicBezierConnection<T> extends Connection<T> {
         this.points.endY - bbox.y + endOffsetY
       }
 
+      `;
+    } else if (
+      this.hasMultipleConnectionsFromSameOutput() &&
+      !isConnectingToRectThumb
+    ) {
+      const minDistance =
+        this.lowestDistanceWhenMultipleConnectionsFromSameOutput() / 2;
+
+      path = `
+      M${this.points.beginX - bbox.x + startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+      L${this.points.beginX - bbox.x + startOffsetX + minDistance} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+      L${this.points.beginX - bbox.x + startOffsetX + minDistance} ${
+        this.points.endY - bbox.y + endOffsetY
+      }
+      ${this.points.endX - bbox.x + endOffsetX} ${
+        this.points.endY - bbox.y + endOffsetY
+      }
       `;
     }
     (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);

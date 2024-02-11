@@ -327,12 +327,28 @@ export class Connection<T> {
     }
   };
 
+  getMultipleConnectionsFromSameOutput() {
+    if (this.nodeComponent?.startNode) {
+      const connections = this.nodeComponent.startNode.connections;
+      if (connections) {
+        const filteredConnections = connections.filter(
+          (c) =>
+            c.startNode && c.startNode?.id === this.nodeComponent?.startNode?.id
+        );
+        return filteredConnections.length > 1 ? filteredConnections : [];
+      }
+    }
+    return [];
+  }
+
   onUpdate = (
     target?: INodeComponent<T>,
     x?: number,
     y?: number,
-    initiator?: INodeComponent<T>
+    initiator?: INodeComponent<T>,
+    inUpdateLoop?: boolean
   ) => {
+    console.log('inUpdateLoop', inUpdateLoop);
     const connection = target as unknown as IConnectionNodeComponent<T>;
     if (!target && x === undefined && y === undefined && !initiator) {
       // eslint-disable-next-line no-console
@@ -722,6 +738,7 @@ export class Connection<T> {
     }
 
     if (
+      !inUpdateLoop &&
       this.nodeComponent &&
       initiator &&
       initiator.nodeType === NodeType.Connection
@@ -824,6 +841,35 @@ export class Connection<T> {
       svgParentElement.style.width = `${bbox.width}px`;
       svgParentElement.style.height = `${bbox.height}px`;
       svgParentElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
+    }
+
+    const connectionsFromSameoutput =
+      this.getMultipleConnectionsFromSameOutput();
+    if (
+      !inUpdateLoop &&
+      this.nodeComponent?.id &&
+      connectionsFromSameoutput.length > 0
+    ) {
+      console.log(
+        'update all connections from same output',
+        initiator?.id,
+        inUpdateLoop,
+        connectionsFromSameoutput
+      );
+      if (
+        !initiator ||
+        (initiator &&
+          (initiator.id === this.nodeComponent.id ||
+            initiator.id === this.nodeComponent.startNode?.id ||
+            initiator.id === this.nodeComponent.endNode?.id) &&
+          !connectionsFromSameoutput.find((c) => c.id === initiator.id))
+      ) {
+        connectionsFromSameoutput.forEach((c) => {
+          if (c.id !== this.nodeComponent?.id) {
+            c.update?.(c, undefined, undefined, this.nodeComponent, true);
+          }
+        });
+      }
     }
     return true;
   };
