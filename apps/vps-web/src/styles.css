@@ -6,6 +6,10 @@
 	min-height: 100dvh;
 }
 
+.pointer-events-stroke {
+	pointer-events: stroke;
+}
+
 .menu {
 
 	scrollbar-width: none;

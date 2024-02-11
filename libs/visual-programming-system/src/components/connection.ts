@@ -192,7 +192,8 @@ export class Connection<T> {
     this.pathTransparentElement = createNSElement(
       'path',
       {
-        class: 'connection-background-path pointer-events-auto cursor-pointer',
+        class:
+          'connection-background-path pointer-events-stroke cursor-pointer',
         d: path,
         stroke: containerNode ? '#94a3b8' : '#1e293b',
         'stroke-width': 10,
