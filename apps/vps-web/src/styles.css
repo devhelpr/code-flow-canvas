@@ -211,6 +211,11 @@ rect-node:has(.hover) > .shape-circle,
 	z-index: 2;
 }
 
+.selected.connection:not(.layer-2) {
+	z-index: 3;
+}
+
+
 .connection.layer-2 {
 	z-index: 1;
 	opacity: 0.25;
