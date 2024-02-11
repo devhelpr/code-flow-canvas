@@ -55,7 +55,7 @@ export const getAdditionVectorColorNode: NodeTaskFactory<GLNodeInfo> = (
     const value1 = payload?.['color1'];
     const value2 = payload?.['color2'];
     return {
-      result: `${value1} + ${value2}`,
+      result: `(${value1} + ${value2})`,
       output: input,
       followPath: undefined,
     };

@@ -67,6 +67,7 @@ export class GLNavbarComponent extends Component<
           <option value="">Select example flow</option>
           <option value="hello-world-gl-flow.json">Hello gl</option>
           <option value="creative-shader-flow.json">Creative shader</option>
+          <option value="sigmoid-flow.json">Sigmoid</option>
         </select>
         <children></children>
       </div>`

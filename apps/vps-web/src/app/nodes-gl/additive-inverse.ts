@@ -47,7 +47,7 @@ export const getAdditiveInverseNode: NodeTaskFactory<GLNodeInfo> = (
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
     const value = payload?.['value'];
     return {
-      result: `-(${value})`,
+      result: `(-(${value}))`,
       output: input,
       followPath: undefined,
     };

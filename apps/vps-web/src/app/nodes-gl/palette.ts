@@ -125,7 +125,7 @@ export const getPaletteNode: NodeTaskFactory<GLNodeInfo> = (
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
     const value = payload?.['index'];
-    const palete = payload?.['palette'];
+    const palete = payload?.['palette'] || '0.0';
     return {
       result: `choosePalete(${value},${palete})`,
       output: input,

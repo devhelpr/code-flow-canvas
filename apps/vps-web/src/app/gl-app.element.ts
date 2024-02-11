@@ -1458,146 +1458,150 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   };
   shaderStatements = '';
   flowTOGLCanvas = () => {
-    this.valueParameterUniforms.forEach((uniform) => {
-      if (this.shaderProgram) {
-        uniform.uniform = null;
-      }
-    });
-    this.valueParameterUniforms = [];
-    console.log('flowTOGLCanvas');
-    let sdfIndex = 1;
-    this.shaderStatements = '';
-    this.shaderExtensions = '';
-    const nodeVisited: string[] = [];
-    const glslFunctions = getGLSLFunctions();
-    if (this.canvasApp) {
-      const compositions = this.canvasApp.compositons.getAllCompositions();
-      Object.entries(compositions).forEach(([_key, composition]) => {
-        composition.nodes.forEach((node) => {
-          if (node.nodeInfo?.type && glslFunctions[node.nodeInfo?.type]) {
-            if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
-              nodeVisited.push(node.nodeType ?? '');
-              const glslFunction = glslFunctions[node.nodeInfo?.type];
-              this.shaderExtensions += glslFunction;
+    try {
+      this.valueParameterUniforms.forEach((uniform) => {
+        if (this.shaderProgram) {
+          uniform.uniform = null;
+        }
+      });
+      this.valueParameterUniforms = [];
+      console.log('flowTOGLCanvas');
+      let sdfIndex = 1;
+      this.shaderStatements = '';
+      this.shaderExtensions = '';
+      const nodeVisited: string[] = [];
+      const glslFunctions = getGLSLFunctions();
+      if (this.canvasApp) {
+        const compositions = this.canvasApp.compositons.getAllCompositions();
+        Object.entries(compositions).forEach(([_key, composition]) => {
+          composition.nodes.forEach((node) => {
+            if (node.nodeInfo?.type && glslFunctions[node.nodeInfo?.type]) {
+              if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+                nodeVisited.push(node.nodeType ?? '');
+                const glslFunction = glslFunctions[node.nodeInfo?.type];
+                this.shaderExtensions += glslFunction;
+              }
+            }
+          });
+        });
+        const visitedNodes: string[] = [];
+
+        this.canvasApp.elements.forEach((element) => {
+          const node = element as unknown as INodeComponent<GLNodeInfo>;
+          if (node.nodeType === NodeType.Shape) {
+            if (node?.nodeInfo?.type === 'value-node') {
+              this.valueParameterUniforms.push({
+                uniform: undefined,
+                id: node.id,
+                uniformName: `value_${node.id}`,
+                value: 0,
+                node: node as unknown as IRectNodeComponent<GLNodeInfo>,
+              });
+            }
+            if (node?.nodeInfo?.type && glslFunctions[node?.nodeInfo?.type]) {
+              if (nodeVisited.indexOf(node?.nodeInfo?.type ?? '') < 0) {
+                nodeVisited.push(node?.nodeInfo?.type ?? '');
+                const glslFunction = glslFunctions[node?.nodeInfo?.type];
+                this.shaderExtensions += glslFunction;
+              }
+            }
+            if (
+              node.nodeInfo?.type === 'define-vec2-variable-node' ||
+              node.nodeInfo?.type === 'define-color-variable-node'
+            ) {
+              const inputs = this.getInputsForNode(
+                node as IRectNodeComponent<GLNodeInfo>
+              );
+              visitedNodes.push(node.id);
+              const result = node.nodeInfo?.compute?.(0, sdfIndex, inputs);
+              this.shaderStatements += result?.result ?? '';
+              this.shaderStatements += `
+`;
+              sdfIndex++;
             }
           }
         });
-      });
-      const visitedNodes: string[] = [];
+        this.canvasApp.elements.forEach((element) => {
+          this.shaderNodePreoutput = '';
+          const node = element as unknown as INodeComponent<GLNodeInfo>;
+          if (node.nodeType === NodeType.Shape) {
+            if (visitedNodes.indexOf(node.id) < 0) {
+              if (node.nodeType && glslFunctions[node.nodeType]) {
+                if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+                  nodeVisited.push(node.nodeType ?? '');
+                  const glslFunction = glslFunctions[node.nodeType];
+                  this.shaderExtensions += glslFunction;
+                }
+              }
 
-      this.canvasApp.elements.forEach((element) => {
-        const node = element as unknown as INodeComponent<GLNodeInfo>;
-        if (node.nodeType === NodeType.Shape) {
-          if (node?.nodeInfo?.type === 'value-node') {
-            this.valueParameterUniforms.push({
-              uniform: undefined,
-              id: node.id,
-              uniformName: `value_${node.id}`,
-              value: 0,
-              node: node as unknown as IRectNodeComponent<GLNodeInfo>,
-            });
-          }
-          if (node?.nodeInfo?.type && glslFunctions[node?.nodeInfo?.type]) {
-            if (nodeVisited.indexOf(node?.nodeInfo?.type ?? '') < 0) {
-              nodeVisited.push(node?.nodeInfo?.type ?? '');
-              const glslFunction = glslFunctions[node?.nodeInfo?.type];
-              this.shaderExtensions += glslFunction;
-            }
-          }
-          if (
-            node.nodeInfo?.type === 'define-vec2-variable-node' ||
-            node.nodeInfo?.type === 'define-color-variable-node'
-          ) {
-            const inputs = this.getInputsForNode(
-              node as IRectNodeComponent<GLNodeInfo>
-            );
-            visitedNodes.push(node.id);
-            const result = node.nodeInfo?.compute?.(0, sdfIndex, inputs);
-            this.shaderStatements += result?.result ?? '';
-            this.shaderStatements += `
+              if (
+                node.nodeInfo?.type === 'set-vec2-variable-node' ||
+                node.nodeInfo?.type === 'set-color-variable-node' ||
+                node.nodeInfo?.type === 'set-and-add-color-variable-node' ||
+                node.nodeInfo?.isComposition
+              ) {
+                const inputs = this.getInputsForNode(
+                  node as IRectNodeComponent<GLNodeInfo>
+                );
+                const result = node.nodeInfo?.compute?.(
+                  0,
+                  sdfIndex,
+                  inputs,
+                  {} as any,
+                  node.nodeInfo?.isComposition ? 'test' : undefined
+                );
+
+                this.shaderStatements +=
+                  this.shaderNodePreoutput + result?.result ?? '';
+                this.shaderStatements += `
 `;
-            sdfIndex++;
-          }
-        }
-      });
-      this.canvasApp.elements.forEach((element) => {
-        this.shaderNodePreoutput = '';
-        const node = element as unknown as INodeComponent<GLNodeInfo>;
-        if (node.nodeType === NodeType.Shape) {
-          if (visitedNodes.indexOf(node.id) < 0) {
-            if (node.nodeType && glslFunctions[node.nodeType]) {
-              if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
-                nodeVisited.push(node.nodeType ?? '');
-                const glslFunction = glslFunctions[node.nodeType];
-                this.shaderExtensions += glslFunction;
+                sdfIndex++;
               }
             }
-
-            if (
-              node.nodeInfo?.type === 'set-vec2-variable-node' ||
-              node.nodeInfo?.type === 'set-color-variable-node' ||
-              node.nodeInfo?.type === 'set-and-add-color-variable-node' ||
-              node.nodeInfo?.isComposition
-            ) {
-              const inputs = this.getInputsForNode(
-                node as IRectNodeComponent<GLNodeInfo>
-              );
-              const result = node.nodeInfo?.compute?.(
-                0,
-                sdfIndex,
-                inputs,
-                {} as any,
-                node.nodeInfo?.isComposition ? 'test' : undefined
-              );
-
-              this.shaderStatements +=
-                this.shaderNodePreoutput + result?.result ?? '';
-              this.shaderStatements += `
-`;
-              sdfIndex++;
-            }
           }
-        }
-      });
+        });
 
-      this.canvasApp.elements.forEach((element) => {
-        this.shaderNodePreoutput = '';
-        const node = element as unknown as INodeComponent<GLNodeInfo>;
-        if (node.nodeType === NodeType.Shape) {
-          if (visitedNodes.indexOf(node.id) < 0) {
-            if (node.nodeType && glslFunctions[node.nodeType]) {
-              if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
-                nodeVisited.push(node.nodeType ?? '');
-                const glslFunction = glslFunctions[node.nodeType];
-                this.shaderExtensions += glslFunction;
+        this.canvasApp.elements.forEach((element) => {
+          this.shaderNodePreoutput = '';
+          const node = element as unknown as INodeComponent<GLNodeInfo>;
+          if (node.nodeType === NodeType.Shape) {
+            if (visitedNodes.indexOf(node.id) < 0) {
+              if (node.nodeType && glslFunctions[node.nodeType]) {
+                if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
+                  nodeVisited.push(node.nodeType ?? '');
+                  const glslFunction = glslFunctions[node.nodeType];
+                  this.shaderExtensions += glslFunction;
+                }
+              }
+              if (
+                node.nodeInfo?.type === 'circle-node' ||
+                node.nodeInfo?.type === 'output-color-node'
+              ) {
+                const inputs = this.getInputsForNode(
+                  node as IRectNodeComponent<GLNodeInfo>
+                );
+                const result = node.nodeInfo?.compute?.(
+                  0,
+                  sdfIndex,
+                  inputs,
+                  {} as any,
+                  node.nodeInfo?.isComposition ? 'test' : undefined
+                );
+
+                this.shaderStatements +=
+                  this.shaderNodePreoutput + result?.result ?? '';
+                this.shaderStatements += `
+`;
+                sdfIndex++;
               }
             }
-            if (
-              node.nodeInfo?.type === 'circle-node' ||
-              node.nodeInfo?.type === 'output-color-node'
-            ) {
-              const inputs = this.getInputsForNode(
-                node as IRectNodeComponent<GLNodeInfo>
-              );
-              const result = node.nodeInfo?.compute?.(
-                0,
-                sdfIndex,
-                inputs,
-                {} as any,
-                node.nodeInfo?.isComposition ? 'test' : undefined
-              );
-
-              this.shaderStatements +=
-                this.shaderNodePreoutput + result?.result ?? '';
-              this.shaderStatements += `
-`;
-              sdfIndex++;
-            }
           }
-        }
-      });
+        });
 
-      this.updateGLCanvasParameters();
+        this.updateGLCanvasParameters();
+      }
+    } catch (error) {
+      console.log('error in compiling to GLSL', error);
     }
   };
 

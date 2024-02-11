@@ -55,7 +55,7 @@ export const getSubtractNode: NodeTaskFactory<GLNodeInfo> = (
     const value1 = payload?.['value1'];
     const value2 = payload?.['value2'];
     return {
-      result: `${value1} - ${value2}`,
+      result: `(${value1} - ${value2})`,
       output: input,
       followPath: undefined,
     };

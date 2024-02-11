@@ -60,7 +60,7 @@ export const getMultiplyNode: NodeTaskFactory<GLNodeInfo> = (
 
     value2 = payload?.['value2'];
     return {
-      result: `${value1} * ${value2}`,
+      result: `(${value1} * ${value2})`,
       output: input,
       followPath: undefined,
     };

@@ -57,7 +57,7 @@ export const getMultiplyColorNode: NodeTaskFactory<GLNodeInfo> = (
 
     const x = payload?.['x'];
     return {
-      result: `${color} * ${x}`,
+      result: `(${color} * ${x})`,
       output: input,
       followPath: undefined,
     };
