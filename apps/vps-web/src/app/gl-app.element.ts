@@ -1516,10 +1516,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               node: node as unknown as IRectNodeComponent<GLNodeInfo>,
             });
           }
-          if (node.nodeType && glslFunctions[node.nodeType]) {
-            if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
-              nodeVisited.push(node.nodeType ?? '');
-              const glslFunction = glslFunctions[node.nodeType];
+          if (node?.nodeInfo?.type && glslFunctions[node?.nodeInfo?.type]) {
+            if (nodeVisited.indexOf(node?.nodeInfo?.type ?? '') < 0) {
+              nodeVisited.push(node?.nodeInfo?.type ?? '');
+              const glslFunction = glslFunctions[node?.nodeInfo?.type];
               this.shaderExtensions += glslFunction;
             }
           }
