@@ -196,7 +196,7 @@ export class Connection<T> {
           'connection-background-path pointer-events-stroke cursor-pointer',
         d: path,
         stroke: containerNode ? '#94a3b8' : '#1e293b',
-        'stroke-width': 10,
+        'stroke-width': 20,
         fill: 'transparent',
         pointerdown: this.onPointerDown,
       },

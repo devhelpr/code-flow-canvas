@@ -883,16 +883,22 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         }
         if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
           maxX = node.x;
+          +(node.width ?? 0);
         }
         if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
-          maxY = node.y;
+          maxY = node.y + (node.height ?? 0);
         }
       });
 
+      minX -= 300;
+      maxX += 300;
+
       const nodesIdsToIgnore: string[] = [];
 
+      let yIndex = 0;
+
       // inputs
-      composition.thumbs?.forEach((thumb, index) => {
+      composition.thumbs?.forEach((thumb, _index) => {
         if (thumb.connectionType === ThumbConnectionType.end && thumb.nodeId) {
           const factory = getGLNodeTaskFactory('thumb-input');
           const node = canvasApp?.elements.get(
@@ -906,7 +912,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             const thumbInput = nodeTask.createVisualNode(
               canvasApp,
               minX - 100,
-              minY - 100 + index * 75
+              minY - 100 + yIndex * 75
             );
             nodesIdsToIgnore.push(thumbInput.id);
             const connection = canvasApp.createCubicBezier(
@@ -944,23 +950,41 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                   end: true,
                 }) || undefined;
 
+              thumbInput.connections?.push(connection.nodeComponent);
               node.connections?.push(connection.nodeComponent);
 
               if (connection.nodeComponent.update) {
                 connection.nodeComponent.update();
               }
 
+              if (thumbInput.update) {
+                thumbInput.update(
+                  thumbInput,
+                  thumbInput.x,
+                  thumbInput.y,
+                  thumbInput
+                );
+              }
+
               if (node.update) {
                 node.update(node, node.x, node.y, node);
               }
             }
+            yIndex++;
           }
         }
       });
 
+      yIndex = 0;
       // outputs
-      composition.thumbs?.forEach((thumb, index) => {
-        if (thumb.connectionType === ThumbConnectionType.start) {
+      composition.thumbs?.forEach((thumb, _index) => {
+        if (
+          thumb.nodeId &&
+          thumb.connectionType === ThumbConnectionType.start
+        ) {
+          const node = canvasApp?.elements.get(
+            thumb.nodeId
+          ) as IRectNodeComponent<GLNodeInfo>;
           const factory = getGLNodeTaskFactory('thumb-output');
           if (factory && this.canvasUpdated && node && thumb.name) {
             const nodeTask = factory(() => {
@@ -969,7 +993,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             const thumbOutput = nodeTask.createVisualNode(
               canvasApp,
               maxX + 100,
-              minY - 100 + index * 75
+              minY - 100 + yIndex * 75
             );
 
             nodesIdsToIgnore.push(thumbOutput.id);
@@ -998,8 +1022,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
               connection.nodeComponent.startNodeThumb =
                 getThumbNodeByName<GLNodeInfo>(thumb.name, node, {
-                  start: false,
-                  end: true,
+                  start: true,
+                  end: false,
                 }) || undefined;
 
               connection.nodeComponent.endNode = thumbOutput;
@@ -1009,15 +1033,26 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                   end: false,
                 }) || undefined;
 
+              thumbOutput.connections?.push(connection.nodeComponent);
               node.connections?.push(connection.nodeComponent);
 
               if (connection.nodeComponent.update) {
                 connection.nodeComponent.update();
               }
 
+              if (thumbOutput.update) {
+                thumbOutput.update(
+                  thumbOutput,
+                  thumbOutput.x,
+                  thumbOutput.y,
+                  thumbOutput
+                );
+              }
+
               if (node.update) {
                 node.update(node, node.x, node.y, node);
               }
+              yIndex++;
             }
           }
         }
