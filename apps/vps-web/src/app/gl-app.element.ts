@@ -1573,7 +1573,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 node.nodeInfo?.type === 'set-vec2-variable-node' ||
                 node.nodeInfo?.type === 'set-color-variable-node' ||
                 node.nodeInfo?.type === 'set-and-add-color-variable-node' ||
-                node.nodeInfo?.isComposition
+                (node.nodeInfo?.isComposition &&
+                  (
+                    (node as IRectNodeComponent<GLNodeInfo>).connections || []
+                  ).filter((c) => c.startNode?.id === node.id).length === 0)
               ) {
                 const inputs = this.getInputsForNode(
                   node as IRectNodeComponent<GLNodeInfo>

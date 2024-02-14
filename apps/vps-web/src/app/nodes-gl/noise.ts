@@ -72,7 +72,7 @@ export const getNoiseNode: NodeTaskFactory<GLNodeInfo> = (
     const time = payload?.['time'] ?? '1.';
     const zoom = payload?.['zoom'] ?? '.0001';
     return {
-      result: `normalNoise(${value},${zoom},1.,${time})`,
+      result: `normalNoise(${value},${zoom},0.5,${time})`,
       output: input,
       followPath: undefined,
     };

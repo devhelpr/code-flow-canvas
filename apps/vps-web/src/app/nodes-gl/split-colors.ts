@@ -52,6 +52,7 @@ export const getSplitColorsNode = (
     name: nodeName,
     family: 'flow-canvas',
     isContainer: false,
+    getCompute: () => compute,
     createVisualNode: (
       canvasApp: CanvasAppInstance<GLNodeInfo>,
       x: number,

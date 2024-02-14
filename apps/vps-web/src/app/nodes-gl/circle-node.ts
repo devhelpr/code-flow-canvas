@@ -42,6 +42,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
     name: 'circle-node',
     family: 'flow-canvas',
     isContainer: false,
+    getCompute: () => compute,
     createVisualNode: (
       canvasApp: CanvasAppInstance<GLNodeInfo>,
       x: number,

@@ -32,6 +32,7 @@ export const getCreateCompositionNode =
     let nodes: FlowNode<GLNodeInfo>[] = [];
     let compositionThumbs: IThumb[] = [];
     let composition: Composition<GLNodeInfo> | undefined = undefined;
+
     const getNodeOutput = (
       node: FlowNode<GLNodeInfo>,
       thumbName: string,
