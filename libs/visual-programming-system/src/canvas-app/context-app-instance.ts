@@ -18,8 +18,15 @@ import {
   GetNodeStatedHandler,
 } from '../interfaces/node-state-handlers';
 import { Composition } from '../interfaces/composition';
+import { CanvasAppInstance } from './CanvasAppInstance';
+import { Compositions } from '../compositions/compositions';
+import { NodeTransformer } from '../components/node-transformer';
+import { ContextRect } from '../context-components/context-rect';
 
-export const createContextInstanceApp = <T>(_canvasId?: string) => {
+export const createContextInstanceApp = <T>(
+  _canvasId?: string
+): CanvasAppInstance<T> => {
+  const compositons = new Compositions<T>();
   const variables: Record<
     string,
     {
@@ -51,8 +58,9 @@ export const createContextInstanceApp = <T>(_canvasId?: string) => {
     canvas,
     rootElement,
     interactionStateMachine,
-    nodeTransformer: undefined,
-    compositons: [],
+    nodeTransformer: undefined as unknown as NodeTransformer<T>,
+    compositons,
+    isContextOnly: true,
     setOnAddcomposition: (
       _onAddComposition: (
         composition: Composition<T>,
@@ -132,7 +140,7 @@ export const createContextInstanceApp = <T>(_canvasId?: string) => {
       _width: number,
       _height: number,
       _text?: string,
-      _thumbs?: IThumb[],
+      thumbs?: IThumb[],
       _markup?: string | INodeComponent<T>,
       _layoutProperties?: {
         classNames?: string;
@@ -140,12 +148,17 @@ export const createContextInstanceApp = <T>(_canvasId?: string) => {
       _hasStaticWidthHeight?: boolean,
       _disableInteraction?: boolean,
       _disableManualResize?: boolean,
-      _id?: string,
-      _nodeInfo?: T,
-      _containerNode?: IRectNodeComponent<T>,
+      id?: string,
+      nodeInfo?: T,
+      containerNode?: IRectNodeComponent<T>,
       _isStaticPosition?: boolean
     ) => {
-      return undefined as unknown as Rect<T>;
+      const instance = new ContextRect<T>(elements, thumbs, id, containerNode);
+      if (!instance || !instance.nodeComponent) {
+        throw new Error('rectInstance is undefined');
+      }
+      instance.nodeComponent.nodeInfo = nodeInfo;
+      return instance as unknown as Rect<T>;
     },
     createRectThumb: (
       _x: number,
