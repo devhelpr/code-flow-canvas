@@ -1,4 +1,9 @@
-import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
+import {
+  GetNodeTaskFactory,
+  NodeTaskFactory,
+  NodeTypeRegistry,
+  RegisterComposition,
+} from './node-task-registry';
 import { getCircleNode } from '../nodes-gl/circle-node';
 import { getValueNode } from '../nodes-gl/value-node';
 import { getColorNode } from '../nodes-gl/color-node';
@@ -196,7 +201,9 @@ export const setupGLNodeTaskRegistry = () => {
   );
 };
 
-export const getGLNodeTaskFactory = (name: string) => {
+export const getGLNodeTaskFactory: GetNodeTaskFactory<GLNodeInfo> = (
+  name: string
+) => {
   return glNodeTaskRegistry[name] ?? false;
 };
 
@@ -222,7 +229,9 @@ export const registerCompositionNodes = (
   });
 };
 
-export const registerComposition = (composition: Composition<GLNodeInfo>) => {
+export const registerComposition: RegisterComposition<GLNodeInfo> = (
+  composition: Composition<GLNodeInfo>
+) => {
   const node = getCreateCompositionNode(
     composition.thumbs,
     composition.id,

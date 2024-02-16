@@ -19,7 +19,6 @@ import {
   IDOMElement,
   Composition,
   IConnectionNodeComponent,
-  getThumbNodeByIdentifierWithinNode,
   createCanvasApp,
   ThumbConnectionType,
   getThumbNodeByName,
@@ -109,7 +108,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     }
     this.setupWindowResize();
     this.setupGLCanvas();
-    this.canvasApp.setOnAddcomposition(this.onAddComposition);
+    this.canvasApp.setOnAddcomposition(this.onAddGLComposition);
     const canvasUpdated = () => {
       if (this.isStoring) {
         return;
@@ -713,91 +712,19 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     });
   }
 
-  onAddComposition = (
+  onAddGLComposition = (
     composition: Composition<GLNodeInfo>,
     connections: {
       thumbIdentifierWithinNode: string;
       connection: IConnectionNodeComponent<GLNodeInfo>;
     }[]
   ) => {
-    if (!this.canvasApp) {
-      return;
-    }
-    console.log('REGISTER COMPOSITION', composition);
-    registerComposition(composition);
-
-    const nodeType = `composition-${composition.id}`;
-
-    let minX = -1;
-    let minY = -1;
-    let maxX = -1;
-    let maxY = -1;
-    composition.nodes.forEach((node) => {
-      if (node.x < minX || minX === -1) {
-        minX = node.x;
-      }
-      if (node.y < minY || minY === -1) {
-        minY = node.y;
-      }
-      if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
-        maxX = node.x;
-      }
-      if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
-        maxY = node.y;
-      }
-    });
-    minX = minX === -1 ? minX : composition.nodes[0]?.x ?? 0;
-    minY = minY === -1 ? minY : composition.nodes[0]?.y ?? 0;
-    const x = (minX + maxX) / 2 - 100;
-    const y = (minY + maxY) / 2 - 100;
-
-    const factory = getGLNodeTaskFactory(nodeType);
-
-    if (factory) {
-      const nodeTask = factory(() => undefined);
-
-      const node = nodeTask.createVisualNode(this.canvasApp, x, y);
-      if (node && node.nodeInfo) {
-        // TODO : IMPROVE THIS
-        (node.nodeInfo as any).taskType = nodeType;
-      }
-
-      connections.forEach((connection) => {
-        if (!connection.connection.startNode) {
-          connection.connection.startNode = node;
-
-          connection.connection.startNodeThumb =
-            getThumbNodeByIdentifierWithinNode<GLNodeInfo>(
-              connection.thumbIdentifierWithinNode,
-              node,
-              {
-                start: true,
-                end: false,
-              }
-            ) || undefined;
-
-          node.connections.push(connection.connection);
-          connection.connection.update?.();
-        }
-        if (!connection.connection.endNode) {
-          connection.connection.endNode = node;
-
-          connection.connection.endNodeThumb =
-            getThumbNodeByIdentifierWithinNode<GLNodeInfo>(
-              connection.thumbIdentifierWithinNode,
-              node,
-              {
-                start: false,
-                end: true,
-              }
-            ) || undefined;
-          node.connections.push(connection.connection);
-          connection.connection.update?.();
-        }
-      });
-
-      node?.update?.();
-    }
+    return this.onAddComposition(
+      composition,
+      connections,
+      registerComposition,
+      getGLNodeTaskFactory
+    );
   };
 
   editComposition = () => {

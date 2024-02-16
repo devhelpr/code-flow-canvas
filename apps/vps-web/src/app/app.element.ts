@@ -18,6 +18,8 @@ import {
   ICommandHandler,
   IDOMElement,
   IConnectionNodeComponent,
+  Composition,
+  getThumbNodeByIdentifierWithinNode,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -28,6 +30,7 @@ import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-
 import { executeCommand } from './command-handlers/register-commands';
 import { getSortedNodes } from './utils/sort-nodes';
 import { getStartNodes } from './utils/start-nodes';
+import { GetNodeTaskFactory, RegisterComposition } from './node-task-registry';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -743,19 +746,92 @@ export class AppElement<T> {
       tabIndex++;
     });
   };
-}
+  onAddComposition = (
+    composition: Composition<T>,
+    connections: {
+      thumbIdentifierWithinNode: string;
+      connection: IConnectionNodeComponent<T>;
+    }[],
+    registerComposition: RegisterComposition<T>,
+    getNodeTaskFactory: GetNodeTaskFactory<T>
+  ) => {
+    if (!this.canvasApp) {
+      return;
+    }
+    console.log('REGISTER COMPOSITION', composition);
+    registerComposition(composition);
 
-/*
-const [getCount, setCount] = createSignal(0);
-const [getValue, setValue] = createSignal('test');
-createEffect(() => console.log('effect', getCount(), getValue()));
-setCount(1);
-setCount(2);
-setValue('test2');
-setCount(3);
-*/
-/*
-setInterval(() => {
-  setCount(getCount() + 1);
-}, 1000);
-*/
+    const nodeType = `composition-${composition.id}`;
+
+    let minX = -1;
+    let minY = -1;
+    let maxX = -1;
+    let maxY = -1;
+    composition.nodes.forEach((node) => {
+      if (node.x < minX || minX === -1) {
+        minX = node.x;
+      }
+      if (node.y < minY || minY === -1) {
+        minY = node.y;
+      }
+      if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
+        maxX = node.x;
+      }
+      if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
+        maxY = node.y;
+      }
+    });
+    minX = minX === -1 ? minX : composition.nodes[0]?.x ?? 0;
+    minY = minY === -1 ? minY : composition.nodes[0]?.y ?? 0;
+    const x = (minX + maxX) / 2 - 100;
+    const y = (minY + maxY) / 2 - 100;
+
+    const factory = getNodeTaskFactory(nodeType);
+
+    if (factory) {
+      const nodeTask = factory(() => undefined);
+
+      const node = nodeTask.createVisualNode(this.canvasApp, x, y);
+      if (node && node.nodeInfo) {
+        // TODO : IMPROVE THIS
+        (node.nodeInfo as any).taskType = nodeType;
+      }
+
+      connections.forEach((connection) => {
+        if (!connection.connection.startNode) {
+          connection.connection.startNode = node;
+
+          connection.connection.startNodeThumb =
+            getThumbNodeByIdentifierWithinNode<T>(
+              connection.thumbIdentifierWithinNode,
+              node,
+              {
+                start: true,
+                end: false,
+              }
+            ) || undefined;
+
+          node.connections.push(connection.connection);
+          connection.connection.update?.();
+        }
+        if (!connection.connection.endNode) {
+          connection.connection.endNode = node;
+
+          connection.connection.endNodeThumb =
+            getThumbNodeByIdentifierWithinNode<T>(
+              connection.thumbIdentifierWithinNode,
+              node,
+              {
+                start: false,
+                end: true,
+              }
+            ) || undefined;
+          node.connections.push(connection.connection);
+          connection.connection.update?.();
+        }
+      });
+
+      node?.update?.();
+    }
+  };
+}

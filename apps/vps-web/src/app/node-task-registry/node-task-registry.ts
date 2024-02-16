@@ -1,5 +1,6 @@
 import {
   CanvasAppInstance,
+  Composition,
   INodeComponent,
   IRectNodeComponent,
   IThumb,
@@ -7,6 +8,8 @@ import {
 
 export type InitialValues = Record<string, any>;
 export type NodeTaskFactory<T> = (onUpdatedCanvas: () => void) => NodeTask<T>;
+export type GetNodeTaskFactory<T> = (name: string) => NodeTaskFactory<T>;
+
 export type NodeTask<T> = {
   name: string;
   family: string;
@@ -50,3 +53,4 @@ export type NodeTask<T> = {
 };
 
 export type NodeTypeRegistry<T> = Record<string, NodeTaskFactory<T>>;
+export type RegisterComposition<T> = (composition: Composition<T>) => void;
