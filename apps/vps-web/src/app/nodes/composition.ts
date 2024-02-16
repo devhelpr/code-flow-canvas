@@ -19,7 +19,11 @@ import { GLNodeInfo } from '../types/gl-node-info';
 import { NodeInfo } from '../types/node-info';
 import { importToCanvas } from '../storage/import-to-canvas';
 import { run } from '../simple-flow-engine/simple-flow-engine';
-import { runPath } from '../follow-path/run-path';
+import {
+  runCounter,
+  runPath,
+  setRunCounterResetHandler,
+} from '../follow-path/run-path';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
 
 const familyName = 'flow-canvas';
@@ -110,6 +114,15 @@ export const getCreateCompositionNode =
           }
         }
         if (composition) {
+          setRunCounterResetHandler(() => {
+            if (runCounter <= 0) {
+              // resolve({
+              //   result: input,
+              //   output: input,
+              //   followPath: undefined,
+              //});
+            }
+          });
           run(
             contextCanvasApp.elements,
             contextCanvasApp,
@@ -162,6 +175,8 @@ export const getCreateCompositionNode =
         category: 'Compositions',
         backgroundColorClassName: 'bg-purple-500',
         textColorClassName: 'text-black',
-      }
+      },
+      undefined,
+      true
     );
   };

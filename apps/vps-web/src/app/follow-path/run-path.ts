@@ -10,14 +10,20 @@ import {
   getNodeConnectionPairsFromThumb,
 } from './get-node-connection-pairs';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
-import {
-  runCounter,
-  runCounterResetHandler,
-  nodeAnimationMap,
-  updateRunCounterElement,
-  incrementRunCounter,
-  decrementRunCounter,
-} from './animate-path';
+export let runCounter = 0;
+export const incrementRunCounter = () => {
+  runCounter++;
+};
+export const decrementRunCounter = () => {
+  runCounter--;
+};
+export const resetRunCounter = () => {
+  runCounter = 0;
+};
+export let runCounterResetHandler: undefined | (() => void) = undefined;
+export const setRunCounterResetHandler = (handler: () => void) => {
+  runCounterResetHandler = handler;
+};
 
 export const runPathForNodeConnectionPairs = <T>(
   canvasApp: CanvasAppInstance<T>,
@@ -51,11 +57,7 @@ export const runPathForNodeConnectionPairs = <T>(
       onStopped(input ?? '', scopeId);
     }
 
-    if (
-      runCounter <= 0 &&
-      runCounterResetHandler &&
-      nodeAnimationMap.size === 0
-    ) {
+    if (runCounter <= 0 && runCounterResetHandler) {
       runCounterResetHandler();
     }
     return;
@@ -73,7 +75,6 @@ export const runPathForNodeConnectionPairs = <T>(
     }
 
     incrementRunCounter();
-    updateRunCounterElement();
 
     if (
       start &&
@@ -92,7 +93,6 @@ export const runPathForNodeConnectionPairs = <T>(
       const resolver = (result: any) => {
         console.log('animatePath onNextNode result', input, result);
         decrementRunCounter();
-        updateRunCounterElement();
 
         // uncomment the following line during debugging when a breakpoint is above here
         // .. this causes the message-bubble animation to continue after continuing
@@ -118,11 +118,7 @@ export const runPathForNodeConnectionPairs = <T>(
           if (onStopped) {
             onStopped(result.output ?? input ?? '');
           }
-          if (
-            runCounter <= 0 &&
-            runCounterResetHandler &&
-            nodeAnimationMap.size === 0
-          ) {
+          if (runCounter <= 0 && runCounterResetHandler) {
             runCounterResetHandler();
           }
         }
@@ -135,7 +131,6 @@ export const runPathForNodeConnectionPairs = <T>(
         });
     } else {
       decrementRunCounter();
-      updateRunCounterElement();
 
       if (start) {
         onNextNode && onNextNode(start.id, start, input ?? '', connection);
