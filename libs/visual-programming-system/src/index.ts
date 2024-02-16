@@ -18,3 +18,4 @@ export { RectThumb } from './components/rect-thumb';
 export * from './canvas-app/CanvasAppInstance';
 export * from './components/utils/calculate-connector-thumbs';
 export * from './interfaces/composition';
+export * from './canvas-app/context-app-instance';
