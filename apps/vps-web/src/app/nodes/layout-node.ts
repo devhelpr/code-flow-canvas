@@ -20,7 +20,7 @@ export interface ComputeResult {
   followPath?: string;
 }
 export const getLayoutNode =
-  (animatePath: AnimatePathFunction) =>
+  (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;

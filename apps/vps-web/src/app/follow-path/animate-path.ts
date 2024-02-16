@@ -12,8 +12,8 @@ import {
 } from './get-node-connection-pairs';
 import { getPointOnConnection } from './point-on-connection';
 import { followNodeExecution } from './followNodeExecution';
-import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 // function getSpeed(maxSpeed: number, speedMeter: number) {
 //   //return 1;
@@ -28,8 +28,8 @@ function getMaxLoop() {
   return 1.015;
 }
 
-export type AnimatePathFunction = (
-  node: IRectNodeComponent<NodeInfo>,
+export type AnimatePathFunction<T> = (
+  node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
@@ -48,8 +48,8 @@ export type AnimatePathFunction = (
   scopeId?: string
 ) => void;
 
-export type AnimatePathFromThumbFunction = (
-  node: IThumbNodeComponent<NodeInfo>,
+export type AnimatePathFromThumbFunction<T> = (
+  node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
@@ -67,9 +67,9 @@ export type AnimatePathFromThumbFunction = (
   scopeId?: string
 ) => void;
 
-export type FollowPathFunction = (
-  canvasApp: CanvasAppInstance<NodeInfo>,
-  node: IRectNodeComponent<NodeInfo>,
+export type FollowPathFunction<T> = (
+  canvasApp: CanvasAppInstance<T>,
+  node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
@@ -90,11 +90,11 @@ export type FollowPathFunction = (
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
 
-type NodeAnimationNextNode = (
+type NodeAnimationNextNode = <T>(
   nodeId: string,
-  node: IRectNodeComponent<NodeInfo>,
+  node: IRectNodeComponent<T>,
   input: string | any[],
-  connection: IConnectionNodeComponent<NodeInfo>,
+  connection: IConnectionNodeComponent<T>,
   scopeId?: string
 ) =>
   | {
@@ -110,10 +110,10 @@ type NodeAnimationNextNode = (
       followPath?: string;
     }>;
 
-interface NodeAnimatonInfo {
-  start: IRectNodeComponent<NodeInfo>;
-  connection: IConnectionNodeComponent<NodeInfo>;
-  end: IRectNodeComponent<NodeInfo>;
+interface NodeAnimatonInfo<T> {
+  start: IRectNodeComponent<T>;
+  connection: IConnectionNodeComponent<T>;
+  end: IRectNodeComponent<T>;
   animationLoop: number;
   animatedNodes?: {
     node1?: IDOMElement;
@@ -138,7 +138,7 @@ interface NodeAnimatonInfo {
   color: string;
 }
 
-const nodeAnimationMap: Map<number, NodeAnimatonInfo> = new Map();
+const nodeAnimationMap: Map<number, NodeAnimatonInfo<BaseNodeInfo>> = new Map();
 let nodeAnimationId = 1;
 
 let speedMeter = 500;
@@ -187,7 +187,7 @@ export function setOnFrame(handler: (elapsed: number) => void) {
 }
 
 let lastTime: number | undefined = undefined;
-export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
+export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
   let quit = false;
   const animateCamera = (time: number) => {
     if (quit) {
@@ -272,11 +272,11 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
 
           const color = nodeAnimation.color;
 
-          const bezierCurvePoints = getPointOnConnection<NodeInfo>(
+          const bezierCurvePoints = getPointOnConnection<T>(
             loop,
-            connection,
-            start,
-            end
+            connection as unknown as IConnectionNodeComponent<T>,
+            start as unknown as IRectNodeComponent<T>,
+            end as unknown as IRectNodeComponent<T>
           );
 
           if (!animatedNodes?.node1) {
@@ -336,9 +336,9 @@ export function setCameraAnimation(canvasApp: CanvasAppInstance<NodeInfo>) {
               //lastTime = undefined;
 
               if (!result.stop && result.result !== undefined) {
-                animatePath(
+                animatePath<T>(
                   canvasApp,
-                  end as unknown as IRectNodeComponent<NodeInfo>,
+                  end as unknown as IRectNodeComponent<T>,
                   color,
                   nodeAnimation.onNextNode as OnNextNodeFunction,
                   nodeAnimation.onStopped,
@@ -445,14 +445,14 @@ const updateRunCounterElement = () => {
 //   // }
 // };
 
-export const animatePathForNodeConnectionPairs = (
-  canvasApp: CanvasAppInstance<NodeInfo>,
+export const animatePathForNodeConnectionPairs = <T>(
+  canvasApp: CanvasAppInstance<T>,
   nodeConnectionPairs:
     | false
     | {
-        start: IRectNodeComponent<NodeInfo>;
-        end: IRectNodeComponent<NodeInfo>;
-        connection: IConnectionNodeComponent<NodeInfo>;
+        start: IRectNodeComponent<T>;
+        end: IRectNodeComponent<T>;
+        connection: IConnectionNodeComponent<T>;
       }[],
   color: string,
   onNextNode?: OnNextNodeFunction,
@@ -469,7 +469,7 @@ export const animatePathForNodeConnectionPairs = (
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  fromNode?: IRectNodeComponent<NodeInfo>
+  fromNode?: IRectNodeComponent<T>
 ) => {
   if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
     canvasApp?.elements.delete(animatedNodes?.node1.id);
@@ -482,14 +482,6 @@ export const animatePathForNodeConnectionPairs = (
     animatedNodes.node3 = undefined;
   }
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
-    // if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
-    //   canvasApp?.elements.delete(animatedNodes?.node1.id);
-    //   animatedNodes.node1.domElement?.remove();
-    //   animatedNodes.node1 = undefined;
-    //   canvasApp?.elements.delete(animatedNodes?.node2.id);
-    //   animatedNodes.node2.domElement?.remove();
-    //   animatedNodes.node2 = undefined;
-    // }
     if (onStopped) {
       console.log('animatePath onStopped4', input);
       onStopped(input ?? '', scopeId);
@@ -500,9 +492,8 @@ export const animatePathForNodeConnectionPairs = (
       runCounter,
       scopeId,
       input,
-      fromNode?.nodeInfo?.type
+      (fromNode?.nodeInfo as any)?.type
     );
-    //}
 
     if (
       runCounter <= 0 &&
@@ -513,8 +504,7 @@ export const animatePathForNodeConnectionPairs = (
     }
     return;
   }
-  // const maxSpeed = 500;
-  // const currentSpeed = speedMeter;
+
   nodeConnectionPairs.forEach((nodeConnectionPair, index) => {
     const start = nodeConnectionPair.start;
     const connection = nodeConnectionPair.connection;
@@ -624,9 +614,10 @@ export const animatePathForNodeConnectionPairs = (
     updateRunCounterElement();
 
     nodeAnimationMap.set(nodeAnimationId, {
-      start: start as unknown as IRectNodeComponent<NodeInfo>,
-      connection: connection as unknown as IConnectionNodeComponent<NodeInfo>,
-      end: end as unknown as IRectNodeComponent<NodeInfo>,
+      start: start as unknown as IRectNodeComponent<BaseNodeInfo>,
+      connection:
+        connection as unknown as IConnectionNodeComponent<BaseNodeInfo>,
+      end: end as unknown as IRectNodeComponent<BaseNodeInfo>,
       animationLoop: 0,
       animatedNodes,
       onNextNode: onNextNode as unknown as NodeAnimationNextNode,
@@ -790,9 +781,10 @@ export const animatePathForNodeConnectionPairs = (
   });
 };
 
-export const animatePath: FollowPathFunction = (
-  canvasApp: CanvasAppInstance<NodeInfo>,
-  node: IRectNodeComponent<NodeInfo>,
+//: FollowPathFunction<T>
+export const animatePath = <T>(
+  canvasApp: CanvasAppInstance<T>,
+  node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
@@ -810,7 +802,7 @@ export const animatePath: FollowPathFunction = (
   followThumb?: string,
   scopeId?: string
 ) => {
-  const nodeConnectionPairs = getNodeConnectionPairById<NodeInfo>(
+  const nodeConnectionPairs = getNodeConnectionPairById<T>(
     canvasApp,
     node,
     followPathByName,
@@ -837,9 +829,9 @@ export const animatePath: FollowPathFunction = (
   );
 };
 
-export const animatePathFromThumb = (
-  canvasApp: CanvasAppInstance<NodeInfo>,
-  node: IThumbNodeComponent<NodeInfo>,
+export const animatePathFromThumb = <T>(
+  canvasApp: CanvasAppInstance<T>,
+  node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction,
   onStopped?: (input: string | any[], scopeId?: string) => void,
@@ -857,10 +849,7 @@ export const animatePathFromThumb = (
 
   scopeId?: string
 ) => {
-  const connectionsPairs = getNodeConnectionPairsFromThumb<NodeInfo>(
-    canvasApp,
-    node
-  );
+  const connectionsPairs = getNodeConnectionPairsFromThumb<T>(canvasApp, node);
 
   animatePathForNodeConnectionPairs(
     canvasApp,

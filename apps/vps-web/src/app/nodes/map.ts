@@ -86,8 +86,8 @@ const isInputOfRangeValueType = (input: RangeValueType) => {
 
 export const getMap =
   (
-    _animatePath: AnimatePathFunction,
-    animatePathFromThumb: AnimatePathFromThumbFunction
+    _animatePath: AnimatePathFunction<NodeInfo>,
+    animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
   ) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;

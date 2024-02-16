@@ -20,17 +20,27 @@ import {
   IConnectionNodeComponent,
   Composition,
   getThumbNodeByIdentifierWithinNode,
+  ThumbConnectionType,
+  getThumbNodeByName,
+  NodeType,
+  mapConnectionToFlowNode,
+  mapShapeNodeToFlowNode,
+  FlowNode,
 } from '@devhelpr/visual-programming-system';
 
 import {
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
+  setCameraAnimation,
+  setPositionTargetCameraAnimation,
 } from './follow-path/animate-path';
 import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-provider';
 import { executeCommand } from './command-handlers/register-commands';
 import { getSortedNodes } from './utils/sort-nodes';
 import { getStartNodes } from './utils/start-nodes';
 import { GetNodeTaskFactory, RegisterComposition } from './node-task-registry';
+import { BaseNodeInfo } from './types/base-node-info';
+import { importToCanvas } from './storage/import-to-canvas';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -61,6 +71,11 @@ export class AppElement<T> {
   editPopupEditingNodeIndicator: IDOMElement | undefined = undefined;
   selectedNodeLabel: IDOMElement | undefined = undefined;
   rootElement: HTMLElement | undefined = undefined;
+
+  resetStateButton: IDOMElement | undefined = undefined;
+  clearCanvasButton: IDOMElement | undefined = undefined;
+  compositionEditButton: IDOMElement | undefined = undefined;
+  compositionEditExitButton: IDOMElement | undefined = undefined;
 
   appRootElement: Element | null;
   commandRegistry = new Map<string, ICommandHandler>();
@@ -832,6 +847,370 @@ export class AppElement<T> {
       });
 
       node?.update?.();
+    }
+  };
+
+  editComposition = (
+    getNodeTaskFactory: GetNodeTaskFactory<T>,
+    canvasUpdated: () => void
+  ) => {
+    const selectedNodeInfo = getSelectedNode();
+    if (!selectedNodeInfo) {
+      return;
+    }
+    const node = (
+      selectedNodeInfo?.containerNode
+        ? (selectedNodeInfo?.containerNode?.nodeInfo as any)?.canvasAppInstance
+            ?.elements
+        : this.canvasApp?.elements
+    )?.get(selectedNodeInfo.id);
+
+    if (!node) {
+      return;
+    }
+
+    if (
+      node.nodeInfo?.isComposition &&
+      this.rootElement &&
+      node.nodeInfo.compositionId
+    ) {
+      (this.compositionEditButton?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+      (
+        this.compositionEditExitButton?.domElement as HTMLElement
+      ).classList.remove('hidden');
+
+      (this.clearCanvasButton?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+      (this.resetStateButton?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+
+      this.canvasApp?.setDisableInteraction(true);
+
+      (this.canvas?.domElement as HTMLElement).classList.add('hidden');
+      (this.canvas?.domElement as HTMLElement).classList.add(
+        'pointer-events-none'
+      );
+      const composition = this.canvasApp?.compositons?.getComposition(
+        node.nodeInfo.compositionId
+      );
+      if (!composition) {
+        return;
+      }
+      this.canvasApp?.setIsCameraFollowingPaused(true);
+
+      const canvasApp = createCanvasApp<T>(
+        this.rootElement,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'composition-canvas-' + node.nodeInfo.compositionId
+      );
+      canvasApp?.setCamera(0, 0, 1);
+
+      importToCanvas(
+        composition.nodes as FlowNode<BaseNodeInfo>[],
+        canvasApp as unknown as CanvasAppInstance<BaseNodeInfo>,
+        () => {
+          //
+        },
+        undefined,
+        0,
+        getNodeTaskFactory
+      );
+
+      let minX = -1;
+      let minY = -1;
+      let maxX = -1;
+      let maxY = -1;
+      composition.nodes.forEach((node) => {
+        if (node.x < minX || minX === -1) {
+          minX = node.x;
+        }
+        if (node.y < minY || minY === -1) {
+          minY = node.y;
+        }
+        if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
+          maxX = node.x;
+          +(node.width ?? 0);
+        }
+        if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
+          maxY = node.y + (node.height ?? 0);
+        }
+      });
+
+      minX -= 300;
+      maxX += 300;
+
+      const nodesIdsToIgnore: string[] = [];
+
+      let yIndex = 0;
+
+      // inputs
+      composition.thumbs?.forEach((thumb, _index) => {
+        if (thumb.connectionType === ThumbConnectionType.end && thumb.nodeId) {
+          const factory = getNodeTaskFactory('thumb-input');
+          const node = canvasApp?.elements.get(
+            thumb.nodeId
+          ) as IRectNodeComponent<T>;
+          if (factory && node && thumb.name) {
+            const nodeTask = factory(() => {
+              //
+            });
+            nodeTask.setTitle?.(thumb.name);
+            const thumbInput = nodeTask.createVisualNode(
+              canvasApp,
+              minX - 100,
+              minY - 100 + yIndex * 75
+            );
+            nodesIdsToIgnore.push(thumbInput.id);
+            const connection = canvasApp.createCubicBezier(
+              thumbInput.x,
+              thumbInput.y,
+              thumbInput.x,
+              thumbInput.y,
+              thumbInput.x,
+              thumbInput.y,
+              thumbInput.x,
+              thumbInput.y,
+              false,
+              undefined,
+              undefined,
+              undefined
+            );
+            if (connection && connection.nodeComponent) {
+              nodesIdsToIgnore.push(connection.nodeComponent.id);
+              connection.nodeComponent.isControlled = true;
+              connection.nodeComponent.nodeInfo = {} as T;
+              connection.nodeComponent.layer = 1;
+
+              connection.nodeComponent.startNode = thumbInput;
+              connection.nodeComponent.startNodeThumb =
+                getThumbNodeByName<T>('output', thumbInput, {
+                  start: true,
+                  end: false,
+                }) || undefined;
+
+              connection.nodeComponent.endNode = node;
+
+              connection.nodeComponent.endNodeThumb =
+                getThumbNodeByName<T>(thumb.name, node, {
+                  start: false,
+                  end: true,
+                }) || undefined;
+
+              thumbInput.connections?.push(connection.nodeComponent);
+              node.connections?.push(connection.nodeComponent);
+
+              if (connection.nodeComponent.update) {
+                connection.nodeComponent.update();
+              }
+
+              if (thumbInput.update) {
+                thumbInput.update(
+                  thumbInput,
+                  thumbInput.x,
+                  thumbInput.y,
+                  thumbInput
+                );
+              }
+
+              if (node.update) {
+                node.update(node, node.x, node.y, node);
+              }
+            }
+            yIndex++;
+          }
+        }
+      });
+
+      yIndex = 0;
+      // outputs
+      composition.thumbs?.forEach((thumb, _index) => {
+        if (
+          thumb.nodeId &&
+          thumb.connectionType === ThumbConnectionType.start
+        ) {
+          const node = canvasApp?.elements.get(
+            thumb.nodeId
+          ) as IRectNodeComponent<T>;
+          const factory = getNodeTaskFactory('thumb-output');
+          if (factory && node && thumb.name) {
+            const nodeTask = factory(() => {
+              //
+            });
+            const thumbOutput = nodeTask.createVisualNode(
+              canvasApp,
+              maxX + 100,
+              minY - 100 + yIndex * 75
+            );
+
+            nodesIdsToIgnore.push(thumbOutput.id);
+
+            const connection = canvasApp.createCubicBezier(
+              thumbOutput.x,
+              thumbOutput.y,
+              thumbOutput.x,
+              thumbOutput.y,
+              thumbOutput.x,
+              thumbOutput.y,
+              thumbOutput.x,
+              thumbOutput.y,
+              false,
+              undefined,
+              undefined,
+              undefined
+            );
+            if (connection && connection.nodeComponent) {
+              nodesIdsToIgnore.push(connection.nodeComponent.id);
+              connection.nodeComponent.isControlled = true;
+              connection.nodeComponent.nodeInfo = {} as T;
+              connection.nodeComponent.layer = 1;
+
+              connection.nodeComponent.startNode = node;
+
+              connection.nodeComponent.startNodeThumb =
+                getThumbNodeByName<T>(thumb.name, node, {
+                  start: true,
+                  end: false,
+                }) || undefined;
+
+              connection.nodeComponent.endNode = thumbOutput;
+              connection.nodeComponent.endNodeThumb =
+                getThumbNodeByName<T>('input', thumbOutput, {
+                  start: true,
+                  end: false,
+                }) || undefined;
+
+              thumbOutput.connections?.push(connection.nodeComponent);
+              node.connections?.push(connection.nodeComponent);
+
+              if (connection.nodeComponent.update) {
+                connection.nodeComponent.update();
+              }
+
+              if (thumbOutput.update) {
+                thumbOutput.update(
+                  thumbOutput,
+                  thumbOutput.x,
+                  thumbOutput.y,
+                  thumbOutput
+                );
+              }
+
+              if (node.update) {
+                node.update(node, node.x, node.y, node);
+              }
+              yIndex++;
+            }
+          }
+        }
+      });
+
+      const quitCameraSubscribtion = setCameraAnimation(canvasApp);
+      canvasApp.setOnWheelEvent((x: number, y: number, scale: number) => {
+        setPositionTargetCameraAnimation(x, y, scale);
+      });
+      canvasApp.setonDragCanvasEvent((x, y) => {
+        setPositionTargetCameraAnimation(x, y);
+      });
+
+      canvasApp.centerCamera();
+      const handler = () => {
+        quitCameraSubscribtion();
+        canvasApp?.elements.forEach((element) => {
+          if (nodesIdsToIgnore.indexOf(element.id) >= 0) {
+            const nodeHelper = element as unknown as INodeComponent<T>;
+            if (nodeHelper.nodeType === NodeType.Connection) {
+              const connectionHelper =
+                element as unknown as IConnectionNodeComponent<T>;
+              if (connectionHelper.startNode) {
+                connectionHelper.startNode.connections =
+                  connectionHelper.startNode?.connections?.filter(
+                    (c) => c.id !== connectionHelper.id
+                  );
+              }
+              if (connectionHelper.endNode) {
+                connectionHelper.endNode.connections =
+                  connectionHelper.endNode?.connections?.filter(
+                    (c) => c.id !== connectionHelper.id
+                  );
+              }
+            }
+
+            element.domElement.remove();
+            this.removeElement(element);
+          }
+        });
+        nodesIdsToIgnore.forEach((id) => {
+          canvasApp?.elements.delete(id);
+        });
+
+        // store changes to composition
+        const nodesToStore = Array.from(canvasApp?.elements).map((element) => {
+          const nodeToToConvert = element[1] as unknown as INodeComponent<T>;
+          if (nodeToToConvert.nodeType === NodeType.Connection) {
+            return mapConnectionToFlowNode(
+              nodeToToConvert as IConnectionNodeComponent<T>
+            );
+          } else {
+            return mapShapeNodeToFlowNode(
+              nodeToToConvert as IRectNodeComponent<T>
+            );
+          }
+        });
+        composition.nodes = nodesToStore;
+        this.canvasApp?.compositons.setComposition(composition);
+
+        // remove and cleanup temp canvas
+        canvasApp?.elements.forEach((element) => {
+          element.domElement.remove();
+          this.removeElement(element);
+        });
+        canvasApp?.elements.clear();
+        canvasApp?.setDisableInteraction(true);
+        canvasApp.removeEvents();
+        canvasApp.canvas?.domElement.remove();
+        this.canvasApp?.elements.forEach((element) => {
+          const node = element as INodeComponent<T>;
+          if ((node.nodeInfo as BaseNodeInfo)?.isComposition) {
+            (node.nodeInfo as BaseNodeInfo)?.initializeCompute?.();
+          }
+        });
+
+        (this.canvas?.domElement as HTMLElement).classList.remove('hidden');
+        (this.canvas?.domElement as HTMLElement).classList.remove(
+          'pointer-events-none'
+        );
+        this.canvasApp?.setIsCameraFollowingPaused(false);
+        this.canvasApp?.setDisableInteraction(false);
+        this.canvasApp?.centerCamera();
+
+        canvasUpdated();
+
+        (
+          this.compositionEditExitButton?.domElement as HTMLElement
+        ).removeEventListener('click', handler);
+
+        (
+          this.compositionEditExitButton?.domElement as HTMLElement
+        ).classList.add('hidden');
+
+        (this.clearCanvasButton?.domElement as HTMLElement).classList.remove(
+          'hidden'
+        );
+        (this.resetStateButton?.domElement as HTMLElement).classList.remove(
+          'hidden'
+        );
+      };
+      (
+        this.compositionEditExitButton?.domElement as HTMLElement
+      ).addEventListener('click', handler);
+      //
     }
   };
 }

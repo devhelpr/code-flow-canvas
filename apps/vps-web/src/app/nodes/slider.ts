@@ -12,7 +12,7 @@ import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getSlider =
-  (animatePath: AnimatePathFunction) =>
+  (animatePath: AnimatePathFunction<NodeInfo>) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;

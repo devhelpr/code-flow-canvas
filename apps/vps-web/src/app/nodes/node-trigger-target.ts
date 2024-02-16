@@ -14,7 +14,7 @@ import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
 export const getNodeTriggerTarget =
-  (_animatePath: AnimatePathFunction) =>
+  (_animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let divElement: IDOMElement;

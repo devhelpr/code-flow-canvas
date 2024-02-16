@@ -51,7 +51,7 @@ const selectFile = () => {
 export const loadTextFileNodeName = 'load-text-file';
 const fieldName = 'fileName';
 export const loadTextFile =
-  (_animatePath: AnimatePathFunction) =>
+  (_animatePath: AnimatePathFunction<NodeInfo>) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;

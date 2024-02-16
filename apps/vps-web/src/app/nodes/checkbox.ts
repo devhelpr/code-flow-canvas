@@ -13,7 +13,7 @@ import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getCheckbox =
-  (animatePath: AnimatePathFunction) =>
+  (animatePath: AnimatePathFunction<NodeInfo>) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = false;

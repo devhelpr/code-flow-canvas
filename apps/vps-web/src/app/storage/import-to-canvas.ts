@@ -10,13 +10,13 @@ import {
   getThumbNodeByIdentifierWithinNode,
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const importToCanvas = (
-  nodesList: FlowNode<NodeInfo>[],
-  canvasApp: CanvasAppInstance<NodeInfo>,
+export const importToCanvas = <T extends BaseNodeInfo>(
+  nodesList: FlowNode<T>[],
+  canvasApp: CanvasAppInstance<T>,
   canvasUpdated: () => void,
-  containerNode?: IRectNodeComponent<NodeInfo>,
+  containerNode?: IRectNodeComponent<T>,
   nestedLevel?: number,
   getNodeTaskFactory?: (name: string) => any
 ) => {
@@ -33,7 +33,7 @@ export const importToCanvas = (
               node.x,
               node.y,
               node.id,
-              node.nodeInfo?.formValues ?? undefined,
+              (node.nodeInfo as BaseNodeInfo)?.formValues ?? undefined,
               containerNode,
               node.width,
               node.height,
@@ -79,7 +79,7 @@ export const importToCanvas = (
                       child.nodeInfo?.canvasAppInstance
                     ) {
                       importToCanvas(
-                        element.elements as unknown as FlowNode<NodeInfo>[],
+                        element.elements as unknown as FlowNode<T>[],
                         child.nodeInfo.canvasAppInstance,
                         canvasUpdated,
                         child,
@@ -95,28 +95,27 @@ export const importToCanvas = (
 
               const elementList = Array.from(
                 (canvasVisualNode?.nodeInfo?.canvasAppInstance
-                  ?.elements as ElementNodeMap<NodeInfo>) ?? []
+                  ?.elements as ElementNodeMap<T>) ?? []
               );
               node.elements.forEach((node) => {
                 if (
                   node.nodeType === NodeType.Connection &&
                   canvasVisualNode.nodeInfo
                 ) {
-                  let start: IRectNodeComponent<NodeInfo> | undefined =
-                    undefined;
-                  let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
+                  let start: IRectNodeComponent<T> | undefined = undefined;
+                  let end: IRectNodeComponent<T> | undefined = undefined;
 
                   // undefined_input undefined_output
                   if (node.startNodeId === 'undefined_input') {
                     start = info?.inputs[0];
                   } else if (node.startNodeId) {
                     const startElement = elementList.find((e) => {
-                      const element = e[1] as IElementNode<NodeInfo>;
+                      const element = e[1] as IElementNode<T>;
                       return element.id === node.startNodeId;
                     });
                     if (startElement) {
                       start =
-                        startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                        startElement[1] as unknown as IRectNodeComponent<T>;
                     }
                   }
 
@@ -124,12 +123,11 @@ export const importToCanvas = (
                     end = info?.outputs[0];
                   } else if (node.endNodeId) {
                     const endElement = elementList.find((e) => {
-                      const element = e[1] as IElementNode<NodeInfo>;
+                      const element = e[1] as IElementNode<T>;
                       return element.id === node.endNodeId;
                     });
                     if (endElement) {
-                      end =
-                        endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+                      end = endElement[1] as unknown as IRectNodeComponent<T>;
                     }
                   }
                   let c1x = 0;
@@ -183,7 +181,7 @@ export const importToCanvas = (
                     curve.nodeComponent.startNode = start;
                     curve.nodeComponent.startNodeThumb =
                       node.startThumbIdentifierWithinNode
-                        ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+                        ? getThumbNodeByIdentifierWithinNode<T>(
                             node.startThumbIdentifierWithinNode,
                             start,
                             {
@@ -191,7 +189,7 @@ export const importToCanvas = (
                               end: false,
                             }
                           )
-                        : getThumbNodeByName<NodeInfo>(
+                        : getThumbNodeByName<T>(
                             node.startThumbName ?? '',
                             start,
                             {
@@ -205,7 +203,7 @@ export const importToCanvas = (
                     curve.nodeComponent.endNode = end;
                     curve.nodeComponent.endNodeThumb =
                       node.endThumbIdentifierWithinNode
-                        ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+                        ? getThumbNodeByIdentifierWithinNode<T>(
                             node.endThumbIdentifierWithinNode,
                             end,
                             {
@@ -213,14 +211,10 @@ export const importToCanvas = (
                               end: true,
                             }
                           )
-                        : getThumbNodeByName<NodeInfo>(
-                            node.endThumbName ?? '',
-                            end,
-                            {
-                              start: false,
-                              end: true,
-                            }
-                          ) || undefined;
+                        : getThumbNodeByName<T>(node.endThumbName ?? '', end, {
+                            start: false,
+                            end: true,
+                          }) || undefined;
                   }
                   if (start) {
                     start.connections?.push(curve.nodeComponent);
@@ -258,15 +252,15 @@ export const importToCanvas = (
 
   nodesList.forEach((node, _index) => {
     if (node.nodeType === NodeType.Connection) {
-      let start: IRectNodeComponent<NodeInfo> | undefined = undefined;
-      let end: IRectNodeComponent<NodeInfo> | undefined = undefined;
+      let start: IRectNodeComponent<T> | undefined = undefined;
+      let end: IRectNodeComponent<T> | undefined = undefined;
       if (node.startNodeId) {
         const startElement = elementList.find((e) => {
-          const element = e[1] as IElementNode<NodeInfo>;
+          const element = e[1] as IElementNode<T>;
           return element.id === node.startNodeId;
         });
         if (startElement) {
-          start = startElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+          start = startElement[1] as unknown as IRectNodeComponent<T>;
         } else {
           console.log(
             'import-to-canvas: create connection : no node.startNodeId found',
@@ -276,11 +270,11 @@ export const importToCanvas = (
       }
       if (node.endNodeId) {
         const endElement = elementList.find((e) => {
-          const element = e[1] as IElementNode<NodeInfo>;
+          const element = e[1] as IElementNode<T>;
           return element.id === node.endNodeId;
         });
         if (endElement) {
-          end = endElement[1] as unknown as IRectNodeComponent<NodeInfo>;
+          end = endElement[1] as unknown as IRectNodeComponent<T>;
         } else {
           console.log(
             'import-to-canvas: create connection : no node.endNodeId found',
@@ -352,13 +346,13 @@ export const importToCanvas = (
         return;
       }
       curve.nodeComponent.isControlled = true;
-      curve.nodeComponent.nodeInfo = {};
+      curve.nodeComponent.nodeInfo = {} as T;
       curve.nodeComponent.layer = node.layer ?? 1;
 
       if (start && curve.nodeComponent) {
         curve.nodeComponent.startNode = start;
         const thumb = node.startThumbIdentifierWithinNode
-          ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+          ? getThumbNodeByIdentifierWithinNode<T>(
               node.startThumbIdentifierWithinNode ?? '',
               start,
               {
@@ -366,7 +360,7 @@ export const importToCanvas = (
                 end: false,
               }
             )
-          : getThumbNodeByName<NodeInfo>(node.startThumbName ?? '', start, {
+          : getThumbNodeByName<T>(node.startThumbName ?? '', start, {
               start: true,
               end: false,
             });
@@ -381,7 +375,7 @@ export const importToCanvas = (
       if (end && curve.nodeComponent) {
         curve.nodeComponent.endNode = end;
         const thumb = node.endThumbIdentifierWithinNode
-          ? getThumbNodeByIdentifierWithinNode<NodeInfo>(
+          ? getThumbNodeByIdentifierWithinNode<T>(
               node.endThumbIdentifierWithinNode ?? '',
               end,
               {
@@ -389,7 +383,7 @@ export const importToCanvas = (
                 end: true,
               }
             )
-          : getThumbNodeByName<NodeInfo>(node.endThumbName ?? '', end, {
+          : getThumbNodeByName<T>(node.endThumbName ?? '', end, {
               start: false,
               end: true,
             });

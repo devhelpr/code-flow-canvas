@@ -28,7 +28,7 @@ const activeFunctionColor = 'bg-orange-400';
 const fieldName = 'functionCall';
 
 export const getCallFunction =
-  (animatePath: AnimatePathFunction) =>
+  (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let componentWrapper: INodeComponent<NodeInfo> | undefined;

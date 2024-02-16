@@ -23,7 +23,7 @@ export interface ComputeResult {
   stop?: boolean;
 }
 export const getCanvasNode =
-  (animatePath: AnimatePathFunction) =>
+  (animatePath: AnimatePathFunction<NodeInfo>) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let htmlNode: IDOMElement | undefined = undefined;

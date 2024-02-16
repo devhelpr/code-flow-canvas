@@ -19,8 +19,8 @@ export interface AppNavComponentsProps<T> {
   storageProvider: FlowrunnerIndexedDbStorageProvider;
   initializeNodes: () => void;
   clearCanvas: () => void;
-  animatePath: AnimatePathFunction;
-  animatePathFromThumb: AnimatePathFromThumbFunction;
+  animatePath: AnimatePathFunction<T>;
+  animatePathFromThumb: AnimatePathFromThumbFunction<T>;
   canvasUpdated: () => void;
   canvasApp: CanvasAppInstance<NodeInfo>;
   removeElement: (element: IElementNode<NodeInfo>) => void;
