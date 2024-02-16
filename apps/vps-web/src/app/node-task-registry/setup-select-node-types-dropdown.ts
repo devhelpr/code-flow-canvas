@@ -69,6 +69,7 @@ export const setupTasksInDropdown = (
     createOptgroup('variables-dictionary');
     createOptgroup('variables-grid');
     createOptgroup('variables-set');
+    createOptgroup('Compositions');
 
     const nodeTasks = getNodeFactoryNames();
     nodeTasks.forEach((nodeTask) => {

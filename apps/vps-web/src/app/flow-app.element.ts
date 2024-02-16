@@ -264,6 +264,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 getNodeTaskFactory
               );
               this.isStoring = false;
+              setupTasksInDropdown(
+                this.selectNodeType?.domElement as HTMLSelectElement
+              );
               canvasUpdated();
             },
           }) as unknown as HTMLElement;
@@ -375,9 +378,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<NodeInfo>,
               nestedLevel?: number,
-              getNodeTaskFactory?: (name: string) => any
+              getNodeTaskFactory?: (name: string) => any,
+              compositions: Record<string, Composition<NodeInfo>> = {}
             ) => {
               this.isStoring = true;
+              removeAllCompositions();
+              importCompositions<NodeInfo>(compositions, canvasApp);
+              registerCompositionNodes(
+                this.canvasApp?.compositons?.getAllCompositions() ?? {}
+              );
               importToCanvas(
                 nodesList,
                 canvasApp,
@@ -435,6 +444,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             this.canvasApp.centerCamera();
             initializeNodes();
             this.setTabOrderOfNodes();
+            setupTasksInDropdown(
+              this.selectNodeType?.domElement as HTMLSelectElement
+            );
             this.isStoring = false;
           })
           .catch((error) => {
