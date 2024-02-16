@@ -19,6 +19,8 @@ import {
   SelectedNodeInfo,
   FlowNode,
   IDOMElement,
+  IConnectionNodeComponent,
+  Composition,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -66,10 +68,16 @@ import {
 import {
   getNodeFactoryNames,
   getNodeTaskFactory,
+  registerComposition,
+  registerCompositionNodes,
+  removeAllCompositions,
   setupCanvasNodeTaskRegistry,
 } from './node-task-registry/canvas-node-task-registry';
-import { serializeElementsMap } from './storage/serialize-canvas';
-import { importToCanvas } from './storage/import-to-canvas';
+import {
+  serializeCompositions,
+  serializeElementsMap,
+} from './storage/serialize-canvas';
+import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
 import { registerCommands } from './command-handlers/register-commands';
@@ -101,6 +109,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   runButton: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
 
+  canvasUpdated: (() => void) | undefined = undefined;
+
   constructor(appRootSelector: string) {
     super(appRootSelector);
     if (!this.rootElement) {
@@ -109,6 +119,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (!this.canvasApp) {
       return;
     }
+    this.canvasApp.setOnAddcomposition(this.onAddFlowComposition);
 
     const animatePath = (
       node: IRectNodeComponent<NodeInfo>,
@@ -197,6 +208,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       console.log('canvasUpdated before setTabOrderOfNodes');
       this.setTabOrderOfNodes();
     };
+    this.canvasUpdated = canvasUpdated;
     this.canvasApp.setOnCanvasUpdated(() => {
       canvasUpdated();
     });
@@ -234,9 +246,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<NodeInfo>,
               nestedLevel?: number,
-              getNodeTaskFactory?: (name: string) => any
+              getNodeTaskFactory?: (name: string) => any,
+              compositions: Record<string, Composition<NodeInfo>> = {}
             ) => {
               this.isStoring = true;
+              removeAllCompositions();
+              importCompositions<NodeInfo>(compositions, canvasApp);
+              registerCompositionNodes(
+                this.canvasApp?.compositons?.getAllCompositions() ?? {}
+              );
               importToCanvas(
                 nodesList,
                 canvasApp,
@@ -250,7 +268,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             },
           }) as unknown as HTMLElement;
 
-          createElement(
+          this.resetStateButton = createElement(
             'button',
             {
               class: navBarButton,
@@ -265,7 +283,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'Reset state'
           );
 
-          createElement(
+          this.clearCanvasButton = createElement(
             'button',
             {
               class: navBarOutlineButton,
@@ -281,6 +299,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             },
             menubarElement.domElement,
             'Clear canvas'
+          );
+
+          this.compositionEditButton = createElement(
+            'button',
+            {
+              class: `${navBarButton} hidden`,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.editFlowComposition();
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Edit composition'
+          );
+
+          this.compositionEditExitButton = createElement(
+            'button',
+            {
+              class: `${navBarButton} hidden`,
+            },
+            menubarElement.domElement,
+            'Exit Edit composition'
           );
 
           this.selectedNodeLabel = createElement(
@@ -377,6 +419,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
             }
+            removeAllCompositions();
+            importCompositions<NodeInfo>(flow.compositions, this.canvasApp);
+            registerCompositionNodes(
+              this.canvasApp.compositons.getAllCompositions()
+            );
             importToCanvas(
               flow.flows.flow.nodes,
               this.canvasApp,
@@ -406,6 +453,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           return;
         }
         console.log('nodesList', nodesList);
+        const compositions = getSerializeCompositions() || {};
+        console.log('compositions', compositions);
         const flow: Flow<NodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
@@ -416,7 +465,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               nodes: nodesList,
             },
           },
-          compositions: {},
+          compositions: compositions,
         };
         this.storageProvider.saveFlow('1234', flow);
       }
@@ -486,6 +535,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         return;
       }
       return serializeElementsMap(this.canvasApp.elements);
+    };
+
+    const getSerializeCompositions = () => {
+      if (!this.canvasApp) {
+        return;
+      }
+      return serializeCompositions<NodeInfo>(
+        this.canvasApp.compositons.getAllCompositions()
+      );
     };
 
     const runCounterElement = createElement(
@@ -839,6 +897,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (!this.rootElement) {
         return;
       }
+
+      if (this.compositionEditButton?.domElement) {
+        (
+          this.compositionEditButton?.domElement as HTMLButtonElement
+        ).classList.add('hidden');
+      }
+
       this.rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
       });
@@ -875,6 +940,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         if (!node) {
           return;
         }
+
+        if (node.nodeInfo?.isComposition) {
+          (
+            this.compositionEditButton?.domElement as HTMLButtonElement
+          ).classList.remove('hidden');
+        }
+
         if (node.nodeType === NodeType.Connection) {
           console.log('selected connection', node);
           node.connectorWrapper?.domElement?.classList?.add('selected');
@@ -1155,5 +1227,26 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     domMessage.style.display = 'none';
     domCircle.classList.add('hidden');
     domMessage.classList.add('hidden');
+  };
+
+  onAddFlowComposition = (
+    composition: Composition<NodeInfo>,
+    connections: {
+      thumbIdentifierWithinNode: string;
+      connection: IConnectionNodeComponent<NodeInfo>;
+    }[]
+  ) => {
+    return this.onAddComposition(
+      composition,
+      connections,
+      registerComposition,
+      getNodeTaskFactory
+    );
+  };
+
+  editFlowComposition = () => {
+    if (this.canvasUpdated) {
+      this.editComposition(getNodeTaskFactory, this.canvasUpdated);
+    }
   };
 }

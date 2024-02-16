@@ -24,6 +24,7 @@ import {
 import {
   serializeElementsMap,
   exportFlowToJson,
+  serializeCompositions,
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
@@ -327,8 +328,17 @@ export class NavbarComponent extends Component<
   onClickExport = (event: Event) => {
     event.preventDefault();
     const data = serializeElementsMap(this.props.canvasApp.elements);
-    console.log('EXPORT DATA', exportFlowToJson<NodeInfo>('1234', data, {}));
-    downloadJSON(exportFlowToJson<NodeInfo>('1234', data, {}), 'vps-flow.json');
+    const compositions = serializeCompositions<NodeInfo>(
+      this.props.canvasApp.compositons.getAllCompositions()
+    );
+    console.log(
+      'EXPORT DATA',
+      exportFlowToJson<NodeInfo>('1234', data, compositions)
+    );
+    downloadJSON(
+      exportFlowToJson<NodeInfo>('1234', data, compositions),
+      'vps-flow.json'
+    );
     return false;
   };
 
@@ -358,7 +368,8 @@ export class NavbarComponent extends Component<
               this.props.canvasUpdated,
               undefined,
               0,
-              getNodeTaskFactory
+              getNodeTaskFactory,
+              data.compositions
             );
             this.props.canvasApp.centerCamera();
             this.props.initializeNodes();
@@ -437,7 +448,8 @@ export class NavbarComponent extends Component<
             this.props.canvasUpdated,
             undefined,
             0,
-            getNodeTaskFactory
+            getNodeTaskFactory,
+            data.compositions
           );
           this.props.canvasApp.centerCamera();
           this.props.initializeNodes();

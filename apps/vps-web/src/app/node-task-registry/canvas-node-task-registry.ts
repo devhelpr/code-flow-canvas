@@ -18,7 +18,11 @@ import { createStateMachineNode } from '../nodes/state-machine-node';
 import { getSum } from '../nodes/sum';
 import { getVariable } from '../nodes/variable';
 import { NodeInfo } from '../types/node-info';
-import { NodeTaskFactory, NodeTypeRegistry } from './node-task-registry';
+import {
+  NodeTaskFactory,
+  NodeTypeRegistry,
+  RegisterComposition,
+} from './node-task-registry';
 import { getSequential } from '../nodes/sequential';
 import { createStateCompound } from '../nodes/state-compound';
 import { getStyledNode } from '../nodes/styled-node';
@@ -132,14 +136,20 @@ import {
   sendNodeToNodeTree,
   sendNodeToNodeTreeNodeName,
 } from '../nodes/send-node-to-node-tree';
+import { Composition } from '@devhelpr/visual-programming-system';
+import { getCreateCompositionNode } from '../nodes/composition';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
-
+export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
   name: string,
-  nodeFactory: NodeTaskFactory<NodeInfo>
+  nodeFactory: NodeTaskFactory<NodeInfo>,
+  label?: string
 ) => {
   canvasNodeTaskRegistry[name] = nodeFactory;
+  if (label) {
+    canvasNodeTaskRegistryLabels[name] = label;
+  }
 };
 export const getNodeFactoryNames = () => {
   return Object.keys(canvasNodeTaskRegistry).sort();
@@ -276,4 +286,38 @@ export const setupCanvasNodeTaskRegistry = (
 
 export const getNodeTaskFactory = (name: string) => {
   return canvasNodeTaskRegistry[name] ?? false;
+};
+
+export const removeAllCompositions = () => {
+  Object.keys(canvasNodeTaskRegistry).forEach((key) => {
+    if (key.startsWith('composition-')) {
+      delete canvasNodeTaskRegistry[key];
+    }
+  });
+};
+
+export const registerCompositionNodes = (
+  compositions: Record<string, Composition<NodeInfo>>
+) => {
+  Object.entries(compositions).forEach(([key, composition]) => {
+    const node = getCreateCompositionNode(
+      composition.thumbs,
+      key,
+      composition.name,
+      getNodeTaskFactory
+    );
+    registerNodeFactory(`composition-${key}`, node, composition.name);
+  });
+};
+
+export const registerComposition: RegisterComposition<NodeInfo> = (
+  composition: Composition<NodeInfo>
+) => {
+  const node = getCreateCompositionNode(
+    composition.thumbs,
+    composition.id,
+    composition.name,
+    getNodeTaskFactory
+  );
+  registerNodeFactory(`composition-${composition.id}`, node);
 };

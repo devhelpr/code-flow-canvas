@@ -1,5 +1,6 @@
 import { createElement } from '@devhelpr/visual-programming-system';
 import {
+  canvasNodeTaskRegistryLabels,
   getNodeFactoryNames,
   getNodeTaskFactory,
 } from './canvas-node-task-registry';
@@ -88,7 +89,8 @@ export const setupTasksInDropdown = (
       if (nodeTask === nodeType) {
         isPreviouslySelectedNodeTypeInDropdown = true;
       }
-      createOption(selectNodeTypeHTMLElement, nodeTask, nodeTask, categoryName);
+      const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
+      createOption(selectNodeTypeHTMLElement, nodeTask, label, categoryName);
     });
     if (isPreviouslySelectedNodeTypeInDropdown) {
       selectNodeTypeHTMLElement.value = nodeType;
