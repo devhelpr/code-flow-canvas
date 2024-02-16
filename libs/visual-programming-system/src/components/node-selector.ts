@@ -431,6 +431,14 @@ export class NodeSelector<T> {
     this.selectionWasPlacedOrMoved = false;
   };
 
+  /*
+    TODO : for Flow-canvas when a selection contains certain nodes or combination of nodes a 
+       composition can not be created:
+       - if a selection contains a function-node and is called from nodes outside the selection
+       - if a selection contains a call-function node and the function is defined outside the selection
+       - variables
+       - accessing variables       
+  */
   onCreateComposition = () => {
     const thumbs: IThumb[] = [];
     let outputThumbIndex = 0;
