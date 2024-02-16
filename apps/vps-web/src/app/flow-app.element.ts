@@ -124,7 +124,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const animatePath = (
       node: IRectNodeComponent<NodeInfo>,
       color: string,
-      onNextNode?: OnNextNodeFunction,
+      onNextNode?: OnNextNodeFunction<NodeInfo>,
       onStopped?: (input: string | any[]) => void,
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",
@@ -164,7 +164,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const animatePathFromThumb = (
       node: IThumbNodeComponent<NodeInfo>,
       color: string,
-      onNextNode?: OnNextNodeFunction,
+      onNextNode?: OnNextNodeFunction<NodeInfo>,
       onStopped?: (input: string | any[], scopeId?: string) => void,
       input?: string | any[],
       followPathByName?: string, // normal, success, failure, "subflow",

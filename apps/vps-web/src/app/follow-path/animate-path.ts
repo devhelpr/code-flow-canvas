@@ -25,7 +25,7 @@ function getMaxLoop() {
 export type AnimatePathFunction<T> = (
   node: IRectNodeComponent<T>,
   color: string,
-  onNextNode?: OnNextNodeFunction,
+  onNextNode?: OnNextNodeFunction<T>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
@@ -45,7 +45,7 @@ export type AnimatePathFunction<T> = (
 export type AnimatePathFromThumbFunction<T> = (
   node: IThumbNodeComponent<T>,
   color: string,
-  onNextNode?: OnNextNodeFunction,
+  onNextNode?: OnNextNodeFunction<T>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
@@ -65,7 +65,7 @@ export type FollowPathFunction<T> = (
   canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   color: string,
-  onNextNode?: OnNextNodeFunction,
+  onNextNode?: OnNextNodeFunction<T>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string, // normal, success, failure, "subflow",
@@ -132,7 +132,10 @@ interface NodeAnimatonInfo<T> {
   color: string;
 }
 
-const nodeAnimationMap: Map<number, NodeAnimatonInfo<BaseNodeInfo>> = new Map();
+export const nodeAnimationMap: Map<
+  number,
+  NodeAnimatonInfo<BaseNodeInfo>
+> = new Map();
 let nodeAnimationId = 1;
 
 let speedMeter = 500;
@@ -322,7 +325,7 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
 
             const resolver = (result: any) => {
               console.log('animatePath onNextNode result', input, result);
-              runCounter--;
+              decrementRunCounter();
               updateRunCounterElement();
 
               // uncomment the following line during debugging when a breakpoint is above here
@@ -334,7 +337,7 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
                   canvasApp,
                   end as unknown as IRectNodeComponent<T>,
                   color,
-                  nodeAnimation.onNextNode as OnNextNodeFunction,
+                  nodeAnimation.onNextNode as OnNextNodeFunction<T>,
                   nodeAnimation.onStopped,
                   result.output,
                   result.followPathByName,
@@ -372,7 +375,7 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
               });
           }
         } else {
-          runCounter--;
+          decrementRunCounter();
           updateRunCounterElement();
 
           if (start) {
@@ -407,10 +410,16 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
 }
 
 export let runCounter = 0;
+export const incrementRunCounter = () => {
+  runCounter++;
+};
+export const decrementRunCounter = () => {
+  runCounter--;
+};
 export const resetRunCounter = () => {
   runCounter = 0;
 };
-let runCounterResetHandler: undefined | (() => void) = undefined;
+export let runCounterResetHandler: undefined | (() => void) = undefined;
 export const setRunCounterResetHandler = (handler: () => void) => {
   runCounterResetHandler = handler;
 };
@@ -419,7 +428,7 @@ let runCounterUpdateElement: undefined | HTMLElement = undefined;
 export const setRunCounterUpdateElement = (domElement: HTMLElement) => {
   runCounterUpdateElement = domElement;
 };
-const updateRunCounterElement = () => {
+export const updateRunCounterElement = () => {
   if (runCounterUpdateElement) {
     runCounterUpdateElement.textContent = `${runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
   }
@@ -435,7 +444,7 @@ export const animatePathForNodeConnectionPairs = <T>(
         connection: IConnectionNodeComponent<T>;
       }[],
   color: string,
-  onNextNode?: OnNextNodeFunction,
+  onNextNode?: OnNextNodeFunction<T>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   _followPathByName?: string,
@@ -590,7 +599,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       domMessage.classList.remove('layer-2');
     }
 
-    runCounter++;
+    incrementRunCounter();
     updateRunCounterElement();
 
     nodeAnimationMap.set(nodeAnimationId, {
@@ -622,7 +631,7 @@ export const animatePath = <T>(
   canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   color: string,
-  onNextNode?: OnNextNodeFunction,
+  onNextNode?: OnNextNodeFunction<T>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string,
@@ -669,7 +678,7 @@ export const animatePathFromThumb = <T>(
   canvasApp: CanvasAppInstance<T>,
   node: IThumbNodeComponent<T>,
   color: string,
-  onNextNode?: OnNextNodeFunction,
+  onNextNode?: OnNextNodeFunction<T>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   followPathByName?: string,

@@ -136,7 +136,7 @@ const triggerExecution = (
   animatePath: (
     node: IRectNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: OnNextNodeFunction,
+    onNextNode?: OnNextNodeFunction<NodeInfo>,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -353,7 +353,7 @@ const triggerExecution = (
           output: result ?? input,
           followPathByName: followPath,
         };
-      }) as OnNextNodeFunction,
+      }) as OnNextNodeFunction<NodeInfo>,
       (input: string | any[]) => {
         if (onStopped) {
           onStopped(input, scopeId);
@@ -388,7 +388,7 @@ export const runNode = (
   animatePath: (
     node: IRectNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: OnNextNodeFunction,
+    onNextNode?: OnNextNodeFunction<NodeInfo>,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -568,7 +568,7 @@ export const run = (
   animatePath: (
     node: IRectNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: OnNextNodeFunction,
+    onNextNode?: OnNextNodeFunction<NodeInfo>,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
@@ -635,7 +635,7 @@ export const runNodeFromThumb = (
   animatePathFromThumb: (
     node: IThumbNodeComponent<NodeInfo>,
     color: string,
-    onNextNode?: OnNextNodeFunction,
+    onNextNode?: OnNextNodeFunction<NodeInfo>,
     onStopped?: (input: string | any[], scopeId?: string) => void,
     input?: string | any[],
     followPathByName?: string,
