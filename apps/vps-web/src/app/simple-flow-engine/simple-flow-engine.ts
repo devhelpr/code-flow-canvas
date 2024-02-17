@@ -128,13 +128,14 @@ const triggerExecution = (
         const formInfo = nextNode.nodeInfo as unknown as any;
 
         const nodeStates = canvasApp.getNodeStates();
-
-        connectionExecuteHistory.push({
-          connection:
-            connection as unknown as IConnectionNodeComponent<NodeInfo>,
-          connectionValue: input,
-          nodeStates: nodeStates,
-        });
+        if (!canvasApp.isContextOnly) {
+          connectionExecuteHistory.push({
+            connection:
+              connection as unknown as IConnectionNodeComponent<NodeInfo>,
+            connectionValue: input,
+            nodeStates: nodeStates,
+          });
+        }
 
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
@@ -515,7 +516,9 @@ export const run = (
       .. it errors .. stop the flow
 
   */
-  connectionExecuteHistory = [];
+  if (!canvasApp.isContextOnly) {
+    connectionExecuteHistory = [];
+  }
 
   let isRunning = false;
   let cameraSet = false;
@@ -594,11 +597,14 @@ export const runNodeFromThumb = (
       connection: IConnectionNodeComponent<NodeInfo>,
       scopeId?: string
     ) => {
-      connectionExecuteHistory.push({
-        connection: connection as unknown as IConnectionNodeComponent<NodeInfo>,
-        connectionValue: input,
-        nodeStates: canvasApp.getNodeStates(),
-      });
+      if (!canvasApp.isContextOnly) {
+        connectionExecuteHistory.push({
+          connection:
+            connection as unknown as IConnectionNodeComponent<NodeInfo>,
+          connectionValue: input,
+          nodeStates: canvasApp.getNodeStates(),
+        });
+      }
 
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
