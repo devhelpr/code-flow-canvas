@@ -111,6 +111,7 @@ export const getUVNode: NodeTaskFactory<GLNodeInfo> = (
     {
       hasTitlebar: false,
       category: 'input',
+      additionalClassNames: 'uv-node',
     }
   );
 };

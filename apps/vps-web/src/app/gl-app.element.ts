@@ -100,6 +100,36 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     }
     this.setupWindowResize();
     this.setupGLCanvas();
+    const glcanvas = document.getElementById('glcanvas');
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('mousemove', (event) => {
+        if (glcanvas) {
+          const canvasSize = glcanvas.getBoundingClientRect();
+          const width = canvasSize.width;
+          const height = canvasSize.height;
+
+          const aspect = width / height;
+          let uvx = event.offsetX / width;
+          let uvy = event.offsetY / height;
+
+          uvx = uvx * 2.0 - 1.0;
+          uvy = uvy * 2.0 - 1.0;
+          uvx *= aspect;
+          const uvNodes = document.querySelectorAll('.uv-node');
+          uvNodes.forEach((node) => {
+            node.innerHTML = `UV<br />${uvx.toFixed(2)} ${uvy.toFixed(2)}`;
+          });
+        }
+      });
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('mouseleave', (_event) => {
+        const uvNodes = document.querySelectorAll('.uv-node');
+        uvNodes.forEach((node) => {
+          node.textContent = 'UV';
+        });
+      });
     this.canvasApp.setOnAddcomposition(this.onAddGLComposition);
     const canvasUpdated = () => {
       if (this.isStoring) {
