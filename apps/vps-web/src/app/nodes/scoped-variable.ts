@@ -303,6 +303,10 @@ export const getScopedVariable =
           : undefined
       );
 
+      if (canvasAppInstance?.isContextOnly) {
+        return;
+      }
+
       if (fieldType === 'value') {
         if (isNaN(currentValue)) {
           currentValue = 0;
@@ -362,22 +366,24 @@ export const getScopedVariable =
     };
 
     const getData = (parameter?: any, scopeId?: string) => {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = undefined;
-      }
-      (componentWrapper.domElement as unknown as HTMLElement).classList.add(
-        'border-orange-200'
-      );
-      timeout = setTimeout(() => {
-        (
-          componentWrapper?.domElement as unknown as HTMLElement
-        ).classList.remove('border-orange-200');
+      if (!canvasAppInstance?.isContextOnly) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = undefined;
+        }
+        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
+          'border-orange-200'
+        );
+        timeout = setTimeout(() => {
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          ).classList.remove('border-orange-200');
 
-        (
-          componentWrapper?.domElement as unknown as HTMLElement
-        ).classList.remove('border-green-200');
-      }, 250);
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          ).classList.remove('border-green-200');
+        }, 250);
+      }
       return getDataForFieldType(parameter, scopeId);
     };
 
@@ -396,6 +402,9 @@ export const getScopedVariable =
     };
 
     const visualizeData = (lastStoredDataState: any) => {
+      if (canvasAppInstance?.isContextOnly) {
+        return;
+      }
       if (htmlNode) {
         if (fieldType === 'value') {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
@@ -516,6 +525,9 @@ export const getScopedVariable =
 
           if (htmlNode && fieldType === 'grid') {
             const grid = getDataForFieldType(undefined, scopeId);
+            if (canvasAppInstance?.isContextOnly) {
+              return;
+            }
             if (grid && Array.isArray(grid.data)) {
               if (grid.data.length > 0) {
                 showGridData(
