@@ -9,10 +9,7 @@ import {
   NodeType,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
-import {
-  getNodeConnectionPairById,
-  getNodeConnectionPairByIdWhereNodeIsEndpoint,
-} from '../follow-path/get-node-connection-pairs';
+import { getNodeConnectionPairByIdWhereNodeIsEndpoint } from '../follow-path/get-node-connection-pairs';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
@@ -88,47 +85,6 @@ const getVariablePayload = (
   }
   return payload;
 };
-
-const sendData = (
-  node: IRectNodeComponent<NodeInfo>,
-  canvasApp: CanvasAppInstance<NodeInfo>,
-  data: string,
-  scopeId?: string
-) => {
-  const dataNodesConnectionPairs = getNodeConnectionPairById<NodeInfo>(
-    canvasApp,
-    node,
-    undefined,
-    undefined,
-    true
-  );
-  if (dataNodesConnectionPairs) {
-    dataNodesConnectionPairs.forEach((connectionInfo) => {
-      if (connectionInfo.end) {
-        const nodeInfo = connectionInfo.end.nodeInfo as unknown as any;
-        if (nodeInfo && nodeInfo.sendData) {
-          nodeInfo.sendData(data, scopeId);
-        }
-      }
-    });
-  }
-};
-
-// export interface RunNodeResult<NodeInfo> {
-//   input: string | any[];
-//   previousOutput: string | any[];
-//   output: string | any[];
-//   result: boolean;
-//   nodeId: string;
-//   nodeType: string;
-//   path: string;
-//   scopeNode?: IRectNodeComponent<NodeInfo>;
-//   node: IRectNodeComponent<NodeInfo>;
-//   endNode?: IRectNodeComponent<NodeInfo>;
-//   connection?: IConnectionNodeComponent<NodeInfo>;
-//   previousNode?: IRectNodeComponent<NodeInfo>;
-//   nextNode?: IRectNodeComponent<NodeInfo>;
-// }
 
 const triggerExecution = (
   node: IRectNodeComponent<NodeInfo>,
@@ -224,7 +180,7 @@ const triggerExecution = (
                     return;
                   }
                   result = computeResult.result;
-                  sendData(nextNode, canvasApp, result);
+
                   followPath = computeResult.followPath;
 
                   resolve({
@@ -264,7 +220,7 @@ const triggerExecution = (
             scopeId
           );
           result = computeResult.result;
-          sendData(nextNode, canvasApp, result);
+
           followPath = computeResult.followPath;
 
           if (computeResult.stop) {
@@ -399,10 +355,9 @@ export const runNode = (
         scopeId
       )
       .then((computeResult: any) => {
-        sendData(node, canvasApp, computeResult.result);
         result = computeResult.result;
         followPath = computeResult.followPath;
-        //previousOutput = computeResult.previousOutput;
+
         if (computeResult.dummyEndpoint) {
           return;
         }
@@ -447,10 +402,8 @@ export const runNode = (
       scopeId
     );
 
-    sendData(node, canvasApp, computeResult.result);
     result = computeResult.result;
     followPath = computeResult.followPath;
-    //previousOutput = computeResult.previousOutput;
     if (computeResult.stop) {
       if (onStopped) {
         onStopped(computeResult.output ?? '', scopeId);
@@ -687,22 +640,6 @@ export const runNodeFromThumb = (
                   output: result,
                 });
               } else {
-                // if (pathExecution) {
-                //   pathExecution.push({
-                //     input: input ?? '',
-                //     scopeNode,
-                //     output: computeResult.output ?? input,
-                //     previousOutput: computeResult.previousOutput,
-                //     result: result,
-                //     nodeId: nextNode.id,
-                //     path: followPath ?? '',
-                //     node: nextNode as unknown as IRectNodeComponent<NodeInfo>,
-                //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
-                //     previousNode:
-                //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<NodeInfo>,
-                //   });
-                // }
-
                 resolve({
                   result: true,
                   output: result ?? input,

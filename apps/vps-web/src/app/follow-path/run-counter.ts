@@ -9,7 +9,8 @@ export class RunCounter {
   resetRunCounter() {
     this.runCounter = 0;
   }
-  runCounterResetHandler: undefined | (() => void) = undefined;
+  runCounterResetHandler: undefined | ((input?: string | any[]) => void) =
+    undefined;
   setRunCounterResetHandler(handler: () => void) {
     this.runCounterResetHandler = handler;
   }

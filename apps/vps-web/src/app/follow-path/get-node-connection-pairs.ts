@@ -6,7 +6,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 
 export const getNodeConnectionPairById = <T>(
-  canvasApp: CanvasAppInstance<T>,
+  _canvasApp: CanvasAppInstance<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean,
@@ -54,8 +54,8 @@ export const getNodeConnectionPairById = <T>(
 
           if (
             connection &&
-            end &&
-            canvasApp?.canvas
+            end
+            // canvasApp?.canvas
             // connection.controlPoints &&
             // connection.controlPoints.length >= 1
           ) {

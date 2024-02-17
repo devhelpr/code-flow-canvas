@@ -800,7 +800,6 @@ export const getScopedVariable =
           node.nodeInfo.formElements = formElements;
           node.nodeInfo.isVariable = true;
           node.nodeInfo.compute = compute;
-          node.nodeInfo.sendData = compute;
           node.nodeInfo.getData = getData;
           node.nodeInfo.initializeCompute = initializeCompute;
           node.nodeInfo.delete = () => {

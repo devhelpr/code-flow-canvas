@@ -12,21 +12,6 @@ import {
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 import { RunCounter } from './run-counter';
 
-// export let runCounter = 0;
-// export const incrementRunCounter = () => {
-//   runCounter++;
-// };
-// export const decrementRunCounter = () => {
-//   runCounter--;
-// };
-// export const resetRunCounter = () => {
-//   runCounter = 0;
-// };
-// export let runCounterResetHandler: undefined | (() => void) = undefined;
-// export const setRunCounterResetHandler = (handler: () => void) => {
-//   runCounterResetHandler = handler;
-// };
-
 export const runPathForNodeConnectionPairs = <T>(
   canvasApp: CanvasAppInstance<T>,
   nodeConnectionPairs:
@@ -65,7 +50,7 @@ export const runPathForNodeConnectionPairs = <T>(
       runCounter &&
       runCounter.runCounterResetHandler
     ) {
-      runCounter.runCounterResetHandler();
+      runCounter.runCounterResetHandler(input ?? '');
     }
     return;
   }
@@ -86,9 +71,9 @@ export const runPathForNodeConnectionPairs = <T>(
     if (
       start &&
       end &&
-      connection &&
-      connection.controlPoints &&
-      connection.controlPoints.length >= 1
+      connection
+      // connection.controlPoints &&
+      // connection.controlPoints.length >= 1
     ) {
       const onNextOrPromise = singleStep ??
         onNextNode?.(end.id, end, input ?? '', connection, scopeId) ?? {

@@ -421,21 +421,6 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
   };
 }
 
-// export let runCounter = 0;
-// export const incrementRunCounter = () => {
-//   runCounter++;
-// };
-// export const decrementRunCounter = () => {
-//   runCounter--;
-// };
-// export const resetRunCounter = () => {
-//   runCounter = 0;
-// };
-// export let runCounterResetHandler: undefined | (() => void) = undefined;
-// export const setRunCounterResetHandler = (handler: () => void) => {
-//   runCounterResetHandler = handler;
-// };
-
 let runCounterUpdateElement: undefined | HTMLElement = undefined;
 export const setRunCounterUpdateElement = (domElement: HTMLElement) => {
   runCounterUpdateElement = domElement;
@@ -501,7 +486,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       runCounter.runCounterResetHandler &&
       nodeAnimationMap.size === 0
     ) {
-      runCounter.runCounterResetHandler();
+      runCounter.runCounterResetHandler(input ?? '');
     }
     return;
   }

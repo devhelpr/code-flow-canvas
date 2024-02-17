@@ -113,17 +113,8 @@ export const getCreateCompositionNode =
           }
         }
         if (composition) {
-          // setRunCounterResetHandler(() => {
-          //   if (runCounter.runCounter <= 0) {
-          //     // resolve({
-          //     //   result: input,
-          //     //   output: input,
-          //     //   followPath: undefined,
-          //     //});
-          //   }
-          // });
           const runCounter = new RunCounter();
-          runCounter.setRunCounterResetHandler(() => {
+          runCounter.setRunCounterResetHandler((input?: string | any[]) => {
             if (runCounter.runCounter <= 0) {
               resolve({
                 result: input,
@@ -137,11 +128,7 @@ export const getCreateCompositionNode =
             contextCanvasApp,
             runFlowPath,
             (_input) => {
-              // resolve({
-              //   result: input,
-              //   output: input,
-              //   followPath: undefined,
-              // });
+              //
             },
             input,
             undefined,
