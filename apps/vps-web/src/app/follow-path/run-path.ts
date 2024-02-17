@@ -10,20 +10,22 @@ import {
   getNodeConnectionPairsFromThumb,
 } from './get-node-connection-pairs';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
-export let runCounter = 0;
-export const incrementRunCounter = () => {
-  runCounter++;
-};
-export const decrementRunCounter = () => {
-  runCounter--;
-};
-export const resetRunCounter = () => {
-  runCounter = 0;
-};
-export let runCounterResetHandler: undefined | (() => void) = undefined;
-export const setRunCounterResetHandler = (handler: () => void) => {
-  runCounterResetHandler = handler;
-};
+import { RunCounter } from './run-counter';
+
+// export let runCounter = 0;
+// export const incrementRunCounter = () => {
+//   runCounter++;
+// };
+// export const decrementRunCounter = () => {
+//   runCounter--;
+// };
+// export const resetRunCounter = () => {
+//   runCounter = 0;
+// };
+// export let runCounterResetHandler: undefined | (() => void) = undefined;
+// export const setRunCounterResetHandler = (handler: () => void) => {
+//   runCounterResetHandler = handler;
+// };
 
 export const runPathForNodeConnectionPairs = <T>(
   canvasApp: CanvasAppInstance<T>,
@@ -49,7 +51,7 @@ export const runPathForNodeConnectionPairs = <T>(
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  _fromNode?: IRectNodeComponent<T>
+  runCounter?: RunCounter
 ) => {
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (onStopped) {
@@ -57,8 +59,13 @@ export const runPathForNodeConnectionPairs = <T>(
       onStopped(input ?? '', scopeId);
     }
 
-    if (runCounter <= 0 && runCounterResetHandler) {
-      runCounterResetHandler();
+    if (
+      runCounter &&
+      runCounter.runCounter <= 0 &&
+      runCounter &&
+      runCounter.runCounterResetHandler
+    ) {
+      runCounter.runCounterResetHandler();
     }
     return;
   }
@@ -74,7 +81,7 @@ export const runPathForNodeConnectionPairs = <T>(
       animatedNodes.node3 = undefined;
     }
 
-    incrementRunCounter();
+    runCounter?.incrementRunCounter();
 
     if (
       start &&
@@ -92,7 +99,7 @@ export const runPathForNodeConnectionPairs = <T>(
 
       const resolver = (result: any) => {
         console.log('animatePath onNextNode result', input, result);
-        decrementRunCounter();
+        runCounter?.decrementRunCounter();
 
         // uncomment the following line during debugging when a breakpoint is above here
         // .. this causes the message-bubble animation to continue after continuing
@@ -112,14 +119,19 @@ export const runPathForNodeConnectionPairs = <T>(
             undefined,
             undefined,
             result.followThumb,
-            scopeId
+            scopeId,
+            runCounter
           );
         } else {
           if (onStopped) {
             onStopped(result.output ?? input ?? '');
           }
-          if (runCounter <= 0 && runCounterResetHandler) {
-            runCounterResetHandler();
+          if (
+            runCounter &&
+            runCounter.runCounter <= 0 &&
+            runCounter.runCounterResetHandler
+          ) {
+            runCounter?.runCounterResetHandler();
           }
         }
       };
@@ -130,7 +142,7 @@ export const runPathForNodeConnectionPairs = <T>(
           console.log('animatePath onNextNode error', err);
         });
     } else {
-      decrementRunCounter();
+      runCounter?.decrementRunCounter();
 
       if (start) {
         onNextNode && onNextNode(start.id, start, input ?? '', connection);
@@ -161,7 +173,8 @@ export const runPathFromThumb = <T>(
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
 
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => {
   const connectionsPairs = getNodeConnectionPairsFromThumb<T>(canvasApp, node);
 
@@ -179,7 +192,8 @@ export const runPathFromThumb = <T>(
     followPathToEndThumb,
     singleStep,
     scopeId,
-    node?.thumbLinkedToNode
+    // node?.thumbLinkedToNode
+    runCounter
   );
 };
 
@@ -201,7 +215,8 @@ export const runPath = <T>(
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
   followThumb?: string,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => {
   const nodeConnectionPairs = getNodeConnectionPairById<T>(
     canvasApp,
@@ -226,6 +241,7 @@ export const runPath = <T>(
     followPathToEndThumb,
     singleStep,
     scopeId,
-    node
+    //node
+    runCounter
   );
 };

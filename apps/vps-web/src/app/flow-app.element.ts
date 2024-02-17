@@ -42,9 +42,6 @@ import {
   setCameraAnimation,
   setTargetCameraAnimation,
   setPositionTargetCameraAnimation,
-  runCounter,
-  resetRunCounter,
-  setRunCounterResetHandler,
   setRunCounterUpdateElement,
   setOnFrame,
 } from './follow-path/animate-path';
@@ -85,6 +82,7 @@ import {
   createOption,
   setupTasksInDropdown,
 } from './node-task-registry/setup-select-node-types-dropdown';
+import { RunCounter } from './follow-path/run-counter';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -138,7 +136,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       followPathToEndThumb?: boolean,
       singleStep?: boolean,
       followThumb?: string,
-      scopeId?: string
+      scopeId?: string,
+      runCounter?: RunCounter
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -157,7 +156,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         followPathToEndThumb,
         singleStep,
         followThumb,
-        scopeId
+        scopeId,
+        runCounter
       );
     };
 
@@ -177,7 +177,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       offsetY?: number,
       followPathToEndThumb?: boolean,
       singleStep?: boolean,
-      scopeId?: string
+      scopeId?: string,
+      runCounter?: RunCounter
     ) => {
       if (!this.canvasApp) {
         throw new Error('canvasApp not defined');
@@ -195,7 +196,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         offsetY,
         followPathToEndThumb,
         singleStep,
-        scopeId
+        scopeId,
+        runCounter
       );
     };
     const canvasUpdated = () => {
@@ -580,7 +582,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             runCounterElement.domElement as HTMLElement
           );
           this.removeFormElement();
-          resetRunCounter();
+          //resetRunCounter();
           if (this.canvasApp?.elements) {
             this.canvasApp?.elements.forEach((node: IElementNode<NodeInfo>) => {
               if (
@@ -592,17 +594,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               }
             });
             (pathRange.domElement as HTMLButtonElement).disabled = true;
-            run(
-              this.canvasApp?.elements,
-              this.canvasApp,
-              animatePath,
-              (input) => {
-                console.log('run finished', input);
-              }
-            );
-
-            setRunCounterResetHandler(() => {
-              if (runCounter <= 0) {
+            const runCounter = new RunCounter();
+            runCounter.setRunCounterResetHandler(() => {
+              if (runCounter.runCounter <= 0) {
                 (pathRange.domElement as HTMLButtonElement).disabled = false;
                 (this.runButton?.domElement as HTMLButtonElement).disabled =
                   false;
@@ -617,6 +611,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 );
               }
             });
+            run(
+              this.canvasApp?.elements,
+              this.canvasApp,
+              animatePath,
+              (input) => {
+                console.log('run finished', input);
+              },
+              undefined,
+              undefined,
+              undefined,
+              runCounter
+            );
           }
           return false;
         },

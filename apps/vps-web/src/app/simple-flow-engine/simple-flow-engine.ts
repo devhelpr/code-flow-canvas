@@ -16,6 +16,7 @@ import {
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
+import { RunCounter } from '../follow-path/run-counter';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -146,27 +147,17 @@ const triggerExecution = (
     _followPathToEndThumb?: boolean,
     _singleStep?: boolean,
     followThumb?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => void,
   onStopped: undefined | ((input: string | any[], scopeId?: string) => void),
   followPath: string | undefined,
   offsetX?: number,
   offsetY?: number,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => {
   if (result !== undefined) {
-    // if (pathExecution) {
-    //   pathExecution.push({
-    //     input: input ?? '',
-    //     output: result,
-    //     previousOutput: previousOutput,
-    //     result: !!result,
-    //     nodeId: node.id,
-    //     path: followPath ?? '',
-    //     node: node,
-    //     nodeType: (node.nodeInfo as any)?.type ?? '',
-    //   });
-    // }
     animatePath(
       node,
       'white',
@@ -223,11 +214,6 @@ const triggerExecution = (
                   if (onStopped) {
                     onStopped(computeResult.output ?? '', scopeId);
                   }
-                  // return {
-                  //   result: result,
-                  //   stop: true,
-                  //   output: result,
-                  // };
                 } else {
                   if (computeResult.stop && computeResult.dummyEndpoint) {
                     resolve({
@@ -240,20 +226,6 @@ const triggerExecution = (
                   result = computeResult.result;
                   sendData(nextNode, canvasApp, result);
                   followPath = computeResult.followPath;
-
-                  // if (pathExecution) {
-                  //   pathExecution.push({
-                  //     input: input ?? '',
-                  //     previousOutput: computeResult.previousOutput,
-                  //     output: computeResult.output ?? input,
-                  //     result: result,
-                  //     nodeId: nextNode.id,
-                  //     path: followPath ?? '',
-                  //     node: nextNode,
-                  //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
-                  //     previousNode,
-                  //   });
-                  // }
 
                   resolve({
                     result: true,
@@ -294,7 +266,6 @@ const triggerExecution = (
           result = computeResult.result;
           sendData(nextNode, canvasApp, result);
           followPath = computeResult.followPath;
-          //previousOutput = computeResult.previousOutput;
 
           if (computeResult.stop) {
             if (onStopped) {
@@ -335,19 +306,6 @@ const triggerExecution = (
           };
         }
 
-        // if (pathExecution) {
-        //   pathExecution.push({
-        //     input: input ?? '',
-        //     output: result,
-        //     previousOutput: previousOutput,
-        //     result: !!result,
-        //     nodeId: nextNode.id,
-        //     path: followPath ?? '',
-        //     node: nextNode,
-        //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
-        //     previousNode,
-        //   });
-        // }
         return {
           result: true,
           output: result ?? input,
@@ -367,7 +325,8 @@ const triggerExecution = (
       undefined,
       undefined,
       undefined,
-      scopeId
+      scopeId,
+      runCounter
     );
   } else {
     console.log('expression result', result);
@@ -397,7 +356,9 @@ export const runNode = (
     offsetY?: number,
     _followPathToEndThumb?: boolean,
     _singleStep?: boolean,
-    followThumb?: string
+    followThumb?: string,
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string,
@@ -405,7 +366,8 @@ export const runNode = (
   offsetY?: number,
   loopIndex?: number,
   connection?: IConnectionNodeComponent<NodeInfo>,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ): void => {
   const payload = getVariablePayload(node, canvasApp);
 
@@ -459,7 +421,8 @@ export const runNode = (
           followPath,
           offsetX,
           offsetY,
-          scopeId
+          scopeId,
+          runCounter
         );
       });
   } else if (formInfo && formInfo?.compute) {
@@ -518,7 +481,8 @@ export const runNode = (
       followPath,
       offsetX,
       offsetY,
-      scopeId
+      scopeId,
+      runCounter
     );
   } else {
     result = false;
@@ -577,12 +541,15 @@ export const run = (
     offsetY?: number,
     _followPathToEndThumb?: boolean,
     _singleStep?: boolean,
-    followThumb?: string
+    followThumb?: string,
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => void,
   onFinishRun?: (input: string | any[]) => void,
   input?: string,
   offsetX?: number,
-  offsetY?: number
+  offsetY?: number,
+  runCounter?: RunCounter
 ) => {
   /*
 	TODO : simple flow engine to run the nodes
@@ -618,7 +585,11 @@ export const run = (
       },
       input,
       offsetX,
-      offsetY
+      offsetY,
+      undefined,
+      undefined,
+      undefined,
+      runCounter
     );
   });
   if (!isRunning) {
@@ -648,13 +619,15 @@ export const runNodeFromThumb = (
     offsetY?: number,
     followPathToEndThumb?: boolean,
     singleStep?: boolean,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string | any[],
   _scopeNode?: IRectNodeComponent<NodeInfo>,
   loopIndex?: number,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => {
   //let result: any = false;
   let followPath: string | undefined = undefined;
@@ -789,22 +762,6 @@ export const runNodeFromThumb = (
         };
       }
 
-      // if (pathExecution) {
-      //   pathExecution.push({
-      //     input: input ?? '',
-      //     output: result,
-      //     previousOutput: previousOutput,
-      //     result: !!result,
-      //     nodeId: nextNode.id,
-      //     scopeNode,
-      //     path: followPath ?? '',
-      //     node: nextNode as unknown as IRectNodeComponent<NodeInfo>,
-      //     nodeType: (nextNode.nodeInfo as any)?.type ?? '',
-      //     previousNode:
-      //       nodeThumb.thumbLinkedToNode as unknown as IRectNodeComponent<NodeInfo>,
-      //   });
-      // }
-
       if (formInfo.decorators) {
         const decoratorInput = handleDecoratrs(
           formInfo.decorators,
@@ -839,6 +796,7 @@ export const runNodeFromThumb = (
     undefined,
     undefined,
     undefined,
-    scopeId
+    scopeId,
+    runCounter
   );
 };

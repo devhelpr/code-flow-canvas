@@ -14,6 +14,7 @@ import { getPointOnConnection } from './point-on-connection';
 import { followNodeExecution } from './followNodeExecution';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 import { BaseNodeInfo } from '../types/base-node-info';
+import { RunCounter } from './run-counter';
 
 function getLoopIncrement() {
   return 0.25;
@@ -39,7 +40,8 @@ export type AnimatePathFunction<T> = (
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
   followThumb?: string,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => void;
 
 export type AnimatePathFromThumbFunction<T> = (
@@ -58,7 +60,8 @@ export type AnimatePathFromThumbFunction<T> = (
   offsetY?: number,
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => void;
 
 export type FollowPathFunction<T> = (
@@ -79,7 +82,8 @@ export type FollowPathFunction<T> = (
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
   followThumb?: string,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => void;
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
@@ -89,7 +93,8 @@ type NodeAnimationNextNode = <T>(
   node: IRectNodeComponent<T>,
   input: string | any[],
   connection: IConnectionNodeComponent<T>,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) =>
   | {
       result: boolean;
@@ -130,6 +135,7 @@ interface NodeAnimatonInfo<T> {
   messageText: IDOMElement;
 
   color: string;
+  runCounter?: RunCounter;
 }
 
 export const nodeAnimationMap: Map<
@@ -325,8 +331,10 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
 
             const resolver = (result: any) => {
               console.log('animatePath onNextNode result', input, result);
-              decrementRunCounter();
-              updateRunCounterElement();
+              nodeAnimation.runCounter?.decrementRunCounter();
+              if (nodeAnimation.runCounter) {
+                updateRunCounterElement(nodeAnimation.runCounter);
+              }
 
               // uncomment the following line during debugging when a breakpoint is above here
               // .. this causes the message-bubble animation to continue after continuing
@@ -347,7 +355,8 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
                   undefined,
                   undefined,
                   result.followThumb,
-                  nodeAnimation.scopeId
+                  nodeAnimation.scopeId,
+                  nodeAnimation.runCounter
                 );
               } else {
                 testCircle && canvasApp?.elements.delete(testCircle.id);
@@ -359,11 +368,12 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
                   nodeAnimation.onStopped(result.output ?? input ?? '');
                 }
                 if (
-                  runCounter <= 0 &&
-                  runCounterResetHandler &&
+                  nodeAnimation.runCounter &&
+                  nodeAnimation.runCounter.runCounter <= 0 &&
+                  nodeAnimation.runCounter.runCounterResetHandler &&
                   nodeAnimationMap.size === 0
                 ) {
-                  runCounterResetHandler();
+                  nodeAnimation.runCounter.runCounterResetHandler();
                 }
               }
             };
@@ -375,8 +385,10 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
               });
           }
         } else {
-          decrementRunCounter();
-          updateRunCounterElement();
+          nodeAnimation.runCounter?.decrementRunCounter();
+          if (nodeAnimation.runCounter) {
+            updateRunCounterElement(nodeAnimation.runCounter);
+          }
 
           if (start) {
             nodeAnimation.onNextNode &&
@@ -409,28 +421,28 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
   };
 }
 
-export let runCounter = 0;
-export const incrementRunCounter = () => {
-  runCounter++;
-};
-export const decrementRunCounter = () => {
-  runCounter--;
-};
-export const resetRunCounter = () => {
-  runCounter = 0;
-};
-export let runCounterResetHandler: undefined | (() => void) = undefined;
-export const setRunCounterResetHandler = (handler: () => void) => {
-  runCounterResetHandler = handler;
-};
+// export let runCounter = 0;
+// export const incrementRunCounter = () => {
+//   runCounter++;
+// };
+// export const decrementRunCounter = () => {
+//   runCounter--;
+// };
+// export const resetRunCounter = () => {
+//   runCounter = 0;
+// };
+// export let runCounterResetHandler: undefined | (() => void) = undefined;
+// export const setRunCounterResetHandler = (handler: () => void) => {
+//   runCounterResetHandler = handler;
+// };
 
 let runCounterUpdateElement: undefined | HTMLElement = undefined;
 export const setRunCounterUpdateElement = (domElement: HTMLElement) => {
   runCounterUpdateElement = domElement;
 };
-export const updateRunCounterElement = () => {
+export const updateRunCounterElement = (runCounter: RunCounter) => {
   if (runCounterUpdateElement) {
-    runCounterUpdateElement.textContent = `${runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
+    runCounterUpdateElement.textContent = `${runCounter.runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
   }
 };
 
@@ -458,7 +470,7 @@ export const animatePathForNodeConnectionPairs = <T>(
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  fromNode?: IRectNodeComponent<T>
+  runCounter?: RunCounter
 ) => {
   if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
     canvasApp?.elements.delete(animatedNodes?.node1.id);
@@ -480,16 +492,16 @@ export const animatePathForNodeConnectionPairs = <T>(
       'animatePathForNodeConnectionPairs runCounter',
       runCounter,
       scopeId,
-      input,
-      (fromNode?.nodeInfo as any)?.type
+      input
     );
 
     if (
-      runCounter <= 0 &&
-      runCounterResetHandler &&
+      runCounter &&
+      runCounter.runCounter <= 0 &&
+      runCounter.runCounterResetHandler &&
       nodeAnimationMap.size === 0
     ) {
-      runCounterResetHandler();
+      runCounter.runCounterResetHandler();
     }
     return;
   }
@@ -599,8 +611,10 @@ export const animatePathForNodeConnectionPairs = <T>(
       domMessage.classList.remove('layer-2');
     }
 
-    incrementRunCounter();
-    updateRunCounterElement();
+    runCounter?.incrementRunCounter();
+    if (runCounter) {
+      updateRunCounterElement(runCounter);
+    }
 
     nodeAnimationMap.set(nodeAnimationId, {
       start: start as unknown as IRectNodeComponent<BaseNodeInfo>,
@@ -622,6 +636,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       singleStep,
       offsetX,
       offsetY,
+      runCounter,
     });
     nodeAnimationId++;
   });
@@ -645,7 +660,8 @@ export const animatePath = <T>(
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
   followThumb?: string,
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => {
   const nodeConnectionPairs = getNodeConnectionPairById<T>(
     canvasApp,
@@ -670,7 +686,8 @@ export const animatePath = <T>(
     followPathToEndThumb,
     singleStep,
     scopeId,
-    node
+    //node,
+    runCounter
   );
 };
 
@@ -692,7 +709,8 @@ export const animatePathFromThumb = <T>(
   followPathToEndThumb?: boolean,
   singleStep?: boolean,
 
-  scopeId?: string
+  scopeId?: string,
+  runCounter?: RunCounter
 ) => {
   const connectionsPairs = getNodeConnectionPairsFromThumb<T>(canvasApp, node);
 
@@ -710,6 +728,7 @@ export const animatePathFromThumb = <T>(
     followPathToEndThumb,
     singleStep,
     scopeId,
-    node?.thumbLinkedToNode
+    //    node?.thumbLinkedToNode,
+    runCounter
   );
 };

@@ -19,12 +19,9 @@ import { GLNodeInfo } from '../types/gl-node-info';
 import { NodeInfo } from '../types/node-info';
 import { importToCanvas } from '../storage/import-to-canvas';
 import { run } from '../simple-flow-engine/simple-flow-engine';
-import {
-  runCounter,
-  runPath,
-  setRunCounterResetHandler,
-} from '../follow-path/run-path';
+import { runPath } from '../follow-path/run-path';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
+import { RunCounter } from '../follow-path/run-counter';
 
 const familyName = 'flow-canvas';
 
@@ -63,7 +60,8 @@ export const getCreateCompositionNode =
       followPathToEndThumb?: boolean,
       singleStep?: boolean,
       followThumb?: string,
-      scopeId?: string
+      scopeId?: string,
+      runCounter?: RunCounter
     ) => {
       return runPath(
         contextCanvasApp,
@@ -79,7 +77,8 @@ export const getCreateCompositionNode =
         followPathToEndThumb,
         singleStep,
         followThumb,
-        scopeId
+        scopeId,
+        runCounter
       );
     };
     const initializeCompute = () => {
@@ -114,27 +113,40 @@ export const getCreateCompositionNode =
           }
         }
         if (composition) {
-          setRunCounterResetHandler(() => {
-            if (runCounter <= 0) {
-              // resolve({
-              //   result: input,
-              //   output: input,
-              //   followPath: undefined,
-              //});
+          // setRunCounterResetHandler(() => {
+          //   if (runCounter.runCounter <= 0) {
+          //     // resolve({
+          //     //   result: input,
+          //     //   output: input,
+          //     //   followPath: undefined,
+          //     //});
+          //   }
+          // });
+          const runCounter = new RunCounter();
+          runCounter.setRunCounterResetHandler(() => {
+            if (runCounter.runCounter <= 0) {
+              resolve({
+                result: input,
+                output: input,
+                followPath: undefined,
+              });
             }
           });
           run(
             contextCanvasApp.elements,
             contextCanvasApp,
             runFlowPath,
-            (input) => {
-              resolve({
-                result: input,
-                output: input,
-                followPath: undefined,
-              });
+            (_input) => {
+              // resolve({
+              //   result: input,
+              //   output: input,
+              //   followPath: undefined,
+              // });
             },
-            input
+            input,
+            undefined,
+            undefined,
+            runCounter
           );
           return;
         }
