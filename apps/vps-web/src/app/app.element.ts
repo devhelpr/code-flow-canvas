@@ -59,6 +59,7 @@ export class AppElement<T> {
 
   canvas?: IElementNode<T> = undefined;
   canvasApp?: CanvasAppInstance<T> = undefined;
+  currentCanvasApp?: CanvasAppInstance<T> = undefined;
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
@@ -112,6 +113,7 @@ export class AppElement<T> {
     );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
+    this.currentCanvasApp = canvasApp;
 
     this.canvasApp.setOnCameraChanged(this.onCameraChanged);
 
@@ -236,16 +238,16 @@ export class AppElement<T> {
 
             const id = element.getAttribute('data-node-id');
             if (id) {
-              const node = this.canvasApp?.elements.get(
+              const node = this.currentCanvasApp?.elements.get(
                 id
               ) as IRectNodeComponent<T>;
               if (node) {
                 this.focusedNode = node;
               }
-              if (node && node.x && node.y && this.canvasApp) {
+              if (node && node.x && node.y && this.currentCanvasApp) {
                 console.log('focusin node found', node);
                 this.setCameraTargetOnNode(node);
-                this.canvasApp.selectNode(node);
+                this.currentCanvasApp.selectNode(node);
                 this.removeFormElement();
               }
             }
@@ -373,9 +375,9 @@ export class AppElement<T> {
         ) {
           return true;
         }
-        if (this.canvasApp) {
+        if (this.currentCanvasApp) {
           event.preventDefault();
-          this.canvasApp.centerCamera();
+          this.currentCanvasApp.centerCamera();
           return false;
         }
       }
@@ -384,19 +386,19 @@ export class AppElement<T> {
         console.log('ctrl + i', this.focusedNode);
         let currentFocusedNode = this.focusedNode;
         this.popupNode = this.focusedNode;
-        if (this.focusedNode && this.canvasApp) {
-          this.canvasApp.selectNode(this.focusedNode);
+        if (this.focusedNode && this.currentCanvasApp) {
+          this.currentCanvasApp.selectNode(this.focusedNode);
         } else {
           const selectedNodeInfo = getSelectedNode();
           if (selectedNodeInfo) {
-            const node = this.canvasApp?.elements.get(
+            const node = this.currentCanvasApp?.elements.get(
               selectedNodeInfo.id
             ) as IRectNodeComponent<T>;
-            if (node && this.canvasApp) {
+            if (node && this.currentCanvasApp) {
               this.focusedNode = node;
               this.popupNode = this.focusedNode;
               currentFocusedNode = node;
-              this.canvasApp.selectNode(this.focusedNode);
+              this.currentCanvasApp.selectNode(this.focusedNode);
             }
           }
         }
@@ -438,16 +440,16 @@ export class AppElement<T> {
         if (closestRectNode) {
           const id = closestRectNode.getAttribute('data-node-id');
           if (id) {
-            const node = this.canvasApp?.elements.get(
+            const node = this.currentCanvasApp?.elements.get(
               id
             ) as IRectNodeComponent<T>;
             if (node) {
               this.focusedNode = node;
             }
-            if (node && node.x && node.y && this.canvasApp) {
+            if (node && node.x && node.y && this.currentCanvasApp) {
               console.log('focusin node found', node);
               this.setCameraTargetOnNode(node);
-              this.canvasApp.selectNode(node);
+              this.currentCanvasApp.selectNode(node);
               this.removeFormElement();
             }
           }
@@ -491,14 +493,14 @@ export class AppElement<T> {
   protected clearCanvas = () => {
     this.onPreclearCanvas();
     setSelectNode(undefined);
-    this.canvasApp?.resetNodeTransform();
-    this.canvasApp?.elements.forEach((element) => {
+    this.currentCanvasApp?.resetNodeTransform();
+    this.currentCanvasApp?.elements.forEach((element) => {
       element.domElement.remove();
       this.removeElement(element);
     });
-    this.canvasApp?.elements.clear();
-    this.canvasApp?.compositons.clearCompositions();
-    this.canvasApp?.setCamera(0, 0, 1);
+    this.currentCanvasApp?.elements.clear();
+    this.currentCanvasApp?.compositons.clearCompositions();
+    this.currentCanvasApp?.setCamera(0, 0, 1);
   };
 
   onShouldPositionPopup = (_node: IRectNodeComponent<T>) => {
@@ -514,7 +516,7 @@ export class AppElement<T> {
       const node = (
         selectedNodeInfo?.containerNode
           ? selectedNodeInfo?.containerNode?.canvasAppInstance?.elements
-          : this.canvasApp?.elements
+          : this.currentCanvasApp?.elements
       )?.get(selectedNodeInfo.id);
 
       if (!node) {
@@ -560,7 +562,7 @@ export class AppElement<T> {
         parentY = parentCoordinates.y;
       }
     }
-    const camera = this.canvasApp?.getCamera();
+    const camera = this.currentCanvasApp?.getCamera();
 
     const xCamera = camera?.x ?? 0;
     const yCamera = camera?.y ?? 0;
@@ -708,11 +710,11 @@ export class AppElement<T> {
   };
 
   setTabOrderOfNodes = () => {
-    if (!this.canvasApp) {
+    if (!this.currentCanvasApp) {
       return;
     }
     const nodes = getSortedNodes(
-      getStartNodes(this.canvasApp.elements, true)
+      getStartNodes(this.currentCanvasApp.elements, true)
     ) as IRectNodeComponent<T>[];
 
     nodes.sort((a: IRectNodeComponent<T>, b: IRectNodeComponent<T>) => {
@@ -770,7 +772,7 @@ export class AppElement<T> {
     registerComposition: RegisterComposition<T>,
     getNodeTaskFactory: GetNodeTaskFactory<T>
   ) => {
-    if (!this.canvasApp) {
+    if (!this.currentCanvasApp) {
       return;
     }
     console.log('REGISTER COMPOSITION', composition);
@@ -806,7 +808,7 @@ export class AppElement<T> {
     if (factory) {
       const nodeTask = factory(() => undefined);
 
-      const node = nodeTask.createVisualNode(this.canvasApp, x, y);
+      const node = nodeTask.createVisualNode(this.currentCanvasApp, x, y);
       if (node && node.nodeInfo) {
         // TODO : IMPROVE THIS
         (node.nodeInfo as any).taskType = nodeType;
@@ -862,7 +864,7 @@ export class AppElement<T> {
       selectedNodeInfo?.containerNode
         ? (selectedNodeInfo?.containerNode?.nodeInfo as any)?.canvasAppInstance
             ?.elements
-        : this.canvasApp?.elements
+        : this.currentCanvasApp?.elements
     )?.get(selectedNodeInfo.id);
 
     if (!node) {
@@ -888,19 +890,19 @@ export class AppElement<T> {
         'hidden'
       );
 
-      this.canvasApp?.setDisableInteraction(true);
+      this.currentCanvasApp?.setDisableInteraction(true);
 
       (this.canvas?.domElement as HTMLElement).classList.add('hidden');
       (this.canvas?.domElement as HTMLElement).classList.add(
         'pointer-events-none'
       );
-      const composition = this.canvasApp?.compositons?.getComposition(
+      const composition = this.currentCanvasApp?.compositons?.getComposition(
         node.nodeInfo.compositionId
       );
       if (!composition) {
         return;
       }
-      this.canvasApp?.setIsCameraFollowingPaused(true);
+      this.currentCanvasApp?.setIsCameraFollowingPaused(true);
 
       const canvasApp = createCanvasApp<T>(
         this.rootElement,
@@ -911,7 +913,7 @@ export class AppElement<T> {
         'composition-canvas-' + node.nodeInfo.compositionId
       );
       canvasApp?.setCamera(0, 0, 1);
-
+      this.currentCanvasApp = canvasApp;
       importToCanvas(
         composition.nodes as FlowNode<BaseNodeInfo>[],
         canvasApp as unknown as CanvasAppInstance<BaseNodeInfo>,
@@ -1175,7 +1177,10 @@ export class AppElement<T> {
         canvasApp?.setDisableInteraction(true);
         canvasApp.removeEvents();
         canvasApp.canvas?.domElement.remove();
-        this.canvasApp?.elements.forEach((element) => {
+
+        this.currentCanvasApp = this.canvasApp;
+
+        this.currentCanvasApp?.elements.forEach((element) => {
           const node = element as INodeComponent<T>;
           if ((node.nodeInfo as BaseNodeInfo)?.isComposition) {
             (node.nodeInfo as BaseNodeInfo)?.initializeCompute?.();
@@ -1186,9 +1191,9 @@ export class AppElement<T> {
         (this.canvas?.domElement as HTMLElement).classList.remove(
           'pointer-events-none'
         );
-        this.canvasApp?.setIsCameraFollowingPaused(false);
-        this.canvasApp?.setDisableInteraction(false);
-        this.canvasApp?.centerCamera();
+        this.currentCanvasApp?.setIsCameraFollowingPaused(false);
+        this.currentCanvasApp?.setDisableInteraction(false);
+        this.currentCanvasApp?.centerCamera();
 
         canvasUpdated();
 

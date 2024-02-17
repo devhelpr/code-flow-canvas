@@ -139,11 +139,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       scopeId?: string,
       runCounter?: RunCounter
     ) => {
-      if (!this.canvasApp) {
+      if (!this.currentCanvasApp) {
         throw new Error('canvasApp not defined');
       }
       return _animatePath(
-        this.canvasApp,
+        this.currentCanvasApp,
         node,
         color,
         onNextNode,
@@ -180,11 +180,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       scopeId?: string,
       runCounter?: RunCounter
     ) => {
-      if (!this.canvasApp) {
+      if (!this.currentCanvasApp) {
         throw new Error('canvasApp not defined');
       }
       return _animatePathFromThumb(
-        this.canvasApp,
+        this.currentCanvasApp,
         node,
         color,
         onNextNode,
@@ -356,10 +356,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             showPopup: (node: IRectNodeComponent<NodeInfo>) => {
               this.popupNode = node;
 
-              if (this.canvasApp) {
+              if (this.currentCanvasApp) {
                 this.focusedNode = node;
                 this.popupNode = this.focusedNode;
-                this.canvasApp.selectNode(this.focusedNode);
+                this.currentCanvasApp.selectNode(this.focusedNode);
               }
 
               this.positionPopup(
@@ -519,7 +519,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         element.classList.remove('state-active');
       });
 
-      this.canvasApp?.elements.forEach((node) => {
+      this.currentCanvasApp?.elements.forEach((node) => {
         const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
         if (nodeComponent.nodeType !== NodeType.Connection) {
           if (nodeComponent?.nodeInfo?.initializeCompute) {
@@ -934,7 +934,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           currentSelectedNode?.containerNode
             ? (currentSelectedNode?.containerNode.nodeInfo as any)
                 ?.canvasAppInstance?.elements
-            : this.canvasApp?.elements
+            : this.currentCanvasApp?.elements
         )?.get(currentSelectedNode.id);
         if (node) {
           if (node.nodeType === NodeType.Connection) {
@@ -952,7 +952,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           selectedNodeInfo?.containerNode
             ? (selectedNodeInfo?.containerNode.nodeInfo as any)
                 ?.canvasAppInstance?.elements
-            : this.canvasApp?.elements
+            : this.currentCanvasApp?.elements
         )?.get(selectedNodeInfo.id);
 
         if (!node) {
@@ -1064,7 +1064,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               selectedNodeInfo?.containerNode
                 ? (selectedNodeInfo?.containerNode.nodeInfo as any)
                     ?.canvasAppInstance?.elements
-                : this.canvasApp?.elements
+                : this.currentCanvasApp?.elements
             )?.get(selectedNodeInfo.id);
             if (node) {
               if ((node.nodeInfo as any).formElements) {
