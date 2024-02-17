@@ -124,8 +124,8 @@ export class Connection<T> {
       'connection-id',
       id ?? ''
     );
-
-    this.createArrowMarker();
+    const arrowIdPrefix = (id ?? crypto.randomUUID()).replace(/-/g, '');
+    this.createArrowMarker(arrowIdPrefix);
 
     this.nodeComponent = createSVGNodeComponent(
       'g',
@@ -210,7 +210,7 @@ export class Connection<T> {
         d: path,
         stroke: 'currentColor',
         //'marker-start': 'url(#arrowbegin)',
-        'marker-end': 'url(#arrow)',
+        'marker-end': `url(#${arrowIdPrefix}_arrow)`,
         'stroke-width': 3,
         ...dashedStroke,
         fill: 'transparent',
@@ -877,15 +877,17 @@ export class Connection<T> {
     return true;
   };
 
-  createArrowMarker() {
+  createArrowMarker(id: string) {
     if (!this.svgParent) {
       return;
     }
     const defs = createNSElement('defs', {}, this.svgParent.domElement);
+
+    // marked id's reference the whole document, so we need to make them unique
     const marker = createNSElement(
       'marker',
       {
-        id: 'arrow',
+        id: `${id}_arrow`,
         class: 'arrow-marker',
         refX: '1.5',
         refY: '2',
@@ -909,7 +911,7 @@ export class Connection<T> {
     const markerBegin = createNSElement(
       'marker',
       {
-        id: 'arrowbegin',
+        id: `${id}_arrowbegin`,
         class: 'arrow-marker',
         refX: '2',
         refY: '2',
