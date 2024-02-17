@@ -51,7 +51,7 @@ export class AutoAlignCommand<
   constructor(commandContext: ICommandContext<T>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
-    this.canvasApp = commandContext.canvasApp;
+    this.getCanvasApp = commandContext.getCanvasApp;
     this.canvasUpdated = commandContext.canvasUpdated;
     this.rootElement = commandContext.rootElement;
     this.setupTasksInDropdown = commandContext.setupTasksInDropdown;
@@ -59,7 +59,7 @@ export class AutoAlignCommand<
   }
   commandRegistry: Map<string, ICommandHandler>;
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<T>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
@@ -76,7 +76,11 @@ export class AutoAlignCommand<
   // parameter1 is the nodeType
   // parameter2 is the id of a selected node
   execute(_parameter1?: any, _parameter2?: any): void {
-    this.elementsList = Array.from(this.canvasApp.elements).map(
+    const canvasApp = this.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    this.elementsList = Array.from(canvasApp.elements).map(
       (e) => e[1] as INodeComponent<T>
     );
     this.minX = -1;
@@ -89,7 +93,7 @@ export class AutoAlignCommand<
     const visitedNodes: string[] = [];
     const revisitNodes: IRectNodeComponent<T>[] = [];
     this.isRevisiting = false;
-    const nodes = getStartNodes<T>(this.canvasApp.elements).toSorted((a, b) => {
+    const nodes = getStartNodes<T>(canvasApp.elements).toSorted((a, b) => {
       if (['uv-node', 'value-node'].indexOf(a.nodeInfo?.type ?? '') >= 0) {
         if (
           a.nodeInfo?.type === 'uv-node' &&

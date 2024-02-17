@@ -7,7 +7,7 @@ import { NodeTaskFactory } from '../node-task-registry';
 
 export interface ICommandContext<T> {
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<T>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   canvasUpdated: () => void;
   removeElement: (element: IElementNode<T>) => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;

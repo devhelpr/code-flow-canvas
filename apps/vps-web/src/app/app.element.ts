@@ -912,6 +912,9 @@ export class AppElement<T> {
         undefined,
         'composition-canvas-' + node.nodeInfo.compositionId
       );
+      if (canvasApp) {
+        canvasApp.isComposition = true;
+      }
       canvasApp?.setCamera(0, 0, 1);
       this.currentCanvasApp = canvasApp;
       importToCanvas(
@@ -1112,6 +1115,9 @@ export class AppElement<T> {
           }
         }
       });
+
+      setSelectNode(undefined);
+      this.canvasApp?.nodeTransformer.detachNode();
 
       const quitCameraSubscribtion = setCameraAnimation(canvasApp);
       canvasApp.setOnWheelEvent((x: number, y: number, scale: number) => {

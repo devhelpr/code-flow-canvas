@@ -15,36 +15,38 @@ export class DeleteNodeCommand<
 > extends CommandHandler<T> {
   constructor(commandContext: ICommandContext<T>) {
     super(commandContext);
-    this.canvasApp = commandContext.canvasApp;
+    this.getCanvasApp = commandContext.getCanvasApp;
     this.canvasUpdated = commandContext.canvasUpdated;
     this.rootElement = commandContext.rootElement;
     this.removeElement = commandContext.removeElement;
   }
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<T>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   canvasUpdated: () => void;
   removeElement: (element: IElementNode<T>) => void;
   // parameter1 is the id of a selected node
   execute(parameter1?: any, _parameter2?: any): void {
+    const canvasApp = this.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
     console.log('AddNode flow-app');
     if (typeof parameter1 !== 'string') {
       return;
     }
-    const node = this.canvasApp?.elements.get(
-      parameter1
-    ) as IRectNodeComponent<T>;
+    const node = canvasApp.elements.get(parameter1) as IRectNodeComponent<T>;
     if (!node) {
       console.log('node not found in canvas');
       return;
     }
-    this.canvasApp?.resetNodeTransform();
+    canvasApp.resetNodeTransform();
     if (node.nodeType === NodeType.Shape) {
       //does the shape have connections? yes.. remove the link between the connection and the node
       // OR .. remove the connection as well !?
       const shapeNode = node as IRectNodeComponent<T>;
       if (shapeNode.connections) {
         shapeNode.connections.forEach((c) => {
-          const connection = this.canvasApp?.elements?.get(
+          const connection = canvasApp.elements?.get(
             c.id
           ) as IConnectionNodeComponent<T>;
           if (connection) {
@@ -71,7 +73,7 @@ export class DeleteNodeCommand<
               }
             }
             this.removeElement(connection);
-            this.canvasApp?.elements?.delete(connection.id);
+            canvasApp.elements?.delete(connection.id);
           }
         });
       }
@@ -80,7 +82,7 @@ export class DeleteNodeCommand<
     }
 
     this.removeElement(node);
-    this.canvasApp?.elements?.delete(node.id);
+    canvasApp.elements?.delete(node.id);
 
     setSelectNode(undefined);
     this.canvasUpdated();

@@ -22,7 +22,7 @@ export interface AppNavComponentsProps<T> {
   animatePath: AnimatePathFunction<T>;
   animatePathFromThumb: AnimatePathFromThumbFunction<T>;
   canvasUpdated: () => void;
-  canvasApp: CanvasAppInstance<NodeInfo>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   removeElement: (element: IElementNode<NodeInfo>) => void;
   setIsStoring: (isStoring: boolean) => void;
   importToCanvas: (
@@ -45,7 +45,7 @@ export interface GenericAppNavComponentsProps<T> {
   initializeNodes: () => void;
   clearCanvas: () => void;
   canvasUpdated: () => void;
-  canvasApp: CanvasAppInstance<T>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   removeElement: (element: IElementNode<T>) => void;
   setIsStoring: (isStoring: boolean) => void;
   importToCanvas: (

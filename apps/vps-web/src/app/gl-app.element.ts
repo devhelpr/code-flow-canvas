@@ -140,7 +140,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             selectNodeType: this.selectNodeType
               ?.domElement as HTMLSelectElement,
             canvasUpdated: canvasUpdated,
-            canvasApp: this.canvasApp,
+            getCanvasApp: () => this.currentCanvasApp,
             removeElement: this.removeElement,
             rootElement: menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
@@ -245,7 +245,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
           registerCommands<GLNodeInfo>({
             rootElement: this.rootElement,
-            canvasApp: this.canvasApp,
+            getCanvasApp: () => this.currentCanvasApp,
             canvasUpdated,
             removeElement: this.removeElement,
             getNodeTaskFactory: getGLNodeTaskFactory,

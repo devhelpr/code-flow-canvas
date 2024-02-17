@@ -135,23 +135,26 @@ export class NavbarComponent extends Component<
 
   onClickAddNode = (event: Event) => {
     event.preventDefault();
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
     console.log('onClickAddNode flow-app');
-    this.props.canvasApp?.resetNodeTransform();
+    this.props.getCanvasApp()?.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
     if (!nodeType) {
       console.log('onClickAddNode: no nodeType selected');
     }
     let halfWidth = 0;
     let halfHeight = 0;
-    if (this.props.canvasApp?.rootElement) {
-      const box = this.props.canvasApp?.rootElement.getBoundingClientRect();
+    if (this.props.getCanvasApp()?.rootElement) {
+      const box = canvasApp.rootElement.getBoundingClientRect();
       halfWidth = box.width / 2;
       halfHeight = box.height / 2;
     }
-    const startPos = this.props.canvasApp?.transformCameraSpaceToWorldSpace(
-      halfWidth,
-      halfHeight
-    );
+    const startPos = this.props
+      .getCanvasApp()
+      ?.transformCameraSpaceToWorldSpace(halfWidth, halfHeight);
     const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
     const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
@@ -162,9 +165,9 @@ export class NavbarComponent extends Component<
 
       const selectedNodeInfo = getSelectedNode();
       if (selectedNodeInfo) {
-        let node = this.props.canvasApp?.elements?.get(
-          selectedNodeInfo.id
-        ) as INodeComponent<NodeInfo>;
+        let node = this.props
+          .getCanvasApp()
+          ?.elements?.get(selectedNodeInfo.id) as INodeComponent<NodeInfo>;
 
         if (!node) {
           console.log('node not found in canvas'); // is the selected node in a container?
@@ -216,11 +219,7 @@ export class NavbarComponent extends Component<
       //factory.createVisualNode(props.canvasApp, startX, startY);
       //} else if (factory) {
       //const nodeTask = factory(props.canvasUpdated);
-      const node = nodeTask.createVisualNode(
-        this.props.canvasApp,
-        startX,
-        startY
-      );
+      const node = nodeTask.createVisualNode(canvasApp, startX, startY);
       if (node && node.nodeInfo) {
         node.nodeInfo.taskType = nodeType;
       }
@@ -231,7 +230,7 @@ export class NavbarComponent extends Component<
 
   onClickCenter = (event: Event) => {
     event.preventDefault();
-    this.props.canvasApp?.centerCamera();
+    this.props.getCanvasApp()?.centerCamera();
     return false;
   };
 
@@ -244,9 +243,9 @@ export class NavbarComponent extends Component<
           )?.nodeInfo?.canvasAppInstance?.elements?.get(
             nodeElementId.id
           ) as INodeComponent<NodeInfo>)
-        : (this.props.canvasApp?.elements?.get(
-            nodeElementId.id
-          ) as INodeComponent<NodeInfo>);
+        : (this.props
+            .getCanvasApp()
+            ?.elements?.get(nodeElementId.id) as INodeComponent<NodeInfo>);
 
       if (node) {
         return { selectedNodeInfo: nodeElementId, node };
@@ -258,7 +257,7 @@ export class NavbarComponent extends Component<
   onClickDelete = (event: Event) => {
     event.preventDefault();
     const nodeInfo = this.getSelectedNodeInfo();
-    this.props.canvasApp?.resetNodeTransform();
+    this.props.getCanvasApp()?.resetNodeTransform();
     if (nodeInfo) {
       const node = nodeInfo.node;
       if (node.nodeType === NodeType.Connection) {
@@ -282,9 +281,9 @@ export class NavbarComponent extends Component<
         const shapeNode = node as IRectNodeComponent<NodeInfo>;
         if (shapeNode.connections) {
           shapeNode.connections.forEach((c) => {
-            const connection = this.props.canvasApp?.elements?.get(
-              c.id
-            ) as IConnectionNodeComponent<NodeInfo>;
+            const connection = this.props
+              .getCanvasApp()
+              ?.elements?.get(c.id) as IConnectionNodeComponent<NodeInfo>;
             if (connection) {
               if (connection.startNode?.id === node.id) {
                 connection.startNode = undefined;
@@ -316,7 +315,9 @@ export class NavbarComponent extends Component<
         );
       } else {
         this.props.removeElement(node);
-        this.props.canvasApp?.elements?.delete(nodeInfo.selectedNodeInfo.id);
+        this.props
+          .getCanvasApp()
+          ?.elements?.delete(nodeInfo.selectedNodeInfo.id);
       }
       setSelectNode(undefined);
       this.props.canvasUpdated();
@@ -327,9 +328,13 @@ export class NavbarComponent extends Component<
 
   onClickExport = (event: Event) => {
     event.preventDefault();
-    const data = serializeElementsMap(this.props.canvasApp.elements);
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    const data = serializeElementsMap(canvasApp.elements);
     const compositions = serializeCompositions<NodeInfo>(
-      this.props.canvasApp.compositons.getAllCompositions()
+      canvasApp.compositons.getAllCompositions()
     );
     console.log(
       'EXPORT DATA',
@@ -358,20 +363,24 @@ export class NavbarComponent extends Component<
 
         const reader = new FileReader();
         reader.addEventListener('load', (event) => {
+          const canvasApp = this.props.getCanvasApp();
+          if (!canvasApp) {
+            return;
+          }
           if (event && event.target && event.target.result) {
             const data = JSON.parse(event.target.result.toString());
             console.log('IMPORT DATA', data);
             this.props.clearCanvas();
             this.props.importToCanvas(
               data.flows.flow.nodes,
-              this.props.canvasApp,
+              canvasApp,
               this.props.canvasUpdated,
               undefined,
               0,
               getNodeTaskFactory,
               data.compositions
             );
-            this.props.canvasApp.centerCamera();
+            this.props.getCanvasApp()?.centerCamera();
             this.props.initializeNodes();
           }
         });
@@ -400,6 +409,10 @@ export class NavbarComponent extends Component<
         const reader = new FileReader();
         reader.addEventListener('load', (event) => {
           if (event && event.target && event.target.result) {
+            const canvasApp = this.props.getCanvasApp();
+            if (!canvasApp) {
+              return;
+            }
             const data = event.target.result.toString();
             const nodeList = convertExpressionScriptToFlow(data);
             if (nodeList) {
@@ -417,12 +430,12 @@ export class NavbarComponent extends Component<
               this.props.clearCanvas();
               this.props.importToCanvas(
                 flow.flows.flow.nodes,
-                this.props.canvasApp,
+                canvasApp,
                 this.props.canvasUpdated,
                 undefined,
                 0
               );
-              this.props.canvasApp.centerCamera();
+              canvasApp.centerCamera();
               this.props.initializeNodes();
             }
           }
@@ -441,17 +454,21 @@ export class NavbarComponent extends Component<
       fetch(`/example-flows/${example}`)
         .then((response) => response.json())
         .then((data) => {
+          const canvasApp = this.props.getCanvasApp();
+          if (!canvasApp) {
+            return;
+          }
           this.props.clearCanvas();
           this.props.importToCanvas(
             data.flows.flow.nodes,
-            this.props.canvasApp,
+            canvasApp,
             this.props.canvasUpdated,
             undefined,
             0,
             getNodeTaskFactory,
             data.compositions
           );
-          this.props.canvasApp.centerCamera();
+          canvasApp.centerCamera();
           this.props.initializeNodes();
         });
     }
@@ -489,7 +506,7 @@ export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
     animatePath: props.animatePath,
     animatePathFromThumb: props.animatePathFromThumb,
     canvasUpdated: props.canvasUpdated,
-    canvasApp: props.canvasApp,
+    getCanvasApp: props.getCanvasApp,
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,

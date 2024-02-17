@@ -22,13 +22,13 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
   constructor(commandContext: ICommandContext<T>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
-    this.canvasApp = commandContext.canvasApp;
+    this.getCanvasApp = commandContext.getCanvasApp;
     this.canvasUpdated = commandContext.canvasUpdated;
     this.rootElement = commandContext.rootElement;
     this.setupTasksInDropdown = commandContext.setupTasksInDropdown;
   }
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<T>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
@@ -39,19 +39,23 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     thumbId?: string,
     inputThumbName?: string
   ) => {
-    this.canvasApp?.resetNodeTransform();
+    const canvasApp = this.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    canvasApp.resetNodeTransform();
     if (!nodeType) {
       console.log('addNodeType: no nodeType given');
       return false;
     }
     let halfWidth = 0;
     let halfHeight = 0;
-    if (this.canvasApp?.rootElement) {
-      const box = this.canvasApp?.rootElement.getBoundingClientRect();
+    if (canvasApp.rootElement) {
+      const box = canvasApp.rootElement.getBoundingClientRect();
       halfWidth = box.width / 2;
       halfHeight = box.height / 2;
     }
-    const startPos = this.canvasApp?.transformCameraSpaceToWorldSpace(
+    const startPos = canvasApp.transformCameraSpaceToWorldSpace(
       halfWidth,
       halfHeight
     );
@@ -66,13 +70,13 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     if (factory) {
       const nodeTask = factory(this.canvasUpdated);
 
-      const node = nodeTask.createVisualNode(this.canvasApp, startX, startY);
+      const node = nodeTask.createVisualNode(canvasApp, startX, startY);
       if (node && node.nodeInfo) {
         // TODO : IMPROVE THIS
         (node.nodeInfo as any).taskType = nodeType;
 
         if (connectToNode) {
-          const connection = this.canvasApp?.createCubicBezier(
+          const connection = canvasApp.createCubicBezier(
             connectToNode.x,
             connectToNode.y,
             startX,
@@ -163,7 +167,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
       return;
     }
     if (typeof parameter2 === 'string') {
-      const node = this.canvasApp?.elements.get(
+      const node = this.getCanvasApp()?.elements.get(
         parameter2
       ) as IRectNodeComponent<T>;
       if (!node) {

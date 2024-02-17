@@ -62,6 +62,7 @@ export const createContextInstanceApp = <T>(
     nodeTransformer: undefined as unknown as NodeTransformer<T>,
     compositons,
     isContextOnly: true,
+    isComposition: false,
     setOnAddcomposition: (
       _onAddComposition: (
         composition: Composition<T>,

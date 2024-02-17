@@ -131,16 +131,20 @@ export class GLNavbarComponent extends Component<
   onClickAddNode = (event: Event) => {
     event.preventDefault();
     console.log('onClickAddNode gl-app');
-    this.props.canvasApp?.resetNodeTransform();
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    canvasApp.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
     let halfWidth = 0;
     let halfHeight = 0;
-    if (this.props.canvasApp?.rootElement) {
-      const box = this.props.canvasApp?.rootElement.getBoundingClientRect();
+    if (canvasApp.rootElement) {
+      const box = canvasApp.rootElement.getBoundingClientRect();
       halfWidth = box.width / 2;
       halfHeight = box.height / 2;
     }
-    const startPos = this.props.canvasApp?.transformCameraSpaceToWorldSpace(
+    const startPos = canvasApp.transformCameraSpaceToWorldSpace(
       halfWidth,
       halfHeight
     );
@@ -184,7 +188,7 @@ export class GLNavbarComponent extends Component<
 
       const selectedNodeInfo = getSelectedNode();
       if (selectedNodeInfo) {
-        let node = this.props.canvasApp?.elements?.get(
+        let node = canvasApp.elements?.get(
           selectedNodeInfo.id
         ) as INodeComponent<NodeInfo>;
 
@@ -235,11 +239,7 @@ export class GLNavbarComponent extends Component<
           }
         }
       }
-      const node = nodeTask.createVisualNode(
-        this.props.canvasApp,
-        startX,
-        startY
-      );
+      const node = nodeTask.createVisualNode(canvasApp, startX, startY);
       if (node && node.nodeInfo) {
         this.lastAddedNode = node;
         node.nodeInfo.taskType = nodeType;
@@ -251,7 +251,8 @@ export class GLNavbarComponent extends Component<
 
   onClickCenter = (event: Event) => {
     event.preventDefault();
-    this.props.canvasApp?.centerCamera();
+
+    this.props.getCanvasApp()?.centerCamera();
     return false;
   };
 
@@ -264,9 +265,9 @@ export class GLNavbarComponent extends Component<
           )?.nodeInfo?.canvasAppInstance?.elements?.get(
             nodeElementId.id
           ) as INodeComponent<NodeInfo>)
-        : (this.props.canvasApp?.elements?.get(
-            nodeElementId.id
-          ) as INodeComponent<NodeInfo>);
+        : (this.props
+            .getCanvasApp()
+            ?.elements?.get(nodeElementId.id) as INodeComponent<NodeInfo>);
 
       if (node) {
         return { selectedNodeInfo: nodeElementId, node };
@@ -277,7 +278,12 @@ export class GLNavbarComponent extends Component<
 
   onClickDelete = (event: Event) => {
     event.preventDefault();
-    this.props.canvasApp?.resetNodeTransform();
+
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    canvasApp.resetNodeTransform();
     this.lastAddedNode = null;
     const nodeInfo = this.getSelectedNodeInfo();
 
@@ -304,7 +310,7 @@ export class GLNavbarComponent extends Component<
         const shapeNode = node as IRectNodeComponent<NodeInfo>;
         if (shapeNode.connections) {
           shapeNode.connections.forEach((c) => {
-            const connection = this.props.canvasApp?.elements?.get(
+            const connection = canvasApp.elements?.get(
               c.id
             ) as IConnectionNodeComponent<NodeInfo>;
             if (connection) {
@@ -338,7 +344,7 @@ export class GLNavbarComponent extends Component<
         );
       } else {
         this.props.removeElement(node);
-        this.props.canvasApp?.elements?.delete(nodeInfo.selectedNodeInfo.id);
+        canvasApp.elements?.delete(nodeInfo.selectedNodeInfo.id);
       }
       setSelectNode(undefined);
       this.props.canvasUpdated();
@@ -349,9 +355,13 @@ export class GLNavbarComponent extends Component<
 
   onClickExport = (event: Event) => {
     event.preventDefault();
-    const data = serializeElementsMap(this.props.canvasApp.elements);
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    const data = serializeElementsMap(canvasApp.elements);
     const compositions = serializeCompositions<GLNodeInfo>(
-      this.props.canvasApp.compositons.getAllCompositions()
+      canvasApp.compositons.getAllCompositions()
     );
     console.log(
       'EXPORT DATA',
@@ -380,20 +390,24 @@ export class GLNavbarComponent extends Component<
 
         const reader = new FileReader();
         reader.addEventListener('load', (event) => {
+          const canvasApp = this.props.getCanvasApp();
+          if (!canvasApp) {
+            return;
+          }
           if (event && event.target && event.target.result) {
             const data = JSON.parse(event.target.result.toString());
             console.log('IMPORT DATA', data);
             this.props.clearCanvas();
             this.props.importToCanvas(
               data.flows.flow.nodes,
-              this.props.canvasApp,
+              canvasApp,
               this.props.canvasUpdated,
               undefined,
               0,
               getGLNodeTaskFactory,
               data.compositions
             );
-            this.props.canvasApp.centerCamera();
+            canvasApp.centerCamera();
             this.props.initializeNodes();
           }
         });
@@ -411,17 +425,21 @@ export class GLNavbarComponent extends Component<
       fetch(`/example-flows-gl/${example}`)
         .then((response) => response.json())
         .then((data: Flow<GLNodeInfo>) => {
+          const canvasApp = this.props.getCanvasApp();
+          if (!canvasApp) {
+            return;
+          }
           this.props.clearCanvas();
           this.props.importToCanvas(
             data.flows.flow.nodes,
-            this.props.canvasApp,
+            canvasApp,
             this.props.canvasUpdated,
             undefined,
             0,
             getGLNodeTaskFactory,
             data.compositions
           );
-          this.props.canvasApp.centerCamera();
+          canvasApp.centerCamera();
           this.props.initializeNodes();
         });
     }
@@ -457,7 +475,7 @@ export const GLNavbarMenu = (props: GenericAppNavComponentsProps<any>) => {
     rootAppElement: props.rootAppElement,
     selectNodeType: props.selectNodeType,
     canvasUpdated: props.canvasUpdated,
-    canvasApp: props.canvasApp,
+    getCanvasApp: props.getCanvasApp,
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,

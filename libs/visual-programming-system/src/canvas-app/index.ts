@@ -586,6 +586,7 @@ export const createCanvasApp = <T>(
     nodeTransformer,
     compositons,
     isContextOnly: false,
+    isComposition: false,
     setOnAddcomposition: (
       onAddComposition: (
         composition: Composition<T>,

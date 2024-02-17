@@ -152,13 +152,17 @@ export class NodeSidebarMenuComponent extends Component<
   getSelectedNodeInfo = () => {
     const nodeElementId = getSelectedNode();
     if (nodeElementId) {
+      const canvasApp = this.props.getCanvasApp();
+      if (!canvasApp) {
+        return false;
+      }
       const node = nodeElementId.containerNode
         ? ((
             nodeElementId?.containerNode as unknown as IRectNodeComponent<NodeInfo>
           )?.nodeInfo?.canvasAppInstance?.elements?.get(
             nodeElementId.id
           ) as INodeComponent<NodeInfo>)
-        : (this.props.canvasApp?.elements?.get(
+        : (canvasApp?.elements?.get(
             nodeElementId.id
           ) as INodeComponent<NodeInfo>);
 
@@ -228,23 +232,28 @@ export class NodeSidebarMenuComponent extends Component<
 
     */
     this.props.setIsStoring(true);
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return false;
+    }
+
     this.showDependencyConnections = !this.showDependencyConnections;
     if (this.showDependencyConnections) {
-      this.props.canvasApp?.elements.forEach((element) => {
+      canvasApp.elements.forEach((element) => {
         if (element.nodeInfo?.getDependencies) {
           const dependencies = element.nodeInfo.getDependencies();
           console.log('getDependencies', dependencies);
           if (dependencies.length > 0) {
             dependencies.forEach((dependency) => {
-              const startNode = this.props.canvasApp?.elements?.get(
+              const startNode = canvasApp?.elements?.get(
                 dependency.startNodeId
               ) as IRectNodeComponent<NodeInfo>;
-              const endNode = this.props.canvasApp?.elements?.get(
+              const endNode = canvasApp.elements?.get(
                 dependency.endNodeId
               ) as IRectNodeComponent<NodeInfo>;
 
               if (startNode && endNode) {
-                const connection = this.props.canvasApp?.createLine(
+                const connection = canvasApp.createLine(
                   startNode.x,
                   startNode.y,
                   endNode.x,
@@ -277,13 +286,13 @@ export class NodeSidebarMenuComponent extends Component<
         }
       });
     } else {
-      this.props.canvasApp?.elements.forEach((element) => {
+      canvasApp.elements.forEach((element) => {
         const node = element as INodeComponent<NodeInfo>;
         if (node.nodeType === NodeType.Connection) {
           const connection = node as IConnectionNodeComponent<NodeInfo>;
           if (connection.isAnnotationConnection) {
             this.props.removeElement(node);
-            this.props.canvasApp?.elements?.delete(element.id);
+            canvasApp.elements?.delete(element.id);
           }
         }
       });
@@ -374,7 +383,7 @@ export const NodeSidebarMenuComponents = (
     animatePath: props.animatePath,
     animatePathFromThumb: props.animatePathFromThumb,
     canvasUpdated: props.canvasUpdated,
-    canvasApp: props.canvasApp,
+    getCanvasApp: props.getCanvasApp,
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,

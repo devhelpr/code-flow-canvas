@@ -201,6 +201,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       );
     };
     const canvasUpdated = () => {
+      if (
+        this.currentCanvasApp?.isContextOnly ||
+        this.currentCanvasApp?.isComposition
+      ) {
+        return;
+      }
       console.log('canvasUpdated');
       if (this.isStoring) {
         return;
@@ -236,7 +242,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             animatePath: animatePath,
             animatePathFromThumb: animatePathFromThumb,
             canvasUpdated: canvasUpdated,
-            canvasApp: this.canvasApp,
+            getCanvasApp: () => this.currentCanvasApp,
             removeElement: this.removeElement,
             rootElement: menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
@@ -348,7 +354,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             animatePath: animatePath,
             animatePathFromThumb: animatePathFromThumb,
             canvasUpdated: canvasUpdated,
-            canvasApp: this.canvasApp,
+            getCanvasApp: () => this.currentCanvasApp,
             removeElement: this.removeElement,
             rootElement: this.rootElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
@@ -404,7 +410,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
           registerCommands<NodeInfo>({
             rootElement: this.rootElement,
-            canvasApp: this.canvasApp,
+            getCanvasApp: () => this.currentCanvasApp,
             canvasUpdated: canvasUpdated,
             removeElement: this.removeElement,
             getNodeTaskFactory,

@@ -14,7 +14,7 @@ export class PasteNodeCommand<
   constructor(commandContext: ICommandContext<T>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
-    this.canvasApp = commandContext.canvasApp;
+    this.getCanvasApp = commandContext.getCanvasApp;
     this.canvasUpdated = commandContext.canvasUpdated;
     this.rootElement = commandContext.rootElement;
     this.setupTasksInDropdown = commandContext.setupTasksInDropdown;
@@ -22,7 +22,7 @@ export class PasteNodeCommand<
   }
   commandRegistry: Map<string, ICommandHandler>;
   rootElement: HTMLElement;
-  canvasApp: CanvasAppInstance<T>;
+  getCanvasApp: () => CanvasAppInstance<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
@@ -32,6 +32,10 @@ export class PasteNodeCommand<
   lastX = 0;
   lastY = 0;
   execute(_parameter1?: any, _parameter2?: any): void {
+    const canvasApp = this.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
     const copyCommand = this.commandRegistry.get(
       'copy-node'
     ) as CopyNodeCommand<T>;
@@ -54,7 +58,7 @@ export class PasteNodeCommand<
           const initialValues = structuredClone(copyNode.nodeInfo.formValues);
 
           const nodeClone = nodeTask.createVisualNode(
-            this.canvasApp,
+            canvasApp,
             x,
             y,
             undefined,
