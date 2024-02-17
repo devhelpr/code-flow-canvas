@@ -47,7 +47,7 @@ export class NodeSidebarMenuComponent extends Component<
   ) {
     super(parent, props);
     this.template = createTemplate(
-      `<div class="z-10 flex flex-col absolute right-0 top-1/2 bg-slate-700 -translate-y-1/2 p-[4px] rounded-l-lg">
+      `<div class="z-20 flex flex-col absolute right-0 top-1/2 bg-slate-700 -translate-y-1/2 p-[4px] rounded-l-lg">
       <button class="${navBarButtonNomargin} flex  w-[32px] h-[32px] mb-1"><span class="icon icon-tune text-[16px]"></span></button>
       <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L1</button>
       <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L2</button>
