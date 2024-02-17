@@ -22,6 +22,7 @@ import { CanvasAppInstance } from './CanvasAppInstance';
 import { Compositions } from '../compositions/compositions';
 import { NodeTransformer } from '../components/node-transformer';
 import { ContextRect } from '../context-components/context-rect';
+import { ContextConnection } from '../context-components/context-connection';
 
 export const createContextInstanceApp = <T>(
   _canvasId?: string
@@ -197,7 +198,11 @@ export const createContextInstanceApp = <T>(
       _id?: string,
       _containerNode?: IRectNodeComponent<T>
     ) => {
-      return undefined as unknown as CubicBezierConnection<T>;
+      return new ContextConnection<T>(
+        elements,
+        _id,
+        _containerNode
+      ) as unknown as CubicBezierConnection<T>;
     },
     createQuadraticBezier: (
       _startX?: number,
@@ -211,7 +216,11 @@ export const createContextInstanceApp = <T>(
       _id?: string,
       _containerNode?: IRectNodeComponent<T>
     ) => {
-      return undefined as unknown as QuadraticBezierConnection<T>;
+      return new ContextConnection<T>(
+        elements,
+        _id,
+        _containerNode
+      ) as unknown as QuadraticBezierConnection<T>;
     },
     createLine: (
       _startX?: number,
@@ -223,14 +232,23 @@ export const createContextInstanceApp = <T>(
       _id?: string,
       _containerNode?: IRectNodeComponent<T>
     ) => {
-      return undefined as unknown as LineConnection<T>;
+      return new ContextConnection<T>(
+        elements,
+        _id,
+        _containerNode
+      ) as unknown as LineConnection<T>;
     },
     deleteElementFromNode: (
-      _element: INodeComponent<T>,
-      _child: INodeComponent<T>,
+      element: INodeComponent<T>,
+      child: INodeComponent<T>,
       _noCanvasUpdated = false
     ) => {
-      //
+      if (element && child) {
+        if (element.elements) {
+          element.elements.delete(child.id);
+        }
+        element.domElement.removeChild(child.domElement);
+      }
     },
     setOnWheelEvent: (
       _onWheelEventHandler: (x: number, y: number, scale: number) => void
