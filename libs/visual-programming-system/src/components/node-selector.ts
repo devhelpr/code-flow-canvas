@@ -437,7 +437,12 @@ export class NodeSelector<T> {
        - if a selection contains a function-node and is called from nodes outside the selection
        - if a selection contains a call-function node and the function is defined outside the selection
        - variables
-       - accessing variables       
+       - accessing variables
+       
+       in general:
+       - compositions should be able to run standalone or with the help of various input nodes
+       - multiple copies of the same composition should be able to run at the same time
+
   */
   onCreateComposition = () => {
     const thumbs: IThumb[] = [];

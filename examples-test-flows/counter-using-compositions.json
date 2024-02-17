@@ -1,0 +1,213 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "290b3182-cfbb-4146-ad19-55b45a4760d0",
+          "x": 3614.0860236372446,
+          "y": 769.2677255907296,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "0",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "3af49054-7c24-4f6d-9c8f-23486f5bbba6",
+          "x": 4414.086023637245,
+          "y": 795.2677255907296,
+          "width": 120.00017743716789,
+          "height": 55.99998581418555,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-value"
+          }
+        },
+        {
+          "id": "d0b626ff-6e46-420a-a430-e46f51714a82",
+          "x": 4014.0860236372446,
+          "y": 795.2677255907296,
+          "width": 200,
+          "height": 55,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "composition-8467ebd8-4615-46d3-8768-efbf857ca190",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "isComposition": true,
+            "compositionId": "8467ebd8-4615-46d3-8768-efbf857ca190"
+          }
+        },
+        {
+          "id": "0b476b1f-d084-4a1c-83d4-7e043c3356fc",
+          "x": 3814.0860236372446,
+          "y": 825.2677255907296,
+          "endX": 4014.0860236372446,
+          "endY": 825.2677255907296,
+          "startNodeId": "290b3182-cfbb-4146-ad19-55b45a4760d0",
+          "endNodeId": "d0b626ff-6e46-420a-a430-e46f51714a82",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "endThumbIdentifierWithinNode": "8f804a42-4477-4dbc-b50e-287524c414bc",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "9c6cdbde-3dd7-480c-a00e-1aece4e9efbc",
+          "x": 4214.086023637245,
+          "y": 825.2677255907296,
+          "endX": 4414.086023637245,
+          "endY": 825.2677255907296,
+          "startNodeId": "d0b626ff-6e46-420a-a430-e46f51714a82",
+          "endNodeId": "3af49054-7c24-4f6d-9c8f-23486f5bbba6",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "startThumbIdentifierWithinNode": "9c2343c8-42bf-4280-ac99-4524bbfe3b68",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {
+    "8467ebd8-4615-46d3-8768-efbf857ca190": {
+      "id": "8467ebd8-4615-46d3-8768-efbf857ca190",
+      "name": "test",
+      "nodes": [
+        {
+          "id": "3594a2f9-2184-4a4e-a7f5-c7270af621e6",
+          "x": 4101.193436292964,
+          "y": 604.5948855841976,
+          "width": 100,
+          "height": 64,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "variable",
+            "formValues": {
+              "variableName": "counter",
+              "initialValue": "0",
+              "fieldType": "value",
+              "fieldValueType": "number"
+            },
+            "isVariable": true
+          }
+        },
+        {
+          "id": "1126acf5-9a18-451b-90ca-855bc1ba90ff",
+          "x": 4901.193436292964,
+          "y": 468.09488558419764,
+          "width": 200,
+          "height": 127.99996948242188,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "counter"
+            },
+            "showFormOnlyInPopup": false
+          }
+        },
+        {
+          "id": "730980d5-63da-4175-a72f-6f4071864d22",
+          "x": 4501.193436292964,
+          "y": 476.09488558419764,
+          "width": 200,
+          "height": 111.99996948242188,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "counter + 1",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "b4b28c9e-7d61-4365-acaf-79a998ef7ff7",
+          "x": 4701.193436292964,
+          "y": 532.0948703254086,
+          "endX": 4901.193436292964,
+          "endY": 532.0948703254086,
+          "startNodeId": "730980d5-63da-4175-a72f-6f4071864d22",
+          "endNodeId": "1126acf5-9a18-451b-90ca-855bc1ba90ff",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ],
+      "thumbs": [
+        {
+          "thumbIndex": 0,
+          "thumbType": "StartConnectorRight",
+          "connectionType": "start",
+          "name": "output",
+          "color": "white",
+          "thumbIdentifierWithinNode": "9c2343c8-42bf-4280-ac99-4524bbfe3b68",
+          "nodeId": "1126acf5-9a18-451b-90ca-855bc1ba90ff"
+        },
+        {
+          "thumbIndex": 0,
+          "thumbType": "EndConnectorLeft",
+          "connectionType": "end",
+          "prefixLabel": "",
+          "name": "input",
+          "color": "white",
+          "thumbIdentifierWithinNode": "8f804a42-4477-4dbc-b50e-287524c414bc",
+          "nodeId": "730980d5-63da-4175-a72f-6f4071864d22"
+        }
+      ],
+      "inputNodes": [
+        {
+          "id": "730980d5-63da-4175-a72f-6f4071864d22",
+          "x": 4178.440768146466,
+          "y": 878.455368408872,
+          "width": 199.99998625602544,
+          "height": 112.00000457451658,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "counter + 1",
+              "inputType": "number"
+            },
+            "taskType": "expression"
+          }
+        }
+      ],
+      "outputNodes": [
+        {
+          "id": "1126acf5-9a18-451b-90ca-855bc1ba90ff",
+          "x": 4476.843535643995,
+          "y": 868.2693385782504,
+          "width": 199.99998625602544,
+          "height": 128.00004028842562,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "counter"
+            },
+            "showFormOnlyInPopup": false,
+            "taskType": "set-variable"
+          }
+        }
+      ]
+    }
+  }
+}
