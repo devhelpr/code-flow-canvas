@@ -9,16 +9,12 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
-import {
-  createElementFromTemplate,
-  createTemplate,
-} from '@devhelpr/dom-components';
 
-const fieldName = 'multiply';
-const labelName = 'Multiply';
-const nodeName = 'multiply-node';
+const fieldName = 'dot-vector';
+const labelName = 'Dot product';
+const nodeName = 'dot-vector-node';
 const familyName = 'flow-canvas';
-const thumbConstraint = 'value';
+const thumbConstraint = 'vec2';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -35,7 +31,7 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'value1',
+    name: 'vector1',
     thumbConstraint: thumbConstraint,
   },
   {
@@ -44,35 +40,26 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'value2',
+    name: 'vector2',
     thumbConstraint: thumbConstraint,
   },
 ];
 
-export const getMultiplyNode: NodeTaskFactory<GLNodeInfo> = (
+export const getDotProductVectorNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    let value1 = '';
-
-    value1 = payload?.['value1'];
-
-    let value2 = '';
-
-    value2 = payload?.['value2'];
+    const value1 = payload?.['vector1'];
+    const value2 = payload?.['vector2'];
     return {
-      result: `(${value1} * ${value2})`,
+      result: `dot(${value1},${value2})`,
       output: input,
       followPath: undefined,
     };
   };
-
-  const element = createElementFromTemplate(
-    createTemplate(`<div class="text-7xl mt-[20px]">*</div>`)
-  );
 
   return visualNodeFactory(
     nodeName,
@@ -94,8 +81,6 @@ export const getMultiplyNode: NodeTaskFactory<GLNodeInfo> = (
     {
       hasTitlebar: false,
       category: 'Math',
-      hideTitle: true,
-    },
-    element
+    }
   );
 };

@@ -9,6 +9,10 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import {
+  createElementFromTemplate,
+  createTemplate,
+} from '@devhelpr/dom-components';
 
 const fieldName = 'addition';
 const labelName = 'Addition';
@@ -61,6 +65,10 @@ export const getAdditionNode: NodeTaskFactory<GLNodeInfo> = (
     };
   };
 
+  const element = createElementFromTemplate(
+    createTemplate(`<div class="text-7xl -mt-[10px]">+</div>`)
+  );
+
   return visualNodeFactory(
     nodeName,
     labelName,
@@ -80,7 +88,9 @@ export const getAdditionNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      hideTitle: true,
       category: 'Math',
-    }
+    },
+    element
   );
 };

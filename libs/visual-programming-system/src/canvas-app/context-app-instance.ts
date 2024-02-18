@@ -23,6 +23,7 @@ import { Compositions } from '../compositions/compositions';
 import { NodeTransformer } from '../components/node-transformer';
 import { ContextRect } from '../context-components/context-rect';
 import { ContextConnection } from '../context-components/context-connection';
+import { standardTheme } from '../themes/standard';
 
 export const createContextInstanceApp = <T>(
   _canvasId?: string
@@ -63,6 +64,7 @@ export const createContextInstanceApp = <T>(
     compositons,
     isContextOnly: true,
     isComposition: false,
+    theme: standardTheme,
     setOnAddcomposition: (
       _onAddComposition: (
         composition: Composition<T>,

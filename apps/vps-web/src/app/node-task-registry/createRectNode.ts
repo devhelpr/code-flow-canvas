@@ -72,6 +72,8 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     hideTitle?: boolean;
     backgroundColorClassName?: string;
     textColorClassName?: string;
+    backgroundThemeProperty?: string;
+    textColorThenmeProperty?: string;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -96,10 +98,16 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     'div',
     {
       class: `relative flex flex-col ${
-        settings?.backgroundColorClassName ?? 'bg-slate-500'
-      } ${settings?.textColorClassName ?? 'text-white'} rounded ${
-        showTitlebar ? '' : 'py-2'
-      }`,
+        (settings?.backgroundThemeProperty &&
+          (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
+        settings?.backgroundColorClassName ??
+        canvasApp.theme.nodeBackground
+      } ${
+        (settings?.textColorThenmeProperty &&
+          (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
+        settings?.textColorClassName ??
+        canvasApp.theme.nodeText
+      } rounded ${showTitlebar ? '' : 'py-2'}`,
     },
     undefined
   ) as unknown as INodeComponent<T>;
@@ -141,7 +149,9 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     createElement(
       'div',
       {
-        class: `flex items-center bg-slate-600 border-slate-500 text-white p-1 px-3 rounded-t pointer-events-none`,
+        class: `flex items-center 
+          ${canvasApp.theme.nodeTitleBarBackground} border-slate-500 
+          ${canvasApp.theme.nodeTitleBarText} p-1 px-3 rounded-t pointer-events-none`,
       },
       componentWrapper.domElement,
       settings?.hideTitle ? '' : nodeTitle
@@ -331,6 +341,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
     hideTitle?: boolean;
     backgroundColorClassName?: string;
     textColorClassName?: string;
+    backgroundThemeProperty?: string;
+    textColorThenmeProperty?: string;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -354,7 +366,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
       const decoratorNode = createNodeElement(
         'div',
         {
-          class: `decorator-node p-2 inline-block text-white rounded text-center border-2 border-slate-200 border-solid`,
+          class: `decorator-node p-2 inline-block ${canvasApp.theme.nodeText} rounded text-center border-2 border-slate-200 border-solid`,
         },
         rootElement,
         caption ?? settings?.decoratorTitle ?? initialValue

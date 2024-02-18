@@ -51,6 +51,7 @@ import { getSetColorVariableNode } from '../nodes-gl/set-vec3-variable';
 import { getSetAndAddColorVariableNode } from '../nodes-gl/set-and-add-vec3-variable';
 import { getThumbInputNode } from '../nodes-gl/thumb-input';
 import { getThumbOutputNode } from '../nodes-gl/thumb-output';
+import { getDotProductVectorNode } from '../nodes-gl/dot-vectors';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -105,9 +106,14 @@ export const setupGLNodeTaskRegistry = () => {
     getMultiplyColorNode,
     'Multiply Color'
   );
-  registerGLNodeFactory('addition-node', getAdditionNode, 'Addition');
-  registerGLNodeFactory('subtract-node', getSubtractNode, 'Subtraction');
+  registerGLNodeFactory('addition-node', getAdditionNode, 'Add');
+  registerGLNodeFactory('subtract-node', getSubtractNode, 'Subtract');
   registerGLNodeFactory('modulo-float-node', getModuloFloatNode, 'Modulo');
+  registerGLNodeFactory(
+    'dot-vector-node',
+    getDotProductVectorNode,
+    'Dot Product'
+  );
 
   registerGLNodeFactory(
     'addition-vector-node',

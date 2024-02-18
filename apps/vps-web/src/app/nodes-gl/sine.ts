@@ -30,7 +30,7 @@ const thumbs = [
     maxConnections: -1,
   },
   {
-    thumbType: ThumbType.EndConnectorCenter,
+    thumbType: ThumbType.EndConnectorLeft,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
@@ -39,6 +39,39 @@ const thumbs = [
     name: 'value',
     thumbConstraint: thumbConstraint,
     prefixLabel: 'rads',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+
+    name: 'amp',
+    thumbConstraint: thumbConstraint,
+    prefixLabel: 'amp',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 2,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+
+    name: 'freq',
+    thumbConstraint: thumbConstraint,
+    prefixLabel: 'freq',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 3,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+
+    name: 'shift',
+    thumbConstraint: thumbConstraint,
+    prefixLabel: 'shift',
   },
 ];
 
@@ -49,22 +82,23 @@ export const getSineNode: NodeTaskFactory<GLNodeInfo> = (
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    let value = '';
-
-    value = payload?.['value'];
+    const value = payload?.['value'];
+    const amp = payload?.['amp'] || '1.0';
+    const freq = payload?.['freq'] || '1.0';
+    const shift = payload?.['shift'] || '0.0';
     return {
-      result: `sin(${value})`,
+      result: `(sin(${value} * ${freq} + ${shift}) * ${amp})`,
       output: input,
       followPath: undefined,
     };
   };
 
   const element = createElementFromTemplate(
-    createTemplate(`<svg width="32px" height="32px" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    createTemplate(`<svg width="64px" height="64px" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M57 193.48C61.6479 150.493 84.5896 129 125.825 129C187.678 129 195.16 272 269.08 272C330.771 272 343 201.978 343 193.48" 
     stroke="#ffffff" 
-    stroke-opacity="0.9" 
-    stroke-width="16" 
+    stroke-opacity="1" 
+    stroke-width="40" 
     stroke-linecap="round"
     stroke-linejoin="round"/>
   </svg>`)
@@ -92,6 +126,7 @@ export const getSineNode: NodeTaskFactory<GLNodeInfo> = (
       additionalClassNames: 'flex-wrap flex-col py-5',
       childNodeWrapperClass: 'w-full flex justify-center text-center',
       category: 'Math',
+      hideTitle: true,
     },
     element
   );

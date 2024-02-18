@@ -34,6 +34,7 @@ import {
 import { NodeSelector } from '../components/node-selector';
 import { Compositions } from '../compositions/compositions';
 import { Composition } from '../interfaces/composition';
+import { standardTheme } from '../themes/standard';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -587,6 +588,7 @@ export const createCanvasApp = <T>(
     compositons,
     isContextOnly: false,
     isComposition: false,
+    theme: standardTheme,
     setOnAddcomposition: (
       onAddComposition: (
         composition: Composition<T>,

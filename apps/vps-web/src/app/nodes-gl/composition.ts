@@ -240,8 +240,8 @@ export const getCreateCompositionNode =
         hasTitlebar: false,
         hideTitle: true,
         category: 'Compositions',
-        backgroundColorClassName: 'bg-purple-500',
-        textColorClassName: 'text-black',
+        backgroundThemeProperty: 'compositionBackground',
+        textColorThenmeProperty: 'compositionText',
       }
     );
   };
