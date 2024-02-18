@@ -19,3 +19,5 @@ export * from './canvas-app/CanvasAppInstance';
 export * from './components/utils/calculate-connector-thumbs';
 export * from './interfaces/composition';
 export * from './canvas-app/context-app-instance';
+export * from './themes/standard';
+export * from './interfaces/theme';

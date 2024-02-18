@@ -35,6 +35,7 @@ import { NodeSelector } from '../components/node-selector';
 import { Compositions } from '../compositions/compositions';
 import { Composition } from '../interfaces/composition';
 import { standardTheme } from '../themes/standard';
+import { Theme } from '../interfaces/theme';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -42,8 +43,10 @@ export const createCanvasApp = <T>(
   disableZoom?: boolean,
   backgroundColor?: string,
   interactionStateMachineInstance?: InteractionStateMachine<T>,
-  canvasId?: string
+  canvasId?: string,
+  customTheme?: Theme
 ) => {
+  const theme = customTheme ?? standardTheme;
   const interactionStateMachine =
     interactionStateMachineInstance ?? createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
@@ -101,7 +104,7 @@ export const createCanvasApp = <T>(
     {
       id: canvasId ?? 'canvas',
       class: `w-full h-full origin-top-left ${
-        backgroundColor ?? 'bg-slate-800'
+        backgroundColor ?? theme.background ?? 'bg-slate-800'
       } flex-auto relative z-10 transition-none transform-gpu`,
     },
     rootElement
@@ -588,7 +591,7 @@ export const createCanvasApp = <T>(
     compositons,
     isContextOnly: false,
     isComposition: false,
-    theme: standardTheme,
+    theme: theme,
     setOnAddcomposition: (
       onAddComposition: (
         composition: Composition<T>,
@@ -922,7 +925,8 @@ export const createCanvasApp = <T>(
         isDashed,
         onCanvasUpdated,
         id,
-        containerNode
+        containerNode,
+        theme
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -956,7 +960,8 @@ export const createCanvasApp = <T>(
         isDashed,
         onCanvasUpdated,
         id,
-        containerNode
+        containerNode,
+        theme
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -988,7 +993,8 @@ export const createCanvasApp = <T>(
         isDashed,
         onCanvasUpdated,
         id,
-        containerNode
+        containerNode,
+        theme
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();

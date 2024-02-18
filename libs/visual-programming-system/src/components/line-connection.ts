@@ -9,6 +9,7 @@ import {
   IRectNodeComponent,
   IThumbNodeComponent,
 } from '../interfaces/element';
+import { Theme } from '../interfaces/theme';
 import { createEffect, getVisbility, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
@@ -37,7 +38,8 @@ export class LineConnection<T> extends Connection<T> {
     isDashed = false,
     canvasUpdated?: () => void,
     id?: string,
-    containerNode?: IRectNodeComponent<T>
+    containerNode?: IRectNodeComponent<T>,
+    theme?: Theme
   ) {
     super(
       canvas,
@@ -56,7 +58,8 @@ export class LineConnection<T> extends Connection<T> {
       onQuadraticCalculateControlPoints,
       canvasUpdated,
       id,
-      containerNode
+      containerNode,
+      theme
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');

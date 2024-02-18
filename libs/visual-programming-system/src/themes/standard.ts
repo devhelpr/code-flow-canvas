@@ -2,6 +2,8 @@ import { Theme } from '../interfaces/theme';
 
 export const standardTheme: Theme = {
   name: 'Standard',
+  background: 'bg-slate-800',
+  backgroundAsHexColor: '#1e293b',
   nodeBackground: 'bg-slate-500',
   nodeTitleBarBackground: 'bg-slate-600',
   nodeTitleBarText: 'text-white',

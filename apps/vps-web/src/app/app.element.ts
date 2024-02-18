@@ -26,6 +26,8 @@ import {
   mapConnectionToFlowNode,
   mapShapeNodeToFlowNode,
   FlowNode,
+  Theme,
+  standardTheme,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -41,12 +43,6 @@ import { getStartNodes } from './utils/start-nodes';
 import { GetNodeTaskFactory, RegisterComposition } from './node-task-registry';
 import { BaseNodeInfo } from './types/base-node-info';
 import { importToCanvas } from './storage/import-to-canvas';
-
-const template = document.createElement('template');
-template.innerHTML = `
-  <div class="min-h-dvh w-full bg-slate-800 overflow-hidden touch-none" id="root" >
-  </div>
-`;
 
 export class AppElement<T> {
   public static observedAttributes = [];
@@ -81,7 +77,11 @@ export class AppElement<T> {
   appRootElement: Element | null;
   commandRegistry = new Map<string, ICommandHandler>();
 
-  constructor(appRootSelector: string, customTemplate?: HTMLTemplateElement) {
+  constructor(
+    appRootSelector: string,
+    customTemplate?: HTMLTemplateElement,
+    theme?: Theme
+  ) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
 
@@ -94,6 +94,15 @@ export class AppElement<T> {
     if (!this.appRootElement) {
       return;
     }
+
+    const template = document.createElement('template');
+    template.innerHTML = `
+  <div class="min-h-dvh w-full ${
+    (theme ?? standardTheme).background
+  } overflow-hidden touch-none" id="root" >
+  </div>
+`;
+
     this.appRootElement.appendChild(
       (customTemplate ?? template).content.cloneNode(true)
     );
@@ -109,7 +118,9 @@ export class AppElement<T> {
       undefined,
       undefined,
       undefined,
-      undefined
+      undefined,
+      undefined,
+      theme ?? standardTheme
     );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;

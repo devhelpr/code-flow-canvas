@@ -19,6 +19,7 @@ import {
   IDOMElement,
   Composition,
   IConnectionNodeComponent,
+  standardTheme,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -85,12 +86,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
     template.innerHTML = `<div>
-      <div class="min-h-dvh w-1/2 bg-slate-800 overflow-hidden touch-none" id="root" >
+      <div class="min-h-dvh w-1/2 ${standardTheme.background} overflow-hidden touch-none" id="root" >
       </div>
       <canvas id="glcanvas" class="gl-canvas"></canvas></div>
     `;
 
-    super(appRootSelector, template);
+    super(appRootSelector, template, standardTheme);
 
     if (!this.rootElement) {
       return;

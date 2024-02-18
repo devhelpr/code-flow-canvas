@@ -11,6 +11,7 @@ import {
   IRectNodeComponent,
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
+import { Theme } from '../interfaces/theme';
 import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
@@ -77,7 +78,8 @@ export class Connection<T> {
     onCalculateControlPoints = onCubicCalculateControlPoints,
     canvasUpdated?: () => void,
     id?: string,
-    containerNode?: IRectNodeComponent<T>
+    containerNode?: IRectNodeComponent<T>,
+    theme?: Theme
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -195,7 +197,9 @@ export class Connection<T> {
         class:
           'connection-background-path pointer-events-stroke cursor-pointer',
         d: path,
-        stroke: containerNode ? '#94a3b8' : '#1e293b',
+        stroke: containerNode
+          ? '#94a3b8'
+          : theme?.backgroundAsHexColor ?? '#1e293b',
         'stroke-width': 20,
         fill: 'transparent',
         pointerdown: this.onPointerDown,

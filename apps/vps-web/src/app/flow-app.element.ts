@@ -21,6 +21,7 @@ import {
   IDOMElement,
   IConnectionNodeComponent,
   Composition,
+  standardTheme,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -110,7 +111,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   canvasUpdated: (() => void) | undefined = undefined;
 
   constructor(appRootSelector: string) {
-    super(appRootSelector);
+    super(appRootSelector, undefined, standardTheme);
     if (!this.rootElement) {
       return;
     }
