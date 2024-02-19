@@ -395,54 +395,6 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
 
       e.stopPropagation();
 
-      // const selectedNodeId = getSelectedNode();
-      // if (selectedNodeId) {
-      //   console.log('thumb 1');
-      //   const selectedNode = this.canvasElements?.get(
-      //     selectedNodeId.id
-      //   ) as unknown as INodeComponent<T>;
-      //   const connectionNode =
-      //     this.nodeComponent.thumbLinkedToNode?.nodeType === NodeType.Shape
-      //       ? this.nodeComponent.thumbLinkedToNode?.connections.find(
-      //           (c) => c.id === selectedNodeId.id
-      //         )
-      //       : undefined;
-      //   if (
-      //     connectionNode &&
-      //     selectedNode &&
-      //     selectedNode.nodeType === NodeType.Connection &&
-      //     this.canvas
-      //   ) {
-      //     const { x, y } = transformCameraSpaceToWorldSpace(
-      //       e.clientX,
-      //       e.clientY
-      //     );
-      //     const curve = selectedNode as unknown as IConnectionNodeComponent<T>;
-      //     const connectionThumb =
-      //       this.nodeComponent.thumbConnectionType === 'start'
-      //         ? curve.connectionStartNodeThumb
-      //         : curve.connectionEndNodeThumb;
-
-      //     // remove existing connection
-      //     const connection =
-      //       connectionThumb?.parent as unknown as IConnectionNodeComponent<T>;
-
-      //     if (this.nodeComponent?.thumbConnectionType === 'start') {
-      //       connection.startNode = undefined;
-      //       connection.startNodeThumb = undefined;
-      //     } else {
-      //       connection.endNode = undefined;
-      //       connection.endNodeThumb = undefined;
-      //     }
-
-      //     if (connectionThumb) {
-      //       this.initiateDraggingConnection(connectionThumb, x, y);
-      //     }
-
-      //     return;
-      //   }
-      // }
-
       // loopup connection to with this connection-controller as start point
       const connection = this.nodeComponent
         .parent as unknown as IConnectionNodeComponent<T>;
@@ -458,10 +410,35 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             e.clientX,
             e.clientY
           );
+          let parentX = 0;
+          let parentY = 0;
+          if (this.nodeComponent?.parent?.containerNode) {
+            if (this.nodeComponent?.parent?.containerNode) {
+              if (
+                this.nodeComponent?.parent?.containerNode &&
+                this.nodeComponent?.parent?.containerNode
+                  ?.getParentedCoordinates
+              ) {
+                const parentCoordinates =
+                  this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
+                    x: 0,
+                    y: 0,
+                  };
+                // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
+                // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+                parentX = parentCoordinates.x;
+                parentY = parentCoordinates.y;
+              }
+            }
+          }
           connection.startNode = undefined;
           connection.startNodeThumb = undefined;
           console.log('thumb 2 start', x, y);
-          this.initiateDraggingConnection(connectionThumb, x, y);
+          this.initiateDraggingConnection(
+            connectionThumb,
+            x + parentX,
+            y + parentY
+          );
           return;
         }
       }
@@ -480,8 +457,35 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
           );
           connection.endNode = undefined;
           connection.endNodeThumb = undefined;
+
+          let parentX = 0;
+          let parentY = 0;
+          if (this.nodeComponent?.parent?.containerNode) {
+            if (this.nodeComponent?.parent?.containerNode) {
+              if (
+                this.nodeComponent?.parent?.containerNode &&
+                this.nodeComponent?.parent?.containerNode
+                  ?.getParentedCoordinates
+              ) {
+                const parentCoordinates =
+                  this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
+                    x: 0,
+                    y: 0,
+                  };
+                // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
+                // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+                parentX = parentCoordinates.x;
+                parentY = parentCoordinates.y;
+              }
+            }
+          }
+
           console.log('thumb 2 end', x, y);
-          this.initiateDraggingConnection(connectionThumb, x, y);
+          this.initiateDraggingConnection(
+            connectionThumb,
+            x + parentX,
+            y + parentY
+          );
           return;
         }
       }

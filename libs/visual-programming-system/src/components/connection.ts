@@ -355,7 +355,7 @@ export class Connection<T> {
     initiator?: INodeComponent<T>,
     inUpdateLoop?: boolean
   ) => {
-    console.log('inUpdateLoop', inUpdateLoop);
+    //console.log('inUpdateLoop', inUpdateLoop);
     const connection = target as unknown as IConnectionNodeComponent<T>;
     if (!target && x === undefined && y === undefined && !initiator) {
       // eslint-disable-next-line no-console
