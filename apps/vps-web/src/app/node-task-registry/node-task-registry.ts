@@ -18,6 +18,7 @@ export type NodeTask<T> = {
   isContained?: boolean;
   canBeUsedAsDecorator?: boolean;
   childNodeTasks?: string[];
+  notAllowedChildNodeTasks?: string[];
   thumbs?: IThumb[];
   hideFromNodeTypeSelector?: boolean;
   getCompute?: () => (

@@ -4,7 +4,6 @@ import {
   INodeComponent,
   IRectNodeComponent,
   NodeType,
-  ThumbConnectionType,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
@@ -148,39 +147,39 @@ export class GLNavbarComponent extends Component<
       halfWidth,
       halfHeight
     );
-    let startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
-    let startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
+    const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
+    const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
-    const selectedNode = this.getSelectedNodeInfo();
-    let node: IRectNodeComponent<any> | undefined = undefined;
-    if (
-      selectedNode &&
-      selectedNode.node &&
-      selectedNode.node.nodeType === NodeType.Shape
-    ) {
-      this.lastAddedNode = null;
-      node = selectedNode.node as IRectNodeComponent<any>;
-    } else if (this.lastAddedNode) {
-      node = this.lastAddedNode;
-    }
-    if (node) {
-      let hasOutputConnections = false;
-      let hasInputConnections = false;
-      if (node.thumbConnectors) {
-        hasOutputConnections = node.thumbConnectors.some((c) => {
-          return c.thumbConnectionType === ThumbConnectionType.start;
-        });
-        hasInputConnections = node.thumbConnectors.some((c) => {
-          return c.thumbConnectionType === ThumbConnectionType.end;
-        });
-      }
-      startY = node.y;
-      if (hasOutputConnections) {
-        startX = node.x + (node.width ?? 200) + 250;
-      } else if (hasInputConnections) {
-        startX = node.x - 300;
-      }
-    }
+    //const selectedNode = this.getSelectedNodeInfo();
+    // let node: IRectNodeComponent<any> | undefined = undefined;
+    // if (
+    //   selectedNode &&
+    //   selectedNode.node &&
+    //   selectedNode.node.nodeType === NodeType.Shape
+    // ) {
+    //   this.lastAddedNode = null;
+    //   node = selectedNode.node as IRectNodeComponent<any>;
+    // } else if (this.lastAddedNode) {
+    //   node = this.lastAddedNode;
+    // }
+    // if (node) {
+    //   let hasOutputConnections = false;
+    //   let hasInputConnections = false;
+    //   if (node.thumbConnectors) {
+    //     hasOutputConnections = node.thumbConnectors.some((c) => {
+    //       return c.thumbConnectionType === ThumbConnectionType.start;
+    //     });
+    //     hasInputConnections = node.thumbConnectors.some((c) => {
+    //       return c.thumbConnectionType === ThumbConnectionType.end;
+    //     });
+    //   }
+    //   startY = node.y;
+    //   if (hasOutputConnections) {
+    //     startX = node.x + (node.width ?? 200) + 250;
+    //   } else if (hasInputConnections) {
+    //     startX = node.x - 300;
+    //   }
+    // }
     const factory = getGLNodeTaskFactory(nodeType);
 
     if (factory) {
@@ -217,7 +216,8 @@ export class GLNavbarComponent extends Component<
             if (
               node.nodeInfo.canvasAppInstance &&
               selectedNodeTask.isContainer &&
-              (selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0
+              ((selectedNodeTask.childNodeTasks ?? []).indexOf(nodeType) >= 0 ||
+                !selectedNodeTask.childNodeTasks)
             ) {
               nodeTask.createVisualNode(
                 node.nodeInfo.canvasAppInstance,

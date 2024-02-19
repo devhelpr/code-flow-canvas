@@ -47,9 +47,10 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                 if (
                   element.nodeType === NodeType.Shape &&
                   element.nodeInfo?.type &&
-                  (nodeTask.childNodeTasks ?? []).indexOf(
-                    element.nodeInfo?.type
-                  ) > -1
+                  ((nodeTask.childNodeTasks ?? []).length === 0 ||
+                    (nodeTask.childNodeTasks ?? []).indexOf(
+                      element.nodeInfo?.type
+                    ) > -1)
                 ) {
                   const factory = getNodeTaskFactory(element.nodeInfo?.type);
                   if (

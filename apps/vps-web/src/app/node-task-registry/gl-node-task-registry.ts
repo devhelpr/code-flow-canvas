@@ -15,7 +15,7 @@ import { getOutputColorNode } from '../nodes-gl/output-color-node';
 import { getUVNode } from '../nodes-gl/uv-node';
 import { getAdditionNode } from '../nodes-gl/addition';
 import { getVectorLengthNode } from '../nodes-gl/vector-length';
-import { getNoiseNode } from '../nodes-gl/noise';
+import { getMorganNoiseNode, getNoiseNode } from '../nodes-gl/noise';
 import { getSplitColorsNode } from '../nodes-gl/split-colors';
 import { getPaletteNode } from '../nodes-gl/palette';
 import { getRotateNode } from '../nodes-gl/rotate';
@@ -52,6 +52,11 @@ import { getSetAndAddColorVariableNode } from '../nodes-gl/set-and-add-vec3-vari
 import { getThumbInputNode } from '../nodes-gl/thumb-input';
 import { getThumbOutputNode } from '../nodes-gl/thumb-output';
 import { getDotProductVectorNode } from '../nodes-gl/dot-vectors';
+import { getForNode } from '../nodes-gl/for-node';
+import { getConstantValue } from '../nodes-gl/constant-value';
+import { getSetVariableNode } from '../nodes-gl/set-variable';
+import { getDefineValueVariableNode } from '../nodes-gl/define-float-variable';
+import { getGetVariableNode } from '../nodes-gl/get-variable';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -122,6 +127,12 @@ export const setupGLNodeTaskRegistry = () => {
   );
 
   registerGLNodeFactory('noise-node', getNoiseNode, 'Noise');
+
+  registerGLNodeFactory(
+    'morgan-noise-node',
+    getMorganNoiseNode,
+    'Morgan noise'
+  );
 
   registerGLNodeFactory('rotate-node', getRotateNode, 'Rotate');
   registerGLNodeFactory('scale-node', getScaleNode, 'Scale');
@@ -204,6 +215,27 @@ export const setupGLNodeTaskRegistry = () => {
     'set-and-add-color-variable-node',
     getSetAndAddColorVariableNode,
     'Add and set color variable'
+  );
+
+  registerGLNodeFactory('for-node', getForNode, 'for');
+  registerGLNodeFactory('constant-value', getConstantValue, 'Constant');
+
+  registerGLNodeFactory(
+    'set-variable-node',
+    getSetVariableNode,
+    'Set variable'
+  );
+
+  registerGLNodeFactory(
+    'define-float-variable-node',
+    getDefineValueVariableNode,
+    'Define float variable'
+  );
+
+  registerGLNodeFactory(
+    'get-float-variable-node',
+    getGetVariableNode,
+    'Get float variable'
   );
 };
 
