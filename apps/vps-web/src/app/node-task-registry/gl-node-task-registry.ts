@@ -57,6 +57,7 @@ import { getConstantValue } from '../nodes-gl/constant-value';
 import { getSetVariableNode } from '../nodes-gl/set-variable';
 import { getDefineValueVariableNode } from '../nodes-gl/define-float-variable';
 import { getGetVariableNode } from '../nodes-gl/get-variable';
+import { getFloorVectorNode } from '../nodes-gl/floor-vector';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -236,6 +237,12 @@ export const setupGLNodeTaskRegistry = () => {
     'get-float-variable-node',
     getGetVariableNode,
     'Get float variable'
+  );
+
+  registerGLNodeFactory(
+    'floor-vector-node',
+    getFloorVectorNode,
+    'Floor Vector'
   );
 };
 

@@ -403,8 +403,6 @@ export class Rect<T> {
         rectNode.id
       );
 
-      // check for 'begin' or 'end' connectionControllerType which are the drag handlers of the connection/path
-      // (not to be confused with the resize handlers)
       if (
         (component &&
           component.parent &&
@@ -450,7 +448,15 @@ export class Rect<T> {
         }
         component.parent.isControlled = true;
 
-        rectNode.connections?.push(draggedConnection);
+        // only push connection to rectNode if it is not already there
+        // (because the user tried to reconnect it to another node but then decided to reconnect it to the same node again)
+        if (
+          !rectNode.connections?.find(
+            (connection) => connection.id === draggedConnection.id
+          )
+        ) {
+          rectNode.connections?.push(draggedConnection);
+        }
 
         // Update both sides of the connection to get a correct curve
         if (component.parent.update) {
