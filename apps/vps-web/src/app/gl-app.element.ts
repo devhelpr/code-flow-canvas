@@ -257,6 +257,21 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             'Edit composition'
           );
 
+          this.compositionCreateButton = createElement(
+            'button',
+            {
+              class: `${navBarButton}`,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                //this.createFlowComposition();
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Create composition'
+          );
+
           this.compositionEditExitButton = createElement(
             'button',
             {

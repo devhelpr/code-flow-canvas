@@ -44,6 +44,7 @@ import { getStartNodes } from './utils/start-nodes';
 import { GetNodeTaskFactory, RegisterComposition } from './node-task-registry';
 import { BaseNodeInfo } from './types/base-node-info';
 import { importToCanvas } from './storage/import-to-canvas';
+import { hideElement, showElement } from './utils/show-hide-element';
 
 export class AppElement<T> {
   public static observedAttributes = [];
@@ -74,6 +75,7 @@ export class AppElement<T> {
   clearCanvasButton: IDOMElement | undefined = undefined;
   compositionEditButton: IDOMElement | undefined = undefined;
   compositionEditExitButton: IDOMElement | undefined = undefined;
+  compositionCreateButton: IDOMElement | undefined = undefined;
 
   appRootElement: Element | null;
   commandRegistry = new Map<string, ICommandHandler>();
@@ -876,23 +878,13 @@ export class AppElement<T> {
     /*
        enable editing and add thumbs
 
-       - add thumbs to the select dropdown
-       - thumb-nodes should have a form field for editing the type
+       - (TODO) thumb-nodes should have a form field for editing the type
          (types depend on flow type : GL and flow differ)
-       - after editing :
-          - add new thumbs to composition
-            - create thumbIdentifierWithinNod
-            - assign connected nodeId to thumb
-          
-          - dont store the thumb-nodes in the flow itself.
 
-          - update thumbs in composition
-          - update inputNodes outputNodes lists in composition
+       - after editing :
+
           - check if existing thumbs still match the connected nodes (via thumbConstraint) on the canvas 
             .. and if not: disconnect the nodes
-
-
-          - update composition-node with new thumbs 
 
 
         Later : 
@@ -905,6 +897,9 @@ export class AppElement<T> {
     if (!selectedNodeInfo) {
       return;
     }
+
+    hideElement(this.compositionCreateButton);
+
     const node = (
       selectedNodeInfo?.containerNode
         ? (selectedNodeInfo?.containerNode?.nodeInfo as any)?.canvasAppInstance
@@ -922,23 +917,15 @@ export class AppElement<T> {
       this.rootElement &&
       node.nodeInfo.compositionId
     ) {
-      (this.compositionEditButton?.domElement as HTMLElement).classList.add(
-        'hidden'
-      );
-      (
-        this.compositionEditExitButton?.domElement as HTMLElement
-      ).classList.remove('hidden');
-
-      (this.clearCanvasButton?.domElement as HTMLElement).classList.add(
-        'hidden'
-      );
-      (this.resetStateButton?.domElement as HTMLElement).classList.add(
-        'hidden'
-      );
+      hideElement(this.compositionEditButton);
+      showElement(this.compositionEditExitButton);
+      showElement(this.clearCanvasButton);
+      showElement(this.resetStateButton);
 
       this.currentCanvasApp?.setDisableInteraction(true);
 
-      (this.canvas?.domElement as HTMLElement).classList.add('hidden');
+      hideElement(this.canvas);
+
       (this.canvas?.domElement as HTMLElement).classList.add(
         'pointer-events-none'
       );
@@ -1355,7 +1342,7 @@ export class AppElement<T> {
           }
         });
 
-        (this.canvas?.domElement as HTMLElement).classList.remove('hidden');
+        showElement(this.canvas);
         (this.canvas?.domElement as HTMLElement).classList.remove(
           'pointer-events-none'
         );
@@ -1369,16 +1356,10 @@ export class AppElement<T> {
           this.compositionEditExitButton?.domElement as HTMLElement
         ).removeEventListener('click', handler);
 
-        (
-          this.compositionEditExitButton?.domElement as HTMLElement
-        ).classList.add('hidden');
-
-        (this.clearCanvasButton?.domElement as HTMLElement).classList.remove(
-          'hidden'
-        );
-        (this.resetStateButton?.domElement as HTMLElement).classList.remove(
-          'hidden'
-        );
+        showElement(this.compositionCreateButton);
+        showElement(this.clearCanvasButton);
+        showElement(this.resetStateButton);
+        hideElement(this.compositionEditExitButton);
       };
       (
         this.compositionEditExitButton?.domElement as HTMLElement

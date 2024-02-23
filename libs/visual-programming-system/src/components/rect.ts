@@ -363,8 +363,9 @@ export class Rect<T> {
     const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
     const { scale } = getCamera();
-    this.nodeComponent.width =
-      (astElementSize.width || this.nodeComponent.width || 0) / scale;
+    this.nodeComponent.width = astElementSize.width
+      ? astElementSize.width / scale
+      : this.nodeComponent.width ?? 0;
     this.nodeComponent.height = astElementSize.height / scale;
     if (this.nodeComponent.height < this.minHeight) {
       this.nodeComponent.height = this.minHeight;
