@@ -140,7 +140,9 @@ export const getCanvasNode =
             type: 'canvas-node',
             taskType: 'canvas-node',
           },
-          containerNode
+          containerNode,
+          undefined,
+          'rect-node container-node'
         );
         // rect.nodeComponent.nodeInfo = {};
         // rect.nodeComponent.nodeInfo.formElements = [];

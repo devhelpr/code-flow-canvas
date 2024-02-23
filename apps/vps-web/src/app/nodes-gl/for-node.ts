@@ -120,12 +120,21 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           type: 'for-node',
           taskType: 'for-node',
         },
-        containerNode
+        containerNode,
+        undefined,
+        'rect-node container-node'
       );
 
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
+
+      (
+        rect.nodeComponent?.thumbConnectors?.[0].domElement as HTMLElement
+      )?.classList.remove('z-[1150]');
+      (
+        rect.nodeComponent?.thumbConnectors?.[0].domElement as HTMLElement
+      )?.classList.add('z-[1200]');
 
       if (htmlNode.domElement) {
         canvasAppInstance = createCanvasApp<GLNodeInfo>(

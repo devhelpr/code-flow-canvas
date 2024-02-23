@@ -31,7 +31,7 @@ input::selection {
   color: white;
 }
 
-.selected .connection-path {
+.selected > g > .connection-path {
   @apply text-blue-500;
 }
 
@@ -39,6 +39,9 @@ input::selection {
   @apply text-blue-500;
 }
 
+.selected.container-node {
+  @apply before:border-[6px] before:border-solid before:border-white before:absolute before:w-full before:h-full;
+}
 
 .vertical-slider {
 	-webkit-appearance: slider-vertical;

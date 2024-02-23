@@ -509,13 +509,13 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           };
         // parentX = this.containerNode.x - paddingRect;
         // parentY = this.containerNode.y - paddingRect;
-        parentX = parentCoordinates.x - paddingRect;
-        parentY = parentCoordinates.y - paddingRect;
+        parentX = parentCoordinates.x; // + paddingRect;
+        parentY = parentCoordinates.y + paddingRect;
       }
     }
 
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x + parentX,
+      x - rectCamera.x + parentX - paddingRect,
       y - rectCamera.y + parentY,
       connectionThumb,
       this.canvas,

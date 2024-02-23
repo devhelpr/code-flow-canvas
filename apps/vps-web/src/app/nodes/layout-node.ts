@@ -137,7 +137,9 @@ export const getLayoutNode =
             type: 'layout-node',
             taskType: 'layout-node',
           },
-          containerNode
+          containerNode,
+          undefined,
+          'rect-node container-node'
         );
         // rect.nodeComponent.nodeInfo = {};
         // rect.nodeComponent.nodeInfo.formElements = [];

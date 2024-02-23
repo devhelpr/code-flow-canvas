@@ -14,7 +14,6 @@ import {
   navBarPrimaryIconButton,
 } from '../consts/classes';
 
-import { NodeInfo } from '../types/node-info';
 import {
   BaseComponent,
   Component,
@@ -189,7 +188,7 @@ export class GLNavbarComponent extends Component<
       if (selectedNodeInfo) {
         let node = canvasApp.elements?.get(
           selectedNodeInfo.id
-        ) as INodeComponent<NodeInfo>;
+        ) as INodeComponent<GLNodeInfo>;
 
         if (!node) {
           console.log('node not found in canvas'); // is the selected node in a container?
@@ -199,7 +198,7 @@ export class GLNavbarComponent extends Component<
           )?.canvasAppInstance;
           node = canvasAppInstance?.elements?.get(
             selectedNodeInfo.id
-          ) as INodeComponent<NodeInfo>;
+          ) as INodeComponent<GLNodeInfo>;
           if (!node) {
             console.log('node not found in direct container');
             return;
@@ -225,7 +224,7 @@ export class GLNavbarComponent extends Component<
                 50,
                 undefined,
                 undefined,
-                node as IRectNodeComponent<NodeInfo>,
+                node as IRectNodeComponent<GLNodeInfo>,
                 undefined,
                 undefined,
                 (node.nestedLevel ?? 0) + 1
@@ -261,13 +260,13 @@ export class GLNavbarComponent extends Component<
     if (nodeElementId) {
       const node = nodeElementId.containerNode
         ? ((
-            nodeElementId?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+            nodeElementId?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
           )?.nodeInfo?.canvasAppInstance?.elements?.get(
             nodeElementId.id
-          ) as INodeComponent<NodeInfo>)
+          ) as INodeComponent<GLNodeInfo>)
         : (this.props
             .getCanvasApp()
-            ?.elements?.get(nodeElementId.id) as INodeComponent<NodeInfo>);
+            ?.elements?.get(nodeElementId.id) as INodeComponent<GLNodeInfo>);
 
       if (node) {
         return { selectedNodeInfo: nodeElementId, node };
@@ -291,7 +290,7 @@ export class GLNavbarComponent extends Component<
       const node = nodeInfo.node;
       if (node.nodeType === NodeType.Connection) {
         // Remove the connection from the start and end nodes
-        const connection = node as IConnectionNodeComponent<NodeInfo>;
+        const connection = node as IConnectionNodeComponent<GLNodeInfo>;
         if (connection.startNode) {
           connection.startNode.connections =
             connection.startNode?.connections?.filter(
@@ -307,12 +306,12 @@ export class GLNavbarComponent extends Component<
       } else if (node.nodeType === NodeType.Shape) {
         //does the shape have connections? yes.. remove the link between the connection and the node
         // OR .. remove the connection as well !?
-        const shapeNode = node as IRectNodeComponent<NodeInfo>;
+        const shapeNode = node as IRectNodeComponent<GLNodeInfo>;
         if (shapeNode.connections) {
           shapeNode.connections.forEach((c) => {
             const connection = canvasApp.elements?.get(
               c.id
-            ) as IConnectionNodeComponent<NodeInfo>;
+            ) as IConnectionNodeComponent<GLNodeInfo>;
             if (connection) {
               if (connection.startNode?.id === node.id) {
                 connection.startNode = undefined;
@@ -329,19 +328,21 @@ export class GLNavbarComponent extends Component<
         return;
       }
 
-      if (nodeInfo.selectedNodeInfo.containerNode) {
+      if (
+        nodeInfo.selectedNodeInfo.containerNode &&
+        nodeInfo.selectedNodeInfo.containerNode.nodeInfo
+      ) {
         (
           nodeInfo?.selectedNodeInfo
-            ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+            ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
+        )?.nodeInfo?.canvasAppInstance?.resetNodeTransform();
+        (
+          nodeInfo?.selectedNodeInfo
+            ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
         )?.nodeInfo?.canvasAppInstance?.elements?.delete(
           nodeInfo.selectedNodeInfo.id
         );
-        this.props.removeElement(
-          node
-          // (
-          //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-          // ).nodeInfo.canvasAppInstance
-        );
+        this.props.removeElement(node);
       } else {
         this.props.removeElement(node);
         canvasApp.elements?.delete(nodeInfo.selectedNodeInfo.id);

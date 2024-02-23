@@ -334,7 +334,9 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
             caption: initialValue ?? '',
           },
         },
-        containerNode
+        containerNode,
+        undefined,
+        'rect-node container-node'
       );
       // rect.nodeComponent.nodeInfo = {};
       // rect.nodeComponent.nodeInfo.formElements = [];

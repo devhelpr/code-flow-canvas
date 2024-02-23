@@ -304,6 +304,10 @@ export class NavbarComponent extends Component<
         (
           nodeInfo?.selectedNodeInfo
             ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+        )?.nodeInfo?.canvasAppInstance?.resetNodeTransform();
+        (
+          nodeInfo?.selectedNodeInfo
+            ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
         )?.nodeInfo?.canvasAppInstance?.elements?.delete(
           nodeInfo.selectedNodeInfo.id
         );
