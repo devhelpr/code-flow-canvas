@@ -42,7 +42,8 @@ export const createOption = (
 };
 
 export const setupTasksInDropdown = (
-  selectNodeTypeHTMLElement: HTMLSelectElement
+  selectNodeTypeHTMLElement: HTMLSelectElement,
+  isComposition?: boolean
 ) => {
   if (selectNodeTypeHTMLElement) {
     const nodeType = selectNodeTypeHTMLElement.value;
@@ -83,7 +84,9 @@ export const setupTasksInDropdown = (
           return;
         }
         if (node.hideFromNodeTypeSelector) {
-          return;
+          if (!isComposition || (isComposition && !node.useInCompositionOnly)) {
+            return;
+          }
         }
         categoryName = node.category || 'uncategorized';
       }
@@ -111,7 +114,8 @@ export const setupTasksInDropdown = (
 };
 
 export const setupGLTasksInDropdown = (
-  selectNodeTypeHTMLElement: HTMLSelectElement
+  selectNodeTypeHTMLElement: HTMLSelectElement,
+  isComposition?: boolean
 ) => {
   if (selectNodeTypeHTMLElement) {
     const nodeType = selectNodeTypeHTMLElement.value;
@@ -146,7 +150,9 @@ export const setupGLTasksInDropdown = (
           return;
         }
         if (node.hideFromNodeTypeSelector) {
-          return;
+          if (!isComposition || (isComposition && !node.useInCompositionOnly)) {
+            return;
+          }
         }
         categoryName = node.category || 'uncategorized';
       }

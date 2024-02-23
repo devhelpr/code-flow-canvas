@@ -41,7 +41,7 @@ export class Rect<T> {
   protected canvasUpdated?: () => void;
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
-  protected containerNode?: IRectNodeComponent<T>;
+  public containerNode?: IRectNodeComponent<T>;
 
   protected minHeight = 0;
 
@@ -334,6 +334,20 @@ export class Rect<T> {
       return;
     }
 
+    if (this.nodeComponent.thumbConnectors) {
+      const thumbStartItemsCount = this.nodeComponent.thumbConnectors.filter(
+        (thumb) => {
+          return thumb.thumbConnectionType === ThumbConnectionType.start;
+        }
+      ).length;
+      const thumbEndItemsCount = this.nodeComponent.thumbConnectors.filter(
+        (thumb) => {
+          return thumb.thumbConnectionType === ThumbConnectionType.end;
+        }
+      ).length;
+      this.minHeight = Math.max(thumbStartItemsCount, thumbEndItemsCount) * 55;
+    }
+
     const astElementHtmlElement = this.rectInfo.astElement
       ?.domElement as unknown as HTMLElement;
     if (astElementHtmlElement) {
@@ -349,7 +363,8 @@ export class Rect<T> {
     const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
     const { scale } = getCamera();
-    this.nodeComponent.width = astElementSize.width / scale;
+    this.nodeComponent.width =
+      (astElementSize.width || this.nodeComponent.width || 0) / scale;
     this.nodeComponent.height = astElementSize.height / scale;
     if (this.nodeComponent.height < this.minHeight) {
       this.nodeComponent.height = this.minHeight;
@@ -385,7 +400,7 @@ export class Rect<T> {
     this.updateEventListeners.push(onUpdate);
   };
 
-  protected onReceiveDraggedConnection =
+  public onReceiveDraggedConnection =
     (rectNode: IRectNodeComponent<T>) =>
     (thumbNode: IThumbNodeComponent<T>, component: INodeComponent<T>) => {
       // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)
@@ -500,7 +515,7 @@ export class Rect<T> {
       }
     };
 
-  private onCanReceiveDroppedComponent(
+  public onCanReceiveDroppedComponent(
     thumbNodeDropTarget: IThumbNodeComponent<T>,
     draggedConnectionController: INodeComponent<T>,
     receivingThumbNode: IThumbNodeComponent<T>

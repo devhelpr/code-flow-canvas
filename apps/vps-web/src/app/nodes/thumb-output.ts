@@ -19,7 +19,7 @@ const thumbs = [
   {
     thumbType: ThumbType.EndConnectorCenter,
     thumbIndex: 0,
-    connectionType: ThumbConnectionType.start,
+    connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
     name: 'input',
@@ -64,6 +64,11 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
       hideFromNodeTypeSelector: true,
       backgroundColorClassName: 'bg-yellow-500',
       textColorClassName: 'text-black',
-    }
+      category: 'Compositions',
+    },
+    undefined,
+    undefined,
+    undefined,
+    true
   );
 };

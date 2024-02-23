@@ -73,7 +73,7 @@ export class DeleteNodeCommand<
               }
             }
             this.removeElement(connection);
-            canvasApp.elements?.delete(connection.id);
+            canvasApp.deleteElement(connection.id);
           }
         });
       }
@@ -82,7 +82,7 @@ export class DeleteNodeCommand<
     }
 
     this.removeElement(node);
-    canvasApp.elements?.delete(node.id);
+    canvasApp.deleteElement(node.id);
 
     setSelectNode(undefined);
     this.canvasUpdated();

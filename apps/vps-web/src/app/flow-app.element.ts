@@ -1271,7 +1271,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   editFlowComposition = () => {
     if (this.canvasUpdated) {
-      this.editComposition(getNodeTaskFactory, this.canvasUpdated);
+      this.editComposition(
+        getNodeTaskFactory,
+        this.canvasUpdated,
+        setupTasksInDropdown,
+        this.selectNodeType?.domElement as HTMLSelectElement
+      );
     }
   };
 }

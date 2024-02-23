@@ -64,6 +64,11 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
       hideFromNodeTypeSelector: true,
       backgroundColorClassName: 'bg-yellow-300',
       textColorClassName: 'text-black',
-    }
+      category: 'Compositions',
+    },
+    undefined,
+    undefined,
+    undefined,
+    true
   );
 };

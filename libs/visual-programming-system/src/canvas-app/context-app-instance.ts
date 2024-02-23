@@ -241,6 +241,12 @@ export const createContextInstanceApp = <T>(
         _containerNode
       ) as unknown as LineConnection<T>;
     },
+    addThumbToNode: (_thumb: IThumb, _node: INodeComponent<T>) => {
+      return undefined;
+    },
+    deleteElement: (id: string) => {
+      elements?.delete(id);
+    },
     deleteElementFromNode: (
       element: INodeComponent<T>,
       child: INodeComponent<T>,

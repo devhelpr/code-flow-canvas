@@ -78,7 +78,8 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
   childNode?: HTMLElement,
   isAsyncCompute = false,
   nodeInfo?: T,
-  getNodeTaskFactory?: (name: string) => any
+  getNodeTaskFactory?: (name: string) => any,
+  useInCompositionOnly = false
 ): CreateNodeInfo<T> => {
   const showTitlebar = settings ? settings?.hasTitlebar : true;
   let hasBeforeDecorator = false;
@@ -301,6 +302,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     }
     node.nodeInfo.initializeCompute = initializeCompute;
     node.nodeInfo.showFormOnlyInPopup = settings?.hasFormInPopup ?? false;
+    node.nodeInfo.useInCompositionOnly = useInCompositionOnly;
   }
   return {
     node,
@@ -346,7 +348,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
-  canBeUsedAsDecorator = false
+  canBeUsedAsDecorator = false,
+  useInCompositionOnly = false
 ) => {
   let createDecoratorNode:
     | undefined
@@ -397,6 +400,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
     canBeUsedAsDecorator,
     category: settings?.category,
     hideFromNodeTypeSelector: settings?.hideFromNodeTypeSelector ?? false,
+    useInCompositionOnly: useInCompositionOnly,
     thumbs,
     getCompute: () =>
       compute as unknown as (

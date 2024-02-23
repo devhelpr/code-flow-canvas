@@ -292,7 +292,7 @@ export class NodeSidebarMenuComponent extends Component<
           const connection = node as IConnectionNodeComponent<NodeInfo>;
           if (connection.isAnnotationConnection) {
             this.props.removeElement(node);
-            canvasApp.elements?.delete(element.id);
+            canvasApp.deleteElement(element.id);
           }
         }
       });

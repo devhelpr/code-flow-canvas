@@ -763,7 +763,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   editGLComposition = () => {
     if (this.canvasUpdated) {
-      this.editComposition(getGLNodeTaskFactory, this.canvasUpdated);
+      this.editComposition(
+        getGLNodeTaskFactory,
+        this.canvasUpdated,
+        setupGLTasksInDropdown,
+        this.selectNodeType?.domElement as HTMLSelectElement
+      );
     }
   };
 

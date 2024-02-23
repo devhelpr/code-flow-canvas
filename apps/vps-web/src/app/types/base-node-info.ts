@@ -21,6 +21,7 @@ export interface BaseNodeInfo {
   type?: string;
   compositionId?: string;
   isComposition?: boolean;
+  useInCompositionOnly?: boolean;
 
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;

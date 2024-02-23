@@ -21,6 +21,7 @@ export type NodeTask<T> = {
   notAllowedChildNodeTasks?: string[];
   thumbs?: IThumb[];
   hideFromNodeTypeSelector?: boolean;
+  useInCompositionOnly?: boolean;
   getCompute?: () => (
     input: any,
     loopIndex?: number,

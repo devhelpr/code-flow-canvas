@@ -339,13 +339,13 @@ export class GLNavbarComponent extends Component<
         (
           nodeInfo?.selectedNodeInfo
             ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
-        )?.nodeInfo?.canvasAppInstance?.elements?.delete(
+        )?.nodeInfo?.canvasAppInstance?.deleteElement(
           nodeInfo.selectedNodeInfo.id
         );
         this.props.removeElement(node);
       } else {
         this.props.removeElement(node);
-        canvasApp.elements?.delete(nodeInfo.selectedNodeInfo.id);
+        canvasApp.deleteElement(nodeInfo.selectedNodeInfo.id);
       }
       setSelectNode(undefined);
       this.props.canvasUpdated();

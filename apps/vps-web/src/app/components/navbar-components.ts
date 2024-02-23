@@ -308,7 +308,7 @@ export class NavbarComponent extends Component<
         (
           nodeInfo?.selectedNodeInfo
             ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
-        )?.nodeInfo?.canvasAppInstance?.elements?.delete(
+        )?.nodeInfo?.canvasAppInstance?.deleteElement(
           nodeInfo.selectedNodeInfo.id
         );
         this.props.removeElement(
@@ -319,9 +319,7 @@ export class NavbarComponent extends Component<
         );
       } else {
         this.props.removeElement(node);
-        this.props
-          .getCanvasApp()
-          ?.elements?.delete(nodeInfo.selectedNodeInfo.id);
+        this.props.getCanvasApp()?.deleteElement(nodeInfo.selectedNodeInfo.id);
       }
       setSelectNode(undefined);
       this.props.canvasUpdated();

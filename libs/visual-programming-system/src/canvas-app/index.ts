@@ -23,6 +23,7 @@ import {
   INodeComponent,
   IRectNodeComponent,
   IThumb,
+  ThumbConnectionType,
 } from '../interfaces';
 import { setSelectNode } from '../reactivity';
 import { NodeType } from '../types';
@@ -36,6 +37,8 @@ import { Compositions } from '../compositions/compositions';
 import { Composition } from '../interfaces/composition';
 import { standardTheme } from '../themes/standard';
 import { Theme } from '../interfaces/theme';
+import { ThumbNodeConnector } from '../components/thumb-node-connector';
+import { thumbPosition } from '../components/utils/calculate-connector-thumbs';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -50,6 +53,7 @@ export const createCanvasApp = <T>(
   const interactionStateMachine =
     interactionStateMachineInstance ?? createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
+  const rectInstanceList = {} as Record<string, Rect<T>>;
 
   const variables: Record<
     string,
@@ -836,6 +840,7 @@ export const createCanvasApp = <T>(
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');
       }
+      rectInstanceList[rectInstance.nodeComponent.id] = rectInstance;
       rectInstance.nodeComponent.nodeInfo = nodeInfo;
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -1002,6 +1007,97 @@ export const createCanvasApp = <T>(
         onCanvasUpdated();
       }
       return line;
+    },
+    addThumbToNode: (thumb: IThumb, nodeComponent: IRectNodeComponent<T>) => {
+      if (!nodeComponent) {
+        return;
+      }
+      const rectInstance = rectInstanceList[nodeComponent.id];
+      if (!rectInstance) {
+        return;
+      }
+      const { x, y } = thumbPosition(
+        nodeComponent,
+        thumb.thumbType,
+        thumb.thumbIndex ?? 0
+      );
+
+      const thumbNode = new ThumbNodeConnector<T>(
+        thumb,
+        nodeComponent.domElement,
+        canvas,
+        interactionStateMachine,
+        nodeComponent.elements,
+        thumb.name ??
+          (thumb.connectionType === ThumbConnectionType.start
+            ? 'output'
+            : 'input'),
+        thumb.thumbType,
+        thumb.connectionType,
+        thumb.color ?? '#008080',
+        x,
+        y,
+        undefined,
+        NodeType.Connector,
+        `top-0 left-0 origin-center z-[1150]  ${thumb.class ?? ''} ${
+          thumb.hidden ? 'invisible pointer-events-none' : ''
+        }`,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        thumb.thumbIndex ?? 0,
+        true,
+
+        elements,
+        nodeComponent,
+        pathHiddenElement,
+        disableInteraction,
+        thumb.label,
+        thumb.thumbShape ?? 'circle',
+        onCanvasUpdated,
+        rectInstance.containerNode
+      );
+
+      if (!thumbNode.nodeComponent) {
+        throw new Error('ThumbNode.nodeComponent is undefined');
+      }
+      thumbNode.nodeComponent.pathName = thumb.pathName;
+      thumbNode.nodeComponent.isControlled = true;
+      thumbNode.nodeComponent.isConnectPoint = true;
+      thumbNode.nodeComponent.thumbConnectionType = thumb.connectionType;
+      thumbNode.nodeComponent.thumbControlPointDistance =
+        thumb.controlPointDistance;
+      thumbNode.nodeComponent.thumbLinkedToNode = nodeComponent;
+      thumbNode.nodeComponent.thumbConstraint = thumb.thumbConstraint;
+      thumbNode.nodeComponent.isDataPort = thumb.isDataPort;
+      thumbNode.nodeComponent.maxConnections = thumb.maxConnections;
+      thumbNode.nodeComponent.thumbFormId = thumb.formId;
+      thumbNode.nodeComponent.thumbFormFieldName = thumb.formFieldName;
+
+      if (!disableInteraction) {
+        thumbNode.nodeComponent.onCanReceiveDroppedComponent =
+          rectInstance.onCanReceiveDroppedComponent;
+        thumbNode.nodeComponent.onReceiveDraggedConnection =
+          rectInstance.onReceiveDraggedConnection(nodeComponent);
+      }
+      thumbNode.nodeComponent.update =
+        rectInstance.onEndThumbConnectorElementupdate;
+
+      if (nodeComponent.thumbConnectors) {
+        nodeComponent.thumbConnectors.push(thumbNode.nodeComponent);
+      }
+
+      nodeComponent?.update?.();
+      rectInstance?.resize();
+      return undefined;
+    },
+    deleteElement: (id: string) => {
+      elements?.delete(id);
+      if (rectInstanceList[id]) {
+        delete rectInstanceList[id];
+      }
     },
     deleteElementFromNode: (
       element: INodeComponent<T>,

@@ -490,7 +490,7 @@ export class RectThumb<T> extends Rect<T> {
     );
   };
 
-  protected override onReceiveDraggedConnection =
+  public override onReceiveDraggedConnection =
     (rectNode: IRectNodeComponent<T>) =>
     (thumbNode: IThumbNodeComponent<T>, component: INodeComponent<T>) => {
       // component is not the path itself but it is the drag-handle of a path (the parent of that handle is the path node-component)

@@ -28,6 +28,7 @@ import {
   FlowNode,
   Theme,
   standardTheme,
+  IThumb,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -865,8 +866,41 @@ export class AppElement<T> {
 
   editComposition = (
     getNodeTaskFactory: GetNodeTaskFactory<T>,
-    canvasUpdated: () => void
+    canvasUpdated: () => void,
+    setupTasksInDropdown: (
+      selectNodeTypeHTMLElement: HTMLSelectElement,
+      isComposition?: boolean
+    ) => void,
+    selectNodeTypeHTMLElement: HTMLSelectElement
   ) => {
+    /*
+       enable editing and add thumbs
+
+       - add thumbs to the select dropdown
+       - thumb-nodes should have a form field for editing the type
+         (types depend on flow type : GL and flow differ)
+       - after editing :
+          - add new thumbs to composition
+            - create thumbIdentifierWithinNod
+            - assign connected nodeId to thumb
+          
+          - dont store the thumb-nodes in the flow itself.
+
+          - update thumbs in composition
+          - update inputNodes outputNodes lists in composition
+          - check if existing thumbs still match the connected nodes (via thumbConstraint) on the canvas 
+            .. and if not: disconnect the nodes
+
+
+          - update composition-node with new thumbs 
+
+
+        Later : 
+        - allow naming composition and show name
+        - create composition from scratch
+        - allow edit of composition node-color
+        - allow adding composition nodes to composition
+    */
     const selectedNodeInfo = getSelectedNode();
     if (!selectedNodeInfo) {
       return;
@@ -881,6 +915,7 @@ export class AppElement<T> {
     if (!node) {
       return;
     }
+    const compositionNode = node;
 
     if (
       node.nodeInfo?.isComposition &&
@@ -1139,8 +1174,124 @@ export class AppElement<T> {
       });
 
       canvasApp.centerCamera();
+
+      setupTasksInDropdown(selectNodeTypeHTMLElement, true);
+
       const handler = () => {
         quitCameraSubscribtion();
+
+        // TODO :
+        // - get new thumbs here and add to nodeIgnore list
+        //
+
+        let thumbInputIndex = -1;
+        let thumbOutputIndex = -1;
+        composition.thumbs.forEach((thumb) => {
+          if (thumb.connectionType === ThumbConnectionType.end) {
+            if (thumb.thumbIndex > thumbInputIndex || thumbInputIndex === -1) {
+              thumbInputIndex = thumb.thumbIndex;
+            }
+          }
+          if (thumb.connectionType === ThumbConnectionType.start) {
+            if (
+              thumb.thumbIndex > thumbOutputIndex ||
+              thumbOutputIndex === -1
+            ) {
+              thumbOutputIndex = thumb.thumbIndex;
+            }
+          }
+        });
+
+        canvasApp?.elements.forEach((element) => {
+          const nodeHelper = element as unknown as IRectNodeComponent<T>;
+          const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
+          if (
+            baseNodeInfo?.type === 'thumb-input' ||
+            baseNodeInfo?.type === 'thumb-output'
+          ) {
+            if (nodesIdsToIgnore.indexOf(element.id) < 0) {
+              // new thumbs
+              nodesIdsToIgnore.push(element.id);
+              // composition.thumbs?.push({
+              //   connectionType:
+              //     baseNodeInfo?.type === 'thumb-input'
+              //       ? ThumbConnectionType.end
+              //       : ThumbConnectionType.start,
+              //   name: baseNodeInfo?.title ?? '',
+              //   nodeId: element.id,
+              // });
+
+              if (baseNodeInfo?.type === 'thumb-input') {
+                const connection = nodeHelper.connections?.find(
+                  (connection) => connection.startNode === nodeHelper
+                );
+
+                const connectedToNode = nodeHelper.connections?.find(
+                  (connection) => connection.startNode === nodeHelper
+                )?.endNode;
+                if (connection && connectedToNode) {
+                  nodesIdsToIgnore.push(connection.id);
+                  thumbInputIndex++;
+                  const thumb: IThumb = {
+                    thumbIndex: thumbInputIndex,
+                    thumbType: 'EndConnectorLeft',
+                    connectionType: ThumbConnectionType.end,
+                    prefixLabel: '',
+                    name: connection?.endNodeThumb?.thumbName ?? '',
+                    prefixIcon: '',
+                    thumbConstraint: 'value',
+                    color: 'white',
+                    label: '',
+                    thumbIdentifierWithinNode: crypto.randomUUID(),
+                    nodeId: connectedToNode?.id,
+                  };
+                  composition.thumbs.push(thumb);
+                  if (!composition.inputNodes) {
+                    composition.inputNodes = [];
+                  }
+                  composition.inputNodes.push(
+                    mapShapeNodeToFlowNode(connectedToNode)
+                  );
+                  this.canvasApp?.addThumbToNode(thumb, compositionNode);
+                }
+              } else if (baseNodeInfo?.type === 'thumb-output') {
+                const connection = nodeHelper.connections?.find(
+                  (connection) => connection.endNode === nodeHelper
+                );
+
+                const connectedToNode = nodeHelper.connections?.find(
+                  (connection) => connection.endNode === nodeHelper
+                )?.startNode;
+                if (connection && connectedToNode) {
+                  nodesIdsToIgnore.push(connection.id);
+                  thumbOutputIndex++;
+                  const thumb: IThumb = {
+                    thumbIndex: thumbOutputIndex,
+                    thumbType: 'StartConnectorRight',
+                    connectionType: ThumbConnectionType.start,
+                    prefixLabel: '',
+                    name: connection?.startNodeThumb?.thumbName ?? '',
+                    prefixIcon: '',
+                    thumbConstraint: 'value',
+                    color: 'white',
+                    label: '',
+                    thumbIdentifierWithinNode: crypto.randomUUID(),
+                    nodeId: connectedToNode?.id,
+                  };
+                  composition.thumbs.push(thumb);
+                  if (!composition.outputNodes) {
+                    composition.outputNodes = [];
+                  }
+                  composition.outputNodes.push(
+                    mapShapeNodeToFlowNode(connectedToNode)
+                  );
+                  this.canvasApp?.addThumbToNode(thumb, compositionNode);
+                }
+              }
+            }
+          }
+        });
+
         canvasApp?.elements.forEach((element) => {
           if (nodesIdsToIgnore.indexOf(element.id) >= 0) {
             const nodeHelper = element as unknown as INodeComponent<T>;
