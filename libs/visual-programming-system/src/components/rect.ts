@@ -91,27 +91,30 @@ export class Rect<T> {
 
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
-    let widthHelper = width;
 
     this.containerNode = containerNode;
     this.isStaticPosition = isStaticPosition;
     this.pathHiddenElement = pathHiddenElement;
 
-    let minHeightAdd = 0;
-    if (
-      markup !== undefined &&
-      typeof markup !== 'string' &&
-      markup.domElement
-    ) {
-      const titleTopLabelField = (
-        markup.domElement as HTMLElement
-      ).querySelector(`.node-top-label`) as HTMLElement;
-      if (titleTopLabelField) {
-        const bounds = titleTopLabelField.getBoundingClientRect();
-        minHeightAdd = bounds.height || 24; // TODO Fix this!!!
-      }
-    }
     if (thumbs) {
+      // TODO : refactor this so it uses real thumbs placements instead of constant values 55 and 24
+      // ... do after creating rect and also in .resze() method
+      // see also lines 213 (approx)
+      let minHeightAdd = 0;
+      if (
+        markup !== undefined &&
+        typeof markup !== 'string' &&
+        markup.domElement
+      ) {
+        const titleTopLabelField = (
+          markup.domElement as HTMLElement
+        ).querySelector(`.node-top-label`) as HTMLElement;
+        if (titleTopLabelField) {
+          const bounds = titleTopLabelField.getBoundingClientRect();
+          minHeightAdd = bounds.height || 0; // TODO Fix this!!! (bounds.height is 0 because element is not rendered)
+        }
+      }
+
       const thumbStartItemsCount = thumbs.filter((thumb) => {
         return thumb.connectionType === ThumbConnectionType.start;
       }).length;
@@ -122,16 +125,13 @@ export class Rect<T> {
         minHeightAdd + Math.max(thumbStartItemsCount, thumbEndItemsCount) * 55;
     }
 
-    let heightHelper = Math.max(height, this.minHeight);
-    console.log('minHeight', height, this.minHeight);
-
     this.rectInfo = this.createRectElement(
       canvas.domElement,
       elements,
       startX,
       startY,
-      widthHelper,
-      heightHelper,
+      width,
+      Math.max(height, this.minHeight),
       pathHiddenElement,
       text,
       (
@@ -160,28 +160,7 @@ export class Rect<T> {
       !disableManualResize &&
       !disableInteraction;
     this.nodeComponent.containerNode = containerNode;
-    this.nodeComponent.getParentedCoordinates = () => {
-      console.log(
-        'getParentedCoordinates',
-        !!this.nodeComponent?.containerNode
-      );
-      let parentX = 0;
-      let parentY = 0;
-      if (
-        this.nodeComponent?.containerNode &&
-        this.nodeComponent?.containerNode.getParentedCoordinates
-      ) {
-        const { x, y } =
-          this.nodeComponent.containerNode.getParentedCoordinates();
-        parentX = x;
-        parentY = y;
-        console.log('parentX', parentX, 'parentY', parentY);
-      }
-      return {
-        x: parentX + (this.nodeComponent?.x ?? 0),
-        y: parentY + (this.nodeComponent?.y ?? 0),
-      };
-    };
+    this.nodeComponent.getParentedCoordinates = this.getParentedCoordinates;
 
     this.nodeComponent.update = this.onUpdate(
       this.rectInfo.astElement,
@@ -204,31 +183,15 @@ export class Rect<T> {
       }
     };
 
-    this.nodeComponent.x = startX;
-    this.nodeComponent.y = startY;
-    this.nodeComponent.width = width;
-    this.nodeComponent.height = Math.max(height, this.minHeight);
-    this.oldWidth = width;
-    this.oldHeight = Math.max(height, this.minHeight);
+    // precalculate height/width to place thumbs correctly for some thumb types (e.g. StartConnectorCenter and EndConnectorTop etc)
 
-    if (!hasStaticWidthHeight) {
-      const astElementSize = (
-        this.rectInfo.astElement?.domElement as unknown as HTMLElement
-      ).getBoundingClientRect();
-
-      const { scale } = getCamera();
-      this.nodeComponent.width = astElementSize.width / scale;
-      this.nodeComponent.height = astElementSize.height / scale; // - 20;
-      this.points.width = astElementSize.width / scale;
-      this.points.height = astElementSize.height / scale; // - 20;
-      if (this.points.height < this.minHeight) {
-        this.points.height = this.minHeight;
-        this.nodeComponent.height = this.minHeight;
-      }
-    }
-
-    widthHelper = this.nodeComponent.width ?? 0;
-    heightHelper = this.nodeComponent.height ?? 0;
+    this.updateNodeSize(
+      startX,
+      startY,
+      width,
+      height,
+      hasStaticWidthHeight ?? false
+    );
 
     const thumbConnectors: IThumbNodeComponent<T>[] = [];
 
@@ -240,12 +203,10 @@ export class Rect<T> {
         const { x, y } = thumbPosition(
           this.nodeComponent,
           thumb.thumbType,
-          thumb.thumbIndex ?? 0
-        );
-        console.log(
-          'thumb node',
-          (this.nodeComponent?.nodeInfo as any)?.type,
-          y
+          thumb.thumbIndex ?? 0,
+          {
+            thumbLinkedToNode: this.nodeComponent,
+          } as IThumbNodeComponent<T>
         );
 
         const thumbNode = new ThumbNodeConnector<T>(
@@ -315,6 +276,58 @@ export class Rect<T> {
     }
     this.nodeComponent.thumbConnectors = thumbConnectors;
 
+    // Recalculate thumb positions after the nodes have been rendered and init height/width again
+
+    let minHeightAdd = 0;
+
+    const titleTopLabelField = (
+      this.nodeComponent.domElement as HTMLElement
+    ).querySelector(`.node-top-label`) as HTMLElement;
+    if (titleTopLabelField) {
+      const bounds = titleTopLabelField.getBoundingClientRect();
+      minHeightAdd = bounds.height || 0;
+    }
+
+    let thumbStartHeight = 0;
+    let thumbEndHeight = 0;
+    this.nodeComponent.thumbConnectors.forEach((thumb) => {
+      if (thumb.thumbType === ThumbType.StartConnectorRight) {
+        const offsetTop = (thumb.domElement as HTMLElement)?.offsetTop ?? 0;
+        const bounds = (
+          thumb.domElement as HTMLElement
+        ).getBoundingClientRect();
+        const top = offsetTop + bounds?.height ?? 0;
+
+        if (top > thumbStartHeight) {
+          thumbStartHeight = top;
+        }
+      }
+      return thumb.thumbConnectionType === ThumbConnectionType.start;
+    });
+    this.nodeComponent.thumbConnectors.forEach((thumb) => {
+      if (thumb.thumbType === ThumbType.EndConnectorLeft) {
+        const offsetTop = (thumb.domElement as HTMLElement)?.offsetTop ?? 0;
+        const bounds = (
+          thumb.domElement as HTMLElement
+        ).getBoundingClientRect();
+        const top = offsetTop + bounds?.height ?? 0;
+
+        if (top > thumbEndHeight) {
+          thumbEndHeight = top;
+        }
+      }
+      return thumb.thumbConnectionType === ThumbConnectionType.end;
+    });
+    this.minHeight = minHeightAdd + Math.max(thumbEndHeight, thumbStartHeight);
+
+    this.updateNodeSize(
+      startX,
+      startY,
+      width,
+      height,
+      hasStaticWidthHeight ?? false
+    );
+
     this.nodeComponent.update(
       this.nodeComponent,
       startX,
@@ -337,23 +350,93 @@ export class Rect<T> {
     this.nodeComponent.connections = [];
   }
 
+  private updateNodeSize(
+    startX: number,
+    startY: number,
+    width: number,
+    height: number,
+    hasStaticWidthHeight: boolean
+  ) {
+    if (!this.nodeComponent) {
+      return;
+    }
+    this.nodeComponent.x = startX;
+    this.nodeComponent.y = startY;
+    this.nodeComponent.width = width;
+    this.nodeComponent.height = Math.max(height, this.minHeight);
+    this.oldWidth = width;
+    this.oldHeight = Math.max(height, this.minHeight);
+
+    if (!hasStaticWidthHeight) {
+      const astElementSize = (
+        this.rectInfo.astElement?.domElement as unknown as HTMLElement
+      ).getBoundingClientRect();
+
+      const { scale } = getCamera();
+      this.nodeComponent.width = astElementSize.width / scale;
+      this.nodeComponent.height = astElementSize.height / scale; // - 20;
+      this.points.width = astElementSize.width / scale;
+      this.points.height = astElementSize.height / scale; // - 20;
+      if (this.points.height < this.minHeight) {
+        this.points.height = this.minHeight;
+        this.nodeComponent.height = this.minHeight;
+      }
+    }
+
+    (
+      this.nodeComponent.domElement as HTMLElement
+    ).style.height = `${this.nodeComponent.height}px`;
+  }
   public resize(width?: number) {
     if (this.hasStaticWidthHeight || !this.nodeComponent) {
       return;
     }
-
+    const { scale } = getCamera();
     if (this.nodeComponent.thumbConnectors) {
-      const thumbStartItemsCount = this.nodeComponent.thumbConnectors.filter(
-        (thumb) => {
-          return thumb.thumbConnectionType === ThumbConnectionType.start;
+      let minHeightAdd = 0;
+
+      const titleTopLabelField = (
+        this.nodeComponent.domElement as HTMLElement
+      ).querySelector(`.node-top-label`) as HTMLElement;
+      if (titleTopLabelField) {
+        const bounds = titleTopLabelField.getBoundingClientRect();
+        minHeightAdd = (bounds.height || 0) / scale; // TODO Fix this!!! (bounds.height is 0 because element is not rendered)
+      }
+
+      let thumbStartHeight = 0;
+      let thumbEndHeight = 0;
+      this.nodeComponent.thumbConnectors.forEach((thumb) => {
+        if (thumb.thumbType === ThumbType.StartConnectorRight) {
+          const offsetTop =
+            ((thumb.domElement as HTMLElement)?.offsetTop ?? 0) / scale;
+          const bounds = (
+            thumb.domElement as HTMLElement
+          ).getBoundingClientRect();
+          const top = offsetTop + (bounds?.height ?? 0) / scale;
+
+          if (top > thumbStartHeight) {
+            thumbStartHeight = top;
+          }
         }
-      ).length;
-      const thumbEndItemsCount = this.nodeComponent.thumbConnectors.filter(
-        (thumb) => {
-          return thumb.thumbConnectionType === ThumbConnectionType.end;
+        return thumb.thumbConnectionType === ThumbConnectionType.start;
+      });
+      this.nodeComponent.thumbConnectors.forEach((thumb) => {
+        if (thumb.thumbType === ThumbType.EndConnectorLeft) {
+          const offsetTop =
+            ((thumb.domElement as HTMLElement)?.offsetTop ?? 0) / scale;
+          const bounds = (
+            thumb.domElement as HTMLElement
+          ).getBoundingClientRect();
+          const top = offsetTop + (bounds?.height ?? 0) / scale;
+
+          if (top > thumbEndHeight) {
+            thumbEndHeight = top;
+          }
         }
-      ).length;
-      this.minHeight = Math.max(thumbStartItemsCount, thumbEndItemsCount) * 55;
+        return thumb.thumbConnectionType === ThumbConnectionType.end;
+      });
+      this.minHeight =
+        minHeightAdd + Math.max(thumbEndHeight, thumbStartHeight);
     }
 
     const astElementHtmlElement = this.rectInfo.astElement
@@ -370,7 +453,6 @@ export class Rect<T> {
 
     const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
-    const { scale } = getCamera();
     this.nodeComponent.width = astElementSize.width
       ? astElementSize.width / scale
       : this.nodeComponent.width ?? 0;
@@ -397,6 +479,26 @@ export class Rect<T> {
       height: this.nodeComponent.height,
     };
   }
+
+  public getParentedCoordinates = () => {
+    console.log('getParentedCoordinates', !!this.nodeComponent?.containerNode);
+    let parentX = 0;
+    let parentY = 0;
+    if (
+      this.nodeComponent?.containerNode &&
+      this.nodeComponent?.containerNode.getParentedCoordinates
+    ) {
+      const { x, y } =
+        this.nodeComponent.containerNode.getParentedCoordinates();
+      parentX = x;
+      parentY = y;
+      console.log('parentX', parentX, 'parentY', parentY);
+    }
+    return {
+      x: parentX + (this.nodeComponent?.x ?? 0),
+      y: parentY + (this.nodeComponent?.y ?? 0),
+    };
+  };
 
   public addUpdateEventListener = (
     onUpdate: (
@@ -561,7 +663,6 @@ export class Rect<T> {
       connectionCount
     );
 
-    //console.log('thumbNode', thumbNode);
     if (
       (thumbNodeDropTarget.maxConnections !== undefined &&
         thumbNodeDropTarget.maxConnections !== -1 &&

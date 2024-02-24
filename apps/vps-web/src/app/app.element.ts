@@ -1343,7 +1343,7 @@ export class AppElement<T> {
         const nodes = (
           this.canvasApp?.canvas?.domElement as HTMLElement
         ).querySelectorAll(
-          `[data-node-type="composition-${composition.id}"] .inner-node`
+          `[data-node-type="composition-${composition.id}"] .node-top-label`
         );
         nodes.forEach((node) => {
           (node as HTMLElement).innerHTML = composition.name;

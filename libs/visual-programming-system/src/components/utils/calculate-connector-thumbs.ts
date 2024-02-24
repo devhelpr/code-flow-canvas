@@ -1,3 +1,4 @@
+import { getCamera } from '../../camera';
 import {
   paddingRect,
   thumbHeight,
@@ -61,6 +62,7 @@ export const calculateConnectorY = <T>(
     if (thumb) {
       const element = thumb.thumbLinkedToNode?.domElement as HTMLElement;
       if (element) {
+        const { scale } = getCamera();
         const formField = element.querySelector(
           `[id="${thumb.thumbFormId}_${thumb.thumbFormFieldName}"]`
         ) as HTMLElement;
@@ -75,8 +77,8 @@ export const calculateConnectorY = <T>(
           ) as HTMLElement;
           if (titleTopLabelField) {
             const bounds = titleTopLabelField.getBoundingClientRect();
-            console.log('node-top-label', bounds.height);
-            formFieldOffsetY = bounds.height ?? 0;
+
+            formFieldOffsetY = (bounds.height ?? 0) / scale;
           }
         }
       }
