@@ -97,6 +97,20 @@ export class Rect<T> {
     this.isStaticPosition = isStaticPosition;
     this.pathHiddenElement = pathHiddenElement;
 
+    let minHeightAdd = 0;
+    if (
+      markup !== undefined &&
+      typeof markup !== 'string' &&
+      markup.domElement
+    ) {
+      const titleTopLabelField = (
+        markup.domElement as HTMLElement
+      ).querySelector(`.node-top-label`) as HTMLElement;
+      if (titleTopLabelField) {
+        const bounds = titleTopLabelField.getBoundingClientRect();
+        minHeightAdd = bounds.height || 24; // TODO Fix this!!!
+      }
+    }
     if (thumbs) {
       const thumbStartItemsCount = thumbs.filter((thumb) => {
         return thumb.connectionType === ThumbConnectionType.start;
@@ -104,7 +118,8 @@ export class Rect<T> {
       const thumbEndItemsCount = thumbs.filter((thumb) => {
         return thumb.connectionType === ThumbConnectionType.end;
       }).length;
-      this.minHeight = Math.max(thumbStartItemsCount, thumbEndItemsCount) * 55;
+      this.minHeight =
+        minHeightAdd + Math.max(thumbStartItemsCount, thumbEndItemsCount) * 55;
     }
 
     let heightHelper = Math.max(height, this.minHeight);
@@ -168,17 +183,6 @@ export class Rect<T> {
       };
     };
 
-    // this.nodeComponent.domElement?.addEventListener('pointerup', this.onPointerUp);
-    // this.nodeComponent.domElement?.addEventListener(
-    //   'pointerover',
-    //   this.onPointerOver
-    // );
-
-    // this.nodeComponent.domElement?.addEventListener(
-    //   'pointerleave',
-    //   this.onPointerLeave
-    // );
-
     this.nodeComponent.update = this.onUpdate(
       this.rectInfo.astElement,
       (
@@ -237,6 +241,11 @@ export class Rect<T> {
           this.nodeComponent,
           thumb.thumbType,
           thumb.thumbIndex ?? 0
+        );
+        console.log(
+          'thumb node',
+          (this.nodeComponent?.nodeInfo as any)?.type,
+          y
         );
 
         const thumbNode = new ThumbNodeConnector<T>(
@@ -326,7 +335,6 @@ export class Rect<T> {
       this.nodeTransformer.attachNode(this.nodeComponent);
     };
     this.nodeComponent.connections = [];
-    //this.nodeTransformer.attachNode(this.nodeComponent);
   }
 
   public resize(width?: number) {

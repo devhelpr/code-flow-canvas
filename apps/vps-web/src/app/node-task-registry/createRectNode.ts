@@ -258,7 +258,19 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
       }
     });
   }
-
+  if (nodeInfo?.isComposition) {
+    const topLabel = createElement(
+      'div',
+      {
+        class: `node-top-label text-center text-white`,
+      },
+      undefined,
+      nodeTitle
+    ) as unknown as INodeComponent<T>;
+    (componentWrapper.domElement as HTMLElement).prepend(
+      topLabel.domElement as HTMLElement
+    );
+  }
   const rect = canvasApp.createRect(
     x,
     y,

@@ -170,7 +170,7 @@ export const getCreateCompositionNode =
       },
       {
         hasTitlebar: false,
-        hideTitle: false,
+        hideTitle: true,
         category: 'Compositions',
         backgroundThemeProperty: 'compositionBackground',
         textColorThenmeProperty: 'compositionText',

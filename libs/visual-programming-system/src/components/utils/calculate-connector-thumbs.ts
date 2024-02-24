@@ -69,6 +69,15 @@ export const calculateConnectorY = <T>(
           offsetIndex = 0;
           formFieldOffsetY = formField.offsetTop ?? 0;
           formFieldOffsetY -= paddingRect + 3;
+        } else {
+          const titleTopLabelField = element.querySelector(
+            `.node-top-label`
+          ) as HTMLElement;
+          if (titleTopLabelField) {
+            const bounds = titleTopLabelField.getBoundingClientRect();
+            console.log('node-top-label', bounds.height);
+            formFieldOffsetY = bounds.height ?? 0;
+          }
         }
       }
     }
@@ -133,7 +142,8 @@ export const thumbPosition = <T>(
         thumbType,
         rectNode?.width ?? 0,
         rectNode?.height ?? 0,
-        index
+        index,
+        thumb
       ),
     };
   } else if (thumbType === ThumbType.EndConnectorCenter) {
