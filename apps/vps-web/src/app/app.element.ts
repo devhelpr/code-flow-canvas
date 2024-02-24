@@ -29,6 +29,7 @@ import {
   Theme,
   standardTheme,
   IThumb,
+  ElementNodeMap,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -1361,12 +1362,31 @@ export class AppElement<T> {
           (node as HTMLElement).innerHTML = composition.name;
         });
 
-        this.currentCanvasApp?.elements.forEach((element) => {
-          const node = element as INodeComponent<T>;
-          if ((node.nodeInfo as BaseNodeInfo)?.isComposition) {
-            (node.nodeInfo as BaseNodeInfo)?.initializeCompute?.();
-          }
-        });
+        // initialize composition nodes (recursively for container nodes as well)
+        const initializeCompute = (elements: ElementNodeMap<T>) => {
+          elements.forEach((element) => {
+            const node = element as INodeComponent<T>;
+            if ((node.nodeInfo as BaseNodeInfo)?.isComposition) {
+              (node.nodeInfo as BaseNodeInfo)?.initializeCompute?.();
+            } else if ((node.nodeInfo as any)?.canvasAppInstance) {
+              if (this.currentCanvasApp?.compositons) {
+                (
+                  (node.nodeInfo as any)
+                    .canvasAppInstance as unknown as CanvasAppInstance<T>
+                ).compositons = this.currentCanvasApp?.compositons;
+              }
+              initializeCompute(
+                (
+                  (node.nodeInfo as any)
+                    .canvasAppInstance as CanvasAppInstance<T>
+                ).elements
+              );
+            }
+          });
+        };
+        if (this.currentCanvasApp?.elements) {
+          initializeCompute(this.currentCanvasApp?.elements);
+        }
 
         showElement(this.canvas);
         (this.canvas?.domElement as HTMLElement).classList.remove(

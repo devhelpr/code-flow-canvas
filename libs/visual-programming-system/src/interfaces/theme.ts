@@ -8,6 +8,8 @@ export interface Theme {
   backgroundAsHexColor: string; // used for background for the tranparent-path of connections to make them "transparent" when overlapping other connections
   nodeBackground: string;
   nodeText: string;
+  nodeInversedBackground: string;
+  nodeInversedText: string;
   nodeTitleBarBackground: string;
   nodeTitleBarText: string;
   compositionBackground: string;

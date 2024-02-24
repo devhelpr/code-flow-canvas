@@ -1,4 +1,5 @@
 import {
+  Theme,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -50,7 +51,8 @@ const thumbs = [
 ];
 
 export const getMultiplyNode: NodeTaskFactory<GLNodeInfo> = (
-  _updated: () => void
+  _updated: () => void,
+  theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
@@ -95,6 +97,8 @@ export const getMultiplyNode: NodeTaskFactory<GLNodeInfo> = (
       hasTitlebar: false,
       category: 'Math',
       hideTitle: true,
+      backgroundColorClassName: theme?.nodeInversedBackground,
+      textColorClassName: theme?.nodeInversedText,
     },
     element
   );

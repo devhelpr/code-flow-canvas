@@ -5,6 +5,8 @@ export const standardTheme: Theme = {
   background: 'bg-slate-800',
   backgroundAsHexColor: '#1e293b',
   nodeBackground: 'bg-slate-500',
+  nodeInversedBackground: 'bg-white',
+  nodeInversedText: 'text-black',
   nodeTitleBarBackground: 'bg-slate-600',
   nodeTitleBarText: 'text-white',
   nodeText: 'text-white',
