@@ -112,7 +112,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        true,
+        false,
         undefined,
         undefined,
         id,

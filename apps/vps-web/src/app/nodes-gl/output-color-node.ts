@@ -146,7 +146,7 @@ export const getOutputColorNode = (
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        true,
+        false,
         undefined,
         true,
         id,

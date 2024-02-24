@@ -26,7 +26,7 @@ const thumbs = [
     maxConnections: -1,
   },
   {
-    thumbType: ThumbType.EndConnectorLeft,
+    thumbType: ThumbType.EndConnectorCenter,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
