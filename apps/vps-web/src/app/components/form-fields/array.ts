@@ -35,9 +35,9 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
     this.fieldName = props.fieldName;
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'}">
-        <label for="${props.fieldName}" class="block  mb-2 text-white">${
-        props.label ?? props.fieldName
-      }</label>
+        <label for="${props.fieldName}" class="block  mb-2 ${
+        props.settings?.textLabelColor ?? 'text-white'
+      }">${props.label ?? props.fieldName}</label>
         <div class="flex flex-col"></div>
         <button class="${primaryButton}"
           type="button"

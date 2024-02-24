@@ -13,9 +13,6 @@ export interface ColorFieldProps extends BaseFormFieldProps {
   label?: string;
   isRow?: boolean;
   isLast?: boolean;
-  settings?: {
-    showLabel?: boolean;
-  };
   onChange?: (value: string) => void;
 }
 
@@ -35,9 +32,9 @@ export class ColorFieldChildComponent extends FormFieldComponent<ColorFieldProps
         <label for="${props.formId}_${props.fieldName}" class="block  mb-2 ${
         props.settings?.showLabel === false ? 'hidden' : ''
       } 
-        text-white ${props.isRow ? 'mr-2' : ''}">${
-        props.label ?? props.fieldName
-      }</label>
+      ${props.settings?.textLabelColor ?? 'text-white'} ${
+        props.isRow ? 'mr-2' : ''
+      }">${props.label ?? props.fieldName}</label>
         <input class="block w-full p-1 text-white accent-white"
           name="${props.fieldName}"      
           id="${props.formId}_${props.fieldName}"

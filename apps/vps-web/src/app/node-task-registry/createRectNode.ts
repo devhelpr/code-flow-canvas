@@ -202,6 +202,10 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
       id: id ?? '',
       formElements,
       hasSubmitButton: false,
+      settings: {
+        textLabelColor:
+          settings?.textColorClassName ?? canvasApp.theme.nodeText,
+      },
       onSave: (formValues) => {
         console.log('onSave', formValues, rect);
       },

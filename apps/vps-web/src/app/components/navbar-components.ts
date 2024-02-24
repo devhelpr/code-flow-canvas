@@ -161,7 +161,7 @@ export class NavbarComponent extends Component<
     const factory = getNodeTaskFactory(nodeType);
 
     if (factory) {
-      const nodeTask = factory(this.props.canvasUpdated);
+      const nodeTask = factory(this.props.canvasUpdated, canvasApp.theme);
 
       const selectedNodeInfo = getSelectedNode();
       if (selectedNodeInfo) {

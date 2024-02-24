@@ -27,6 +27,9 @@ export interface FormComponentProps {
   canvasUpdated?: () => void;
   setDataOnNode?: (formValues: FormValues) => void;
   getDataFromNode?: () => FormValues;
+  settings?: {
+    textLabelColor: string;
+  };
 }
 
 export type FormValues = {
@@ -42,6 +45,9 @@ export interface Props {
   canvasUpdated?: () => void;
   setDataOnNode?: (formValues: FormValues) => void;
   getDataFromNode?: () => FormValues;
+  settings?: {
+    textLabelColor: string;
+  };
 }
 
 export class FormsComponent extends Component<Props> {
@@ -155,6 +161,7 @@ export class FormsComponent extends Component<Props> {
     this.components = [];
     let loop = 0;
     this.props.formElements.forEach((formControl, index) => {
+      const settings = { ...this.props.settings, ...formControl.settings };
       if (formControl.fieldType === FormFieldType.Text) {
         const formControlComponent = new InputFieldChildComponent(this, {
           formId: this.props.id,
@@ -162,7 +169,7 @@ export class FormsComponent extends Component<Props> {
           label: formControl.label,
           value: formControl.value,
           isRow: formControl.isRow,
-          settings: formControl.settings,
+          settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
@@ -175,7 +182,7 @@ export class FormsComponent extends Component<Props> {
           label: formControl.label,
           value: formControl.value,
           isRow: formControl.isRow,
-          settings: formControl.settings,
+          settings,
           options: formControl.options,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
@@ -192,7 +199,7 @@ export class FormsComponent extends Component<Props> {
           min: formControl.min,
           max: formControl.max,
           step: formControl.step,
-          settings: formControl.settings,
+          settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
@@ -231,7 +238,7 @@ export class FormsComponent extends Component<Props> {
           label: formControl.label,
           value: formControl.value,
           isRow: formControl.isRow,
-          settings: formControl.settings,
+          settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
@@ -243,6 +250,7 @@ export class FormsComponent extends Component<Props> {
           fieldName: formControl.fieldName,
           label: formControl.label,
           value: formControl.value,
+          settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
@@ -253,6 +261,7 @@ export class FormsComponent extends Component<Props> {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           caption: formControl.caption,
+          settings,
           setValue: this.setValue,
           onButtonClick: formControl.onButtonClick,
           isLast: index === this.props.formElements.length - 1,
@@ -265,6 +274,7 @@ export class FormsComponent extends Component<Props> {
           label: formControl.label,
           formElements: formControl.formElements,
           values: formControl.values,
+          settings,
           isLast: index === this.props.formElements.length - 1,
           setValue: this.setValue,
         });
@@ -324,6 +334,7 @@ export const FormComponent = (props: FormComponentProps) => {
     canvasUpdated: props.canvasUpdated,
     setDataOnNode: props.setDataOnNode,
     getDataFromNode: props.getDataFromNode,
+    settings: props.settings,
   }).render();
   // const values: FormValues = {};
   // const onChange = (item: FormField, value: string) => {

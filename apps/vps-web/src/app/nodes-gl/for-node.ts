@@ -146,7 +146,7 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
         );
 
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;
-
+        canvasAppInstance.compositons = canvasApp.compositons;
         const inputInstance = canvasAppInstance.createRect(
           -1,
           0,

@@ -18,4 +18,8 @@ export interface Theme {
   selectNodeBorderColor: string;
   selectConnectionColor: string;
   selectThumbColor: string;
+  compositionThumbInputNodeBackground: string;
+  compositionThumbInputNodeText: string;
+  compositionThumbOutputNodeBackground: string;
+  compositionThumbOutputNodeText: string;
 }

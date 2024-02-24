@@ -8,6 +8,10 @@ export class FormFieldComponent<T> extends Component<T> {
 }
 
 export interface BaseFormFieldProps {
+  settings?: {
+    showLabel?: boolean;
+    textLabelColor?: string;
+  };
   setValue: (fieldName: string, value: string) => void;
 }
 

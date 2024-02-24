@@ -4,10 +4,14 @@ import {
   INodeComponent,
   IRectNodeComponent,
   IThumb,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 
 export type InitialValues = Record<string, any>;
-export type NodeTaskFactory<T> = (onUpdatedCanvas: () => void) => NodeTask<T>;
+export type NodeTaskFactory<T> = (
+  onUpdatedCanvas: () => void,
+  theme?: Theme
+) => NodeTask<T>;
 export type GetNodeTaskFactory<T> = (name: string) => NodeTaskFactory<T>;
 
 export type NodeTask<T> = {

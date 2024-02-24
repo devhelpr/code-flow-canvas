@@ -18,9 +18,6 @@ export interface SelectFieldProps extends BaseFormFieldProps {
   label?: string;
   isRow?: boolean;
   isLast?: boolean;
-  settings?: {
-    showLabel?: boolean;
-  };
   options: SelectOption[];
   onChange?: (value: string) => void;
 }
@@ -41,7 +38,9 @@ export class SelectFieldChildComponent extends FormFieldComponent<SelectFieldPro
         <label for="${props.formId}_${props.fieldName}" class="block  mb-2 ${
         props.settings?.showLabel === false ? 'hidden' : ''
       } 
-        text-white ${props.isRow ? 'mr-2' : ''}">${
+      ${props.settings?.textLabelColor ?? 'text-white'} ${
+        props.isRow ? 'mr-2' : ''
+      }">${
         props.label ?? props.fieldName
       }</label><select class="block w-full p-1"
           name="${props.fieldName}"

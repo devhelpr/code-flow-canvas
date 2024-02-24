@@ -16,9 +16,7 @@ export interface SliderFieldProps extends BaseFormFieldProps {
   step?: number;
   isRow?: boolean;
   isLast?: boolean;
-  settings?: {
-    showLabel?: boolean;
-  };
+
   onChange?: (value: string) => void;
   onGetSettings: () => {
     min: number;
@@ -68,9 +66,9 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         <label for="${props.formId}_${props.fieldName}" class="block  mb-2 ${
         props.settings?.showLabel === false ? 'hidden' : ''
       } 
-        text-white ${props.isRow ? 'mr-2' : ''}">${
-        props.label ?? props.fieldName
-      }</label>
+      ${props.settings?.textLabelColor ?? 'text-white'} ${
+        props.isRow ? 'mr-2' : ''
+      }">${props.label ?? props.fieldName}</label>
         <input class="block w-full py-1 text-white accent-white slider"
           name="${props.formId}_${props.fieldName}"      
           id="${props.formId}_${props.fieldName}"

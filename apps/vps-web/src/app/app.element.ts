@@ -885,17 +885,21 @@ export class AppElement<T> {
        - (TODO) thumb-nodes should have a form field for editing the type
          (types depend on flow type : GL and flow differ)
 
-       - after editing :
+          - after modifying the types... the thumbs and connections should be updated
+
+       - after editing (exit edit-mode) :
 
           - check if existing thumbs still match the connected nodes (via thumbConstraint) on the canvas 
             .. and if not: disconnect the nodes
 
 
         Later : 
-        - allow naming composition and show name
+        - allow adding composition nodes to composition and prevent infinite loops during execution
+            (in a child composition , a composition which is called , which is also a parent or ancestor of the current composition will cause an infinite loop)
+        - (done) allow naming composition and show name
         - create composition from scratch
         - allow edit of composition node-color
-        - allow adding composition nodes to composition
+        
     */
     const selectedNodeInfo = getSelectedNode();
     if (!selectedNodeInfo) {
@@ -1004,12 +1008,16 @@ export class AppElement<T> {
           if (factory && node && thumb.name) {
             const nodeTask = factory(() => {
               //
-            });
+            }, canvasApp.theme);
             nodeTask.setTitle?.(thumb.name);
             const thumbInput = nodeTask.createVisualNode(
               canvasApp,
               minX - 100,
-              minY - 100 + yIndex * 75
+              minY - 100 + yIndex * 200,
+              undefined,
+              {
+                valueType: thumb.thumbConstraint,
+              }
             );
             nodesIdsToIgnore.push(thumbInput.id);
             const connection = canvasApp.createCubicBezier(
@@ -1086,11 +1094,15 @@ export class AppElement<T> {
           if (factory && node && thumb.name) {
             const nodeTask = factory(() => {
               //
-            });
+            }, canvasApp.theme);
             const thumbOutput = nodeTask.createVisualNode(
               canvasApp,
               maxX + 100,
-              minY - 100 + yIndex * 75
+              minY - 100 + yIndex * 200,
+              undefined,
+              {
+                valueType: thumb.thumbConstraint,
+              }
             );
 
             nodesIdsToIgnore.push(thumbOutput.id);

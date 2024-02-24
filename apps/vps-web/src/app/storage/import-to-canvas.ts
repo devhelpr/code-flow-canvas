@@ -25,7 +25,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
     if (getNodeTaskFactory && node.nodeType === NodeType.Shape) {
       const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
       if (factory) {
-        const nodeTask = factory(canvasUpdated);
+        const nodeTask = factory(canvasUpdated, canvasApp.theme);
         if (nodeTask) {
           if (nodeTask.isContainer) {
             const canvasVisualNode = nodeTask.createVisualNode(
@@ -57,7 +57,10 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                     factory &&
                     canvasVisualNode?.nodeInfo?.canvasAppInstance
                   ) {
-                    const childNodeTask = factory(canvasUpdated);
+                    const childNodeTask = factory(
+                      canvasUpdated,
+                      canvasApp.theme
+                    );
 
                     const child = childNodeTask.createVisualNode(
                       canvasVisualNode.nodeInfo.canvasAppInstance,

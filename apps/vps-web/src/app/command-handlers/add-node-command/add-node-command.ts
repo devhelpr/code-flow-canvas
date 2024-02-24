@@ -68,7 +68,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     const factory = this.getNodeTaskFactory(nodeType);
 
     if (factory) {
-      const nodeTask = factory(this.canvasUpdated);
+      const nodeTask = factory(this.canvasUpdated, canvasApp.theme);
 
       const node = nodeTask.createVisualNode(canvasApp, startX, startY);
       if (node && node.nodeInfo) {
@@ -342,7 +342,8 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     const factory = this.getNodeTaskFactory(nodeType);
 
     if (factory) {
-      const nodeTask = factory(this.canvasUpdated);
+      const canvasApp = this.getCanvasApp();
+      const nodeTask = factory(this.canvasUpdated, canvasApp?.theme);
       if (nodeTask.thumbs) {
         const template = createTemplate(
           `<div class="flex flex-col w-full thumb-input-selector-container my-2">
