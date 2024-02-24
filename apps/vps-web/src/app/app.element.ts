@@ -45,6 +45,7 @@ import { GetNodeTaskFactory, RegisterComposition } from './node-task-registry';
 import { BaseNodeInfo } from './types/base-node-info';
 import { importToCanvas } from './storage/import-to-canvas';
 import { hideElement, showElement } from './utils/show-hide-element';
+import { createInputDialog } from './utils/create-input-dialog';
 
 export class AppElement<T> {
   public static observedAttributes = [];
@@ -76,6 +77,7 @@ export class AppElement<T> {
   compositionEditButton: IDOMElement | undefined = undefined;
   compositionEditExitButton: IDOMElement | undefined = undefined;
   compositionCreateButton: IDOMElement | undefined = undefined;
+  compositionNameButton: IDOMElement | undefined = undefined;
 
   appRootElement: Element | null;
   commandRegistry = new Map<string, ICommandHandler>();
@@ -866,6 +868,8 @@ export class AppElement<T> {
     }
   };
 
+  compositionUnderEdit: Composition<T> | undefined = undefined;
+
   editComposition = (
     getNodeTaskFactory: GetNodeTaskFactory<T>,
     canvasUpdated: () => void,
@@ -921,6 +925,7 @@ export class AppElement<T> {
       showElement(this.compositionEditExitButton);
       showElement(this.clearCanvasButton);
       showElement(this.resetStateButton);
+      showElement(this.compositionNameButton);
 
       this.currentCanvasApp?.setDisableInteraction(true);
 
@@ -935,6 +940,7 @@ export class AppElement<T> {
       if (!composition) {
         return;
       }
+      this.compositionUnderEdit = composition;
       this.currentCanvasApp?.setIsCameraFollowingPaused(true);
 
       const canvasApp = createCanvasApp<T>(
@@ -1334,6 +1340,14 @@ export class AppElement<T> {
         canvasApp.canvas?.domElement.remove();
 
         this.currentCanvasApp = this.canvasApp;
+        const nodes = (
+          this.canvasApp?.canvas?.domElement as HTMLElement
+        ).querySelectorAll(
+          `[data-node-type="composition-${composition.id}"] .inner-node`
+        );
+        nodes.forEach((node) => {
+          (node as HTMLElement).innerHTML = composition.name;
+        });
 
         this.currentCanvasApp?.elements.forEach((element) => {
           const node = element as INodeComponent<T>;
@@ -1360,6 +1374,10 @@ export class AppElement<T> {
         showElement(this.clearCanvasButton);
         showElement(this.resetStateButton);
         hideElement(this.compositionEditExitButton);
+        hideElement(this.compositionNameButton);
+
+        this.compositionUnderEdit = undefined;
+        setupTasksInDropdown(selectNodeTypeHTMLElement, false);
       };
       (
         this.compositionEditExitButton?.domElement as HTMLElement
@@ -1367,4 +1385,20 @@ export class AppElement<T> {
       //
     }
   };
+
+  editCompositionName() {
+    if (!this.rootElement || !this.compositionUnderEdit) {
+      return;
+    }
+
+    createInputDialog(
+      this.rootElement,
+      'Composition name',
+      this.compositionUnderEdit.name
+    ).then((name) => {
+      if (name && this.compositionUnderEdit) {
+        this.compositionUnderEdit.name = name;
+      }
+    });
+  }
 }

@@ -34,7 +34,7 @@ export const getCreateCompositionNode =
   ): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     const fieldName = 'composition';
-    const labelName = `Composition ${name}`;
+    const labelName = `${name ?? 'Composition'}`;
     const nodeName = `composition-${compositionId}`;
     let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
     // let nodes: FlowNode<NodeInfo>[] = [];
@@ -170,7 +170,7 @@ export const getCreateCompositionNode =
       },
       {
         hasTitlebar: false,
-        hideTitle: true,
+        hideTitle: false,
         category: 'Compositions',
         backgroundThemeProperty: 'compositionBackground',
         textColorThenmeProperty: 'compositionText',

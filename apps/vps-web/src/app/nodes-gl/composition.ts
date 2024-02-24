@@ -26,7 +26,7 @@ export const getCreateCompositionNode =
   ): NodeTaskFactory<GLNodeInfo> =>
   (_updated: () => void): NodeTask<GLNodeInfo> => {
     const fieldName = 'composition';
-    const labelName = `Composition ${name}`;
+    const labelName = `${name ?? 'Composition'}`;
     const nodeName = `composition-${compositionId}`;
     let canvasApp: CanvasAppInstance<GLNodeInfo> | undefined = undefined;
     let nodes: FlowNode<GLNodeInfo>[] = [];
@@ -238,7 +238,7 @@ export const getCreateCompositionNode =
       },
       {
         hasTitlebar: false,
-        hideTitle: true,
+        hideTitle: false,
         category: 'Compositions',
         backgroundThemeProperty: 'compositionBackground',
         textColorThenmeProperty: 'compositionText',

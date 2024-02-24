@@ -328,6 +328,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'Edit composition'
           );
 
+          this.compositionNameButton = createElement(
+            'button',
+            {
+              class: `${navBarButton} hidden`,
+              click: (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.editCompositionName();
+                return false;
+              },
+            },
+            menubarElement.domElement,
+            'Edit composition name'
+          );
+
           this.compositionCreateButton = createElement(
             'button',
             {

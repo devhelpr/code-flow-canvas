@@ -279,7 +279,9 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
       formValues: initialValues ?? {},
       decorators: nodeInfo?.decorators,
     } as T,
-    containerNode
+    containerNode,
+    undefined,
+    `rect-node${nodeInfo?.isComposition ? ' composition-node' : ''}`
   );
 
   if (!rect.nodeComponent) {
@@ -288,6 +290,9 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
 
   const node = rect.nodeComponent;
   if (node.nodeInfo) {
+    const domElement = node.domElement as HTMLElement;
+    domElement.setAttribute('data-node-type', nodeTypeName);
+
     node.nodeInfo.formElements = formElements;
     if (isAsyncCompute) {
       (node.nodeInfo as NodeInfo).computeAsync = compute as (
