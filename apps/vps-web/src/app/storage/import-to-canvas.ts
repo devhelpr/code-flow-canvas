@@ -72,7 +72,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                       element.width,
                       element.height,
                       nestedLevel ? nestedLevel + 1 : 1,
-                      node.nodeInfo,
+                      element.nodeInfo,
                       getNodeTaskFactory
                     );
 
