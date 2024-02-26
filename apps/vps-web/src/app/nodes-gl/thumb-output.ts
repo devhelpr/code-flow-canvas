@@ -27,7 +27,7 @@ const thumbs = [
     label: ' ',
     name: 'input',
     thumbConstraint: thumbConstraint,
-    maxConnections: -1,
+    maxConnections: 1,
   },
 ];
 
@@ -69,6 +69,7 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
             { value: 'value', label: 'value' },
             { value: 'vec2', label: 'vec2' },
             { value: 'vec3', label: 'vec3' },
+            { value: 'constant-value', label: 'constant-value' },
           ],
           onChange: (value: string) => {
             if (!node.nodeInfo) {
@@ -79,6 +80,9 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
               ...node.nodeInfo.formValues,
               ['valueType']: value,
             };
+            if (node.thumbConnectors?.[0]) {
+              node.thumbConnectors[0].thumbConstraint = value;
+            }
             if (updated) {
               updated();
             }

@@ -101,7 +101,7 @@ export const getSplitVector2dNode = (
 
           {
             thumbType: ThumbType.EndConnectorCenter,
-            thumbIndex: 3,
+            thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',

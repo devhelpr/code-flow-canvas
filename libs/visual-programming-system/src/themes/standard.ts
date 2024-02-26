@@ -10,7 +10,7 @@ export const standardTheme: Theme = {
   nodeTitleBarBackground: 'bg-slate-600',
   nodeTitleBarText: 'text-white',
   nodeText: 'text-white',
-  compositionBackground: 'bg-purple-500',
+  compositionBackground: 'bg-sky-600',
   compositionText: 'white',
   connectionColor: 'bg-white-500',
   arrowColor: 'bg-white',

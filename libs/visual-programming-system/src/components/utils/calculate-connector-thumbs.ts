@@ -45,11 +45,20 @@ export const calculateConnectorY = <T>(
   index?: number,
   thumb?: IThumbNodeComponent<T>
 ) => {
+  const { scale } = getCamera();
   if (
     thumbType === ThumbType.StartConnectorCenter ||
     thumbType === ThumbType.EndConnectorCenter ||
     thumbType === ThumbType.Center
   ) {
+    // const element = thumb?.thumbLinkedToNode?.domElement as HTMLElement;
+    // if (element) {
+    //   const bounds = element.getBoundingClientRect();
+    //   if (bounds.height > 0) {
+    //     return bounds.height / scale / 2;
+    //   }
+    // }
+
     return height / 2;
   }
 
@@ -62,7 +71,6 @@ export const calculateConnectorY = <T>(
     if (thumb) {
       const element = thumb.thumbLinkedToNode?.domElement as HTMLElement;
       if (element) {
-        const { scale } = getCamera();
         const formField = element.querySelector(
           `[id="${thumb.thumbFormId}_${thumb.thumbFormFieldName}"]`
         ) as HTMLElement;
@@ -155,7 +163,8 @@ export const thumbPosition = <T>(
         thumbType,
         rectNode?.width ?? 0,
         rectNode?.height ?? 0,
-        index
+        index,
+        thumb
       ),
     };
   }
@@ -193,7 +202,8 @@ export const thumbPosition = <T>(
         thumbType,
         rectNode?.width ?? 0,
         rectNode?.height ?? 0,
-        index
+        index,
+        thumb
       ),
     };
   }

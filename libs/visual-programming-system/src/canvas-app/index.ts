@@ -1088,9 +1088,25 @@ export const createCanvasApp = <T>(
       if (nodeComponent.thumbConnectors) {
         nodeComponent.thumbConnectors.push(thumbNode.nodeComponent);
       }
+      rectInstance.updateMinHeight();
+      rectInstance.updateNodeSize(
+        nodeComponent.x,
+        nodeComponent.y,
+        nodeComponent.width ?? 0,
+        nodeComponent.height ?? 0,
+        false
+      );
+      rectInstance.oldHeight = -1;
+      rectInstance.oldWidth = -1;
 
-      nodeComponent?.update?.();
-      rectInstance?.resize();
+      nodeComponent?.update?.(
+        nodeComponent,
+        nodeComponent.x,
+        nodeComponent.y,
+        nodeComponent
+      );
+      //const { scale } = getCamera();
+      //rectInstance?.resize((nodeComponent.width ?? 0) / scale);
       return undefined;
     },
     deleteElement: (id: string) => {

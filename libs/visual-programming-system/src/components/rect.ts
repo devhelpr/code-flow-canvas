@@ -249,6 +249,47 @@ export class Rect<T> {
 
     // Recalculate thumb positions after the nodes have been rendered and init height/width again
 
+    this.updateMinHeight();
+
+    this.updateNodeSize(
+      startX,
+      startY,
+      width,
+      height,
+      hasStaticWidthHeight ?? false
+    );
+
+    // WARNING! .. if this is not done, then thumb positioning is incorrect after loading flow
+    //  for thumb-types EndConnecterCenter and StartConnectorCenter
+    this.oldWidth = -1;
+    this.oldHeight = -1;
+
+    this.nodeComponent.update(
+      this.nodeComponent,
+      startX,
+      startY,
+      this.nodeComponent
+    );
+
+    this.nodeComponent.onClick = () => {
+      if (!this.nodeComponent) {
+        return;
+      }
+      console.log('CLICKED ON RECT', this.nodeComponent.id);
+      setSelectNode({
+        id: this.nodeComponent.id,
+        containerNode: this.nodeComponent
+          .containerNode as unknown as IRectNodeComponent<unknown>,
+      });
+      this.nodeTransformer.attachNode(this.nodeComponent);
+    };
+    this.nodeComponent.connections = [];
+  }
+
+  public updateMinHeight() {
+    if (!this.nodeComponent || !this.nodeComponent.thumbConnectors) {
+      return;
+    }
     let minHeightAdd = 0;
     const { scale } = getCamera();
     const titleTopLabelField = (
@@ -290,38 +331,9 @@ export class Rect<T> {
       return thumb.thumbConnectionType === ThumbConnectionType.end;
     });
     this.minHeight = minHeightAdd + Math.max(thumbEndHeight, thumbStartHeight);
-
-    this.updateNodeSize(
-      startX,
-      startY,
-      width,
-      height,
-      hasStaticWidthHeight ?? false
-    );
-
-    this.nodeComponent.update(
-      this.nodeComponent,
-      startX,
-      startY,
-      this.nodeComponent
-    );
-
-    this.nodeComponent.onClick = () => {
-      if (!this.nodeComponent) {
-        return;
-      }
-      console.log('CLICKED ON RECT', this.nodeComponent.id);
-      setSelectNode({
-        id: this.nodeComponent.id,
-        containerNode: this.nodeComponent
-          .containerNode as unknown as IRectNodeComponent<unknown>,
-      });
-      this.nodeTransformer.attachNode(this.nodeComponent);
-    };
-    this.nodeComponent.connections = [];
   }
 
-  private updateNodeSize(
+  public updateNodeSize(
     startX: number,
     startY: number,
     width: number,
@@ -379,8 +391,7 @@ export class Rect<T> {
       let thumbEndHeight = 0;
       this.nodeComponent.thumbConnectors.forEach((thumb) => {
         if (thumb.thumbType === ThumbType.StartConnectorRight) {
-          const offsetTop =
-            ((thumb.domElement as HTMLElement)?.offsetTop ?? 0) / scale;
+          const offsetTop = (thumb.domElement as HTMLElement)?.offsetTop ?? 0; // / scale;
           const bounds = (
             thumb.domElement as HTMLElement
           ).getBoundingClientRect();
@@ -394,8 +405,7 @@ export class Rect<T> {
       });
       this.nodeComponent.thumbConnectors.forEach((thumb) => {
         if (thumb.thumbType === ThumbType.EndConnectorLeft) {
-          const offsetTop =
-            ((thumb.domElement as HTMLElement)?.offsetTop ?? 0) / scale;
+          const offsetTop = (thumb.domElement as HTMLElement)?.offsetTop ?? 0; // / scale;
           const bounds = (
             thumb.domElement as HTMLElement
           ).getBoundingClientRect();

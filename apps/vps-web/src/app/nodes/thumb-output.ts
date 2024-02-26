@@ -24,7 +24,7 @@ const thumbs = [
     label: ' ',
     name: 'input',
     thumbConstraint: thumbConstraint,
-    maxConnections: -1,
+    maxConnections: 1,
   },
 ];
 

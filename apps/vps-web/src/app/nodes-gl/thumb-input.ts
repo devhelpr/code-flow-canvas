@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   IRectNodeComponent,
   Theme,
   ThumbConnectionType,
@@ -27,7 +28,7 @@ const thumbs = [
     label: ' ',
     name: 'output',
     thumbConstraint: thumbConstraint,
-    maxConnections: -1,
+    maxConnections: 1,
   },
 ];
 
@@ -36,6 +37,7 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
   theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
+  let canvasApp: CanvasAppInstance<GLNodeInfo>;
   const initializeCompute = () => {
     return;
   };
@@ -69,6 +71,7 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
             { value: 'value', label: 'value' },
             { value: 'vec2', label: 'vec2' },
             { value: 'vec3', label: 'vec3' },
+            { value: 'constant-value', label: 'constant-value' },
           ],
           onChange: (value: string) => {
             if (!node.nodeInfo) {
@@ -79,6 +82,26 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
               ...node.nodeInfo.formValues,
               ['valueType']: value,
             };
+            if (node.thumbConnectors?.[0]) {
+              node.thumbConnectors[0].thumbConstraint = value;
+              if (node.connections) {
+                node.connections = node.connections.filter((c) => {
+                  if (c.endNodeThumb?.thumbConstraint !== value && c.endNode) {
+                    c.endNode.connections = c.endNode?.connections?.filter(
+                      (con) => con !== c
+                    );
+                    c.endNodeThumb = undefined;
+                    if (canvasApp) {
+                      canvasApp.elements.delete(c.id);
+                      c.domElement.remove();
+                    }
+                    return false;
+                  }
+
+                  return true;
+                });
+              }
+            }
             if (updated) {
               updated();
             }
@@ -88,6 +111,7 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
     },
     (nodeInstance) => {
       node = nodeInstance.node as IRectNodeComponent<GLNodeInfo>;
+      canvasApp = nodeInstance.contextInstance;
     },
     {
       hasTitlebar: false,
