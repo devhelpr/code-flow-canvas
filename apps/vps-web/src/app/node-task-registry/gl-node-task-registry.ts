@@ -58,6 +58,7 @@ import { getSetVariableNode } from '../nodes-gl/set-variable';
 import { getDefineValueVariableNode } from '../nodes-gl/define-float-variable';
 import { getGetVariableNode } from '../nodes-gl/get-variable';
 import { getFloorVectorNode } from '../nodes-gl/floor-vector';
+import { getMouseNode } from '../nodes-gl/mouse-node';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -82,6 +83,7 @@ export const setupGLNodeTaskRegistry = () => {
     'Output Color'
   );
   registerGLNodeFactory('uv-node', getUVNode, 'UV');
+  registerGLNodeFactory('mouse-node', getMouseNode, 'Mouse');
 
   registerGLNodeFactory('color-node', getColorNode, 'Color');
   registerGLNodeFactory('value-node', getValueNode, 'Value');

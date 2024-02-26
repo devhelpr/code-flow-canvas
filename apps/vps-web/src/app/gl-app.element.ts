@@ -81,7 +81,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   focusedNode: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   runButton: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
-
+  mouseX = 0;
+  mouseY = 0;
   canvasUpdated: (() => void) | undefined = undefined;
 
   constructor(appRootSelector: string) {
@@ -118,6 +119,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           uvx = uvx * 2.0 - 1.0;
           uvy = uvy * 2.0 - 1.0;
           uvx *= aspect;
+          this.mouseX = uvx;
+          this.mouseY = uvy;
           const uvNodes = document.querySelectorAll('.uv-node');
           uvNodes.forEach((node) => {
             node.innerHTML = `UV<br />${uvx.toFixed(2)} ${uvy.toFixed(2)}`;
@@ -853,6 +856,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.u_CanvasWidthUniformLocation = null;
       this.u_CanvasHeightUniformLocation = null;
       this.u_TestUniformLocation = null;
+      this.u_MouseXUniformLocation = null;
+      this.u_MouseYUniformLocation = null;
 
       this.setupShader(this.gl);
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -883,6 +888,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   u_CanvasWidthUniformLocation: WebGLUniformLocation | null = null;
   u_CanvasHeightUniformLocation: WebGLUniformLocation | null = null;
   u_TestUniformLocation: WebGLUniformLocation | null = null;
+
+  u_MouseXUniformLocation: WebGLUniformLocation | null = null;
+  u_MouseYUniformLocation: WebGLUniformLocation | null = null;
+
   vertexPositionAttribute = 0;
 
   valueParameterUniforms: {
@@ -909,7 +918,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     uniform float u_width;
     uniform float u_height;
     uniform float u_test;
-    
+    uniform float u_mouseX;
+    uniform float u_mouseY;
+
     ${shaderDynamicUniforms}
     #define PI = 3.1415926535897932384626433832795;
     float metaball(vec2 p, vec2 center, float radius) {
@@ -1036,6 +1047,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.u_TestUniformLocation = gl.getUniformLocation(
       this.shaderProgram,
       'u_test'
+    );
+
+    this.u_MouseXUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
+      'u_mouseX'
+    );
+    this.u_MouseYUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
+      'u_mouseY'
     );
 
     this.vertexPositionAttribute = gl.getAttribLocation(
@@ -1413,6 +1433,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     gl.uniform1f(this.u_CanvasWidthUniformLocation, glcanvas.width);
     gl.uniform1f(this.u_CanvasHeightUniformLocation, glcanvas.height);
     gl.uniform1f(this.u_TestUniformLocation, this.test);
+    gl.uniform1f(this.u_MouseXUniformLocation, this.mouseX ?? 0);
+    gl.uniform1f(this.u_MouseYUniformLocation, -this.mouseY ?? 0);
 
     this.valueParameterUniforms.forEach((uniform) => {
       if (uniform.uniform) {
