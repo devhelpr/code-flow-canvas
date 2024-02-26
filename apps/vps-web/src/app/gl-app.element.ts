@@ -83,6 +83,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   selectNodeType: IDOMElement | undefined = undefined;
   mouseX = 0;
   mouseY = 0;
+  wheel = 1;
   canvasUpdated: (() => void) | undefined = undefined;
 
   constructor(appRootSelector: string) {
@@ -836,6 +837,58 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
   };
 
+  wheelTime = -1;
+
+  isMacOs =
+    typeof navigator !== 'undefined' &&
+    navigator?.userAgent?.indexOf('Mac') >= 0;
+
+  onGLCanvasWheelEvent = (event: WheelEvent) => {
+    if (
+      event.target &&
+      (event.target as any).closest &&
+      ((event.target as any).closest('.menu') ||
+        (event.target as any).closest('.menu-container'))
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    if (this.wheelTime === -1) {
+      this.wheelTime = event.timeStamp;
+    }
+    let timeDiff = event.timeStamp - this.wheelTime;
+    if (event.shiftKey) {
+      timeDiff = timeDiff * 16;
+    }
+
+    const factor = event.ctrlKey
+      ? this.isMacOs
+        ? 350
+        : 50
+      : this.isMacOs
+      ? 150
+      : 20;
+
+    const delta =
+      -event.deltaY *
+      (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
+      factor;
+
+    // Determine the scale factor for the zoom
+    const scaleFactor = 1 + delta * 0.05;
+
+    const scaleBy = scaleFactor;
+
+    let newScale = this.wheel * scaleBy;
+    if (newScale < 0.05) {
+      newScale = 0.05;
+    } else if (newScale > 5) {
+      newScale = 5;
+    }
+    this.wheel = newScale;
+  };
+
   updateGLCanvasParameters = () => {
     this.pauseRender = true;
     if (
@@ -858,6 +911,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.u_TestUniformLocation = null;
       this.u_MouseXUniformLocation = null;
       this.u_MouseYUniformLocation = null;
+      this.u_wheelUniformLocation = null;
 
       this.setupShader(this.gl);
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -891,6 +945,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   u_MouseXUniformLocation: WebGLUniformLocation | null = null;
   u_MouseYUniformLocation: WebGLUniformLocation | null = null;
+  u_wheelUniformLocation: WebGLUniformLocation | null = null;
 
   vertexPositionAttribute = 0;
 
@@ -920,6 +975,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     uniform float u_test;
     uniform float u_mouseX;
     uniform float u_mouseY;
+    uniform float u_wheel;
 
     ${shaderDynamicUniforms}
     #define PI = 3.1415926535897932384626433832795;
@@ -1056,6 +1112,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.u_MouseYUniformLocation = gl.getUniformLocation(
       this.shaderProgram,
       'u_mouseY'
+    );
+    this.u_wheelUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
+      'u_wheel'
     );
 
     this.vertexPositionAttribute = gl.getAttribLocation(
@@ -1365,8 +1425,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   pauseRender = false;
   positionBuffer: WebGLBuffer | null = null;
+  isWheelEventSet = false;
   setupGLCanvas = () => {
     this.glcanvas = document.getElementById('glcanvas') as HTMLCanvasElement;
+    if (!this.isWheelEventSet) {
+      this.glcanvas.addEventListener('wheel', this.onGLCanvasWheelEvent);
+      this.isWheelEventSet = true;
+    }
     this.canvasSize = this.glcanvas.getBoundingClientRect();
     this.glcanvas.width = this.canvasSize.width;
     this.glcanvas.height = this.canvasSize.height;
@@ -1435,6 +1500,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     gl.uniform1f(this.u_TestUniformLocation, this.test);
     gl.uniform1f(this.u_MouseXUniformLocation, this.mouseX ?? 0);
     gl.uniform1f(this.u_MouseYUniformLocation, -this.mouseY ?? 0);
+    gl.uniform1f(this.u_wheelUniformLocation, this.wheel ?? 0);
 
     this.valueParameterUniforms.forEach((uniform) => {
       if (uniform.uniform) {
