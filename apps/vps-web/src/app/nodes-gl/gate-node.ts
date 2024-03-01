@@ -19,9 +19,8 @@ export interface ComputeResult {
   followPath?: string;
   stop?: boolean;
 }
-let repeatVariable = 0;
 
-export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
+export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
   let htmlNode: IDOMElement | undefined = undefined;
   let rect:
@@ -30,16 +29,16 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
   let canvasAppInstance: CanvasAppInstance<GLNodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
-  let repeatVariableInstance = 0;
+
   const initializeCompute = () => {
-    //repeatVariable = 0;
     return;
   };
 
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     const block = payload?.['block'] ?? 1;
-    const repeat = payload?.['repeat'] ?? 1;
-    const shader = `for (float i${repeatVariable} = 0.; i${repeatVariable} < ${repeat}; i${repeatVariable}+=1.0) {
+    const left = payload?.['left'] ?? 0;
+    const right = payload?.['right'] ?? 1;
+    const shader = `if (${left} > ${right}) {
         ${block}
     }`;
 
@@ -51,10 +50,10 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
   };
 
   return {
-    name: 'for-node',
+    name: 'gate-node',
     family: 'flow-canvas',
     isContainer: true,
-    notAllowedChildNodeTasks: ['for-node'],
+    notAllowedChildNodeTasks: ['gate-node'],
     childNodeTasks: undefined,
     getCompute: () => compute,
     getConnectionInfo: () => {
@@ -73,9 +72,6 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       width?: number,
       height?: number
     ) => {
-      repeatVariable++;
-      repeatVariableInstance = repeatVariable;
-
       htmlNode = createElement(
         'div',
         {
@@ -88,7 +84,7 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       const wrapper = createNodeElement(
         'div',
         {
-          class: `bg-slate-400 rounded opacity-90 relative z-[1151]`,
+          class: `bg-slate-600 rounded opacity-90 relative z-[1151]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -107,8 +103,17 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            name: 'repeat',
-            thumbConstraint: 'constant-value',
+            name: 'left',
+            thumbConstraint: 'value',
+          },
+          {
+            thumbType: ThumbType.EndConnectorLeft,
+            thumbIndex: 1,
+            connectionType: ThumbConnectionType.end,
+            color: 'white',
+            label: ' ',
+            name: 'right',
+            thumbConstraint: 'value',
           },
         ],
         wrapper,
@@ -119,8 +124,8 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
         id,
         {
           formElements: [],
-          type: 'for-node',
-          taskType: 'for-node',
+          type: 'gate-node',
+          taskType: 'gate-node',
         },
         containerNode,
         undefined,
@@ -136,6 +141,12 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       )?.classList.remove('z-[1150]');
       (
         rect.nodeComponent?.thumbConnectors?.[0].domElement as HTMLElement
+      )?.classList.add('z-[1200]');
+      (
+        rect.nodeComponent?.thumbConnectors?.[1].domElement as HTMLElement
+      )?.classList.remove('z-[1150]');
+      (
+        rect.nodeComponent?.thumbConnectors?.[1].domElement as HTMLElement
       )?.classList.add('z-[1200]');
 
       if (htmlNode.domElement) {
@@ -222,7 +233,6 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.canvasAppInstance = canvasAppInstance;
-        (node.nodeInfo as any).repeatVariableInstance = repeatVariableInstance;
       }
 
       return node;

@@ -84,7 +84,7 @@
           "nodeInfo": {
             "type": "value-node",
             "formValues": {
-              "value": "-1",
+              "value": "1",
               "valueSliderSettings": "{\"min\":-2,\"max\":1,\"step\":0.5}"
             },
             "showFormOnlyInPopup": false,
@@ -129,8 +129,8 @@
           "nodeInfo": {
             "type": "value-node",
             "formValues": {
-              "value": "0.5",
-              "valueSliderSettings": "{\"min\":0.1,\"max\":10,\"step\":0.1}"
+              "value": "1",
+              "valueSliderSettings": "{\"min\":0.1,\"max\":1,\"step\":0.1}"
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false
@@ -165,8 +165,22 @@
           }
         },
         {
+          "id": "3d5c5ebb-1d49-4114-9470-bbabed85eb0c",
+          "x": 346.68674164378456,
+          "y": -897.4574757273149,
+          "width": 200.00003051757812,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "position-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
           "id": "f9b56641-1f32-4af8-92ec-0b7b668efe6a",
-          "x": 546.6867881183778,
+          "x": 546.6867721613627,
           "y": -767.4574757273149,
           "endX": 824.9991591486353,
           "endY": -413.5664233101201,
@@ -328,21 +342,6 @@
           "nodeType": "Connection",
           "layer": 1,
           "nodeInfo": {}
-        },
-        {
-          "id": "3d5c5ebb-1d49-4114-9470-bbabed85eb0c",
-          "x": 346.68674164378456,
-          "y": -897.4574757273149,
-          "width": 200.0000464745932,
-          "height": 154.99995193018427,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "position-node",
-            "formValues": {},
-            "showFormOnlyInPopup": false,
-            "useInCompositionOnly": false,
-            "taskType": "position-node"
-          }
         }
       ]
     }

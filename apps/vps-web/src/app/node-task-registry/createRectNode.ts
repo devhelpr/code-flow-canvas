@@ -351,7 +351,10 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
   height: number,
   thumbs: IThumb[],
   onGetFormElements: (values?: InitialValues) => FormField[],
-  onCreatedNode: (nodeInfo: CreateNodeInfo<T>) => void,
+  onCreatedNode: (
+    nodeInfo: CreateNodeInfo<T>,
+    containerNode?: IRectNodeComponent<T>
+  ) => void,
   settings?: {
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
@@ -467,7 +470,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
         nodeInfo as unknown as T,
         getNodeTaskFactory
       );
-      onCreatedNode(nodeInstance);
+      onCreatedNode(nodeInstance, containerNode);
       console.log('nodeTitle', nodeTitle);
       nodeInstance.node.label = nodeTitle;
       return nodeInstance.node as IRectNodeComponent<T>;

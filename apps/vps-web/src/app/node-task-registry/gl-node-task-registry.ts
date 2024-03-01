@@ -61,6 +61,9 @@ import { getFloorVectorNode } from '../nodes-gl/floor-vector';
 import { getMouseNode } from '../nodes-gl/mouse-node';
 import { getWheelNode } from '../nodes-gl/wheel-node';
 import { getPositionNode } from '../nodes-gl/position-node';
+import { getBreakNode } from '../nodes-gl/break';
+import { getGateNode } from '../nodes-gl/gate-node';
+import { getCurrentIterationNode } from '../nodes-gl/current-iteration';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -225,7 +228,14 @@ export const setupGLNodeTaskRegistry = () => {
   );
 
   registerGLNodeFactory('for-node', getForNode, 'for');
+  registerGLNodeFactory('gate-node', getGateNode, 'gate');
   registerGLNodeFactory('constant-value', getConstantValue, 'Constant');
+
+  registerGLNodeFactory(
+    'current-iteration-node',
+    getCurrentIterationNode,
+    'Current Iteration'
+  );
 
   registerGLNodeFactory(
     'set-variable-node',
@@ -250,6 +260,8 @@ export const setupGLNodeTaskRegistry = () => {
     getFloorVectorNode,
     'Floor Vector'
   );
+
+  registerGLNodeFactory('break-node', getBreakNode, 'Break');
 };
 
 export const getGLNodeTaskFactory: GetNodeTaskFactory<GLNodeInfo> = (

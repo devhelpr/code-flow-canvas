@@ -243,8 +243,8 @@ export const createCanvasApp = <T>(
       let newScale = scaleCamera * scaleBy;
       if (newScale < 0.05) {
         newScale = 0.05;
-      } else if (newScale > 5) {
-        newScale = 5;
+      } else if (newScale > 205) {
+        newScale = 205;
       }
 
       const newPos = {
