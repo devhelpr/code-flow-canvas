@@ -46,6 +46,7 @@ export const getBreakNode: NodeTaskFactory<GLNodeInfo> = (
       hasTitlebar: false,
       category: 'Control Flow',
       hasStaticWidthHeight: true,
+      backgroundColorClassName: 'bg-red-500',
     }
   );
 };
