@@ -1,4 +1,5 @@
 import {
+  Theme,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -9,9 +10,13 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import {
+  createElementFromTemplate,
+  createTemplate,
+} from '@devhelpr/dom-components';
 
 const fieldName = 'addition-vector';
-const labelName = 'Add vectors';
+const labelName = `Add vectors`;
 const nodeName = 'addition-vector-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'vec2';
@@ -46,7 +51,8 @@ const thumbs = [
 ];
 
 export const getAdditionVectorNode: NodeTaskFactory<GLNodeInfo> = (
-  _updated: () => void
+  _updated: () => void,
+  theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
@@ -61,6 +67,11 @@ export const getAdditionVectorNode: NodeTaskFactory<GLNodeInfo> = (
     };
   };
 
+  const element = createElementFromTemplate(
+    createTemplate(
+      `<div class="text-7xl -mt-[10px]">+<br /><span class="text-base block">Vectors</span></div>`
+    )
+  );
   return visualNodeFactory(
     nodeName,
     labelName,
@@ -80,7 +91,11 @@ export const getAdditionVectorNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      hideTitle: true,
       category: 'Math',
-    }
+      backgroundColorClassName: theme?.nodeInversedBackground,
+      textColorClassName: theme?.nodeInversedText,
+    },
+    element
   );
 };

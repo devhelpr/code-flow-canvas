@@ -13,26 +13,48 @@ import {
 } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
-const fieldName = 'wheel';
-const labelName = 'Wheel';
-const nodeName = 'wheel-node';
+const fieldName = 'position';
+const labelName = 'Position';
+const nodeName = 'position-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
   {
-    thumbType: ThumbType.StartConnectorCenter,
+    thumbType: ThumbType.StartConnectorRight,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
     thumbConstraint: thumbConstraint,
     maxConnections: -1,
-    name: 'wheel',
-    prefixLabel: 'zoom',
+    name: 'x',
+    prefixLabel: 'x',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    thumbConstraint: thumbConstraint,
+    maxConnections: -1,
+    name: 'y',
+    prefixLabel: 'y',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 2,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    thumbConstraint: 'vec2',
+    maxConnections: -1,
+    name: 'vector',
+    prefixLabel: 'vector',
   },
 ];
 
-export const getWheelNode: NodeTaskFactory<GLNodeInfo> = (
+export const getPositionNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
@@ -44,11 +66,25 @@ export const getWheelNode: NodeTaskFactory<GLNodeInfo> = (
     _payload?: any,
     thumbName?: string
   ) => {
-    return {
-      result: `u_wheel`,
-      output: input,
-      followPath: undefined,
-    };
+    if (thumbName === 'x') {
+      return {
+        result: `u_positionX`,
+        output: input,
+        followPath: undefined,
+      };
+    } else if (thumbName == 'y') {
+      return {
+        result: `u_positionY`,
+        output: input,
+        followPath: undefined,
+      };
+    } else {
+      return {
+        result: `vec2(u_positionX, u_positionY)`,
+        output: input,
+        followPath: undefined,
+      };
+    }
   };
 
   return visualNodeFactory(
@@ -75,7 +111,7 @@ export const getWheelNode: NodeTaskFactory<GLNodeInfo> = (
     {
       hasTitlebar: false,
       category: 'input',
-      additionalClassNames: 'wheel-node',
+      additionalClassNames: 'position-node',
     }
   );
 };

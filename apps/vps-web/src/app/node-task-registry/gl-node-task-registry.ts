@@ -60,6 +60,7 @@ import { getGetVariableNode } from '../nodes-gl/get-variable';
 import { getFloorVectorNode } from '../nodes-gl/floor-vector';
 import { getMouseNode } from '../nodes-gl/mouse-node';
 import { getWheelNode } from '../nodes-gl/wheel-node';
+import { getPositionNode } from '../nodes-gl/position-node';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -85,6 +86,7 @@ export const setupGLNodeTaskRegistry = () => {
   );
   registerGLNodeFactory('uv-node', getUVNode, 'UV');
   registerGLNodeFactory('mouse-node', getMouseNode, 'Mouse');
+  registerGLNodeFactory('position-node', getPositionNode, 'Position');
   registerGLNodeFactory('wheel-node', getWheelNode, 'Wheel');
 
   registerGLNodeFactory('color-node', getColorNode, 'Color');

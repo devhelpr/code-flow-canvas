@@ -83,7 +83,14 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   selectNodeType: IDOMElement | undefined = undefined;
   mouseX = 0;
   mouseY = 0;
+  positionX = 0;
+  positionY = 0;
   wheel = 1;
+  isMovingGLCanvas = false;
+  startGLCanvasDragX = 0;
+  startGLCanvasDragY = 0;
+  orgPositionX = 0;
+  orgPositionY = 0;
   canvasUpdated: (() => void) | undefined = undefined;
 
   constructor(appRootSelector: string) {
@@ -105,9 +112,32 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.setupWindowResize();
     this.setupGLCanvas();
     const glcanvas = document.getElementById('glcanvas');
+
     document
       .getElementById('glcanvas')
-      ?.addEventListener('mousemove', (event) => {
+      ?.addEventListener('pointerdown', (event) => {
+        this.isMovingGLCanvas = true;
+        if (glcanvas) {
+          const canvasSize = glcanvas.getBoundingClientRect();
+          const width = canvasSize.width;
+          const height = canvasSize.height;
+
+          const aspect = width / height;
+          let uvx = event.offsetX / width;
+          let uvy = event.offsetY / height;
+          uvx = uvx * 2.0 - 1.0;
+          uvy = uvy * 2.0 - 1.0;
+          uvx *= aspect;
+          this.startGLCanvasDragX = uvx;
+          this.startGLCanvasDragY = uvy;
+          this.orgPositionX = this.positionX;
+          this.orgPositionY = this.positionY;
+        }
+      });
+
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('pointermove', (event) => {
         if (glcanvas) {
           const canvasSize = glcanvas.getBoundingClientRect();
           const width = canvasSize.width;
@@ -126,11 +156,25 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           uvNodes.forEach((node) => {
             node.innerHTML = `UV<br />${uvx.toFixed(2)} ${uvy.toFixed(2)}`;
           });
+
+          if (this.isMovingGLCanvas) {
+            const movedX = uvx - this.startGLCanvasDragX;
+            const movedY = uvy - this.startGLCanvasDragY;
+            this.positionX = this.orgPositionX + movedX;
+            this.positionY = this.orgPositionY + movedY;
+          }
         }
       });
+
     document
       .getElementById('glcanvas')
-      ?.addEventListener('mouseleave', (_event) => {
+      ?.addEventListener('pointerup', (event) => {
+        this.isMovingGLCanvas = false;
+      });
+
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('pointerleave', (_event) => {
         const uvNodes = document.querySelectorAll('.uv-node');
         uvNodes.forEach((node) => {
           node.textContent = 'UV';
@@ -913,6 +957,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.u_MouseYUniformLocation = null;
       this.u_wheelUniformLocation = null;
 
+      this.u_PositionXUniformLocation = null;
+      this.u_PositionYUniformLocation = null;
+
       this.setupShader(this.gl);
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       this.pauseRender = false;
@@ -946,6 +993,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   u_MouseXUniformLocation: WebGLUniformLocation | null = null;
   u_MouseYUniformLocation: WebGLUniformLocation | null = null;
   u_wheelUniformLocation: WebGLUniformLocation | null = null;
+  u_PositionXUniformLocation: WebGLUniformLocation | null = null;
+  u_PositionYUniformLocation: WebGLUniformLocation | null = null;
 
   vertexPositionAttribute = 0;
 
@@ -976,6 +1025,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     uniform float u_mouseX;
     uniform float u_mouseY;
     uniform float u_wheel;
+    uniform float u_positionX;
+    uniform float u_positionY;
 
     ${shaderDynamicUniforms}
     #define PI = 3.1415926535897932384626433832795;
@@ -1116,6 +1167,14 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.u_wheelUniformLocation = gl.getUniformLocation(
       this.shaderProgram,
       'u_wheel'
+    );
+    this.u_PositionXUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
+      'u_positionX'
+    );
+    this.u_PositionYUniformLocation = gl.getUniformLocation(
+      this.shaderProgram,
+      'u_positionY'
     );
 
     this.vertexPositionAttribute = gl.getAttribLocation(
@@ -1501,6 +1560,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     gl.uniform1f(this.u_MouseXUniformLocation, this.mouseX ?? 0);
     gl.uniform1f(this.u_MouseYUniformLocation, -this.mouseY ?? 0);
     gl.uniform1f(this.u_wheelUniformLocation, this.wheel ?? 0);
+    gl.uniform1f(this.u_PositionXUniformLocation, this.positionX ?? 0);
+    gl.uniform1f(this.u_PositionYUniformLocation, -this.positionY ?? 0);
 
     this.valueParameterUniforms.forEach((uniform) => {
       if (uniform.uniform) {
