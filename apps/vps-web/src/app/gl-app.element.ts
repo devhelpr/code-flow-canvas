@@ -168,7 +168,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     document
       .getElementById('glcanvas')
-      ?.addEventListener('pointerup', (event) => {
+      ?.addEventListener('pointerup', (_event) => {
         this.isMovingGLCanvas = false;
       });
 

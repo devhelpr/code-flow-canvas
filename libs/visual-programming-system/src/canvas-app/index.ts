@@ -1088,6 +1088,21 @@ export const createCanvasApp = <T>(
       if (nodeComponent.thumbConnectors) {
         nodeComponent.thumbConnectors.push(thumbNode.nodeComponent);
       }
+
+      rectInstance.cachedHeight = -1;
+      rectInstance.cachedWidth = -1;
+
+      // ugly workaround for getting correct height because when calculating the above the thumb wasn't at the correct position
+
+      nodeComponent?.update?.(
+        nodeComponent,
+        nodeComponent.x,
+        nodeComponent.y,
+        nodeComponent
+      );
+
+      // now recalculate height of node
+
       rectInstance.updateMinHeight();
       rectInstance.updateNodeSize(
         nodeComponent.x,
@@ -1096,8 +1111,8 @@ export const createCanvasApp = <T>(
         nodeComponent.height ?? 0,
         false
       );
-      rectInstance.oldHeight = -1;
-      rectInstance.oldWidth = -1;
+      rectInstance.cachedHeight = -1;
+      rectInstance.cachedWidth = -1;
 
       nodeComponent?.update?.(
         nodeComponent,
@@ -1105,8 +1120,6 @@ export const createCanvasApp = <T>(
         nodeComponent.y,
         nodeComponent
       );
-      //const { scale } = getCamera();
-      //rectInstance?.resize((nodeComponent.width ?? 0) / scale);
       return undefined;
     },
     deleteElement: (id: string) => {

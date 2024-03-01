@@ -42,7 +42,7 @@ export const getWheelNode: NodeTaskFactory<GLNodeInfo> = (
     input: string,
     _loopIndex?: number,
     _payload?: any,
-    thumbName?: string
+    _thumbName?: string
   ) => {
     return {
       result: `u_wheel`,

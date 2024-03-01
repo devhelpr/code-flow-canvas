@@ -261,8 +261,8 @@ export class Rect<T> {
 
     // WARNING! .. if this is not done, then thumb positioning is incorrect after loading flow
     //  for thumb-types EndConnecterCenter and StartConnectorCenter
-    this.oldWidth = -1;
-    this.oldHeight = -1;
+    this.cachedWidth = -1;
+    this.cachedHeight = -1;
 
     this.nodeComponent.update(
       this.nodeComponent,
@@ -348,8 +348,8 @@ export class Rect<T> {
     this.nodeComponent.y = startY;
     this.nodeComponent.width = width;
     this.nodeComponent.height = Math.max(height, this.minHeight);
-    this.oldWidth = width;
-    this.oldHeight = Math.max(height, this.minHeight);
+    this.cachedWidth = width;
+    this.cachedHeight = Math.max(height, this.minHeight);
 
     if (!hasStaticWidthHeight) {
       const astElementSize = (
@@ -743,8 +743,8 @@ export class Rect<T> {
     console.log('onCanReceiveDroppedComponent FALSE4');
     return false;
   }
-  oldWidth = -1;
-  oldHeight = -1;
+  cachedWidth = -1;
+  cachedHeight = -1;
   onEndThumbConnectorElementupdate = (
     target?: INodeComponent<T>,
     x?: number,
@@ -755,13 +755,13 @@ export class Rect<T> {
       return false;
     }
     if (
-      this.oldWidth === -1 ||
-      this.oldHeight === -1 ||
-      this.oldWidth !== this.nodeComponent?.width ||
-      this.oldHeight !== this.nodeComponent?.height
+      this.cachedWidth === -1 ||
+      this.cachedHeight === -1 ||
+      this.cachedWidth !== this.nodeComponent?.width ||
+      this.cachedHeight !== this.nodeComponent?.height
     ) {
-      this.oldWidth = this.nodeComponent?.width ?? -1;
-      this.oldHeight = this.nodeComponent?.height ?? -1;
+      this.cachedWidth = this.nodeComponent?.width ?? -1;
+      this.cachedHeight = this.nodeComponent?.height ?? -1;
       this.nodeComponent?.thumbConnectors?.forEach((thumbConnector) => {
         if (thumbConnector.domElement && this.nodeComponent) {
           const { x, y } = thumbPosition(
