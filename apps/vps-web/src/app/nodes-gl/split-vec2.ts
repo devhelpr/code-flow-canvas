@@ -46,7 +46,7 @@ export const getSplitVector2dNode = (
   };
 
   const nodeName = 'split-vector2-node';
-  const nodeTitle = 'Split Vector';
+  const nodeTitle = 'Split';
   return {
     name: nodeName,
     family: 'flow-canvas',
@@ -63,7 +63,7 @@ export const getSplitVector2dNode = (
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center`,
+          class: `inner-node bg-slate-500 text-white p-4 rounded-xl flex flex-row items-center justify-center`,
         },
         undefined,
         nodeTitle

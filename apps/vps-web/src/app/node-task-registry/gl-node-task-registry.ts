@@ -64,6 +64,7 @@ import { getPositionNode } from '../nodes-gl/position-node';
 import { getBreakNode } from '../nodes-gl/break';
 import { getGateNode } from '../nodes-gl/gate-node';
 import { getCurrentIterationNode } from '../nodes-gl/current-iteration';
+import { getSquaredNode } from '../nodes-gl/square';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -135,6 +136,7 @@ export const setupGLNodeTaskRegistry = () => {
     getAdditionVectorNode,
     'Add Vectors'
   );
+  registerGLNodeFactory('squared-node', getSquaredNode, 'Squared');
 
   registerGLNodeFactory('noise-node', getNoiseNode, 'Noise');
 

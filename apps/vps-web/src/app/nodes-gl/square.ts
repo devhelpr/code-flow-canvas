@@ -1,4 +1,5 @@
 import {
+  IRectNodeComponent,
   Theme,
   ThumbConnectionType,
   ThumbType,
@@ -15,9 +16,9 @@ import {
   createTemplate,
 } from '@devhelpr/dom-components';
 
-const fieldName = 'subtract';
-const labelName = 'Subtract';
-const nodeName = 'subtract-node';
+const fieldName = 'square';
+const labelName = 'Square';
+const nodeName = 'squared-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
 const thumbs = [
@@ -31,44 +32,48 @@ const thumbs = [
     maxConnections: -1,
   },
   {
-    thumbType: ThumbType.EndConnectorLeft,
+    thumbType: ThumbType.EndConnectorCenter,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'value1',
-    thumbConstraint: thumbConstraint,
-  },
-  {
-    thumbType: ThumbType.EndConnectorLeft,
-    thumbIndex: 1,
-    connectionType: ThumbConnectionType.end,
-    color: 'white',
-    label: ' ',
-    name: 'value2',
+    name: 'value',
     thumbConstraint: thumbConstraint,
   },
 ];
 
-export const getSubtractNode: NodeTaskFactory<GLNodeInfo> = (
+export const getSquaredNode: NodeTaskFactory<GLNodeInfo> = (
   _updated: () => void,
   theme?: Theme
 ): NodeTask<GLNodeInfo> => {
+  let node: IRectNodeComponent<GLNodeInfo>;
   const initializeCompute = () => {
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    const value1 = payload?.['value1'];
-    const value2 = payload?.['value2'];
+    const value = payload?.['value'];
+    if (node && node.domElement) {
+      const element = (node.domElement as HTMLElement).querySelector(
+        '.node-text'
+      );
+      if (element) {
+        if (value.length > 0 && value.length <= 4) {
+          element.innerHTML = `${value}&sup2;`;
+        } else {
+          element.innerHTML = `x&sup2;`;
+        }
+      }
+    }
+
     return {
-      result: `(${value1} - ${value2})`,
+      result: `(${value} * ${value})`,
       output: input,
       followPath: undefined,
     };
   };
 
   const element = createElementFromTemplate(
-    createTemplate(`<div class="text-7xl -mt-[10px]">-</div>`)
+    createTemplate(`<div class="node-text text-7xl -mt-[10px]">x&sup2;</div>`)
   );
 
   return visualNodeFactory(
@@ -79,14 +84,14 @@ export const getSubtractNode: NodeTaskFactory<GLNodeInfo> = (
     compute,
     initializeCompute,
     false,
-    100,
+    150,
     320,
     thumbs,
     (_values?: InitialValues) => {
       return [];
     },
-    (_nodeInstance) => {
-      //
+    (nodeInstance) => {
+      node = nodeInstance.node as unknown as IRectNodeComponent<GLNodeInfo>;
     },
     {
       hasTitlebar: false,
