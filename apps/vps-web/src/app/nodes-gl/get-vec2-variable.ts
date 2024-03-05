@@ -22,6 +22,7 @@ const thumbs = [
     thumbConstraint: 'vec2',
     name: 'vector',
     prefixLabel: '',
+    maxConnections: -1,
   },
 ];
 

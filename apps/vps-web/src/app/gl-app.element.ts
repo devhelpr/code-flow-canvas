@@ -61,6 +61,12 @@ import { registerCommands } from './command-handlers/register-commands';
 import { setupGLTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
 import { GLNodeInfo } from './types/gl-node-info';
 import { getGLSLFunctions } from './nodes-gl/custom-glsl-functions-registry';
+import {
+  floatType,
+  vec2Type,
+  vec3Type,
+  vec4Type,
+} from './gl-types/float-vec2-vec3';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -207,7 +213,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         timeDiff = timeDiff * 16;
       }
 
-      const factor = event.ctrlKey ? (isMacOs ? 350 : 50) : isMacOs ? 150 : 20;
+      const factor = event.ctrlKey
+        ? isMacOs
+          ? 350
+          : 350
+        : isMacOs
+        ? 150
+        : 150;
 
       const delta =
         -event.deltaY *
@@ -1037,7 +1049,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   createFragmentShader = (statements: string) => {
     let shaderDynamicUniforms = '';
     this.valueParameterUniforms.forEach((uniform) => {
-      shaderDynamicUniforms += `uniform float ${uniform.uniformName.replaceAll(
+      shaderDynamicUniforms += `uniform ${floatType} ${uniform.uniformName.replaceAll(
         '-',
         ''
       )};\n`;
@@ -1045,21 +1057,21 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     return `
     precision highp float;
-    uniform float u_time;
-    uniform float u_width;
-    uniform float u_height;
-    uniform float u_test;
-    uniform float u_mouseX;
-    uniform float u_mouseY;
-    uniform float u_wheel;
-    uniform float u_positionX;
-    uniform float u_positionY;
+    uniform ${floatType} u_time;
+    uniform ${floatType} u_width;
+    uniform ${floatType} u_height;
+    uniform ${floatType} u_test;
+    uniform ${floatType} u_mouseX;
+    uniform ${floatType} u_mouseY;
+    uniform ${floatType} u_wheel;
+    uniform ${floatType} u_positionX;
+    uniform ${floatType} u_positionY;
 
     ${shaderDynamicUniforms}
     #define PI = 3.1415926535897932384626433832795;
-    float metaball(vec2 p, vec2 center, float radius) {
-      float r = radius * radius;
-      float d = length(p - center);
+    ${floatType} metaball(${vec2Type} p, ${vec2Type} center, ${floatType} radius) {
+      ${floatType} r = radius * radius;
+      ${floatType} d = length(p - center);
       return r / (d * d);
     }
 
@@ -1071,36 +1083,36 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 	
   
     void main() {
-      float aspect = u_width/u_height;
-      vec2 resolution = vec2(u_width, u_height);
-      vec2 uv = (gl_FragCoord.xy / resolution.xy);      
+      ${floatType} aspect = u_width/u_height;
+      ${vec2Type} resolution = ${vec2Type}(u_width, u_height);
+      ${vec2Type} uv = (gl_FragCoord.xy / resolution.xy);      
       uv = uv * 2.0 - 1.0;
       uv.x *= aspect;
 
-      vec3 backgroundColor = vec3(0.0, 0.0, 0.0);
-      vec3 finalColor = vec3(0.0);
-      vec3 totalcolinf = vec3(0.00);
-      float totalInfluence = 0.0;
+      ${vec3Type} backgroundColor = ${vec3Type}(0.0, 0.0, 0.0);
+      ${vec3Type} finalColor = ${vec3Type}(0.0);
+      ${vec3Type} totalcolinf = ${vec3Type}(0.00);
+      ${floatType} totalInfluence = 0.0;
 
       ${statements}
 
-      float threshold = 1.5;
-      float threshold2 = 3.5;
+      ${floatType} threshold = 1.5;
+      ${floatType} threshold2 = 3.5;
       if (totalInfluence > threshold) {
-          vec3 color = (totalcolinf) / totalInfluence;
+        ${vec3Type} color = (totalcolinf) / totalInfluence;
           if (totalInfluence < threshold2) {
             color = mix(backgroundColor, color, (totalInfluence - threshold) / (threshold2 - threshold));
           }
-          gl_FragColor = vec4(color, 1.0);
+          gl_FragColor = ${vec4Type}(color, 1.0);
       } else {
-          gl_FragColor = vec4(backgroundColor, 1.0);
+          gl_FragColor = ${vec4Type}(backgroundColor, 1.0);
       }          
     }
     `;
   };
 
   vsSource = `
-      attribute vec4 aVertexPosition;
+      attribute ${vec4Type} aVertexPosition;
       void main() {
           gl_Position = aVertexPosition;
       }
@@ -1517,10 +1529,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   isWheelEventSet = false;
   setupGLCanvas = () => {
     this.glcanvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    // if (!this.isWheelEventSet) {
-    //   this.glcanvas.addEventListener('wheel', this.onGLCanvasWheelEvent);
-    //   this.isWheelEventSet = true;
-    // }
+    this.isWheelEventSet = true;
+
     this.canvasSize = this.glcanvas.getBoundingClientRect();
     this.glcanvas.width = this.canvasSize.width;
     this.glcanvas.height = this.canvasSize.height;

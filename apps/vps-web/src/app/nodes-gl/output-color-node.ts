@@ -9,6 +9,7 @@ import {
 
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { floatType, vec3Type } from '../gl-types/float-vec2-vec3';
 
 const thumbs = [
   {
@@ -71,7 +72,7 @@ export const getOutputColorNode = (
     if (red_color === green_color) {
       isRedStatementSet = true;
       preStatements += `
-        float red = ${red_color};
+      ${floatType}  red = ${red_color};
       `;
       red_color = 'red';
       green_color = 'red';
@@ -80,7 +81,7 @@ export const getOutputColorNode = (
     if (red_color === blue_color) {
       if (!isRedStatementSet) {
         preStatements += `
-          float red = ${red_color};
+        ${floatType} red = ${red_color};
         `;
         red_color = 'red';
       }
@@ -89,14 +90,14 @@ export const getOutputColorNode = (
 
     if (green_color === blue_color && green_color !== 'red') {
       preStatements += `
-        float green = ${green_color};
+      ${floatType} green = ${green_color};
       `;
       green_color = 'green';
       blue_color = 'green';
     }
     let shaderCode = `
       ${preStatements}
-      backgroundColor = vec3(${red_color}, ${green_color}, ${blue_color});
+      backgroundColor =  ${vec3Type}(${red_color}, ${green_color}, ${blue_color});
     `;
     if (vector) {
       shaderCode = `

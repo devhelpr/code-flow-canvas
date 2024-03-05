@@ -1,4 +1,6 @@
 import {
+  IThumb,
+  Theme,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -9,12 +11,16 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import {
+  createElementFromTemplate,
+  createTemplate,
+} from '@devhelpr/dom-components';
 
-const fieldName = 'dot-vector';
-const labelName = 'Dot product';
-const nodeName = 'dot-vector-node';
+const fieldName = 'greater-then';
+const labelName = 'Greater Then';
+const nodeName = 'greater-then-node';
 const familyName = 'flow-canvas';
-const thumbConstraint = 'vec2';
+const thumbConstraint = 'value';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -22,8 +28,9 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    thumbConstraint: 'value',
+    thumbConstraint: 'condition',
     maxConnections: -1,
+    thumbShape: 'diamond',
   },
   {
     thumbType: ThumbType.EndConnectorLeft,
@@ -31,7 +38,7 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'vector1',
+    name: 'value1',
     thumbConstraint: thumbConstraint,
   },
   {
@@ -40,26 +47,33 @@ const thumbs = [
     connectionType: ThumbConnectionType.end,
     color: 'white',
     label: ' ',
-    name: 'vector2',
+    name: 'value2',
     thumbConstraint: thumbConstraint,
   },
-];
+] as IThumb[];
 
-export const getDotProductVectorNode: NodeTaskFactory<GLNodeInfo> = (
-  _updated: () => void
+export const getGreaterThenNode: NodeTaskFactory<GLNodeInfo> = (
+  _updated: () => void,
+  theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    const value1 = payload?.['vector1'];
-    const value2 = payload?.['vector2'];
+    const value1 = payload?.['value1'];
+    const value2 = payload?.['value2'];
     return {
-      result: `dot(${value1},${value2})`,
+      result: `(${value1} > ${value2})`,
       output: input,
       followPath: undefined,
     };
   };
+
+  const element = createElementFromTemplate(
+    createTemplate(
+      `<div class="text-7xl"><span class="icon-navigate_nextchevron_right" /></div>`
+    )
+  );
 
   return visualNodeFactory(
     nodeName,
@@ -80,7 +94,11 @@ export const getDotProductVectorNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      hideTitle: true,
       category: 'Math',
-    }
+      backgroundColorClassName: `${theme?.nodeInversedBackground} diamond-shape`,
+      textColorClassName: theme?.nodeInversedText,
+    },
+    element
   );
 };

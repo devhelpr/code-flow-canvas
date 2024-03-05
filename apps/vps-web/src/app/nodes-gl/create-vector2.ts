@@ -9,6 +9,7 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { vec2Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'create-vector2';
 const labelName = 'Create vector';
@@ -60,7 +61,7 @@ export const getCreateVector2Node: NodeTaskFactory<GLNodeInfo> = (
     const x = payload?.['x'];
     const y = payload?.['y'];
     return {
-      result: `vec2(${x}, ${y})`,
+      result: `${vec2Type}(${x}, ${y})`,
       output: input,
       followPath: undefined,
     };

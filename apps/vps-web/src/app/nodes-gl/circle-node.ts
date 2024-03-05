@@ -9,6 +9,7 @@ import {
 
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { vec3Type } from '../gl-types/float-vec2-vec3';
 
 export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
@@ -17,7 +18,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
     return;
   };
   const compute = (_input: string, loopIndex?: number, payload?: any) => {
-    const color = payload?.['color'] ?? 'vec3(1.,1.,1.)';
+    const color = payload?.['color'] ?? `${vec3Type}(1.,1.,1.)`;
     const x = payload?.['x'] ?? '0.0';
     const y = payload?.['y'] ?? '0.0';
 

@@ -11,6 +11,7 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { FormFieldType } from '../components/FormField';
 import { FormComponent } from '../components/form-component';
+import { vec3Type } from '../gl-types/float-vec2-vec3';
 
 const thumbs = [
   {
@@ -36,7 +37,7 @@ export const getSetColorVariableNode = (
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     const variableName =
       (node ?? payload)?.nodeInfo?.formValues?.variableName ?? '';
-    const vector = payload?.['vector'] ?? 'vec2(0., 0., 0.)';
+    const vector = payload?.['vector'] ?? `${vec3Type}(0., 0., 0.)`;
     const shaderCode = `${variableName} = ${vector};`;
     return {
       result: shaderCode,

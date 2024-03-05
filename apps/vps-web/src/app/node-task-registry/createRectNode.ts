@@ -269,7 +269,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
         class: `node-top-label text-center text-white`,
       },
       undefined,
-      nodeTitle
+      nodeTitle.replace('^2', '²')
     ) as unknown as INodeComponent<T>;
     (componentWrapper.domElement as HTMLElement).prepend(
       topLabel.domElement as HTMLElement

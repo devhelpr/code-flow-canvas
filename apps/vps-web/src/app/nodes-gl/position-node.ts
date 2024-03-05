@@ -12,6 +12,7 @@ import {
   visualNodeFactory,
 } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { vec2Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'position';
 const labelName = 'Position';
@@ -80,7 +81,7 @@ export const getPositionNode: NodeTaskFactory<GLNodeInfo> = (
       };
     } else {
       return {
-        result: `vec2(u_positionX, u_positionY)`,
+        result: `${vec2Type}(u_positionX, u_positionY)`,
         output: input,
         followPath: undefined,
       };

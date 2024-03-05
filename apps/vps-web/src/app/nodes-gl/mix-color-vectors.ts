@@ -9,6 +9,7 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { vec3Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'mix-color-vector';
 const labelName = 'Mix color vectors';
@@ -61,8 +62,8 @@ export const getMixVectorColorNode: NodeTaskFactory<GLNodeInfo> = (
     return;
   };
   const compute = (input: string, _loopIndex?: number, payload?: any) => {
-    const value1 = payload?.['color1'] ?? 'vec3(0.0, 0.0, 0.0)';
-    const value2 = payload?.['color2'] ?? 'vec3(1.0, 1.0, 1.0)';
+    const value1 = payload?.['color1'] ?? `${vec3Type}(0.0, 0.0, 0.0)`;
+    const value2 = payload?.['color2'] ?? `${vec3Type}(1.0, 1.0, 1.0)`;
     const interpolate = payload?.['interpolate'] ?? '0.5';
     return {
       result: `mix(${value1}, ${value2}, ${interpolate})`,

@@ -36,9 +36,8 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
 
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     const block = payload?.['block'] ?? 1;
-    const left = payload?.['left'] ?? 0;
-    const right = payload?.['right'] ?? 1;
-    const shader = `if (${left} > ${right}) {
+    const condition = payload?.['condition'] ?? 'false';
+    const shader = `if (${condition}) {
         ${block}
     }`;
 
@@ -103,17 +102,9 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            name: 'left',
-            thumbConstraint: 'value',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 1,
-            connectionType: ThumbConnectionType.end,
-            color: 'white',
-            label: ' ',
-            name: 'right',
-            thumbConstraint: 'value',
+            name: 'condition',
+            thumbConstraint: 'condition',
+            thumbShape: 'diamond',
           },
         ],
         wrapper,
@@ -141,12 +132,6 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       )?.classList.remove('z-[1150]');
       (
         rect.nodeComponent?.thumbConnectors?.[0].domElement as HTMLElement
-      )?.classList.add('z-[1200]');
-      (
-        rect.nodeComponent?.thumbConnectors?.[1].domElement as HTMLElement
-      )?.classList.remove('z-[1150]');
-      (
-        rect.nodeComponent?.thumbConnectors?.[1].domElement as HTMLElement
       )?.classList.add('z-[1200]');
 
       if (htmlNode.domElement) {

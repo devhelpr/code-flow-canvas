@@ -375,6 +375,7 @@ export class NodeSelector<T> {
     }
     const camera = getCamera();
 
+    // TODO: also update padding and margin depending on the camera scale
     (this.nodeSelectorElement.domElement as HTMLElement).style.borderWidth = `${
       1 / camera.scale
     }px`;
@@ -388,6 +389,18 @@ export class NodeSelector<T> {
       (
         this.createCompositionButtons.domElement as HTMLElement
       ).style.fontSize = `${12 / camera.scale}px`;
+      (
+        this.createCompositionButtons.domElement as HTMLElement
+      ).style.padding = `${0.5 / camera.scale}rem`;
+      (
+        this.createCompositionButtons.domElement as HTMLElement
+      ).style.margin = `${0.5 / camera.scale}rem`;
+      (
+        this.createCompositionButtons.domElement as HTMLElement
+      ).style.borderRadius = `${0.15 / camera.scale}rem`;
+      (
+        this.createCompositionButtons.domElement as HTMLElement
+      ).style.borderWidth = `${1 / camera.scale}px`;
     }
     if (this.toolsNodesPanel) {
       (this.toolsNodesPanel.domElement as HTMLElement).style.bottom = `-${

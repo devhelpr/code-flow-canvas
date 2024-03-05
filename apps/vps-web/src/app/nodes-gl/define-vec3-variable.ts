@@ -11,6 +11,7 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { FormFieldType } from '../components/FormField';
+import { vec3Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'variableName';
 const labelName = 'Variable';
@@ -38,7 +39,7 @@ export const getDefineColorVariableNode: NodeTaskFactory<GLNodeInfo> = (
   };
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     const variableName = node?.nodeInfo?.formValues?.variableName ?? '';
-    const vector = payload?.['vector'] ?? 'vec3(0., 0., 0.)';
+    const vector = payload?.['vector'] ?? `${vec3Type}(0., 0., 0.)`;
     const shaderCode = `vec3 ${variableName} = ${vector};`;
     return {
       result: shaderCode,

@@ -1406,7 +1406,7 @@ export class AppElement<T> {
           `[data-node-type="composition-${composition.id}"] .node-top-label`
         );
         nodes.forEach((node) => {
-          (node as HTMLElement).innerHTML = composition.name;
+          (node as HTMLElement).innerHTML = composition.name.replace('^2', '²');
         });
 
         // initialize composition nodes (recursively for container nodes as well)

@@ -92,6 +92,19 @@ export const getSquaredNode: NodeTaskFactory<GLNodeInfo> = (
     },
     (nodeInstance) => {
       node = nodeInstance.node as unknown as IRectNodeComponent<GLNodeInfo>;
+
+      const element = (node.domElement as HTMLElement).querySelector(
+        '.node-text'
+      );
+      if (element) {
+        const value = (nodeInstance.node as IRectNodeComponent<GLNodeInfo>)
+          ?.connections?.[0]?.connectionStartNodeThumb?.prefixLabel;
+        if (value && value.length > 0 && value.length <= 4) {
+          element.innerHTML = `${value}&sup2;`;
+        } else {
+          element.innerHTML = `x&sup2;`;
+        }
+      }
     },
     {
       hasTitlebar: false,

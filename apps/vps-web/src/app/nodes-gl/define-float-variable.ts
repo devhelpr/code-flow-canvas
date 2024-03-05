@@ -11,6 +11,7 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { FormFieldType } from '../components/FormField';
+import { floatType } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'variableName';
 const labelName = 'Variable';
@@ -39,7 +40,7 @@ export const getDefineValueVariableNode: NodeTaskFactory<GLNodeInfo> = (
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
     const variableName = node?.nodeInfo?.formValues?.variableName ?? '';
     const value = payload?.['value'] ?? '0.';
-    const shaderCode = `float ${variableName} = ${value};`;
+    const shaderCode = `${floatType} ${variableName} = ${value};`;
     return {
       result: shaderCode,
       output: shaderCode,

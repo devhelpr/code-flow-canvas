@@ -11,53 +11,81 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { FormFieldType } from '../components/FormField';
-import { vec2Type } from '../gl-types/float-vec2-vec3';
 
-const fieldName = 'variableName';
-const labelName = 'Variable';
-const nodeName = 'define-vec2-variable-node';
+// this is the escape hatch
+
+const fieldName = 'custom';
+const labelName = 'Custom';
+const nodeName = 'custom-node';
 const familyName = 'flow-canvas';
+const thumbConstraint = 'value';
 const thumbs = [
   {
-    thumbType: ThumbType.EndConnectorCenter,
+    thumbType: ThumbType.StartConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    //thumbConstraint: thumbConstraint,
+    maxConnections: -1,
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
-    label: 'v2',
+    label: 'a',
+
+    name: 'value',
+    thumbConstraint: thumbConstraint,
+    prefixLabel: ' ',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: 'b',
+
+    name: 'z',
     thumbConstraint: 'vec2',
-    name: 'vector',
-    prefixLabel: '',
+    prefixLabel: ' ',
   },
 ];
 
-export const getDefineVectorVariableNode: NodeTaskFactory<GLNodeInfo> = (
+export const getCustomNode: NodeTaskFactory<GLNodeInfo> = (
   updated: () => void
 ): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
   const initializeCompute = () => {
     return;
   };
-  const compute = (_input: string, _loopIndex?: number, payload?: any) => {
-    const variableName = node?.nodeInfo?.formValues?.variableName ?? '';
-    const vector = payload?.['vector'] ?? `${vec2Type}(0., 0.)`;
-    const shaderCode = `${vec2Type} ${variableName} = ${vector};`;
+  const compute = (input: string, _loopIndex?: number, payload?: any) => {
+    let custom = node?.nodeInfo?.formValues?.custom ?? '';
+    const value = payload?.['value'];
+    const z = payload?.['z'];
+    custom = custom.replaceAll('$a', value);
+    custom = custom.replaceAll('$b', z);
+    console.log('custom', custom);
+    // $a - log2(log2(dot($b,$b))) + 4.0
     return {
-      result: shaderCode,
-      output: shaderCode,
+      //result: `${value} - log2(log2(dot(${z},${z}))) + 4.0`,
+      result: custom,
+      output: input,
       followPath: undefined,
     };
   };
 
   return visualNodeFactory(
     nodeName,
-    'Define vector variable',
+    labelName,
     familyName,
     fieldName,
     compute,
     initializeCompute,
     false,
     200,
-    150,
+    100,
     thumbs,
     (values?: InitialValues) => {
       return [
@@ -68,14 +96,14 @@ export const getDefineVectorVariableNode: NodeTaskFactory<GLNodeInfo> = (
             showLabel: false,
           },
           label: labelName,
-          value: values?.['variableName'] ?? '',
+          value: values?.['custom'] ?? '',
           onChange: (value: string) => {
             if (!node?.nodeInfo) {
               return;
             }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
-              variableName: value,
+              custom: value,
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {
@@ -86,11 +114,11 @@ export const getDefineVectorVariableNode: NodeTaskFactory<GLNodeInfo> = (
       ];
     },
     (nodeInstance) => {
-      node = nodeInstance.node as IRectNodeComponent<GLNodeInfo>;
+      node = nodeInstance.node as unknown as IRectNodeComponent<GLNodeInfo>;
     },
     {
       hasTitlebar: true,
-      category: 'variables',
+      category: 'Custom',
     }
   );
 };

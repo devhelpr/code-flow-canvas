@@ -10,6 +10,7 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { registerGLSLFunction } from './custom-glsl-functions-registry';
+import { floatType, vec3Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'palette';
 const labelName = 'Palette';
@@ -53,43 +54,43 @@ const thumbs = [
 
 registerGLSLFunction(
   nodeName,
-  `vec3 palete( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
+  `${vec3Type} palete( in ${floatType} t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
     return a + b*cos( 6.28318*(c*t+d) );  
   }
 
-  vec3 palete2(float t) {
-    vec3 a = vec3(0.5, 0.5, 0.5);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.263,0.416,0.557);
+  ${vec3Type}  palete2(${floatType}  t) {
+    ${vec3Type} a = vec3(0.5, 0.5, 0.5);
+    ${vec3Type} b = vec3(0.5, 0.5, 0.5);
+    ${vec3Type} c = vec3(1.0, 1.0, 1.0);
+    ${vec3Type} d = vec3(0.263,0.416,0.557);
 
     return a + b*cos( 6.28318*(c*t+d) );
   }
 
-  vec3 chooseColor(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(2.0,1.0,0.0), vec3(0.5,0.20,0.25));
+  ${vec3Type} chooseColor(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(2.0,1.0,0.0), ${vec3Type}(0.5,0.20,0.25));
   }
 
-  vec3 chooseColor2(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.33,0.67));
+  ${vec3Type}  chooseColor2(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(1.0,1.0,1.0), ${vec3Type}(0.0,0.33,0.67));
   }
 
-  vec3 chooseColor3(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.1,0.2));
+  ${vec3Type}  chooseColor3(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(1.0,1.0,1.0), ${vec3Type}(0.0,0.1,0.2));
   }
-  vec3 chooseColor4(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.3,0.2,0.2));
+  ${vec3Type}  chooseColor4(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(1.0,1.0,1.0), ${vec3Type}(0.3,0.2,0.2));
   }
-  vec3 chooseColor5(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,0.5), vec3(0.8,0.9,0.3));
+  ${vec3Type}  chooseColor5(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(1.0,1.0,0.5), ${vec3Type}(0.8,0.9,0.3));
   }
-  vec3 chooseColor6(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,0.7,0.4), vec3(0.0,0.15,0.2));
+  ${vec3Type}  chooseColor6(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(0.5,0.5,0.5), ${vec3Type}(1.0,0.7,0.4), ${vec3Type}(0.0,0.15,0.2));
   }
-  vec3 chooseColor7(float paleteOffset) {
-    return palete(paleteOffset, vec3(0.8,0.5,0.4), vec3(0.2,0.4,0.2), vec3(2.0,1.0,1.0), vec3(0.0,0.25,0.25));
+  ${vec3Type}  chooseColor7(${floatType}  paleteOffset) {
+    return palete(paleteOffset, ${vec3Type}(0.8,0.5,0.4), ${vec3Type}(0.2,0.4,0.2), ${vec3Type}(2.0,1.0,1.0), ${vec3Type}(0.0,0.25,0.25));
   }
-  vec3 choosePalete(float paleteOffset , float paleteType) {
+  ${vec3Type}  choosePalete(${floatType}  paleteOffset , ${floatType}  paleteType) {
     if (paleteType == 1.0) {
       return chooseColor(paleteOffset);
     }

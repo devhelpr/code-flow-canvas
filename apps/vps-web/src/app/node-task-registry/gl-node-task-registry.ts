@@ -65,6 +65,8 @@ import { getBreakNode } from '../nodes-gl/break';
 import { getGateNode } from '../nodes-gl/gate-node';
 import { getCurrentIterationNode } from '../nodes-gl/current-iteration';
 import { getSquaredNode } from '../nodes-gl/square';
+import { getGreaterThenNode } from '../nodes-gl/greater-then';
+import { getCustomNode } from '../nodes-gl/custom';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -264,6 +266,12 @@ export const setupGLNodeTaskRegistry = () => {
   );
 
   registerGLNodeFactory('break-node', getBreakNode, 'Break');
+  registerGLNodeFactory(
+    'greater-then-node',
+    getGreaterThenNode,
+    'Greater Then'
+  );
+  registerGLNodeFactory('custom-node', getCustomNode, 'Custom');
 };
 
 export const getGLNodeTaskFactory: GetNodeTaskFactory<GLNodeInfo> = (

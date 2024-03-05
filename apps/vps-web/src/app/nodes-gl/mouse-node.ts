@@ -12,6 +12,7 @@ import {
   visualNodeFactory,
 } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { vec2Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'mouse';
 const labelName = 'Mouse';
@@ -80,7 +81,7 @@ export const getMouseNode: NodeTaskFactory<GLNodeInfo> = (
       };
     } else {
       return {
-        result: `vec2(u_mouseX, u_mouseY)`,
+        result: `${vec2Type}(u_mouseX, u_mouseY)`,
         output: input,
         followPath: undefined,
       };

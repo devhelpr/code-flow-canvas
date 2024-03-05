@@ -11,6 +11,7 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { registerGLSLFunction } from './custom-glsl-functions-registry';
+import { vec2Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'rotate';
 const labelName = 'Rotate';
@@ -54,7 +55,7 @@ const thumbs = [
 
 registerGLSLFunction(
   nodeName,
-  `vec2 rotate(vec2 v, float a) {
+  `${vec2Type} rotate(vec2 v, float a) {
     float degreeToRad = a * 0.017453292519943295;
     return vec2(sin(degreeToRad) * v.x + cos(degreeToRad) * v.y, cos(degreeToRad) * v.x - sin(degreeToRad) * v.y);
   }`

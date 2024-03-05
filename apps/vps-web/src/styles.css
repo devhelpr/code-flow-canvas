@@ -463,3 +463,12 @@ position: relative;
 .add-node-dialog-container .form select {
 	@apply border border-gray-300 p-2;
 }
+
+.node-top-label {
+	font-size: calc(1vw + 1vh);
+	font-weight: 700;
+}
+
+.diamond-shape {
+	clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
