@@ -98,6 +98,9 @@ export const createContextInstanceApp = <T>(
     resetNodeTransform: () => {
       //
     },
+    destoyCanvasApp: () => {
+      //
+    },
     setOnCameraChanged: (
       _onCameraChangedHandler: (camera: {
         x: number;

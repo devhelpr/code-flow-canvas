@@ -404,6 +404,26 @@ export const importToCanvas = <T extends BaseNodeInfo>(
       if (end) {
         end.connections?.push(curve.nodeComponent);
       }
+
+      // does this work?
+      if (curve.nodeComponent.endNode?.update) {
+        curve.nodeComponent.endNode.update(
+          curve.nodeComponent.endNode,
+          curve.nodeComponent.endNode.x,
+          curve.nodeComponent.endNode.y,
+          curve.nodeComponent.endNode
+        );
+      }
+      if (curve.nodeComponent.startNode?.update) {
+        curve.nodeComponent.startNode.update(
+          curve.nodeComponent.startNode,
+          curve.nodeComponent.startNode.x,
+          curve.nodeComponent.startNode.y,
+          curve.nodeComponent.startNode
+        );
+      }
+      // end does this work?
+
       if (curve.nodeComponent.update) {
         curve.nodeComponent.update();
       }

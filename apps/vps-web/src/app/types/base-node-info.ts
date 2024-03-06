@@ -29,4 +29,5 @@ export interface BaseNodeInfo {
   delete?: () => void;
   formValues?: any;
   decorators?: INodeDecorator[];
+  update?: () => void;
 }

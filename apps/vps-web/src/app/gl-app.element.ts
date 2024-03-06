@@ -1318,6 +1318,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     let sdfIndex = 1;
     const visitedNodes: string[] = [];
 
+    // TODO : use getSortedNodes here
+
     elementMap.forEach((element) => {
       const node = element as unknown as INodeComponent<GLNodeInfo>;
       if (node.nodeType === NodeType.Shape) {

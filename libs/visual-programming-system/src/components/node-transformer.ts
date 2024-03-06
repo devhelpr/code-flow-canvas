@@ -31,11 +31,16 @@ const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
     - visibilty of moveNodePanel
 */
 
+const transformNodeList: NodeTransformer<unknown>[] = [];
+
 export class NodeTransformer<T> {
   constructor(
     rootElement: DOMElementNode,
     interactionStateMachine: InteractionStateMachine<T>
   ) {
+    this.id = crypto.randomUUID();
+    transformNodeList.push(this as NodeTransformer<unknown>);
+
     this.interactionStateMachine = interactionStateMachine;
     this.nodeTransformElement = createElement(
       'div',
@@ -162,6 +167,14 @@ export class NodeTransformer<T> {
       this.moveNodesPanel.domElement
     );
   }
+  destroy() {
+    const index = transformNodeList.findIndex((item) => this.id === item.id);
+    if (index > -1) {
+      transformNodeList.slice(index, 1);
+    }
+  }
+
+  id = '';
 
   nodeTransformElement: IDOMElement | undefined;
   interactionStateMachine: InteractionStateMachine<T> | undefined;
@@ -185,6 +198,8 @@ export class NodeTransformer<T> {
     }
     this.attachedNode = node;
 
+    this.detachRegisteredNodes();
+
     this.visibilityResizeControls(node.canBeResized ?? true);
     const transformerDomElement = this.nodeTransformElement
       ?.domElement as HTMLElement;
@@ -202,12 +217,24 @@ export class NodeTransformer<T> {
     }
   }
 
-  detachNode() {
+  detachNode(isVisited = false) {
     this.previouslyAttachedNode = this.attachedNode;
     this.attachedNode = undefined;
     (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
       'hidden'
     );
+    if (isVisited) {
+      return;
+    }
+    this.detachRegisteredNodes();
+  }
+
+  private detachRegisteredNodes() {
+    transformNodeList.forEach((transformer) => {
+      if (transformer.id !== this.id && transformer.detachNode) {
+        transformer.detachNode(true);
+      }
+    });
   }
 
   visibilityResizeControls(visible: boolean) {

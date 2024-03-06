@@ -1273,6 +1273,9 @@ export class Rect<T> {
             this.nodeComponent
           );
         }
+        if ((this.nodeComponent?.nodeInfo as any)?.update) {
+          (this.nodeComponent.nodeInfo as any).update();
+        }
       }
 
       this.updateEventListeners.forEach((onUpdate) => {

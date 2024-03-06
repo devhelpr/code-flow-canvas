@@ -607,6 +607,9 @@ export const createCanvasApp = <T>(
     ) => {
       nodeSelector.onAddComposition = onAddComposition;
     },
+    destoyCanvasApp: () => {
+      nodeTransformer.destroy();
+    },
     getIsCameraFollowingPaused: () => {
       return isCameraFollowingPaused;
     },
@@ -1123,6 +1126,12 @@ export const createCanvasApp = <T>(
       return undefined;
     },
     deleteElement: (id: string) => {
+      const node = elements?.get(id);
+      if (node && node.nodeInfo) {
+        if ((node.nodeInfo as any).canvasAppInstance) {
+          (node.nodeInfo as any).canvasAppInstance.destoyCanvasApp();
+        }
+      }
       elements?.delete(id);
       if (rectInstanceList[id]) {
         delete rectInstanceList[id];
