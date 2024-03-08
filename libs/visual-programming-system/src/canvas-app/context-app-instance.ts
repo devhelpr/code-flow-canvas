@@ -247,6 +247,9 @@ export const createContextInstanceApp = <T>(
         _containerNode
       ) as unknown as LineConnection<T>;
     },
+    editThumbNode: (_thumb: IThumb, _nodeComponent: IRectNodeComponent<T>) => {
+      //
+    },
     deleteThumbNode: (
       _thumb: IThumb,
       _nodeComponent: IRectNodeComponent<T>

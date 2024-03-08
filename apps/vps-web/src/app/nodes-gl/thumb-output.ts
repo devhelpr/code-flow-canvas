@@ -1,4 +1,5 @@
 import {
+  CanvasAppInstance,
   IRectNodeComponent,
   Theme,
   ThumbConnectionType,
@@ -36,6 +37,7 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
   theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
+  let canvasApp: CanvasAppInstance<GLNodeInfo>;
   const initializeCompute = () => {
     return;
   };
@@ -80,8 +82,29 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
               ...node.nodeInfo.formValues,
               ['valueType']: value,
             };
+
             if (node.thumbConnectors?.[0]) {
               node.thumbConnectors[0].thumbConstraint = value;
+              if (node.connections) {
+                node.connections = node.connections.filter((c) => {
+                  if (
+                    c.startNodeThumb?.thumbConstraint !== value &&
+                    c.startNode
+                  ) {
+                    c.startNode.connections = c.startNode?.connections?.filter(
+                      (con) => con !== c
+                    );
+                    c.startNodeThumb = undefined;
+                    if (canvasApp) {
+                      canvasApp.elements.delete(c.id);
+                      c.domElement.remove();
+                    }
+                    return false;
+                  }
+
+                  return true;
+                });
+              }
             }
             if (updated) {
               updated();
@@ -92,6 +115,7 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
     },
     (nodeInstance) => {
       node = nodeInstance.node as IRectNodeComponent<GLNodeInfo>;
+      canvasApp = nodeInstance.contextInstance;
     },
     {
       hasTitlebar: false,

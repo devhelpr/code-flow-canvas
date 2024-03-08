@@ -939,6 +939,30 @@ export class AppElement<T> {
     });
   };
 
+  editThumbFromComposition = (
+    canvasApp: CanvasAppInstance<T>,
+    compositionId: string,
+    thumb: IThumb
+  ) => {
+    canvasApp.elements.forEach((element) => {
+      const node = element as IRectNodeComponent<T>;
+      const nodeInfo = node.nodeInfo as BaseNodeInfo;
+      if (
+        nodeInfo?.isComposition &&
+        nodeInfo?.compositionId === compositionId
+      ) {
+        ///
+        canvasApp?.editThumbNode(thumb, node);
+      } else if ((node.nodeInfo as any)?.canvasAppInstance) {
+        this.editThumbFromComposition(
+          (node.nodeInfo as any)?.canvasAppInstance,
+          compositionId,
+          thumb
+        );
+      }
+    });
+  };
+
   editComposition = (
     getNodeTaskFactory: GetNodeTaskFactory<T>,
     canvasUpdated: () => void,
@@ -1077,12 +1101,15 @@ export class AppElement<T> {
       }[] = [];
       // inputs
       composition.thumbs?.forEach((thumb, _index) => {
-        if (thumb.connectionType === ThumbConnectionType.end && thumb.nodeId) {
+        if (thumb.connectionType === ThumbConnectionType.end) {
           const factory = getNodeTaskFactory('thumb-input');
-          const node = canvasApp?.elements.get(
-            thumb.nodeId
-          ) as IRectNodeComponent<T>;
-          if (factory && node && thumb.name) {
+          let node: IRectNodeComponent<T> | undefined = undefined;
+          if (thumb.nodeId) {
+            node = canvasApp?.elements.get(
+              thumb.nodeId
+            ) as IRectNodeComponent<T>;
+          }
+          if (factory && thumb.name) {
             const nodeTask = factory(() => {
               //
             }, canvasApp.theme);
@@ -1102,50 +1129,52 @@ export class AppElement<T> {
               thumbIdentifierWithInNode: thumb.thumbIdentifierWithinNode ?? '',
               thumb,
             });
-            const connection = canvasApp.createCubicBezier(
-              thumbInput.x,
-              thumbInput.y,
-              thumbInput.x,
-              thumbInput.y,
-              thumbInput.x,
-              thumbInput.y,
-              thumbInput.x,
-              thumbInput.y,
-              false,
-              undefined,
-              undefined,
-              undefined
-            );
-            if (connection && connection.nodeComponent) {
-              nodesIdsToIgnore.push(connection.nodeComponent.id);
-              connection.nodeComponent.isControlled = true;
-              connection.nodeComponent.nodeInfo = {} as T;
-              connection.nodeComponent.layer = 1;
-
-              connection.nodeComponent.startNode = thumbInput;
-              connection.nodeComponent.startNodeThumb =
-                getThumbNodeByName<T>('output', thumbInput, {
-                  start: true,
-                  end: false,
-                }) || undefined;
-
-              connection.nodeComponent.endNode = node;
-
-              connection.nodeComponent.endNodeThumb =
-                getThumbNodeByName<T>(thumb.name, node, {
-                  start: false,
-                  end: true,
-                }) || undefined;
-              console.log(
-                'thumb-input endThumb',
-                connection.nodeComponent.endNodeThumb
+            if (node) {
+              const connection = canvasApp.createCubicBezier(
+                thumbInput.x,
+                thumbInput.y,
+                thumbInput.x,
+                thumbInput.y,
+                thumbInput.x,
+                thumbInput.y,
+                thumbInput.x,
+                thumbInput.y,
+                false,
+                undefined,
+                undefined,
+                undefined
               );
+              if (connection && connection.nodeComponent) {
+                nodesIdsToIgnore.push(connection.nodeComponent.id);
+                connection.nodeComponent.isControlled = true;
+                connection.nodeComponent.nodeInfo = {} as T;
+                connection.nodeComponent.layer = 1;
 
-              thumbInput.connections?.push(connection.nodeComponent);
-              node.connections?.push(connection.nodeComponent);
+                connection.nodeComponent.startNode = thumbInput;
+                connection.nodeComponent.startNodeThumb =
+                  getThumbNodeByName<T>('output', thumbInput, {
+                    start: true,
+                    end: false,
+                  }) || undefined;
 
-              if (connection.nodeComponent.update) {
-                connection.nodeComponent.update();
+                connection.nodeComponent.endNode = node;
+
+                connection.nodeComponent.endNodeThumb =
+                  getThumbNodeByName<T>(thumb.name, node, {
+                    start: false,
+                    end: true,
+                  }) || undefined;
+                console.log(
+                  'thumb-input endThumb',
+                  connection.nodeComponent.endNodeThumb
+                );
+
+                thumbInput.connections?.push(connection.nodeComponent);
+                node.connections?.push(connection.nodeComponent);
+
+                if (connection.nodeComponent.update) {
+                  connection.nodeComponent.update();
+                }
               }
 
               if (thumbInput.update) {
@@ -1169,15 +1198,15 @@ export class AppElement<T> {
       yIndex = 0;
       // outputs
       composition.thumbs?.forEach((thumb, _index) => {
-        if (
-          thumb.nodeId &&
-          thumb.connectionType === ThumbConnectionType.start
-        ) {
-          const node = canvasApp?.elements.get(
-            thumb.nodeId
-          ) as IRectNodeComponent<T>;
+        if (thumb.connectionType === ThumbConnectionType.start) {
+          let node: IRectNodeComponent<T> | undefined = undefined;
+          if (thumb.nodeId) {
+            node = canvasApp?.elements.get(
+              thumb.nodeId
+            ) as IRectNodeComponent<T>;
+          }
           const factory = getNodeTaskFactory('thumb-output');
-          if (factory && node && thumb.name) {
+          if (factory && thumb.name) {
             const nodeTask = factory(() => {
               //
             }, canvasApp.theme);
@@ -1198,46 +1227,48 @@ export class AppElement<T> {
               thumb,
             });
 
-            const connection = canvasApp.createCubicBezier(
-              thumbOutput.x,
-              thumbOutput.y,
-              thumbOutput.x,
-              thumbOutput.y,
-              thumbOutput.x,
-              thumbOutput.y,
-              thumbOutput.x,
-              thumbOutput.y,
-              false,
-              undefined,
-              undefined,
-              undefined
-            );
-            if (connection && connection.nodeComponent) {
-              nodesIdsToIgnore.push(connection.nodeComponent.id);
-              connection.nodeComponent.isControlled = true;
-              connection.nodeComponent.nodeInfo = {} as T;
-              connection.nodeComponent.layer = 1;
+            if (node) {
+              const connection = canvasApp.createCubicBezier(
+                thumbOutput.x,
+                thumbOutput.y,
+                thumbOutput.x,
+                thumbOutput.y,
+                thumbOutput.x,
+                thumbOutput.y,
+                thumbOutput.x,
+                thumbOutput.y,
+                false,
+                undefined,
+                undefined,
+                undefined
+              );
+              if (connection && connection.nodeComponent) {
+                nodesIdsToIgnore.push(connection.nodeComponent.id);
+                connection.nodeComponent.isControlled = true;
+                connection.nodeComponent.nodeInfo = {} as T;
+                connection.nodeComponent.layer = 1;
 
-              connection.nodeComponent.startNode = node;
+                connection.nodeComponent.startNode = node;
 
-              connection.nodeComponent.startNodeThumb =
-                getThumbNodeByName<T>(thumb.name, node, {
-                  start: true,
-                  end: false,
-                }) || undefined;
+                connection.nodeComponent.startNodeThumb =
+                  getThumbNodeByName<T>(thumb.name, node, {
+                    start: true,
+                    end: false,
+                  }) || undefined;
 
-              connection.nodeComponent.endNode = thumbOutput;
-              connection.nodeComponent.endNodeThumb =
-                getThumbNodeByName<T>('input', thumbOutput, {
-                  start: true,
-                  end: false,
-                }) || undefined;
+                connection.nodeComponent.endNode = thumbOutput;
+                connection.nodeComponent.endNodeThumb =
+                  getThumbNodeByName<T>('input', thumbOutput, {
+                    start: true,
+                    end: false,
+                  }) || undefined;
 
-              thumbOutput.connections?.push(connection.nodeComponent);
-              node.connections?.push(connection.nodeComponent);
+                thumbOutput.connections?.push(connection.nodeComponent);
+                node.connections?.push(connection.nodeComponent);
 
-              if (connection.nodeComponent.update) {
-                connection.nodeComponent.update();
+                if (connection.nodeComponent.update) {
+                  connection.nodeComponent.update();
+                }
               }
 
               if (thumbOutput.update) {
@@ -1300,7 +1331,12 @@ export class AppElement<T> {
             }
           }
         });
-        const thumbsOnCanvas: { nodeInfo: BaseNodeInfo; id: string }[] = [];
+        const thumbsOnCanvas: {
+          nodeInfo: BaseNodeInfo;
+          id: string;
+          isNew: boolean;
+          nodeComponent: IRectNodeComponent<T>;
+        }[] = [];
         canvasApp?.elements.forEach((element) => {
           const nodeHelper = element as unknown as IRectNodeComponent<T>;
           const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
@@ -1308,7 +1344,12 @@ export class AppElement<T> {
             baseNodeInfo?.type === 'thumb-input' ||
             baseNodeInfo?.type === 'thumb-output'
           ) {
-            thumbsOnCanvas.push({ id: element.id, nodeInfo: baseNodeInfo });
+            thumbsOnCanvas.push({
+              id: element.id,
+              nodeInfo: baseNodeInfo,
+              isNew: nodesIdsToIgnore.indexOf(element.id) < 0,
+              nodeComponent: nodeHelper,
+            });
 
             if (nodesIdsToIgnore.indexOf(element.id) < 0) {
               // new thumbs
@@ -1408,11 +1449,99 @@ export class AppElement<T> {
         });
 
         createdThumbsIds.forEach((thumbInfo) => {
-          // remove thumbs that are not on the canvas
           const index = thumbsOnCanvas.findIndex(
             (thumb) => thumb.id === thumbInfo.id
           );
           if (
+            index >= 0 &&
+            this.canvasApp &&
+            composition.inputNodes &&
+            composition.outputNodes &&
+            thumbInfo
+          ) {
+            const thumbOnCanvas = thumbsOnCanvas[index];
+            if (!thumbOnCanvas.isNew) {
+              // check if thumbconstaint is still the same
+
+              // update input/output thumbs on composition if they changed
+              // (remove the not connected nodes and add the connected ones)
+
+              //
+
+              if (thumbInfo.thumb.connectionType === ThumbConnectionType.end) {
+                composition.inputNodes = composition.inputNodes.filter(
+                  (node) => node.id !== thumbInfo.thumb.nodeId
+                );
+                if (
+                  composition.inputNodes.findIndex(
+                    (node) => node.id === thumbInfo.thumb.nodeId
+                  ) < 0
+                ) {
+                  const connectedToNode =
+                    thumbOnCanvas.nodeComponent.connections?.find(
+                      (connection) =>
+                        connection.startNode?.id ===
+                        thumbOnCanvas.nodeComponent.id
+                    )?.endNode;
+                  if (connectedToNode) {
+                    thumbInfo.thumb.nodeId = connectedToNode.id;
+                    composition.inputNodes.push(
+                      mapShapeNodeToFlowNode(connectedToNode)
+                    );
+                  } else {
+                    thumbInfo.thumb.nodeId = undefined;
+                  }
+                } else {
+                  thumbInfo.thumb.nodeId = undefined;
+                }
+              }
+              if (
+                thumbInfo.thumb.connectionType === ThumbConnectionType.start
+              ) {
+                composition.outputNodes = composition.outputNodes.filter(
+                  (node) => node.id !== thumbInfo.thumb.nodeId
+                );
+                if (
+                  composition.outputNodes.findIndex(
+                    (node) => node.id === thumbInfo.thumb.nodeId
+                  ) < 0
+                ) {
+                  const connectedToNode =
+                    thumbOnCanvas.nodeComponent.connections?.find(
+                      (connection) =>
+                        connection.endNode?.id ===
+                        thumbOnCanvas.nodeComponent.id
+                    )?.startNode;
+                  if (connectedToNode) {
+                    thumbInfo.thumb.nodeId = connectedToNode.id;
+
+                    composition.outputNodes.push(
+                      mapShapeNodeToFlowNode(connectedToNode)
+                    );
+                  } else {
+                    thumbInfo.thumb.nodeId = undefined;
+                  }
+                } else {
+                  thumbInfo.thumb.nodeId = undefined;
+                }
+              }
+
+              composition.thumbs.forEach((thumb) => {
+                if (
+                  thumb.thumbIdentifierWithinNode ===
+                  thumbInfo.thumbIdentifierWithInNode
+                ) {
+                  thumb.thumbConstraint =
+                    thumbOnCanvas.nodeInfo.formValues.valueType;
+                }
+              });
+              this.editThumbFromComposition(
+                this.canvasApp,
+                composition.id,
+                thumbInfo.thumb
+              );
+            }
+          } else if (
             index < 0 &&
             this.canvasApp &&
             composition.inputNodes &&

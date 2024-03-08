@@ -1016,8 +1016,87 @@ export const createCanvasApp = <T>(
       }
       return line;
     },
+    editThumbNode: (thumb: IThumb, nodeComponent: IRectNodeComponent<T>) => {
+      if (!nodeComponent) {
+        return;
+      }
+      const rectInstance = rectInstanceList[nodeComponent.id];
+      if (!rectInstance) {
+        return;
+      }
+
+      if (rectInstance.nodeComponent?.thumbConnectors) {
+        const thumbIndex = rectInstance.nodeComponent.thumbConnectors.findIndex(
+          (t) =>
+            t.thumbIdentifierWithinNode === thumb.thumbIdentifierWithinNode &&
+            thumb.thumbIdentifierWithinNode
+        );
+        if (thumbIndex >= 0) {
+          const thumbNode =
+            rectInstance.nodeComponent.thumbConnectors[thumbIndex];
+
+          if (thumbNode) {
+            rectInstance.nodeComponent.connections.forEach((c) => {
+              if (c.startNodeThumb?.id === thumbNode.id) {
+                c.startNodeThumb.thumbConstraint = thumb.thumbConstraint;
+                if (c.endNodeThumb?.thumbConstraint !== thumb.thumbConstraint) {
+                  c.startNodeThumb = undefined;
+                  c.startNode = undefined;
+                }
+              }
+              if (c.endNodeThumb?.id === thumbNode.id) {
+                c.endNodeThumb.thumbConstraint = thumb.thumbConstraint;
+                if (
+                  c.startNodeThumb?.thumbConstraint !== thumb.thumbConstraint
+                ) {
+                  c.endNodeThumb = undefined;
+                  c.endNode = undefined;
+                }
+              }
+            });
+            const nodeId = rectInstance.nodeComponent.id;
+
+            rectInstance.nodeComponent.connections =
+              rectInstance.nodeComponent.connections.filter(
+                (c) => c.startNode?.id === nodeId || c.endNode?.id === nodeId
+              );
+          }
+        }
+      }
+
+      rectInstance.cachedHeight = -1;
+      rectInstance.cachedWidth = -1;
+
+      // ugly workaround for getting correct height because when calculating the above the thumb wasn't at the correct position
+
+      nodeComponent?.update?.(
+        nodeComponent,
+        nodeComponent.x,
+        nodeComponent.y,
+        nodeComponent
+      );
+
+      // now recalculate height of node
+
+      rectInstance.updateMinHeight();
+      rectInstance.updateNodeSize(
+        nodeComponent.x,
+        nodeComponent.y,
+        nodeComponent.width ?? 0,
+        nodeComponent.height ?? 0,
+        false
+      );
+      rectInstance.cachedHeight = -1;
+      rectInstance.cachedWidth = -1;
+
+      nodeComponent?.update?.(
+        nodeComponent,
+        nodeComponent.x,
+        nodeComponent.y,
+        nodeComponent
+      );
+    },
     deleteThumbNode: (thumb: IThumb, nodeComponent: IRectNodeComponent<T>) => {
-      //console.log('deleteThumbNode', thumb, nodeComponent);
       if (!nodeComponent) {
         return;
       }
