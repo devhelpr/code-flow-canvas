@@ -914,6 +914,30 @@ export class AppElement<T> {
     });
   };
 
+  deleteThumbFromComposition = (
+    canvasApp: CanvasAppInstance<T>,
+    compositionId: string,
+    thumb: IThumb
+  ) => {
+    canvasApp.elements.forEach((element) => {
+      const node = element as IRectNodeComponent<T>;
+      const nodeInfo = node.nodeInfo as BaseNodeInfo;
+      if (
+        nodeInfo?.isComposition &&
+        nodeInfo?.compositionId === compositionId
+      ) {
+        ///
+        canvasApp?.deleteThumbNode(thumb, node);
+      } else if ((node.nodeInfo as any)?.canvasAppInstance) {
+        this.deleteThumbFromComposition(
+          (node.nodeInfo as any)?.canvasAppInstance,
+          compositionId,
+          thumb
+        );
+      }
+    });
+  };
+
   editComposition = (
     getNodeTaskFactory: GetNodeTaskFactory<T>,
     canvasUpdated: () => void,
@@ -1044,6 +1068,11 @@ export class AppElement<T> {
 
       let yIndex = 0;
 
+      const createdThumbsIds: {
+        id: string;
+        thumbIdentifierWithInNode: string;
+        thumb: IThumb;
+      }[] = [];
       // inputs
       composition.thumbs?.forEach((thumb, _index) => {
         if (thumb.connectionType === ThumbConnectionType.end && thumb.nodeId) {
@@ -1066,6 +1095,11 @@ export class AppElement<T> {
               }
             );
             nodesIdsToIgnore.push(thumbInput.id);
+            createdThumbsIds.push({
+              id: thumbInput.id,
+              thumbIdentifierWithInNode: thumb.thumbIdentifierWithinNode ?? '',
+              thumb,
+            });
             const connection = canvasApp.createCubicBezier(
               thumbInput.x,
               thumbInput.y,
@@ -1156,6 +1190,11 @@ export class AppElement<T> {
             );
 
             nodesIdsToIgnore.push(thumbOutput.id);
+            createdThumbsIds.push({
+              id: thumbOutput.id,
+              thumbIdentifierWithInNode: thumb.thumbIdentifierWithinNode ?? '',
+              thumb,
+            });
 
             const connection = canvasApp.createCubicBezier(
               thumbOutput.x,
@@ -1259,7 +1298,7 @@ export class AppElement<T> {
             }
           }
         });
-
+        const thumbsOnCanvas: { nodeInfo: BaseNodeInfo; id: string }[] = [];
         canvasApp?.elements.forEach((element) => {
           const nodeHelper = element as unknown as IRectNodeComponent<T>;
           const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
@@ -1267,6 +1306,8 @@ export class AppElement<T> {
             baseNodeInfo?.type === 'thumb-input' ||
             baseNodeInfo?.type === 'thumb-output'
           ) {
+            thumbsOnCanvas.push({ id: element.id, nodeInfo: baseNodeInfo });
+
             if (nodesIdsToIgnore.indexOf(element.id) < 0) {
               // new thumbs
               nodesIdsToIgnore.push(element.id);
@@ -1361,6 +1402,38 @@ export class AppElement<T> {
                 }
               }
             }
+          }
+        });
+
+        createdThumbsIds.forEach((thumbInfo) => {
+          // remove thumbs that are not on the canvas
+          const index = thumbsOnCanvas.findIndex(
+            (thumb) => thumb.id === thumbInfo.id
+          );
+          if (
+            index < 0 &&
+            this.canvasApp &&
+            composition.inputNodes &&
+            composition.outputNodes
+          ) {
+            // thumb was removed
+            this.deleteThumbFromComposition(
+              this.canvasApp,
+              composition.id,
+              thumbInfo.thumb
+            );
+            composition.inputNodes = composition.inputNodes.filter(
+              (node) => node.id !== thumbInfo.thumb.nodeId
+            );
+            composition.outputNodes = composition.outputNodes.filter(
+              (node) => node.id !== thumbInfo.thumb.nodeId
+            );
+
+            composition.thumbs = composition.thumbs.filter(
+              (thumb) =>
+                thumb.thumbIdentifierWithinNode !==
+                thumbInfo.thumbIdentifierWithInNode
+            );
           }
         });
 
