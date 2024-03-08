@@ -787,7 +787,12 @@ export class AppElement<T> {
       connection: IConnectionNodeComponent<T>;
     }[],
     registerComposition: RegisterComposition<T>,
-    getNodeTaskFactory: GetNodeTaskFactory<T>
+    getNodeTaskFactory: GetNodeTaskFactory<T>,
+    setupTasksInDropdown: (
+      selectNodeTypeHTMLElement: HTMLSelectElement,
+      isComposition?: boolean
+    ) => void,
+    selectNodeTypeHTMLElement: HTMLSelectElement
   ) => {
     if (!this.currentCanvasApp) {
       return;
@@ -825,7 +830,20 @@ export class AppElement<T> {
     if (factory) {
       const nodeTask = factory(() => undefined);
 
-      const node = nodeTask.createVisualNode(this.currentCanvasApp, x, y);
+      const node = nodeTask.createVisualNode(
+        this.currentCanvasApp,
+        x,
+        y,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          isComposition: true,
+        }
+      );
       if (node && node.nodeInfo) {
         // TODO : IMPROVE THIS
         (node.nodeInfo as any).taskType = nodeType;
@@ -866,6 +884,7 @@ export class AppElement<T> {
       });
 
       node?.update?.();
+      setupTasksInDropdown(selectNodeTypeHTMLElement, true);
     }
   };
 
@@ -1464,6 +1483,37 @@ export class AppElement<T> {
     }
   };
 
+  createFlowComposition() {
+    if (!this.rootElement) {
+      return;
+    }
+
+    createInputDialog(this.rootElement, 'New composition name', '', (name) => {
+      if (this.canvasApp?.compositons?.doesCompositionNameExist(name)) {
+        return {
+          valid: false,
+          message: `Composition with name "${name}" already exists`,
+        };
+      }
+      return {
+        valid: true,
+      };
+    }).then((name) => {
+      if (name && this.canvasApp) {
+        const composition: Composition<T> = {
+          id: crypto.randomUUID(),
+          name: name,
+          nodes: [],
+          thumbs: [],
+          inputNodes: [],
+          outputNodes: [],
+        };
+        this.canvasApp.compositons.addComposition(composition);
+        this.canvasApp.addComposition(composition);
+      }
+    });
+  }
+
   editCompositionName() {
     if (!this.rootElement || !this.compositionUnderEdit) {
       return;
@@ -1472,7 +1522,18 @@ export class AppElement<T> {
     createInputDialog(
       this.rootElement,
       'Composition name',
-      this.compositionUnderEdit.name
+      this.compositionUnderEdit.name,
+      (name) => {
+        if (this.canvasApp?.compositons?.doesCompositionNameExist(name)) {
+          return {
+            valid: false,
+            message: `Composition with name "${name}" already exists`,
+          };
+        }
+        return {
+          valid: true,
+        };
+      }
     ).then((name) => {
       if (name && this.compositionUnderEdit) {
         this.compositionUnderEdit.name = name;

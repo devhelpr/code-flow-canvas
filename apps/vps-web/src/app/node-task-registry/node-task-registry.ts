@@ -6,6 +6,7 @@ import {
   IThumb,
   Theme,
 } from '@devhelpr/visual-programming-system';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export type InitialValues = Record<string, any>;
 export type NodeTaskFactory<T> = (
@@ -44,7 +45,7 @@ export type NodeTask<T> = {
     width?: number,
     height?: number,
     nestedLevel?: number,
-    dummy?: any,
+    nodeInfo?: BaseNodeInfo,
     dummy2?: any
   ) => IRectNodeComponent<T>;
   getConnectionInfo?: () => {

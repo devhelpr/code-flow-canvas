@@ -311,5 +311,9 @@ export const registerComposition: RegisterComposition<GLNodeInfo> = (
     composition.name,
     getGLNodeTaskFactory
   );
-  registerGLNodeFactory(`composition-${composition.id}`, node);
+  registerGLNodeFactory(
+    `composition-${composition.id}`,
+    node,
+    composition.name
+  );
 };

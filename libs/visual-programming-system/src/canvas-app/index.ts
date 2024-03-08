@@ -607,6 +607,11 @@ export const createCanvasApp = <T>(
     ) => {
       nodeSelector.onAddComposition = onAddComposition;
     },
+    addComposition: (composition: Composition<T>) => {
+      if (nodeSelector.onAddComposition) {
+        nodeSelector.onAddComposition(composition, []);
+      }
+    },
     destoyCanvasApp: () => {
       nodeTransformer.destroy();
     },

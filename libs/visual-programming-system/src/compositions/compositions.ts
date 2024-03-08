@@ -23,4 +23,11 @@ export class Compositions<T> {
   public setComposition(composition: Composition<T>) {
     this.addComposition(composition);
   }
+
+  public doesCompositionNameExist(name: string) {
+    return Object.values(this.compositions).some(
+      (composition) =>
+        composition.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+    );
+  }
 }

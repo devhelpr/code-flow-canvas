@@ -350,7 +350,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                //this.createFlowComposition();
+                this.createFlowComposition();
                 return false;
               },
             },
@@ -1295,7 +1295,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       composition,
       connections,
       registerComposition,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      setupTasksInDropdown,
+      this.selectNodeType?.domElement as HTMLSelectElement
     );
   };
 

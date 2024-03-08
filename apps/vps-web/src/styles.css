@@ -472,3 +472,17 @@ position: relative;
 .diamond-shape {
 	clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
+
+.form-input {
+	@apply border border-gray-300 p-2;
+}
+.form-input:invalid {
+	@apply border-red-500;
+}
+.form-error {
+	display: none;
+	@apply text-red-500;
+}
+.form-input:invalid + .form-error {
+	@apply block;
+}

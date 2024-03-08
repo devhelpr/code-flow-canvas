@@ -418,7 +418,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                //this.createFlowComposition();
+                this.createFlowComposition();
                 return false;
               },
             },
@@ -926,7 +926,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       composition,
       connections,
       registerComposition,
-      getGLNodeTaskFactory
+      getGLNodeTaskFactory,
+      setupGLTasksInDropdown,
+      this.selectNodeType?.domElement as HTMLSelectElement
     );
   };
 

@@ -76,6 +76,9 @@ export const createContextInstanceApp = <T>(
     ) => {
       //
     },
+    addComposition: (_composition: Composition<T>) => {
+      //
+    },
     getIsCameraFollowingPaused: () => {
       return false;
     },
