@@ -43,7 +43,8 @@ export const createOption = (
 
 export const setupTasksInDropdown = (
   selectNodeTypeHTMLElement: HTMLSelectElement,
-  isComposition?: boolean
+  isInComposition?: boolean,
+  compositionId?: string
 ) => {
   if (selectNodeTypeHTMLElement) {
     const nodeType = selectNodeTypeHTMLElement.value;
@@ -84,7 +85,17 @@ export const setupTasksInDropdown = (
           return;
         }
         if (node.hideFromNodeTypeSelector) {
-          if (!isComposition || (isComposition && !node.useInCompositionOnly)) {
+          if (
+            !isInComposition ||
+            (isInComposition && !node.useInCompositionOnly)
+          ) {
+            return;
+          }
+          if (
+            isInComposition &&
+            nodeTask === `composition-${compositionId}` &&
+            compositionId
+          ) {
             return;
           }
         }
@@ -115,7 +126,8 @@ export const setupTasksInDropdown = (
 
 export const setupGLTasksInDropdown = (
   selectNodeTypeHTMLElement: HTMLSelectElement,
-  isComposition?: boolean
+  isInComposition?: boolean,
+  compositionId?: string
 ) => {
   if (selectNodeTypeHTMLElement) {
     const nodeType = selectNodeTypeHTMLElement.value;
@@ -150,10 +162,22 @@ export const setupGLTasksInDropdown = (
           return;
         }
         if (node.hideFromNodeTypeSelector) {
-          if (!isComposition || (isComposition && !node.useInCompositionOnly)) {
+          if (
+            !isInComposition ||
+            (isInComposition && !node.useInCompositionOnly)
+          ) {
             return;
           }
         }
+
+        if (
+          isInComposition &&
+          nodeTask === `composition-${compositionId}` &&
+          compositionId
+        ) {
+          return;
+        }
+
         categoryName = node.category || 'uncategorized';
       }
       if (nodeTask === nodeType) {

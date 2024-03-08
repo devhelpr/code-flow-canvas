@@ -790,7 +790,8 @@ export class AppElement<T> {
     getNodeTaskFactory: GetNodeTaskFactory<T>,
     setupTasksInDropdown: (
       selectNodeTypeHTMLElement: HTMLSelectElement,
-      isComposition?: boolean
+      isComposition?: boolean,
+      compositionId?: string
     ) => void,
     selectNodeTypeHTMLElement: HTMLSelectElement
   ) => {
@@ -884,7 +885,7 @@ export class AppElement<T> {
       });
 
       node?.update?.();
-      setupTasksInDropdown(selectNodeTypeHTMLElement, true);
+      setupTasksInDropdown(selectNodeTypeHTMLElement, true, composition.id);
     }
   };
 
@@ -943,7 +944,8 @@ export class AppElement<T> {
     canvasUpdated: () => void,
     setupTasksInDropdown: (
       selectNodeTypeHTMLElement: HTMLSelectElement,
-      isComposition?: boolean
+      isComposition?: boolean,
+      compositionId?: string
     ) => void,
     selectNodeTypeHTMLElement: HTMLSelectElement
   ) => {
@@ -1269,7 +1271,7 @@ export class AppElement<T> {
 
       canvasApp.centerCamera();
 
-      setupTasksInDropdown(selectNodeTypeHTMLElement, true);
+      setupTasksInDropdown(selectNodeTypeHTMLElement, true, composition.id);
 
       const handler = () => {
         quitCameraSubscribtion();
