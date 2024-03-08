@@ -1141,7 +1141,7 @@ export const createCanvasApp = <T>(
         elements,
         nodeComponent,
         pathHiddenElement,
-        disableInteraction,
+        false,
         thumb.label,
         thumb.thumbShape ?? 'circle',
         onCanvasUpdated,
@@ -1164,12 +1164,10 @@ export const createCanvasApp = <T>(
       thumbNode.nodeComponent.thumbFormId = thumb.formId;
       thumbNode.nodeComponent.thumbFormFieldName = thumb.formFieldName;
 
-      if (!disableInteraction) {
-        thumbNode.nodeComponent.onCanReceiveDroppedComponent =
-          rectInstance.onCanReceiveDroppedComponent;
-        thumbNode.nodeComponent.onReceiveDraggedConnection =
-          rectInstance.onReceiveDraggedConnection(nodeComponent);
-      }
+      thumbNode.nodeComponent.onCanReceiveDroppedComponent =
+        rectInstance.onCanReceiveDroppedComponent;
+      thumbNode.nodeComponent.onReceiveDraggedConnection =
+        rectInstance.onReceiveDraggedConnection(nodeComponent);
       thumbNode.nodeComponent.update =
         rectInstance.onEndThumbConnectorElementupdate;
 

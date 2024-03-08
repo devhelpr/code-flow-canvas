@@ -19,7 +19,7 @@ const familyName = 'flow-canvas';
 
 export const getCreateCompositionNode =
   (
-    thumbs: IThumb[],
+    thumbsOnInitialisation: IThumb[],
     compositionId: string,
     name: string,
     getGLNodeFactory: (name: string) => NodeTaskFactory<GLNodeInfo>
@@ -186,7 +186,7 @@ export const getCreateCompositionNode =
             }
           });
 
-          thumbs.forEach((thumb) => {
+          composition.thumbs.forEach((thumb) => {
             if (
               composition &&
               thumb.thumbIdentifierWithinNode === thumbIdentifierWithinNode
@@ -224,7 +224,7 @@ export const getCreateCompositionNode =
       false,
       200,
       100,
-      thumbs,
+      thumbsOnInitialisation,
       (_values?: InitialValues) => {
         return [];
       },

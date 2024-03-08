@@ -1422,12 +1422,16 @@ export class AppElement<T> {
               composition.id,
               thumbInfo.thumb
             );
-            composition.inputNodes = composition.inputNodes.filter(
-              (node) => node.id !== thumbInfo.thumb.nodeId
-            );
-            composition.outputNodes = composition.outputNodes.filter(
-              (node) => node.id !== thumbInfo.thumb.nodeId
-            );
+            if (thumbInfo.thumb.connectionType === ThumbConnectionType.end) {
+              composition.inputNodes = composition.inputNodes.filter(
+                (node) => node.id !== thumbInfo.thumb.nodeId
+              );
+            }
+            if (thumbInfo.thumb.connectionType === ThumbConnectionType.start) {
+              composition.outputNodes = composition.outputNodes.filter(
+                (node) => node.id !== thumbInfo.thumb.nodeId
+              );
+            }
 
             composition.thumbs = composition.thumbs.filter(
               (thumb) =>
