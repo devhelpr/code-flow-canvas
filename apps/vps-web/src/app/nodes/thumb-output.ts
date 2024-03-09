@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   IRectNodeComponent,
+  Theme,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -32,7 +33,8 @@ const thumbs = [
 ];
 
 export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: () => void,
+  theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let canvasApp: CanvasAppInstance<NodeInfo>;
@@ -112,6 +114,25 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
             }
           },
         },
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'thumbName',
+          value: values?.['thumbName'] ?? 'output',
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['thumbName']: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+        },
       ];
     },
     (nodeInstance) => {
@@ -121,8 +142,9 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
     {
       hasTitlebar: false,
       hideFromNodeTypeSelector: true,
-      backgroundColorClassName: 'bg-yellow-500',
-      textColorClassName: 'text-black',
+      backgroundColorClassName:
+        theme?.compositionThumbOutputNodeBackground ?? 'bg-yellow-500',
+      textColorClassName: theme?.compositionThumbOutputNodeText ?? 'text-black',
       category: 'Compositions',
     },
     undefined,

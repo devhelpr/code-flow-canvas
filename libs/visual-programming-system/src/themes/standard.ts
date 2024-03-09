@@ -18,8 +18,8 @@ export const standardTheme: Theme = {
   selectNodeBorderColor: 'bg-blue-500',
   selectConnectionColor: 'bg-blue-500',
   selectThumbColor: 'bg-blue-500',
-  compositionThumbInputNodeBackground: 'bg-green-500',
+  compositionThumbInputNodeBackground: 'bg-yellow-300',
   compositionThumbInputNodeText: 'text-black',
-  compositionThumbOutputNodeBackground: 'bg-red-500',
+  compositionThumbOutputNodeBackground: 'bg-yellow-500',
   compositionThumbOutputNodeText: 'text-black',
 };

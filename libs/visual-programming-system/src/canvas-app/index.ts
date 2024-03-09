@@ -39,6 +39,7 @@ import { standardTheme } from '../themes/standard';
 import { Theme } from '../interfaces/theme';
 import { ThumbNodeConnector } from '../components/thumb-node-connector';
 import { thumbPosition } from '../components/utils/calculate-connector-thumbs';
+import { updateThumbPrefixLabel } from '../utils/thumbs';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -1039,6 +1040,13 @@ export const createCanvasApp = <T>(
             rectInstance.nodeComponent.connections.forEach((c) => {
               if (c.startNodeThumb?.id === thumbNode.id) {
                 c.startNodeThumb.thumbConstraint = thumb.thumbConstraint;
+                c.startNodeThumb.prefixLabel = thumb.prefixLabel;
+
+                updateThumbPrefixLabel(
+                  thumb.prefixLabel ?? '',
+                  c.startNodeThumb
+                );
+
                 if (c.endNodeThumb?.thumbConstraint !== thumb.thumbConstraint) {
                   c.startNodeThumb = undefined;
                   c.startNode = undefined;
@@ -1046,6 +1054,10 @@ export const createCanvasApp = <T>(
               }
               if (c.endNodeThumb?.id === thumbNode.id) {
                 c.endNodeThumb.thumbConstraint = thumb.thumbConstraint;
+                c.endNodeThumb.prefixLabel = thumb.prefixLabel;
+
+                updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.endNodeThumb);
+
                 if (
                   c.startNodeThumb?.thumbConstraint !== thumb.thumbConstraint
                 ) {

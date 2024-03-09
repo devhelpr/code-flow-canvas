@@ -111,6 +111,25 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
             }
           },
         },
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'thumbName',
+          value: values?.['thumbName'] ?? 'output',
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['thumbName']: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+        },
       ];
     },
     (nodeInstance) => {

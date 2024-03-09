@@ -1112,6 +1112,7 @@ export class AppElement<T> {
               undefined,
               {
                 valueType: thumb.thumbConstraint,
+                thumbName: thumb.prefixLabel,
               }
             );
             if (thumbInput.thumbConnectors?.[0]) {
@@ -1212,6 +1213,7 @@ export class AppElement<T> {
               undefined,
               {
                 valueType: thumb.thumbConstraint,
+                thumbName: thumb.prefixLabel,
               }
             );
             if (thumbOutput.thumbConnectors?.[0]) {
@@ -1376,6 +1378,8 @@ export class AppElement<T> {
                       connection?.startNodeThumb?.thumbConstraint ?? 'value',
                     color: 'white',
                     prefixLabel:
+                      (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
+                        ?.thumbName ??
                       connection?.endNode?.label ??
                       connection?.startNodeThumb?.thumbConstraint?.toString() ??
                       '',
@@ -1420,6 +1424,8 @@ export class AppElement<T> {
                       connection?.endNodeThumb?.thumbConstraint ?? 'value',
                     color: 'white',
                     prefixLabel:
+                      (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
+                        ?.thumbName ??
                       connection?.startNode?.label ??
                       connection?.endNodeThumb?.thumbConstraint?.toString() ??
                       '',
@@ -1460,6 +1466,10 @@ export class AppElement<T> {
           ) {
             const thumbOnCanvas = thumbsOnCanvas[index];
             if (!thumbOnCanvas.isNew) {
+              thumbInfo.thumb.prefixLabel =
+                (thumbOnCanvas.nodeComponent.nodeInfo as BaseNodeInfo)
+                  ?.formValues?.thumbName ?? thumbInfo.thumb.prefixLabel;
+
               // check if thumbconstaint is still the same
 
               // update input/output thumbs on composition if they changed

@@ -1,4 +1,8 @@
-import { INodeComponent, ThumbConnectionType } from '../interfaces';
+import {
+  INodeComponent,
+  IThumbNodeComponent,
+  ThumbConnectionType,
+} from '../interfaces';
 import { ThumbType } from '../types';
 
 export const getThumbNodeByName = <T>(
@@ -87,4 +91,16 @@ export const getThumbNode = <T>(
     return thumbNode;
   }
   return false;
+};
+
+export const updateThumbPrefixLabel = <T>(
+  prefixLabel: string,
+  thumbNode: IThumbNodeComponent<T>
+) => {
+  const element = (thumbNode.domElement as HTMLElement).querySelector(
+    '.thumb-prefix-label'
+  );
+  if (element) {
+    element.textContent = prefixLabel;
+  }
 };
