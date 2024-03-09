@@ -1123,6 +1123,10 @@ export class AppElement<T> {
                 valueType: thumb.thumbConstraint,
               }
             );
+            if (thumbInput.thumbConnectors?.[0]) {
+              thumbInput.thumbConnectors[0].thumbConstraint =
+                thumb.thumbConstraint;
+            }
             nodesIdsToIgnore.push(thumbInput.id);
             createdThumbsIds.push({
               id: thumbInput.id,
@@ -1219,7 +1223,10 @@ export class AppElement<T> {
                 valueType: thumb.thumbConstraint,
               }
             );
-
+            if (thumbOutput.thumbConnectors?.[0]) {
+              thumbOutput.thumbConnectors[0].thumbConstraint =
+                thumb.thumbConstraint;
+            }
             nodesIdsToIgnore.push(thumbOutput.id);
             createdThumbsIds.push({
               id: thumbOutput.id,
@@ -1310,9 +1317,10 @@ export class AppElement<T> {
         showElement(this.canvas);
         this.canvasApp?.centerCamera();
 
-        // TODO :
-        // - get new thumbs here and add to nodeIgnore list
-        //
+        // Only store the nodes and not the thumbs and connections to the thumbs
+        // nodesIdsToIgnore contains the node and connection id's of the thumbs
+        // and connections to the thumbs. In below code this list gets updated
+        // by looking at all of the changes that have been made
 
         let thumbInputIndex = -1;
         let thumbOutputIndex = -1;
@@ -1494,6 +1502,13 @@ export class AppElement<T> {
                 } else {
                   thumbInfo.thumb.nodeId = undefined;
                 }
+                thumbOnCanvas.nodeComponent.connections?.forEach(
+                  (connection) => {
+                    if (nodesIdsToIgnore.indexOf(connection.id) < 0) {
+                      nodesIdsToIgnore.push(connection.id);
+                    }
+                  }
+                );
               }
               if (
                 thumbInfo.thumb.connectionType === ThumbConnectionType.start
@@ -1524,6 +1539,13 @@ export class AppElement<T> {
                 } else {
                   thumbInfo.thumb.nodeId = undefined;
                 }
+                thumbOnCanvas.nodeComponent.connections?.forEach(
+                  (connection) => {
+                    if (nodesIdsToIgnore.indexOf(connection.id) < 0) {
+                      nodesIdsToIgnore.push(connection.id);
+                    }
+                  }
+                );
               }
 
               composition.thumbs.forEach((thumb) => {

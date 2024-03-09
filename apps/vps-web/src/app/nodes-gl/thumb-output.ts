@@ -92,7 +92,7 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
                     c.startNode
                   ) {
                     c.startNode.connections = c.startNode?.connections?.filter(
-                      (con) => con !== c
+                      (con) => con.id !== c.id
                     );
                     c.startNodeThumb = undefined;
                     if (canvasApp) {
