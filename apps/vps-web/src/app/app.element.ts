@@ -126,7 +126,8 @@ export class AppElement<T> {
       undefined,
       undefined,
       undefined,
-      theme ?? standardTheme
+      theme ?? standardTheme,
+      this.showEditCompositionNameDialog
     );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
@@ -1040,7 +1041,9 @@ export class AppElement<T> {
         undefined,
         undefined,
         undefined,
-        'composition-canvas-' + node.nodeInfo.compositionId
+        'composition-canvas-' + node.nodeInfo.compositionId,
+        undefined,
+        this.showEditCompositionNameDialog
       );
       if (canvasApp) {
         canvasApp.isComposition = true;
@@ -1744,6 +1747,28 @@ export class AppElement<T> {
       }
     });
   }
+
+  showEditCompositionNameDialog = () => {
+    return new Promise<string | false>((resolve) => {
+      if (!this.rootElement) {
+        return;
+      }
+
+      createInputDialog(this.rootElement, 'Composition name', '', (name) => {
+        if (this.canvasApp?.compositons?.doesCompositionNameExist(name)) {
+          return {
+            valid: false,
+            message: `Composition with name "${name}" already exists`,
+          };
+        }
+        return {
+          valid: true,
+        };
+      }).then((name) => {
+        resolve(name);
+      });
+    });
+  };
 
   editCompositionName() {
     if (!this.rootElement || !this.compositionUnderEdit) {

@@ -50,6 +50,7 @@ export class NodeSelector<T> {
   elements: ElementNodeMap<T> = new Map();
   orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
   compositions: Compositions<T>;
+
   onAddComposition?: (
     composition: Composition<T>,
     connections: {
@@ -58,17 +59,21 @@ export class NodeSelector<T> {
     }[]
   ) => void;
 
+  onEditCompositionName: () => Promise<string | false>;
+
   constructor(
     rootElement: DOMElementNode,
     interactionStateMachine: InteractionStateMachine<T>,
     elements: ElementNodeMap<T>,
     canCreateComposition: boolean,
-    compositions: Compositions<T>
+    compositions: Compositions<T>,
+    onEditCompositionName: () => Promise<string | false>
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.elements = elements;
     this.compositions = compositions;
     this.canCreateComposition = canCreateComposition;
+    this.onEditCompositionName = onEditCompositionName;
 
     this.nodeSelectorElement = createElement(
       'div',
@@ -471,154 +476,167 @@ export class NodeSelector<T> {
     const outputNodes: FlowNode<T>[] = [];
 
     const nodesInComposition = [...this.selectedNodes];
-    this.elements.forEach((element) => {
-      const nodeComponent = element as unknown as IRectNodeComponent<T>;
-      if (nodeComponent.nodeType === NodeType.Shape) {
-        const isNodeSelected = this.selectedNodes.find(
-          (n) => n.id === nodeComponent.id
-        );
-        if (isNodeSelected) {
-          nodeComponent.connections.forEach((connection) => {
-            if (connection.startNode?.id === nodeComponent.id) {
-              if (connection.endNode) {
-                const isEndNodeSelected =
-                  this.selectedNodes.find(
-                    (n) => n.id === connection.endNode?.id
-                  ) !== undefined;
-                if (!isEndNodeSelected) {
-                  // create output thumb
 
-                  // todo : after adding composition : create composition-node and connect to endNode
-                  //const endNode = connection.endNode;
-                  outputNodes.push(mapShapeNodeToFlowNode(nodeComponent));
-                  const outputNodeThumb = connection.startNodeThumb;
-                  const thumbIdentifierWithinNode: string = crypto.randomUUID();
-                  if (outputNodeThumb) {
-                    thumbs.push({
-                      thumbIndex: outputThumbIndex,
-                      thumbType: 'StartConnectorRight',
-                      connectionType: ThumbConnectionType.start,
-                      prefixLabel: outputNodeThumb.prefixLabel,
-                      name: outputNodeThumb.thumbName,
-                      prefixIcon: outputNodeThumb.prefixIcon,
-                      thumbConstraint: outputNodeThumb.thumbConstraint,
-                      color: 'white',
-                      label: outputNodeThumb.thumbLabel,
-                      thumbIdentifierWithinNode: thumbIdentifierWithinNode,
-                      nodeId: nodeComponent.id,
-                    });
-                    outputThumbIndex++;
-                  }
-
-                  if (
-                    !connectionsToCompositions.find(
-                      (c) => c.connection.id === connection.id
-                    )
-                  ) {
-                    connection.startNode = undefined;
-                    connection.startNodeThumb;
-                    connectionsToCompositions.push({
-                      thumbIdentifierWithinNode: thumbIdentifierWithinNode,
-                      connection,
-                    });
-                  }
-                } else {
-                  // include connection
-                  if (!nodesInComposition.find((n) => n.id === connection.id)) {
-                    nodesInComposition.push(connection);
-                  }
-                }
-              }
-            }
-
-            if (connection.endNode?.id === nodeComponent.id) {
-              if (connection.startNode) {
-                const isStartNodeSelected =
-                  this.selectedNodes.find(
-                    (n) => n.id === connection.startNode?.id
-                  ) !== undefined;
-                if (!isStartNodeSelected) {
-                  // create input thumb
-
-                  // todo : after adding composition : create composition-node and connect to startNode
-                  //const startNode = connection.startNode;
-                  inputNodes.push(mapShapeNodeToFlowNode(nodeComponent));
-                  const inputNodeThumb = connection.endNodeThumb;
-                  const thumbIdentifierWithinNode: string = crypto.randomUUID();
-                  if (inputNodeThumb) {
-                    thumbs.push({
-                      thumbIndex: inputThumbIndex,
-                      thumbType: 'EndConnectorLeft',
-                      connectionType: ThumbConnectionType.end,
-                      prefixLabel:
-                        inputNodeThumb.prefixLabel ||
-                        (connection.endNode.label ?? ''),
-                      name: inputNodeThumb.thumbName,
-                      prefixIcon: inputNodeThumb.prefixIcon,
-                      thumbConstraint: inputNodeThumb.thumbConstraint,
-                      color: 'white',
-                      label: inputNodeThumb.thumbLabel,
-                      thumbIdentifierWithinNode: thumbIdentifierWithinNode,
-                      nodeId: nodeComponent.id,
-                    });
-                    inputThumbIndex++;
-                  }
-
-                  if (
-                    !connectionsToCompositions.find(
-                      (c) => c.connection.id === connection.id
-                    )
-                  ) {
-                    connection.endNode = undefined;
-                    connection.endNodeThumb = undefined;
-                    connectionsToCompositions.push({
-                      thumbIdentifierWithinNode: thumbIdentifierWithinNode,
-                      connection,
-                    });
-                  }
-                } else {
-                  // include connection
-                  if (!nodesInComposition.find((n) => n.id === connection.id)) {
-                    nodesInComposition.push(connection);
-                  }
-                }
-              }
-            }
-          });
-        }
+    this.onEditCompositionName().then((name) => {
+      if (!name) {
+        return;
       }
-    });
 
-    const composition: Composition<T> = {
-      id: crypto.randomUUID(),
-      name: 'test',
-      nodes: nodesInComposition.map((node) => {
-        if (node.nodeType === NodeType.Connection) {
-          return mapConnectionToFlowNode(node as IConnectionNodeComponent<T>);
-        } else {
-          return mapShapeNodeToFlowNode(node as IRectNodeComponent<T>);
+      this.elements.forEach((element) => {
+        const nodeComponent = element as unknown as IRectNodeComponent<T>;
+        if (nodeComponent.nodeType === NodeType.Shape) {
+          const isNodeSelected = this.selectedNodes.find(
+            (n) => n.id === nodeComponent.id
+          );
+          if (isNodeSelected) {
+            nodeComponent.connections.forEach((connection) => {
+              if (connection.startNode?.id === nodeComponent.id) {
+                if (connection.endNode) {
+                  const isEndNodeSelected =
+                    this.selectedNodes.find(
+                      (n) => n.id === connection.endNode?.id
+                    ) !== undefined;
+                  if (!isEndNodeSelected) {
+                    // create output thumb
+
+                    // todo : after adding composition : create composition-node and connect to endNode
+                    //const endNode = connection.endNode;
+                    outputNodes.push(mapShapeNodeToFlowNode(nodeComponent));
+                    const outputNodeThumb = connection.startNodeThumb;
+                    const thumbIdentifierWithinNode: string =
+                      crypto.randomUUID();
+                    if (outputNodeThumb) {
+                      thumbs.push({
+                        thumbIndex: outputThumbIndex,
+                        thumbType: 'StartConnectorRight',
+                        connectionType: ThumbConnectionType.start,
+                        prefixLabel: outputNodeThumb.prefixLabel,
+                        name: outputNodeThumb.thumbName,
+                        prefixIcon: outputNodeThumb.prefixIcon,
+                        thumbConstraint: outputNodeThumb.thumbConstraint,
+                        color: 'white',
+                        label: outputNodeThumb.thumbLabel,
+                        thumbIdentifierWithinNode: thumbIdentifierWithinNode,
+                        nodeId: nodeComponent.id,
+                      });
+                      outputThumbIndex++;
+                    }
+
+                    if (
+                      !connectionsToCompositions.find(
+                        (c) => c.connection.id === connection.id
+                      )
+                    ) {
+                      connection.startNode = undefined;
+                      connection.startNodeThumb;
+                      connectionsToCompositions.push({
+                        thumbIdentifierWithinNode: thumbIdentifierWithinNode,
+                        connection,
+                      });
+                    }
+                  } else {
+                    // include connection
+                    if (
+                      !nodesInComposition.find((n) => n.id === connection.id)
+                    ) {
+                      nodesInComposition.push(connection);
+                    }
+                  }
+                }
+              }
+
+              if (connection.endNode?.id === nodeComponent.id) {
+                if (connection.startNode) {
+                  const isStartNodeSelected =
+                    this.selectedNodes.find(
+                      (n) => n.id === connection.startNode?.id
+                    ) !== undefined;
+                  if (!isStartNodeSelected) {
+                    // create input thumb
+
+                    // todo : after adding composition : create composition-node and connect to startNode
+                    //const startNode = connection.startNode;
+                    inputNodes.push(mapShapeNodeToFlowNode(nodeComponent));
+                    const inputNodeThumb = connection.endNodeThumb;
+                    const thumbIdentifierWithinNode: string =
+                      crypto.randomUUID();
+                    if (inputNodeThumb) {
+                      thumbs.push({
+                        thumbIndex: inputThumbIndex,
+                        thumbType: 'EndConnectorLeft',
+                        connectionType: ThumbConnectionType.end,
+                        prefixLabel:
+                          inputNodeThumb.prefixLabel ||
+                          (connection.endNode.label ?? ''),
+                        name: inputNodeThumb.thumbName,
+                        prefixIcon: inputNodeThumb.prefixIcon,
+                        thumbConstraint: inputNodeThumb.thumbConstraint,
+                        color: 'white',
+                        label: inputNodeThumb.thumbLabel,
+                        thumbIdentifierWithinNode: thumbIdentifierWithinNode,
+                        nodeId: nodeComponent.id,
+                      });
+                      inputThumbIndex++;
+                    }
+
+                    if (
+                      !connectionsToCompositions.find(
+                        (c) => c.connection.id === connection.id
+                      )
+                    ) {
+                      connection.endNode = undefined;
+                      connection.endNodeThumb = undefined;
+                      connectionsToCompositions.push({
+                        thumbIdentifierWithinNode: thumbIdentifierWithinNode,
+                        connection,
+                      });
+                    }
+                  } else {
+                    // include connection
+                    if (
+                      !nodesInComposition.find((n) => n.id === connection.id)
+                    ) {
+                      nodesInComposition.push(connection);
+                    }
+                  }
+                }
+              }
+            });
+          }
         }
-      }),
-      thumbs: thumbs,
-      inputNodes,
-      outputNodes,
-    };
-    this.compositions.addComposition(composition);
+      });
 
-    // remove all selected nodes from the canvas
-    nodesInComposition.forEach((node) => {
-      this.elements.delete(node.id);
-      node.domElement?.remove();
+      const composition: Composition<T> = {
+        id: crypto.randomUUID(),
+        name: name,
+        nodes: nodesInComposition.map((node) => {
+          if (node.nodeType === NodeType.Connection) {
+            return mapConnectionToFlowNode(node as IConnectionNodeComponent<T>);
+          } else {
+            return mapShapeNodeToFlowNode(node as IRectNodeComponent<T>);
+          }
+        }),
+        thumbs: thumbs,
+        inputNodes,
+        outputNodes,
+      };
+      this.compositions.addComposition(composition);
+
+      // remove all selected nodes from the canvas
+      nodesInComposition.forEach((node) => {
+        this.elements.delete(node.id);
+        node.domElement?.remove();
+      });
+
+      // add composition node to the canvas with reference to the composition
+      if (this.onAddComposition) {
+        this.onAddComposition(composition, connectionsToCompositions);
+      }
+
+      this.selectedNodes[0]?.updateEnd?.();
+      this.selectedNodes = [];
+      this.selectionWasPlacedOrMoved = false;
+      this.removeSelector();
     });
-
-    // add composition node to the canvas with reference to the composition
-    if (this.onAddComposition) {
-      this.onAddComposition(composition, connectionsToCompositions);
-    }
-
-    this.selectedNodes[0]?.updateEnd?.();
-    this.selectedNodes = [];
-    this.selectionWasPlacedOrMoved = false;
-    this.removeSelector();
   };
 }

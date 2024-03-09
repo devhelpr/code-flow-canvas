@@ -48,7 +48,8 @@ export const createCanvasApp = <T>(
   backgroundColor?: string,
   interactionStateMachineInstance?: InteractionStateMachine<T>,
   canvasId?: string,
-  customTheme?: Theme
+  customTheme?: Theme,
+  onEditCompositionName?: () => Promise<string | false>
 ) => {
   const theme = customTheme ?? standardTheme;
   const interactionStateMachine =
@@ -127,7 +128,8 @@ export const createCanvasApp = <T>(
     interactionStateMachine,
     elements,
     true,
-    compositons
+    compositons,
+    onEditCompositionName ?? (() => Promise.resolve(false))
   );
 
   const setCameraPosition = (x: number, y: number) => {
