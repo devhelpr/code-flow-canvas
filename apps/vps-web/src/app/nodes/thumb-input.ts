@@ -1,4 +1,6 @@
 import {
+  CanvasAppInstance,
+  IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -8,7 +10,8 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
-import { GLNodeInfo } from '../types/gl-node-info';
+import { NodeInfo } from '../types/node-info';
+import { FormField, FormFieldType } from '../components/FormField';
 
 const fieldName = 'thumb-input';
 const labelName = 'Thumb input';
@@ -28,9 +31,11 @@ const thumbs = [
   },
 ];
 
-export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
-  _updated: () => void
-): NodeTask<GLNodeInfo> => {
+export const getThumbInputNode: NodeTaskFactory<NodeInfo> = (
+  updated: () => void
+): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
+  let canvasApp: CanvasAppInstance<NodeInfo>;
   const initializeCompute = () => {
     return;
   };
@@ -53,11 +58,61 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
     200,
     100,
     thumbs,
-    (_values?: InitialValues) => {
-      return [];
+    (values?: InitialValues): FormField[] => {
+      const initialInputType = values?.['valueType'] ?? 'value';
+      return [
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'valueType',
+          value: initialInputType,
+          options: [
+            { value: 'value', label: 'value' },
+            { value: 'array', label: 'array' },
+            { value: 'object', label: 'object' },
+            { value: 'number', label: 'number' },
+            { value: 'string', label: 'string' },
+            { value: 'set', label: 'set' },
+            { value: 'range', label: 'range' },
+          ],
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['valueType']: value,
+            };
+            if (node.thumbConnectors?.[0]) {
+              node.thumbConnectors[0].thumbConstraint = value;
+              if (node.connections) {
+                node.connections = node.connections.filter((c) => {
+                  if (c.endNodeThumb?.thumbConstraint !== value && c.endNode) {
+                    c.endNode.connections = c.endNode?.connections?.filter(
+                      (con) => con !== c
+                    );
+                    c.endNodeThumb = undefined;
+                    if (canvasApp) {
+                      canvasApp.elements.delete(c.id);
+                      c.domElement.remove();
+                    }
+                    return false;
+                  }
+
+                  return true;
+                });
+              }
+            }
+            if (updated) {
+              updated();
+            }
+          },
+        },
+      ];
     },
-    (_nodeInstance) => {
-      //
+    (nodeInstance) => {
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+      canvasApp = nodeInstance.contextInstance;
     },
     {
       hasTitlebar: false,
