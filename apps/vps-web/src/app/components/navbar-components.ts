@@ -65,6 +65,7 @@ export class NavbarComponent extends Component<
         <button class="${navBarButton}">Load</button>
         <select type="select" name="example-flows" class="p-2 m-2 relative ">
           <option value="">Select example flow</option>
+          <option value="counter-flow.json">Counter</option>
           <option value="quicksort-flow.json">Quicksort</option>
         </select>
         <children></children>

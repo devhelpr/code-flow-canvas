@@ -1,0 +1,80 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "054132af-4d2f-48ed-b239-f5129dd35288",
+          "x": 122.34441018202554,
+          "y": -276.51955082999257,
+          "width": 120.00000447580442,
+          "height": 64.00000550414732,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "variable",
+            "formValues": {
+              "variableName": "counter",
+              "initialValue": "0",
+              "fieldType": "value",
+              "fieldValueType": "number"
+            },
+            "isVariable": true,
+            "taskType": "variable"
+          }
+        },
+        {
+          "id": "06256fee-1157-4f80-8886-1767f926a909",
+          "x": -37.90894974259744,
+          "y": -64.8632664406205,
+          "width": 199.99997628915767,
+          "height": 111.99999794331418,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "counter + 1",
+              "inputType": "number"
+            },
+            "taskType": "expression"
+          }
+        },
+        {
+          "id": "c9c55ec2-6475-4945-a680-1966d46e3676",
+          "x": 279.0786499813757,
+          "y": -73.60697032267876,
+          "width": 199.99997628915767,
+          "height": 128.00001100829465,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "counter"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "taskType": "set-variable"
+          }
+        },
+        {
+          "id": "a3cabe53-a367-45f3-964b-304c4236a61b",
+          "x": 162.09102654656022,
+          "y": -8.863267468963414,
+          "endX": 279.0786499813757,
+          "endY": -9.606964818531438,
+          "startNodeId": "06256fee-1157-4f80-8886-1767f926a909",
+          "endNodeId": "c9c55ec2-6475-4945-a680-1966d46e3676",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
