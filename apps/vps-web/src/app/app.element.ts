@@ -823,8 +823,24 @@ export class AppElement<T> {
     });
     minX = minX === -1 ? minX : composition.nodes[0]?.x ?? 0;
     minY = minY === -1 ? minY : composition.nodes[0]?.y ?? 0;
-    const x = (minX + maxX) / 2 - 100;
-    const y = (minY + maxY) / 2 - 100;
+    let x = (minX + maxX) / 2 - 100;
+    let y = (minY + maxY) / 2 - 100;
+
+    if (minX === -1) {
+      let halfWidth = 0;
+      let halfHeight = 0;
+      if (this.currentCanvasApp.rootElement) {
+        const box = this.currentCanvasApp.rootElement.getBoundingClientRect();
+        halfWidth = box.width / 2;
+        halfHeight = box.height / 2;
+      }
+      const startPos = this.currentCanvasApp.transformCameraSpaceToWorldSpace(
+        halfWidth,
+        halfHeight
+      );
+      x = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
+      y = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
+    }
 
     const factory = getNodeTaskFactory(nodeType);
 
@@ -973,31 +989,6 @@ export class AppElement<T> {
     ) => void,
     selectNodeTypeHTMLElement: HTMLSelectElement
   ) => {
-    /*
-       enable editing and add thumbs
-
-       - (TODO) thumb-nodes should have a form field for editing the type
-         (types depend on flow type : GL and flow differ)
-
-          - after modifying the types... the thumbs and connections should be updated
-
-       - after editing (exit edit-mode) :
-
-          - update all compositions on all canvases (containers as well) :
-
-            - check if existing thumbs still match the connected nodes (via thumbConstraint) on the canvas 
-              .. and if not: disconnect the nodes
-
-
-
-        Later : 
-        - allow adding composition nodes to composition and prevent infinite loops during execution
-            (in a child composition , a composition which is called , which is also a parent or ancestor of the current composition will cause an infinite loop)
-        - (done) allow naming composition and show name
-        - create composition from scratch
-        - allow edit of composition node-color
-        
-    */
     const selectedNodeInfo = getSelectedNode();
     if (!selectedNodeInfo) {
       return;
