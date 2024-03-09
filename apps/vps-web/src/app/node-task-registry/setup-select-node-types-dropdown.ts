@@ -91,13 +91,13 @@ export const setupTasksInDropdown = (
           ) {
             return;
           }
-          if (
-            isInComposition &&
-            nodeTask === `composition-${compositionId}` &&
-            compositionId
-          ) {
-            return;
-          }
+        }
+        if (
+          isInComposition &&
+          nodeTask === `composition-${compositionId}` &&
+          compositionId
+        ) {
+          return;
         }
         categoryName = node.category || 'uncategorized';
       }
