@@ -29,6 +29,7 @@ import {
 import { downloadJSON } from '../utils/create-download-link';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
 import { AppNavComponentsProps } from '../component-interface/app-nav-component';
+import { isNodeTaskComposition } from '../node-task-registry/composition-utils';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -145,6 +146,10 @@ export class NavbarComponent extends Component<
     if (!nodeType) {
       console.log('onClickAddNode: no nodeType selected');
     }
+    const nodeInfo = isNodeTaskComposition(nodeType)
+      ? { isComposition: true }
+      : undefined;
+
     let halfWidth = 0;
     let halfHeight = 0;
     if (this.props.getCanvasApp()?.rootElement) {
@@ -170,8 +175,7 @@ export class NavbarComponent extends Component<
           ?.elements?.get(selectedNodeInfo.id) as INodeComponent<NodeInfo>;
 
         if (!node) {
-          console.log('node not found in canvas'); // is the selected node in a container?
-          //selectedNodeInfo.containerNode ...
+          console.log('node not found in canvas');
           const canvasAppInstance = (
             selectedNodeInfo.containerNode?.nodeInfo as any
           )?.canvasAppInstance;
@@ -205,7 +209,8 @@ export class NavbarComponent extends Component<
                 node as IRectNodeComponent<NodeInfo>,
                 undefined,
                 undefined,
-                (node.nestedLevel ?? 0) + 1
+                (node.nestedLevel ?? 0) + 1,
+                nodeInfo
               );
 
               return;
@@ -216,10 +221,19 @@ export class NavbarComponent extends Component<
           }
         }
       }
-      //factory.createVisualNode(props.canvasApp, startX, startY);
-      //} else if (factory) {
-      //const nodeTask = factory(props.canvasUpdated);
-      const node = nodeTask.createVisualNode(canvasApp, startX, startY);
+
+      const node = nodeTask.createVisualNode(
+        canvasApp,
+        startX,
+        startY,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        nodeInfo
+      );
       if (node && node.nodeInfo) {
         node.nodeInfo.taskType = nodeType;
       }

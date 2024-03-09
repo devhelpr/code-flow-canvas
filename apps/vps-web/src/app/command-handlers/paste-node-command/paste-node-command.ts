@@ -57,12 +57,21 @@ export class PasteNodeCommand<
           y += 20 + (copyNode?.height ?? 50);
           const initialValues = structuredClone(copyNode.nodeInfo.formValues);
 
+          const nodeInfo = copyNode?.nodeInfo?.isComposition
+            ? { isComposition: true }
+            : {};
           const nodeClone = nodeTask.createVisualNode(
             canvasApp,
             x,
             y,
             undefined,
-            initialValues
+            initialValues,
+
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            nodeInfo
           );
           this.lastX = x;
           this.lastY = y;

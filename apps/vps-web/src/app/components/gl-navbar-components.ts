@@ -29,6 +29,7 @@ import { downloadJSON } from '../utils/create-download-link';
 import { GenericAppNavComponentsProps } from '../component-interface/app-nav-component';
 import { getGLNodeTaskFactory } from '../node-task-registry/gl-node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { isNodeTaskComposition } from '../node-task-registry/composition-utils';
 
 export class GLNavbarComponent extends Component<
   GenericAppNavComponentsProps<any>
@@ -136,6 +137,11 @@ export class GLNavbarComponent extends Component<
     }
     canvasApp.resetNodeTransform();
     const nodeType = this.props.selectNodeType.value;
+
+    const nodeInfo = isNodeTaskComposition(nodeType)
+      ? { isComposition: true }
+      : undefined;
+
     let halfWidth = 0;
     let halfHeight = 0;
     if (canvasApp.rootElement) {
@@ -150,36 +156,6 @@ export class GLNavbarComponent extends Component<
     const startX = (startPos?.x ?? Math.floor(Math.random() * 250)) - 100;
     const startY = (startPos?.y ?? Math.floor(Math.random() * 500)) - 150;
 
-    //const selectedNode = this.getSelectedNodeInfo();
-    // let node: IRectNodeComponent<any> | undefined = undefined;
-    // if (
-    //   selectedNode &&
-    //   selectedNode.node &&
-    //   selectedNode.node.nodeType === NodeType.Shape
-    // ) {
-    //   this.lastAddedNode = null;
-    //   node = selectedNode.node as IRectNodeComponent<any>;
-    // } else if (this.lastAddedNode) {
-    //   node = this.lastAddedNode;
-    // }
-    // if (node) {
-    //   let hasOutputConnections = false;
-    //   let hasInputConnections = false;
-    //   if (node.thumbConnectors) {
-    //     hasOutputConnections = node.thumbConnectors.some((c) => {
-    //       return c.thumbConnectionType === ThumbConnectionType.start;
-    //     });
-    //     hasInputConnections = node.thumbConnectors.some((c) => {
-    //       return c.thumbConnectionType === ThumbConnectionType.end;
-    //     });
-    //   }
-    //   startY = node.y;
-    //   if (hasOutputConnections) {
-    //     startX = node.x + (node.width ?? 200) + 250;
-    //   } else if (hasInputConnections) {
-    //     startX = node.x - 300;
-    //   }
-    // }
     const factory = getGLNodeTaskFactory(nodeType);
 
     if (factory) {
@@ -228,7 +204,8 @@ export class GLNavbarComponent extends Component<
                 node as IRectNodeComponent<GLNodeInfo>,
                 undefined,
                 undefined,
-                (node.nestedLevel ?? 0) + 1
+                (node.nestedLevel ?? 0) + 1,
+                nodeInfo
               );
 
               return;
@@ -239,7 +216,19 @@ export class GLNavbarComponent extends Component<
           }
         }
       }
-      const node = nodeTask.createVisualNode(canvasApp, startX, startY);
+
+      const node = nodeTask.createVisualNode(
+        canvasApp,
+        startX,
+        startY,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        nodeInfo
+      );
       if (node && node.nodeInfo) {
         this.lastAddedNode = node;
         node.nodeInfo.taskType = nodeType;
