@@ -257,7 +257,6 @@ export const createCanvasApp = <T>(
     const scaleBy = scaleFactor;
 
     if (canvas.domElement) {
-      console.log('wheel', event.clientX, event.clientY);
       const mousePointTo = {
         x: event.clientX / scaleCamera - xCamera / scaleCamera,
         y: event.clientY / scaleCamera - yCamera / scaleCamera,
@@ -581,7 +580,6 @@ export const createCanvasApp = <T>(
       );
 
       if (startDistance === null) {
-        console.log('touchmove first');
         startDistance = distance;
         //initialScale = scaleCamera;
         startCenterX = (touch1.clientX + touch2.clientX) / 2;
@@ -593,20 +591,20 @@ export const createCanvasApp = <T>(
           startCenterX = (touch1.clientX + touch2.clientX) / 2;
           startCenterY = (touch1.clientY + touch2.clientY) / 2;
 
-          console.log(
-            'touchmove',
-            // distance - startDistance,
-            // distance,
-            // startDistance,
-            startCenterX,
-            startCenterY,
-            touch1.clientX,
-            touch1.clientY,
-            touch2.clientX,
-            touch2.clientY
-          );
+          // console.log(
+          //   'touchmove',
+          //   // distance - startDistance,
+          //   // distance,
+          //   // startDistance,
+          //   startCenterX,
+          //   startCenterY,
+          //   touch1.clientX,
+          //   touch1.clientY,
+          //   touch2.clientX,
+          //   touch2.clientY
+          // );
           wheelEvent({
-            deltaY: (distance - startDistance) * -0.05,
+            deltaY: (distance - startDistance) * -0.085,
             target: event.target,
             viaTouch: true,
             clientX: startCenterX,
@@ -649,12 +647,8 @@ export const createCanvasApp = <T>(
     return true;
   };
   const onTouchEnd = (event: TouchEvent) => {
-    //let result = true;
     if (isZoomingViaTouch) {
       console.log('touchend isZoomingViaTouch', event);
-      // event.preventDefault();
-      // event.stopPropagation();
-      //result = false;
       isMoving = false;
       isClicking = false;
       wasMoved = false;
@@ -663,8 +657,6 @@ export const createCanvasApp = <T>(
 
     startDistance = null;
     isZoomingViaTouch = false;
-
-    //return result;
   };
 
   const onClick = (event: MouseEvent) => {

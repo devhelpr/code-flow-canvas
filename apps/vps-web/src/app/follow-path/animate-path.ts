@@ -162,7 +162,7 @@ export function setTargetCameraAnimation(
   scale: number,
   fastTransition = false
 ) {
-  console.log('setTargetCameraAnimation', x, y, id, scale);
+  //console.log('setTargetCameraAnimation', x, y, id, scale);
   targetX = x;
   targetY = y;
   nodeId = id;
@@ -176,7 +176,7 @@ export function setPositionTargetCameraAnimation(
   y: number,
   scale?: number
 ) {
-  console.log('setPositionTargetCameraAnimation', x, y, scale);
+  //console.log('setPositionTargetCameraAnimation', x, y, scale);
   isTargetinCameraSpace = true;
   targetX = x;
   targetY = y;
