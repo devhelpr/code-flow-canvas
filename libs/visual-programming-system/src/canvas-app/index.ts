@@ -562,7 +562,7 @@ export const createCanvasApp = <T>(
       if (startDistance === null) {
         startDistance = distance;
       } else {
-        const scaleBy = distance / startDistance;
+        const scaleBy = (distance / startDistance) * 0.01;
 
         if (canvas.domElement) {
           const centerX = (touch1.clientX + touch2.clientX) / 2;
