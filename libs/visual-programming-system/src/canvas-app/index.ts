@@ -573,6 +573,12 @@ export const createCanvasApp = <T>(
         if (canvas.domElement) {
           const centerX = (touch1.clientX + touch2.clientX) / 2;
           const centerY = (touch1.clientY + touch2.clientY) / 2;
+          console.log(
+            'touchmove',
+            distance - startDistance,
+            distance,
+            startDistance
+          );
           wheelEvent({
             deltaY: distance - startDistance,
             target: event.target,
