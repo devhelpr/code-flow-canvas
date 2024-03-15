@@ -323,7 +323,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             startCenterY = (touch1.clientY + touch2.clientY) / 2;
 
             onGLCanvasWheelEvent({
-              deltaY: (distance - startDistance) * -0.0085,
+              deltaY: (distance - startDistance) * -0.00085,
               target: event.target,
               viaTouch: true,
               clientX: startCenterX,
