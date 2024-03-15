@@ -323,6 +323,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             startCenterY = (touch1.clientY + touch2.clientY) / 2;
             console.log(
               'touchzoom',
+              touch1.clientX,
+              touch1.clientY,
+              touch2.clientX,
+              touch2.clientY,
               startDistance,
               distance,
               startCenterX,
