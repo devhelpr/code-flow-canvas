@@ -501,6 +501,82 @@ export const createCanvasApp = <T>(
       }
     }
   };
+
+  let startDistance: null | number = null;
+  const onTouchMove = (event: TouchEvent) => {
+    if (
+      event.target &&
+      (event.target as any).closest &&
+      ((event.target as any).closest('.menu') ||
+        (event.target as any).closest('.menu-container'))
+    ) {
+      return;
+    }
+
+    if (disableInteraction) {
+      return;
+    }
+
+    if (
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0 ||
+      (event.target !== rootElement && event.target !== canvas.domElement)
+    ) {
+      if (
+        !(event.target as unknown as any).closest ||
+        !(event.target as unknown as any).closest(`#${canvasId ?? 'canvas'}`)
+      ) {
+        return;
+      }
+    }
+
+    event.preventDefault();
+    if (event.touches.length == 2) {
+      const touch1 = event.touches[0];
+      const touch2 = event.touches[1];
+      const distance = Math.sqrt(
+        Math.pow(touch2.pageX - touch1.pageX, 2) +
+          Math.pow(touch2.pageY - touch1.pageY, 2)
+      );
+
+      if (startDistance === null) {
+        startDistance = distance;
+      } else {
+        const scaleBy = distance / startDistance;
+
+        if (canvas.domElement) {
+          const centerX = (touch1.pageX + touch2.pageX) / 2;
+          const centerY = (touch1.pageY + touch2.pageY) / 2;
+
+          const mousePointTo = {
+            x: centerX / scaleCamera - xCamera / scaleCamera,
+            y: centerY / scaleCamera - yCamera / scaleCamera,
+          };
+
+          let newScale = scaleCamera * scaleBy;
+          if (newScale < 0.05) {
+            newScale = 0.05;
+          } else if (newScale > 205) {
+            newScale = 205;
+          }
+
+          const newPos = {
+            x: -(mousePointTo.x - centerX / newScale) * newScale,
+            y: -(mousePointTo.y - centerY / newScale) * newScale,
+          };
+
+          if (onWheelEvent) {
+            onWheelEvent(newPos.x, newPos.y, newScale);
+          }
+        }
+      }
+    }
+  };
+  const onTouchEnd = (_event: TouchEvent) => {
+    startDistance = -1;
+  };
+
   const onClick = (event: MouseEvent) => {
     const tagName = (event.target as HTMLElement)?.tagName;
     console.log(
@@ -546,6 +622,10 @@ export const createCanvasApp = <T>(
     rootElement.addEventListener('pointermove', onPointerMove);
     rootElement.addEventListener('pointerup', onPointerUp);
     rootElement.addEventListener('pointerleave', onPointerLeave);
+
+    rootElement.addEventListener('touchmove', onTouchMove, { passive: false });
+    rootElement.addEventListener('touchend', onTouchEnd);
+    rootElement.addEventListener('touchcancel', onTouchEnd);
 
     if (!disableZoom) {
       rootElement.addEventListener('wheel', wheelEvent);
