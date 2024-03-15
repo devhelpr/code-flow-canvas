@@ -574,6 +574,7 @@ export const createCanvasApp = <T>(
         }
       }
     }
+    return true;
   };
   const onTouchEnd = (_event: TouchEvent) => {
     startDistance = -1;
