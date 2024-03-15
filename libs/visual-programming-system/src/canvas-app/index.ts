@@ -566,7 +566,7 @@ export const createCanvasApp = <T>(
         startDistance = distance;
         initialScale = scaleCamera;
       } else {
-        const scaleBy = (distance / startDistance) * 0.005;
+        const scaleBy = (distance / startDistance) * 0.05;
 
         if (canvas.domElement) {
           const centerX = (touch1.clientX + touch2.clientX) / 2;
@@ -577,7 +577,8 @@ export const createCanvasApp = <T>(
             y: centerY / scaleCamera - yCamera / scaleCamera,
           };
 
-          let newScale = initialScale + scaleBy; // * scaleCamera;
+          const sign = distance > startDistance ? 1 : -1;
+          let newScale = initialScale + scaleBy * sign; // * scaleCamera;
           if (newScale < 0.05) {
             newScale = 0.05;
           } else if (newScale > 205) {
