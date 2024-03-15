@@ -129,6 +129,7 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.showFormOnlyInPopup = true;
       }
       return node;
     },

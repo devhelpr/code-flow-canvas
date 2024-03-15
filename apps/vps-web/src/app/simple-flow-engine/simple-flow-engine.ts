@@ -161,7 +161,8 @@ const triggerExecution = (
             runIndex,
             payload,
             connection?.endNodeThumb?.thumbName,
-            scopeId
+            scopeId,
+            runCounter
           );
 
           return new Promise((resolve, reject) => {
@@ -218,7 +219,8 @@ const triggerExecution = (
             runIndex,
             payload,
             connection?.endNodeThumb?.thumbName,
-            scopeId
+            scopeId,
+            runCounter
           );
           result = computeResult.result;
 
@@ -353,7 +355,8 @@ export const runNode = (
         loopIndex === undefined ? runIndex : loopIndex,
         payload,
         connection?.endNodeThumb?.thumbName,
-        scopeId
+        scopeId,
+        runCounter
       )
       .then((computeResult: any) => {
         result = computeResult.result;
@@ -400,7 +403,8 @@ export const runNode = (
       loopIndex === undefined ? runIndex : loopIndex,
       payload,
       connection?.endNodeThumb?.thumbName,
-      scopeId
+      scopeId,
+      runCounter
     );
 
     result = computeResult.result;
@@ -633,7 +637,8 @@ export const runNodeFromThumb = (
               loopIndex,
               undefined,
               connection?.endNodeThumb?.thumbName,
-              scopeId
+              scopeId,
+              runCounter
             )
             .then((computeResult: any) => {
               result = computeResult.result;
@@ -681,7 +686,8 @@ export const runNodeFromThumb = (
           loopIndex,
           undefined,
           connection?.endNodeThumb?.thumbName,
-          scopeId
+          scopeId,
+          runCounter
         );
         result = computeResult.result;
         followPath = computeResult.followPath;

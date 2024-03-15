@@ -948,6 +948,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     createEffect(() => {
       const selectedNodeInfo = getSelectedNode();
+
       console.log('selected nodeElement...', selectedNodeInfo);
       if (!this.rootElement) {
         return;
@@ -1083,7 +1084,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           undefined
         );
         this.formElement = formElementInstance;
+        this.focusedNode = node;
         const currentFocusNode = this.focusedNode;
+        this.popupNode = currentFocusNode;
         FormComponent({
           rootElement: this.formElement.domElement as HTMLElement,
           id: selectedNodeInfo.id,
@@ -1311,4 +1314,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       );
     }
   };
+
+  onEditComposition() {
+    //
+  }
+
+  onExitEditComposition() {
+    //
+  }
 }

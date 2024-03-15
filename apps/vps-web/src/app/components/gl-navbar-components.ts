@@ -30,6 +30,10 @@ import { GenericAppNavComponentsProps } from '../component-interface/app-nav-com
 import { getGLNodeTaskFactory } from '../node-task-registry/gl-node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { isNodeTaskComposition } from '../node-task-registry/composition-utils';
+import {
+  addClassesHTMLElement,
+  removeClassesHTMLElement,
+} from '../utils/add-remove-classes';
 
 export class GLNavbarComponent extends Component<
   GenericAppNavComponentsProps<any>
@@ -455,10 +459,22 @@ export class GLNavbarComponent extends Component<
       this.renderElements(childElements);
     }
   }
+
+  onEditComposition() {
+    addClassesHTMLElement(this.exportButton, ['hidden']);
+    addClassesHTMLElement(this.importButton, ['hidden']);
+    addClassesHTMLElement(this.selectExampleFlow, ['hidden']);
+  }
+
+  onExitEditComposition() {
+    removeClassesHTMLElement(this.exportButton, ['hidden']);
+    removeClassesHTMLElement(this.importButton, ['hidden']);
+    removeClassesHTMLElement(this.selectExampleFlow, ['hidden']);
+  }
 }
 
 export const GLNavbarMenu = (props: GenericAppNavComponentsProps<any>) => {
-  new GLNavbarComponent(null, {
+  return new GLNavbarComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,
     clearCanvas: props.clearCanvas,

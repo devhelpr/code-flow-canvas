@@ -31,7 +31,10 @@ import {
   createIndexedDBStorageProvider,
   FlowrunnerIndexedDbStorageProvider,
 } from './storage/indexeddb-storage-provider';
-import { GLNavbarMenu } from './components/gl-navbar-components';
+import {
+  GLNavbarComponent,
+  GLNavbarMenu,
+} from './components/gl-navbar-components';
 import {
   menubarClasses,
   menubarContainerClasses,
@@ -67,6 +70,7 @@ import {
   vec3Type,
   vec4Type,
 } from './gl-types/float-vec2-vec3';
+import { addClasses, removeClasses } from './utils/add-remove-classes';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -78,9 +82,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   isStoring = false;
 
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
-
+  glNavbarComponent: GLNavbarComponent | undefined = undefined;
   scopeNodeDomElement: HTMLElement | undefined = undefined;
-
+  menubarElement: IDOMElement | undefined = undefined;
+  menubarContainerElement: IDOMElement | undefined = undefined;
   formElement: IDOMElement | undefined = undefined;
   selectedNodeLabel: IDOMElement | undefined = undefined;
 
@@ -303,8 +308,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
         this.initializeCommandHandlers();
 
-        if (this.storageProvider && this.canvasApp && this.rootElement) {
-          GLNavbarMenu({
+        if (
+          this.storageProvider &&
+          this.canvasApp &&
+          this.rootElement &&
+          this.menubarElement
+        ) {
+          this.glNavbarComponent = GLNavbarMenu({
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
@@ -313,7 +323,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             canvasUpdated: canvasUpdated,
             getCanvasApp: () => this.currentCanvasApp,
             removeElement: this.removeElement,
-            rootElement: menubarElement.domElement as HTMLElement,
+            rootElement: this.menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             importToCanvas: (
@@ -346,7 +356,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 this.selectNodeType?.domElement as HTMLSelectElement
               );
             },
-          }) as unknown as HTMLElement;
+          });
 
           this.resetStateButton = createElement(
             'button',
@@ -359,7 +369,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 return false;
               },
             },
-            menubarElement.domElement,
+            this.menubarElement.domElement,
             'Reset state'
           );
 
@@ -377,7 +387,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 return false;
               },
             },
-            menubarElement.domElement,
+            this.menubarElement.domElement,
             'Clear canvas'
           );
 
@@ -392,7 +402,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 return false;
               },
             },
-            menubarElement.domElement,
+            this.menubarElement.domElement,
             'Edit composition'
           );
 
@@ -407,7 +417,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 return false;
               },
             },
-            menubarElement.domElement,
+            this.menubarElement.domElement,
             'Edit composition name'
           );
 
@@ -422,16 +432,16 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 return false;
               },
             },
-            menubarElement.domElement,
+            this.menubarElement.domElement,
             'Create composition'
           );
 
           this.compositionEditExitButton = createElement(
             'button',
             {
-              class: `${navBarButton} hidden`,
+              class: `${navBarButton} hidden ml-auto`,
             },
-            menubarElement.domElement,
+            this.menubarElement.domElement,
             'Exit Edit composition'
           );
 
@@ -441,7 +451,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               id: 'selectedNode',
               class: 'text-white',
             },
-            menubarElement.domElement
+            this.menubarElement.domElement
           );
 
           registerCommands<GLNodeInfo>({
@@ -528,7 +538,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       setSelectNode(undefined);
     });
 
-    const menubarContainerElement = createElement(
+    this.menubarContainerElement = createElement(
       'div',
       {
         class: menubarClasses,
@@ -536,12 +546,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.rootElement
     );
 
-    const menubarElement = createElement(
+    this.menubarElement = createElement(
       'div',
       {
         class: menubarContainerClasses,
       },
-      menubarContainerElement.domElement
+      this.menubarContainerElement.domElement
     );
 
     const initializeNodes = () => {
@@ -620,7 +630,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           //
         },
       },
-      menubarElement.domElement,
+      this.menubarElement.domElement,
       ''
     );
 
@@ -942,6 +952,26 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       );
     }
   };
+
+  onEditComposition() {
+    super.onEditComposition();
+
+    removeClasses(this.menubarContainerElement, ['bg-slate-700']);
+    addClasses(this.menubarContainerElement, ['bg-sky-500']);
+    this.glNavbarComponent?.onEditComposition();
+    addClasses(this.clearCanvasButton, ['hidden']);
+    addClasses(this.resetStateButton, ['hidden']);
+  }
+
+  onExitEditComposition() {
+    super.onExitEditComposition();
+
+    removeClasses(this.menubarContainerElement, ['bg-sky-500']);
+    addClasses(this.menubarContainerElement, ['bg-slate-700']);
+    this.glNavbarComponent?.onExitEditComposition();
+    removeClasses(this.clearCanvasButton, ['hidden']);
+    removeClasses(this.resetStateButton, ['hidden']);
+  }
 
   getSelectTaskElement = () => {
     return this.selectNodeType?.domElement as HTMLSelectElement;

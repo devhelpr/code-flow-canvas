@@ -1018,6 +1018,7 @@ export class AppElement<T> {
       showElement(this.clearCanvasButton);
       showElement(this.resetStateButton);
       showElement(this.compositionNameButton);
+      this.onEditComposition();
 
       this.currentCanvasApp?.setDisableInteraction(true);
 
@@ -1706,6 +1707,7 @@ export class AppElement<T> {
         showElement(this.resetStateButton);
         hideElement(this.compositionEditExitButton);
         hideElement(this.compositionNameButton);
+        this.onExitEditComposition();
 
         this.compositionUnderEdit = undefined;
         setupTasksInDropdown(selectNodeTypeHTMLElement, false);
@@ -1795,5 +1797,13 @@ export class AppElement<T> {
         this.compositionUnderEdit.name = name;
       }
     });
+  }
+
+  onEditComposition() {
+    //
+  }
+
+  onExitEditComposition() {
+    //
   }
 }

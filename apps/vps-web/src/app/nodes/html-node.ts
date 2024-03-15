@@ -287,6 +287,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formValues = {
           html: initialValue || defaultHTML,
         };
+        node.nodeInfo.showFormOnlyInPopup = true;
       }
       setHTML('');
 

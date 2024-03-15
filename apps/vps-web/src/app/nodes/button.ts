@@ -13,6 +13,7 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const getButton =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
@@ -21,11 +22,20 @@ export const getButton =
     let button: IDOMElement;
     let currentValue = 0;
     let triggerButton = false;
+    let runCounter: RunCounter | undefined = undefined;
     const initializeCompute = () => {
       currentValue = 0;
       return;
     };
-    const compute = (input: string) => {
+    const compute = (
+      input: string,
+      _loopIndex?: number,
+      _payload?: any,
+      _thumbName?: string,
+      _scopeId?: string,
+      runCounterCompute?: RunCounter
+    ) => {
+      runCounter = runCounterCompute;
       try {
         currentValue = parseFloat(input) || 0;
       } catch {
@@ -114,7 +124,13 @@ export const getButton =
                 undefined,
                 containerNode
                   ? node.nodeInfo.formValues['caption'] || 'Button'
-                  : currentValue.toString()
+                  : currentValue.toString(),
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                runCounter
               );
               return false;
             },
@@ -174,6 +190,7 @@ export const getButton =
           node.nodeInfo.formElements = formElements;
           node.nodeInfo.compute = compute;
           node.nodeInfo.initializeCompute = initializeCompute;
+          node.nodeInfo.showFormOnlyInPopup = true;
         }
         return node;
       },

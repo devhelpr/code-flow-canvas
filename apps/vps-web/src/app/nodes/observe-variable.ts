@@ -13,6 +13,7 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const observeVariable =
   (animatePath: AnimatePathFunction<NodeInfo>) =>
@@ -20,6 +21,7 @@ export const observeVariable =
     let node: IRectNodeComponent<NodeInfo>;
     let variableName = '';
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+    let runCounter: RunCounter | undefined = undefined;
     const initializeCompute = () => {
       if (canvasAppInstance && variableName) {
         canvasAppInstance.removeObserveVariable(node.id, variableName);
@@ -27,9 +29,18 @@ export const observeVariable =
       }
       return;
     };
-    const compute = (input: string) => {
+    const compute = (
+      input: string,
+      _loopIndex?: number,
+      _payload?: any,
+      _thumbName?: string,
+      _scopeId?: string,
+      runCounterCompute?: RunCounter
+    ) => {
+      runCounter = runCounterCompute;
       return {
         result: input,
+        stop: input === undefined || input === null || input === '',
         followPath: undefined,
       };
     };
@@ -67,7 +78,13 @@ export const observeVariable =
               (_input) => {
                 //
               },
-              value
+              value,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              runCounter
             );
           }
         });

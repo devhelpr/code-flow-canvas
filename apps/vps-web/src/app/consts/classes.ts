@@ -34,7 +34,7 @@ export const menubarClasses = `menu fixed top-0 z-[1050] flex flex-row flex-nowr
     whitespace-nowrap overflow-x-scroll`;
 export const menubarContainerClasses = `menu-container flex flex-row flex-nowrap 
 items-center justify-start height-[50px] overflow-visible
-whitespace-nowrap`;
+whitespace-nowrap min-w-[100vw]`;
 
 export const primaryButton = `rounded-md bg-blue-500 text-white p-2  hover:bg-blue-600 select-none whitespace-nowrap
 disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
