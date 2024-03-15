@@ -2,6 +2,11 @@
 @tailwind base;
 @tailwind utilities;
 
+:root {
+	touch-action: pan-x pan-y;
+	height: 100%;
+}
+
 .min-h-dvh {
 	min-height: 100dvh;
 }
