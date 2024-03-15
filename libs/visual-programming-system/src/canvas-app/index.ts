@@ -565,7 +565,7 @@ export const createCanvasApp = <T>(
         startDistance = distance;
         //initialScale = scaleCamera;
       } else {
-        const scaleBy = (distance / startDistance) * 0.05;
+        const scaleBy = (distance / startDistance) * 0.005;
 
         if (canvas.domElement) {
           const centerX = (touch1.clientX + touch2.clientX) / 2;
@@ -613,7 +613,7 @@ export const createCanvasApp = <T>(
       result = false;
     }
 
-    startDistance = -1;
+    startDistance = null;
     isZoomingViaTouch = false;
     return result;
   };
