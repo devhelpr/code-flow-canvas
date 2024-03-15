@@ -211,7 +211,7 @@ export const createCanvasApp = <T>(
   };
   rootElement.addEventListener('pointerdown', onPointerDown);
 
-  let wheelTime = -1;
+  //let wheelTime = -1;
 
   const wheelEvent = (event: WheelEvent) => {
     if (
@@ -232,13 +232,13 @@ export const createCanvasApp = <T>(
     if (!(event as any).viaTouch) {
       event.preventDefault();
     }
-    if (wheelTime === -1) {
-      wheelTime = event.timeStamp;
-    }
-    let timeDiff = event.timeStamp - wheelTime;
-    if (event.shiftKey) {
-      timeDiff = timeDiff * 16;
-    }
+    // if (wheelTime === -1) {
+    //   wheelTime = event.timeStamp;
+    // }
+    // let timeDiff = event.timeStamp - wheelTime;
+    // if (event.shiftKey) {
+    //   timeDiff = timeDiff * 16;
+    // }
 
     const factor = event.ctrlKey ? (isMacOs ? 350 : 50) : isMacOs ? 150 : 20;
 
@@ -579,7 +579,9 @@ export const createCanvasApp = <T>(
             'touchmove',
             distance - startDistance,
             distance,
-            startDistance
+            startDistance,
+            startCenterX,
+            startCenterY
           );
           wheelEvent({
             deltaY: (distance - startDistance) * -0.05,
