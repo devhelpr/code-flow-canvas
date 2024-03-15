@@ -573,7 +573,7 @@ export const createCanvasApp = <T>(
             y: centerY / scaleCamera - yCamera / scaleCamera,
           };
 
-          let newScale = scaleCamera * scaleBy;
+          let newScale = scaleBy;
           if (newScale < 0.05) {
             newScale = 0.05;
           } else if (newScale > 205) {
