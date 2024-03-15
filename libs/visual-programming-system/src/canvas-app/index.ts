@@ -381,7 +381,8 @@ export const createCanvasApp = <T>(
     if (
       currentState.state === InteractionState.Moving &&
       currentState.element &&
-      currentState.target
+      currentState.target &&
+      !isZoomingViaTouch
     ) {
       const interactionState = interactionStateMachine.interactionEventState(
         InteractionEvent.PointerUp,
@@ -601,9 +602,18 @@ export const createCanvasApp = <T>(
     }
     return true;
   };
-  const onTouchEnd = (_event: TouchEvent) => {
+  const onTouchEnd = (event: TouchEvent) => {
+    let result = true;
+    if (isZoomingViaTouch) {
+      console.log('touchend isZoomingViaTouch', event);
+      event.preventDefault();
+      event.stopPropagation();
+      result = false;
+    }
+
     startDistance = -1;
     isZoomingViaTouch = false;
+    return result;
   };
 
   const onClick = (event: MouseEvent) => {
