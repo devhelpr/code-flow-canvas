@@ -521,7 +521,7 @@ export const createCanvasApp = <T>(
 
   let isZoomingViaTouch = false;
   let startDistance: null | number = null;
-  let initialScale = -1;
+  //let initialScale = -1;
   const onTouchMove = (event: TouchEvent) => {
     if (
       event.target &&
@@ -563,7 +563,7 @@ export const createCanvasApp = <T>(
 
       if (startDistance === null) {
         startDistance = distance;
-        initialScale = scaleCamera;
+        //initialScale = scaleCamera;
       } else {
         const scaleBy = (distance / startDistance) * 0.05;
 
