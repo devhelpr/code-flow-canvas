@@ -335,7 +335,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               glcanvas.offsetTop
             );
             onGLCanvasWheelEvent({
-              deltaY: (distance - startDistance) * -0.085,
+              deltaY: (distance - startDistance) * -0.85,
               target: event.target,
               viaTouch: true,
               offsetX: startCenterX - glcanvas.offsetLeft,
