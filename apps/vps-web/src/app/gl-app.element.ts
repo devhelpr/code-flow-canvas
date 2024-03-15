@@ -136,7 +136,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         isZoomingViaTouch = false;
         if (event.pointerType === 'touch') {
           skipFirstPointerMoveOnTouch = true;
-          return;
         }
         this.isMovingGLCanvas = true;
         if (glcanvas) {
