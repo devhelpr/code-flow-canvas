@@ -212,8 +212,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         this.isMovingGLCanvas = false;
       });
 
-    let wheelTime = -1;
-
     const isMacOs =
       typeof navigator !== 'undefined' &&
       navigator?.userAgent?.indexOf('Mac') >= 0;
@@ -232,13 +230,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         return;
       }
 
-      event.preventDefault();
-      if (wheelTime === -1) {
-        wheelTime = event.timeStamp;
-      }
-      let timeDiff = event.timeStamp - wheelTime;
-      if (event.shiftKey) {
-        timeDiff = timeDiff * 16;
+      if (!(event as any).viaTouch) {
+        event.preventDefault();
       }
 
       const factor = event.ctrlKey
