@@ -567,6 +567,7 @@ export const createCanvasApp = <T>(
       );
 
       if (startDistance === null) {
+        console.log('touchmove first');
         startDistance = distance;
         //initialScale = scaleCamera;
         startCenterX = (touch1.clientX + touch2.clientX) / 2;
@@ -620,9 +621,9 @@ export const createCanvasApp = <T>(
           // if (onWheelEvent) {
           //   onWheelEvent(newPos.x, newPos.y, newScale);
           // }
-          return false;
         }
       }
+      return false;
     }
     return true;
   };
