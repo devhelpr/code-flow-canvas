@@ -585,11 +585,15 @@ export const createCanvasApp = <T>(
 
           console.log(
             'touchmove',
-            distance - startDistance,
-            distance,
-            startDistance,
+            // distance - startDistance,
+            // distance,
+            // startDistance,
             startCenterX,
-            startCenterY
+            startCenterY,
+            touch1.clientX,
+            touch1.clientY,
+            touch2.clientX,
+            touch2.clientY
           );
           wheelEvent({
             deltaY: (distance - startDistance) * -0.05,
