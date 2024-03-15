@@ -167,6 +167,7 @@ export const createCanvasApp = <T>(
   rootElement.addEventListener('contextmenu', onContextMenu, false);
 
   const onPointerDown = (event: PointerEvent) => {
+    isZoomingViaTouch = false;
     //console.log('pointerdown canvas', event.target, canvas.domElement);
     if (disableInteraction) {
       return;
@@ -187,6 +188,15 @@ export const createCanvasApp = <T>(
         wasMoved = false;
         return;
       }
+    }
+    const eventTargetHelper = event.target as HTMLElement;
+    if (
+      event.target &&
+      eventTargetHelper.hasPointerCapture &&
+      eventTargetHelper.releasePointerCapture &&
+      eventTargetHelper.hasPointerCapture(event.pointerId)
+    ) {
+      eventTargetHelper.releasePointerCapture(event.pointerId);
     }
 
     if (event.shiftKey) {
@@ -214,6 +224,9 @@ export const createCanvasApp = <T>(
     }
 
     if (disableInteraction) {
+      return;
+    }
+    if (isZoomingViaTouch) {
       return;
     }
     event.preventDefault();
@@ -264,6 +277,9 @@ export const createCanvasApp = <T>(
 
   const onPointerMove = (event: PointerEvent) => {
     if (disableInteraction) {
+      return;
+    }
+    if (isZoomingViaTouch) {
       return;
     }
 
@@ -502,6 +518,7 @@ export const createCanvasApp = <T>(
     }
   };
 
+  let isZoomingViaTouch = false;
   let startDistance: null | number = null;
   const onTouchMove = (event: TouchEvent) => {
     if (
@@ -533,6 +550,7 @@ export const createCanvasApp = <T>(
 
     event.preventDefault();
     if (event.touches.length == 2) {
+      isZoomingViaTouch = true;
       event.stopPropagation();
       const touch1 = event.touches[0];
       const touch2 = event.touches[1];
@@ -578,6 +596,7 @@ export const createCanvasApp = <T>(
   };
   const onTouchEnd = (_event: TouchEvent) => {
     startDistance = -1;
+    isZoomingViaTouch = false;
   };
 
   const onClick = (event: MouseEvent) => {
@@ -625,12 +644,12 @@ export const createCanvasApp = <T>(
     rootElement.addEventListener('pointermove', onPointerMove);
     rootElement.addEventListener('pointerup', onPointerUp);
     rootElement.addEventListener('pointerleave', onPointerLeave);
-
-    rootElement.addEventListener('touchmove', onTouchMove, { passive: false });
-    rootElement.addEventListener('touchend', onTouchEnd);
-    rootElement.addEventListener('touchcancel', onTouchEnd);
-
     if (!disableZoom) {
+      rootElement.addEventListener('touchmove', onTouchMove, {
+        passive: false,
+      });
+      rootElement.addEventListener('touchend', onTouchEnd);
+      rootElement.addEventListener('touchcancel', onTouchEnd);
       rootElement.addEventListener('wheel', wheelEvent);
     }
 
@@ -665,6 +684,9 @@ export const createCanvasApp = <T>(
     rootElement.removeEventListener('pointerup', onPointerUp);
     rootElement.removeEventListener('pointerleave', onPointerLeave);
     rootElement.removeEventListener('contextmenu', onContextMenu, false);
+    rootElement.removeEventListener('touchmove', onTouchMove);
+    rootElement.removeEventListener('touchend', onTouchEnd);
+    rootElement.removeEventListener('touchcancel', onTouchEnd);
   };
 
   // const getCurrentScope = () => {
