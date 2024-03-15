@@ -471,6 +471,7 @@ export const createCanvasApp = <T>(
     if (currentState?.canvasNode?.id === undefined || !event.target) {
       console.log('pointerleave reset');
       interactionStateMachine.reset();
+      return;
     } else if (currentState.canvasNode?.id !== canvas.id) {
       return;
     }
