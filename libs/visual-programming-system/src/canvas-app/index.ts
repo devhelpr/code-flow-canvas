@@ -458,7 +458,10 @@ export const createCanvasApp = <T>(
     if (disableInteraction) {
       return;
     }
-
+    if (isZoomingViaTouch) {
+      console.log('pointerleave isZoomingViaTouch', event);
+      return;
+    }
     isMoving = false;
     isClicking = false;
     wasMoved = false;
