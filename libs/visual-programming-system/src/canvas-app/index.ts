@@ -229,7 +229,9 @@ export const createCanvasApp = <T>(
     if (isZoomingViaTouch && !(event as any).viaTouch) {
       return;
     }
-    event.preventDefault();
+    if (!(event as any).viaTouch) {
+      event.preventDefault();
+    }
     if (wheelTime === -1) {
       wheelTime = event.timeStamp;
     }
@@ -572,7 +574,6 @@ export const createCanvasApp = <T>(
           const centerX = (touch1.clientX + touch2.clientX) / 2;
           const centerY = (touch1.clientY + touch2.clientY) / 2;
           wheelEvent({
-            ...event,
             deltaY: distance - startDistance,
             target: event.target,
             viaTouch: true,
