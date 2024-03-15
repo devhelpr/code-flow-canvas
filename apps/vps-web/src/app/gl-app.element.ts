@@ -321,7 +321,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           } else {
             startCenterX = (touch1.clientX + touch2.clientX) / 2;
             startCenterY = (touch1.clientY + touch2.clientY) / 2;
-
+            console.log(
+              'touchzoom',
+              startDistance,
+              distance,
+              startCenterX,
+              startCenterY
+            );
             onGLCanvasWheelEvent({
               deltaY: (distance - startDistance) * -0.00085,
               target: event.target,
