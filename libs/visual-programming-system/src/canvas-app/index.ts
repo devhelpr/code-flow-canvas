@@ -584,7 +584,14 @@ export const createCanvasApp = <T>(
             x: -(mousePointTo.x - centerX / newScale) * newScale,
             y: -(mousePointTo.y - centerY / newScale) * newScale,
           };
-          console.log('touchzoom', scaleBy, newScale, newPos);
+          console.log(
+            'touchzoom',
+            scaleBy,
+            startDistance,
+            newScale,
+            newPos,
+            event.touches
+          );
           if (onWheelEvent) {
             onWheelEvent(newPos.x, newPos.y, newScale);
           }
