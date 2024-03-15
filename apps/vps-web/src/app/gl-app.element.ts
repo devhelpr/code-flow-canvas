@@ -332,8 +332,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               deltaY: (distance - startDistance) * -0.00085,
               target: event.target,
               viaTouch: true,
-              clientX: startCenterX,
-              clientY: startCenterY,
+              offsetX: startCenterX,
+              offsetY: startCenterY,
             } as unknown as WheelEvent);
           }
           return false;
