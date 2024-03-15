@@ -165,9 +165,10 @@ export const createCanvasApp = <T>(
     interactionStateMachine.reset();
   };
   rootElement.addEventListener('contextmenu', onContextMenu, false);
-
+  let skipFirstPointerMoveOnTouch = false;
   const onPointerDown = (event: PointerEvent) => {
     isZoomingViaTouch = false;
+    skipFirstPointerMoveOnTouch = false;
     //console.log('pointerdown canvas', event.target, canvas.domElement);
     if (disableInteraction) {
       return;
@@ -199,6 +200,9 @@ export const createCanvasApp = <T>(
       eventTargetHelper.releasePointerCapture(event.pointerId);
     }
 
+    if (event.pointerType === 'touch') {
+      skipFirstPointerMoveOnTouch = true;
+    }
     if (event.shiftKey) {
       nodeSelector.onPointerDown(event);
       return;
@@ -306,6 +310,11 @@ export const createCanvasApp = <T>(
       isMoving = true;
       wasMoved = true;
     }
+    if (skipFirstPointerMoveOnTouch) {
+      skipFirstPointerMoveOnTouch = false;
+      console.log('skipFirstPointerMoveOnTouch');
+      return;
+    }
     if (Date.now() - startTime < CLICK_MOVEMENT_THRESHOLD) {
       //return;
     }
@@ -316,7 +325,6 @@ export const createCanvasApp = <T>(
       isClicking &&
       !disableZoom
     ) {
-      return;
       startClientDragX = event.clientX;
       startClientDragY = event.clientY;
       startDragX = xCamera;
