@@ -533,6 +533,7 @@ export const createCanvasApp = <T>(
 
     event.preventDefault();
     if (event.touches.length == 2) {
+      event.stopPropagation();
       const touch1 = event.touches[0];
       const touch2 = event.touches[1];
       const distance = Math.sqrt(
@@ -569,6 +570,7 @@ export const createCanvasApp = <T>(
           if (onWheelEvent) {
             onWheelEvent(newPos.x, newPos.y, newScale);
           }
+          return false;
         }
       }
     }
