@@ -524,6 +524,8 @@ export const createCanvasApp = <T>(
 
   let isZoomingViaTouch = false;
   let startDistance: null | number = null;
+  let startCenterX = 0;
+  let startCenterY = 0;
   //let initialScale = -1;
   const onTouchMove = (event: TouchEvent) => {
     if (
@@ -567,12 +569,12 @@ export const createCanvasApp = <T>(
       if (startDistance === null) {
         startDistance = distance;
         //initialScale = scaleCamera;
+        startCenterX = (touch1.clientX + touch2.clientX) / 2;
+        startCenterY = (touch1.clientY + touch2.clientY) / 2;
       } else {
         //const scaleBy = (distance / startDistance) * 0.05;
 
         if (canvas.domElement) {
-          const centerX = (touch1.clientX + touch2.clientX) / 2;
-          const centerY = (touch1.clientY + touch2.clientY) / 2;
           console.log(
             'touchmove',
             distance - startDistance,
@@ -580,11 +582,11 @@ export const createCanvasApp = <T>(
             startDistance
           );
           wheelEvent({
-            deltaY: distance - startDistance,
+            deltaY: (distance - startDistance) * -0.05,
             target: event.target,
             viaTouch: true,
-            clientX: centerX,
-            clientY: centerY,
+            clientX: startCenterX,
+            clientY: startCenterY,
           } as unknown as WheelEvent);
           // const mousePointTo = {
           //   x: centerX / scaleCamera - xCamera / scaleCamera,
