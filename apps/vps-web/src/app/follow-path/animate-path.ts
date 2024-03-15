@@ -176,6 +176,7 @@ export function setPositionTargetCameraAnimation(
   y: number,
   scale?: number
 ) {
+  console.log('setPositionTargetCameraAnimation', x, y, scale);
   isTargetinCameraSpace = true;
   targetX = x;
   targetY = y;
