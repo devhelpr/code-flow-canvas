@@ -253,6 +253,7 @@ export const createCanvasApp = <T>(
     const scaleBy = scaleFactor;
 
     if (canvas.domElement) {
+      console.log('wheel', event.clientX, event.clientY);
       const mousePointTo = {
         x: event.clientX / scaleCamera - xCamera / scaleCamera,
         y: event.clientY / scaleCamera - yCamera / scaleCamera,
