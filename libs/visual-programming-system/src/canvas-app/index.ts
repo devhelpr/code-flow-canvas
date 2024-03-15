@@ -257,6 +257,7 @@ export const createCanvasApp = <T>(
       };
 
       let newScale = scaleCamera * scaleBy;
+      //console.log('wheel', scaleBy, scaleCamera, newScale);
       if (newScale < 0.05) {
         newScale = 0.05;
       } else if (newScale > 205) {
@@ -521,7 +522,7 @@ export const createCanvasApp = <T>(
 
   let isZoomingViaTouch = false;
   let startDistance: null | number = null;
-  //let initialScale = -1;
+  let initialScale = -1;
   const onTouchMove = (event: TouchEvent) => {
     if (
       event.target &&
@@ -563,7 +564,7 @@ export const createCanvasApp = <T>(
 
       if (startDistance === null) {
         startDistance = distance;
-        //initialScale = scaleCamera;
+        initialScale = scaleCamera;
       } else {
         const scaleBy = (distance / startDistance) * 0.005;
 
@@ -576,7 +577,7 @@ export const createCanvasApp = <T>(
             y: centerY / scaleCamera - yCamera / scaleCamera,
           };
 
-          let newScale = scaleBy * scaleCamera;
+          let newScale = initialScale + scaleBy; // * scaleCamera;
           if (newScale < 0.05) {
             newScale = 0.05;
           } else if (newScale > 205) {
@@ -589,8 +590,9 @@ export const createCanvasApp = <T>(
           };
           console.log(
             'touchzoom',
+            initialScale,
             scaleBy,
-            startDistance,
+            //startDistance,
             newScale,
             newPos,
             event.touches
