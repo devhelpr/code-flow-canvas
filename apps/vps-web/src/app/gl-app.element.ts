@@ -304,8 +304,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           return;
         }
 
-        event.preventDefault();
         if (event.touches.length == 2) {
+          event.preventDefault();
           isZoomingViaTouch = true;
           event.stopPropagation();
           const touch1 = event.touches[0];
@@ -324,7 +324,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             startCenterY = (touch1.clientY + touch2.clientY) / 2;
 
             onGLCanvasWheelEvent({
-              deltaY: (distance - startDistance) * -0.085,
+              deltaY: (distance - startDistance) * -0.0085,
               target: event.target,
               viaTouch: true,
               clientX: startCenterX,
