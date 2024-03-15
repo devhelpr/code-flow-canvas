@@ -537,8 +537,8 @@ export const createCanvasApp = <T>(
       const touch1 = event.touches[0];
       const touch2 = event.touches[1];
       const distance = Math.sqrt(
-        Math.pow(touch2.pageX - touch1.pageX, 2) +
-          Math.pow(touch2.pageY - touch1.pageY, 2)
+        Math.pow(touch2.clientX - touch1.clientX, 2) +
+          Math.pow(touch2.clientY - touch1.clientY, 2)
       );
 
       if (startDistance === null) {
@@ -547,8 +547,8 @@ export const createCanvasApp = <T>(
         const scaleBy = distance / startDistance;
 
         if (canvas.domElement) {
-          const centerX = (touch1.pageX + touch2.pageX) / 2;
-          const centerY = (touch1.pageY + touch2.pageY) / 2;
+          const centerX = (touch1.clientX + touch2.clientX) / 2;
+          const centerY = (touch1.clientY + touch2.clientY) / 2;
 
           const mousePointTo = {
             x: centerX / scaleCamera - xCamera / scaleCamera,
