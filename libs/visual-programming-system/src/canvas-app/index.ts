@@ -634,10 +634,15 @@ export const createCanvasApp = <T>(
       // event.preventDefault();
       // event.stopPropagation();
       //result = false;
+      isMoving = false;
+      isClicking = false;
+      wasMoved = false;
+      interactionStateMachine.reset();
     }
 
     startDistance = null;
     isZoomingViaTouch = false;
+
     //return result;
   };
 
