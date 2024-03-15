@@ -124,9 +124,20 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.setupGLCanvas();
     const glcanvas = document.getElementById('glcanvas');
 
+    let skipFirstPointerMoveOnTouch = false;
+    let isZoomingViaTouch = false;
+    let startDistance: null | number = null;
+    let startCenterX = 0;
+    let startCenterY = 0;
+
     document
       .getElementById('glcanvas')
       ?.addEventListener('pointerdown', (event) => {
+        isZoomingViaTouch = false;
+        if (event.pointerType === 'touch') {
+          skipFirstPointerMoveOnTouch = true;
+          return;
+        }
         this.isMovingGLCanvas = true;
         if (glcanvas) {
           const canvasSize = glcanvas.getBoundingClientRect();
@@ -149,6 +160,14 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     document
       .getElementById('glcanvas')
       ?.addEventListener('pointermove', (event) => {
+        if (skipFirstPointerMoveOnTouch) {
+          skipFirstPointerMoveOnTouch = false;
+          return;
+        }
+        if (isZoomingViaTouch) {
+          return;
+        }
+
         if (glcanvas) {
           const canvasSize = glcanvas.getBoundingClientRect();
           const width = canvasSize.width;
@@ -206,6 +225,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         ((event.target as any).closest('.menu') ||
           (event.target as any).closest('.menu-container'))
       ) {
+        return;
+      }
+
+      if (isZoomingViaTouch && !(event as any).viaTouch) {
         return;
       }
 
@@ -275,6 +298,62 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     document
       .getElementById('glcanvas')
       ?.addEventListener('wheel', onGLCanvasWheelEvent);
+
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('touchmove', (event) => {
+        if (
+          event.target &&
+          (event.target as any).closest &&
+          ((event.target as any).closest('.menu') ||
+            (event.target as any).closest('.menu-container'))
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        if (event.touches.length == 2) {
+          isZoomingViaTouch = true;
+          event.stopPropagation();
+          const touch1 = event.touches[0];
+          const touch2 = event.touches[1];
+          const distance = Math.sqrt(
+            Math.pow(touch2.clientX - touch1.clientX, 2) +
+              Math.pow(touch2.clientY - touch1.clientY, 2)
+          );
+
+          if (startDistance === null) {
+            startDistance = distance;
+            startCenterX = (touch1.clientX + touch2.clientX) / 2;
+            startCenterY = (touch1.clientY + touch2.clientY) / 2;
+          } else {
+            startCenterX = (touch1.clientX + touch2.clientX) / 2;
+            startCenterY = (touch1.clientY + touch2.clientY) / 2;
+
+            onGLCanvasWheelEvent({
+              deltaY: (distance - startDistance) * -0.085,
+              target: event.target,
+              viaTouch: true,
+              clientX: startCenterX,
+              clientY: startCenterY,
+            } as unknown as WheelEvent);
+          }
+          return false;
+        }
+        return true;
+      });
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('touchend', (_event) => {
+        startDistance = null;
+        isZoomingViaTouch = false;
+      });
+    document
+      .getElementById('glcanvas')
+      ?.addEventListener('touchcancel', (_event) => {
+        startDistance = null;
+        isZoomingViaTouch = false;
+      });
 
     this.canvasApp.setOnAddcomposition(this.onAddGLComposition);
     const canvasUpdated = () => {
