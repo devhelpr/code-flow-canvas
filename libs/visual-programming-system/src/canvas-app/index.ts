@@ -316,6 +316,7 @@ export const createCanvasApp = <T>(
       isClicking &&
       !disableZoom
     ) {
+      return;
       startClientDragX = event.clientX;
       startClientDragY = event.clientY;
       startDragX = xCamera;
