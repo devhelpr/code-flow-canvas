@@ -226,7 +226,7 @@ export const createCanvasApp = <T>(
     if (disableInteraction) {
       return;
     }
-    if (isZoomingViaTouch) {
+    if (isZoomingViaTouch && !(event as any).viaTouch) {
       return;
     }
     event.preventDefault();
@@ -522,7 +522,7 @@ export const createCanvasApp = <T>(
 
   let isZoomingViaTouch = false;
   let startDistance: null | number = null;
-  let initialScale = -1;
+  //let initialScale = -1;
   const onTouchMove = (event: TouchEvent) => {
     if (
       event.target &&
@@ -564,43 +564,50 @@ export const createCanvasApp = <T>(
 
       if (startDistance === null) {
         startDistance = distance;
-        initialScale = scaleCamera;
+        //initialScale = scaleCamera;
       } else {
-        const scaleBy = (distance / startDistance) * 0.05;
+        //const scaleBy = (distance / startDistance) * 0.05;
 
         if (canvas.domElement) {
           const centerX = (touch1.clientX + touch2.clientX) / 2;
           const centerY = (touch1.clientY + touch2.clientY) / 2;
+          wheelEvent({
+            deltaY: distance - startDistance,
+            target: event.target,
+            viaTouch: true,
+            clientX: centerX,
+            clientY: centerY,
+          } as unknown as WheelEvent);
+          // const mousePointTo = {
+          //   x: centerX / scaleCamera - xCamera / scaleCamera,
+          //   y: centerY / scaleCamera - yCamera / scaleCamera,
+          // };
 
-          const mousePointTo = {
-            x: centerX / scaleCamera - xCamera / scaleCamera,
-            y: centerY / scaleCamera - yCamera / scaleCamera,
-          };
+          // const sign = distance > startDistance ? 1 : -1;
+          // let newScale = initialScale + scaleBy * sign; // * scaleCamera;
+          // if (newScale < 0.05) {
+          //   newScale = 0.05;
+          // } else if (newScale > 205) {
+          //   newScale = 205;
+          // }
 
-          const sign = distance > startDistance ? 1 : -1;
-          let newScale = initialScale + scaleBy * sign; // * scaleCamera;
-          if (newScale < 0.05) {
-            newScale = 0.05;
-          } else if (newScale > 205) {
-            newScale = 205;
-          }
-
-          const newPos = {
-            x: -(mousePointTo.x - centerX / newScale) * newScale,
-            y: -(mousePointTo.y - centerY / newScale) * newScale,
-          };
-          console.log(
-            'touchzoom',
-            initialScale,
-            scaleBy,
-            //startDistance,
-            newScale,
-            newPos,
-            event.touches
-          );
-          if (onWheelEvent) {
-            onWheelEvent(newPos.x, newPos.y, newScale);
-          }
+          // const newPos = {
+          //   x: -(mousePointTo.x - centerX / newScale) * newScale,
+          //   y: -(mousePointTo.y - centerY / newScale) * newScale,
+          // };
+          // console.log(
+          //   'touchzoom',
+          //   sign,
+          //   initialScale,
+          //   scaleBy,
+          //   //startDistance,
+          //   newScale,
+          //   newPos,
+          //   event.touches
+          // );
+          // if (onWheelEvent) {
+          //   onWheelEvent(newPos.x, newPos.y, newScale);
+          // }
           return false;
         }
       }
