@@ -625,17 +625,17 @@ export const createCanvasApp = <T>(
     return true;
   };
   const onTouchEnd = (event: TouchEvent) => {
-    let result = true;
+    //let result = true;
     if (isZoomingViaTouch) {
       console.log('touchend isZoomingViaTouch', event);
-      event.preventDefault();
-      event.stopPropagation();
-      result = false;
+      // event.preventDefault();
+      // event.stopPropagation();
+      //result = false;
     }
 
     startDistance = null;
     isZoomingViaTouch = false;
-    return result;
+    //return result;
   };
 
   const onClick = (event: MouseEvent) => {
