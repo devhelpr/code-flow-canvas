@@ -303,7 +303,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           return;
         }
 
-        if (event.touches.length == 2) {
+        if (glcanvas && event.touches.length == 2) {
           event.preventDefault();
           isZoomingViaTouch = true;
           event.stopPropagation();
@@ -330,14 +330,16 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               startDistance,
               distance,
               startCenterX,
-              startCenterY
+              startCenterY,
+              glcanvas.offsetLeft,
+              glcanvas.offsetTop
             );
             onGLCanvasWheelEvent({
               deltaY: (distance - startDistance) * -0.085,
               target: event.target,
               viaTouch: true,
-              offsetX: startCenterX,
-              offsetY: startCenterY,
+              offsetX: startCenterX - glcanvas.offsetLeft,
+              offsetY: startCenterY - glcanvas.offsetTop,
             } as unknown as WheelEvent);
           }
           return false;
