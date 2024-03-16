@@ -37,8 +37,25 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       if (variableName) {
-        contextInstance.setVariable(variableName, { push: input }, scopeId);
-        console.log('pushArrayVariable', variableName, input);
+        let shouldPush = false;
+        if (Array.isArray(input)) {
+          shouldPush = input.length > 0;
+        } else {
+          shouldPush = input !== undefined && input !== '' && input !== null;
+        }
+        if (shouldPush) {
+          contextInstance.setVariable(variableName, { push: input }, scopeId);
+          console.log(
+            `pushArrayVariable (scopeId: ${scopeId})`,
+            variableName,
+            input
+          );
+        } else {
+          console.log(
+            'pushArrayVariable : INPUT was empty.. no push!!',
+            variableName
+          );
+        }
       }
     }
     return {

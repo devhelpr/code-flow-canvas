@@ -22,6 +22,7 @@ import {
   IComputeResult,
   visualNodeFactory,
 } from '../node-task-registry/createRectNode';
+import { RunCounter } from '../follow-path/run-counter';
 
 const defaultFunctionColor = 'bg-slate-500';
 const activeFunctionColor = 'bg-orange-400';
@@ -165,7 +166,8 @@ export const getCallFunction =
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
-      scopeId?: string
+      scopeId?: string,
+      runCounter?: RunCounter
     ) => {
       const componentDomElement = componentWrapper?.domElement as HTMLElement;
       componentDomElement.classList.remove(activeFunctionColor);
@@ -209,7 +211,7 @@ export const getCallFunction =
                 componentDomElement.classList.remove(defaultFunctionColor);
 
                 console.log(
-                  'callFunction start',
+                  'callFunction START:',
                   commandName,
                   scopeId,
                   parameterCommands,
@@ -227,7 +229,7 @@ export const getCallFunction =
                     componentDomElement.classList.remove(activeFunctionColor);
                     componentDomElement.classList.add(defaultFunctionColor);
                     console.log(
-                      'callFunction',
+                      'callFunction END:',
                       commandName,
                       scopeId,
                       parameterCommands,
@@ -259,7 +261,8 @@ export const getCallFunction =
                   undefined,
                   undefined,
                   undefined,
-                  scopeGuid
+                  scopeGuid,
+                  runCounter
                 );
               }
             }
@@ -401,6 +404,7 @@ export const getCallFunction =
           connectionType: ThumbConnectionType.start,
           color: 'white',
           label: ' ',
+          maxConnections: -1,
         },
         {
           thumbType: ThumbType.EndConnectorCenter,

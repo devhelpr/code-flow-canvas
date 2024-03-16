@@ -398,7 +398,7 @@ export const getScopedVariable =
         lastStoredDataState = dataToVisualize;
       }
 
-      visualizeData(data);
+      visualizeData(lastStoredDataState);
     };
 
     const visualizeData = (lastStoredDataState: any) => {

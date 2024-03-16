@@ -14,6 +14,7 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '../follow-path/animate-path';
+import { RunCounter } from '../follow-path/run-counter';
 
 const thumbs = [
   {
@@ -58,7 +59,8 @@ export const getParallel =
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
-      scopeId?: string
+      scopeId?: string,
+      runCounter?: RunCounter
     ) => {
       return new Promise((resolve, reject) => {
         if (
@@ -94,7 +96,8 @@ export const getParallel =
           input,
           node,
           loopIndex,
-          scopeId
+          scopeId,
+          runCounter
         );
 
         runNodeFromThumb(
@@ -117,7 +120,8 @@ export const getParallel =
           input,
           node,
           loopIndex,
-          scopeId
+          scopeId,
+          runCounter
         );
       });
     };

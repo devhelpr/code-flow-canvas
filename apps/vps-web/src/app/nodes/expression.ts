@@ -94,14 +94,14 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     }
     let result: any = false;
     try {
-      compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
+      compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? 'input');
       if (!compiledExpressionInfo) {
         return {
           result: undefined,
           followPath: undefined,
         };
       }
-      const expression = node?.nodeInfo?.formValues?.['expression'] ?? '';
+      const expression = node?.nodeInfo?.formValues?.['expression'] ?? 'input';
       const inputType = node?.nodeInfo?.formValues?.['inputType'] ?? 'number';
       const expressionFunction = (
         new Function(
@@ -146,12 +146,14 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         Object.defineProperties(payloadForExpression, {
           [variableName]: {
             get: () => {
-              console.log('get', variableName);
-              return canvasAppInstance?.getVariable(
+              const getResult = canvasAppInstance?.getVariable(
                 variableName,
                 undefined,
                 scopeId
               );
+
+              console.log('get', variableName, getResult);
+              return getResult;
             },
             set: (value) => {
               canvasAppInstance?.setVariable(variableName, value, scopeId);

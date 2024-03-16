@@ -51,6 +51,12 @@ const handleDecoratrs = (
       );
       if (decoratorResult && !decoratorResult.stop && decoratorResult.output) {
         decoratorInput = decoratorResult.output;
+        console.log(
+          `decorator output ${decorator.taskType}`,
+          decoratorInput,
+          'input was',
+          input
+        );
       } else {
         // ? error handling decorators ?
         //return false;
@@ -180,11 +186,20 @@ const triggerExecution = (
                   }
                 } else {
                   if (computeResult.stop && computeResult.dummyEndpoint) {
-                    resolve({
-                      result: false,
-                      output: '',
-                      stop: true,
-                    });
+                    console.log('dummyEndpoint(2)', computeResult.output);
+                    if (computeResult.output) {
+                      resolve({
+                        result: computeResult.output,
+                        output: computeResult.output,
+                        stop: true,
+                      });
+                    } else {
+                      resolve({
+                        result: false,
+                        output: '',
+                        stop: true,
+                      });
+                    }
                     return;
                   }
                   result = computeResult.result;
@@ -294,7 +309,7 @@ const triggerExecution = (
       runCounter
     );
   } else {
-    console.log('expression result', result);
+    //console.log('expression result', result);
   }
 };
 
@@ -369,6 +384,7 @@ export const runNode = (
         followPath = computeResult.followPath;
 
         if (computeResult.dummyEndpoint) {
+          console.log('dummyEndpoint', computeResult.output);
           return;
         }
         if (computeResult.stop) {
@@ -618,7 +634,7 @@ export const runNodeFromThumb = (
 
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
-      console.log('runNodeFromThumb', loopIndex, nextNode);
+      //console.log('runNodeFromThumb', loopIndex, nextNode);
       if (formInfo && formInfo.computeAsync) {
         if (formInfo.decorators) {
           const decoratorInput = handleDecoratrs(
@@ -709,7 +725,7 @@ export const runNodeFromThumb = (
         result = false;
         followPath = undefined;
       }
-      console.log('expression result', result);
+      //console.log('expression result', result);
       if (result === undefined) {
         return {
           result: false,

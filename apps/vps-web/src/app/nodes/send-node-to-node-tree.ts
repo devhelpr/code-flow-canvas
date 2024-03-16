@@ -74,7 +74,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
             Object.defineProperties(payloadForExpression, {
               [variableName]: {
                 get: () => {
-                  console.log('get', variableName);
+                  //console.log('get', variableName);
                   return contextInstance?.getVariable(
                     variableName,
                     undefined,
@@ -97,7 +97,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
             ) || '-';
         }
       }
-      console.log('commandHandlerName', commandHandlerName, input);
+      //console.log('commandHandlerName', commandHandlerName, input);
 
       if (commandHandlerName) {
         const varTreeNode = contextInstance?.getVariable(
@@ -115,14 +115,14 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
 
         const treeNode =
           varTreeNode || node?.nodeInfo?.formValues?.['treeNode'] || 'node';
-        console.log(
-          'treeNode',
-          treeNode,
-          varTreeNode,
-          node?.nodeInfo?.formValues?.['treeNode'],
-          childTreeNode,
-          node?.nodeInfo?.formValues?.['childTreeNode']
-        );
+        // console.log(
+        //   'treeNode',
+        //   treeNode,
+        //   varTreeNode,
+        //   node?.nodeInfo?.formValues?.['treeNode'],
+        //   childTreeNode,
+        //   node?.nodeInfo?.formValues?.['childTreeNode']
+        // );
         contextInstance.executeCommandOnCommandHandler(
           commandHandlerName,
           'add',
@@ -184,7 +184,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
+            //console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -203,7 +203,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               expression: value,
             };
-            console.log('onChange', node.nodeInfo);
+            //console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -222,7 +222,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               treeNode: value,
             };
-            console.log('onChange', node.nodeInfo);
+            //console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

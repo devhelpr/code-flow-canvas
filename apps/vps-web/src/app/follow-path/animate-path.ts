@@ -332,7 +332,7 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
             }
 
             const resolver = (result: any) => {
-              console.log('animatePath onNextNode result', input, result);
+              //console.log('animatePath onNextNode result', input, result);
               nodeAnimation.runCounter?.decrementRunCounter();
               if (nodeAnimation.runCounter) {
                 updateRunCounterElement(nodeAnimation.runCounter);
@@ -461,16 +461,16 @@ export const animatePathForNodeConnectionPairs = <T>(
   }
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (onStopped) {
-      console.log('animatePath onStopped4', input);
+      //console.log('animatePath onStopped4', input);
       onStopped(input ?? '', scopeId);
     }
 
-    console.log(
-      'animatePathForNodeConnectionPairs runCounter',
-      runCounter,
-      scopeId,
-      input
-    );
+    // console.log(
+    //   'animatePathForNodeConnectionPairs runCounter',
+    //   runCounter,
+    //   scopeId,
+    //   input
+    // );
 
     if (
       runCounter &&
@@ -551,7 +551,7 @@ export const animatePathForNodeConnectionPairs = <T>(
           (start.nodeInfo as unknown as any)?.formValues?.Expression ??
           ''
       );
-    console.log('animatePathForNodeConnectionPairs', input);
+    //console.log('animatePathForNodeConnectionPairs', input);
     messageText.domElement.textContent =
       input?.toString() ??
       (start.nodeInfo as unknown as any)?.formValues?.Expression ??
