@@ -70,6 +70,8 @@ export class NavbarComponent extends Component<
         <select type="select" name="example-flows" class="p-2 m-2 relative ">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
+          <option value="simple-state-machine.json">Simple statemachine</option>
+          <option value="fibonacci-flow.json">Fibonacci</option>
           <option value="quicksort-flow.json">Quicksort</option>
         </select>
         <children></children>

@@ -14,6 +14,7 @@ import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
 import { RunCounter } from '../follow-path/run-counter';
+import { updateRunCounterElement } from '../follow-path/updateRunCounterElement';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -170,6 +171,11 @@ const triggerExecution = (
               .then((computeResult: any) => {
                 if (computeResult.stop && !computeResult.dummyEndpoint) {
                   if (onStopped) {
+                    if (runCounter) {
+                      runCounter.decrementRunCounter();
+                      updateRunCounterElement(runCounter);
+                      runCounter.callRunCounterResetHandler();
+                    }
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {

@@ -29,7 +29,7 @@ export const createContextInstanceApp = <T>(
   _canvasId?: string
 ): CanvasAppInstance<T> => {
   const compositons = new Compositions<T>();
-  const variables: Record<
+  let variables: Record<
     string,
     {
       id: string;
@@ -372,6 +372,10 @@ export const createContextInstanceApp = <T>(
         }
       });
       return result;
+    },
+    deleteVariables: () => {
+      variables = {};
+      variableObservers.clear();
     },
     getVariableNames: (scopeId?: string) => {
       if (scopeId) {

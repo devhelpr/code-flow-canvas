@@ -43,9 +43,9 @@ import {
   setCameraAnimation,
   setTargetCameraAnimation,
   setPositionTargetCameraAnimation,
-  setRunCounterUpdateElement,
   setOnFrame,
 } from './follow-path/animate-path';
+import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
 import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
 import {

@@ -1,0 +1,140 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "8f2e9070-acfa-484b-bff9-aa53c715713a",
+          "x": 752.663445440615,
+          "y": 194.45551805419518,
+          "width": 200,
+          "height": 120,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "list[-1] + list[-2]"
+            }
+          }
+        },
+        {
+          "id": "65f37532-f7c5-4f2a-89b3-6237343b2992",
+          "x": 85.74461648684542,
+          "y": 94.62880575756388,
+          "width": 200.00001525878906,
+          "height": 120.00000762939453,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "runIteration"
+            }
+          }
+        },
+        {
+          "id": "dfc99c1d-59ce-4951-9d42-792723ff9183",
+          "x": 1105.912341423321,
+          "y": 131.37487478228584,
+          "width": 240.00017447359784,
+          "height": 115.99999089484973,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "array",
+            "formValues": {
+              "variableName": "list"
+            }
+          }
+        },
+        {
+          "id": "15637d31-4f03-4705-a3c0-d16fb9c3551e",
+          "x": 419.46020412292626,
+          "y": 65.41540985206757,
+          "width": 200,
+          "height": 168,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "split-by-case",
+            "formValues": {
+              "case1": "0",
+              "case2": "1",
+              "case3": ""
+            }
+          }
+        },
+        {
+          "id": "910ecae7-5f95-45d3-bf4b-b019844c7612",
+          "x": 952.6634477761723,
+          "y": 254.45551168701505,
+          "endX": 1105.9124509300493,
+          "endY": 161.64401493240354,
+          "startNodeId": "8f2e9070-acfa-484b-bff9-aa53c715713a",
+          "endNodeId": "dfc99c1d-59ce-4951-9d42-792723ff9183",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "8797624e-7102-4378-b861-58decaf97d5b",
+          "x": 285.7446317456345,
+          "y": 154.62880957226116,
+          "endX": 419.46020412292626,
+          "endY": 149.41540985206757,
+          "startNodeId": "65f37532-f7c5-4f2a-89b3-6237343b2992",
+          "endNodeId": "15637d31-4f03-4705-a3c0-d16fb9c3551e",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "895bc0b6-d73f-4cad-a98b-7f471cdd2c4a",
+          "x": 619.4602041229263,
+          "y": 109.41540985206757,
+          "endX": 1105.9124509300493,
+          "endY": 161.64401493240354,
+          "startNodeId": "15637d31-4f03-4705-a3c0-d16fb9c3551e",
+          "endNodeId": "dfc99c1d-59ce-4951-9d42-792723ff9183",
+          "startThumbName": "output1",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "8b42577c-8101-46e9-b24d-88565cff4c00",
+          "x": 619.4602041229263,
+          "y": 149.41540985206757,
+          "endX": 1105.9124509300493,
+          "endY": 161.64401493240354,
+          "startNodeId": "15637d31-4f03-4705-a3c0-d16fb9c3551e",
+          "endNodeId": "dfc99c1d-59ce-4951-9d42-792723ff9183",
+          "startThumbName": "output2",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        },
+        {
+          "id": "bdabe01c-1f0e-4f77-bdb7-e74440964bb1",
+          "x": 619.4602041229263,
+          "y": 189.41540985206757,
+          "endX": 752.6634477761723,
+          "endY": 254.45551168701505,
+          "startNodeId": "15637d31-4f03-4705-a3c0-d16fb9c3551e",
+          "endNodeId": "8f2e9070-acfa-484b-bff9-aa53c715713a",
+          "startThumbName": "output3",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "nodeInfo": {}
+        }
+      ]
+    }
+  }
+}

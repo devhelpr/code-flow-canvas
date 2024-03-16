@@ -513,6 +513,7 @@ export class AppElement<T> {
   protected clearCanvas = () => {
     this.onPreclearCanvas();
     setSelectNode(undefined);
+    this.currentCanvasApp?.deleteVariables();
     this.currentCanvasApp?.resetNodeTransform();
     this.currentCanvasApp?.elements.forEach((element) => {
       element.domElement.remove();

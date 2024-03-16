@@ -15,6 +15,7 @@ import { followNodeExecution } from './followNodeExecution';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { RunCounter } from './run-counter';
+import { updateRunCounterElement } from './updateRunCounterElement';
 
 function getLoopIncrement() {
   return 0.25;
@@ -421,16 +422,6 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
     quit = true;
   };
 }
-
-let runCounterUpdateElement: undefined | HTMLElement = undefined;
-export const setRunCounterUpdateElement = (domElement: HTMLElement) => {
-  runCounterUpdateElement = domElement;
-};
-export const updateRunCounterElement = (runCounter: RunCounter) => {
-  if (runCounterUpdateElement) {
-    runCounterUpdateElement.textContent = `${runCounter.runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
-  }
-};
 
 export const animatePathForNodeConnectionPairs = <T>(
   canvasApp: CanvasAppInstance<T>,

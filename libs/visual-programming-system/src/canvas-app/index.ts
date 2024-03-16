@@ -57,7 +57,7 @@ export const createCanvasApp = <T>(
   const elements = createElementMap<T>();
   const rectInstanceList = {} as Record<string, Rect<T>>;
 
-  const variables: Record<
+  let variables: Record<
     string,
     {
       id: string;
@@ -1592,6 +1592,10 @@ export const createCanvasApp = <T>(
         }
       });
       return result;
+    },
+    deleteVariables: () => {
+      variables = {};
+      variableObservers.clear();
     },
     getVariableNames: (scopeId?: string) => {
       if (scopeId) {

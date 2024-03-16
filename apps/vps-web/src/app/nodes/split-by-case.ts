@@ -17,6 +17,7 @@ import {
   AnimatePathFunction,
 } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const getSplitByCase =
   (
@@ -35,7 +36,8 @@ export const getSplitByCase =
       loopIndex?: number,
       _payload?: any,
       _thumbName?: string,
-      scopeId?: string
+      scopeId?: string,
+      runCounterCompute?: RunCounter
     ) => {
       return new Promise((resolve, reject) => {
         if (
@@ -89,7 +91,8 @@ export const getSplitByCase =
             input,
             node,
             loopIndex,
-            scopeId
+            scopeId,
+            runCounterCompute
           );
         } else {
           resolve({
