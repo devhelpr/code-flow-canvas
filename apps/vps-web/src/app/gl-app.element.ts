@@ -71,6 +71,7 @@ import {
   vec4Type,
 } from './gl-types/float-vec2-vec3';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
+import { getSortedNodes } from './utils/sort-nodes';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -448,6 +449,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();
+                this.wheel = 1.0;
+                this.positionX = 0;
+                this.positionY = 0;
                 initializeNodes();
                 return false;
               },
@@ -1083,7 +1087,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   };
 
   onPreclearCanvas = () => {
-    //
+    this.wheel = 1.0;
+    this.positionX = 0;
+    this.positionY = 0;
   };
   setCameraTargetOnNode = (node: IRectNodeComponent<GLNodeInfo>) => {
     setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
@@ -1435,8 +1441,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     let sdfIndex = 1;
     const visitedNodes: string[] = [];
 
-    // TODO : use getSortedNodes here
-
     elementMap.forEach((element) => {
       const node = element as unknown as INodeComponent<GLNodeInfo>;
       if (node.nodeType === NodeType.Shape) {
@@ -1473,7 +1477,14 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         }
       }
     });
-    elementMap.forEach((element) => {
+
+    const nodes = getSortedNodes(
+      Array.from(elementMap).map(
+        ([_key, value]) => value as INodeComponent<GLNodeInfo>
+      )
+    );
+    console.log('sorted nodes', nodes);
+    nodes.forEach((element) => {
       this.shaderNodePreoutput = '';
       const node = element as unknown as INodeComponent<GLNodeInfo>;
       if (node.nodeType === NodeType.Shape) {
@@ -1485,7 +1496,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               this.shaderExtensions += glslFunction;
             }
           }
-
           if (
             node.nodeInfo?.type === 'set-vec2-variable-node' ||
             node.nodeInfo?.type === 'set-color-variable-node' ||
@@ -1511,24 +1521,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               this.shaderNodePreoutput + result?.result ?? '';
 
             sdfIndex++;
-          }
-        }
-      }
-    });
-
-    elementMap.forEach((element) => {
-      this.shaderNodePreoutput = '';
-      const node = element as unknown as INodeComponent<GLNodeInfo>;
-      if (node.nodeType === NodeType.Shape) {
-        if (visitedNodes.indexOf(node.id) < 0) {
-          if (node.nodeType && glslFunctions[node.nodeType]) {
-            if (nodeVisited.indexOf(node.nodeType ?? '') < 0) {
-              nodeVisited.push(node.nodeType ?? '');
-              const glslFunction = glslFunctions[node.nodeType];
-              this.shaderExtensions += glslFunction;
-            }
-          }
-          if (
+          } else if (
             node.nodeInfo?.type === 'circle-node' ||
             node.nodeInfo?.type === 'output-color-node' ||
             node.nodeInfo?.type === 'break-node'
