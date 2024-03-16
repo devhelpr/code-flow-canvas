@@ -85,7 +85,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   glNavbarComponent: GLNavbarComponent | undefined = undefined;
   scopeNodeDomElement: HTMLElement | undefined = undefined;
   menubarElement: IDOMElement | undefined = undefined;
-  menubarContainerElement: IDOMElement | undefined = undefined;
+
   formElement: IDOMElement | undefined = undefined;
   selectedNodeLabel: IDOMElement | undefined = undefined;
 
@@ -1041,6 +1041,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     removeClasses(this.menubarContainerElement, ['bg-slate-700']);
     addClasses(this.menubarContainerElement, ['bg-sky-500']);
+
     this.glNavbarComponent?.onEditComposition();
     addClasses(this.clearCanvasButton, ['hidden']);
     addClasses(this.resetStateButton, ['hidden']);
@@ -1051,6 +1052,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     removeClasses(this.menubarContainerElement, ['bg-sky-500']);
     addClasses(this.menubarContainerElement, ['bg-slate-700']);
+
     this.glNavbarComponent?.onExitEditComposition();
     removeClasses(this.clearCanvasButton, ['hidden']);
     removeClasses(this.resetStateButton, ['hidden']);

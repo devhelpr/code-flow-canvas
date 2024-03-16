@@ -30,6 +30,10 @@ import { downloadJSON } from '../utils/create-download-link';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
 import { AppNavComponentsProps } from '../component-interface/app-nav-component';
 import { isNodeTaskComposition } from '../node-task-registry/composition-utils';
+import {
+  addClassesHTMLElement,
+  removeClassesHTMLElement,
+} from '../utils/add-remove-classes';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -492,6 +496,18 @@ export class NavbarComponent extends Component<
     return false;
   };
 
+  onEditComposition() {
+    addClassesHTMLElement(this.exportButton, ['hidden']);
+    addClassesHTMLElement(this.importButton, ['hidden']);
+    addClassesHTMLElement(this.selectExampleFlow, ['hidden']);
+  }
+
+  onExitEditComposition() {
+    removeClassesHTMLElement(this.exportButton, ['hidden']);
+    removeClassesHTMLElement(this.importButton, ['hidden']);
+    removeClassesHTMLElement(this.selectExampleFlow, ['hidden']);
+  }
+
   render() {
     super.render();
 
@@ -513,7 +529,7 @@ export class NavbarComponent extends Component<
 }
 
 export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
-  new NavbarComponent(null, {
+  return new NavbarComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,
     clearCanvas: props.clearCanvas,

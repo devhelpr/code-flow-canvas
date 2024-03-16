@@ -54,7 +54,10 @@ import {
 } from './storage/indexeddb-storage-provider';
 import { getPointOnConnection } from './follow-path/point-on-connection';
 import { AppComponents } from './components/app-components';
-import { NavbarComponents } from './components/navbar-components';
+import {
+  NavbarComponent,
+  NavbarComponents,
+} from './components/navbar-components';
 import {
   menubarClasses,
   navBarButton,
@@ -84,6 +87,7 @@ import {
   setupTasksInDropdown,
 } from './node-task-registry/setup-select-node-types-dropdown';
 import { RunCounter } from './follow-path/run-counter';
+import { addClasses, removeClasses } from './utils/add-remove-classes';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -95,7 +99,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   isStoring = false;
 
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
-
+  navbarComponent: NavbarComponent | undefined = undefined;
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
   formElement: IDOMElement | undefined = undefined;
@@ -106,6 +110,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   messageText: IDOMElement | undefined = undefined;
   focusedNode: IRectNodeComponent<NodeInfo> | undefined = undefined;
   runButton: IDOMElement | undefined = undefined;
+  speedMeterElement: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
 
   canvasUpdated: (() => void) | undefined = undefined;
@@ -234,7 +239,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.initializeCommandHandlers();
 
         if (this.storageProvider && this.canvasApp && this.rootElement) {
-          NavbarComponents({
+          this.navbarComponent = NavbarComponents({
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
@@ -278,7 +283,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               );
               canvasUpdated();
             },
-          }) as unknown as HTMLElement;
+          });
 
           this.resetStateButton = createElement(
             'button',
@@ -361,7 +366,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           this.compositionEditExitButton = createElement(
             'button',
             {
-              class: `${navBarButton} hidden`,
+              class: `${navBarButton} ml-auto hidden`,
             },
             menubarElement.domElement,
             'Exit Edit composition'
@@ -531,7 +536,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       setSelectNode(undefined);
     });
 
-    const menubarContainerElement = createElement(
+    this.menubarContainerElement = createElement(
       'div',
       {
         class: menubarClasses,
@@ -544,7 +549,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       {
         class: menubarContainerClasses,
       },
-      menubarContainerElement.domElement
+      this.menubarContainerElement.domElement
     );
 
     const initializeNodes = () => {
@@ -601,7 +606,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       'div',
       {
         class:
-          'absolute z-[10000] top-0 right-0 text-white px-2 py-1 m-2 bg-slate-900',
+          'absolute z-[10000] top-[60px] right-[4px] text-white px-2 py-1 m-2 mr-0 bg-slate-700 rounded-md',
       },
       this.rootElement,
       ''
@@ -675,7 +680,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
 
     let speedMeter = 375;
-    const speedMeterElement = createElement(
+    this.speedMeterElement = createElement(
       'input',
       {
         type: 'range',
@@ -698,7 +703,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
 
     speedMeter = parseInt(
-      (speedMeterElement.domElement as HTMLInputElement).value
+      (this.speedMeterElement.domElement as HTMLInputElement).value
     );
     setSpeedMeter(speedMeter);
 
@@ -1316,10 +1321,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   };
 
   onEditComposition() {
-    //
+    super.onEditComposition();
+
+    removeClasses(this.menubarContainerElement, ['bg-slate-700']);
+    addClasses(this.menubarContainerElement, ['bg-sky-500']);
+
+    this.navbarComponent?.onEditComposition();
+    addClasses(this.clearCanvasButton, ['hidden']);
+    addClasses(this.resetStateButton, ['hidden']);
+
+    addClasses(this.runButton, ['hidden']);
+    addClasses(this.speedMeterElement, ['hidden']);
   }
 
   onExitEditComposition() {
-    //
+    super.onExitEditComposition();
+
+    removeClasses(this.menubarContainerElement, ['bg-sky-500']);
+    addClasses(this.menubarContainerElement, ['bg-slate-700']);
+
+    this.navbarComponent?.onExitEditComposition();
+    removeClasses(this.clearCanvasButton, ['hidden']);
+    removeClasses(this.resetStateButton, ['hidden']);
+
+    removeClasses(this.runButton, ['hidden']);
+    removeClasses(this.speedMeterElement, ['hidden']);
   }
 }

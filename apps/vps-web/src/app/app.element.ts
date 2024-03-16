@@ -73,6 +73,8 @@ export class AppElement<T> {
   selectedNodeLabel: IDOMElement | undefined = undefined;
   rootElement: HTMLElement | undefined = undefined;
 
+  menubarContainerElement: IDOMElement | undefined = undefined;
+
   resetStateButton: IDOMElement | undefined = undefined;
   clearCanvasButton: IDOMElement | undefined = undefined;
   compositionEditButton: IDOMElement | undefined = undefined;
