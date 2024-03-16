@@ -1,12 +1,12 @@
 import { createElement } from '@devhelpr/visual-programming-system';
 import {
-  canvasNodeTaskRegistryLabels,
-  getNodeFactoryNames,
-  getNodeTaskFactory,
-} from './canvas-node-task-registry';
+  getGLNodeFactoryNames,
+  getGLNodeTaskFactory,
+  glNodeTaskRegistryLabels,
+} from './gl-node-task-registry';
 import { createOption } from './createOption';
 
-export const setupTasksInDropdown = (
+export const setupGLTasksInDropdown = (
   selectNodeTypeHTMLElement: HTMLSelectElement,
   isInComposition?: boolean,
   compositionId?: string
@@ -25,22 +25,16 @@ export const setupTasksInDropdown = (
         },
         selectNodeTypeHTMLElement
       );
-    createOptgroup('expression');
-    createOptgroup('flow-control');
-    createOptgroup('iterators');
-    createOptgroup('variables');
-    createOptgroup('connectivity');
-    createOptgroup('functions');
-    createOptgroup('string');
-    createOptgroup('variables-array');
-    createOptgroup('variables-dictionary');
-    createOptgroup('variables-grid');
-    createOptgroup('variables-set');
+    createOptgroup('input');
+    createOptgroup('output');
+    createOptgroup('UI');
+    createOptgroup('Math');
     createOptgroup('Compositions');
+    createOptgroup('uncategorized');
 
-    const nodeTasks = getNodeFactoryNames();
+    const nodeTasks = getGLNodeFactoryNames();
     nodeTasks.forEach((nodeTask) => {
-      const factory = getNodeTaskFactory(nodeTask);
+      const factory = getGLNodeTaskFactory(nodeTask);
       let categoryName = 'Default';
       if (factory) {
         const node = factory(() => {
@@ -57,6 +51,7 @@ export const setupTasksInDropdown = (
             return;
           }
         }
+
         if (
           isInComposition &&
           nodeTask === `composition-${compositionId}` &&
@@ -64,12 +59,13 @@ export const setupTasksInDropdown = (
         ) {
           return;
         }
+
         categoryName = node.category || 'uncategorized';
       }
       if (nodeTask === nodeType) {
         isPreviouslySelectedNodeTypeInDropdown = true;
       }
-      const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
+      const label = glNodeTaskRegistryLabels[nodeTask] || nodeTask;
       createOption(selectNodeTypeHTMLElement, nodeTask, label, categoryName);
     });
     if (isPreviouslySelectedNodeTypeInDropdown) {

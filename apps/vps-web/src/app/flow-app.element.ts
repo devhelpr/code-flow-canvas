@@ -82,10 +82,8 @@ import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
 import { registerCommands } from './command-handlers/register-commands';
-import {
-  createOption,
-  setupTasksInDropdown,
-} from './node-task-registry/setup-select-node-types-dropdown';
+import { setupTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
+import { createOption } from './node-task-registry/createOption';
 import { RunCounter } from './follow-path/run-counter';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
 

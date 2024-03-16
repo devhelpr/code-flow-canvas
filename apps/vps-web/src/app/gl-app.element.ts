@@ -61,7 +61,7 @@ import {
   setTargetCameraAnimation,
 } from './follow-path/animate-path';
 import { registerCommands } from './command-handlers/register-commands';
-import { setupGLTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
+import { setupGLTasksInDropdown } from './node-task-registry/setupGLTasksInDropdown';
 import { GLNodeInfo } from './types/gl-node-info';
 import { getGLSLFunctions } from './nodes-gl/custom-glsl-functions-registry';
 import {
