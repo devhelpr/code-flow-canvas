@@ -90,7 +90,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-purple-500 p-4 rounded max-w-[120px] max-h-[500px] `,
+          class: `inner-node bg-purple-500 p-4 rounded max-w-[120px] max-h-[500px] text-white`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement

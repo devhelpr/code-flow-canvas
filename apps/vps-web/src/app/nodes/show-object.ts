@@ -74,7 +74,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-purple-500 p-4 rounded max-w-[240px]`,
+          class: `inner-node bg-purple-500 p-4 rounded max-w-[240px] text-white`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
