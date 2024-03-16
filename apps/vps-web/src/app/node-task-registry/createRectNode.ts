@@ -471,8 +471,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
         getNodeTaskFactory
       );
       onCreatedNode(nodeInstance, containerNode);
-      console.log('nodeTitle', nodeTitle);
       nodeInstance.node.label = nodeTitle;
+      nodeInstance?.rect?.resize(width);
       return nodeInstance.node as IRectNodeComponent<T>;
     },
     createDecoratorNode,
