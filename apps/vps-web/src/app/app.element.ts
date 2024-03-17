@@ -588,8 +588,8 @@ export class AppElement<T> {
     const xCamera = camera?.x ?? 0;
     const yCamera = camera?.y ?? 0;
     const scaleCamera = camera?.scale ?? 1;
-    const xNode = parentX + nodeComponent.x ?? 0;
-    const yNode = parentY + nodeComponent.y ?? 0;
+    const xNode = parentX + nodeComponent.x;
+    const yNode = parentY + nodeComponent.y;
     const widthNode = nodeComponent.width ?? 0;
     const heightNode = nodeComponent.height ?? 0;
 

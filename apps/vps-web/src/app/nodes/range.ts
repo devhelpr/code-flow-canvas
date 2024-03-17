@@ -91,7 +91,7 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
     const hasStepConnection =
       node?.connections?.find(
         (connection) => connection.endNodeThumb?.thumbName === 'step'
-      ) !== undefined ?? false;
+      ) !== undefined;
 
     if (thumbName === 'min') {
       values.min = parseFloat(input) ?? undefined;

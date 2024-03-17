@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "vps-web",
+  "neverConnectToCloud": true,
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx-cloud",
@@ -48,5 +49,12 @@
       "unitTestRunner": "vitest"
     }
   },
-  "plugins": []
+  "plugins": [
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    }
+  ]
 }

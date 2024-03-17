@@ -1539,8 +1539,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
             this.shaderStatements +=
               this.shaderNodePreoutput + result?.result ?? '';
-            this.shaderStatements += `
-`;
+
             sdfIndex++;
           } else {
             if (
@@ -1709,11 +1708,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     gl.uniform1f(this.u_CanvasWidthUniformLocation, glcanvas.width);
     gl.uniform1f(this.u_CanvasHeightUniformLocation, glcanvas.height);
     gl.uniform1f(this.u_TestUniformLocation, this.test);
-    gl.uniform1f(this.u_MouseXUniformLocation, this.mouseX ?? 0);
-    gl.uniform1f(this.u_MouseYUniformLocation, -this.mouseY ?? 0);
-    gl.uniform1f(this.u_wheelUniformLocation, this.wheel ?? 0);
-    gl.uniform1f(this.u_PositionXUniformLocation, -this.positionX ?? 0);
-    gl.uniform1f(this.u_PositionYUniformLocation, this.positionY ?? 0);
+    gl.uniform1f(this.u_MouseXUniformLocation, this.mouseX);
+    gl.uniform1f(this.u_MouseYUniformLocation, -this.mouseY);
+    gl.uniform1f(this.u_wheelUniformLocation, this.wheel);
+    gl.uniform1f(this.u_PositionXUniformLocation, -this.positionX);
+    gl.uniform1f(this.u_PositionYUniformLocation, this.positionY);
 
     this.valueParameterUniforms.forEach((uniform) => {
       if (uniform.uniform) {
