@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve vps-web --no-cloud",
+    "start": "nx serve vps-web",
     "startapi": "nx serve vps-api",
     "build": "nx build vps-web",
     "test": "nx run-many --all --target=test",
     "graph": "nx graph",
-    "playwright": "nx e2e vps-web --no-cloud",
+    "playwright": "nx e2e vps-web",
     "reset": "nx reset"
   },
   "private": true,
