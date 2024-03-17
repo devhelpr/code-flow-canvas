@@ -8,7 +8,7 @@ import {
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { FormComponent } from '../components/form-component';
+import { FormComponent, FormsComponent } from '../components/form-component';
 import { NodeInfo } from '../types/node-info';
 import {
   compileExpressionAsInfo,
@@ -21,6 +21,7 @@ import {
 } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { FormFieldType } from '../components/FormField';
+import { IFormsComponent } from '../components/IFormsComponent';
 
 const thumbs = [
   {
@@ -62,6 +63,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: IDOMElement | undefined = undefined;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let nodeFormComponent: FormsComponent | undefined = undefined;
+
   let currentValue = 0;
   let compiledExpressionInfo:
     | {
@@ -250,7 +253,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           fieldName: 'expression',
           label: 'Expression',
           value: initialValue ?? '',
-          onChange: (value: string) => {
+          onChange: (value: string, formComponent: IFormsComponent) => {
             if (!node.nodeInfo) {
               return;
             }
@@ -260,6 +263,14 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             };
             console.log('onChange', node.nodeInfo);
             compiledExpressionInfo = undefined;
+            if (nodeFormComponent) {
+              if (
+                nodeFormComponent.formComponentId !==
+                formComponent.formComponentId
+              ) {
+                nodeFormComponent.setValue('expression', value);
+              }
+            }
             if (updated) {
               updated();
             }
@@ -275,7 +286,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
 
-      FormComponent({
+      nodeFormComponent = FormComponent({
         rootElement: componentWrapper.domElement as HTMLElement,
         id: id ?? '',
         formElements,
@@ -283,7 +294,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         onSave: (formValues) => {
           console.log('onSave', formValues);
         },
-      }) as unknown as HTMLElement;
+      });
 
       const rect = canvasApp.createRect(
         x,

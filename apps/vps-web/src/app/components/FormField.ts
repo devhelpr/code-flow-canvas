@@ -1,3 +1,5 @@
+import { IFormsComponent } from './IFormsComponent';
+
 export const FormFieldType = {
   Text: 'Text',
   TextArea: 'TextArea',
@@ -45,7 +47,7 @@ export type FormField = (
   label?: string;
   value: string;
   isRow?: boolean;
-  onChange?: (value: string) => void;
+  onChange?: (value: string, formComponent: IFormsComponent) => void;
   settings?: {
     showLabel?: boolean;
   };

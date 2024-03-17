@@ -5,6 +5,7 @@ import {
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 import { BaseFormFieldProps, FormFieldComponent } from './field';
+import { IFormsComponent } from '../IFormsComponent';
 
 export interface InputFieldProps extends BaseFormFieldProps {
   formId: string;
@@ -14,7 +15,7 @@ export interface InputFieldProps extends BaseFormFieldProps {
   isRow?: boolean;
   isLast?: boolean;
 
-  onChange?: (value: string) => void;
+  onChange?: (value: string, formComponent: IFormsComponent) => void;
 }
 
 export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps> {
@@ -97,9 +98,17 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
     const input = event.target as HTMLInputElement;
     console.log(input.value);
     if (this.props.onChange) {
-      this.props.onChange(input.value);
+      this.props.onChange(input.value, this.props.formsComponent);
     }
   };
+
+  setValue(value: string) {
+    super.setValue(value);
+    if (this.input) {
+      this.input.value = value;
+    }
+  }
+
   render() {
     super.render();
     if (!this.element) return;

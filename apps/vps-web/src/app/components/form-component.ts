@@ -17,6 +17,7 @@ import { FormFieldComponent } from './form-fields/field';
 import { SelectFieldChildComponent } from './form-fields/select';
 import { FormField, FormFieldType } from './FormField';
 import { ArrayFieldChildComponent } from './form-fields/array';
+import { IFormsComponent } from './IFormsComponent';
 
 export interface FormComponentProps {
   rootElement: HTMLElement;
@@ -50,7 +51,10 @@ export interface Props {
   };
 }
 
-export class FormsComponent extends Component<Props> {
+export class FormsComponent
+  extends Component<Props>
+  implements IFormsComponent
+{
   oldProps: Props | null = null;
   values: FormValues = {};
   previousDoRenderChildren: boolean | null = null;
@@ -60,8 +64,11 @@ export class FormsComponent extends Component<Props> {
   form: HTMLFormElement | null = null;
   buttonElement: HTMLElement | null = null;
 
+  formComponentId: string;
+
   constructor(parent: BaseComponent | null, props: Props) {
     super(parent, props);
+    this.formComponentId = crypto.randomUUID();
 
     // WARNING ! Don't make the parents positioned relative or absolute... this will break the positioning of the thumbs when connected to form elements!!!
     // offsetTop is used.. and that is relative to the first positioned parent.. which is the node, not the form...
@@ -135,7 +142,7 @@ export class FormsComponent extends Component<Props> {
     item.value = value;
     this.values[item.fieldName] = value;
     if (item.onChange) {
-      item.onChange(value);
+      item.onChange(value, this);
     }
   };
 
@@ -173,6 +180,7 @@ export class FormsComponent extends Component<Props> {
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
+          formsComponent: this,
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Select) {
@@ -187,11 +195,13 @@ export class FormsComponent extends Component<Props> {
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
+          formsComponent: this,
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Slider) {
         const formControlComponent = new SliderFieldChildComponent(this, {
           formId: this.props.id,
+          formsComponent: this,
           fieldName: formControl.fieldName,
           label: formControl.label,
           value: formControl.value,
@@ -233,6 +243,7 @@ export class FormsComponent extends Component<Props> {
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Color) {
         const formControlComponent = new ColorFieldChildComponent(this, {
+          formsComponent: this,
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
@@ -246,6 +257,7 @@ export class FormsComponent extends Component<Props> {
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.TextArea) {
         const formControlComponent = new TextAreaFieldComponent(this, {
+          formsComponent: this,
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
@@ -258,6 +270,7 @@ export class FormsComponent extends Component<Props> {
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Button) {
         const formControlComponent = new ButtonFieldChildComponent(this, {
+          formsComponent: this,
           formId: this.props.id,
           fieldName: formControl.fieldName,
           caption: formControl.caption,
@@ -269,6 +282,7 @@ export class FormsComponent extends Component<Props> {
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Array) {
         const formControlComponent = new ArrayFieldChildComponent(this, {
+          formsComponent: this,
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
@@ -325,7 +339,7 @@ export class FormsComponent extends Component<Props> {
 }
 
 export const FormComponent = (props: FormComponentProps) => {
-  new FormsComponent(null, {
+  const formComponent = new FormsComponent(null, {
     rootElement: props.rootElement,
     onSave: props.onSave,
     formElements: props.formElements,
@@ -335,81 +349,7 @@ export const FormComponent = (props: FormComponentProps) => {
     setDataOnNode: props.setDataOnNode,
     getDataFromNode: props.getDataFromNode,
     settings: props.settings,
-  }).render();
-  // const values: FormValues = {};
-  // const onChange = (item: FormField, value: string) => {
-  //   item.value = value;
-  //   values[item.fieldName] = value;
-  //   if (item.onChange) {
-  //     item.onChange(value);
-  //   }
-  // };
-  // return (
-  //   <div class="w-full p-2">
-  //     <form
-  //       onsubmit={(event: SubmitEvent) => {
-  //         event.preventDefault();
-  //         event.stopPropagation();
-  //         const form = event.target as HTMLFormElement;
-  //         const values = Object.fromEntries(new FormData(form));
-  //         console.log(values);
-  //         props.onSave({ ...values });
-  //         return false;
-  //       }}
-  //     >
-  //       <list:Render list={props.formElements}>
-  //         {(item: FormField) => (
-  //           <div class="w-full mb-2">
-  //             <label for={item.fieldName} class="block mb-2">
-  //               {item.fieldName}
-  //             </label>
-  //             <if:Condition test={item.fieldType === FormFieldType.Text}>
-  //               <div>
-  //                 <InputField
-  //                   formId={props.id}
-  //                   fieldName={item.fieldName}
-  //                   value={item.value}
-  //                   onChange={(value) => onChange(item, value)}
-  //                 ></InputField>
-  //               </div>
-  //             </if:Condition>
-  //             <if:Condition test={item.fieldType === FormFieldType.TextArea}>
-  //               <div>
-  //                 <TextAreaField
-  //                   fieldName={item.fieldName}
-  //                   value={item.value}
-  //                   onChange={(value) => onChange(item, value)}
-  //                 ></TextAreaField>
-  //               </div>
-  //             </if:Condition>
-  //             <if:Condition test={item.fieldType === FormFieldType.Select}>
-  //               <div>
-  //                 <SelectField
-  //                   formId={props.id}
-  //                   fieldName={item.fieldName}
-  //                   value={item.value}
-  //                   options={item.fieldType === 'Select' ? item.options : []}
-  //                   onChange={(value) => onChange(item, value)}
-  //                 ></SelectField>
-  //               </div>
-  //             </if:Condition>
-  //           </div>
-  //         )}
-  //       </list:Render>
-  //       <if:Condition
-  //         test={
-  //           props.hasSubmitButton === undefined ||
-  //           props.hasSubmitButton === true
-  //         }
-  //       >
-  //         <button
-  //           type="submit"
-  //           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-  //         >
-  //           Save
-  //         </button>
-  //       </if:Condition>
-  //     </form>
-  //   </div>
-  //);
+  });
+  formComponent.render();
+  return formComponent;
 };

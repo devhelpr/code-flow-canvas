@@ -1,4 +1,5 @@
 import { Component } from '@devhelpr/dom-components';
+import { IFormsComponent } from '../IFormsComponent';
 
 export class FormFieldComponent<T> extends Component<T> {
   fieldName?: string;
@@ -13,6 +14,7 @@ export interface BaseFormFieldProps {
     textLabelColor?: string;
   };
   setValue: (fieldName: string, value: string) => void;
+  formsComponent: IFormsComponent;
 }
 
 export interface FormContext {
