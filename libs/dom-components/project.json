@@ -17,21 +17,15 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["coverage/libs/dom-components"],
+      "outputs": ["{workspaceRoot}/coverage/libs/dom-components"],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/libs/dom-components"
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "libs/dom-components/**/*.ts",
-          "libs/dom-components/package.json"
-        ]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     }
   },
   "tags": []

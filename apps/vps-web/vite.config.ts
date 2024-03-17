@@ -4,6 +4,14 @@ import { defineConfig } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
+  root: __dirname,
+  build: {
+    outDir: '../../dist/apps/vps-web',
+    reportCompressedSize: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
   server: {
     port: 4200,
     host: 'localhost',
@@ -24,6 +32,11 @@ export default defineConfig({
   // },
 
   test: {
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../coverage/apps/vps-web',
+      provider: 'v8',
+    },
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',

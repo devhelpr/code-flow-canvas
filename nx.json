@@ -1,40 +1,74 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "vps-web",
   "neverConnectToCloud": true,
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
         "_accessToken": "NmUzMzMxNWUtZTUzNi00NDM1LWE0MmMtOTE3MDZjN2M2ZDVkfHJlYWQtd3JpdGU="
       }
     }
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ],
+      "cache": true
     },
     "e2e": {
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "cache": true
     },
     "test": {
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "cache": true
     },
     "lint": {
-      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json"
+      ],
+      "cache": true
+    },
+    "@nx/vite:test": {
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "cache": true
+    },
+    "@nx/eslint:lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json"
+      ],
+      "cache": true
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/.eslintrc.json"
     ],
-    "sharedGlobals": ["{workspaceRoot}/babel.config.json"]
+    "sharedGlobals": [
+      "{workspaceRoot}/babel.config.json"
+    ]
   },
   "generators": {
     "@nx/web:application": {
@@ -56,5 +90,6 @@
         "targetName": "e2e"
       }
     }
-  ]
+  ],
+  "useInferencePlugins": false
 }

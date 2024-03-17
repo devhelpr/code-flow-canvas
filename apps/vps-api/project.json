@@ -21,14 +21,7 @@
         "unstable": true
       }
     },
-    "test": {
-      "executor": "@nx/deno:test",
-      "outputs": ["{options.coverageDirectory}"],
-      "options": {
-        "coverageDirectory": "coverage/apps/vps-api",
-        "denoConfig": "apps/vps-api/deno.json"
-      }
-    },
+
     "lint": {
       "executor": "@nx/deno:lint",
       "options": {
