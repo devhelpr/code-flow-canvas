@@ -3,6 +3,7 @@ import {
   Composition,
   FlowNode,
   IThumb,
+  IThumbNodeComponent,
   NodeType,
   ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
@@ -41,7 +42,7 @@ export const getCreateCompositionNode =
     ) => {
       const inputs: Record<string, string> = {};
       let hasInputBeenSet = false;
-
+      let outputthumbIdentifierWithinNode = thumbIdentifierWithinNode;
       compositionThumbs.forEach((thumb) => {
         if (
           thumb.nodeId === node.id &&
@@ -60,6 +61,7 @@ export const getCreateCompositionNode =
           if (connection.endThumbName) {
             hasInputBeenSet = true;
             let startNode: FlowNode<GLNodeInfo> | undefined = undefined;
+            let endNode: FlowNode<GLNodeInfo> | undefined = undefined;
 
             // TODO : if node is connected to a composition input... then take input from composition....
             //   - nodes kunnen inputs hebben die van buiten de composition komen maar
@@ -74,13 +76,39 @@ export const getCreateCompositionNode =
                 (nodeEval) => nodeEval.id === connection.startNodeId
               );
             }
-            if (startNode) {
-              inputs[connection.endThumbName] = getNodeOutput(
-                startNode,
-                connection.startThumbName ?? '',
-                undefined,
-                payload
+            if (
+              node.nodeInfo?.isComposition &&
+              connection.endNodeId &&
+              connection.endThumbName
+            ) {
+              endNode = nodes.find(
+                (nodeEval) => nodeEval.id === connection.endNodeId
               );
+            }
+            if (startNode) {
+              if (
+                connection.endThumbIdentifierWithinNode &&
+                node.nodeInfo?.isComposition
+              ) {
+                console.log('composition in composition', endNode, connection);
+                outputthumbIdentifierWithinNode =
+                  connection.endThumbIdentifierWithinNode;
+                const output = getNodeOutput(
+                  startNode,
+                  connection.startThumbName ?? '',
+                  undefined,
+                  payload
+                );
+                console.log('composition in composition output', output);
+                inputs[connection.endThumbIdentifierWithinNode] = output;
+              } else {
+                inputs[connection.endThumbName] = getNodeOutput(
+                  startNode,
+                  connection.startThumbName ?? '',
+                  undefined,
+                  payload
+                );
+              }
             }
           }
         }
@@ -93,18 +121,19 @@ export const getCreateCompositionNode =
 
         const helper = instance.getCompute?.();
 
-        const result = helper?.(
+        const result = (helper as any)?.(
           0,
           0,
           hasInputBeenSet
             ? { ...inputs, nodeInfo: node?.nodeInfo }
             : { ...payload, nodeInfo: node?.nodeInfo },
           thumbName,
-          thumbIdentifierWithinNode,
-          true
-        );
+          outputthumbIdentifierWithinNode,
+          true,
+          canvasApp
+        ) as unknown as typeof helper;
 
-        return result?.result ?? '';
+        return (result as any)?.result ?? '';
       }
 
       return '';
@@ -120,13 +149,20 @@ export const getCreateCompositionNode =
       _loopIndex?: number,
       payload?: any,
       _thumbName?: string,
-      thumbIdentifierWithinNode?: string
+      thumbIdentifierWithinNode?: string,
+      unknownVariable?: boolean,
+      hackCanvasApp?: CanvasAppInstance<GLNodeInfo>
     ) => {
       let shader = '';
       let result: undefined | string = undefined;
-      if (thumbIdentifierWithinNode && canvasApp) {
+      if (!canvasApp && !hackCanvasApp) {
+        return;
+      }
+      if (thumbIdentifierWithinNode) {
         if (!composition) {
-          composition = canvasApp.compositons.getComposition(compositionId);
+          composition = (
+            hackCanvasApp ?? canvasApp
+          )?.compositons.getComposition(compositionId);
           if (composition) {
             nodes = composition.nodes;
             compositionThumbs = composition.thumbs;
@@ -219,7 +255,7 @@ export const getCreateCompositionNode =
       labelName,
       familyName,
       fieldName,
-      compute,
+      compute as any,
       initializeCompute,
       false,
       200,

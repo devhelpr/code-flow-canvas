@@ -67,6 +67,7 @@ import { getCurrentIterationNode } from '../nodes-gl/current-iteration';
 import { getSquaredNode } from '../nodes-gl/square';
 import { getGreaterThenNode } from '../nodes-gl/greater-then';
 import { getCustomNode } from '../nodes-gl/custom';
+import { getCreateVector3Node } from '../nodes-gl/create-vector3';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -175,6 +176,12 @@ export const setupGLNodeTaskRegistry = () => {
     'split-colors-node',
     getSplitColorsNode,
     'Split Colors'
+  );
+
+  registerGLNodeFactory(
+    'create-vector3',
+    getCreateVector3Node,
+    'Create Color Vector'
   );
 
   registerGLNodeFactory('mix-color-vector-node', getMixVectorColorNode, 'Mix');
