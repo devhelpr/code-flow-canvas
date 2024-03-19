@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - demo-deploy
+env:
+  NX_NON_NATIVE_HASHER: true
 
 jobs:
   publish:
