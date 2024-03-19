@@ -64,7 +64,7 @@ export const getFunction =
           if (canvasAppInstance && scopeId) {
             canvasAppInstance.registerTempVariable(
               parameter,
-              inputObject[parameter],
+              structuredClone(inputObject[parameter]),
               scopeId
             );
           }

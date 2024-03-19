@@ -48,9 +48,10 @@ export const getArrayVariable: NodeTaskFactory<NodeInfo> = (
       if (variableName) {
         const data = contextInstance.getVariableInfo(variableName, scopeId);
         if (data && Array.isArray(data.data)) {
+          const arrayData = structuredClone(data.data);
           return {
-            result: data.data,
-            output: data.data,
+            result: arrayData,
+            output: arrayData,
             followPath: undefined,
           };
         }
