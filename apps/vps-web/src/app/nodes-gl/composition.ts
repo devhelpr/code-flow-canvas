@@ -3,7 +3,6 @@ import {
   Composition,
   FlowNode,
   IThumb,
-  IThumbNodeComponent,
   NodeType,
   ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
@@ -150,7 +149,7 @@ export const getCreateCompositionNode =
       payload?: any,
       _thumbName?: string,
       thumbIdentifierWithinNode?: string,
-      unknownVariable?: boolean,
+      _unknownVariable?: boolean,
       hackCanvasApp?: CanvasAppInstance<GLNodeInfo>
     ) => {
       let shader = '';
