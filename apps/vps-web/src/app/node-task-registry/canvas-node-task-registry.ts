@@ -140,6 +140,7 @@ import { Composition } from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes/composition';
 import { getThumbInputNode } from '../nodes/thumb-input';
 import { getThumbOutputNode } from '../nodes/thumb-output';
+import { getTestNode } from '../nodes/test';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -287,6 +288,8 @@ export const setupCanvasNodeTaskRegistry = (
 
   registerNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
   registerNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
+
+  registerNodeFactory('test-node', getTestNode, 'Test Node');
 };
 
 export const getNodeTaskFactory = (name: string) => {

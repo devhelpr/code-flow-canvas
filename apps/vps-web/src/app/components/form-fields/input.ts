@@ -28,7 +28,7 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
     super(parent, props);
     this.fieldName = props.fieldName;
     this.template = createTemplate(
-      `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
+      `<div class="w-full form-component__input ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
       }">
         <label for="${props.formId}_${props.fieldName}" class="block  mb-2 ${

@@ -74,6 +74,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     textColorClassName?: string;
     backgroundThemeProperty?: string;
     textColorThenmeProperty?: string;
+    adjustToFormContent?: boolean;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -108,7 +109,8 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
           (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
         settings?.textColorClassName ??
         canvasApp.theme.nodeText
-      } rounded ${showTitlebar ? '' : 'py-2'}`,
+      } rounded ${showTitlebar ? '' : 'py-2'}      
+      ${settings?.adjustToFormContent ? 'w-min' : ''}`,
     },
     undefined
   ) as unknown as INodeComponent<T>;
@@ -203,6 +205,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
       formElements,
       hasSubmitButton: false,
       settings: {
+        minWidthContent: settings?.adjustToFormContent ?? false,
         textLabelColor:
           settings?.textColorClassName ?? canvasApp.theme.nodeText,
       },
@@ -286,7 +289,9 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     {
       classNames: ``,
     },
-    settings?.hasStaticWidthHeight ?? false,
+    settings?.adjustToFormContent
+      ? false
+      : settings?.hasStaticWidthHeight ?? false,
     undefined,
     undefined,
     id,
@@ -369,6 +374,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
     textColorClassName?: string;
     backgroundThemeProperty?: string;
     textColorThenmeProperty?: string;
+    adjustToFormContent?: boolean;
   },
   childNode?: HTMLElement,
   isAsyncCompute = false,
@@ -478,7 +484,11 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
       );
       onCreatedNode(nodeInstance, containerNode);
       nodeInstance.node.label = nodeTitle;
-      nodeInstance?.rect?.resize(width);
+      if (settings?.adjustToFormContent) {
+        nodeInstance?.rect?.resize();
+      } else {
+        nodeInstance?.rect?.resize(width);
+      }
       return nodeInstance.node as IRectNodeComponent<T>;
     },
     createDecoratorNode,

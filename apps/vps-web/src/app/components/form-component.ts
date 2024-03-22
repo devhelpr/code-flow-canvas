@@ -18,17 +18,21 @@ import { SelectFieldChildComponent } from './form-fields/select';
 import { FormField, FormFieldType } from './FormField';
 import { ArrayFieldChildComponent } from './form-fields/array';
 import { IFormsComponent } from './IFormsComponent';
+import { createFormDialog } from '../utils/create-form-dialog';
 
 export interface FormComponentProps {
   rootElement: HTMLElement;
   onSave: (values: any) => void;
+  onCancel?: () => void;
   formElements: FormField[];
   hasSubmitButton?: boolean;
+  hasCancelButton?: boolean;
   id: string;
   canvasUpdated?: () => void;
   setDataOnNode?: (formValues: FormValues) => void;
   getDataFromNode?: () => FormValues;
   settings?: {
+    minWidthContent?: boolean;
     textLabelColor: string;
   };
 }
@@ -40,14 +44,17 @@ export type FormValues = {
 export interface Props {
   rootElement: HTMLElement;
   onSave: (values: any) => void;
+  onCancel?: () => void;
   formElements: FormField[];
   hasSubmitButton?: boolean;
+  hasCancelButton?: boolean;
   id: string;
   canvasUpdated?: () => void;
   setDataOnNode?: (formValues: FormValues) => void;
   getDataFromNode?: () => FormValues;
   settings?: {
     textLabelColor: string;
+    minWidthContent?: boolean;
   };
 }
 
@@ -63,6 +70,7 @@ export class FormsComponent
   div: HTMLDivElement | null = null;
   form: HTMLFormElement | null = null;
   buttonElement: HTMLElement | null = null;
+  cancelButtonElement: HTMLElement | null = null;
 
   formComponentId: string;
 
@@ -73,14 +81,21 @@ export class FormsComponent
     // WARNING ! Don't make the parents positioned relative or absolute... this will break the positioning of the thumbs when connected to form elements!!!
     // offsetTop is used.. and that is relative to the first positioned parent.. which is the node, not the form...
     this.template = createTemplate(
-      `<div class="w-full p-2">
+      `<div class="${props.settings?.minWidthContent ? 'w-min' : 'w-full'} p-2">
         <form>
           <children></children>
           ${
             props.hasSubmitButton === true
-              ? ` <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-4 rounded">Save</button>`
+              ? ` <button type="submit" class="border-transparent border bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-4 rounded">Save</button>`
               : ''
           }
+        ${
+          props.hasCancelButton === true
+            ? `<button type="button" class="${
+                props.hasSubmitButton ? 'ml-2' : ''
+              } border border-blue-500 bg-transparent hover:bg-blue-500 text-white font-bold py-2 px-4 mt-4 rounded">Cancel</button>`
+            : ''
+        }
         </form>
       </div>`
     );
@@ -106,11 +121,26 @@ export class FormsComponent
         // );
         this.childRoot = this.form.firstChild as HTMLElement;
         if (this.props.hasSubmitButton === true) {
-          this.buttonElement = this.form.lastChild as HTMLElement;
+          if (!this.props.hasCancelButton) {
+            this.buttonElement = this.form.lastChild as HTMLElement;
+          } else {
+            this.buttonElement = (this.form.lastChild as HTMLElement)
+              .previousSibling as HTMLElement;
+          }
+        }
+        if (this.props.hasCancelButton === true) {
+          this.cancelButtonElement = this.form.lastChild as HTMLElement;
+          this.cancelButtonElement.addEventListener('click', () => {
+            this.unmount();
+            this.props.onCancel?.();
+          });
         }
         this.renderList.push(this.childRoot);
         if (this.buttonElement) {
           this.renderList.push(this.buttonElement);
+        }
+        if (this.cancelButtonElement) {
+          this.renderList.push(this.cancelButtonElement);
         }
         this.createFormElements();
         this.rootElement.append(this.element);
@@ -138,11 +168,19 @@ export class FormsComponent
     return false;
   };
 
-  onChange = (item: FormField, value: string) => {
-    item.value = value;
-    this.values[item.fieldName] = value;
+  onChange = (item: FormField, value: unknown) => {
     if (item.onChange) {
-      item.onChange(value, this);
+      if (item.fieldType === FormFieldType.Array) {
+        // hacky until I improved typescript typing
+        item.value = value as unknown as string;
+        this.values[item.fieldName] = value as unknown as string;
+
+        item.onChange(value as unknown as unknown[], this);
+      } else {
+        item.value = value as unknown as string;
+        this.values[item.fieldName] = value as unknown as string;
+        item.onChange(value as unknown as string, this);
+      }
     }
   };
 
@@ -174,7 +212,8 @@ export class FormsComponent
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
-          value: formControl.value,
+          value:
+            formControl.value || this.values?.[formControl.fieldName] || '',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -188,7 +227,8 @@ export class FormsComponent
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
-          value: formControl.value,
+          value:
+            formControl.value || this.values?.[formControl.fieldName] || '',
           isRow: formControl.isRow,
           settings,
           options: formControl.options,
@@ -204,7 +244,8 @@ export class FormsComponent
           formsComponent: this,
           fieldName: formControl.fieldName,
           label: formControl.label,
-          value: formControl.value,
+          value:
+            formControl.value ?? this.values?.[formControl.fieldName] ?? '',
           isRow: formControl.isRow,
           min: formControl.min,
           max: formControl.max,
@@ -247,7 +288,8 @@ export class FormsComponent
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
-          value: formControl.value,
+          value:
+            formControl.value || this.values?.[formControl.fieldName] || '',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -261,7 +303,8 @@ export class FormsComponent
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
-          value: formControl.value,
+          value:
+            formControl.value || this.values?.[formControl.fieldName] || '',
           settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
@@ -291,6 +334,23 @@ export class FormsComponent
           settings,
           isLast: index === this.props.formElements.length - 1,
           setValue: this.setValue,
+          onChange: (value) => this.onChange(formControl, value),
+          createFormDialog: async (
+            formElements: FormField[],
+            values?: unknown
+          ) => {
+            return new Promise((resolve, reject) => {
+              createFormDialog(formElements, undefined, values).then(
+                (result) => {
+                  if (result !== false) {
+                    resolve(result);
+                  } else {
+                    reject();
+                  }
+                }
+              );
+            });
+          },
         });
         this.components.push(formControlComponent);
       }
@@ -333,6 +393,9 @@ export class FormsComponent
       if (this.buttonElement) {
         childElements.push(this.buttonElement);
       }
+      if (this.cancelButtonElement) {
+        childElements.push(this.cancelButtonElement);
+      }
       this.renderElements(childElements);
     }
   }
@@ -342,8 +405,10 @@ export const FormComponent = (props: FormComponentProps) => {
   const formComponent = new FormsComponent(null, {
     rootElement: props.rootElement,
     onSave: props.onSave,
+    onCancel: props.onCancel,
     formElements: props.formElements,
     hasSubmitButton: props.hasSubmitButton,
+    hasCancelButton: props.hasCancelButton,
     id: props.id,
     canvasUpdated: props.canvasUpdated,
     setDataOnNode: props.setDataOnNode,

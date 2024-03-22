@@ -14,9 +14,13 @@ export interface ArrayFieldProps extends BaseFormFieldProps {
   fieldName: string;
   label?: string;
   isLast?: boolean;
-  values: Record<string, string>[];
+  values: unknown[];
   formElements: FormField[];
-  onChange?: (value: string) => void;
+  createFormDialog: (
+    formElements: FormField[],
+    values?: unknown
+  ) => Promise<unknown>;
+  onChange?: (value: unknown[]) => void;
 }
 
 export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps> {
@@ -27,18 +31,21 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
   doRenderChildren = false;
   initialRender = false;
 
-  values: Record<string, string>[] = [];
+  values: { id: string; arrayItems: unknown }[] = [];
   components: Component<FormFieldComponent<FormField>>[] = [];
 
   constructor(parent: BaseComponent | null, props: ArrayFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
+    this.values = props.values.map((value) => {
+      return { id: crypto.randomUUID(), arrayItems: value };
+    });
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'}">
         <label for="${props.fieldName}" class="block  mb-2 ${
         props.settings?.textLabelColor ?? 'text-white'
       }">${props.label ?? props.fieldName}</label>
-        <div class="flex flex-col"></div>
+        <div class="_flex flex-col table"></div>
         <button class="${primaryButton}"
           type="button"
           id="${props.formId}_${props.fieldName}"          
@@ -48,6 +55,84 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
 
     this.mount();
   }
+
+  createRenderRow = (
+    value: { id: string; arrayItems: unknown },
+    doCreateOnly?: boolean
+  ) => {
+    const arrayItem = createElementFromTemplate(
+      createTemplate(
+        `<div class="array-item _flex _flex-row table-row" data-array-id=${value.id}></div>`
+      )
+    );
+    if (arrayItem && this.array) {
+      arrayItem.remove();
+
+      (this.props.formElements ?? []).forEach((formElement, index) => {
+        const data = (value.arrayItems as any)[formElement.fieldName];
+
+        const cell = createElementFromTemplate(
+          createTemplate(
+            `<div class="table-cell array-item__cell array-item__cell-${
+              formElement.fieldType
+            } p-0.5 ${index === 0 ? 'pl-0' : ''}"></div>`
+          )
+        );
+        if (cell) {
+          cell.remove();
+
+          cell.textContent = data ?? '';
+          arrayItem.appendChild(cell);
+        }
+      });
+
+      const editCell = createElementFromTemplate(
+        createTemplate(
+          `<div class="table-cell array-item__cell array-item__cell ml-auto">
+            <a href="#" class="array-item__edit"><span class="icon icon-createmode_editedit"></span></a>
+            <a href="#" class="array-item__delete"><span class="icon icon-delete"></span></a>
+          </div>`
+        )
+      );
+      if (editCell) {
+        editCell.remove();
+        editCell.firstChild?.addEventListener('click', () => {
+          const values = this.values.find((v) => v.id === value.id);
+          if (values) {
+            this.props
+              .createFormDialog(this.props.formElements, values.arrayItems)
+              .then((result) => {
+                values.arrayItems = result;
+                const updatedArrayRow = this.createRenderRow(values, true);
+                if (updatedArrayRow) {
+                  this.array
+                    ?.querySelector(`[data-array-id="${value.id}"]`)
+                    ?.replaceWith(updatedArrayRow);
+                  this.render();
+                  this.props.onChange?.(
+                    this.values.map((value) => value.arrayItems)
+                  );
+                }
+              });
+          }
+        });
+        editCell.lastChild?.addEventListener('click', () => {
+          this.values = this.values.filter((v) => v.id !== value.id);
+
+          this.render();
+          this.array?.querySelector(`[data-array-id="${value.id}"]`)?.remove();
+          this.props.onChange?.(this.values.map((value) => value.arrayItems));
+        });
+        arrayItem.appendChild(editCell);
+      }
+
+      if (arrayItem && !doCreateOnly) {
+        this.array.appendChild(arrayItem);
+      }
+      return arrayItem;
+    }
+    return false;
+  };
 
   mount() {
     super.mount();
@@ -66,6 +151,9 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         this.renderList.push(this.label, this.array, this.addButton);
         this.addButton.addEventListener('click', this.onAddButtonClick);
 
+        this.values.forEach((value, _index) => {
+          this.createRenderRow(value);
+        });
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
           (value) => {
@@ -91,7 +179,13 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
   }
 
   onAddButtonClick = (_event: Event) => {
-    //
+    this.props.createFormDialog(this.props.formElements).then((result) => {
+      const valueRow = { arrayItems: result, id: crypto.randomUUID() };
+      this.values.push(valueRow);
+      this.createRenderRow(valueRow);
+      this.render();
+      this.props.onChange?.(this.values.map((value) => value.arrayItems));
+    });
   };
   render() {
     super.render();

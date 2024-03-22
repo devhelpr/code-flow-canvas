@@ -490,3 +490,11 @@ position: relative;
 .form-input:invalid + .form-error {
 	@apply block;
 }
+
+.modal-dialog-form {
+	width: 50%;
+	max-width: 512px;
+	@media (max-width: 768px) {
+		width: calc(100% - 40px);
+	}
+}

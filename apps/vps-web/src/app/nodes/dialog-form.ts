@@ -258,7 +258,7 @@ export const dialogFormNode =
                 value: '',
               },
             ],
-            onChange: (value: string) => {
+            onChange: (value: unknown[]) => {
               if (!node.nodeInfo) {
                 return;
               }

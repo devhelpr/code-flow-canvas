@@ -1,135 +1,123 @@
 import {
-  CanvasAppInstance,
-  createElement,
-  INodeComponent,
   IRectNodeComponent,
+  Rect,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { FormFieldType } from '../components/FormField';
+import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { NodeInfo } from '../types/node-info';
+import { FormField, FormFieldType } from '../components/FormField';
 
-export const getTest: NodeTaskFactory<NodeInfo> = (
+const fieldName = 'testt-input';
+const labelName = 'Test input';
+const nodeName = 'test-node';
+const familyName = 'flow-canvas';
+const thumbConstraint = 'value';
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    name: 'output',
+    thumbConstraint: thumbConstraint,
+    maxConnections: 1,
+  },
+];
+
+export const getTestNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let nodeComponent: INodeComponent<NodeInfo>;
+  let rect: Rect<NodeInfo> | undefined;
   const initializeCompute = () => {
     return;
   };
-  const compute = (input: string, _loopIndex?: number) => {
+  const compute = (_input: string, _loopIndex?: number, _payload?: any) => {
+    const result = node.nodeInfo?.formValues?.['array'] ?? [];
     return {
-      result: input,
+      result: result,
+      output: result,
       followPath: undefined,
     };
   };
-  return {
-    name: 'test',
-    family: 'flow-canvas',
-    category: 'flow-canvas',
-    //isContained: true,
-    createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
-      x: number,
-      y: number,
-      id?: string,
-      initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
-    ) => {
-      const initialValue = initalValues?.['caption'] ?? 'Test';
-      const formElements = [
+
+  return visualNodeFactory(
+    nodeName,
+    labelName,
+    familyName,
+    fieldName,
+    compute,
+    initializeCompute,
+    false,
+    200,
+    100,
+    thumbs,
+    (values?: InitialValues): FormField[] => {
+      const initialInputType = values?.['array'] ?? [];
+      return [
         {
-          fieldType: FormFieldType.Text,
-          fieldName: 'caption',
-          value: initialValue ?? '',
-          onChange: (value: string) => {
+          fieldType: FormFieldType.Array,
+          fieldName: 'array',
+          value: initialInputType,
+          values: initialInputType,
+          //[
+          //   {
+          //     testField: 'test',
+          //     testField2: 'test2',
+          //   },
+          // ],
+          formElements: [
+            {
+              fieldName: 'testField',
+              fieldType: FormFieldType.Text,
+              value: '',
+            },
+            {
+              fieldName: 'testField2',
+              fieldType: FormFieldType.Text,
+              value: '',
+            },
+            {
+              fieldName: 'color',
+              fieldType: FormFieldType.Color,
+              value: '',
+            },
+          ],
+          onChange: (values: unknown[]) => {
             if (!node.nodeInfo) {
               return;
             }
+
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
-              caption: value,
+              ['array']: [...values],
             };
-            nodeComponent.domElement.textContent =
-              node.nodeInfo.formValues['caption'] ?? 'Test';
-            console.log('onChange', node.nodeInfo);
+
             if (updated) {
               updated();
+            }
+            if (rect) {
+              rect.resize();
             }
           },
         },
       ];
-
-      nodeComponent = createElement(
-        'div',
-        {
-          class: `flex text-center items-center justify-center
-              w-[100px] h-[50px] overflow-hidden
-              bg-sky-600 text-white
-              rounded-lg 
-              inner-node
-              shape-rect`,
-          style: {
-            // 'clip-path': 'circle(50%)',
-          },
-        },
-        undefined,
-        'state'
-      ) as unknown as INodeComponent<NodeInfo>;
-      nodeComponent.domElement.textContent = initialValue ?? 'Test';
-
-      const rect = canvasApp.createRectThumb(
-        x,
-        y,
-        100,
-        50,
-        undefined,
-        [
-          {
-            thumbType: ThumbType.Center,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.startOrEnd,
-            color: 'white',
-            label: '#',
-            name: 'input',
-            hidden: true,
-          },
-        ],
-        nodeComponent,
-        {
-          classNames: `bg-slate-500 p-4 rounded`,
-        },
-        undefined,
-        undefined,
-        undefined,
-        id,
-        {
-          formElements: formElements,
-          type: 'test',
-          formValues: {
-            caption: initialValue ?? '',
-          },
-        },
-        containerNode,
-        undefined,
-        false
-      );
-
-      if (!rect.nodeComponent) {
-        throw new Error('rect.nodeComponent is undefined');
-      }
-      node = rect.nodeComponent;
-      if (node.nodeInfo) {
-        node.nodeInfo.formElements = formElements;
-        node.nodeInfo.compute = compute;
-        node.nodeInfo.initializeCompute = initializeCompute;
-      }
-      return node;
     },
-  };
+    (nodeInstance) => {
+      rect = nodeInstance.rect;
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+      rect?.resize();
+    },
+    {
+      category: 'Test',
+      adjustToFormContent: true,
+    }
+  );
 };

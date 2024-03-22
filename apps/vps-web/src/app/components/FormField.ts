@@ -16,38 +16,45 @@ export type FormField = (
   | {
       fieldType: 'Select';
       options: { value: string; label: string }[];
+      onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Text';
+      onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Button';
       caption: string;
       onButtonClick?: () => Promise<void> | void;
+      onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'TextArea';
+      onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Slider';
       min?: number;
       max?: number;
       step?: number;
+      onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Color';
+      onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Array';
       formElements: FormField[];
-      values: Record<string, string>[];
+      values: unknown[];
+      onChange?: (value: unknown[], formComponent: IFormsComponent) => void;
     }
 ) & {
   fieldName: string;
   label?: string;
   value: string;
   isRow?: boolean;
-  onChange?: (value: string, formComponent: IFormsComponent) => void;
+
   settings?: {
     showLabel?: boolean;
   };
