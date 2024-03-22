@@ -117,10 +117,11 @@ export const getCreateCompositionNode =
         const instance = factory(() => {
           return false;
         });
-
-        const helper = instance.getCompute?.();
-
-        const result = (helper as any)?.(
+        if (canvasApp && instance.setCanvasApp) {
+          instance.setCanvasApp(canvasApp);
+        }
+        const compute = instance.getCompute?.();
+        const result = compute?.(
           0,
           0,
           hasInputBeenSet
@@ -128,11 +129,10 @@ export const getCreateCompositionNode =
             : { ...payload, nodeInfo: node?.nodeInfo },
           thumbName,
           outputthumbIdentifierWithinNode,
-          true,
-          canvasApp
-        ) as unknown as typeof helper;
+          true
+        );
 
-        return (result as any)?.result ?? '';
+        return result?.result ?? '';
       }
 
       return '';
@@ -149,19 +149,16 @@ export const getCreateCompositionNode =
       payload?: any,
       _thumbName?: string,
       thumbIdentifierWithinNode?: string,
-      _unknownVariable?: boolean,
-      hackCanvasApp?: CanvasAppInstance<GLNodeInfo>
+      _unknownVariable?: boolean
     ) => {
       let shader = '';
       let result: undefined | string = undefined;
-      if (!canvasApp && !hackCanvasApp) {
+      if (!canvasApp) {
         return;
       }
       if (thumbIdentifierWithinNode) {
         if (!composition) {
-          composition = (
-            hackCanvasApp ?? canvasApp
-          )?.compositons.getComposition(compositionId);
+          composition = canvasApp?.compositons.getComposition(compositionId);
           if (composition) {
             nodes = composition.nodes;
             compositionThumbs = composition.thumbs;
@@ -277,6 +274,13 @@ export const getCreateCompositionNode =
         category: 'Compositions',
         backgroundThemeProperty: 'compositionBackground',
         textColorThenmeProperty: 'compositionText',
+      },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      (canvasAppInstance: CanvasAppInstance<GLNodeInfo>) => {
+        canvasApp = canvasAppInstance;
       }
     );
   };

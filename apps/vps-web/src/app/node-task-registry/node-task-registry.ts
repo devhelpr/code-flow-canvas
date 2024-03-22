@@ -35,6 +35,7 @@ export type NodeTask<T> = {
     thumbIdentifierWithinNode?: string,
     isInComposition?: boolean
   ) => { result: string | undefined };
+  setCanvasApp?: (canvasApp: CanvasAppInstance<T>) => void;
   createVisualNode: (
     canvasApp: CanvasAppInstance<T>,
     x: number,

@@ -12,6 +12,7 @@ import {
 
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { getLoop } from '../shapes/loop';
 
 export interface ComputeResult {
   result: string | any[];
@@ -92,6 +93,15 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
+      ) as unknown as INodeComponent<GLNodeInfo>;
+
+      createNodeElement(
+        'div',
+        {
+          class: `absolute top-0 left-0 w-full h-full flex flex-row justify-center text-slate-500 p-8 opacity-50`,
+        },
+        wrapper.domElement,
+        getLoop()
       ) as unknown as INodeComponent<GLNodeInfo>;
 
       rect = canvasApp.createRect(

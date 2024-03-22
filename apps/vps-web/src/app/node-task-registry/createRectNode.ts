@@ -373,7 +373,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
   childNode?: HTMLElement,
   isAsyncCompute = false,
   canBeUsedAsDecorator = false,
-  useInCompositionOnly = false
+  useInCompositionOnly = false,
+  onSetCanvasApp?: (canvasApp: CanvasAppInstance<T>) => void
 ) => {
   let createDecoratorNode:
     | undefined
@@ -426,6 +427,11 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
     hideFromNodeTypeSelector: settings?.hideFromNodeTypeSelector ?? false,
     useInCompositionOnly: useInCompositionOnly,
     thumbs,
+    setCanvasApp: (canvasApp: CanvasAppInstance<T>) => {
+      if (onSetCanvasApp) {
+        onSetCanvasApp(canvasApp);
+      }
+    },
     getCompute: () =>
       compute as unknown as (
         input: any,

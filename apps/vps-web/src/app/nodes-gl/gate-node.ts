@@ -12,6 +12,7 @@ import {
 
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
+import { getDiamond } from '../shapes/diamond';
 
 export interface ComputeResult {
   result: string | any[];
@@ -87,6 +88,15 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
+      ) as unknown as INodeComponent<GLNodeInfo>;
+
+      createNodeElement(
+        'div',
+        {
+          class: `absolute top-0 left-0 w-full h-full flex flex-row justify-center text-slate-700 p-8 opacity-50`,
+        },
+        wrapper.domElement,
+        getDiamond()
       ) as unknown as INodeComponent<GLNodeInfo>;
 
       rect = canvasApp.createRect(
