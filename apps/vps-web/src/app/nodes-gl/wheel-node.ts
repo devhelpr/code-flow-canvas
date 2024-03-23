@@ -14,7 +14,7 @@ import {
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'wheel';
-const labelName = 'Wheel';
+const labelName = 'Scene zoom';
 const nodeName = 'wheel-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
@@ -28,7 +28,7 @@ const thumbs = [
     thumbConstraint: thumbConstraint,
     maxConnections: -1,
     name: 'wheel',
-    prefixLabel: 'zoom',
+    prefixLabel: ' ',
   },
 ];
 

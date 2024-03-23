@@ -93,8 +93,8 @@ export const setupGLNodeTaskRegistry = () => {
   );
   registerGLNodeFactory('uv-node', getUVNode, 'UV');
   registerGLNodeFactory('mouse-node', getMouseNode, 'Mouse');
-  registerGLNodeFactory('position-node', getPositionNode, 'Position');
-  registerGLNodeFactory('wheel-node', getWheelNode, 'Wheel');
+  registerGLNodeFactory('position-node', getPositionNode, 'Scene position');
+  registerGLNodeFactory('wheel-node', getWheelNode, 'Scene zoom');
 
   registerGLNodeFactory('color-node', getColorNode, 'Color');
   registerGLNodeFactory('value-node', getValueNode, 'Value');

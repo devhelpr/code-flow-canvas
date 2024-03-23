@@ -15,7 +15,7 @@ import { GLNodeInfo } from '../types/gl-node-info';
 import { vec2Type } from '../gl-types/float-vec2-vec3';
 
 const fieldName = 'position';
-const labelName = 'Position';
+const labelName = 'Scene position';
 const nodeName = 'position-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
