@@ -23,7 +23,7 @@ const thumbs = [
     thumbIndex: 0,
     connectionType: ThumbConnectionType.end,
     color: 'white',
-    label: 'v2',
+    label: '',
     thumbConstraint: 'value',
     name: 'value',
     prefixLabel: '',
