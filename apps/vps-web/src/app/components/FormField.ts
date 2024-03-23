@@ -8,6 +8,7 @@ export const FormFieldType = {
   Color: 'Color',
   Button: 'Button',
   Array: 'Array',
+  File: 'File',
 } as const;
 
 export type FormFieldType = (typeof FormFieldType)[keyof typeof FormFieldType];
@@ -21,6 +22,13 @@ export type FormField = (
   | {
       fieldType: 'Text';
       onChange?: (value: string, formComponent: IFormsComponent) => void;
+    }
+  | {
+      fieldType: 'File';
+      onChange?: (
+        value: FileFieldValue,
+        formComponent: IFormsComponent
+      ) => void;
     }
   | {
       fieldType: 'Button';
@@ -59,3 +67,8 @@ export type FormField = (
     showLabel?: boolean;
   };
 };
+
+export interface FileFieldValue {
+  fileName: string;
+  data: string;
+}

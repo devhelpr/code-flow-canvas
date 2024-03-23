@@ -11,7 +11,11 @@ import {
 } from '../node-task-registry';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { NodeInfo } from '../types/node-info';
-import { FormField, FormFieldType } from '../components/FormField';
+import {
+  FileFieldValue,
+  FormField,
+  FormFieldType,
+} from '../components/FormField';
 
 const fieldName = 'testt-input';
 const labelName = 'Test input';
@@ -105,6 +109,25 @@ export const getTestNode: NodeTaskFactory<NodeInfo> = (
             }
             if (rect) {
               rect.resize();
+            }
+          },
+        },
+        {
+          fieldType: FormFieldType.File,
+          fieldName: 'media',
+          value: '',
+          onChange: (value: FileFieldValue) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['media']: value,
+            };
+
+            if (updated) {
+              updated();
             }
           },
         },

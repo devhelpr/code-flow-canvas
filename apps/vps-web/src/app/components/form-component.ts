@@ -15,10 +15,11 @@ import { ColorFieldChildComponent } from './form-fields/color';
 import { ButtonFieldChildComponent } from './form-fields/button';
 import { FormFieldComponent } from './form-fields/field';
 import { SelectFieldChildComponent } from './form-fields/select';
-import { FormField, FormFieldType } from './FormField';
+import { FileFieldValue, FormField, FormFieldType } from './FormField';
 import { ArrayFieldChildComponent } from './form-fields/array';
 import { IFormsComponent } from './IFormsComponent';
 import { createFormDialog } from '../utils/create-form-dialog';
+import { FileFieldChildComponent } from './form-fields/file';
 
 export interface FormComponentProps {
   rootElement: HTMLElement;
@@ -176,6 +177,10 @@ export class FormsComponent
         this.values[item.fieldName] = value as unknown as string;
 
         item.onChange(value as unknown as unknown[], this);
+      } else if (item.fieldType === FormFieldType.File) {
+        item.value = value as unknown as string;
+        this.values[item.fieldName] = value as unknown as string;
+        item.onChange(value as unknown as FileFieldValue, this);
       } else {
         item.value = value as unknown as string;
         this.values[item.fieldName] = value as unknown as string;
@@ -209,6 +214,21 @@ export class FormsComponent
       const settings = { ...this.props.settings, ...formControl.settings };
       if (formControl.fieldType === FormFieldType.Text) {
         const formControlComponent = new InputFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          label: formControl.label,
+          value:
+            formControl.value || this.values?.[formControl.fieldName] || '',
+          isRow: formControl.isRow,
+          settings,
+          setValue: this.setValue,
+          onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
+          formsComponent: this,
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.File) {
+        const formControlComponent = new FileFieldChildComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
