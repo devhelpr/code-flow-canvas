@@ -1,3 +1,7 @@
+import {
+  createElementFromTemplate,
+  createTemplate,
+} from '@devhelpr/dom-components';
 import { transformCameraSpaceToWorldSpace } from '../camera';
 import {
   thumbRadius,
@@ -27,8 +31,10 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
+import { thumbThreeDots } from './icons/thumb-three-dots';
 import { CubicBezierConnection } from './qubic-bezier-connection';
 import { ThumbNode } from './thumb';
+import { thumbTwoDots } from './icons/thumb-two-dots';
 
 export class ThumbNodeConnector<T> extends ThumbNode<T> {
   constructor(
@@ -225,7 +231,35 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       },
       this.circleElement.domElement
     );
-    if (label) {
+    if (thumb.thumbConstraint === 'vec3' || thumb.thumbConstraint === 'vec2') {
+      const icon =
+        thumb.thumbConstraint === 'vec3' ? thumbThreeDots() : thumbTwoDots();
+      if (icon) {
+        const element = createElementFromTemplate(createTemplate(icon));
+        element.remove();
+
+        const iconWrapper = createElement(
+          'div',
+          {
+            class: 'pointer-events-none relative',
+          },
+          innerCircle.domElement
+        );
+
+        createElement(
+          'div',
+          {
+            class: `pointer-events-none absolute ${
+              thumb.connectionType === ThumbConnectionType.start
+                ? 'top-[2px] -left-[4px]'
+                : '-top-[10px] -left-[10px]'
+            }`,
+          },
+          iconWrapper.domElement,
+          element
+        );
+      }
+    } else if (label) {
       let clipPath = '';
       let innerLabelClasses = `pointer-events-none absolute ${thumbFontSizeClass} flex items-center justify-center
         ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
