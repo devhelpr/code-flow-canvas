@@ -12,7 +12,7 @@ import {
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { NodeInfo } from '../types/node-info';
 import {
-  FileFieldValue,
+  //FileFieldValue,
   FormField,
   FormFieldType,
 } from '../components/FormField';
