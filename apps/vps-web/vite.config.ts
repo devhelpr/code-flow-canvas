@@ -2,6 +2,7 @@
 import { defineConfig } from 'vite';
 //import jsxCompiler from './vite/vite-plugin-jsx-compiler';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+//import mkcert from 'vite-plugin-mkcert';
 
 export default defineConfig({
   root: __dirname,
@@ -15,9 +16,11 @@ export default defineConfig({
   server: {
     port: 4200,
     host: 'localhost',
+    //host: '192.168.68.109',
+    //https: true,
   },
 
-  plugins: [nxViteTsPaths()],
+  plugins: [nxViteTsPaths()], //mkcert()
   esbuild: {
     sourcemap: false,
   },
