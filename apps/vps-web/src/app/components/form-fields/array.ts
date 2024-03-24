@@ -157,7 +157,7 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         this.addButton = this.array.nextSibling as HTMLInputElement;
         this.renderList.push(this.label, this.array, this.addButton);
         this.addButton.addEventListener('click', this.onAddButtonClick);
-
+        console.log('array', this.array, this.values, this.label);
         this.values.forEach((value, _index) => {
           this.createRenderRow(value);
         });
