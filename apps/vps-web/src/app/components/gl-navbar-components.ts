@@ -72,6 +72,7 @@ export class GLNavbarComponent extends Component<
           <option value="creative-shader-flow.json">Creative shader</option>
           <option value="sigmoid-flow.json">Sigmoid</option>
           <option value="fractal-flow.json">Mandelbrot</option>
+          <option value="moving-circle-flow.json">Moving circle</option>
         </select>
         <children></children>
       </div>`

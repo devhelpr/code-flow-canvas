@@ -68,6 +68,7 @@ import { getSquaredNode } from '../nodes-gl/square';
 import { getGreaterThenNode } from '../nodes-gl/greater-then';
 import { getCustomNode } from '../nodes-gl/custom';
 import { getCreateVector3Node } from '../nodes-gl/create-vector3';
+import { getGradientColorNode } from '../nodes-gl/gradient-color-node';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -97,6 +98,11 @@ export const setupGLNodeTaskRegistry = () => {
   registerGLNodeFactory('wheel-node', getWheelNode, 'Scene zoom');
 
   registerGLNodeFactory('color-node', getColorNode, 'Color');
+  registerGLNodeFactory(
+    'gradient-color-node',
+    getGradientColorNode,
+    'Gradient'
+  );
   registerGLNodeFactory('value-node', getValueNode, 'Value');
 
   registerGLNodeFactory(

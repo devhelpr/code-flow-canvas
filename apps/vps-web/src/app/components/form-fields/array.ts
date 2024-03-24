@@ -20,6 +20,7 @@ export interface ArrayFieldProps extends BaseFormFieldProps {
     formElements: FormField[],
     values?: unknown
   ) => Promise<unknown>;
+  createDataReadElement: (formElement: FormField, data: unknown) => HTMLElement;
   onChange?: (value: unknown[]) => void;
 }
 
@@ -80,8 +81,9 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         );
         if (cell) {
           cell.remove();
-
-          cell.textContent = data ?? '';
+          const element = this.props.createDataReadElement(formElement, data);
+          cell.appendChild(element);
+          //cell.textContent = data ?? '';
           arrayItem.appendChild(cell);
         }
       });
@@ -96,8 +98,10 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
       );
       if (editCell) {
         editCell.remove();
-        editCell.firstChild?.addEventListener('click', () => {
+        editCell.firstChild?.addEventListener('click', (event) => {
+          event.preventDefault();
           const values = this.values.find((v) => v.id === value.id);
+          console.log('edit', value, values?.arrayItems, this.values);
           if (values) {
             this.props
               .createFormDialog(this.props.formElements, values.arrayItems)
@@ -115,13 +119,16 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
                 }
               });
           }
+          return false;
         });
-        editCell.lastChild?.addEventListener('click', () => {
+        editCell.lastChild?.addEventListener('click', (event) => {
+          event.preventDefault();
           this.values = this.values.filter((v) => v.id !== value.id);
 
           this.render();
           this.array?.querySelector(`[data-array-id="${value.id}"]`)?.remove();
           this.props.onChange?.(this.values.map((value) => value.arrayItems));
+          return false;
         });
         arrayItem.appendChild(editCell);
       }
@@ -179,7 +186,7 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
   }
 
   onAddButtonClick = (_event: Event) => {
-    this.props.createFormDialog(this.props.formElements).then((result) => {
+    this.props.createFormDialog(this.props.formElements, {}).then((result) => {
       const valueRow = { arrayItems: result, id: crypto.randomUUID() };
       this.values.push(valueRow);
       this.createRenderRow(valueRow);

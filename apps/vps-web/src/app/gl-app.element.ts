@@ -785,7 +785,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
       });
-
+      let nodeType = '';
       if (
         currentSelectedNode &&
         (!selectedNodeInfo || selectedNodeInfo.id !== currentSelectedNode.id)
@@ -807,7 +807,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
       removeFormElement();
       if (selectedNodeInfo && this.selectedNodeLabel) {
-        this.selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
         const node = (
           selectedNodeInfo?.containerNode
             ? (selectedNodeInfo?.containerNode?.nodeInfo as any)
@@ -819,10 +818,16 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           return;
         }
 
+        nodeType = node.nodeInfo?.type;
+        console.log('selected node', node);
+
         if (node.nodeInfo?.isComposition) {
+          this.selectedNodeLabel.domElement.textContent = 'composition';
           (
             this.compositionEditButton?.domElement as HTMLButtonElement
           ).classList.remove('hidden');
+        } else {
+          this.selectedNodeLabel.domElement.textContent = nodeType || 'NODE'; //`${selectedNodeInfo.id}`;
         }
 
         if (node.nodeType === NodeType.Connection) {
@@ -1169,7 +1174,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   }[] = [];
 
   shaderExtensions = '';
-  createFragmentShader = (statements: string) => {
+  createFragmentShader = (statements: string, prestatements: string) => {
     let shaderDynamicUniforms = '';
     this.valueParameterUniforms.forEach((uniform) => {
       shaderDynamicUniforms += `uniform ${floatType} ${uniform.uniformName.replaceAll(
@@ -1178,7 +1183,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       )};\n`;
     });
 
-    return `
+    return `#version 300 es
     precision highp float;
     uniform ${floatType} u_time;
     uniform ${floatType} u_width;
@@ -1191,6 +1196,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     uniform ${floatType} u_positionY;
 
     ${shaderDynamicUniforms}
+
+   
+    
     #define PI = 3.1415926535897932384626433832795;
     ${floatType} metaball(${vec2Type} p, ${vec2Type} center, ${floatType} radius) {
       ${floatType} r = radius * radius;
@@ -1198,14 +1206,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       return r / (d * d);
     }
 
-    
-    
-   
+    ${this.shaderExtensions}	
+    ${prestatements}
 
-    ${this.shaderExtensions}
-	
-  
+    out vec4 fragColor;
     void main() {
+     
       ${floatType} aspect = u_width/u_height;
       ${vec2Type} resolution = ${vec2Type}(u_width, u_height);
       ${vec2Type} uv = (gl_FragCoord.xy / resolution.xy);      
@@ -1226,16 +1232,16 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           if (totalInfluence < threshold2) {
             color = mix(backgroundColor, color, (totalInfluence - threshold) / (threshold2 - threshold));
           }
-          gl_FragColor = ${vec4Type}(color, 1.0);
+          fragColor = ${vec4Type}(color, 1.0);
       } else {
-          gl_FragColor = ${vec4Type}(backgroundColor, 1.0);
+        fragColor = ${vec4Type}(backgroundColor, 1.0);
       }          
     }
     `;
   };
 
-  vsSource = `
-      attribute ${vec4Type} aVertexPosition;
+  vsSource = `#version 300 es
+      in ${vec4Type} aVertexPosition;
       void main() {
           gl_Position = aVertexPosition;
       }
@@ -1293,9 +1299,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   };
 
   setupShader = (gl: WebGLRenderingContext) => {
-    const fsSource = this.createFragmentShader(`
+    const fsSource = this.createFragmentShader(
+      `
       ${this.shaderStatements}
-    `);
+    `,
+      this.shaderNodePreStatements
+    );
     console.log('fsSource', fsSource);
     this.initShaderProgram(gl, this.vsSource, fsSource);
     if (!this.shaderProgram) {
@@ -1401,7 +1410,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       thumbIdentifierWithinNode
     );
     if ((result as any).preoutput) {
-      this.shaderNodePreoutput += (result as any).preoutput;
+      if ((result as any).hasPreStatement) {
+        this.shaderNodePreStatements += (result as any).preoutput;
+      } else {
+        this.shaderNodePreoutput += (result as any).preoutput;
+      }
     }
     return result?.result ?? '';
   };
@@ -1432,6 +1445,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     return inputs;
   };
   shaderStatements = '';
+  shaderNodePreStatements = '';
 
   parseFLow = (
     elementMap: ElementNodeMap<GLNodeInfo>,
@@ -1610,6 +1624,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
       this.shaderStatements = '';
       this.shaderExtensions = '';
+      this.shaderNodePreStatements = '';
       const nodeVisited: string[] = [];
       const glslFunctions = getGLSLFunctions();
       if (this.canvasApp) {
@@ -1646,7 +1661,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.glcanvas.width = this.canvasSize.width;
     this.glcanvas.height = this.canvasSize.height;
     this.valueParameterUniforms = [];
-    const gl = this.glcanvas.getContext('webgl');
+    const gl = this.glcanvas.getContext('webgl2');
     this.gl?.viewport(0, 0, this.canvasSize.width, this.canvasSize.height);
 
     if (!gl) {

@@ -1,6 +1,6 @@
 export const createElement = (
   tag: string,
-  className: string,
+  className?: string,
   id?: string,
   text?: string
 ): HTMLElement => {
@@ -8,7 +8,9 @@ export const createElement = (
   if (id) {
     element.id = id;
   }
-  element.classList.add(className);
+  if (className) {
+    element.classList.add(className);
+  }
   if (text) {
     element.textContent = text;
   }

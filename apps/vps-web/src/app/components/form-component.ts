@@ -5,6 +5,7 @@
 import {
   BaseComponent,
   Component,
+  createElement,
   createElementFromTemplate,
   createTemplate,
 } from '@devhelpr/dom-components';
@@ -162,28 +163,33 @@ export class FormsComponent
   onSubmit = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    const form = event.target as HTMLFormElement;
-    const values = Object.fromEntries(new FormData(form));
-    console.log(values);
-    this.props.onSave({ ...values });
+    // the commented code below is tricky.. FormData doesn't contain the proper field names
+    //const form = event.target as HTMLFormElement;
+    //const values = Object.fromEntries(new FormData(form));
+    console.log('onSubmit form', this.values);
+    //this.props.onSave({ ...values });
+    this.props.onSave({ ...this.values });
     return false;
   };
 
   onChange = (item: FormField, value: unknown) => {
+    if (item.fieldType === FormFieldType.Array) {
+      // hacky until I improved typescript typing
+      item.value = value as unknown as string;
+      this.values[item.fieldName] = value as unknown as string;
+    } else if (item.fieldType === FormFieldType.File) {
+      item.value = value as unknown as string;
+      this.values[item.fieldName] = value as unknown as string;
+    } else {
+      item.value = value as unknown as string;
+      this.values[item.fieldName] = value as unknown as string;
+    }
     if (item.onChange) {
       if (item.fieldType === FormFieldType.Array) {
-        // hacky until I improved typescript typing
-        item.value = value as unknown as string;
-        this.values[item.fieldName] = value as unknown as string;
-
         item.onChange(value as unknown as unknown[], this);
       } else if (item.fieldType === FormFieldType.File) {
-        item.value = value as unknown as string;
-        this.values[item.fieldName] = value as unknown as string;
         item.onChange(value as unknown as FileFieldValue, this);
       } else {
-        item.value = value as unknown as string;
-        this.values[item.fieldName] = value as unknown as string;
         item.onChange(value as unknown as string, this);
       }
     }
@@ -198,6 +204,10 @@ export class FormsComponent
   };
 
   setValue = (fieldName: string, value: string) => {
+    if (!this.values) {
+      this.values = {};
+    }
+    this.values[fieldName] = value;
     const formElement = this.components.find(
       (component) =>
         (component as FormFieldComponent<any>).fieldName === fieldName
@@ -209,16 +219,22 @@ export class FormsComponent
 
   createFormElements() {
     this.components = [];
+    if (!this.values) {
+      this.values = {};
+    }
     let loop = 0;
     this.props.formElements.forEach((formControl, index) => {
       const settings = { ...this.props.settings, ...formControl.settings };
       if (formControl.fieldType === FormFieldType.Text) {
+        if (!this.values?.[formControl.fieldName]) {
+          this.values[formControl.fieldName] = formControl.value || '';
+        }
         const formControlComponent = new InputFieldChildComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            formControl.value || this.values?.[formControl.fieldName] || '',
+            this.values?.[formControl.fieldName] || formControl.value || '',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -233,7 +249,7 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            formControl.value || this.values?.[formControl.fieldName] || '',
+            this.values?.[formControl.fieldName] || formControl.value || '',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -243,12 +259,15 @@ export class FormsComponent
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Select) {
+        if (!this.values?.[formControl.fieldName]) {
+          this.values[formControl.fieldName] = formControl.value || '';
+        }
         const formControlComponent = new SelectFieldChildComponent(this, {
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            formControl.value || this.values?.[formControl.fieldName] || '',
+            this.values?.[formControl.fieldName] || formControl.value || '',
           isRow: formControl.isRow,
           settings,
           options: formControl.options,
@@ -259,13 +278,16 @@ export class FormsComponent
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Slider) {
+        if (!this.values?.[formControl.fieldName]) {
+          this.values[formControl.fieldName] = formControl.value || '0.0';
+        }
         const formControlComponent = new SliderFieldChildComponent(this, {
           formId: this.props.id,
           formsComponent: this,
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            formControl.value ?? this.values?.[formControl.fieldName] ?? '',
+            this.values?.[formControl.fieldName] || formControl.value || '0.0',
           isRow: formControl.isRow,
           min: formControl.min,
           max: formControl.max,
@@ -275,7 +297,7 @@ export class FormsComponent
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
           onGetSettings: () => {
-            return this.values[`${formControl.fieldName}SliderSettings`]
+            return this.values?.[`${formControl.fieldName}SliderSettings`]
               ? JSON.parse(
                   this.values[`${formControl.fieldName}SliderSettings`]
                 )
@@ -286,7 +308,10 @@ export class FormsComponent
                 };
           },
           onStoreSettings: (formValues) => {
-            console.log('onSave', formValues);
+            console.log('onStoreSettings', formControl.fieldName, formValues);
+            if (!this.values) {
+              this.values = {};
+            }
             this.values[`${formControl.fieldName}SliderSettings`] =
               JSON.stringify(formValues);
 
@@ -303,13 +328,18 @@ export class FormsComponent
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.Color) {
+        if (!this.values?.[formControl.fieldName]) {
+          this.values[formControl.fieldName] = formControl.value || '#000000';
+        }
         const formControlComponent = new ColorFieldChildComponent(this, {
           formsComponent: this,
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            formControl.value || this.values?.[formControl.fieldName] || '',
+            this.values?.[formControl.fieldName] ||
+            formControl.value ||
+            '#000000',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -318,13 +348,16 @@ export class FormsComponent
         });
         this.components.push(formControlComponent);
       } else if (formControl.fieldType === FormFieldType.TextArea) {
+        if (!this.values?.[formControl.fieldName]) {
+          this.values[formControl.fieldName] = formControl.value || '';
+        }
         const formControlComponent = new TextAreaFieldComponent(this, {
           formsComponent: this,
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            formControl.value || this.values?.[formControl.fieldName] || '',
+            this.values?.[formControl.fieldName] || formControl.value || '',
           settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
@@ -355,20 +388,41 @@ export class FormsComponent
           isLast: index === this.props.formElements.length - 1,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
+          createDataReadElement: (formElement, data) => {
+            if (formElement.fieldType === FormFieldType.Color) {
+              const element = createElement(
+                'span',
+                'form-field__read-color',
+                undefined,
+                undefined
+              );
+              element.style.backgroundColor =
+                data?.toString() ?? this.values[formElement.fieldName] ?? '';
+              return element;
+            }
+            return createElement(
+              'span',
+              undefined,
+              undefined,
+              data?.toString() ?? this.values[formElement.fieldName] ?? ''
+            );
+          },
           createFormDialog: async (
             formElements: FormField[],
             values?: unknown
           ) => {
             return new Promise((resolve, reject) => {
-              createFormDialog(formElements, undefined, values).then(
-                (result) => {
+              createFormDialog(formElements, undefined, values)
+                .then((result) => {
                   if (result !== false) {
                     resolve(result);
                   } else {
                     reject();
                   }
-                }
-              );
+                })
+                .catch((error) => {
+                  console.log('createFormDialog', error);
+                });
             });
           },
         });
