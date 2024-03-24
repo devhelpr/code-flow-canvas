@@ -40,7 +40,16 @@ export class Component<T> extends BaseComponent {
       )[]),
     ];
     const element = this.childContainerElement ?? this.element;
-    element?.replaceChildren?.(...this.renderList);
+    //console.log('renderElements', element, this.renderList);
+
+    // this doesn't work on iOS
+    //element?.replaceChildren?.(...this.renderList);
+    if (element) {
+      element.innerHTML = '';
+      this.renderList.forEach((renderElement) => {
+        element.appendChild(renderElement);
+      });
+    }
   }
 
   propsHandler = {
