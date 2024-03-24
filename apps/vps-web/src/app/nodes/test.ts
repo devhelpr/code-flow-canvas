@@ -88,11 +88,11 @@ export const getTestNode: NodeTaskFactory<NodeInfo> = (
               fieldType: FormFieldType.Text,
               value: '',
             },
-            {
-              fieldName: 'color',
-              fieldType: FormFieldType.Color,
-              value: '',
-            },
+            // {
+            //   fieldName: 'color',
+            //   fieldType: FormFieldType.Color,
+            //   value: '',
+            // },
           ],
           onChange: (values: unknown[]) => {
             if (!node.nodeInfo) {
@@ -112,25 +112,25 @@ export const getTestNode: NodeTaskFactory<NodeInfo> = (
             }
           },
         },
-        {
-          fieldType: FormFieldType.File,
-          fieldName: 'media',
-          value: '',
-          onChange: (value: FileFieldValue) => {
-            if (!node.nodeInfo) {
-              return;
-            }
+        // {
+        //   fieldType: FormFieldType.File,
+        //   fieldName: 'media',
+        //   value: '',
+        //   onChange: (value: FileFieldValue) => {
+        //     if (!node.nodeInfo) {
+        //       return;
+        //     }
 
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              ['media']: value,
-            };
+        //     node.nodeInfo.formValues = {
+        //       ...node.nodeInfo.formValues,
+        //       ['media']: value,
+        //     };
 
-            if (updated) {
-              updated();
-            }
-          },
-        },
+        //     if (updated) {
+        //       updated();
+        //     }
+        //   },
+        // },
       ];
     },
     (nodeInstance) => {
