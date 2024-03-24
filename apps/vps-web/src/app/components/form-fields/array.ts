@@ -159,7 +159,7 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         this.addButton.addEventListener('click', this.onAddButtonClick);
         console.log('array', this.array, this.values, this.label);
         this.values.forEach((value, _index) => {
-          this.createRenderRow(value);
+          console.log('array item', value, _index, this.createRenderRow(value));
         });
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
