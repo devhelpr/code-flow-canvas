@@ -44,6 +44,13 @@ export class RootComponent extends BaseComponent {
         childElements.push(component.element!);
       }
     });
-    this.childRoot?.replaceChildren?.(...childElements);
+    if (this.childRoot) {
+      // this doesn't add all children on iOS:
+      //this.childRoot?.replaceChildren?.(...childElements);
+      this.childRoot.innerHTML = '';
+      childElements.forEach((childElement) => {
+        this.childRoot?.appendChild(childElement);
+      });
+    }
   }
 }

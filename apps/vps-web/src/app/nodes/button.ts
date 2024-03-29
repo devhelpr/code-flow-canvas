@@ -191,6 +191,7 @@ export const getButton =
           node.nodeInfo.compute = compute;
           node.nodeInfo.initializeCompute = initializeCompute;
           node.nodeInfo.showFormOnlyInPopup = true;
+          node.nodeInfo.isUINode = true;
         }
         return node;
       },

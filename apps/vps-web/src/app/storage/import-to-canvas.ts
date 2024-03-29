@@ -18,7 +18,8 @@ export const importToCanvas = <T extends BaseNodeInfo>(
   canvasUpdated: () => void,
   containerNode?: IRectNodeComponent<T>,
   nestedLevel?: number,
-  getNodeTaskFactory?: (name: string) => any
+  getNodeTaskFactory?: (name: string) => any,
+  onImported?: () => void
 ) => {
   console.log('importToCanvas', nestedLevel);
   nodesList.forEach((node) => {
@@ -429,6 +430,10 @@ export const importToCanvas = <T extends BaseNodeInfo>(
       }
     }
   });
+
+  if (onImported) {
+    onImported();
+  }
 };
 
 export const importCompositions = <T>(

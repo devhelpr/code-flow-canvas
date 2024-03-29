@@ -29,6 +29,7 @@ export interface NodeInfo extends BaseNodeInfo {
   supportsDecorators?: boolean;
 
   initializeOnStartFlow?: boolean;
+  isUINode?: boolean;
 }
 
 //export type NodeInfo = any;

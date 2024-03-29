@@ -902,7 +902,12 @@ export const createCanvasApp = <T>(
 
         const width = maxX - minX + 120 / helperScale;
         const height = maxY - minY;
-        const scale = rootWidth / width;
+
+        let scale = rootWidth / width;
+
+        if (height * scale > rootHeight) {
+          scale = rootHeight / (height * scale);
+        }
 
         console.log(
           'centerCamera x',
