@@ -899,16 +899,20 @@ export const createCanvasApp = <T>(
 
         const helperWidth = maxX - minX;
         const helperScale = rootWidth / helperWidth;
-
+        const helperHeight = maxY - minY;
+        const helperScaleHeight = rootHeight / helperHeight;
         const width = maxX - minX + 120 / helperScale;
-        const height = maxY - minY;
+        const height = maxY - minY + 240 / helperScaleHeight;
 
         let scale = rootWidth / width;
-
+        const scaleX = scale;
         if (height * scale > rootHeight) {
           scale = rootHeight / (height * scale);
         }
-
+        scale = rootHeight / height;
+        if (scale > scaleX) {
+          scale = scaleX;
+        }
         console.log(
           'centerCamera x',
           minX,
@@ -916,7 +920,9 @@ export const createCanvasApp = <T>(
           'width',
           width,
           'rootWidth',
-          rootWidth
+          rootWidth,
+          scaleX,
+          scale
         );
 
         console.log(
@@ -932,7 +938,10 @@ export const createCanvasApp = <T>(
           rootWidth / 2 -
           (scale * width) / 2 -
           scale * (minX - 60 / helperScale);
-        yCamera = rootHeight / 2 - (scale * height) / 2 - scale * minY;
+        yCamera =
+          rootHeight / 2 -
+          (scale * height) / 2 -
+          scale * (minY - 120 / helperScaleHeight);
         scaleCamera = scale;
 
         console.log('centerCamera', xCamera, yCamera, scaleCamera);
