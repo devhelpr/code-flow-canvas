@@ -67,7 +67,7 @@ export const getSetAndAddColorVariableNode = (
         {
           fieldType: FormFieldType.Text,
           fieldName: 'variableName',
-          label: 'Variable',
+          label: 'Variable (add and set)',
           value: initialValue ?? '',
           onChange: (value: string) => {
             if (!node?.nodeInfo) {

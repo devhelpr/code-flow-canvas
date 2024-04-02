@@ -50,6 +50,7 @@ import { AppElement } from './app.element';
 import {
   getGLNodeFactoryNames,
   getGLNodeTaskFactory,
+  glNodeTaskRegistryLabels,
   registerComposition,
   registerCompositionNodes,
   removeAllCompositions,
@@ -61,7 +62,10 @@ import {
   setTargetCameraAnimation,
 } from './follow-path/animate-path';
 import { registerCommands } from './command-handlers/register-commands';
-import { setupGLTasksInDropdown } from './node-task-registry/setupGLTasksInDropdown';
+import {
+  createOptionGLGroups,
+  setupGLTasksInDropdown,
+} from './node-task-registry/setupGLTasksInDropdown';
 import { GLNodeInfo } from './types/gl-node-info';
 import { getGLSLFunctions } from './nodes-gl/custom-glsl-functions-registry';
 import {
@@ -728,9 +732,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       if (this.selectNodeType?.domElement) {
         (this.selectNodeType?.domElement as HTMLSelectElement).innerHTML = '';
 
+        createOptionGLGroups(
+          this.selectNodeType?.domElement as HTMLSelectElement
+        );
         const nodeTasks = getGLNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
           const factory = getGLNodeTaskFactory(nodeTask);
+          let categoryName = 'Default';
           if (factory) {
             const node = factory(canvasUpdated);
             if (
@@ -742,12 +750,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             if (notAllowedChildNodeTasks.indexOf(node.name) >= 0) {
               return;
             }
+
+            categoryName = node.category || 'uncategorized';
           }
+          const label = glNodeTaskRegistryLabels[nodeTask] || nodeTask;
           createOption(
             this.selectNodeType?.domElement as HTMLSelectElement,
             nodeTask,
-            nodeTask,
-            ''
+            label,
+            categoryName
           );
         });
       }
@@ -1226,7 +1237,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       ${statements}
 
       ${floatType} threshold = 1.5;
-      ${floatType} threshold2 = 3.5;
+      ${floatType} threshold2 = 13.5;
       if (totalInfluence > threshold) {
         ${vec3Type} color = (totalcolinf) / totalInfluence;
           if (totalInfluence < threshold2) {
@@ -1454,6 +1465,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   ) => {
     let sdfIndex = 1;
     const visitedNodes: string[] = [];
+
+    elementMap.forEach((node: IElementNode<GLNodeInfo>) => {
+      if (node && node.nodeInfo && node.nodeInfo.initializeOnCompile) {
+        node.nodeInfo?.initializeCompute?.();
+      }
+    });
 
     elementMap.forEach((element) => {
       const node = element as unknown as INodeComponent<GLNodeInfo>;

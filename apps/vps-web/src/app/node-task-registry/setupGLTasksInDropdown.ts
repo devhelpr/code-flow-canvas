@@ -6,6 +6,30 @@ import {
 } from './gl-node-task-registry';
 import { createOption } from './createOption';
 
+const createOptgroup = (
+  categoryName: string,
+  selectNodeTypeHTMLElement: HTMLSelectElement
+) =>
+  createElement(
+    'optgroup',
+    {
+      label: categoryName,
+      'data-category': categoryName,
+    },
+    selectNodeTypeHTMLElement
+  );
+
+export const createOptionGLGroups = (
+  selectNodeTypeHTMLElement: HTMLSelectElement
+) => {
+  createOptgroup('input', selectNodeTypeHTMLElement);
+  createOptgroup('output', selectNodeTypeHTMLElement);
+  createOptgroup('UI', selectNodeTypeHTMLElement);
+  createOptgroup('Math', selectNodeTypeHTMLElement);
+  createOptgroup('Compositions', selectNodeTypeHTMLElement);
+  createOptgroup('uncategorized', selectNodeTypeHTMLElement);
+};
+
 export const setupGLTasksInDropdown = (
   selectNodeTypeHTMLElement: HTMLSelectElement,
   isInComposition?: boolean,
@@ -16,21 +40,7 @@ export const setupGLTasksInDropdown = (
     let isPreviouslySelectedNodeTypeInDropdown = false;
     selectNodeTypeHTMLElement.innerHTML = '';
 
-    const createOptgroup = (categoryName: string) =>
-      createElement(
-        'optgroup',
-        {
-          label: categoryName,
-          'data-category': categoryName,
-        },
-        selectNodeTypeHTMLElement
-      );
-    createOptgroup('input');
-    createOptgroup('output');
-    createOptgroup('UI');
-    createOptgroup('Math');
-    createOptgroup('Compositions');
-    createOptgroup('uncategorized');
+    createOptionGLGroups(selectNodeTypeHTMLElement);
 
     const nodeTasks = getGLNodeFactoryNames();
     nodeTasks.forEach((nodeTask) => {

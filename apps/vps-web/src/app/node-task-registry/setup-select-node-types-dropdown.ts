@@ -6,6 +6,36 @@ import {
 } from './canvas-node-task-registry';
 import { createOption } from './createOption';
 
+const createOptgroup = (
+  categoryName: string,
+  selectNodeTypeHTMLElement: HTMLSelectElement
+) =>
+  createElement(
+    'optgroup',
+    {
+      label: categoryName,
+      'data-category': categoryName,
+    },
+    selectNodeTypeHTMLElement
+  );
+
+export const createOptionGroups = (
+  selectNodeTypeHTMLElement: HTMLSelectElement
+) => {
+  createOptgroup('expression', selectNodeTypeHTMLElement);
+  createOptgroup('flow-control', selectNodeTypeHTMLElement);
+  createOptgroup('iterators', selectNodeTypeHTMLElement);
+  createOptgroup('variables', selectNodeTypeHTMLElement);
+  createOptgroup('connectivity', selectNodeTypeHTMLElement);
+  createOptgroup('functions', selectNodeTypeHTMLElement);
+  createOptgroup('string', selectNodeTypeHTMLElement);
+  createOptgroup('variables-array', selectNodeTypeHTMLElement);
+  createOptgroup('variables-dictionary', selectNodeTypeHTMLElement);
+  createOptgroup('variables-grid', selectNodeTypeHTMLElement);
+  createOptgroup('variables-set', selectNodeTypeHTMLElement);
+  createOptgroup('Compositions', selectNodeTypeHTMLElement);
+};
+
 export const setupTasksInDropdown = (
   selectNodeTypeHTMLElement: HTMLSelectElement,
   isInComposition?: boolean,
@@ -15,29 +45,7 @@ export const setupTasksInDropdown = (
     const nodeType = selectNodeTypeHTMLElement.value;
     let isPreviouslySelectedNodeTypeInDropdown = false;
     selectNodeTypeHTMLElement.innerHTML = '';
-
-    const createOptgroup = (categoryName: string) =>
-      createElement(
-        'optgroup',
-        {
-          label: categoryName,
-          'data-category': categoryName,
-        },
-        selectNodeTypeHTMLElement
-      );
-    createOptgroup('expression');
-    createOptgroup('flow-control');
-    createOptgroup('iterators');
-    createOptgroup('variables');
-    createOptgroup('connectivity');
-    createOptgroup('functions');
-    createOptgroup('string');
-    createOptgroup('variables-array');
-    createOptgroup('variables-dictionary');
-    createOptgroup('variables-grid');
-    createOptgroup('variables-set');
-    createOptgroup('Compositions');
-
+    createOptionGroups(selectNodeTypeHTMLElement);
     const nodeTasks = getNodeFactoryNames();
     nodeTasks.forEach((nodeTask) => {
       const factory = getNodeTaskFactory(nodeTask);

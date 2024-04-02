@@ -16,4 +16,5 @@ export interface GLNodeInfo extends BaseNodeInfo {
   canvasAppInstance?: CanvasAppInstance<GLNodeInfo>;
 
   thumbs?: IThumb[];
+  initializeOnCompile?: boolean;
 }

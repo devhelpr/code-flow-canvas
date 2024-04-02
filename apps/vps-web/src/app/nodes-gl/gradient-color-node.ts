@@ -47,8 +47,9 @@ export const getGradientColorNode: NodeTaskFactory<GLNodeInfo> = (
   let rect: Rect<GLNodeInfo> | undefined;
   const localGradientId = gradientId;
   gradientId++;
-
+  let isDefined = false;
   const initializeCompute = () => {
+    isDefined = false;
     return;
   };
   const compute = (_input: string, _loopIndex?: number, payload?: any) => {
@@ -70,28 +71,30 @@ export const getGradientColorNode: NodeTaskFactory<GLNodeInfo> = (
     let result = 'vec3(0.0)';
     if (Array.isArray(gradients) && gradients.length > 0) {
       result = '';
-      preoutput = `const Gradient gradient${localGradientId}[${gradients.length}] = Gradient[](`;
       const value = payload['value'] ?? '0.'; // 0..1
-      // localGradientId
-      gradients.forEach((gradient: any, index: number) => {
-        const color = hexToRgb(gradient.color, {
-          r: 0,
-          g: 0,
-          b: 0,
+      if (!isDefined) {
+        preoutput = `const Gradient gradient${localGradientId}[${gradients.length}] = Gradient[](`;
+
+        // localGradientId
+        gradients.forEach((gradient: any, index: number) => {
+          const color = hexToRgb(gradient.color, {
+            r: 0,
+            g: 0,
+            b: 0,
+          });
+          let percentage = gradient.percentage;
+          if (percentage.indexOf('.') < 0) {
+            percentage = `${percentage}.0`;
+          }
+          preoutput += `Gradient(${percentage},vec3(${color.r / 256},${
+            color.g / 256
+          },${color.b / 256}))`;
+          if (index < gradients.length - 1) {
+            preoutput += ',';
+          }
         });
-        let percentage = gradient.percentage;
-        if (percentage.indexOf('.') < 0) {
-          percentage = `${percentage}.0`;
-        }
-        preoutput += `Gradient(${percentage},vec3(${color.r / 256},${
-          color.g / 256
-        },${color.b / 256}))`;
-        if (index < gradients.length - 1) {
-          preoutput += ',';
-        }
-      });
-      preoutput += `);`;
-      preoutput += `vec3 getGradientColor${localGradientId}(float percentage) {
+        preoutput += `);`;
+        preoutput += `vec3 getGradientColor${localGradientId}(float percentage) {
         vec3 startColor = ${startColorVec3};
 
         float totalPerc = 0.;
@@ -125,6 +128,8 @@ export const getGradientColorNode: NodeTaskFactory<GLNodeInfo> = (
         return vec3(currentColor);
       }
       `;
+        isDefined = true;
+      }
       result = `getGradientColor${localGradientId}(${value} * 100.)`;
     }
 
@@ -229,6 +234,9 @@ export const getGradientColorNode: NodeTaskFactory<GLNodeInfo> = (
     (nodeInstance) => {
       rect = nodeInstance.rect;
       node = nodeInstance.node as IRectNodeComponent<GLNodeInfo>;
+      if (node.nodeInfo) {
+        node.nodeInfo.initializeOnCompile = true;
+      }
     },
     {
       category: 'UI',

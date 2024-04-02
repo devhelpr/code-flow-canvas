@@ -67,6 +67,7 @@ import {
   menubarContainerClasses,
 } from './consts/classes';
 import {
+  canvasNodeTaskRegistryLabels,
   getNodeFactoryNames,
   getNodeTaskFactory,
   registerComposition,
@@ -82,7 +83,10 @@ import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
 import { registerCommands } from './command-handlers/register-commands';
-import { setupTasksInDropdown } from './node-task-registry/setup-select-node-types-dropdown';
+import {
+  createOptionGroups,
+  setupTasksInDropdown,
+} from './node-task-registry/setup-select-node-types-dropdown';
 import { createOption } from './node-task-registry/createOption';
 import { RunCounter } from './follow-path/run-counter';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
@@ -739,21 +743,27 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     ) => {
       if (this.selectNodeType?.domElement) {
         (this.selectNodeType?.domElement as HTMLSelectElement).innerHTML = '';
+        createOptionGroups(
+          this.selectNodeType?.domElement as HTMLSelectElement
+        );
 
         const nodeTasks = getNodeFactoryNames();
         nodeTasks.forEach((nodeTask) => {
           const factory = getNodeTaskFactory(nodeTask);
+          let categoryName = 'Default';
           if (factory) {
             const node = factory(canvasUpdated);
             if (allowedNodeTasks.indexOf(node.name) < 0) {
               return;
             }
+            categoryName = node.category || 'uncategorized';
           }
+          const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
           createOption(
             this.selectNodeType?.domElement as HTMLSelectElement,
             nodeTask,
-            nodeTask,
-            'Contained nodes'
+            label,
+            categoryName
           );
         });
       }

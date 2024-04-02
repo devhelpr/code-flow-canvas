@@ -104,7 +104,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
-            thumbConstraint: 'color',
+            thumbConstraint: 'vec3',
             name: 'color',
             prefixLabel: 'color',
           },
