@@ -130,7 +130,9 @@ export const getFunction =
         y: number,
         id?: string,
         initalValues?: InitialValues,
-        containerNode?: IRectNodeComponent<NodeInfo>
+        containerNode?: IRectNodeComponent<NodeInfo>,
+        width?: number,
+        height?: number
       ) => {
         canvasAppInstance = canvasApp;
         const initialValue = initalValues?.['node'] || '';
@@ -194,7 +196,9 @@ export const getFunction =
           componentWrapper.domElement
         );
 
-        divElement.domElement.textContent = initialValue || '';
+        divElement.domElement.textContent = `${initialValue || ''} ${
+          initialValue ? '(' : ''
+        }function${initialValue ? ')' : ''}`;
         parametersContainer = createElement(
           'div',
           {
@@ -206,8 +210,8 @@ export const getFunction =
         const rect = canvasApp.createRect(
           x,
           y,
-          150,
-          100,
+          width || 150,
+          height || 100,
           undefined,
 
           [
@@ -223,7 +227,7 @@ export const getFunction =
           {
             classNames: ` py-4 px-2 rounded`,
           },
-          false,
+          true,
           undefined,
           undefined,
           id,

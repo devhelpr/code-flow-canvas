@@ -244,7 +244,7 @@ rect-node:has(.hover) > .shape-circle,
 	z-index: 6;
 }
 .rect-thumb-node > div:first-child {
-	box-shadow: rgba(0,0,0,0.75) 4px 4px 10px 0px
+	box-shadow: rgba(0,0,0,0.5) 2px 2px 2px 0px
 }
 
 .rect-node {
@@ -256,7 +256,7 @@ rect-node:has(.hover) > .shape-circle,
 
 }
 .rect-node > div:first-child {
-	box-shadow: rgba(0,0,0,0.75) 4px 4px 10px 0px
+	box-shadow: rgba(0,0,0,0.5) 2px 2px 2px 0px
 }
 
 input {
