@@ -65,6 +65,7 @@ import {
   navBarPrimaryIconButton,
   navBarOutlineButton,
   menubarContainerClasses,
+  navBarPrimaryButton,
 } from './consts/classes';
 import {
   canvasNodeTaskRegistryLabels,
@@ -325,7 +326,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           this.compositionEditButton = createElement(
             'button',
             {
-              class: `${navBarButton} hidden`,
+              class: `${navBarPrimaryButton} hidden`,
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();

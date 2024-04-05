@@ -40,6 +40,7 @@ import {
   menubarContainerClasses,
   navBarButton,
   navBarOutlineButton,
+  navBarPrimaryButton,
 } from './consts/classes';
 import {
   serializeCompositions,
@@ -485,7 +486,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           this.compositionEditButton = createElement(
             'button',
             {
-              class: `${navBarButton} hidden`,
+              class: `${navBarPrimaryButton} hidden`,
               click: (event) => {
                 event.preventDefault();
                 event.stopPropagation();
