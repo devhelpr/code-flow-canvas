@@ -233,7 +233,7 @@ export class Rect<T> {
         thumbNode.nodeComponent.maxConnections = thumb.maxConnections;
         thumbNode.nodeComponent.thumbFormId = thumb.formId;
         thumbNode.nodeComponent.thumbFormFieldName = thumb.formFieldName;
-        thumbNode.nodeComponent.onlyAllowTaskTypes = thumb.onlyAllowTaskTypes;
+        thumbNode.nodeComponent.allowTaskTypes = thumb.allowTaskTypes;
 
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
@@ -710,13 +710,13 @@ export class Rect<T> {
             draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
           ).startNode?.nodeInfo as any
         )?.type ?? '';
-      if (nodeTaskType && thumbNodeDropTarget.onlyAllowTaskTypes) {
+      if (nodeTaskType && thumbNodeDropTarget.allowTaskTypes) {
         console.log(
           'nodeTaskType',
           nodeTaskType,
-          thumbNodeDropTarget.onlyAllowTaskTypes
+          thumbNodeDropTarget.allowTaskTypes
         );
-        if (thumbNodeDropTarget.onlyAllowTaskTypes.indexOf(nodeTaskType) < 0) {
+        if (thumbNodeDropTarget.allowTaskTypes.indexOf(nodeTaskType) < 0) {
           console.log('onCanReceiveDroppedComponent FALSE2');
           return false;
         }
@@ -766,13 +766,13 @@ export class Rect<T> {
             draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
           ).endNode?.nodeInfo as any
         )?.type ?? '';
-      if (nodeTaskType && thumbNodeDropTarget.onlyAllowTaskTypes) {
+      if (nodeTaskType && thumbNodeDropTarget.allowTaskTypes) {
         console.log(
           'nodeTaskType',
           nodeTaskType,
-          thumbNodeDropTarget.onlyAllowTaskTypes
+          thumbNodeDropTarget.allowTaskTypes
         );
-        if (thumbNodeDropTarget.onlyAllowTaskTypes.indexOf(nodeTaskType) < 0) {
+        if (thumbNodeDropTarget.allowTaskTypes.indexOf(nodeTaskType) < 0) {
           console.log('onCanReceiveDroppedComponent FALSE2');
           return false;
         }

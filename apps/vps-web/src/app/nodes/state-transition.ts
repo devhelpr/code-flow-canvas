@@ -97,7 +97,7 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             label: '#',
             thumbConstraint: 'transition',
-            onlyAllowTaskTypes: ['state'],
+            allowTaskTypes: ['state'],
             name: 'state',
             hidden: true,
             maxConnections: -1,
