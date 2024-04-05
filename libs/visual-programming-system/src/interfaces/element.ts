@@ -123,6 +123,7 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
   thumbConnectionType?: ThumbConnectionType;
 
   thumbConstraint?: string | string[];
+  onlyAllowTaskTypes?: string[];
   thumbLabel?: string;
   isDataPort?: boolean;
   maxConnections?: number;
@@ -179,6 +180,7 @@ export type IThumb = {
   hidden?: boolean;
   label?: string;
   thumbConstraint?: string | string[];
+  onlyAllowTaskTypes?: string[];
   thumbShape?: 'circle' | 'diamond';
   isDataPort?: boolean;
   maxConnections?: number;

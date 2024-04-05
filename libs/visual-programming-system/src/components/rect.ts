@@ -233,6 +233,7 @@ export class Rect<T> {
         thumbNode.nodeComponent.maxConnections = thumb.maxConnections;
         thumbNode.nodeComponent.thumbFormId = thumb.formId;
         thumbNode.nodeComponent.thumbFormFieldName = thumb.formFieldName;
+        thumbNode.nodeComponent.onlyAllowTaskTypes = thumb.onlyAllowTaskTypes;
 
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
@@ -656,7 +657,9 @@ export class Rect<T> {
     if (
       draggedConnectionController &&
       draggedConnectionController.parent &&
-      thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.end &&
+      (thumbNodeDropTarget.thumbConnectionType ===
+        ThumbConnectionType.startOrEnd ||
+        thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.end) &&
       draggedConnectionController.connectionControllerType ===
         ConnectionControllerType.end
     ) {
@@ -701,11 +704,31 @@ export class Rect<T> {
           return false;
         }
       }
+      const nodeTaskType =
+        (
+          (
+            draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+          ).startNode?.nodeInfo as any
+        )?.type ?? '';
+      if (nodeTaskType && thumbNodeDropTarget.onlyAllowTaskTypes) {
+        console.log(
+          'nodeTaskType',
+          nodeTaskType,
+          thumbNodeDropTarget.onlyAllowTaskTypes
+        );
+        if (thumbNodeDropTarget.onlyAllowTaskTypes.indexOf(nodeTaskType) < 0) {
+          console.log('onCanReceiveDroppedComponent FALSE2');
+          return false;
+        }
+      }
       return true;
     } else if (
       draggedConnectionController &&
       draggedConnectionController.parent &&
-      thumbNodeDropTarget.thumbConnectionType === ThumbConnectionType.start &&
+      (thumbNodeDropTarget.thumbConnectionType ===
+        ThumbConnectionType.startOrEnd ||
+        thumbNodeDropTarget.thumbConnectionType ===
+          ThumbConnectionType.start) &&
       draggedConnectionController.connectionControllerType ===
         ConnectionControllerType.begin
     ) {
@@ -733,6 +756,24 @@ export class Rect<T> {
           ).endNodeThumb?.thumbConstraint
         ) {
           console.log('onCanReceiveDroppedComponent FALSE3');
+          return false;
+        }
+      }
+
+      const nodeTaskType =
+        (
+          (
+            draggedConnectionController.parent as unknown as IConnectionNodeComponent<T>
+          ).endNode?.nodeInfo as any
+        )?.type ?? '';
+      if (nodeTaskType && thumbNodeDropTarget.onlyAllowTaskTypes) {
+        console.log(
+          'nodeTaskType',
+          nodeTaskType,
+          thumbNodeDropTarget.onlyAllowTaskTypes
+        );
+        if (thumbNodeDropTarget.onlyAllowTaskTypes.indexOf(nodeTaskType) < 0) {
+          console.log('onCanReceiveDroppedComponent FALSE2');
           return false;
         }
       }

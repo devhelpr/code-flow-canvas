@@ -109,9 +109,11 @@ export class RectThumb<T> extends Rect<T> {
     this.nodeComponent.onReceiveDraggedConnection =
       this.onReceiveDraggedConnection(this.nodeComponent);
 
-    this.nodeComponent.onCanReceiveDroppedComponent = () => {
-      return true;
-    };
+    // this.nodeComponent.onCanReceiveDroppedComponent = () => {
+    //   return true;
+    // };
+    this.nodeComponent.onCanReceiveDroppedComponent =
+      this.onCanReceiveDroppedComponent;
   }
 
   protected override onPointerDown = (event: PointerEvent) => {
@@ -376,6 +378,10 @@ export class RectThumb<T> extends Rect<T> {
       this.nodeComponent.onCanReceiveDroppedComponent //&&
       //(event as PointerEvent).shiftKey
     ) {
+      console.log(
+        'RECT-THUMB onCanReceiveDroppedComponent',
+        this.nodeComponent.id
+      );
       const state = this.interactionStateMachine.getCurrentInteractionState();
       if (
         state &&
@@ -383,13 +389,21 @@ export class RectThumb<T> extends Rect<T> {
         state.element.nodeType === NodeType.ConnectionController
       ) {
         canReceiveDrop = true;
-        console.log('RECT-THUMB pointer-over state', state);
-
-        // this.nodeComponent.onCanReceiveDroppedComponent(
-        //   this.nodeComponent,
-        //   state.element as unknown as IConnectionNodeComponent<T>,
-        //   this.nodeComponent
-        // );
+        if (
+          this.nodeComponent.thumbConnectors &&
+          this.nodeComponent.thumbConnectors.length > 0 &&
+          (state.element as unknown as any).parent.startNodeThumb
+        ) {
+          const thumb = (state.element as unknown as any).parent.startNodeThumb;
+          if (thumb) {
+            canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
+              this.nodeComponent.thumbConnectors[0],
+              state.element as unknown as IConnectionNodeComponent<T>,
+              thumb
+            );
+            console.log('RECT-THUMB canReceiveDrop', canReceiveDrop);
+          }
+        }
 
         if (!canReceiveDrop) {
           // (
