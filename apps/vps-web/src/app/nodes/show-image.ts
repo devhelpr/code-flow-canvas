@@ -21,7 +21,7 @@ const selectImage = () => {
     };
 
     input.type = 'file';
-    input.setAttribute('accept', '.png,.jpg,.jpeg');
+    input.setAttribute('accept', '.png,.jpg,.jpeg,.webp');
     input.onchange = () => {
       const files = Array.from(input.files);
       if (files && files.length > 0) {
@@ -47,6 +47,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
   let hasInitialValue = true;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     hasInitialValue = true;
@@ -60,12 +61,29 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-      if (typeof input === 'object') {
+      if (typeof input === 'object' && (input as any).image) {
         (
           htmlNode.domElement as HTMLImageElement
         ).src = `data:image/png;base64,${(input as any).image}`;
+      } else {
+        if (canvasAppInstance && typeof input === 'string') {
+          const mediaLibrary = canvasAppInstance.getMediaLibrary();
+          if (mediaLibrary) {
+            const file = mediaLibrary.getFile(input);
+            if (file) {
+              try {
+                (
+                  htmlNode.domElement as HTMLImageElement
+                ).src = `data:image/png;base64,${file.data}`;
+              } catch (e) {
+                console.error('Error when assigning file/media to image', e);
+              }
+            }
+          }
+        }
       }
     }
+
     return {
       result: input,
       followPath: undefined,
@@ -85,6 +103,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       width?: number,
       height?: number
     ) => {
+      canvasAppInstance = canvasApp;
       const formElements = [
         {
           fieldType: FormFieldType.Button,

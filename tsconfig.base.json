@@ -17,6 +17,7 @@
     "paths": {
       "@devhelpr/dom-components": ["libs/dom-components/src/index.ts"],
       "@devhelpr/jsx-runtime": ["libs/jsx-runtime/src/index.ts"],
+      "@devhelpr/media-library": ["media-library/src/index.ts"],
       "@devhelpr/visual-programming-system": [
         "libs/visual-programming-system/src/index.ts"
       ]

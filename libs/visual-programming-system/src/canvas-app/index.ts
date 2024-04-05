@@ -40,6 +40,7 @@ import { Theme } from '../interfaces/theme';
 import { ThumbNodeConnector } from '../components/thumb-node-connector';
 import { thumbPosition } from '../components/utils/calculate-connector-thumbs';
 import { updateThumbPrefixLabel } from '../utils/thumbs';
+import { MediaLibrary } from '@devhelpr/media-library';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -105,6 +106,7 @@ export const createCanvasApp = <T>(
 
   let onDragCanvasEvent: ((x: number, y: number) => void) | undefined =
     undefined;
+  let mediaLibraryInstance: MediaLibrary | undefined = undefined;
 
   const canvas = createNodeElement<T>(
     'div',
@@ -1716,6 +1718,13 @@ export const createCanvasApp = <T>(
       if (commandHandlers[name]) {
         commandHandlers[name].execute(commandName, data);
       }
+    },
+
+    setMediaLibrary: (mediaLibrary: MediaLibrary) => {
+      mediaLibraryInstance = mediaLibrary;
+    },
+    getMediaLibrary: () => {
+      return mediaLibraryInstance;
     },
   };
 };

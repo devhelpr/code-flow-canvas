@@ -24,6 +24,7 @@ import { NodeTransformer } from '../components/node-transformer';
 import { ContextRect } from '../context-components/context-rect';
 import { ContextConnection } from '../context-components/context-connection';
 import { standardTheme } from '../themes/standard';
+import { MediaLibrary } from '@devhelpr/media-library';
 
 export const createContextInstanceApp = <T>(
   _canvasId?: string
@@ -480,6 +481,13 @@ export const createContextInstanceApp = <T>(
       if (commandHandlers[name]) {
         commandHandlers[name].execute(commandName, data);
       }
+    },
+
+    setMediaLibrary: (_mediaLibrary: MediaLibrary) => {
+      //
+    },
+    getMediaLibrary: () => {
+      return undefined;
     },
   };
 };

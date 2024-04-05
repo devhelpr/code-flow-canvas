@@ -141,6 +141,7 @@ import { getCreateCompositionNode } from '../nodes/composition';
 import { getThumbInputNode } from '../nodes/thumb-input';
 import { getThumbOutputNode } from '../nodes/thumb-output';
 import { getTestNode } from '../nodes/test';
+import { getMediaLibraryNode } from '../nodes/media-library';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -290,6 +291,11 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
 
   registerNodeFactory('test-node', getTestNode, 'Test Node');
+  registerNodeFactory(
+    'media-library-node',
+    getMediaLibraryNode,
+    'Media Library'
+  );
 };
 
 export const getNodeTaskFactory = (name: string) => {

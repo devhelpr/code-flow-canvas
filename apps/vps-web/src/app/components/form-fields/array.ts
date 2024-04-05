@@ -6,7 +6,7 @@ import {
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 import { BaseFormFieldProps, FormFieldComponent } from './field';
-import { FormField } from '../FormField';
+import { FormField, FormFieldType } from '../FormField';
 import { primaryButton } from '../../consts/classes';
 
 export interface ArrayFieldProps extends BaseFormFieldProps {
@@ -81,7 +81,10 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         );
         if (cell) {
           cell.remove();
-          const element = this.props.createDataReadElement(formElement, data);
+          const element = this.props.createDataReadElement(
+            formElement,
+            formElement.fieldType !== FormFieldType.File ? data : 'File'
+          );
           cell.appendChild(element);
           //cell.textContent = data ?? '';
           arrayItem.appendChild(cell);

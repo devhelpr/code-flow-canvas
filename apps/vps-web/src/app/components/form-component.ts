@@ -391,7 +391,7 @@ export class FormsComponent
           createDataReadElement: (formElement, data) => {
             if (formElement.fieldType === FormFieldType.Color) {
               const element = createElement(
-                'span',
+                'div',
                 'form-field__read-color',
                 undefined,
                 undefined
@@ -401,8 +401,8 @@ export class FormsComponent
               return element;
             }
             return createElement(
-              'span',
-              undefined,
+              'div',
+              'whitespace-nowrap',
               undefined,
               data?.toString() ?? this.values[formElement.fieldName] ?? ''
             );

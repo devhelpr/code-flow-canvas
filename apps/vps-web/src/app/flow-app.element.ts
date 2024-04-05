@@ -91,6 +91,7 @@ import {
 import { createOption } from './node-task-registry/createOption';
 import { RunCounter } from './follow-path/run-counter';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
+import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -115,7 +116,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   runButton: IDOMElement | undefined = undefined;
   speedMeterElement: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
-
+  mediaLibary: MediaLibrary | undefined = undefined;
   canvasUpdated: (() => void) | undefined = undefined;
 
   constructor(appRootSelector: string) {
@@ -127,6 +128,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       return;
     }
     this.canvasApp.setOnAddcomposition(this.onAddFlowComposition);
+    this.mediaLibary = createMediaLibrary();
+    this.canvasApp.setMediaLibrary(this.mediaLibary);
 
     const animatePath = (
       node: IRectNodeComponent<NodeInfo>,
