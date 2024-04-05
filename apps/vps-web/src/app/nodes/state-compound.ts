@@ -173,7 +173,11 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
           false,
           true,
           '',
-          canvasApp.interactionStateMachine
+          canvasApp.interactionStateMachine,
+          undefined,
+          undefined,
+          undefined,
+          true
         );
 
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;

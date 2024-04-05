@@ -89,7 +89,7 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       const wrapper = createNodeElement(
         'div',
         {
-          class: `bg-slate-400 rounded opacity-90 relative z-[1151]`,
+          class: `bg-slate-400 rounded opacity-90 relative `, //z-[1151]`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -98,7 +98,7 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       createNodeElement(
         'div',
         {
-          class: `absolute top-0 left-0 w-full h-full flex flex-row justify-center text-slate-500 p-8 opacity-50`,
+          class: `absolute bottom-0 right-0 w-auto h-auto flex flex-row justify-center text-white p-8 opacity-100`,
         },
         wrapper.domElement,
         getLoop()
@@ -154,7 +154,11 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           false,
           true,
           '',
-          canvasApp.interactionStateMachine
+          canvasApp.interactionStateMachine,
+          undefined,
+          undefined,
+          undefined,
+          true
         );
 
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;

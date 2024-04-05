@@ -158,7 +158,11 @@ export const getCanvasNode =
             false,
             true,
             '',
-            canvasApp.interactionStateMachine
+            canvasApp.interactionStateMachine,
+            undefined,
+            undefined,
+            undefined,
+            true
           );
 
           rect.nodeComponent.canvasAppInstance = canvasAppInstance;

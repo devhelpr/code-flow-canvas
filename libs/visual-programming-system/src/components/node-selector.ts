@@ -46,6 +46,7 @@ export class NodeSelector<T> {
   resizeMode = 'right-bottom';
 
   canCreateComposition = false;
+  isInContainer = false;
   selectedNodes: INodeComponent<T>[] = [];
   elements: ElementNodeMap<T> = new Map();
   orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
@@ -67,13 +68,15 @@ export class NodeSelector<T> {
     elements: ElementNodeMap<T>,
     canCreateComposition: boolean,
     compositions: Compositions<T>,
-    onEditCompositionName: () => Promise<string | false>
+    onEditCompositionName: () => Promise<string | false>,
+    isInContainer = false
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.elements = elements;
     this.compositions = compositions;
     this.canCreateComposition = canCreateComposition;
     this.onEditCompositionName = onEditCompositionName;
+    this.isInContainer = isInContainer;
 
     this.nodeSelectorElement = createElement(
       'div',
@@ -184,6 +187,10 @@ export class NodeSelector<T> {
   resizeSameWidthAndHeight = false;
 
   onPointerDown = (event: PointerEvent) => {
+    if (this.isInContainer) {
+      // for now... no selections in containers (positioning is incorrect)
+      return;
+    }
     if (this.interactionStateMachine && this.nodeSelectorElement) {
       this.visibilityResizeControls(true);
       this.resizeSameWidthAndHeight = event.shiftKey;

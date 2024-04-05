@@ -237,12 +237,26 @@ rect-node:has(.hover) > .shape-circle,
 }
 
 .rect-thumb-node {
-  cursor: pointer;
+	cursor: pointer;
 	z-index: 5;
 }
+.rect-thumb-node.selected {
+	z-index: 6;
+}
+.rect-thumb-node > div:first-child {
+	box-shadow: rgba(0,0,0,0.75) 4px 4px 10px 0px
+}
+
 .rect-node {
 	cursor: grab;
 	z-index: 3;
+}
+.rect-node.selected {
+	z-index: 4;
+
+}
+.rect-node > div:first-child {
+	box-shadow: rgba(0,0,0,0.75) 4px 4px 10px 0px
 }
 
 input {

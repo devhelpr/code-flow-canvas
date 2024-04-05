@@ -195,7 +195,7 @@ export class Connection<T> {
       'path',
       {
         class:
-          'connection-background-path pointer-events-stroke cursor-pointer',
+          'connection-background-path pointer-events-stroke cursor-pointer opacity-75',
         d: path,
         stroke: containerNode
           ? '#94a3b8'

@@ -365,7 +365,11 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
           false,
           true,
           '',
-          canvasApp.interactionStateMachine
+          canvasApp.interactionStateMachine,
+          undefined,
+          undefined,
+          undefined,
+          true
         );
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;
 
@@ -479,6 +483,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.canvasAppInstance = canvasAppInstance;
+        // node.nodeInfo.noCompositionAllowed = true;
       }
       return node;
     },
