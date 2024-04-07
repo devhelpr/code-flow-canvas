@@ -10,14 +10,19 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const getSlider =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (
+    animatePath: AnimatePathFunction<NodeInfo>,
+    createRunCounterContext: () => RunCounter
+  ) =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
     let triggerButton = false;
+    let runCounter: RunCounter | undefined = undefined;
     const initializeCompute = () => {
       currentValue = 0;
       return;
@@ -79,13 +84,20 @@ export const getSlider =
                 return;
               }
               triggerButton = true;
+              runCounter = createRunCounterContext();
               currentValue = parseInt((event.target as HTMLInputElement).value);
               runNode(
                 node as unknown as IRectNodeComponent<NodeInfo>,
                 canvasAppInstance,
                 animatePath,
                 undefined,
-                currentValue.toString()
+                currentValue.toString(),
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                runCounter
               );
               return false;
             },

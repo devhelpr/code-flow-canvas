@@ -142,6 +142,7 @@ import { getThumbInputNode } from '../nodes/thumb-input';
 import { getThumbOutputNode } from '../nodes/thumb-output';
 import { getTestNode } from '../nodes/test';
 import { getMediaLibraryNode } from '../nodes/media-library';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -161,7 +162,8 @@ export const getNodeFactoryNames = () => {
 
 export const setupCanvasNodeTaskRegistry = (
   animatePath: AnimatePathFunction<NodeInfo>,
-  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
+  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>,
+  createRunCounterContext: () => RunCounter
 ) => {
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
@@ -204,9 +206,15 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('state-compound', createStateCompound);
   registerNodeFactory('variable', getVariable);
   registerNodeFactory('set-variable', setVariable);
-  registerNodeFactory('button', getButton(animatePath));
+  registerNodeFactory(
+    'button',
+    getButton(animatePath, createRunCounterContext)
+  );
   registerNodeFactory('timer', getTimer(animatePath));
-  registerNodeFactory('slider', getSlider(animatePath));
+  registerNodeFactory(
+    'slider',
+    getSlider(animatePath, createRunCounterContext)
+  );
   registerNodeFactory('checkbox', getCheckbox(animatePath));
   registerNodeFactory('styled-node', getStyledNode(animatePath));
   registerNodeFactory('html-node', getHtmlNode);

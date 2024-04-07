@@ -16,7 +16,10 @@ import { FormFieldType } from '../components/FormField';
 import { RunCounter } from '../follow-path/run-counter';
 
 export const getButton =
-  (animatePath: AnimatePathFunction<NodeInfo>) =>
+  (
+    animatePath: AnimatePathFunction<NodeInfo>,
+    createRunCounterContext: () => RunCounter
+  ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let button: IDOMElement;
@@ -115,6 +118,7 @@ export const getButton =
                 return;
               }
               triggerButton = true;
+              runCounter = createRunCounterContext();
               runNode(
                 containerNode ?? node,
                 containerNode

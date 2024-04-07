@@ -114,6 +114,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   messageText: IDOMElement | undefined = undefined;
   focusedNode: IRectNodeComponent<NodeInfo> | undefined = undefined;
   runButton: IDOMElement | undefined = undefined;
+  pathRange: IDOMElement | undefined = undefined;
   speedMeterElement: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
   mediaLibary: MediaLibrary | undefined = undefined;
@@ -236,7 +237,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     setCameraAnimation(this.canvasApp);
 
-    setupCanvasNodeTaskRegistry(animatePath, animatePathFromThumb);
+    setupCanvasNodeTaskRegistry(
+      animatePath,
+      animatePathFromThumb,
+      this.createRunCounterContext
+    );
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
@@ -468,7 +473,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         setOnFrame((_elapsed) => {
           if (connectionExecuteHistory.length > 0) {
             const value = parseInt(
-              (pathRange.domElement as HTMLInputElement).value
+              (this.pathRange?.domElement as HTMLInputElement).value
             );
             if (!isNaN(value)) {
               updateMessageBubble(value);
@@ -596,9 +601,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     };
 
     const resetConnectionSlider = () => {
-      (pathRange.domElement as HTMLElement).setAttribute('value', '0');
-      (pathRange.domElement as HTMLElement).setAttribute('max', '0');
-      (pathRange.domElement as HTMLElement).setAttribute(
+      (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
+      (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
+      (this.pathRange?.domElement as HTMLElement).setAttribute(
         'disabled',
         'disabled'
       );
@@ -656,24 +661,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 node.nodeInfo?.initializeCompute?.();
               }
             });
-            (pathRange.domElement as HTMLButtonElement).disabled = true;
-            const runCounter = new RunCounter();
-            runCounter.setRunCounterResetHandler(() => {
-              if (runCounter.runCounter <= 0) {
-                (pathRange.domElement as HTMLButtonElement).disabled = false;
-                (this.runButton?.domElement as HTMLButtonElement).disabled =
-                  false;
-                increaseRunIndex();
-                (pathRange.domElement as HTMLElement).setAttribute(
-                  'value',
-                  '0'
-                );
-                (pathRange.domElement as HTMLElement).setAttribute(
-                  'max',
-                  (connectionExecuteHistory.length * 1000).toString()
-                );
-              }
-            });
+            (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
+            const runCounter = this.createRunCounterContext(true);
             run(
               this.canvasApp?.elements,
               this.canvasApp,
@@ -915,7 +904,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     };
 
-    const pathRange = createElement(
+    this.pathRange = createElement(
       'input',
       {
         type: 'range',
@@ -935,17 +924,20 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       bgRange.domElement,
       ''
     );
-    (pathRange.domElement as HTMLElement).setAttribute('id', pathRange.id);
+    (this.pathRange.domElement as HTMLElement).setAttribute(
+      'id',
+      this.pathRange.id
+    );
     const labelPathRange = createElement(
       'label',
       {
         class: ' whitespace-nowrap text-black p-2',
-        for: pathRange.id,
+        for: this.pathRange.id,
       },
       bgRange.domElement,
       'Timeline'
     );
-    pathRange.domElement.before(labelPathRange.domElement);
+    this.pathRange.domElement.before(labelPathRange.domElement);
 
     AppComponents({
       rootElement: this.rootElement,
@@ -1379,5 +1371,25 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onImported = () => {
     //
+  };
+
+  createRunCounterContext = (isRunViaRunButton = false) => {
+    (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
+    const runCounter = new RunCounter();
+    runCounter.setRunCounterResetHandler(() => {
+      if (runCounter.runCounter <= 0) {
+        (this.pathRange?.domElement as HTMLButtonElement).disabled = false;
+        if (isRunViaRunButton) {
+          (this.runButton?.domElement as HTMLButtonElement).disabled = false;
+        }
+        increaseRunIndex();
+        (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
+        (this.pathRange?.domElement as HTMLElement).setAttribute(
+          'max',
+          (connectionExecuteHistory.length * 1000).toString()
+        );
+      }
+    });
+    return runCounter;
   };
 }
