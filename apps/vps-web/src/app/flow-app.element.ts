@@ -995,7 +995,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.rootElement.querySelectorAll('.selected').forEach((element) => {
         element.classList.remove('selected');
       });
-
+      let nodeType = '';
       if (
         currentSelectedNode &&
         (!selectedNodeInfo || selectedNodeInfo.id !== currentSelectedNode.id)
@@ -1017,7 +1017,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
       this.removeFormElement();
       if (selectedNodeInfo && this.selectedNodeLabel) {
-        this.selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
         const node = (
           selectedNodeInfo?.containerNode
             ? (selectedNodeInfo?.containerNode.nodeInfo as any)
@@ -1028,6 +1027,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         if (!node) {
           return;
         }
+        nodeType = node.nodeInfo?.type;
+        //this.selectedNodeLabel.domElement.textContent = 'NODE'; //`${selectedNodeInfo.id}`;
+        this.selectedNodeLabel.domElement.textContent = nodeType || 'NODE';
 
         if (node.nodeInfo?.isComposition) {
           (

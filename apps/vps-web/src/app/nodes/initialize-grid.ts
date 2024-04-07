@@ -176,7 +176,7 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node');
+      const textNode = domElement.querySelector('.inner-node .node-content');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
         textNode.innerHTML = `Initialize grid<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
       }

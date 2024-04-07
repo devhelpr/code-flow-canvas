@@ -99,7 +99,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
   const componentWrapper = createNodeElement<T>(
     'div',
     {
-      class: `relative flex flex-col ${
+      class: `inner-node relative flex flex-col ${
         (settings?.backgroundThemeProperty &&
           (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
         settings?.backgroundColorClassName ??
@@ -178,7 +178,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
   const formWrapper = createElement(
     'div',
     {
-      class: `inner-node border-slate-500  ${
+      class: `node-content border-slate-500  ${
         showTitlebar
           ? 'rounded-b'
           : !hasBeforeDecorator && !hasAfterDecorator

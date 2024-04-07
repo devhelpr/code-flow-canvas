@@ -134,7 +134,7 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node');
+      const textNode = domElement.querySelector('.inner-node .node-content');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
         textNode.innerHTML = `Get by key from<br />'${node.nodeInfo?.formValues?.[fieldName]}' dictionary`;
       }

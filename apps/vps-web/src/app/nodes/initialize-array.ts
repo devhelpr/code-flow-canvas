@@ -128,7 +128,7 @@ export const initializeArrayVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node');
+      const textNode = domElement.querySelector('.inner-node .node-content');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
         textNode.innerHTML = `Initialize array<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
       }

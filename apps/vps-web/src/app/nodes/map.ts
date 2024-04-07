@@ -228,7 +228,7 @@ export const getMap =
         foreachComponent = createNodeElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center text-center
+            class: `inner-node bg-slate-500 p-4 rounded flex flex-row items-center justify-center text-center
             transition-colors duration-200`,
             style: {
               'clip-path':

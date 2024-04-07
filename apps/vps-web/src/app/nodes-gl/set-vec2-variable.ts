@@ -87,7 +87,7 @@ export const getSetVectorVariableNode = (
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded-xl flex flex-row items-center justify-center`,
+          class: `inner-node bg-slate-500 p-4 rounded flex flex-row items-center justify-center`,
         },
         undefined,
         ''

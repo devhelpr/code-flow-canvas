@@ -47,7 +47,7 @@ export class NodeTransformer<T> {
       {
         id: 'node-transformer',
         class:
-          'hidden absolute top-0 left-0 z-[2000] border-white border-2 pointer-events-none',
+          'hidden absolute top-0 left-0 z-[2000] border-white border-2 pointer-events-none rounded',
       },
       rootElement
     );

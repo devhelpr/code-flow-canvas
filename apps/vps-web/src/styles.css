@@ -43,9 +43,9 @@ input::selection {
   @apply text-blue-500;
 }
 
-.selected.container-node {
-  @apply before:border-[6px] before:border-solid before:border-white before:absolute before:w-full before:h-full;
-}
+/* .selected.container-node {
+  @apply before:border-[0px] before:border-solid before:border-white before:absolute before:w-full before:h-full;
+} */
 
 .vertical-slider {
 	-webkit-appearance: slider-vertical;
@@ -243,9 +243,6 @@ rect-node:has(.hover) > .shape-circle,
 .rect-thumb-node.selected {
 	z-index: 6;
 }
-.rect-thumb-node > div:first-child {
-	box-shadow: rgba(0,0,0,0.5) 2px 2px 2px 0px
-}
 
 .rect-node {
 	cursor: grab;
@@ -254,9 +251,6 @@ rect-node:has(.hover) > .shape-circle,
 .rect-node.selected {
 	z-index: 4;
 
-}
-.rect-node > div:first-child {
-	box-shadow: rgba(0,0,0,0.5) 2px 2px 2px 0px
 }
 
 input {

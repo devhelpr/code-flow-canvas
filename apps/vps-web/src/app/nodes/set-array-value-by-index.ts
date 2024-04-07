@@ -172,7 +172,7 @@ export const setArrayValueByIndexVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node');
+      const textNode = domElement.querySelector('.inner-node .node-content');
       if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
         textNode.innerHTML = `Set array value in<br />'${node.nodeInfo?.formValues?.[fieldName]}' array`;
       }
