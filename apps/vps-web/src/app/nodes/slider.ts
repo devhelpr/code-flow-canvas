@@ -97,7 +97,8 @@ export const getSlider =
                 undefined,
                 undefined,
                 undefined,
-                runCounter
+                runCounter,
+                true
               );
               return false;
             },

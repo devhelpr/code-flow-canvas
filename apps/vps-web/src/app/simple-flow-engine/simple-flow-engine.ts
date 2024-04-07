@@ -347,10 +347,13 @@ export const runNode = (
   loopIndex?: number,
   connection?: IConnectionNodeComponent<NodeInfo>,
   scopeId?: string,
-  runCounter?: RunCounter
+  runCounter?: RunCounter,
+  shouldClearExecutionHistory = false
 ): void => {
   const payload = getVariablePayload(node, canvasApp);
-
+  if (shouldClearExecutionHistory) {
+    connectionExecuteHistory = [];
+  }
   const formInfo = node.nodeInfo as unknown as any;
   let result: any = false;
   let followPath: string | undefined = undefined;

@@ -225,7 +225,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         return;
       }
 
-      resetConnectionSlider();
+      this.resetConnectionSlider();
       store();
       console.log('canvasUpdated before setTabOrderOfNodes');
       this.setTabOrderOfNodes();
@@ -587,7 +587,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
       resetRunIndex();
       (this.runButton?.domElement as HTMLButtonElement).disabled = false;
-      resetConnectionSlider();
+      this.resetConnectionSlider();
 
       let hasUIElements = false;
       this.currentCanvasApp?.elements.forEach((node) => {
@@ -598,17 +598,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (hasUIElements) {
         (this.runButton?.domElement as HTMLButtonElement).disabled = true;
       }
-    };
-
-    const resetConnectionSlider = () => {
-      (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
-      (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
-      (this.pathRange?.domElement as HTMLElement).setAttribute(
-        'disabled',
-        'disabled'
-      );
-      connectionExecuteHistory.length = 0;
-      this.clearPathExecution();
     };
 
     const serializeFlow = () => {
@@ -1373,8 +1362,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     //
   };
 
+  resetConnectionSlider = () => {
+    (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
+    (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
+    (this.pathRange?.domElement as HTMLElement).setAttribute(
+      'disabled',
+      'disabled'
+    );
+    connectionExecuteHistory.length = 0;
+    this.clearPathExecution();
+  };
+
   createRunCounterContext = (isRunViaRunButton = false) => {
+    this.resetConnectionSlider();
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
+    resetRunIndex();
     const runCounter = new RunCounter();
     runCounter.setRunCounterResetHandler(() => {
       if (runCounter.runCounter <= 0) {

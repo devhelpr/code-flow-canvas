@@ -134,7 +134,8 @@ export const getButton =
                 undefined,
                 undefined,
                 undefined,
-                runCounter
+                runCounter,
+                true
               );
               return false;
             },
