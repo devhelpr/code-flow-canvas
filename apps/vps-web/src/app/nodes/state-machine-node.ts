@@ -201,9 +201,23 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       }
     }
     if (stateMachine) {
-      const nextState = transitionToState(stateMachine, input);
+      const stateEvent =
+        typeof input === 'object' ? (input as any).stateEvent : input;
+      const nextState = transitionToState(stateMachine, stateEvent);
       console.log('NEXTSTATE trigger', nextState);
       if (nextState) {
+        if (typeof input === 'object' && (input as any).value) {
+          const stateEvent = {
+            state: nextState.name,
+            value: (input as any).value,
+          };
+          return {
+            result: stateEvent,
+            followPath: undefined,
+            output: stateEvent,
+          };
+        }
+
         return {
           result: nextState.name,
           followPath: undefined,

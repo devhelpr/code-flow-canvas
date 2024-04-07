@@ -23,22 +23,30 @@ export const getStyledNode =
       display:"block"
     }`;
 
+    //let stylingCache = '';
+
     const setStyling = (value: string) => {
-      let stylingString =
-        node?.nodeInfo?.formValues['styling'] || defaultStyling;
-      stylingString = replaceValues(stylingString, { value: value }, true);
-      const styling = JSON.parse(stylingString);
-      const classes = styling['class'] || '';
-      const classList = classes.split(' ').filter(Boolean);
-      if (classList && classList.length > 0) {
-        (divNode.domElement as HTMLElement).className = '';
-        (divNode.domElement as HTMLElement).classList.add(...classList);
+      try {
+        let stylingString =
+          node?.nodeInfo?.formValues['styling'] || defaultStyling;
+        stylingString = replaceValues(stylingString, { value: value }, true);
+        const styling = JSON.parse(stylingString);
+        const classes = styling['class'] || '';
+        const classList = classes.split(' ').filter(Boolean);
+        if (classList && classList.length > 0) {
+          (divNode.domElement as HTMLElement).className = '';
+          (divNode.domElement as HTMLElement).classList.add(...classList);
+        }
+        if (styling['class']) {
+          delete styling['class'];
+        }
+        (divNode.domElement as HTMLElement).removeAttribute('style');
+        Object.assign((divNode.domElement as HTMLElement).style, styling);
+        console.log('setStyling', styling);
+        //stylingCache = styling;
+      } catch (error) {
+        console.log('Error in setStyling', error);
       }
-      if (styling['class']) {
-        delete styling['class'];
-      }
-      (divNode.domElement as HTMLElement).removeAttribute('style');
-      Object.assign((divNode.domElement as HTMLElement).style, styling);
     };
 
     const initializeCompute = () => {
@@ -51,7 +59,19 @@ export const getStyledNode =
         result: input,
       };
     };
+    // const getNodeStatedHandler = () => {
+    //   return {
+    //     data: stylingCache,
+    //     id: node.id,
+    //   };
+    // };
 
+    // const setNodeStatedHandler = (_id: string, data: any) => {
+    //   if (divNode) {
+    //     (divNode.domElement as HTMLElement).removeAttribute('style');
+    //     Object.assign((divNode.domElement as HTMLElement).style, data);
+    //   }
+    // };
     return {
       name: 'styled-node',
       family: 'flow-canvas',
@@ -142,6 +162,7 @@ export const getStyledNode =
             formValues: {
               styling: initialValue || defaultStyling,
             },
+            formElements: [],
           },
           containerNode
         );
@@ -152,11 +173,16 @@ export const getStyledNode =
         node = rect.nodeComponent;
         if (node.nodeInfo) {
           node.nodeInfo.formElements = formElements;
+          node.nodeInfo.showFormOnlyInPopup = true;
           node.nodeInfo.compute = compute;
           node.nodeInfo.initializeCompute = initializeCompute;
           node.nodeInfo.formValues = {
             styling: initialValue || defaultStyling,
           };
+          // if (id) {
+          //   canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          //   canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+          // }
         }
         setStyling('');
 

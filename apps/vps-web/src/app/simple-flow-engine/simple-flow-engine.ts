@@ -133,16 +133,17 @@ const triggerExecution = (
       ) => {
         let result: any = false;
         const formInfo = nextNode.nodeInfo as unknown as any;
-
-        const nodeStates = canvasApp.getNodeStates();
-        if (!canvasApp.isContextOnly) {
-          connectionExecuteHistory.push({
-            connection:
-              connection as unknown as IConnectionNodeComponent<NodeInfo>,
-            connectionValue: input,
-            nodeStates: nodeStates,
-          });
-        }
+        const storeNodeStates = () => {
+          const nodeStates = canvasApp.getNodeStates();
+          if (!canvasApp.isContextOnly) {
+            connectionExecuteHistory.push({
+              connection:
+                connection as unknown as IConnectionNodeComponent<NodeInfo>,
+              connectionValue: input,
+              nodeStates: nodeStates,
+            });
+          }
+        };
 
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
@@ -185,6 +186,7 @@ const triggerExecution = (
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {
+                  storeNodeStates();
                   if (computeResult.stop && computeResult.dummyEndpoint) {
                     console.log('dummyEndpoint(2)', computeResult.output);
                     if (computeResult.output) {
@@ -248,6 +250,7 @@ const triggerExecution = (
           followPath = computeResult.followPath;
 
           if (computeResult.stop) {
+            storeNodeStates();
             if (onStopped) {
               onStopped(computeResult.output ?? '', scopeId);
             }
@@ -279,6 +282,7 @@ const triggerExecution = (
           result = false;
           followPath = undefined;
         }
+        storeNodeStates();
         if (result === undefined) {
           return {
             result: false,
@@ -626,15 +630,16 @@ export const runNodeFromThumb = (
       connection: IConnectionNodeComponent<NodeInfo>,
       scopeId?: string
     ) => {
-      if (!canvasApp.isContextOnly) {
-        connectionExecuteHistory.push({
-          connection:
-            connection as unknown as IConnectionNodeComponent<NodeInfo>,
-          connectionValue: input,
-          nodeStates: canvasApp.getNodeStates(),
-        });
-      }
-
+      const storeNodeStates = () => {
+        if (!canvasApp.isContextOnly) {
+          connectionExecuteHistory.push({
+            connection:
+              connection as unknown as IConnectionNodeComponent<NodeInfo>,
+            connectionValue: input,
+            nodeStates: canvasApp.getNodeStates(),
+          });
+        }
+      };
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
       //console.log('runNodeFromThumb', loopIndex, nextNode);
@@ -668,7 +673,7 @@ export const runNodeFromThumb = (
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
-
+              storeNodeStates();
               if (computeResult.stop) {
                 resolve({
                   result: result,
@@ -716,8 +721,10 @@ export const runNodeFromThumb = (
         );
         result = computeResult.result;
         followPath = computeResult.followPath;
+
         //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
+          storeNodeStates();
           return {
             result: result,
             stop: true,
@@ -751,6 +758,7 @@ export const runNodeFromThumb = (
           };
         }
         input = decoratorInput;
+        storeNodeStates();
       }
       return {
         result: true,

@@ -14,6 +14,7 @@ import {
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
 import { getNodesByNodeType } from '../graph/get-node-by-variable-name';
+import { replaceValues } from '../utils/replace-values';
 
 const selectImage = () => {
   return new Promise((resolve, _reject) => {
@@ -50,6 +51,37 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     undefined;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
+  const defaultStyling = `{
+   
+  }`;
+
+  let stylingCache = '';
+  const setStyling = (value: string) => {
+    if (!htmlNode) {
+      return;
+    }
+    try {
+      let stylingString =
+        node?.nodeInfo?.formValues['styling'] || defaultStyling;
+      stylingString = replaceValues(stylingString, { value: value }, true);
+      const styling = JSON.parse(stylingString);
+      const classes = styling['class'] || '';
+      const classList = classes.split(' ').filter(Boolean);
+      if (classList && classList.length > 0) {
+        (htmlNode.domElement as HTMLElement).className = '';
+        (htmlNode.domElement as HTMLElement).classList.add(...classList);
+      }
+      if (styling['class']) {
+        delete styling['class'];
+      }
+      (htmlNode.domElement as HTMLElement).removeAttribute('style');
+      Object.assign((htmlNode.domElement as HTMLElement).style, styling);
+      console.log('setStyling', styling);
+      stylingCache = styling;
+    } catch (error) {
+      console.log('Error in setStyling', error);
+    }
+  };
   const initializeCompute = () => {
     hasInitialValue = true;
     if (htmlNode) {
@@ -58,6 +90,9 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string | any[]) => {
+    if (typeof input === 'object' && (input as any).value) {
+      setStyling((input as any).value);
+    }
     if (htmlNode) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -67,10 +102,15 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
           htmlNode.domElement as HTMLImageElement
         ).src = `data:image/png;base64,${(input as any).image}`;
       } else {
-        if (canvasAppInstance && typeof input === 'string') {
+        let imageCodeName = input;
+        if (typeof input === 'object' && (input as any).state) {
+          imageCodeName = (input as any).state;
+        }
+
+        if (canvasAppInstance && typeof imageCodeName === 'string') {
           const mediaLibrary = canvasAppInstance.getMediaLibrary();
           if (mediaLibrary) {
-            const file = mediaLibrary.getFile(input);
+            const file = mediaLibrary.getFile(imageCodeName);
             if (file) {
               try {
                 (
@@ -108,6 +148,19 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     return dependencies;
   };
 
+  const getNodeStatedHandler = () => {
+    return {
+      data: stylingCache,
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    if (htmlNode) {
+      (htmlNode.domElement as HTMLElement).removeAttribute('style');
+      Object.assign((htmlNode.domElement as HTMLElement).style, data);
+    }
+  };
   return {
     name: 'show-image',
     family: 'flow-canvas',
@@ -122,6 +175,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       width?: number,
       height?: number
     ) => {
+      const initialValue = initalValues?.['styling'] || defaultStyling;
       canvasAppInstance = canvasApp;
       const formElements = [
         {
@@ -150,6 +204,25 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
                 }
               });
             });
+          },
+        },
+        {
+          fieldType: FormFieldType.TextArea,
+          fieldName: 'styling',
+          value: initialValue,
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              styling: value,
+            };
+            console.log('onChange', node.nodeInfo);
+            if (updated) {
+              setStyling('');
+              updated();
+            }
           },
         },
       ];
@@ -192,7 +265,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             label: ' ',
-
+            maxConnections: -1,
             name: 'input',
             color: 'white',
           },
@@ -230,8 +303,14 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
           image: initalValues?.['image'] ?? '',
+          styling: initialValue || defaultStyling,
         };
         node.nodeInfo.getDependencies = getDependencies;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
       }
       return node;
     },

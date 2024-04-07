@@ -1373,8 +1373,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.clearPathExecution();
   };
 
-  createRunCounterContext = (isRunViaRunButton = false) => {
-    this.resetConnectionSlider();
+  createRunCounterContext = (
+    isRunViaRunButton = false,
+    shouldResetConnectionSlider = true
+  ) => {
+    if (shouldResetConnectionSlider) {
+      this.resetConnectionSlider();
+    }
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
     resetRunIndex();
     const runCounter = new RunCounter();

@@ -48,7 +48,10 @@ export const getSplitByCase =
           reject();
           return;
         }
-        const inputAsString = input.toString();
+        let inputAsString = input.toString();
+        if (typeof input === 'object' && (input as any).state) {
+          inputAsString = (input as any).state;
+        }
         const case1 = node?.nodeInfo?.formValues?.['case1'] ?? '';
         const case2 = node?.nodeInfo?.formValues?.['case2'] ?? '';
         const case3 = node?.nodeInfo?.formValues?.['case3'] ?? '';
@@ -72,7 +75,9 @@ export const getSplitByCase =
               thumbNode = node.thumbConnectors[1];
             } else if (case3 && inputAsString === case3) {
               thumbNode = node.thumbConnectors[2];
-            } else if (!case3) {
+            } else if ((case2 || '').trim() == '') {
+              thumbNode = node.thumbConnectors[1];
+            } else if ((case3 || '').trim() == '') {
               thumbNode = node.thumbConnectors[2];
             }
           }

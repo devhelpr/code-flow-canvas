@@ -143,6 +143,7 @@ import { getThumbOutputNode } from '../nodes/thumb-output';
 import { getTestNode } from '../nodes/test';
 import { getMediaLibraryNode } from '../nodes/media-library';
 import { RunCounter } from '../follow-path/run-counter';
+import { getCreateEventStateValueNode } from '../nodes/create-state-value';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -163,7 +164,10 @@ export const getNodeFactoryNames = () => {
 export const setupCanvasNodeTaskRegistry = (
   animatePath: AnimatePathFunction<NodeInfo>,
   animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>,
-  createRunCounterContext: () => RunCounter
+  createRunCounterContext: (
+    isRunViaRunButton: boolean,
+    shouldResetConnectionSlider: boolean
+  ) => RunCounter
 ) => {
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
@@ -204,6 +208,11 @@ export const setupCanvasNodeTaskRegistry = (
   //registerNodeFactory('layout-node', getLayoutNode(animatePath));
   registerNodeFactory('state-machine', createStateMachineNode);
   registerNodeFactory('state-compound', createStateCompound);
+  registerNodeFactory(
+    'create-state-event-value',
+    getCreateEventStateValueNode,
+    'Event state-value'
+  );
   registerNodeFactory('variable', getVariable);
   registerNodeFactory('set-variable', setVariable);
   registerNodeFactory(

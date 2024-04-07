@@ -18,7 +18,10 @@ import { RunCounter } from '../follow-path/run-counter';
 export const getButton =
   (
     animatePath: AnimatePathFunction<NodeInfo>,
-    createRunCounterContext: () => RunCounter
+    createRunCounterContext: (
+      isRunViaRunButton: boolean,
+      shouldResetConnectionSlider: boolean
+    ) => RunCounter
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
@@ -118,7 +121,7 @@ export const getButton =
                 return;
               }
               triggerButton = true;
-              runCounter = createRunCounterContext();
+              runCounter = createRunCounterContext(false, true);
               runNode(
                 containerNode ?? node,
                 containerNode
