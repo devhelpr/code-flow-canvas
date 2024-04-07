@@ -173,8 +173,8 @@ export class RectThumb<T> extends Rect<T> {
 
               this.initiateDraggingConnection(
                 connection.connectionStartNodeThumb,
-                x,
-                y,
+                xorg,
+                yorg,
                 connection
               );
             }
@@ -200,8 +200,8 @@ export class RectThumb<T> extends Rect<T> {
 
               this.initiateDraggingConnection(
                 connection.connectionEndNodeThumb,
-                x,
-                y,
+                xorg,
+                yorg,
                 connection
               );
             }
