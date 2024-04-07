@@ -13,6 +13,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
+import { getNodesByNodeType } from '../graph/get-node-by-variable-name';
 
 const selectImage = () => {
   return new Promise((resolve, _reject) => {
@@ -89,6 +90,24 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       followPath: undefined,
     };
   };
+
+  const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
+    const dependencies: { startNodeId: string; endNodeId: string }[] = [];
+    if (canvasAppInstance) {
+      const mediaLibrary = getNodesByNodeType(
+        'media-library-node',
+        canvasAppInstance
+      );
+      if (mediaLibrary) {
+        dependencies.push({
+          startNodeId: node.id,
+          endNodeId: mediaLibrary.id,
+        });
+      }
+    }
+    return dependencies;
+  };
+
   return {
     name: 'show-image',
     family: 'flow-canvas',
@@ -212,6 +231,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.formValues = {
           image: initalValues?.['image'] ?? '',
         };
+        node.nodeInfo.getDependencies = getDependencies;
       }
       return node;
     },

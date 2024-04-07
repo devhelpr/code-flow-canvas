@@ -35,3 +35,19 @@ export const getNodeByFunctionName = (
   });
   return node;
 };
+
+export const getNodesByNodeType = (
+  taskType: string,
+  canvasAppInstance: CanvasAppInstance<NodeInfo>
+): INodeComponent<NodeInfo> | undefined => {
+  let node: INodeComponent<NodeInfo> | undefined = undefined;
+  Array.from(canvasAppInstance.elements).every((itemPair) => {
+    const element = itemPair[1];
+    if (element.nodeInfo?.type === taskType) {
+      node = element as INodeComponent<NodeInfo>;
+      return false;
+    }
+    return true;
+  });
+  return node;
+};
