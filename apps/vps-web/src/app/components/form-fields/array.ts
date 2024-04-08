@@ -7,7 +7,7 @@ import {
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 import { BaseFormFieldProps, FormFieldComponent } from './field';
 import { FormField, FormFieldType } from '../FormField';
-import { primaryButton } from '../../consts/classes';
+import { secondaryNavBarButtonNomargin } from '../../consts/classes';
 
 export interface ArrayFieldProps extends BaseFormFieldProps {
   formId: string;
@@ -46,8 +46,8 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         <label for="${props.fieldName}" class="block  mb-2 ${
         props.settings?.textLabelColor ?? 'text-white'
       }">${props.label ?? props.fieldName}</label>
-        <div class="_flex flex-col table"></div>
-        <button class="${primaryButton}"
+        <div class="_flex flex-col table mb-3"></div>
+        <button class="${secondaryNavBarButtonNomargin}"
           type="button"
           id="${props.formId}_${props.fieldName}"          
           type="text">Add</button>
@@ -74,26 +74,36 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
 
         const cell = createElementFromTemplate(
           createTemplate(
-            `<div class="table-cell array-item__cell array-item__cell-${
+            `<div class="table-cell align-middle array-item__cell array-item__cell-${
               formElement.fieldType
             } p-0.5 ${index === 0 ? 'pl-0' : ''}"></div>`
           )
         );
         if (cell) {
           cell.remove();
-          const element = this.props.createDataReadElement(
-            formElement,
-            formElement.fieldType !== FormFieldType.File ? data : 'File'
-          );
-          cell.appendChild(element);
-          //cell.textContent = data ?? '';
-          arrayItem.appendChild(cell);
+          if (
+            formElement.fieldType === FormFieldType.File &&
+            formElement.isImage
+          ) {
+            const element = this.props.createDataReadElement(formElement, data);
+
+            cell.appendChild(element);
+            arrayItem.appendChild(cell);
+          } else {
+            const element = this.props.createDataReadElement(
+              formElement,
+              formElement.fieldType !== FormFieldType.File ? data : 'File'
+            );
+
+            cell.appendChild(element);
+            arrayItem.appendChild(cell);
+          }
         }
       });
 
       const editCell = createElementFromTemplate(
         createTemplate(
-          `<div class="table-cell array-item__cell array-item__cell ml-auto">
+          `<div class="table-cell align-middle array-item__cell array-item__cell ml-auto">
             <a href="#" class="array-item__edit"><span class="icon icon-createmode_editedit"></span></a>
             <a href="#" class="array-item__delete"><span class="icon icon-delete"></span></a>
           </div>`

@@ -389,7 +389,35 @@ export class FormsComponent
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           createDataReadElement: (formElement, data) => {
-            if (formElement.fieldType === FormFieldType.Color) {
+            if (
+              formElement.fieldType === FormFieldType.File &&
+              formElement.isImage
+            ) {
+              const element = createElement(
+                'img',
+                'form-field__read-image',
+                undefined,
+                undefined
+              );
+              element.classList.add(
+                'w-[48px]',
+                'h-[48px]',
+                'max-w-[48px]',
+                'object-cover'
+              );
+              console.log('createDataReadElement', data, formElement.fieldName);
+              if (data && (data as any).data) {
+                try {
+                  (element as HTMLImageElement).src = `data:image/png;base64,${
+                    (data as any).data
+                  }`;
+                } catch (e) {
+                  console.error('Error when assigning file/media to image', e);
+                }
+              }
+              //
+              return element;
+            } else if (formElement.fieldType === FormFieldType.Color) {
               const element = createElement(
                 'div',
                 'form-field__read-color',
@@ -400,12 +428,14 @@ export class FormsComponent
                 data?.toString() ?? this.values[formElement.fieldName] ?? '';
               return element;
             }
-            return createElement(
+            const element = createElement(
               'div',
               'whitespace-nowrap',
               undefined,
               data?.toString() ?? this.values[formElement.fieldName] ?? ''
             );
+
+            return element;
           },
           createFormDialog: async (
             formElements: FormField[],

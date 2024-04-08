@@ -67,7 +67,7 @@ export class NavbarComponent extends Component<
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <button class="${navBarButton}">Save</button>
         <button class="${navBarButton}">Load</button>
-        <select type="select" name="example-flows" class="p-2 m-2 relative ">
+        <select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
           <option value="simple-state-machine.json">Simple statemachine</option>

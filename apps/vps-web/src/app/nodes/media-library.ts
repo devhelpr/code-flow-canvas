@@ -74,6 +74,7 @@ export const getMediaLibraryNode: NodeTaskFactory<NodeInfo> = (
               fieldName: 'mediaFile',
               fieldType: FormFieldType.File,
               value: '',
+              isImage: true,
             },
             {
               fieldName: 'mediaCodeName',

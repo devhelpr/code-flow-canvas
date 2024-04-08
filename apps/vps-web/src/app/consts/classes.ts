@@ -29,6 +29,9 @@ export const navBarButtonNomargin = `rounded-md bg-slate-500 text-white p-2 hove
 export const invertedNavBarButtonNomargin = `rounded-md bg-white text-slate-500 p-2 hover:bg-slate-300 select-none whitespace-nowrap
  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 
+export const secondaryNavBarButtonNomargin = `rounded-md bg-white text-slate-500 p-2 hover:bg-blue-500 hover:text-white select-none whitespace-nowrap
+ disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
+
 export const menubarClasses = `menu fixed top-0 z-[1050] flex flex-row flex-nowrap 
     items-center justify-start height-[50px]  bg-slate-700 w-full
     whitespace-nowrap overflow-x-scroll`;

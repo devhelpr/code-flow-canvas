@@ -29,6 +29,7 @@ export type FormField = (
         value: FileFieldValue,
         formComponent: IFormsComponent
       ) => void;
+      isImage?: boolean;
     }
   | {
       fieldType: 'Button';
