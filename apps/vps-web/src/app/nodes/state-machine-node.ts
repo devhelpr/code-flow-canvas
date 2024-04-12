@@ -23,6 +23,8 @@ import {
 } from '../state-machine';
 import { connectionExecuteHistory } from '../simple-flow-engine/simple-flow-engine';
 
+// TODO : make example with state-compound and check if correct nodes are updated (classlist)
+
 export const createStateMachine = (
   canvasAppInstance: CanvasAppInstance<NodeInfo>,
   isCompound = false
@@ -107,9 +109,6 @@ export const createStateMachine = (
 
 export const resetStateMachine = (stateMachine: StateMachine<NodeInfo>) => {
   if (stateMachine.currentState) {
-    (
-      stateMachine.currentState.nodeComponent.domElement as HTMLElement
-    )?.classList.remove('state-active');
     if (stateMachine.currentState.stateMachine) {
       resetStateMachine(stateMachine.currentState.stateMachine);
     }
@@ -143,14 +142,13 @@ export const transitionToState = (
       );
       if (transition) {
         resetStateMachine(stateMachine);
+
         const nextStateId = transition.to;
         console.log('nextStateName', nextStateId);
         const nextState = stateMachine.states.find((s) => s.id === nextStateId);
         if (nextState) {
           stateMachine.currentState = nextState;
-          (
-            stateMachine.currentState.nodeComponent.domElement as HTMLElement
-          )?.classList.add('state-active');
+
           if (nextState.stateMachine) {
             initStateMachine(nextState.stateMachine);
           }
@@ -185,7 +183,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
 
   const initializeCompute = () => {
     stateMachine = undefined;
-
+    removeAllActiveStates();
     if (canvasAppInstance?.elements && !stateMachine) {
       stateMachine = undefined;
       stateMachine = createStateMachine(canvasAppInstance);
@@ -201,17 +199,19 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
   const compute = (input: string) => {
     if (!stateMachine && canvasAppInstance) {
       stateMachine = createStateMachine(canvasAppInstance);
-      console.log('stateMachine', stateMachine);
-      if (stateMachine && stateMachine.currentState) {
-        (
-          stateMachine.currentState.nodeComponent.domElement as HTMLElement
-        )?.classList.add('state-active');
-      }
     }
     if (stateMachine) {
       const stateEvent =
         typeof input === 'object' ? (input as any).stateEvent : input;
       const nextStateTransition = transitionToState(stateMachine, stateEvent);
+
+      removeAllActiveStates();
+      if (stateMachine.currentState) {
+        (
+          stateMachine.currentState.nodeComponent.domElement as HTMLElement
+        )?.classList.add('state-active');
+      }
+
       console.log('NEXTSTATE trigger', nextStateTransition);
       if (nextStateTransition) {
         if (canvasAppInstance && nextStateTransition.transition.connectionIn) {
@@ -254,6 +254,40 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
       stop: true,
       followPath: undefined,
     };
+  };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: stateMachine?.currentState ?? '',
+      id: node.id,
+    };
+  };
+
+  const removeAllActiveStates = () => {
+    canvasAppInstance?.rootElement
+      .querySelectorAll('.state-active')
+      .forEach((el) => {
+        el.classList.remove('state-active');
+      });
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    //updateVisual(data);
+    removeAllActiveStates();
+    if (
+      stateMachine &&
+      data &&
+      data.nodeComponent &&
+      data.nodeComponent.domElement
+    ) {
+      (data.nodeComponent.domElement as HTMLElement)?.classList.add(
+        'state-active'
+      );
+    }
+  };
+
+  const updateVisual = (_data: any) => {
+    //
   };
 
   return {
@@ -522,6 +556,14 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.canvasAppInstance = canvasAppInstance;
+
+        node.nodeInfo.updateVisual = updateVisual;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
+
         // node.nodeInfo.noCompositionAllowed = true;
       }
       return node;
