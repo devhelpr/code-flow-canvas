@@ -864,6 +864,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         const percentage = pointValue / stepSize;
 
         if (
+          pathStep.connection.endNode &&
+          pathStep.connection.endNode.nodeInfo?.updateVisual &&
+          percentage > 0.75
+        ) {
+          pathStep.connection.endNode.nodeInfo?.updateVisual(
+            pathStep.connectionValue
+          );
+        }
+
+        if (
           sliderValue % stepSize !== 0 &&
           step < connectionExecuteHistory.length
         ) {

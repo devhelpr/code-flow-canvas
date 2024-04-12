@@ -55,29 +55,46 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
    
   }`;
 
+  const getStyling = (value: string) => {
+    let stylingString = node?.nodeInfo?.formValues['styling'] || defaultStyling;
+    stylingString = replaceValues(stylingString, { value: value }, true);
+    const styling = JSON.parse(stylingString);
+    const classes = styling['class'] || '';
+    const classList = classes.split(' ').filter(Boolean);
+    if (styling['class']) {
+      delete styling['class'];
+    }
+    return {
+      classList,
+      styling,
+    };
+  };
+
   let stylingCache = '';
   const setStyling = (value: string) => {
     if (!htmlNode) {
       return;
     }
     try {
-      let stylingString =
-        node?.nodeInfo?.formValues['styling'] || defaultStyling;
-      stylingString = replaceValues(stylingString, { value: value }, true);
-      const styling = JSON.parse(stylingString);
-      const classes = styling['class'] || '';
-      const classList = classes.split(' ').filter(Boolean);
-      if (classList && classList.length > 0) {
+      // let stylingString =
+      //   node?.nodeInfo?.formValues['styling'] || defaultStyling;
+      // stylingString = replaceValues(stylingString, { value: value }, true);
+      // const styling = JSON.parse(stylingString);
+      // const classes = styling['class'] || '';
+      // const classList = classes.split(' ').filter(Boolean);
+      const result = getStyling(value);
+
+      if (result.classList && result.classList.length > 0) {
         (htmlNode.domElement as HTMLElement).className = '';
-        (htmlNode.domElement as HTMLElement).classList.add(...classList);
+        (htmlNode.domElement as HTMLElement).classList.add(...result.classList);
       }
-      if (styling['class']) {
-        delete styling['class'];
-      }
+      // if (styling['class']) {
+      //   delete styling['class'];
+      // }
       (htmlNode.domElement as HTMLElement).removeAttribute('style');
-      Object.assign((htmlNode.domElement as HTMLElement).style, styling);
-      console.log('setStyling', styling);
-      stylingCache = styling;
+      Object.assign((htmlNode.domElement as HTMLElement).style, result.styling);
+      console.log('setStyling', result.styling);
+      stylingCache = result.styling;
     } catch (error) {
       console.log('Error in setStyling', error);
     }
@@ -159,6 +176,20 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     if (htmlNode) {
       (htmlNode.domElement as HTMLElement).removeAttribute('style');
       Object.assign((htmlNode.domElement as HTMLElement).style, data);
+    }
+  };
+
+  const updateVisual = (data: any) => {
+    if (htmlNode) {
+      if (typeof data === 'object' && (data as any).value) {
+        const result = getStyling((data as any).value);
+
+        (htmlNode.domElement as HTMLElement).removeAttribute('style');
+        Object.assign(
+          (htmlNode.domElement as HTMLElement).style,
+          result.styling
+        );
+      }
     }
   };
   return {
@@ -311,6 +342,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
           canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
           canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
         }
+        node.nodeInfo.updateVisual = updateVisual;
       }
       return node;
     },

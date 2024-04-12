@@ -37,21 +37,53 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
         hasInitialValue = false;
       }
       console.log('visualize object', inputValues);
-
-      htmlNode.domElement.textContent = JSON.stringify(
-        inputValues,
-        null,
-        2
-      ).toString();
-      if (rect) {
-        rect.resize(240);
-      }
+      updateVisual(inputValues);
+      // htmlNode.domElement.textContent = JSON.stringify(
+      //   inputValues,
+      //   null,
+      //   2
+      // ).toString();
+      // if (rect) {
+      //   rect.resize(240);
+      // }
     }
     return {
       result: { ...inputValues },
       followPath: undefined,
     };
   };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: inputValues,
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    if (htmlNode) {
+      htmlNode.domElement.textContent = JSON.stringify(
+        data,
+        null,
+        2
+      ).toString();
+    }
+  };
+
+  const updateVisual = (data: any) => {
+    if (htmlNode) {
+      htmlNode.domElement.textContent = JSON.stringify(
+        data,
+        null,
+        2
+      ).toString();
+
+      if (rect) {
+        rect.resize(240);
+      }
+    }
+  };
+
   return {
     name: 'show-object',
     family: 'flow-canvas',
@@ -128,6 +160,12 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.updateVisual = updateVisual;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
       }
       return node;
     },

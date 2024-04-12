@@ -144,6 +144,7 @@ const triggerExecution = (
             });
           }
         };
+        storeNodeStates();
 
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
@@ -186,7 +187,7 @@ const triggerExecution = (
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {
-                  storeNodeStates();
+                  //storeNodeStates();
                   if (computeResult.stop && computeResult.dummyEndpoint) {
                     console.log('dummyEndpoint(2)', computeResult.output);
                     if (computeResult.output) {
@@ -250,7 +251,7 @@ const triggerExecution = (
           followPath = computeResult.followPath;
 
           if (computeResult.stop) {
-            storeNodeStates();
+            //storeNodeStates();
             if (onStopped) {
               onStopped(computeResult.output ?? '', scopeId);
             }
@@ -282,7 +283,7 @@ const triggerExecution = (
           result = false;
           followPath = undefined;
         }
-        storeNodeStates();
+        //storeNodeStates();
         if (result === undefined) {
           return {
             result: false,
@@ -640,6 +641,7 @@ export const runNodeFromThumb = (
           });
         }
       };
+      storeNodeStates();
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
       //console.log('runNodeFromThumb', loopIndex, nextNode);
@@ -673,7 +675,7 @@ export const runNodeFromThumb = (
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
-              storeNodeStates();
+              //storeNodeStates();
               if (computeResult.stop) {
                 resolve({
                   result: result,
@@ -724,7 +726,7 @@ export const runNodeFromThumb = (
 
         //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
-          storeNodeStates();
+          //storeNodeStates();
           return {
             result: result,
             stop: true,
@@ -758,7 +760,7 @@ export const runNodeFromThumb = (
           };
         }
         input = decoratorInput;
-        storeNodeStates();
+        //storeNodeStates();
       }
       return {
         result: true,
