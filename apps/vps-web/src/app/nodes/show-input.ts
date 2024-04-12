@@ -62,6 +62,37 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       followPath: undefined,
     };
   };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: inputValues,
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    updateVisual(data);
+  };
+
+  const updateVisual = (data: any) => {
+    if (htmlNode) {
+      if (data && typeof data === 'object') {
+        htmlNode.domElement.textContent = JSON.stringify(data, null, 2);
+      } else if (data && Array.isArray(data)) {
+        let output = '';
+        data.forEach((item) => {
+          if (typeof item === 'object') {
+            output += JSON.stringify(item, null, 2) + '\n';
+          } else {
+            output += item + '\n';
+          }
+        });
+        htmlNode.domElement.textContent = output;
+      } else {
+        htmlNode.domElement.textContent = (data || '-').toString();
+      }
+    }
+  };
   return {
     name: 'show-input',
     family: 'flow-canvas',
@@ -144,6 +175,13 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        node.nodeInfo.updateVisual = updateVisual;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
       }
       return node;
     },

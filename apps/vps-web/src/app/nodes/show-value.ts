@@ -17,9 +17,10 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   let hasInitialValue = true;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
-
+  let inputValues: any;
   const initializeCompute = () => {
     hasInitialValue = true;
+    inputValues = '';
     if (htmlNode) {
       htmlNode.domElement.textContent = '-';
       if (rect) {
@@ -29,6 +30,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string | any[]) => {
+    inputValues = input;
     if (htmlNode) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -44,6 +46,26 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       output: input,
       followPath: undefined,
     };
+  };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: inputValues,
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    updateVisual(data);
+  };
+
+  const updateVisual = (data: any) => {
+    if (htmlNode) {
+      htmlNode.domElement.textContent = (data || '-').toString();
+      if (rect) {
+        rect.resize(120);
+      }
+    }
   };
   return {
     name: 'show-value',
@@ -121,6 +143,13 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        node.nodeInfo.updateVisual = updateVisual;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
       }
       return node;
     },

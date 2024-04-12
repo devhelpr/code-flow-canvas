@@ -61,13 +61,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   };
 
   const setNodeStatedHandler = (_id: string, data: any) => {
-    if (htmlNode) {
-      htmlNode.domElement.textContent = JSON.stringify(
-        data,
-        null,
-        2
-      ).toString();
-    }
+    updateVisual(data);
   };
 
   const updateVisual = (data: any) => {
