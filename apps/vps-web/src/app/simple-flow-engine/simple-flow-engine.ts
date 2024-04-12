@@ -357,6 +357,7 @@ export const runNode = (
 ): void => {
   const payload = getVariablePayload(node, canvasApp);
   if (shouldClearExecutionHistory) {
+    console.log('runNode: clearing connectionExecuteHistory');
     connectionExecuteHistory = [];
   }
   const formInfo = node.nodeInfo as unknown as any;

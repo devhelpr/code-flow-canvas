@@ -1415,14 +1415,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     //
   };
 
-  resetConnectionSlider = () => {
+  resetConnectionSlider = (shouldResetConnectionSlider = true) => {
+    console.log('resetConnectionSlider');
     (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
     (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
     (this.pathRange?.domElement as HTMLElement).setAttribute(
       'disabled',
       'disabled'
     );
-    connectionExecuteHistory.length = 0;
+    if (shouldResetConnectionSlider) {
+      connectionExecuteHistory.length = 0;
+    }
     this.clearPathExecution();
   };
 
@@ -1430,9 +1433,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     isRunViaRunButton = false,
     shouldResetConnectionSlider = true
   ) => {
-    if (shouldResetConnectionSlider) {
-      this.resetConnectionSlider();
-    }
+    this.resetConnectionSlider(shouldResetConnectionSlider);
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
     resetRunIndex();
     const runCounter = new RunCounter();

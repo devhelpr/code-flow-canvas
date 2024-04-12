@@ -121,7 +121,7 @@ export const getButton =
                 return;
               }
               triggerButton = true;
-              runCounter = createRunCounterContext(false, true);
+              runCounter = createRunCounterContext(false, false);
               runNode(
                 containerNode ?? node,
                 containerNode
@@ -138,7 +138,7 @@ export const getButton =
                 undefined,
                 undefined,
                 runCounter,
-                true
+                false
               );
               return false;
             },
