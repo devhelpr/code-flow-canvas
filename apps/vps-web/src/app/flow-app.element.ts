@@ -213,19 +213,19 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         runCounter
       );
     };
-    const canvasUpdated = () => {
+    const canvasUpdated = (shouldClearExecutionHistory = true) => {
       if (
         this.currentCanvasApp?.isContextOnly ||
         this.currentCanvasApp?.isComposition
       ) {
         return;
       }
-      console.log('canvasUpdated');
+      console.log('canvasUpdated', shouldClearExecutionHistory);
       if (this.isStoring) {
         return;
       }
 
-      this.resetConnectionSlider();
+      this.resetConnectionSlider(shouldClearExecutionHistory);
       store();
       console.log('canvasUpdated before setTabOrderOfNodes');
       this.setTabOrderOfNodes();

@@ -23,7 +23,9 @@ export const getSlider =
       shouldResetConnectionSlider: boolean
     ) => RunCounter
   ) =>
-  (_updated: () => void): NodeTask<NodeInfo> => {
+  (
+    updated: (shouldClearExecutionHistory?: boolean) => void
+  ): NodeTask<NodeInfo> => {
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
@@ -97,13 +99,15 @@ export const getSlider =
                 ['value']: value,
               };
 
-              // dont call updated() ... slider position is not stored in the node (do we need to store it via a command by the user?)
-              // or only after throttle?
+              // updated() stores this change in the flow
               // .. updated() has a side-effect : it clears the connection history..
+              // .. so call it for the slider with an extra optional parameter: false
+              // .. because below the slider triggers the flow and by not
+              //  clearing the connection history, the slider changes can be seen
 
-              // if (updated) {
-              //   updated();
-              // }
+              if (updated) {
+                updated(false);
+              }
 
               if (!canvasAppInstance) {
                 return;
