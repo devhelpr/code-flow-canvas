@@ -15,7 +15,13 @@ import {
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
-import { StateMachine, State, Transition } from '../state-machine';
+import {
+  StateMachine,
+  State,
+  Transition,
+  StateTransition,
+} from '../state-machine';
+import { connectionExecuteHistory } from '../simple-flow-engine/simple-flow-engine';
 
 export const createStateMachine = (
   canvasAppInstance: CanvasAppInstance<NodeInfo>,
@@ -82,6 +88,8 @@ export const createStateMachine = (
                   to: nextState.endNode.id,
                   nodeComponent:
                     connection.endNode as unknown as IRectNodeComponent<NodeInfo>,
+                  connectionIn: connection,
+                  connectionOut: nextState,
                 };
                 state.transitions.push(transition);
               }
@@ -121,7 +129,7 @@ export const initStateMachine = (stateMachine: StateMachine<NodeInfo>) => {
 export const transitionToState = (
   stateMachine: StateMachine<NodeInfo>,
   transitionName: string
-): State<NodeInfo> | false => {
+): StateTransition<NodeInfo> | false => {
   if (stateMachine.currentState) {
     console.log(
       'transitionToState, currentState:',
@@ -146,7 +154,7 @@ export const transitionToState = (
           if (nextState.stateMachine) {
             initStateMachine(nextState.stateMachine);
           }
-          return nextState;
+          return { transition, nextState };
         }
       } else {
         if (stateMachine.currentState.stateMachine) {
@@ -203,14 +211,31 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
     if (stateMachine) {
       const stateEvent =
         typeof input === 'object' ? (input as any).stateEvent : input;
-      const nextState = transitionToState(stateMachine, stateEvent);
-      console.log('NEXTSTATE trigger', nextState);
-      if (nextState) {
+      const nextStateTransition = transitionToState(stateMachine, stateEvent);
+      console.log('NEXTSTATE trigger', nextStateTransition);
+      if (nextStateTransition) {
+        if (canvasAppInstance && nextStateTransition.transition.connectionIn) {
+          connectionExecuteHistory.push({
+            connection: nextStateTransition.transition.connectionIn,
+            connectionValue: input,
+            nodeStates: canvasAppInstance.getNodeStates(),
+          });
+        }
+
+        if (canvasAppInstance && nextStateTransition.transition.connectionOut) {
+          connectionExecuteHistory.push({
+            connection: nextStateTransition.transition.connectionOut,
+            connectionValue: input,
+            nodeStates: canvasAppInstance.getNodeStates(),
+          });
+        }
+
         if (typeof input === 'object' && (input as any).value) {
           const stateEvent = {
-            state: nextState.name,
+            state: nextStateTransition.nextState.name,
             value: (input as any).value,
           };
+
           return {
             result: stateEvent,
             followPath: undefined,
@@ -219,7 +244,7 @@ export const createStateMachineNode: NodeTaskFactory<NodeInfo> = (
         }
 
         return {
-          result: nextState.name,
+          result: nextStateTransition.nextState.name,
           followPath: undefined,
         };
       }

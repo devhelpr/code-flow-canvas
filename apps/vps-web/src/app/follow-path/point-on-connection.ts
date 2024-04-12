@@ -1,4 +1,5 @@
 import {
+  calculateQuadraticBezierLineIntersections,
   ControlAndEndPointNodeType,
   getLinePoints,
   getPointOnCubicBezierCurve,
@@ -8,6 +9,7 @@ import {
   LineType,
   onGetConnectionToThumbOffset,
   paddingRect,
+  splitQuadraticBezierCurve,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
@@ -101,36 +103,165 @@ export const getPointOnConnection = <T>(
       y: yStart + yHelper * ratio,
     };
   }
-  const bezierCurvePoints =
-    connection.lineType === LineType.BezierCubic
-      ? getPointOnCubicBezierCurve(
-          ratio,
-          {
-            x: startHelper.x + tx + startOffsetX,
-            y: startHelper.y + ty + startOffsetY,
-          },
-          {
-            x: startHelper.cx + tx,
-            y: startHelper.cy + ty,
-          },
-          {
-            x: endHelper.cx + tx,
-            y: endHelper.cy + ty,
-          },
-          { x: endHelper.x + tx + endOffsetX, y: endHelper.y + ty + endOffsetY }
-        )
-      : getPointOnQuadraticBezierCurve(
-          ratio,
-          {
-            x: startHelper.x + tx + startOffsetX,
-            y: startHelper.y + ty + startOffsetY,
-          },
-          {
-            x: startHelper.cx + tx,
-            y: startHelper.cy + ty,
-          },
-          { x: endHelper.x + tx + endOffsetX, y: endHelper.y + ty + endOffsetY }
-        );
 
-  return bezierCurvePoints;
+  if (connection.lineType === LineType.BezierQuadratic) {
+    const spacingAABB = 10;
+    let t = 0;
+    let tEnd = 1;
+    if (start) {
+      const xleft = start.x + startOffsetX - spacingAABB;
+      const yleft = start.y + startOffsetY - spacingAABB;
+      const width = (start.width ?? 0) + spacingAABB * 2;
+      const height = (start.height ?? 0) + spacingAABB * 2;
+
+      const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
+        { x: startHelper.x, y: startHelper.y },
+        { x: startHelper.cx, y: startHelper.cy },
+        { x: endHelper.x, y: endHelper.y },
+        { x: xleft, y: yleft },
+        { x: xleft, y: yleft + height }
+      );
+
+      const AABBTopIntersect = calculateQuadraticBezierLineIntersections(
+        { x: startHelper.x, y: startHelper.y },
+        { x: startHelper.cx, y: startHelper.cy },
+        { x: endHelper.x, y: endHelper.y },
+        { x: xleft, y: yleft },
+        { x: xleft + width, y: yleft }
+      );
+
+      const AABBRightIntersect = calculateQuadraticBezierLineIntersections(
+        { x: startHelper.x, y: startHelper.y },
+        { x: startHelper.cx, y: startHelper.cy },
+        { x: endHelper.x, y: endHelper.y },
+        { x: xleft + width, y: yleft },
+        { x: xleft + width, y: yleft + height }
+      );
+
+      const AABBBottomIntersect = calculateQuadraticBezierLineIntersections(
+        { x: startHelper.x, y: startHelper.y },
+        { x: startHelper.cx, y: startHelper.cy },
+        { x: endHelper.x, y: endHelper.y },
+        { x: xleft, y: yleft + height },
+        { x: xleft + width, y: yleft + height }
+      );
+
+      if (AABBLeftIntersect.length > 0) {
+        t = AABBLeftIntersect[0]?.t;
+      }
+      if (AABBTopIntersect.length > 0) {
+        t = AABBTopIntersect[0]?.t;
+      }
+      if (AABBRightIntersect.length > 0) {
+        t = AABBRightIntersect[0]?.t;
+      }
+      if (AABBBottomIntersect.length > 0) {
+        t = AABBBottomIntersect[0]?.t;
+      }
+    }
+    const split1 = splitQuadraticBezierCurve(
+      startHelper.x,
+      startHelper.y,
+      startHelper.cx,
+      startHelper.cy,
+      endHelper.x,
+      endHelper.y,
+      t ?? 0
+    );
+
+    if (end) {
+      const xleft = end.x + startOffsetX - spacingAABB;
+      const yleft = end.y + startOffsetY - spacingAABB;
+      const width = (end.width ?? 0) + spacingAABB * 2;
+      const height = (end.height ?? 0) + spacingAABB * 2;
+
+      const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
+        { x: split1.curve2.x1, y: split1.curve2.y1 },
+        { x: split1.curve2.c1x, y: split1.curve2.c1y },
+        { x: split1.curve2.x2, y: split1.curve2.y2 },
+        { x: xleft, y: yleft },
+        { x: xleft, y: yleft + height }
+      );
+
+      const AABBTopIntersect = calculateQuadraticBezierLineIntersections(
+        { x: split1.curve2.x1, y: split1.curve2.y1 },
+        { x: split1.curve2.c1x, y: split1.curve2.c1y },
+        { x: split1.curve2.x2, y: split1.curve2.y2 },
+        { x: xleft, y: yleft },
+        { x: xleft + width, y: yleft }
+      );
+
+      const AABBRightIntersect = calculateQuadraticBezierLineIntersections(
+        { x: split1.curve2.x1, y: split1.curve2.y1 },
+        { x: split1.curve2.c1x, y: split1.curve2.c1y },
+        { x: split1.curve2.x2, y: split1.curve2.y2 },
+        { x: xleft + width, y: yleft },
+        { x: xleft + width, y: yleft + height }
+      );
+
+      const AABBBottomIntersect = calculateQuadraticBezierLineIntersections(
+        { x: split1.curve2.x1, y: split1.curve2.y1 },
+        { x: split1.curve2.c1x, y: split1.curve2.c1y },
+        { x: split1.curve2.x2, y: split1.curve2.y2 },
+        { x: xleft, y: yleft + height },
+        { x: xleft + width, y: yleft + height }
+      );
+
+      if (AABBLeftIntersect.length > 0) {
+        tEnd = AABBLeftIntersect[0]?.t;
+      }
+      if (AABBTopIntersect.length > 0) {
+        tEnd = AABBTopIntersect[0]?.t;
+      }
+      if (AABBRightIntersect.length > 0) {
+        tEnd = AABBRightIntersect[0]?.t;
+      }
+      if (AABBBottomIntersect.length > 0) {
+        tEnd = AABBBottomIntersect[0]?.t;
+      }
+    }
+
+    const curves = splitQuadraticBezierCurve(
+      split1.curve2.x1,
+      split1.curve2.y1,
+      split1.curve2.c1x,
+      split1.curve2.c1y,
+      split1.curve2.x2,
+      split1.curve2.y2,
+      tEnd ?? 1
+    );
+
+    return getPointOnQuadraticBezierCurve(
+      ratio,
+      {
+        x: curves.curve1.x1 + tx + startOffsetX,
+        y: curves.curve1.y1 + ty + startOffsetY,
+      },
+      {
+        x: curves.curve1.c1x + tx,
+        y: curves.curve1.c1y + ty,
+      },
+      {
+        x: curves.curve1.x2 + tx + endOffsetX,
+        y: curves.curve1.y2 + ty + endOffsetY,
+      }
+    );
+  } else {
+    return getPointOnCubicBezierCurve(
+      ratio,
+      {
+        x: startHelper.x + tx + startOffsetX,
+        y: startHelper.y + ty + startOffsetY,
+      },
+      {
+        x: startHelper.cx + tx,
+        y: startHelper.cy + ty,
+      },
+      {
+        x: endHelper.cx + tx,
+        y: endHelper.cy + ty,
+      },
+      { x: endHelper.x + tx + endOffsetX, y: endHelper.y + ty + endOffsetY }
+    );
+  }
 };

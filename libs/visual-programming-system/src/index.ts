@@ -8,6 +8,7 @@ export * from './types';
 export * from './utils';
 export * from './canvas-app';
 export * from './utils/bezier';
+export * from './components/utils/bezier-math';
 export * from './spatial-partitioning';
 export * from './constants/measures';
 export * from './components/utils/calculate-cubic-control-points';

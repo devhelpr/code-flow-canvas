@@ -836,10 +836,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           node,
           pathStep.connection.endNode
         );
+
+        let parentX = 0;
+        let parentY = 0;
+        if (
+          pathStep.connection.containerNode &&
+          pathStep.connection.containerNode.getParentedCoordinates
+        ) {
+          const parentCoordinates =
+            pathStep.connection.containerNode.getParentedCoordinates() ?? {
+              x: 0,
+              y: 0,
+            };
+          parentX = parentCoordinates.x;
+          parentY = parentCoordinates.y;
+        }
+
         const domCircle = this.testCircle?.domElement as HTMLElement;
         const domMessage = this.message?.domElement as HTMLElement;
-        domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
-        domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+        domCircle.style.transform = `translate(${
+          bezierCurvePoints.x + parentX
+        }px, ${bezierCurvePoints.y + parentY}px)`;
+        domMessage.style.transform = `translate(${
+          bezierCurvePoints.x + parentX
+        }px, ${bezierCurvePoints.y + parentY}px)`;
       }
     };
 
@@ -883,19 +903,42 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           (this.message?.domElement as HTMLElement).classList.remove('hidden');
 
           if (pathStep.connection.endNode && pathStep.connection) {
+            // also see updateMessageBubble : that's where the bubble are updated via requestAnimationFrame
+
             const bezierCurvePoints = getPointOnConnection<NodeInfo>(
               percentage,
               pathStep.connection,
               node,
               pathStep.connection.endNode
             );
+
+            let parentX = 0;
+            let parentY = 0;
+            if (
+              pathStep.connection.containerNode &&
+              pathStep.connection.containerNode.getParentedCoordinates
+            ) {
+              const parentCoordinates =
+                pathStep.connection.containerNode.getParentedCoordinates() ?? {
+                  x: 0,
+                  y: 0,
+                };
+              parentX = parentCoordinates.x;
+              parentY = parentCoordinates.y;
+            }
             const domCircle = this.testCircle?.domElement as HTMLElement;
             const domMessage = this.message?.domElement as HTMLElement;
             const domMessageText = this.messageText?.domElement as HTMLElement;
             domCircle.style.display = 'flex';
-            domCircle.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+
+            const xHelper = bezierCurvePoints.x + parentX;
+            const yHelper = bezierCurvePoints.y + parentY;
+
+            domCircle.style.transform = `translate(${xHelper}px, ${yHelper}px)`;
             domMessage.style.display = 'flex';
-            domMessage.style.transform = `translate(${bezierCurvePoints.x}px, ${bezierCurvePoints.y}px)`;
+            domMessage.style.transform = `translate(${
+              bezierCurvePoints.x + parentX
+            }px, ${bezierCurvePoints.y + parentY}px)`;
             domMessageText.textContent = pathStep.connectionValue.toString();
             domMessage.title = pathStep.connectionValue.toString();
           }
