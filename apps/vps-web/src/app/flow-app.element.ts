@@ -888,8 +888,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           pathStep.connection.endNode.nodeInfo?.updateVisual &&
           percentage > 0.75
         ) {
+          const nodeState = pathStep.nodeStates.get(
+            pathStep.connection.endNode.id
+          );
           pathStep.connection.endNode.nodeInfo?.updateVisual(
-            pathStep.connectionValue
+            pathStep.connectionValue,
+            nodeState
           );
         }
 
@@ -1435,7 +1439,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   ) => {
     this.resetConnectionSlider(shouldResetConnectionSlider);
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
-    resetRunIndex();
+    if (!isRunViaRunButton) {
+      resetRunIndex();
+    }
     const runCounter = new RunCounter();
     runCounter.setRunCounterResetHandler(() => {
       if (runCounter.runCounter <= 0) {

@@ -614,7 +614,7 @@ export const runNodeFromThumb = (
     runCounter?: RunCounter
   ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
-  input?: string | any[],
+  input?: any,
   _scopeNode?: IRectNodeComponent<NodeInfo>,
   loopIndex?: number,
   scopeId?: string,

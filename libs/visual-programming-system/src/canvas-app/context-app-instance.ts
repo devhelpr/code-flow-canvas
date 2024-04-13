@@ -464,6 +464,14 @@ export const createContextInstanceApp = <T>(
       });
       return result;
     },
+    getNodeState: (id: string) => {
+      const getHandler = nodeGetStateHandlers[id];
+      if (getHandler) {
+        const nodeState = getHandler();
+        return nodeState.data;
+      }
+      return undefined;
+    },
     setNodeStates: (nodeStates: Map<string, any>) => {
       nodeStates.forEach((data, id) => {
         const setHandler = nodeSetStateHandlers[id];

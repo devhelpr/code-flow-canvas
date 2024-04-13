@@ -306,6 +306,11 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     _thumbName?: string,
     scopeId?: string
   ) => {
+    const previousOutput = [...inputValues];
+    if (!isCommmand(input)) {
+      pushValueToArray(input);
+      console.log('array', [...inputValues]);
+    }
     return new Promise((resolve) => {
       if (isCommmand(input)) {
         processCommand(input, loopIndex ?? 0, scopeId).then((result) => {
@@ -323,8 +328,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           }
         });
       } else {
-        const previousOutput = [...inputValues];
-        pushValueToArray(input);
+        //pushValueToArray(input);
         const output = [...inputValues];
         resolve({
           result: output,
@@ -337,13 +341,37 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   };
 
   const getData = () => {
-    return inputValues;
+    return [...inputValues];
   };
   const setData = (_data: any) => {
     //currentValue = data;
   };
   const removeScope = (_scopeId: string) => {
     //
+  };
+
+  const getNodeStatedHandler = () => {
+    //console.log('getNodeStatedHandler array', [...inputValues]);
+    return {
+      data: [...inputValues],
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    //console.log('setNodeStatedHandler array', data);
+    setValue(data);
+  };
+
+  const updateVisual = (data: any, dataContext?: any) => {
+    //console.log('updateVisual array', data, dataContext, typeof dataContext);
+    if (htmlNode) {
+      if (!isCommmand(data)) {
+        if (dataContext) {
+          setValue([...dataContext, data]);
+        }
+      }
+    }
   };
 
   return {
@@ -487,6 +515,13 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.setValue = setValue;
+
+        node.nodeInfo.updateVisual = updateVisual;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
       }
       return node;
     },

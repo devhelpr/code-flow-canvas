@@ -28,7 +28,7 @@ export interface NodeInfo extends BaseNodeInfo {
   getDependencies?: () => { startNodeId: string; endNodeId: string }[];
   supportsDecorators?: boolean;
 
-  updateVisual?: (data: any) => void;
+  updateVisual?: (data: any, dataContext?: any) => void;
 
   initializeOnStartFlow?: boolean;
   isUINode?: boolean;
