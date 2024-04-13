@@ -24,6 +24,7 @@ import {
 import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
+  animatePathForNodeConnectionPairs,
 } from '../follow-path/animate-path';
 import { RunCounter } from '../follow-path/run-counter';
 
@@ -228,118 +229,211 @@ export const createStateMachineNode =
             stateEvent
           );
 
-          removeAllActiveStates();
-          if (stateMachine.currentState) {
-            (
-              stateMachine.currentState.nodeComponent.domElement as HTMLElement
-            )?.classList.add('state-active');
-          }
-
           console.log('NEXTSTATE trigger', nextStateTransition);
-          if (nextStateTransition) {
-            runFlows = true;
-            const eventName = `${nextStateTransition.transition.name}-${nextStateTransition.nextState.name}`;
-            if (node && rootCanvasApp && node.thumbConnectors?.[1]) {
-              runNodeFromThumb(
-                node.thumbConnectors[1],
-                rootCanvasApp,
-                animatePathFromThumb,
-                (inputFromSecondRun: string | any[]) => {
-                  flow1Ran = true;
-
-                  if (flow1Ran && flow2Ran) {
-                    resolve({
-                      result: inputFromSecondRun,
-                      output: inputFromSecondRun,
-                      stop: true,
-                      dummyEndpoint: true,
-                    });
-                  }
+          if (
+            nextStateTransition &&
+            nextStateTransition.transition.connectionIn?.startNode &&
+            nextStateTransition.transition.connectionIn?.endNode
+          ) {
+            animatePathForNodeConnectionPairs(
+              canvasAppInstance!,
+              [
+                {
+                  start: nextStateTransition.transition.connectionIn?.startNode,
+                  connection: nextStateTransition.transition.connectionIn,
+                  end: nextStateTransition.transition.connectionIn?.endNode,
                 },
-                eventName,
-                node,
-                0,
-                scopeId,
-                runCounter
-              );
-            }
-            if (
-              canvasAppInstance &&
-              nextStateTransition.transition.connectionIn
-            ) {
-              connectionExecuteHistory.push({
-                connection: nextStateTransition.transition.connectionIn,
-                connectionValue: input,
-                nodeStates: canvasAppInstance.getNodeStates(),
-              });
-            }
+              ],
+              'white',
+              (_nodeId, _node, _input, _connection) => {
+                if (
+                  nextStateTransition &&
+                  nextStateTransition.transition.connectionOut?.startNode &&
+                  nextStateTransition.transition.connectionOut?.endNode
+                ) {
+                  animatePathForNodeConnectionPairs(
+                    canvasAppInstance!,
+                    [
+                      {
+                        start:
+                          nextStateTransition.transition.connectionOut
+                            ?.startNode,
+                        connection:
+                          nextStateTransition.transition.connectionOut,
+                        end: nextStateTransition.transition.connectionOut
+                          ?.endNode,
+                      },
+                    ],
+                    'white',
+                    (_nodeId, _node, _input, _connection) => {
+                      removeAllActiveStates();
+                      if (stateMachine && stateMachine.currentState) {
+                        (
+                          stateMachine.currentState.nodeComponent
+                            .domElement as HTMLElement
+                        )?.classList.add('state-active');
+                      }
 
-            if (
-              canvasAppInstance &&
-              nextStateTransition.transition.connectionOut
-            ) {
-              connectionExecuteHistory.push({
-                connection: nextStateTransition.transition.connectionOut,
-                connectionValue: input,
-                nodeStates: canvasAppInstance.getNodeStates(),
-              });
-            }
+                      runFlows = true;
+                      const eventName = `${nextStateTransition.transition.name}-${nextStateTransition.nextState.name}`;
+                      if (node && rootCanvasApp && node.thumbConnectors?.[1]) {
+                        runNodeFromThumb(
+                          node.thumbConnectors[1],
+                          rootCanvasApp,
+                          animatePathFromThumb,
+                          (inputFromSecondRun: string | any[]) => {
+                            flow1Ran = true;
 
-            if (typeof input === 'object' && (input as any).value) {
-              const stateEvent = {
-                state: nextStateTransition.nextState.name,
-                value: (input as any).value,
-              };
-              if (rootCanvasApp && node.thumbConnectors?.[0]) {
-                runNodeFromThumb(
-                  node.thumbConnectors[0],
-                  rootCanvasApp,
-                  animatePathFromThumb,
-                  (inputFromSecondRun: string | any[]) => {
-                    flow2Ran = true;
+                            if (flow1Ran && flow2Ran) {
+                              resolve({
+                                result: inputFromSecondRun,
+                                output: inputFromSecondRun,
+                                stop: true,
+                                dummyEndpoint: true,
+                              });
+                            }
+                          },
+                          eventName,
+                          node,
+                          0,
+                          scopeId,
+                          runCounter
+                        );
+                      }
+                      if (
+                        canvasAppInstance &&
+                        nextStateTransition.transition.connectionIn
+                      ) {
+                        connectionExecuteHistory.push({
+                          connection:
+                            nextStateTransition.transition.connectionIn,
+                          connectionValue: input,
+                          nodeStates: canvasAppInstance.getNodeStates(),
+                        });
+                      }
 
-                    if (flow1Ran && flow2Ran) {
-                      resolve({
-                        result: inputFromSecondRun,
-                        output: inputFromSecondRun,
+                      if (
+                        canvasAppInstance &&
+                        nextStateTransition.transition.connectionOut
+                      ) {
+                        connectionExecuteHistory.push({
+                          connection:
+                            nextStateTransition.transition.connectionOut,
+                          connectionValue: input,
+                          nodeStates: canvasAppInstance.getNodeStates(),
+                        });
+                      }
+
+                      let mainOutputNodeRan = false;
+                      if (typeof input === 'object' && (input as any).value) {
+                        const stateEvent = {
+                          state: nextStateTransition.nextState.name,
+                          value: (input as any).value,
+                        };
+                        if (rootCanvasApp && node.thumbConnectors?.[0]) {
+                          runNodeFromThumb(
+                            node.thumbConnectors[0],
+                            rootCanvasApp,
+                            animatePathFromThumb,
+                            (inputFromSecondRun: string | any[]) => {
+                              flow2Ran = true;
+
+                              if (flow1Ran && flow2Ran) {
+                                resolve({
+                                  result: inputFromSecondRun,
+                                  output: inputFromSecondRun,
+                                  stop: true,
+                                  dummyEndpoint: true,
+                                });
+                              }
+                            },
+                            stateEvent,
+                            node,
+                            0,
+                            scopeId,
+                            runCounter
+                          );
+                          mainOutputNodeRan = true;
+                        }
+                      }
+
+                      if (
+                        !mainOutputNodeRan &&
+                        rootCanvasApp &&
+                        node.thumbConnectors?.[0]
+                      ) {
+                        runNodeFromThumb(
+                          node.thumbConnectors[0],
+                          rootCanvasApp,
+                          animatePathFromThumb,
+                          (inputFromSecondRun: string | any[]) => {
+                            flow2Ran = true;
+                            if (flow1Ran && flow2Ran) {
+                              resolve({
+                                result: inputFromSecondRun,
+                                output: inputFromSecondRun,
+                                stop: true,
+                                dummyEndpoint: true,
+                              });
+                            }
+                          },
+                          nextStateTransition.nextState.name,
+                          node,
+                          0,
+                          scopeId,
+                          runCounter
+                        );
+                      }
+                      return {
+                        result: false,
                         stop: true,
-                        dummyEndpoint: true,
-                      });
-                    }
-                  },
-                  stateEvent,
-                  node,
-                  0,
-                  scopeId,
-                  runCounter
-                );
-                return;
-              }
-            }
+                        output: '',
+                        followPathByName: undefined,
+                      };
+                    },
+                    () => {
+                      //
+                    },
+                    input,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    scopeId,
+                    runCounter
+                  );
+                }
+                return {
+                  result: false,
+                  stop: true,
+                  output: '',
+                  followPathByName: undefined,
+                };
+              },
+              () => {
+                //
+              },
+              input,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              scopeId,
+              runCounter
+            );
 
-            if (rootCanvasApp && node.thumbConnectors?.[0]) {
-              runNodeFromThumb(
-                node.thumbConnectors[0],
-                rootCanvasApp,
-                animatePathFromThumb,
-                (inputFromSecondRun: string | any[]) => {
-                  flow2Ran = true;
-                  if (flow1Ran && flow2Ran) {
-                    resolve({
-                      result: inputFromSecondRun,
-                      output: inputFromSecondRun,
-                      stop: true,
-                      dummyEndpoint: true,
-                    });
-                  }
-                },
-                nextStateTransition.nextState.name,
-                node,
-                0,
-                scopeId,
-                runCounter
-              );
-              return;
+            return;
+          } else {
+            removeAllActiveStates();
+            if (stateMachine.currentState) {
+              (
+                stateMachine.currentState.nodeComponent
+                  .domElement as HTMLElement
+              )?.classList.add('state-active');
             }
           }
         }
