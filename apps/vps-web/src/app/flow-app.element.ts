@@ -1439,9 +1439,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   ) => {
     this.resetConnectionSlider(shouldResetConnectionSlider);
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
-    if (!isRunViaRunButton) {
-      resetRunIndex();
-    }
+
     const runCounter = new RunCounter();
     runCounter.setRunCounterResetHandler(() => {
       if (runCounter.runCounter <= 0) {

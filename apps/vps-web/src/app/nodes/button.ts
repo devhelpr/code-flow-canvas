@@ -10,7 +10,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import { runNode } from '../simple-flow-engine/simple-flow-engine';
+import { getRunIndex, runNode } from '../simple-flow-engine/simple-flow-engine';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 import { RunCounter } from '../follow-path/run-counter';
@@ -122,24 +122,28 @@ export const getButton =
               }
               triggerButton = true;
               runCounter = createRunCounterContext(false, false);
+
               runNode(
                 containerNode ?? node,
                 containerNode
                   ? (containerNode.nodeInfo as any)?.canvasAppInstance
                   : canvasApp,
                 animatePath,
-                undefined,
+                () => {
+                  //
+                },
                 containerNode
                   ? node.nodeInfo.formValues['caption'] || 'Button'
                   : currentValue.toString(),
                 undefined,
                 undefined,
-                undefined,
+                getRunIndex(),
                 undefined,
                 undefined,
                 runCounter,
                 false
               );
+
               return false;
             },
           },

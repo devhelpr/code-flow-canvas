@@ -127,13 +127,13 @@ interface NodeAnimatonInfo<T> {
   singleStep?: boolean;
 
   domCircle: HTMLElement;
-  domMessage: HTMLElement;
+  domMessage?: HTMLElement;
   offsetX?: number;
   offsetY?: number;
 
   testCircle: IDOMElement;
-  message: IDOMElement;
-  messageText: IDOMElement;
+  message?: IDOMElement;
+  messageText?: IDOMElement;
 
   color: string;
   runCounter?: RunCounter;
@@ -290,13 +290,14 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
           domCircle.style.transform = `translate(${
             bezierCurvePoints.x + (offsetX ?? 0)
           }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
-          if (!animatedNodes?.node1) {
+          if (!animatedNodes?.node1 && domMessage) {
             domMessage.style.display = 'flex';
           }
-          domMessage.style.transform = `translate(${
-            bezierCurvePoints.x + (offsetX ?? 0)
-          }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
-
+          if (domMessage) {
+            domMessage.style.transform = `translate(${
+              bezierCurvePoints.x + (offsetX ?? 0)
+            }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
+          }
           loop += getLoopIncrement() * elapsed * (0.0001 * speedMeter);
           nodeAnimation.animationLoop = loop;
           if (loop > getMaxLoop()) {
@@ -403,10 +404,10 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
           }
           testCircle && canvasApp?.elements.delete(testCircle.id);
           testCircle?.domElement?.remove();
-
-          canvasApp?.elements.delete(message.id);
-          message?.domElement?.remove();
-
+          if (message) {
+            canvasApp?.elements.delete(message.id);
+            message?.domElement?.remove();
+          }
           nodeAnimationMap.delete(key);
 
           if (nodeAnimation.onStopped) {
@@ -441,6 +442,7 @@ export const animatePathForNodeConnectionPairs = <T>(
     node1?: IDOMElement;
     node2?: IDOMElement;
     node3?: IDOMElement;
+    cursorOnly?: boolean;
   },
   offsetX?: number,
   offsetY?: number,
@@ -524,39 +526,44 @@ export const animatePathForNodeConnectionPairs = <T>(
 
     // eslint-disable-next-line prefer-const
     let message =
-      animatedNodes?.node2 ??
-      createElement(
-        'div',
-        {
-          class: `connection-cursor__message flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-50px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
-          style: {
-            'clip-path':
-              'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
-          },
-        },
-        canvasApp?.canvas.domElement,
-        ''
-      );
+      animatedNodes?.cursorOnly === true
+        ? undefined
+        : animatedNodes?.node2 ??
+          createElement(
+            'div',
+            {
+              class: `connection-cursor__message flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-50px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
+              style: {
+                'clip-path':
+                  'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
+              },
+            },
+            canvasApp?.canvas.domElement,
+            ''
+          );
 
     // eslint-disable-next-line prefer-const
     let messageText =
-      animatedNodes?.node3 ??
-      createElement(
-        'div',
-        {
-          class: `connection-cursor__text truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
-        },
-        message.domElement,
-        input?.toString() ??
-          (start.nodeInfo as unknown as any)?.formValues?.Expression ??
-          ''
-      );
+      animatedNodes?.cursorOnly === true
+        ? undefined
+        : animatedNodes?.node3 ??
+          createElement(
+            'div',
+            {
+              class: `connection-cursor__text truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+            },
+            message?.domElement,
+            input?.toString() ??
+              (start.nodeInfo as unknown as any)?.formValues?.Expression ??
+              ''
+          );
     //console.log('animatePathForNodeConnectionPairs', input);
-    messageText.domElement.textContent =
-      input?.toString() ??
-      (start.nodeInfo as unknown as any)?.formValues?.Expression ??
-      '';
-
+    if (messageText) {
+      messageText.domElement.textContent =
+        input?.toString() ??
+        (start.nodeInfo as unknown as any)?.formValues?.Expression ??
+        '';
+    }
     // dirty hack to prevent reusing cached node on next iteration if nodeConnectionPairs.length > 1
     if (animatedNodes?.node1) {
       animatedNodes.node1 = undefined;
@@ -569,23 +576,30 @@ export const animatePathForNodeConnectionPairs = <T>(
     }
 
     const domCircle = testCircle.domElement as HTMLElement;
-    const domMessage = message.domElement as HTMLElement;
+
+    const domMessage = message?.domElement as HTMLElement;
     if (!animatedNodes?.node1) {
       domCircle.style.display = 'none';
-      domMessage.style.display = 'none';
-      domMessage.style.pointerEvents = 'none';
+      if (domMessage) {
+        domMessage.style.display = 'none';
+        domMessage.style.pointerEvents = 'none';
+      }
     }
 
     if (connection.layer === 2) {
       domCircle.classList.add('layer-2');
-      domMessage.classList.add('layer-2');
       domCircle.classList.remove('layer-1');
-      domMessage.classList.remove('layer-1');
+      if (domMessage) {
+        domMessage.classList.add('layer-2');
+        domMessage.classList.remove('layer-1');
+      }
     } else {
       domCircle.classList.add('layer-1');
-      domMessage.classList.add('layer-1');
       domCircle.classList.remove('layer-2');
-      domMessage.classList.remove('layer-2');
+      if (domMessage) {
+        domMessage.classList.add('layer-1');
+        domMessage.classList.remove('layer-2');
+      }
     }
 
     runCounter?.incrementRunCounter();
@@ -608,8 +622,8 @@ export const animatePathForNodeConnectionPairs = <T>(
       domMessage,
       color,
       testCircle,
-      message,
-      messageText,
+      message: message,
+      messageText: messageText,
       singleStep,
       offsetX,
       offsetY,

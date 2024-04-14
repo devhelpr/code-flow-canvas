@@ -325,6 +325,9 @@ export const resetRunIndex = () => {
 export const increaseRunIndex = () => {
   runIndex++;
 };
+export const getRunIndex = () => {
+  return runIndex;
+};
 
 export const runNode = (
   node: IRectNodeComponent<NodeInfo>,

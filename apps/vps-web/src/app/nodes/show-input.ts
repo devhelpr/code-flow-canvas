@@ -65,7 +65,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
 
   const getNodeStatedHandler = () => {
     return {
-      data: inputValues,
+      data: structuredClone(inputValues),
       id: node.id,
     };
   };

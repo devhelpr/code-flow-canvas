@@ -396,7 +396,9 @@ export const createStateMachineNode =
                     },
                     input,
                     undefined,
-                    undefined,
+                    {
+                      cursorOnly: true,
+                    },
                     undefined,
                     undefined,
                     undefined,
@@ -417,7 +419,9 @@ export const createStateMachineNode =
               },
               input,
               undefined,
-              undefined,
+              {
+                cursorOnly: true,
+              },
               undefined,
               undefined,
               undefined,
