@@ -890,6 +890,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         const pointValue = sliderValue - step * stepSize;
         const percentage = pointValue / stepSize;
 
+        if (percentage < 0.25) {
+          if (pathStep.connection.startNode) {
+            (
+              pathStep.connection.startNode?.domElement as HTMLElement
+            ).classList.add('connection-history__node--active');
+          }
+        }
         if (percentage > 0.75) {
           if (pathStep.connection.endNode) {
             (
