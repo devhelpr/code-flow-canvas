@@ -958,9 +958,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               typeof pathStep.connectionValue === 'object'
             ) {
               const content = JSON.stringify(pathStep.connectionValue, null, 1)
-                .replaceAll('{', '')
+                .replaceAll('{\n', '')
+                .replaceAll(',\n', '\n')
                 .replaceAll('}', '')
-                .replaceAll('"', '');
+                .replaceAll('"', '')
+                .replace(/^ +/gm, '');
               domMessageText.textContent = content;
               domMessage.title = content;
             } else {

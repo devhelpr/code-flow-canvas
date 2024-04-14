@@ -24,7 +24,7 @@ export interface ConnectionExecute {
   connection: IConnectionNodeComponent<NodeInfo>;
   connectionValue: any;
   nodeStates: Map<string, any>;
-  cursorOnly?: true;
+  cursorOnly?: boolean;
 }
 
 export let connectionExecuteHistory: ConnectionExecute[] = [];
@@ -609,6 +609,7 @@ export const runNodeFromThumb = (
       node1?: IElementNode<unknown>;
       node2?: IElementNode<unknown>;
       node3?: IElementNode<unknown>;
+      cursorOnly?: boolean;
     },
     offsetX?: number,
     offsetY?: number,
@@ -622,9 +623,11 @@ export const runNodeFromThumb = (
   _scopeNode?: IRectNodeComponent<NodeInfo>,
   loopIndex?: number,
   scopeId?: string,
-  runCounter?: RunCounter
+  runCounter?: RunCounter,
+  showCursorOnly = false
 ) => {
   //let result: any = false;
+  let firstStoreNodeState = true;
   let followPath: string | undefined = undefined;
   animatePathFromThumb(
     nodeThumb,
@@ -643,10 +646,12 @@ export const runNodeFromThumb = (
               connection as unknown as IConnectionNodeComponent<NodeInfo>,
             connectionValue: input,
             nodeStates: canvasApp.getNodeStates(),
+            cursorOnly: firstStoreNodeState && showCursorOnly === true,
           });
         }
       };
       storeNodeStates();
+      firstStoreNodeState = false;
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
       //console.log('runNodeFromThumb', loopIndex, nextNode);
@@ -780,7 +785,9 @@ export const runNodeFromThumb = (
     },
     input,
     followPath,
-    undefined,
+    {
+      cursorOnly: showCursorOnly,
+    },
     undefined,
     undefined,
     undefined,

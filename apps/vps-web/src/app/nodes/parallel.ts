@@ -97,7 +97,8 @@ export const getParallel =
           node,
           loopIndex,
           scopeId,
-          runCounter
+          runCounter,
+          true
         );
 
         runNodeFromThumb(
@@ -121,7 +122,8 @@ export const getParallel =
           node,
           loopIndex,
           scopeId,
-          runCounter
+          runCounter,
+          true
         );
       });
     };

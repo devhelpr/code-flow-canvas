@@ -516,5 +516,5 @@ position: relative;
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 	text-align: center;
-    white-space: normal;
+    white-space: pre-wrap;
 }

@@ -561,9 +561,11 @@ export const animatePathForNodeConnectionPairs = <T>(
     if (messageText) {
       if (input && typeof input === 'object') {
         messageText.domElement.textContent = JSON.stringify(input, null, 1)
-          .replaceAll('{', '')
+          .replaceAll('{\n', '')
+          .replaceAll(',\n', '\n')
           .replaceAll('}', '')
-          .replaceAll('"', '');
+          .replaceAll('"', '')
+          .replace(/^ +/gm, '');
       } else {
         messageText.domElement.textContent =
           input?.toString() ??
