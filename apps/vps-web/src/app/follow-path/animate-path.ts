@@ -532,7 +532,7 @@ export const animatePathForNodeConnectionPairs = <T>(
           createElement(
             'div',
             {
-              class: `connection-cursor__message flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-2 bg-white text-black absolute top-[-100px] z-[1000] left-[-50px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
+              class: `connection-cursor__message flex text-center truncate-message min-w-0 overflow-hidden z-[1010] pointer-events-none origin-center px-1 bg-white text-black absolute top-[-100px] z-[1000] left-[-50px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
               style: {
                 'clip-path':
                   'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
@@ -550,7 +550,7 @@ export const animatePathForNodeConnectionPairs = <T>(
           createElement(
             'div',
             {
-              class: `connection-cursor__text truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+              class: `connection-cursor__text truncate-message min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
             },
             message?.domElement,
             input?.toString() ??
@@ -559,10 +559,17 @@ export const animatePathForNodeConnectionPairs = <T>(
           );
     //console.log('animatePathForNodeConnectionPairs', input);
     if (messageText) {
-      messageText.domElement.textContent =
-        input?.toString() ??
-        (start.nodeInfo as unknown as any)?.formValues?.Expression ??
-        '';
+      if (input && typeof input === 'object') {
+        messageText.domElement.textContent = JSON.stringify(input, null, 1)
+          .replaceAll('{', '')
+          .replaceAll('}', '')
+          .replaceAll('"', '');
+      } else {
+        messageText.domElement.textContent =
+          input?.toString() ??
+          (start.nodeInfo as unknown as any)?.formValues?.Expression ??
+          '';
+      }
     }
     // dirty hack to prevent reusing cached node on next iteration if nodeConnectionPairs.length > 1
     if (animatedNodes?.node1) {

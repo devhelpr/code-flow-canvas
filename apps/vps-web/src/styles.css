@@ -510,3 +510,11 @@ position: relative;
 .form-field__read-color {
 	@apply inline-block w-[20px] h-[10px] rounded;
 }
+
+.truncate-message {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	text-align: center;
+    white-space: normal;
+}

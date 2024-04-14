@@ -768,7 +768,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.message = createElement(
       'div',
       {
-        class: `flex text-center truncate min-w-0 overflow-hidden z-[1010] pointer-events-auto origin-center px-2 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
+        class: `flex text-center truncate-message min-w-0 overflow-hidden z-[1010] pointer-events-auto origin-center px-1 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
         style: {
           'clip-path':
             'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
@@ -781,7 +781,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.messageText = createElement(
       'div',
       {
-        class: `truncate min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
+        class: `truncate-message min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
       },
       this.message.domElement,
       ''
@@ -901,11 +901,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           sliderValue % stepSize !== 0 &&
           step < connectionExecuteHistory.length
         ) {
+          if (pathStep.cursorOnly === true) {
+            (this.message?.domElement as HTMLElement).classList.remove('flex');
+            (this.message?.domElement as HTMLElement).classList.add('hidden');
+          } else {
+            (this.message?.domElement as HTMLElement).classList.remove(
+              'hidden'
+            );
+          }
+
           (this.testCircle?.domElement as HTMLElement).classList.remove(
             'hidden'
           );
-          (this.message?.domElement as HTMLElement).classList.remove('hidden');
-
           if (pathStep.connection.endNode && pathStep.connection) {
             // also see updateMessageBubble : that's where the bubble are updated via requestAnimationFrame
 
@@ -933,18 +940,33 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             const domCircle = this.testCircle?.domElement as HTMLElement;
             const domMessage = this.message?.domElement as HTMLElement;
             const domMessageText = this.messageText?.domElement as HTMLElement;
-            domCircle.style.display = 'flex';
-
             const xHelper = bezierCurvePoints.x + parentX;
             const yHelper = bezierCurvePoints.y + parentY;
+            domCircle.style.display = 'flex';
 
             domCircle.style.transform = `translate(${xHelper}px, ${yHelper}px)`;
-            domMessage.style.display = 'flex';
+            if (pathStep.cursorOnly === true) {
+              domMessage.style.display = 'none';
+            } else {
+              domMessage.style.display = 'flex';
+            }
             domMessage.style.transform = `translate(${
               bezierCurvePoints.x + parentX
             }px, ${bezierCurvePoints.y + parentY}px)`;
-            domMessageText.textContent = pathStep.connectionValue.toString();
-            domMessage.title = pathStep.connectionValue.toString();
+            if (
+              pathStep.connectionValue &&
+              typeof pathStep.connectionValue === 'object'
+            ) {
+              const content = JSON.stringify(pathStep.connectionValue, null, 1)
+                .replaceAll('{', '')
+                .replaceAll('}', '')
+                .replaceAll('"', '');
+              domMessageText.textContent = content;
+              domMessage.title = content;
+            } else {
+              domMessageText.textContent = pathStep.connectionValue.toString();
+              domMessage.title = pathStep.connectionValue.toString();
+            }
           }
         }
       }

@@ -24,6 +24,7 @@ export interface ConnectionExecute {
   connection: IConnectionNodeComponent<NodeInfo>;
   connectionValue: any;
   nodeStates: Map<string, any>;
+  cursorOnly?: true;
 }
 
 export let connectionExecuteHistory: ConnectionExecute[] = [];

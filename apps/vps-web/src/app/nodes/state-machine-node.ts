@@ -309,6 +309,7 @@ export const createStateMachineNode =
                             nextStateTransition.transition.connectionIn,
                           connectionValue: input,
                           nodeStates: canvasAppInstance.getNodeStates(),
+                          cursorOnly: true,
                         });
                       }
 
@@ -321,6 +322,7 @@ export const createStateMachineNode =
                             nextStateTransition.transition.connectionOut,
                           connectionValue: input,
                           nodeStates: canvasAppInstance.getNodeStates(),
+                          cursorOnly: true,
                         });
                       }
 
