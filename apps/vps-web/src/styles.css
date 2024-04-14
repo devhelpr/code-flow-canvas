@@ -252,6 +252,12 @@ rect-node:has(.hover) > .shape-circle,
 	z-index: 4;
 
 }
+.connection-history--sliding .rect-node {
+	@apply outline-[2px] outline outline-transparent outline-offset-2;
+}
+.rect-node.connection-history__node--active {
+	@apply outline-blue-500;
+}
 
 input {
 	cursor: pointer;

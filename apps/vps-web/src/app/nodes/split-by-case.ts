@@ -91,6 +91,7 @@ export const getSplitByCase =
               resolve({
                 result: true,
                 stop: true,
+                dummyEndpoint: true,
               });
             },
             input,

@@ -864,14 +864,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     };
 
     const showProgressOnPathExecution = (sliderValue: number) => {
+      document.body.classList.add('connection-history--sliding');
       if (this.scopeNodeDomElement) {
         this.scopeNodeDomElement.classList.remove('bg-blue-300');
         this.scopeNodeDomElement = undefined;
       }
+
       const result = getSliderNodeByPosition(sliderValue);
       if (result === false) {
         return;
       }
+      document
+        .querySelectorAll('.connection-history__node--active')
+        .forEach((element) => {
+          element.classList.remove('connection-history__node--active');
+        });
       const step = result.step;
       const stepSize = result.stepSize;
       const pathStep = result.pathStep;
@@ -883,18 +890,29 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         const pointValue = sliderValue - step * stepSize;
         const percentage = pointValue / stepSize;
 
-        if (
-          pathStep.connection.endNode &&
-          pathStep.connection.endNode.nodeInfo?.updateVisual &&
-          percentage > 0.75
-        ) {
-          const nodeState = pathStep.nodeStates.get(
-            pathStep.connection.endNode.id
-          );
-          pathStep.connection.endNode.nodeInfo?.updateVisual(
-            pathStep.connectionValue,
-            nodeState
-          );
+        if (percentage > 0.75) {
+          if (pathStep.connection.endNode) {
+            (
+              pathStep.connection.endNode?.domElement as HTMLElement
+            ).classList.add('connection-history__node--active');
+          }
+
+          if (
+            pathStep.connection.endNode &&
+            pathStep.connection.endNode.nodeInfo?.updateVisual
+          ) {
+            const nodeState = pathStep.nodeStates.get(
+              pathStep.connection.endNode.id
+            );
+            pathStep.connection.endNode.nodeInfo?.updateVisual(
+              pathStep.connectionValue,
+              nodeState
+            );
+          } else {
+            if (pathStep.nextNodeStates) {
+              this.canvasApp?.setNodeStates(pathStep.nextNodeStates);
+            }
+          }
         }
 
         if (
@@ -1445,6 +1463,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   resetConnectionSlider = (shouldResetConnectionSlider = true) => {
     console.log('resetConnectionSlider');
+    document.body.classList.remove('connection-history--sliding');
     (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
     (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
     (this.pathRange?.domElement as HTMLElement).setAttribute(
@@ -1454,6 +1473,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (shouldResetConnectionSlider) {
       connectionExecuteHistory.length = 0;
     }
+
+    document
+      .querySelectorAll('.connection-history__node--active')
+      .forEach((element) => {
+        element.classList.remove('connection-history__node--active');
+      });
+
     this.clearPathExecution();
   };
 

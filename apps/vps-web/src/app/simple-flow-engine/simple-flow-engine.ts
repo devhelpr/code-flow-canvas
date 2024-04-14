@@ -25,6 +25,7 @@ export interface ConnectionExecute {
   connectionValue: any;
   nodeStates: Map<string, any>;
   cursorOnly?: boolean;
+  nextNodeStates?: Map<string, any>;
 }
 
 export let connectionExecuteHistory: ConnectionExecute[] = [];
@@ -121,6 +122,7 @@ const triggerExecution = (
   scopeId?: string,
   runCounter?: RunCounter
 ) => {
+  let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
   if (result !== undefined) {
     animatePath(
       node,
@@ -137,12 +139,13 @@ const triggerExecution = (
         const storeNodeStates = () => {
           const nodeStates = canvasApp.getNodeStates();
           if (!canvasApp.isContextOnly) {
-            connectionExecuteHistory.push({
+            lastConnectionExecutionHistory = {
               connection:
                 connection as unknown as IConnectionNodeComponent<NodeInfo>,
               connectionValue: input,
               nodeStates: nodeStates,
-            });
+            };
+            connectionExecuteHistory.push(lastConnectionExecutionHistory);
           }
         };
         storeNodeStates();
@@ -179,6 +182,11 @@ const triggerExecution = (
             promise
               .then((computeResult: any) => {
                 if (computeResult.stop && !computeResult.dummyEndpoint) {
+                  if (lastConnectionExecutionHistory) {
+                    lastConnectionExecutionHistory.nextNodeStates =
+                      canvasApp.getNodeStates();
+                    lastConnectionExecutionHistory = undefined;
+                  }
                   if (onStopped) {
                     if (runCounter) {
                       runCounter.decrementRunCounter();
@@ -188,8 +196,8 @@ const triggerExecution = (
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {
-                  //storeNodeStates();
                   if (computeResult.stop && computeResult.dummyEndpoint) {
+                    lastConnectionExecutionHistory = undefined;
                     console.log('dummyEndpoint(2)', computeResult.output);
                     if (computeResult.output) {
                       resolve({
@@ -219,6 +227,7 @@ const triggerExecution = (
                 }
               })
               .catch((error: any) => {
+                lastConnectionExecutionHistory = undefined;
                 reject(error);
               });
           });
@@ -252,7 +261,12 @@ const triggerExecution = (
           followPath = computeResult.followPath;
 
           if (computeResult.stop) {
-            //storeNodeStates();
+            if (lastConnectionExecutionHistory) {
+              lastConnectionExecutionHistory.nextNodeStates =
+                canvasApp.getNodeStates();
+              lastConnectionExecutionHistory = undefined;
+            }
+
             if (onStopped) {
               onStopped(computeResult.output ?? '', scopeId);
             }
@@ -284,7 +298,6 @@ const triggerExecution = (
           result = false;
           followPath = undefined;
         }
-        //storeNodeStates();
         if (result === undefined) {
           return {
             result: false,
@@ -299,6 +312,12 @@ const triggerExecution = (
         };
       }) as OnNextNodeFunction<NodeInfo>,
       (input: string | any[]) => {
+        if (lastConnectionExecutionHistory) {
+          lastConnectionExecutionHistory.nextNodeStates =
+            canvasApp.getNodeStates();
+          lastConnectionExecutionHistory = undefined;
+        }
+
         if (onStopped) {
           onStopped(input, scopeId);
         }
@@ -629,6 +648,7 @@ export const runNodeFromThumb = (
   //let result: any = false;
   let firstStoreNodeState = true;
   let followPath: string | undefined = undefined;
+  let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
   animatePathFromThumb(
     nodeThumb,
     'white',
@@ -641,13 +661,14 @@ export const runNodeFromThumb = (
     ) => {
       const storeNodeStates = () => {
         if (!canvasApp.isContextOnly) {
-          connectionExecuteHistory.push({
+          lastConnectionExecutionHistory = {
             connection:
               connection as unknown as IConnectionNodeComponent<NodeInfo>,
             connectionValue: input,
             nodeStates: canvasApp.getNodeStates(),
             cursorOnly: firstStoreNodeState && showCursorOnly === true,
-          });
+          };
+          connectionExecuteHistory.push(lastConnectionExecutionHistory);
         }
       };
       storeNodeStates();
@@ -685,8 +706,13 @@ export const runNodeFromThumb = (
             .then((computeResult: any) => {
               result = computeResult.result;
               followPath = computeResult.followPath;
-              //storeNodeStates();
               if (computeResult.stop) {
+                if (lastConnectionExecutionHistory) {
+                  lastConnectionExecutionHistory.nextNodeStates =
+                    canvasApp.getNodeStates();
+                  lastConnectionExecutionHistory = undefined;
+                }
+
                 resolve({
                   result: result,
                   stop: true,
@@ -736,7 +762,12 @@ export const runNodeFromThumb = (
 
         //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
-          //storeNodeStates();
+          if (lastConnectionExecutionHistory) {
+            lastConnectionExecutionHistory.nextNodeStates =
+              canvasApp.getNodeStates();
+            lastConnectionExecutionHistory = undefined;
+          }
+
           return {
             result: result,
             stop: true,
@@ -770,7 +801,6 @@ export const runNodeFromThumb = (
           };
         }
         input = decoratorInput;
-        //storeNodeStates();
       }
       return {
         result: true,
@@ -779,6 +809,12 @@ export const runNodeFromThumb = (
       };
     },
     (input: string | any[]) => {
+      if (lastConnectionExecutionHistory) {
+        lastConnectionExecutionHistory.nextNodeStates =
+          canvasApp.getNodeStates();
+        lastConnectionExecutionHistory = undefined;
+      }
+
       if (onStopped) {
         onStopped(input, scopeId);
       }
