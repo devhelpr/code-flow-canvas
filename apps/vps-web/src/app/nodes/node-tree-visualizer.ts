@@ -299,7 +299,7 @@ export const getNodeTreeVisualizer = (
         'div',
         {
           class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node 
-          bg-purple-600 text-white p-4 rounded text-center`,
+          bg-fuchsia-600 text-white p-4 rounded text-center`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -336,7 +336,7 @@ export const getNodeTreeVisualizer = (
         'div',
         {
           class:
-            'absolute top-0 left-0 bg-purple-400 text-white px-1 rounded -translate-y-2/4 translate-x-1',
+            'absolute top-0 left-0 bg-fuchsia-400 text-white px-1 rounded -translate-y-2/4 translate-x-1',
         },
         rect.nodeComponent.domElement as unknown as HTMLElement,
         commandName

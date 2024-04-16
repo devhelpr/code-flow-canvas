@@ -121,7 +121,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-purple-500 p-4 rounded max-w-[120px] max-h-[500px] text-white`,
+          class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[120px] max-h-[500px] text-white`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement
@@ -155,7 +155,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         ],
         wrapper,
         {
-          classNames: `bg-purple-500 p-4 rounded`,
+          classNames: `p-4 rounded`,
         },
         undefined,
         false,
