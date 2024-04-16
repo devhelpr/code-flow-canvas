@@ -561,7 +561,8 @@ export const run = (
   input?: string,
   offsetX?: number,
   offsetY?: number,
-  runCounter?: RunCounter
+  runCounter?: RunCounter,
+  shouldResetConnectionSlider?: boolean
 ) => {
   /*
 	TODO : simple flow engine to run the nodes
@@ -574,7 +575,7 @@ export const run = (
       .. it errors .. stop the flow
 
   */
-  if (!canvasApp.isContextOnly) {
+  if (!canvasApp.isContextOnly && shouldResetConnectionSlider) {
     connectionExecuteHistory = [];
   }
 

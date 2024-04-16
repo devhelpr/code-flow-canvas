@@ -634,7 +634,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         click: (event) => {
           event.preventDefault();
           (this.runButton?.domElement as HTMLButtonElement).disabled = true;
-          this.clearPathExecution();
+          //this.clearPathExecution();
           setRunCounterUpdateElement(
             runCounterElement.domElement as HTMLElement
           );
@@ -651,7 +651,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               }
             });
             (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
-            const runCounter = this.createRunCounterContext(true);
+            const runCounter = this.createRunCounterContext(true, false);
             run(
               this.canvasApp?.elements,
               this.canvasApp,
@@ -662,7 +662,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               undefined,
               undefined,
               undefined,
-              runCounter
+              runCounter,
+              false
             );
           }
           return false;
