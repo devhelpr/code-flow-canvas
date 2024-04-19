@@ -1495,6 +1495,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       'disabled'
     );
     if (shouldResetConnectionSlider) {
+      console.log('resetConnectionSlider: clear connectionExecuteHistory');
       connectionExecuteHistory.length = 0;
     }
 
@@ -1511,12 +1512,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     isRunViaRunButton = false,
     shouldResetConnectionSlider = true
   ) => {
+    console.log(
+      'createRunCounterContext',
+      isRunViaRunButton,
+      shouldResetConnectionSlider
+    );
     this.resetConnectionSlider(shouldResetConnectionSlider);
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
 
     const runCounter = new RunCounter();
     runCounter.setRunCounterResetHandler(() => {
       if (runCounter.runCounter <= 0) {
+        console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
         (this.pathRange?.domElement as HTMLButtonElement).disabled = false;
         if (isRunViaRunButton) {
           (this.runButton?.domElement as HTMLButtonElement).disabled = false;
@@ -1526,6 +1533,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         (this.pathRange?.domElement as HTMLElement).setAttribute(
           'max',
           (connectionExecuteHistory.length * 1000).toString()
+        );
+      } else {
+        console.log(
+          'setRunCounterResetHandler: runCounter.runCounter > 0',
+          runCounter.runCounter
         );
       }
     });

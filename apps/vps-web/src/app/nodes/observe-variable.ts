@@ -21,7 +21,6 @@ export const observeVariable =
     let node: IRectNodeComponent<NodeInfo>;
     let variableName = '';
     let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
-    let runCounter: RunCounter | undefined = undefined;
     const initializeCompute = () => {
       if (canvasAppInstance && variableName) {
         canvasAppInstance.removeObserveVariable(node.id, variableName);
@@ -35,9 +34,8 @@ export const observeVariable =
       _payload?: any,
       _thumbName?: string,
       _scopeId?: string,
-      runCounterCompute?: RunCounter
+      _runCounterCompute?: RunCounter
     ) => {
-      runCounter = runCounterCompute;
       return {
         result: input,
         stop: input === undefined || input === null || input === '',
@@ -68,26 +66,30 @@ export const observeVariable =
 
     const setupObserveVariable = () => {
       if (canvasAppInstance && node) {
-        canvasAppInstance.observeVariable(node.id, variableName, (value) => {
-          console.log('observeVariable', value);
-          if (canvasAppInstance) {
-            runNode(
-              node,
-              canvasAppInstance,
-              animatePath,
-              (_input) => {
-                //
-              },
-              value,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              runCounter
-            );
+        canvasAppInstance.observeVariable(
+          node.id,
+          variableName,
+          (value, runCounter?: any) => {
+            console.log('observeVariable', value, runCounter);
+            if (canvasAppInstance) {
+              runNode(
+                node,
+                canvasAppInstance,
+                animatePath,
+                (_input) => {
+                  //
+                },
+                value,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                runCounter
+              );
+            }
           }
-        });
+        );
       }
     };
 

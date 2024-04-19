@@ -116,6 +116,8 @@ export const getUserInput =
                 const matches = value.match(regex);
                 if (matches) {
                   //isResettingInput = true;
+
+                  // this doesnt trigger a onchange event :-)
                   inputElement.value = matches[0];
 
                   value = matches[0];

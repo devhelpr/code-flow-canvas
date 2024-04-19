@@ -71,7 +71,7 @@ export const createCanvasApp = <T>(
   > = {};
   const variableObservers: Map<
     string,
-    Map<string, (data: any) => void>
+    Map<string, (data: any, runCounter?: any) => void>
   > = new Map();
 
   const commandHandlers: Record<string, ICommandHandler> = {};
@@ -1588,7 +1588,12 @@ export const createCanvasApp = <T>(
       }
       return false;
     },
-    setVariable: (variableName: string, data: any, scopeId?: string) => {
+    setVariable: (
+      variableName: string,
+      data: any,
+      scopeId?: string,
+      runCounter?: any
+    ) => {
       if (scopeId && tempVariables[scopeId][variableName]) {
         tempVariables[scopeId][variableName] = data;
       } else if (variableName && variables[variableName]) {
@@ -1597,7 +1602,7 @@ export const createCanvasApp = <T>(
         const map = variableObservers.get(`${variableName}`);
         if (map) {
           map.forEach((observer) => {
-            observer(data);
+            observer(data, runCounter);
           });
         }
       }
@@ -1639,7 +1644,7 @@ export const createCanvasApp = <T>(
     observeVariable: (
       nodeId: string,
       variableName: string,
-      updated: (data: any) => void
+      updated: (data: any, runCounter?: any) => void
     ) => {
       let map = variableObservers.get(`${variableName}`);
       if (!map) {

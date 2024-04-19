@@ -13,6 +13,7 @@ import {
 } from '../node-task-registry';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { visualNodeFactory } from '../node-task-registry/createRectNode';
+import { RunCounter } from '../follow-path/run-counter';
 
 const fieldName = 'variableName';
 
@@ -29,13 +30,14 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     _loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       console.log('setVariable', variableName, input);
       if (variableName) {
-        contextInstance.setVariable(variableName, input, scopeId);
+        contextInstance.setVariable(variableName, input, scopeId, runCounter);
       }
     }
     return {

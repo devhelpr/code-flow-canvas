@@ -578,6 +578,7 @@ export const run = (
   */
   if (!canvasApp.isContextOnly && shouldResetConnectionSlider) {
     connectionExecuteHistory = [];
+    console.log('run: clear connectionExecuteHistory');
   }
 
   let isRunning = false;
