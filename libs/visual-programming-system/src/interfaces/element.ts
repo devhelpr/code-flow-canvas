@@ -100,6 +100,7 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   layer?: number;
   isAnnotationConnection?: boolean;
   isLoopBack?: boolean;
+  hasMultipleOutputs?: boolean;
   onCalculateControlPoints: (
     rectNode: IRectNodeComponent<T>,
     nodeType: ControlAndEndPointNodeType,

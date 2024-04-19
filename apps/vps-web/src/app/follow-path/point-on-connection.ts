@@ -64,13 +64,34 @@ export const getPointOnConnection = <T>(
   const ty = -paddingRect;
 
   const ratio = Math.min(percentage, 1);
-  if (connection.isLoopBack) {
+
+  if (connection.hasMultipleOutputs) {
+    if (connection.pathElement?.domElement) {
+      const path = connection.pathElement?.domElement as SVGPathElement;
+      const pathLength = path.getTotalLength();
+      const point = path.getPointAtLength(pathLength * ratio);
+
+      const loopBackXOffset = 0;
+
+      return {
+        x: point.x + startHelper.x + startOffsetX + tx - loopBackXOffset - 10,
+        y:
+          point.y +
+          ty +
+          (startHelper.y > endHelper.y
+            ? endHelper.y + endOffsetY
+            : startHelper.y + startOffsetY) -
+          10,
+      };
+    }
+  } else if (connection.isLoopBack) {
     if (connection.pathElement?.domElement) {
       const path = connection.pathElement?.domElement as SVGPathElement;
       const pathLength = path.getTotalLength();
       const point = path.getPointAtLength(pathLength * ratio);
 
       const loopBackXOffset = 20;
+
       return {
         x: point.x + endHelper.x + endOffsetX + tx - loopBackXOffset - 10,
         y:

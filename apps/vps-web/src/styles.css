@@ -252,12 +252,18 @@ rect-node:has(.hover) > .shape-circle,
 	z-index: 4;
 
 }
-.connection-history--sliding .rect-node {
+.connection-history--sliding .rect-node:not(:has(.ui-form-node)) {
 	@apply outline-[2px] outline outline-transparent outline-offset-2;
 }
-.rect-node.connection-history__node--active {
+.rect-node.connection-history__node--active:not(:has(.ui-form-node)) {
 	@apply outline-blue-500;
 }
+
+.rect-node.connection-history__node--active:has(.ui-form-node) .inner-node {
+	@apply bg-blue-500;
+}
+
+
 
 input {
 	cursor: pointer;

@@ -395,6 +395,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
     }`;
 
     this.nodeComponent.isLoopBack = false;
+    this.nodeComponent.hasMultipleOutputs = false;
 
     const isConnectingToRectThumb = false;
     if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
@@ -472,6 +473,8 @@ export class CubicBezierConnection<T> extends Connection<T> {
     ) {
       const minDistance =
         this.lowestDistanceWhenMultipleConnectionsFromSameOutput() / 2;
+
+      this.nodeComponent.hasMultipleOutputs = true;
 
       path = `
       M${this.points.beginX - bbox.x + startOffsetX} ${
