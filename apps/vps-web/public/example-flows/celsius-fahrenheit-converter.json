@@ -1,0 +1,261 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "1b4a5801-d9be-4df9-9dd0-cd1c94fbcb06",
+          "x": 3160.5944145379144,
+          "y": 1178.4799121920132,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "user-input",
+            "formValues": {
+              "label": "celsius",
+              "value": ""
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "3bb3ba40-d618-4dea-8dc4-66edfc8c0b25",
+          "x": 2727.4734678362865,
+          "y": 1179.9285422612627,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "(input - 32) * (5/9)",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "27587f70-864a-4140-aadf-7e81cff03084",
+          "x": 3800.463866951436,
+          "y": 1414.0557160594863,
+          "width": 119.99998212456424,
+          "height": 63.99995408907913,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "variable",
+            "formValues": {
+              "variableName": "fahrenheit",
+              "initialValue": "0",
+              "fieldType": "value",
+              "fieldValueType": "number"
+            },
+            "isVariable": true
+          }
+        },
+        {
+          "id": "229132a7-c788-4de2-8cda-d53c31f5d190",
+          "x": 3803.690505147074,
+          "y": 1238.0751458340749,
+          "width": 119.99998212456424,
+          "height": 64.00009050416088,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "variable",
+            "formValues": {
+              "variableName": "celsius",
+              "initialValue": "0",
+              "fieldType": "value",
+              "fieldValueType": "number"
+            },
+            "isVariable": true
+          }
+        },
+        {
+          "id": "31d489b2-55aa-43bf-a313-5fad122503d4",
+          "x": 3161.512443804379,
+          "y": 1457.4494081876903,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "user-input",
+            "formValues": {
+              "label": "fahrenheit",
+              "value": ""
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "f3dee5bc-c1ae-453a-bd7b-9c2cf26e9b68",
+          "x": 3484.9537381655755,
+          "y": 1165.7034557775255,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "celsius"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "5b3cd71a-ed40-4983-b8a4-32ee31b661de",
+          "x": 3502.8276606657155,
+          "y": 1447.3102499284264,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "fahrenheit"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "6092cd9a-1bc1-4303-a77d-50c3db6b32bc",
+          "x": 2726.539904060372,
+          "y": 1454.0236470800996,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "input * (9/5) + 32",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "72722829-4c23-4774-8dcf-5e1d066cb28e",
+          "x": 2351.328722418437,
+          "y": 1182.5263362686705,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "observe-variable",
+            "formValues": {
+              "variableName": "fahrenheit"
+            }
+          }
+        },
+        {
+          "id": "91fead76-1711-438b-9e89-a53ced174b34",
+          "x": 2343.8101707344604,
+          "y": 1449.8510604394312,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "observe-variable",
+            "formValues": {
+              "variableName": "celsius"
+            }
+          }
+        },
+        {
+          "id": "53bce103-9598-44ef-ba13-9ec1cafda0ee",
+          "x": 3360.5944145379144,
+          "y": 1234.4799121920132,
+          "endX": 3484.9537381655755,
+          "endY": 1229.7034557775255,
+          "startNodeId": "1b4a5801-d9be-4df9-9dd0-cd1c94fbcb06",
+          "endNodeId": "f3dee5bc-c1ae-453a-bd7b-9c2cf26e9b68",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "2ea80401-0959-44c0-9899-31e7b1dbc4cf",
+          "x": 3361.512443804379,
+          "y": 1513.4494081876903,
+          "endX": 3502.8276606657155,
+          "endY": 1511.3102499284264,
+          "startNodeId": "31d489b2-55aa-43bf-a313-5fad122503d4",
+          "endNodeId": "5b3cd71a-ed40-4983-b8a4-32ee31b661de",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "45b47bd0-dd34-4b10-a770-383fe48bc236",
+          "x": 2551.328722418437,
+          "y": 1238.5263362686705,
+          "endX": 2727.4734678362865,
+          "endY": 1235.9285422612627,
+          "startNodeId": "72722829-4c23-4774-8dcf-5e1d066cb28e",
+          "endNodeId": "3bb3ba40-d618-4dea-8dc4-66edfc8c0b25",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "733d3f3b-9840-4f17-aa09-2d5cc57480b9",
+          "x": 2927.4734678362865,
+          "y": 1235.9285422612627,
+          "endX": 3160.5944145379144,
+          "endY": 1234.4799121920132,
+          "startNodeId": "3bb3ba40-d618-4dea-8dc4-66edfc8c0b25",
+          "endNodeId": "1b4a5801-d9be-4df9-9dd0-cd1c94fbcb06",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "3b2b6940-e488-4844-b7f1-92fb2630da37",
+          "x": 2543.8101707344604,
+          "y": 1505.8510604394312,
+          "endX": 2726.539904060372,
+          "endY": 1510.0236470800996,
+          "startNodeId": "91fead76-1711-438b-9e89-a53ced174b34",
+          "endNodeId": "6092cd9a-1bc1-4303-a77d-50c3db6b32bc",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "38f38707-f60c-448a-a05a-060b38aa359b",
+          "x": 2926.539904060372,
+          "y": 1510.0236470800996,
+          "endX": 3161.512443804379,
+          "endY": 1513.4494081876903,
+          "startNodeId": "6092cd9a-1bc1-4303-a77d-50c3db6b32bc",
+          "endNodeId": "31d489b2-55aa-43bf-a313-5fad122503d4",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

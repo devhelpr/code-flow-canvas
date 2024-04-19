@@ -409,6 +409,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             showPopup: (node: IRectNodeComponent<NodeInfo>) => {
+              if (node.nodeInfo?.isSettingsPopup) {
+                const selectedNodeInfo = getSelectedNode();
+                if (selectedNodeInfo) {
+                  this.showFormPopup(node, selectedNodeInfo);
+                }
+                return;
+              }
+              if (!node.nodeInfo?.showFormOnlyInPopup) {
+                return;
+              }
+
               this.popupNode = node;
 
               if (this.currentCanvasApp) {
@@ -1178,7 +1189,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           (((nodeInfo as any)?.formElements ?? []).length <= 1 &&
             !(
               nodeInfo.showFormOnlyInPopup && nodeInfo.formElements.length >= 1
-            ))
+            )) ||
+          nodeInfo.isSettingsPopup
         ) {
           (
             this.editPopupContainer?.domElement as unknown as HTMLElement
@@ -1199,95 +1211,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           return;
         }
 
-        const formElementInstance = createElement(
-          'div',
-          {},
-          this.editPopupContainer?.domElement,
-          undefined
-        );
-        this.formElement = formElementInstance;
-        this.focusedNode = node;
-        const currentFocusNode = this.focusedNode;
-        this.popupNode = currentFocusNode;
-        FormComponent({
-          rootElement: this.formElement.domElement as HTMLElement,
-          id: selectedNodeInfo.id,
-          hasSubmitButton: false,
-          onSave: (values: any) => {
-            console.log('onSave', values);
-
-            this.rootElement
-              ?.querySelectorAll('.selected')
-              .forEach((element) => {
-                element.classList.remove('selected');
-              });
-
-            const node = (
-              selectedNodeInfo?.containerNode
-                ? (selectedNodeInfo?.containerNode.nodeInfo as any)
-                    ?.canvasAppInstance?.elements
-                : this.currentCanvasApp?.elements
-            )?.get(selectedNodeInfo.id);
-            if (node) {
-              if ((node.nodeInfo as any).formElements) {
-                (node.nodeInfo as any).formValues = values;
-                Object.entries(values).forEach(([key, value]) => {
-                  console.log(
-                    'updateNamedSignal',
-                    selectedNodeInfo.id + '_' + key,
-                    value
-                  );
-                  updateNamedSignal(
-                    selectedNodeInfo.id + '_' + key,
-                    value as unknown as string
-                  );
-                });
-              } else {
-                node.nodeInfo = values;
-              }
-            }
-
-            this.removeFormElement();
-            currentSelectedNode = undefined;
-
-            if (this.selectedNodeLabel) {
-              this.selectedNodeLabel.domElement.textContent = '';
-            }
-            (
-              this.editPopupContainer?.domElement as unknown as HTMLElement
-            ).classList.add('hidden');
-            (
-              this.editPopupLineContainer?.domElement as unknown as HTMLElement
-            ).classList.add('hidden');
-
-            (
-              this.editPopupEditingNodeIndicator
-                ?.domElement as unknown as HTMLElement
-            ).classList.add('hidden');
-
-            (
-              this.editPopupEditingNodeIndicator
-                ?.domElement as unknown as HTMLElement
-            ).classList.remove('editing-node-indicator');
-
-            console.log('onsave this.focusedNode', this.focusedNode);
-            if (currentFocusNode) {
-              (currentFocusNode.domElement as HTMLElement).focus();
-            }
-          },
-          formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
-            (item: any) => {
-              return {
-                ...item,
-                value: ((node?.nodeInfo as any)?.formValues ?? {})[
-                  item.fieldName
-                ],
-              };
-            }
-          ),
-        }) as unknown as HTMLElement;
-        console.log('before positionPopup1');
-        this.positionPopup(node);
+        this.showFormPopup(node, selectedNodeInfo);
+        currentSelectedNode = undefined;
       } else {
         if (this.selectedNodeLabel) {
           this.selectedNodeLabel.domElement.textContent = '';
@@ -1358,6 +1283,97 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       setPositionTargetCameraAnimation(x, y);
     });
   }
+
+  showFormPopup = (
+    node: IRectNodeComponent<NodeInfo>,
+    selectedNodeInfo: SelectedNodeInfo
+  ) => {
+    const formElementInstance = createElement(
+      'div',
+      {},
+      this.editPopupContainer?.domElement,
+      undefined
+    );
+    this.formElement = formElementInstance;
+    this.focusedNode = node;
+    const currentFocusNode = this.focusedNode;
+    this.popupNode = currentFocusNode;
+    FormComponent({
+      rootElement: this.formElement.domElement as HTMLElement,
+      id: selectedNodeInfo.id,
+      hasSubmitButton: false,
+      onSave: (values: any) => {
+        console.log('onSave', values);
+
+        this.rootElement?.querySelectorAll('.selected').forEach((element) => {
+          element.classList.remove('selected');
+        });
+
+        const node = (
+          selectedNodeInfo?.containerNode
+            ? (selectedNodeInfo?.containerNode.nodeInfo as any)
+                ?.canvasAppInstance?.elements
+            : this.currentCanvasApp?.elements
+        )?.get(selectedNodeInfo.id);
+        if (node) {
+          if ((node.nodeInfo as any).formElements) {
+            (node.nodeInfo as any).formValues = values;
+            Object.entries(values).forEach(([key, value]) => {
+              console.log(
+                'updateNamedSignal',
+                selectedNodeInfo.id + '_' + key,
+                value
+              );
+              updateNamedSignal(
+                selectedNodeInfo.id + '_' + key,
+                value as unknown as string
+              );
+            });
+          } else {
+            node.nodeInfo = values;
+          }
+        }
+
+        this.removeFormElement();
+        //currentSelectedNode = undefined;
+
+        if (this.selectedNodeLabel) {
+          this.selectedNodeLabel.domElement.textContent = '';
+        }
+        (
+          this.editPopupContainer?.domElement as unknown as HTMLElement
+        ).classList.add('hidden');
+        (
+          this.editPopupLineContainer?.domElement as unknown as HTMLElement
+        ).classList.add('hidden');
+
+        (
+          this.editPopupEditingNodeIndicator
+            ?.domElement as unknown as HTMLElement
+        ).classList.add('hidden');
+
+        (
+          this.editPopupEditingNodeIndicator
+            ?.domElement as unknown as HTMLElement
+        ).classList.remove('editing-node-indicator');
+
+        console.log('onsave this.focusedNode', this.focusedNode);
+        if (currentFocusNode) {
+          (currentFocusNode.domElement as HTMLElement).focus();
+        }
+      },
+      formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
+        (item: any) => {
+          return {
+            ...item,
+            value: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
+          };
+        }
+      ),
+    }) as unknown as HTMLElement;
+    console.log('before positionPopup1');
+    this.positionPopup(node);
+  };
 
   run = () => {
     (this.runButton?.domElement as HTMLElement).click();

@@ -74,6 +74,7 @@ export class NavbarComponent extends Component<
           <option value="simple-state-machine-image-brightness.json">Simple state machine with image and brightness</option>
           <option value="parallel-merge-flow.json">Parallel and merge</option>
           <option value="fibonacci-flow.json">Fibonacci</option>
+          <option value="celsius-fahrenheit-converter.json">Celsius to Fahrenheit converter</option>
           <option value="quicksort-flow.json">Quicksort</option>    
         </select>
         <children></children>

@@ -25,6 +25,7 @@ export interface BaseNodeInfo {
 
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;
+  isSettingsPopup?: boolean;
   formElements?: any[];
   delete?: () => void;
   formValues?: any;

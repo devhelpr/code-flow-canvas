@@ -376,9 +376,10 @@ export const runNode = (
   connection?: IConnectionNodeComponent<NodeInfo>,
   scopeId?: string,
   runCounter?: RunCounter,
-  shouldClearExecutionHistory = false
+  shouldClearExecutionHistory = false,
+  inputPayload?: any
 ): void => {
-  const payload = getVariablePayload(node, canvasApp);
+  const payload = inputPayload ?? getVariablePayload(node, canvasApp);
   if (shouldClearExecutionHistory) {
     console.log('runNode: clearing connectionExecuteHistory');
     connectionExecuteHistory = [];
