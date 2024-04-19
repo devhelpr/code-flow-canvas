@@ -7,6 +7,7 @@ import {
   IRectNodeComponent,
   IThumbNodeComponent,
   NodeType,
+  ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 import { getNodeConnectionPairByIdWhereNodeIsEndpoint } from '../follow-path/get-node-connection-pairs';
@@ -150,7 +151,14 @@ const triggerExecution = (
         };
         storeNodeStates();
         if (runCounter) {
-          if (!runCounter.pushCallstack(nextNode.id)) {
+          //if (!runCounter.pushCallstack(`${scopeId}_${connection.id}`)) {
+          if (
+            !runCounter.pushCallstack(
+              `${scopeId}_${nextNode.id}_${
+                connection.endNodeThumb?.thumbName ?? ''
+              }`
+            )
+          ) {
             if (onStopped) {
               onStopped(input, scopeId);
             }
@@ -391,7 +399,16 @@ export const runNode = (
   inputPayload?: any
 ): void => {
   if (runCounter) {
-    if (!runCounter.pushCallstack(node.id)) {
+    let thumbName = '';
+    const endThumbs =
+      node.thumbConnectors?.filter(
+        (e) => e.thumbConnectionType === ThumbConnectionType.end
+      ) ?? [];
+    if (endThumbs.length === 1) {
+      thumbName = endThumbs[0].thumbName;
+    }
+
+    if (!runCounter.pushCallstack(`${scopeId}_${node.id}_${thumbName}`)) {
       if (onStopped) {
         onStopped(input ?? '', scopeId);
       }
@@ -698,7 +715,15 @@ export const runNodeFromThumb = (
       firstStoreNodeState = false;
 
       if (runCounter) {
-        if (!runCounter.pushCallstack(nextNode.id)) {
+        if (
+          //!runCounter.pushCallstack(`${nextNode.id}_${nodeThumb.thumbName}`)
+          //!runCounter.pushCallstack(`${scopeId}_${connection.id}`)
+          !runCounter.pushCallstack(
+            `${scopeId}_${nextNode.id}_${
+              connection.endNodeThumb?.thumbName ?? ''
+            }`
+          )
+        ) {
           if (onStopped) {
             onStopped(input, scopeId);
           }
