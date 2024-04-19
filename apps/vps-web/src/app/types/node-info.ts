@@ -32,6 +32,18 @@ export interface NodeInfo extends BaseNodeInfo {
 
   initializeOnStartFlow?: boolean;
   isUINode?: boolean;
+
+  compileInfo?: {
+    getCode?: (
+      input: any,
+      loopIndex?: number,
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string,
+      runCounter?: RunCounter
+    ) => string;
+    getGlobalCode?: () => string;
+  };
 }
 
 //export type NodeInfo = any;
