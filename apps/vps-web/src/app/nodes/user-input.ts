@@ -282,6 +282,7 @@ export const getUserInput =
           node.nodeInfo.initializeCompute = initializeCompute;
 
           node.nodeInfo.isSettingsPopup = true;
+          node.nodeInfo.isUINode = true;
         }
         return node;
       },
