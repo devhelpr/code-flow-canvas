@@ -760,7 +760,7 @@ export const getScopedVariable =
         componentWrapper = createNodeElement(
           'div',
           {
-            class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node bg-slate-600 text-white p-4 rounded text-center`,
+            class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node bg-blue-600 text-white p-4 rounded text-center`,
           },
           undefined,
           htmlNode.domElement as unknown as HTMLElement

@@ -152,7 +152,7 @@ export const observeVariable =
         createElement(
           'div',
           {
-            class: `flex items-center bg-slate-600 text-white p-1 px-3 rounded-t pointer-events-none`,
+            class: `flex items-center bg-blue-600 text-white p-1 px-3 rounded-t pointer-events-none`,
           },
           componentWrapper.domElement,
           'Observe variable'
@@ -161,7 +161,7 @@ export const observeVariable =
         const formWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 pt-4 rounded-b`,
+            class: `inner-node bg-blue-500 p-4 pt-4 rounded-b`,
           },
           componentWrapper.domElement
         ) as unknown as INodeComponent<NodeInfo>;
