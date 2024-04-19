@@ -199,6 +199,7 @@ export const getUserInput =
               connectionType: ThumbConnectionType.start,
               color: 'white',
               label: ' ',
+              maxConnections: -1,
               //thumbConstraint: 'value',
             },
             {

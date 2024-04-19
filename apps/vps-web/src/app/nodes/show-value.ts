@@ -7,10 +7,15 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { NodeTask, NodeTaskFactory } from '../node-task-registry';
+import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
+} from '../node-task-registry';
+import { FormFieldType } from '../components/FormField';
 
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -18,6 +23,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let inputValues: any;
+  let decimalCount = 0;
+  let append = '';
   const initializeCompute = () => {
     hasInitialValue = true;
     inputValues = '';
@@ -35,8 +42,20 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-
-      htmlNode.domElement.textContent = input.toString();
+      if (typeof input === 'number') {
+        htmlNode.domElement.textContent = `${(input as number).toFixed(
+          decimalCount
+        )} ${append}`;
+      } else if (typeof input === 'string') {
+        const helper = parseFloat(input);
+        if (!isNaN(helper)) {
+          htmlNode.domElement.textContent = `${helper.toFixed(
+            decimalCount
+          )} ${append}`;
+        }
+      } else {
+        htmlNode.domElement.textContent = `${input.toString()} ${append}`;
+      }
       if (rect) {
         rect.resize(120);
       }
@@ -75,8 +94,13 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValues?: InitialValues
     ) => {
+      const decimalsInitialValue = initalValues?.['decimals'] ?? '0';
+      const appendInitialValue = initalValues?.['append'] ?? '';
+      decimalCount = parseInt(decimalsInitialValue) || 0;
+      append = appendInitialValue;
       htmlNode = createElement(
         'div',
         {
@@ -150,6 +174,63 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
           canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
           canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
         }
+        node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'decimals',
+            value: decimalsInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                decimals: value,
+              };
+              decimalCount = parseInt(value) || 0;
+              updated();
+
+              if (!isNaN(inputValues)) {
+                if (htmlNode) {
+                  htmlNode.domElement.textContent = `${inputValues.toFixed(
+                    decimalCount
+                  )} ${appendInitialValue}`;
+                  if (rect) {
+                    rect.resize(120);
+                  }
+                }
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'append',
+            value: appendInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                append: value,
+              };
+
+              updated();
+              append = value;
+              if (!isNaN(inputValues)) {
+                if (htmlNode) {
+                  htmlNode.domElement.textContent = `${inputValues.toFixed(
+                    decimalCount
+                  )} ${value}`;
+                  if (rect) {
+                    rect.resize(120);
+                  }
+                }
+              }
+            },
+          },
+        ];
+        node.nodeInfo.isSettingsPopup = true;
       }
       return node;
     },

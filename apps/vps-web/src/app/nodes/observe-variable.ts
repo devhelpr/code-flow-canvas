@@ -189,6 +189,7 @@ export const observeVariable =
               connectionType: ThumbConnectionType.start,
               color: 'white',
               label: ' ',
+              maxConnections: -1,
             },
           ],
           componentWrapper,
