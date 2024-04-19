@@ -14,6 +14,10 @@ import { RunCounter } from '../follow-path/run-counter';
 import { AnimatePathFunction } from '../follow-path/animate-path';
 import { getRunIndex, runNode } from '../simple-flow-engine/simple-flow-engine';
 
+function parseStringToFloat(value: string): number {
+  return parseFloat(value.toString().replace(',', '.'));
+}
+
 export const getUserInput =
   (
     animatePath: AnimatePathFunction<NodeInfo>,
@@ -28,6 +32,7 @@ export const getUserInput =
     let inputElement: HTMLInputElement | undefined = undefined;
     let labelElement: HTMLLabelElement | undefined = undefined;
     let currentValue = 0;
+    let decimalCount = 0;
     const initializeCompute = () => {
       return;
     };
@@ -40,7 +45,7 @@ export const getUserInput =
       _runCounterCompute?: RunCounter
     ) => {
       try {
-        currentValue = parseFloat(input) || 0;
+        currentValue = parseStringToFloat(input) || 0;
       } catch {
         currentValue = 0;
       }
@@ -52,10 +57,10 @@ export const getUserInput =
           };
         }
       } else {
-        currentValue = parseFloat(input);
+        currentValue = parseStringToFloat(input);
         if (!isNaN(currentValue)) {
           if (inputElement) {
-            inputElement.value = currentValue.toString();
+            inputElement.value = currentValue.toFixed(decimalCount);
           }
         }
       }
@@ -78,7 +83,9 @@ export const getUserInput =
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
         const initialValue = initalValues?.['label'] ?? '';
-
+        const decimalsInitialValue = initalValues?.['decimals'] ?? '0';
+        decimalCount = parseInt(decimalsInitialValue) || 0;
+        //let isResettingInput = false;
         const formElements = [
           {
             fieldType: FormFieldType.Text,
@@ -86,6 +93,11 @@ export const getUserInput =
             label: initialValue ?? 'value',
             value: '',
             onChange: (value: string) => {
+              // if (isResettingInput) {
+              //   isResettingInput = false;
+              //   console.log('isResettingInput', value);
+              //   return;
+              // }
               if (!node.nodeInfo) {
                 return;
               }
@@ -93,8 +105,25 @@ export const getUserInput =
                 return;
               }
 
+              const min = 0;
+              const max = decimalCount;
+              const dot = decimalCount === 0 ? '' : '[.,]';
+              const regex = new RegExp(`^(\\d+(?:${dot}\\d{${min},${max}}))`);
+              if (!regex.test(value)) {
+                console.log('regex.test(value) failed', value);
+                return;
+              } else {
+                const matches = value.match(regex);
+                if (matches) {
+                  //isResettingInput = true;
+                  inputElement.value = matches[0];
+
+                  value = matches[0];
+                  console.log('matches', matches[0], min, max, dot, value);
+                }
+              }
               console.log('onChange user-input', node.nodeInfo);
-              const tempValue = parseFloat(value);
+              const tempValue = parseStringToFloat(value);
               if (isNaN(tempValue)) {
                 return;
               }
@@ -188,6 +217,7 @@ export const getUserInput =
             formValues: {
               label: initialValue ?? '',
               value: '',
+              decimals: decimalsInitialValue ?? '0',
             },
           },
           containerNode
@@ -216,6 +246,28 @@ export const getUserInput =
                   labelElement.textContent = value;
                 }
                 updated();
+              },
+            },
+            {
+              fieldType: FormFieldType.Text,
+              fieldName: 'decimals',
+              value: decimalsInitialValue ?? '',
+              onChange: (value: string) => {
+                if (!node.nodeInfo) {
+                  return;
+                }
+                node.nodeInfo.formValues = {
+                  ...node.nodeInfo.formValues,
+                  decimals: value,
+                };
+                decimalCount = parseInt(value) || 0;
+                updated();
+
+                if (!isNaN(currentValue)) {
+                  if (inputElement) {
+                    inputElement.value = currentValue.toFixed(decimalCount);
+                  }
+                }
               },
             },
           ];
