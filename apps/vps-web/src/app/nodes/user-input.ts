@@ -3,6 +3,7 @@ import {
   createElement,
   INodeComponent,
   IRectNodeComponent,
+  Theme,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -26,7 +27,7 @@ export const getUserInput =
       shouldResetConnectionSlider: boolean
     ) => RunCounter
   ) =>
-  (updated: () => void): NodeTask<NodeInfo> => {
+  (updated: () => void, theme?: Theme): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let form: FormsComponent | undefined = undefined;
     let inputElement: HTMLInputElement | undefined = undefined;
@@ -163,13 +164,24 @@ export const getUserInput =
         const componentWrapper = createElement(
           'div',
           {
-            class: `inner-node bg-slate-500 p-4 rounded`,
+            class: `inner-node bg-slate-400 rounded p-1`, //p-4
           },
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
+        const formWrapper = createElement(
+          'div',
+          {
+            class: `ui-form-node p-4 border-[2px] border-solid rounded bg-slate-500`,
+            style: {
+              'border-color': theme?.backgroundAsHexColor ?? '#000000',
+            },
+          },
+          componentWrapper.domElement
+        ) as unknown as INodeComponent<NodeInfo>;
+
         form = FormComponent({
-          rootElement: componentWrapper.domElement as HTMLElement,
+          rootElement: formWrapper.domElement as HTMLElement,
           id: id ?? '',
           formElements,
           hasSubmitButton: false,

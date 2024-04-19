@@ -216,7 +216,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     const innerCircle = createElement(
       'div',
       {
-        class: `absolute rounded top-[3px] ${leftPosition} ${additionalInnerCirlceClasses}`, //top-[3px] left-[3px
+        class: `absolute rounded top-[3px] outline outline-[2px] outline-slate-800 outline-solid ${leftPosition} ${additionalInnerCirlceClasses}`, //top-[3px] left-[3px
         style: {
           width: `${(radius ?? thumbRadius) - 3}px`, // -6
           height: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6

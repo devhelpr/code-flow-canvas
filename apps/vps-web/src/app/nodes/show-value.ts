@@ -13,6 +13,7 @@ import {
   NodeTaskFactory,
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
+import { getFormattedValue } from '../utils/getFormattedValue';
 
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -42,20 +43,12 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-      if (typeof input === 'number') {
-        htmlNode.domElement.textContent = `${(input as number).toFixed(
-          decimalCount
-        )} ${append}`;
-      } else if (typeof input === 'string') {
-        const helper = parseFloat(input);
-        if (!isNaN(helper)) {
-          htmlNode.domElement.textContent = `${helper.toFixed(
-            decimalCount
-          )} ${append}`;
-        }
-      } else {
-        htmlNode.domElement.textContent = `${input.toString()} ${append}`;
-      }
+      htmlNode.domElement.textContent = getFormattedValue(
+        input,
+        decimalCount,
+        append
+      );
+
       if (rect) {
         rect.resize(120);
       }
@@ -80,7 +73,11 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
 
   const updateVisual = (data: any) => {
     if (htmlNode) {
-      htmlNode.domElement.textContent = (data || '-').toString();
+      htmlNode.domElement.textContent = getFormattedValue(
+        data,
+        decimalCount,
+        append
+      );
       if (rect) {
         rect.resize(120);
       }
@@ -156,6 +153,10 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
         {
           type: 'show-value',
           formElements: [],
+          formValues: {
+            append: append ?? '',
+            decimals: decimalsInitialValue ?? '0',
+          },
         }
       );
 
@@ -192,9 +193,12 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
 
               if (!isNaN(inputValues)) {
                 if (htmlNode) {
-                  htmlNode.domElement.textContent = `${inputValues.toFixed(
-                    decimalCount
-                  )} ${appendInitialValue}`;
+                  htmlNode.domElement.textContent = getFormattedValue(
+                    inputValues,
+                    decimalCount,
+                    appendInitialValue
+                  );
+
                   if (rect) {
                     rect.resize(120);
                   }
@@ -219,9 +223,12 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
               append = value;
               if (!isNaN(inputValues)) {
                 if (htmlNode) {
-                  htmlNode.domElement.textContent = `${inputValues.toFixed(
-                    decimalCount
-                  )} ${value}`;
+                  htmlNode.domElement.textContent = getFormattedValue(
+                    inputValues,
+                    decimalCount,
+                    value
+                  );
+
                   if (rect) {
                     rect.resize(120);
                   }

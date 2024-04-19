@@ -33,6 +33,8 @@ export interface NodeInfo extends BaseNodeInfo {
   initializeOnStartFlow?: boolean;
   isUINode?: boolean;
 
+  getFormattedMessageValue?: (value: any) => any;
+
   compileInfo?: {
     getCode?: (
       input: any,
