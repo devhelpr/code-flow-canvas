@@ -62,6 +62,10 @@ export const getUserInput =
           if (inputElement) {
             inputElement.value = currentValue.toFixed(decimalCount);
           }
+          return {
+            result: currentValue.toFixed(decimalCount),
+            followPath: undefined,
+          };
         }
       }
       return {

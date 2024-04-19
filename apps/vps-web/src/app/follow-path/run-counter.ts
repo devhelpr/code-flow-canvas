@@ -19,4 +19,12 @@ export class RunCounter {
       this.runCounterResetHandler();
     }
   }
+
+  callstack: string[] = [];
+  pushCallstack(nodeId: string) {
+    if (this.callstack.indexOf(nodeId) !== -1) {
+      return false;
+    }
+    return this.callstack.push(nodeId);
+  }
 }

@@ -149,7 +149,18 @@ const triggerExecution = (
           }
         };
         storeNodeStates();
-
+        if (runCounter) {
+          if (!runCounter.pushCallstack(nextNode.id)) {
+            if (onStopped) {
+              onStopped(input, scopeId);
+            }
+            return Promise.resolve({
+              result: input as any,
+              stop: true,
+              output: input as any,
+            });
+          }
+        }
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
         if (formInfo && formInfo.computeAsync) {
           if (formInfo.decorators) {
@@ -379,6 +390,15 @@ export const runNode = (
   shouldClearExecutionHistory = false,
   inputPayload?: any
 ): void => {
+  if (runCounter) {
+    if (!runCounter.pushCallstack(node.id)) {
+      if (onStopped) {
+        onStopped(input ?? '', scopeId);
+      }
+      return;
+    }
+  }
+
   const payload = inputPayload ?? getVariablePayload(node, canvasApp);
   if (shouldClearExecutionHistory) {
     console.log('runNode: clearing connectionExecuteHistory');
@@ -676,6 +696,20 @@ export const runNodeFromThumb = (
       };
       storeNodeStates();
       firstStoreNodeState = false;
+
+      if (runCounter) {
+        if (!runCounter.pushCallstack(nextNode.id)) {
+          if (onStopped) {
+            onStopped(input, scopeId);
+          }
+          return Promise.resolve({
+            result: input as any,
+            stop: true,
+            output: input as any,
+          });
+        }
+      }
+
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
       //console.log('runNodeFromThumb', loopIndex, nextNode);
