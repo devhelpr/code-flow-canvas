@@ -112,7 +112,7 @@ export const getUserInput =
               const min = 0;
               const max = decimalCount;
               const dot = decimalCount === 0 ? '' : '[.,]?';
-              const regex = new RegExp(`^(\\d+(?:${dot}\\d{${min},${max}}))`);
+              const regex = new RegExp(`^-?(\\d+(?:${dot}\\d{${min},${max}}))`);
               if (!regex.test(value)) {
                 console.log('regex.test(value) failed', value);
                 return;
