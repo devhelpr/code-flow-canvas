@@ -1592,13 +1592,18 @@ export const createCanvasApp = <T>(
       variableName: string,
       data: any,
       scopeId?: string,
-      runCounter?: any
+      runCounter?: any,
+      isInitializing?: boolean
     ) => {
       if (scopeId && tempVariables[scopeId][variableName]) {
         tempVariables[scopeId][variableName] = data;
       } else if (variableName && variables[variableName]) {
         variables[variableName].setData(data, scopeId);
-
+        if (isInitializing) {
+          // prevents infinite loop when "reset state" is pressed when observe-variable is used
+          // see celsius-fahrenheit converter
+          return;
+        }
         const map = variableObservers.get(`${variableName}`);
         if (map) {
           map.forEach((observer) => {

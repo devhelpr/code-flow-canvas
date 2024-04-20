@@ -355,13 +355,16 @@ export const createContextInstanceApp = <T>(
       variableName: string,
       data: any,
       scopeId?: string,
-      runCounter?: any
+      runCounter?: any,
+      isInitializing?: boolean
     ) => {
       if (scopeId && tempVariables[scopeId][variableName]) {
         tempVariables[scopeId][variableName] = data;
       } else if (variableName && variables[variableName]) {
         variables[variableName].setData(data, scopeId);
-
+        if (!isInitializing) {
+          return;
+        }
         const map = variableObservers.get(`${variableName}`);
         if (map) {
           map.forEach((observer) => {

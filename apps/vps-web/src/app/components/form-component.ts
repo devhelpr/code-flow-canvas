@@ -84,7 +84,7 @@ export class FormsComponent
     // offsetTop is used.. and that is relative to the first positioned parent.. which is the node, not the form...
     this.template = createTemplate(
       `<div class="${props.settings?.minWidthContent ? 'w-min' : 'w-full'} p-2">
-        <form>
+        <form autocomplete="off" role="search">
           <children></children>
           ${
             props.hasSubmitButton === true

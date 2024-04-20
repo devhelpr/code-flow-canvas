@@ -317,7 +317,13 @@ export const getScopedVariable =
           (htmlNode.domElement as unknown as HTMLElement).textContent =
             getLabel(currentValue.toString());
         }
-        canvasAppInstance?.setVariable(variableName, currentValue);
+        canvasAppInstance?.setVariable(
+          variableName,
+          currentValue,
+          undefined,
+          undefined,
+          true
+        );
       } else if (fieldType === 'dictionary') {
         if (htmlNode) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
