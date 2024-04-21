@@ -134,6 +134,7 @@ export interface IThumbNodeComponent<T> extends INodeComponent<T> {
 
   prefixIcon?: string;
   prefixLabel?: string;
+  hint?: string;
 }
 
 export const ControlAndEndPointNodeType = {
@@ -191,4 +192,5 @@ export type IThumb = {
   prefixIcon?: string;
   prefixLabel?: string;
   nodeId?: string;
+  hint?: string;
 };

@@ -63,10 +63,10 @@ export const getUserInput =
           if (inputElement) {
             inputElement.value = currentValue.toFixed(decimalCount);
           }
-          return {
-            result: currentValue.toFixed(decimalCount),
-            followPath: undefined,
-          };
+          // return {
+          //   result: currentValue.toFixed(decimalCount),
+          //   followPath: undefined,
+          // };
         }
       }
       return {
@@ -206,13 +206,17 @@ export const getUserInput =
           undefined,
           [
             {
-              thumbType: ThumbType.StartConnectorCenter,
+              thumbType: ThumbType.StartConnectorRight,
               thumbIndex: 0,
               connectionType: ThumbConnectionType.start,
               color: 'white',
               label: ' ',
               maxConnections: -1,
               //thumbConstraint: 'value',
+              prefixIcon: 'icon-bolt',
+              formFieldName: 'value',
+              formId: id,
+              hint: 'onInput event',
             },
             {
               thumbType: ThumbType.EndConnectorCenter,

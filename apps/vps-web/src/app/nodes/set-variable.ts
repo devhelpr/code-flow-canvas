@@ -88,6 +88,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
         color: 'white',
         label: ' ',
         name: 'input',
+        maxConnections: -1,
       },
     ],
     (values?: InitialValues) => {

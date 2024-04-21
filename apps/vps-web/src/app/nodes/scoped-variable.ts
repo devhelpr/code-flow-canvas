@@ -12,6 +12,7 @@ import { InitialValues, NodeTask } from '../node-task-registry';
 import { showDictionaryData } from './data-viewers/dictionary';
 import { showArrayData } from './data-viewers/array';
 import { showGridData, StructureInfo } from './data-viewers/grid';
+import { getFormattedValue } from '../utils/getFormattedValue';
 
 export const scopeVariableNodeName = 'scope-variable';
 type FieldTypes = 'value' | 'dictionary' | 'array' | 'grid';
@@ -414,7 +415,7 @@ export const getScopedVariable =
       if (htmlNode) {
         if (fieldType === 'value') {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel(lastStoredDataState.toString());
+            getLabel(getFormattedValue(lastStoredDataState, 2, ''));
 
           if (rect) {
             rect.resize(120);

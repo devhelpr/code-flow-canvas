@@ -157,12 +157,17 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     );
 
     if (!this.circleElement) throw new Error('circleElement is undefined');
-
+    if (thumb.hint) {
+      (this.nodeComponent.domElement as HTMLElement).setAttribute(
+        'title',
+        thumb.hint
+      );
+    }
     if (thumb.prefixIcon) {
       createElement(
         'div',
         {
-          class: `relative text-white -left-[10px] ${thumb.prefixIcon}`,
+          class: `relative text-white -left-[10px] thumb-prefix-icon ${thumb.prefixIcon}`,
         },
         this.circleElement.domElement
       );

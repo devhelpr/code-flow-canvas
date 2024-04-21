@@ -234,6 +234,7 @@ export class Rect<T> {
         thumbNode.nodeComponent.thumbFormId = thumb.formId;
         thumbNode.nodeComponent.thumbFormFieldName = thumb.formFieldName;
         thumbNode.nodeComponent.allowTaskTypes = thumb.allowTaskTypes;
+        thumbNode.nodeComponent.hint = thumb.hint;
 
         if (!disableInteraction) {
           thumbNode.nodeComponent.onCanReceiveDroppedComponent =
