@@ -1,6 +1,7 @@
 import {
   CanvasAppInstance,
   IRectNodeComponent,
+  Theme,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
@@ -18,7 +19,8 @@ import { RunCounter } from '../follow-path/run-counter';
 const fieldName = 'variableName';
 
 export const setVariable: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: () => void,
+  theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
@@ -124,6 +126,8 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     },
     {
       category: 'variables',
+      backgroundColorClassName:
+        theme?.referenceVariableBackgroundColorClassName,
     }
   );
 };

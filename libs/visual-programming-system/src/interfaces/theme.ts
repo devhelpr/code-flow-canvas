@@ -24,4 +24,6 @@ export interface Theme {
   compositionThumbInputNodeText: string;
   compositionThumbOutputNodeBackground: string;
   compositionThumbOutputNodeText: string;
+  variableBackgroundColorClassName: string;
+  referenceVariableBackgroundColorClassName: string;
 }

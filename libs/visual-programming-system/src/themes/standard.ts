@@ -22,4 +22,6 @@ export const standardTheme: Theme = {
   compositionThumbInputNodeText: 'text-black',
   compositionThumbOutputNodeBackground: 'bg-yellow-500',
   compositionThumbOutputNodeText: 'text-black',
+  variableBackgroundColorClassName: 'bg-blue-600',
+  referenceVariableBackgroundColorClassName: 'bg-blue-500',
 };

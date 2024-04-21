@@ -149,13 +149,25 @@ export const observeVariable =
           undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
-        createElement(
+        const titleWrapper = createElement(
           'div',
           {
             class: `flex items-center bg-blue-600 text-white p-1 px-3 rounded-t pointer-events-none`,
           },
-          componentWrapper.domElement,
+          componentWrapper.domElement
+        ) as unknown as INodeComponent<NodeInfo>;
+
+        createElement(
+          'span',
+          {},
+          titleWrapper.domElement,
           'Observe variable'
+        ) as unknown as INodeComponent<NodeInfo>;
+
+        createElement(
+          'span',
+          { class: 'icon-bolt' },
+          titleWrapper.domElement
         ) as unknown as INodeComponent<NodeInfo>;
 
         const formWrapper = createElement(
