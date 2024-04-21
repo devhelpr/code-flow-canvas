@@ -140,6 +140,48 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.compileInfo = {
+          getCode: (input: any) => {
+            return `\
+getValue("${input}",undefined,undefined,"${
+              node?.nodeInfo?.formValues?.['value'] ?? ''
+            }");
+`;
+          },
+          getGlobalCode: () => {
+            return `\
+const replaceValuesGetValue = (
+  content: string,
+  payload: any,
+  keepUnknownFields = false
+) => {
+  let resultContent = content;
+  const matches = resultContent.match(/{.+?}/g);
+  if (matches) {
+    matches.map((match) => {
+      const variableName = match.slice(1, -1);
+      let value = payload[variableName];
+      if (!!keepUnknownFields && value === undefined) {
+        value = match;
+      }
+      const allOccurancesOfMatchRegex = new RegExp(match, 'g');
+      resultContent = resultContent.replace(allOccurancesOfMatchRegex, value);
+    });
+  }
+  return resultContent;
+};
+
+function getValue(input, loopIndex?: number, payload?: any, nodeValue?: string) {
+  return replaceValuesGetValue(nodeValue ?? "", {
+    value: input,
+    currentValue: input,
+    index: loopIndex ?? 0,
+    payload: payload,
+  });
+};
+`;
+          },
+        };
       }
       return node;
     },

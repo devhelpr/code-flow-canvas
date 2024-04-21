@@ -66,6 +66,7 @@ import {
   navBarOutlineButton,
   menubarContainerClasses,
   navBarPrimaryButton,
+  navBarIconButton,
 } from './consts/classes';
 import {
   canvasNodeTaskRegistryLabels,
@@ -92,6 +93,7 @@ import { createOption } from './node-task-registry/createOption';
 import { RunCounter } from './follow-path/run-counter';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
 import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
+import { downloadFile } from './utils/create-download-link';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -119,6 +121,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   selectNodeType: IDOMElement | undefined = undefined;
   mediaLibary: MediaLibrary | undefined = undefined;
   canvasUpdated: (() => void) | undefined = undefined;
+
+  exportCodeButton: IDOMElement | undefined = undefined;
 
   constructor(appRootSelector: string) {
     super(appRootSelector, undefined, standardTheme);
@@ -376,6 +380,24 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'Create composition'
           );
 
+          this.exportCodeButton = createElement(
+            'button',
+            {
+              class: `${navBarIconButton} `,
+            },
+            menubarElement.domElement
+          );
+          createElement(
+            'span',
+            {
+              class: `${navBarIconButtonInnerElement} icon-file_downloadget_app`,
+            },
+            this.exportCodeButton?.domElement
+          );
+
+          this.exportCodeButton.domElement.addEventListener('click', () => {
+            this.exportCodeClick();
+          });
           this.compositionEditExitButton = createElement(
             'button',
             {
@@ -1542,5 +1564,51 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     });
     return runCounter;
+  };
+
+  exportCodeClick = () => {
+    let canExport = true;
+    this.canvasApp?.elements.forEach((element) => {
+      const node = element as INodeComponent<NodeInfo>;
+      if (node.nodeType === NodeType.Connection) {
+        return;
+      }
+      if (node.nodeInfo?.type !== 'value') {
+        canExport = false;
+      }
+    });
+    if (!canExport) {
+      alert('Only value nodes can be exported');
+      return;
+    }
+    let code = '';
+    const globalsSet: Record<string, boolean> = {};
+    this.canvasApp?.elements.forEach((element) => {
+      const node = element as INodeComponent<NodeInfo>;
+
+      if (node.nodeInfo && node.nodeInfo.type === 'value') {
+        if (
+          !node.nodeInfo.compileInfo ||
+          !node.nodeInfo.compileInfo.getGlobalCode
+        ) {
+          return;
+        }
+        if (!globalsSet[node.nodeInfo?.type]) {
+          code += node.nodeInfo?.compileInfo?.getGlobalCode();
+        }
+        globalsSet[node.nodeInfo?.type] = true;
+      }
+    });
+
+    this.canvasApp?.elements.forEach((element) => {
+      const node = element as INodeComponent<NodeInfo>;
+      if (node.nodeInfo && node.nodeInfo.type === 'value') {
+        if (!node.nodeInfo.compileInfo || !node.nodeInfo.compileInfo.getCode) {
+          return;
+        }
+        code += node.nodeInfo?.compileInfo?.getCode('');
+      }
+    });
+    downloadFile(code, 'flow.ts', 'text/javascript');
   };
 }
