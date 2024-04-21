@@ -1578,7 +1578,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     });
     if (!canExport) {
-      alert('Only value nodes can be exported');
+      alert(
+        'Only value nodes can currently be exported (this feature is under development).'
+      );
       return;
     }
     let code = '';
