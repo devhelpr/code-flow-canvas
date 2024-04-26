@@ -143,7 +143,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compileInfo = {
           getCode: (input: any) => {
             return `\
-getValue("${input}",undefined,undefined,"${
+getValue(${input ? input : '""'},undefined,undefined,"${
               node?.nodeInfo?.formValues?.['value'] ?? ''
             }");
 `;

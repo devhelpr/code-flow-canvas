@@ -12,7 +12,8 @@ export const cleanupNodeInfoForSerializing = <T>(nodeInfo: T | undefined) => {
         typeof (nodeInfo as any)[key] !== 'function' &&
         key !== 'formElements' &&
         key !== 'canvasAppInstance' &&
-        key !== 'stateMachine'
+        key !== 'stateMachine' &&
+        key !== 'compileInfo'
       ) {
         let value = (nodeInfo as any)[key];
         if (key === 'decorators' && value) {

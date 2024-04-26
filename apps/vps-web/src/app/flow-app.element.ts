@@ -30,6 +30,7 @@ import { FormComponent } from './components/form-component';
 
 import {
   connectionExecuteHistory,
+  getStartNodes,
   increaseRunIndex,
   resetRunIndex,
   run,
@@ -391,6 +392,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'span',
             {
               class: `${navBarIconButtonInnerElement} icon-file_downloadget_app`,
+              title: 'Export code (work in progress)',
             },
             this.exportCodeButton?.domElement
           );
@@ -1487,6 +1489,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     addClasses(this.runButton, ['hidden']);
     addClasses(this.speedMeterElement, ['hidden']);
+
+    addClasses(this.exportCodeButton, ['hidden']);
   }
 
   onExitEditComposition() {
@@ -1501,6 +1505,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     removeClasses(this.runButton, ['hidden']);
     removeClasses(this.speedMeterElement, ['hidden']);
+
+    removeClasses(this.exportCodeButton, ['hidden']);
   }
 
   onImported = () => {
@@ -1583,6 +1589,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       );
       return;
     }
+    if (!this.canvasApp?.elements) {
+      return;
+    }
     let code = '';
     const globalsSet: Record<string, boolean> = {};
     this.canvasApp?.elements.forEach((element) => {
@@ -1601,14 +1610,52 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         globalsSet[node.nodeInfo?.type] = true;
       }
     });
+    const getConnections = (node: INodeComponent<NodeInfo>) => {
+      const connections: IConnectionNodeComponent<NodeInfo>[] = [];
+      if (this.canvasApp?.elements) {
+        this.canvasApp?.elements.forEach((element) => {
+          const connection = element as IConnectionNodeComponent<NodeInfo>;
+          if (connection.nodeType === NodeType.Connection) {
+            if (connection.startNode?.id === node.id) {
+              connections.push(connection);
+            }
+          }
+        });
+      }
+      return connections;
+    };
 
-    this.canvasApp?.elements.forEach((element) => {
+    let lineIndex = 0;
+
+    const getCodeForNode = (
+      node: INodeComponent<NodeInfo>,
+      outputVar: string
+    ) => {
+      const connections = getConnections(node);
+      connections.forEach((connection) => {
+        if (connection.endNode) {
+          code += `const output${lineIndex} = ${connection?.endNode?.nodeInfo?.compileInfo?.getCode?.(
+            outputVar
+          )}`;
+          const outputVarName = `output${lineIndex}`;
+          lineIndex++;
+          getCodeForNode(connection.endNode, outputVarName);
+        }
+      });
+    };
+    const startNodes = getStartNodes(this.canvasApp?.elements);
+    startNodes.forEach((element) => {
       const node = element as INodeComponent<NodeInfo>;
       if (node.nodeInfo && node.nodeInfo.type === 'value') {
         if (!node.nodeInfo.compileInfo || !node.nodeInfo.compileInfo.getCode) {
           return;
         }
-        code += node.nodeInfo?.compileInfo?.getCode('');
+        code += `const output${lineIndex} = ${node.nodeInfo?.compileInfo?.getCode(
+          ''
+        )}`;
+        const outputVarName = `output${lineIndex}`;
+        lineIndex++;
+        getCodeForNode(node, outputVarName);
       }
     });
     downloadFile(code, 'flow.ts', 'text/javascript');
