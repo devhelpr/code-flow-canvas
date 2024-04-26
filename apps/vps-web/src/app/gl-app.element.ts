@@ -212,6 +212,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             this.positionX = this.orgPositionX + movedX;
             this.positionY = this.orgPositionY + movedY;
           }
+
+          this.updateSceneParamsInNodes();
         }
       });
 
@@ -304,6 +306,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         this.positionY = newPos.y;
 
         this.wheel = newScale;
+
+        this.updateSceneParamsInNodes();
       }
     };
 
@@ -2086,5 +2090,22 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       return false;
     }
     return serializeElementsMap(this.canvasApp.elements);
+  };
+
+  updateSceneParamsInNodes = () => {
+    const positionNodes = document.querySelectorAll(
+      '[data-node-type="position-node"] .node-content'
+    );
+    positionNodes.forEach((node) => {
+      node.innerHTML = `Scene position<br />${this.positionX.toFixed(
+        2
+      )} ${this.positionY.toFixed(2)}`;
+    });
+    const zoomNodes = document.querySelectorAll(
+      '[data-node-type="wheel-node"] .node-content'
+    );
+    zoomNodes.forEach((node) => {
+      node.innerHTML = `Scene zoom ${this.wheel.toFixed(5)}`;
+    });
   };
 }
