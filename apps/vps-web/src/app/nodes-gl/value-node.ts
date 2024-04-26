@@ -97,12 +97,10 @@ export const getValueNode =
                 ['value']: value,
               };
 
-              if (!node.containerNode) {
-                // todo : figure how to explicitly check if a node is in a composition
-                // .. although currently there are no uniforms created for nodes
-                // in compositions... so the the below code doesn't do anything (uniform can not be found)
-                updateUniformValue(node.id, value);
-              }
+              // todo : figure how to explicitly check if a node is in a composition
+              // .. although currently there are no uniforms created for nodes
+              // in compositions... so the the below code doesn't do anything (uniform can not be found)
+              updateUniformValue(node.id, value);
               if (updated) {
                 updated(undefined, true);
               }
