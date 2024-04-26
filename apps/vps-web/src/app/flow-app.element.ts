@@ -1434,6 +1434,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onPreclearCanvas = () => {
     this.clearPathExecution();
+    removeAllCompositions();
+  };
+
+  onPostclearCanvas = () => {
+    setupTasksInDropdown(this.selectNodeType?.domElement as HTMLSelectElement);
   };
 
   clearPathExecution = () => {

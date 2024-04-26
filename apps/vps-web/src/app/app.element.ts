@@ -510,6 +510,10 @@ export class AppElement<T> {
     //
   };
 
+  onPostclearCanvas = () => {
+    //
+  };
+
   protected clearCanvas = () => {
     this.onPreclearCanvas();
     setSelectNode(undefined);
@@ -522,6 +526,7 @@ export class AppElement<T> {
     this.currentCanvasApp?.elements.clear();
     this.currentCanvasApp?.compositons.clearCompositions();
     this.currentCanvasApp?.setCamera(0, 0, 1);
+    this.onPostclearCanvas();
   };
 
   onShouldPositionPopup = (_node: IRectNodeComponent<T>) => {

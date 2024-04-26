@@ -1199,7 +1199,17 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.positionY = 0;
     this.shaderCompileHistory = [];
     this.currentShaderIndex = -1;
+
+    (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
+    (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
+    removeAllCompositions();
   };
+  onPostclearCanvas = () => {
+    setupGLTasksInDropdown(
+      this.selectNodeType?.domElement as HTMLSelectElement
+    );
+  };
+
   setCameraTargetOnNode = (node: IRectNodeComponent<GLNodeInfo>) => {
     setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
   };
