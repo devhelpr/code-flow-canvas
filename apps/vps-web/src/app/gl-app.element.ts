@@ -1198,6 +1198,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.positionX = 0;
     this.positionY = 0;
     this.shaderCompileHistory = [];
+    this.currentShaderIndex = -1;
   };
   setCameraTargetOnNode = (node: IRectNodeComponent<GLNodeInfo>) => {
     setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
@@ -1918,6 +1919,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   rafId = -1;
 
   historyCanvasApp: CanvasAppInstance<GLNodeInfo> | undefined;
+  currentShaderIndex = -1;
   showShaderHistoryItem = (historyIndex: number) => {
     console.log('showShaderHistoryItem', historyIndex);
     if (historyIndex < 0) {
@@ -1944,8 +1946,76 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       historyItem.value !== undefined &&
       historyItem.valueParameterUniform.node?.nodeInfo?.formValues
     ) {
+      /*
+
+        - walk back in the history until a shader is found
+
+        - check1: is the historyCanvas not created? create it and render canvas with the above shader
+        - else check2: is the historyCanvas already created and does the current rendered step equal the found step above?          
+          - if not:
+            - update the historyCanvas and render canvas with the above shader
+      
+
+        - update all uniforms in between
+        - update all the values in the slider as well
+
+        #history-canvas [data-node-id=".."] .node-content input[type="range"].slider
+        */
+      let shaderIndex = historyIndex;
+      let shader: ShaderCompileHistory | undefined = undefined;
+      while (shaderIndex >= 0 && !shader) {
+        const item = this.shaderCompileHistory[shaderIndex];
+        if (item.type === 'shader') {
+          shader = item;
+        } else {
+          shaderIndex--;
+        }
+      }
+      if (!shader) {
+        return;
+      }
+      if (!this.historyCanvasApp) {
+        this.renderFlowNodesFromHistory(shader);
+      } else if (
+        this.currentShaderIndex === -1 ||
+        this.currentShaderIndex !== shaderIndex
+      ) {
+        this.renderFlowNodesFromHistory(shader);
+      }
+      this.currentShaderIndex = shaderIndex;
+
+      this.updateGLCanvasParameters(false, historyItem.shaderCode);
+
+      // loop from shaderIndex to historyIndex
+      let loop = shaderIndex;
+      while (loop < historyIndex) {
+        const item = this.shaderCompileHistory[loop];
+        if (
+          item?.value !== undefined &&
+          item?.valueParameterUniform?.node?.nodeInfo?.formValues
+        ) {
+          item.valueParameterUniform.node.nodeInfo.formValues.value =
+            item.value.toString();
+
+          const sliderElement = document.querySelector<HTMLInputElement>(
+            `#history-canvas [data-node-id="${historyItem.valueParameterUniform.id}"] .node-content input[type="range"].slider`
+          );
+          if (sliderElement) {
+            sliderElement.value = item.value.toString();
+          }
+        }
+        loop++;
+      }
+
       historyItem.valueParameterUniform.node.nodeInfo.formValues.value =
         historyItem.value.toString();
+
+      const sliderElement = document.querySelector<HTMLInputElement>(
+        `#history-canvas [data-node-id="${historyItem.valueParameterUniform.id}"] .node-content input[type="range"].slider`
+      );
+      if (sliderElement) {
+        sliderElement.value = historyItem.value.toString();
+      }
     } else if (
       historyItem.type === 'shader' &&
       historyItem.shaderCode &&
@@ -1986,55 +2056,63 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         }
       });
 
-      if (!this.historyCanvasApp) {
-        this.currentCanvasApp?.setDisableInteraction(true);
-
-        hideElement(this.canvas);
-
-        (this.canvas?.domElement as HTMLElement).classList.add(
-          'pointer-events-none'
-        );
-        this.currentCanvasApp?.setIsCameraFollowingPaused(true);
-
-        this.historyCanvasApp = createCanvasApp<GLNodeInfo>(
-          this.rootElement,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          'history-canvas',
-          undefined,
-          (): Promise<string | false> => Promise.resolve(false)
-        );
-        const camera = this.canvasApp?.getCamera();
-        this.historyCanvasApp.setCamera(
-          camera?.x ?? 0,
-          camera?.y ?? 0,
-          camera?.scale ?? 1
-        );
-        this.currentCanvasApp = this.historyCanvasApp;
-        this.currentCanvasApp?.setDisableInteraction(true);
-      }
-      this.historyCanvasApp.elements.forEach((element) => {
-        element.domElement.remove();
-        this.removeElement(element);
-      });
-
-      this.historyCanvasApp.elements.clear();
-      importToCanvas(
-        historyItem.nodes ?? [],
-        this.historyCanvasApp as unknown as CanvasAppInstance<GLNodeInfo>,
-        () => {
-          //
-        },
-        undefined,
-        0,
-        getGLNodeTaskFactory
-      );
+      this.renderFlowNodesFromHistory(historyItem);
     }
   };
 
+  renderFlowNodesFromHistory = (historyItem: ShaderCompileHistory) => {
+    if (!this.rootElement) {
+      return;
+    }
+    if (!this.historyCanvasApp) {
+      this.currentCanvasApp?.setDisableInteraction(true);
+
+      hideElement(this.canvas);
+
+      (this.canvas?.domElement as HTMLElement).classList.add(
+        'pointer-events-none'
+      );
+      this.currentCanvasApp?.setIsCameraFollowingPaused(true);
+
+      this.historyCanvasApp = createCanvasApp<GLNodeInfo>(
+        this.rootElement,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'history-canvas',
+        undefined,
+        (): Promise<string | false> => Promise.resolve(false)
+      );
+      const camera = this.canvasApp?.getCamera();
+      this.historyCanvasApp.setCamera(
+        camera?.x ?? 0,
+        camera?.y ?? 0,
+        camera?.scale ?? 1
+      );
+      this.currentCanvasApp = this.historyCanvasApp;
+      this.currentCanvasApp?.setDisableInteraction(true);
+    }
+    this.historyCanvasApp.elements.forEach((element) => {
+      element.domElement.remove();
+      this.removeElement(element);
+    });
+
+    this.historyCanvasApp.elements.clear();
+    importToCanvas(
+      historyItem.nodes ?? [],
+      this.historyCanvasApp as unknown as CanvasAppInstance<GLNodeInfo>,
+      () => {
+        //
+      },
+      undefined,
+      0,
+      getGLNodeTaskFactory
+    );
+  };
+
   exitHistoryMode = () => {
+    this.currentShaderIndex = -1;
     if (this.menubarContainerElement) {
       const menuItems = (
         this.menubarContainerElement.domElement as unknown as HTMLElement
