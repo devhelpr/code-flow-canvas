@@ -16,3 +16,15 @@ export const showElement = (element?: IDOMElement) => {
     (element.domElement as HTMLElement).classList.remove('hidden');
   }
 };
+
+export const hideHTMLElement = (element?: HTMLElement) => {
+  if (element) {
+    element.classList.add('hidden');
+  }
+};
+
+export const showHTMLElement = (element?: HTMLElement) => {
+  if (element && element) {
+    element.classList.remove('hidden');
+  }
+};

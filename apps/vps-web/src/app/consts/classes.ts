@@ -33,10 +33,10 @@ export const secondaryNavBarButtonNomargin = `rounded-md bg-white text-slate-500
  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 
 export const menubarClasses = `menu fixed top-0 z-[1050] flex flex-row flex-nowrap 
-    items-center justify-start height-[50px]  bg-slate-700 w-full
+    items-center justify-start h-[58px]  bg-slate-700 w-full
     whitespace-nowrap overflow-x-scroll`;
 export const menubarContainerClasses = `menu-container flex flex-row flex-nowrap 
-items-center justify-start height-[50px] overflow-visible
+items-center justify-start h-[58px] overflow-visible
 whitespace-nowrap min-w-[100vw]`;
 
 export const primaryButton = `rounded-md bg-blue-500 text-white p-2  hover:bg-blue-600 select-none whitespace-nowrap

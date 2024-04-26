@@ -86,7 +86,9 @@ export const getGLNodeFactoryNames = () => {
   return Object.keys(glNodeTaskRegistry).sort();
 };
 
-export const setupGLNodeTaskRegistry = () => {
+export const setupGLNodeTaskRegistry = (
+  updateUniformValue: (id: string, value: string) => void
+) => {
   registerGLNodeFactory(
     'output-color-node',
     getOutputColorNode,
@@ -103,7 +105,11 @@ export const setupGLNodeTaskRegistry = () => {
     getGradientColorNode,
     'Gradient'
   );
-  registerGLNodeFactory('value-node', getValueNode, 'Value');
+  registerGLNodeFactory(
+    'value-node',
+    getValueNode(updateUniformValue),
+    'Value'
+  );
 
   registerGLNodeFactory(
     'additive-inverse-node',

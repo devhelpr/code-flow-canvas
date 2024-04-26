@@ -1,0 +1,319 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "7429e48b-fe30-4d27-959c-0a4709193d0c",
+          "x": 2102.0023558224293,
+          "y": 37.11874848278708,
+          "width": 200,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "uv-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "bf72fdc4-caa1-48cf-abca-75dcb493a98d",
+          "x": 4032.621250457658,
+          "y": 301.5114899166075,
+          "width": 219.999755859375,
+          "height": 205,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "output-color-node",
+            "formValues": {}
+          }
+        },
+        {
+          "id": "2107b72a-01a8-4883-9dd5-a8da5ffcd581",
+          "x": 2109.3369295348557,
+          "y": 309.7218698215676,
+          "width": 200,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "position-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "0add3204-7e6f-41e0-8ad7-9344ee7eb5c1",
+          "x": 2473.067223167489,
+          "y": 211.61718255893038,
+          "width": 100,
+          "height": 105,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "addition-vector-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "f6f0449c-dfa9-438e-af89-9e90c0c5d37a",
+          "x": 2263.3868615588694,
+          "y": 547.547803618333,
+          "width": 200,
+          "height": 40,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "wheel-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "dfc98026-bcf6-4cc7-a61b-bae5b7c77e55",
+          "x": 2687.287333824379,
+          "y": 294.05546398780683,
+          "width": 200,
+          "height": 105,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "scale-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "b1fded46-721c-4ce1-a9e6-337bd77a6638",
+          "x": 3057.9954857352204,
+          "y": 331.4747120659258,
+          "width": 200,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "noise-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "44ad7abb-7135-4174-b7e8-2d9327897810",
+          "x": 2677.052840151914,
+          "y": 460.1681704881011,
+          "width": 200,
+          "height": 106.00003051757812,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "value-node",
+            "formValues": {
+              "value": "-0.35"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "dae1801c-4fc5-4e5c-ba91-72473be29053",
+          "x": 3383.1985990801236,
+          "y": 294.33339085448404,
+          "width": 220,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "split-colors-node",
+            "formValues": {}
+          }
+        },
+        {
+          "id": "6977d136-f2f9-4813-a469-098909af6519",
+          "x": 3749.6676550527823,
+          "y": 207.66984460280207,
+          "width": 200,
+          "height": 411,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "gradient-color-node",
+            "formValues": {
+              "startcolor": "#2b15d1",
+              "gradients": [
+                {
+                  "percentage": "6.3",
+                  "color": "#3b4bc9"
+                },
+                {
+                  "percentage": "21.5",
+                  "color": "#3b4bc9"
+                },
+                {
+                  "percentage": "9.8",
+                  "color": "#1c5511"
+                },
+                {
+                  "percentage": "9.8",
+                  "color": "#0b2f04"
+                },
+                {
+                  "percentage": "9.8",
+                  "color": "#af6b2c"
+                },
+                {
+                  "percentage": "25.5",
+                  "color": "#b45050"
+                },
+                {
+                  "percentage": "9.9",
+                  "color": "#9e3015"
+                }
+              ]
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "initializeOnCompile": true
+          }
+        },
+        {
+          "id": "fa74e579-4228-4ae3-a681-c8b0f6bb1c5d",
+          "x": 2302.0023558224293,
+          "y": 167.11874848278708,
+          "endX": 2473.067223167489,
+          "endY": 241.61718255893038,
+          "startNodeId": "7429e48b-fe30-4d27-959c-0a4709193d0c",
+          "endNodeId": "0add3204-7e6f-41e0-8ad7-9344ee7eb5c1",
+          "startThumbName": "vector",
+          "endThumbName": "vector1",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "1d28c73b-f2ff-4b59-9a80-75a00bb60b5d",
+          "x": 3257.9954857352204,
+          "y": 408.9747120659258,
+          "endX": 3383.1985990801236,
+          "endY": 371.83339085448404,
+          "startNodeId": "b1fded46-721c-4ce1-a9e6-337bd77a6638",
+          "endNodeId": "dae1801c-4fc5-4e5c-ba91-72473be29053",
+          "startThumbName": "output",
+          "endThumbName": "color",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "ac885cac-f51b-4d8c-9284-7b517b8ddc70",
+          "x": 2309.3369295348557,
+          "y": 439.7218698215676,
+          "endX": 2473.067223167489,
+          "endY": 291.6171825589304,
+          "startNodeId": "2107b72a-01a8-4883-9dd5-a8da5ffcd581",
+          "endNodeId": "0add3204-7e6f-41e0-8ad7-9344ee7eb5c1",
+          "startThumbName": "vector",
+          "endThumbName": "vector2",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "7a5dcecd-1ea0-43f5-b846-2bb6342a0dad",
+          "x": 2573.067223167489,
+          "y": 264.1171825589304,
+          "endX": 2687.287333824379,
+          "endY": 324.05546398780683,
+          "startNodeId": "0add3204-7e6f-41e0-8ad7-9344ee7eb5c1",
+          "endNodeId": "dfc98026-bcf6-4cc7-a61b-bae5b7c77e55",
+          "startThumbName": "output",
+          "endThumbName": "vector",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "69633dac-bb79-4363-beff-dd2e82680b2e",
+          "x": 2463.3868615588694,
+          "y": 567.547803618333,
+          "endX": 2687.287333824379,
+          "endY": 374.05546398780683,
+          "startNodeId": "f6f0449c-dfa9-438e-af89-9e90c0c5d37a",
+          "endNodeId": "dfc98026-bcf6-4cc7-a61b-bae5b7c77e55",
+          "startThumbName": "wheel",
+          "endThumbName": "scale",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "10efde24-4e63-49f7-81a2-045fa2c9f6d8",
+          "x": 2887.287333824379,
+          "y": 346.55546398780683,
+          "endX": 3057.9954857352204,
+          "endY": 361.4747120659258,
+          "startNodeId": "dfc98026-bcf6-4cc7-a61b-bae5b7c77e55",
+          "endNodeId": "b1fded46-721c-4ce1-a9e6-337bd77a6638",
+          "startThumbName": "output",
+          "endThumbName": "vector",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "6e09f8cc-f5be-4dea-bc8f-446e48bb9018",
+          "x": 2877.052840151914,
+          "y": 513.1681857468902,
+          "endX": 3057.9954857352204,
+          "endY": 461.4747120659258,
+          "startNodeId": "44ad7abb-7135-4174-b7e8-2d9327897810",
+          "endNodeId": "b1fded46-721c-4ce1-a9e6-337bd77a6638",
+          "startThumbName": "output",
+          "endThumbName": "zoom",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "2f16c617-5087-4970-ad6c-b35c3abc01dc",
+          "x": 3603.1985990801236,
+          "y": 324.33339085448404,
+          "endX": 3749.6676550527823,
+          "endY": 413.1698446028021,
+          "startNodeId": "dae1801c-4fc5-4e5c-ba91-72473be29053",
+          "endNodeId": "6977d136-f2f9-4813-a469-098909af6519",
+          "startThumbName": "r",
+          "endThumbName": "value",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "ff05fa5a-6a21-4b3b-9392-89def36448a7",
+          "x": 3949.6676550527823,
+          "y": 413.1698446028021,
+          "endX": 4032.621250457658,
+          "endY": 481.5114899166075,
+          "startNodeId": "6977d136-f2f9-4813-a469-098909af6519",
+          "endNodeId": "bf72fdc4-caa1-48cf-abca-75dcb493a98d",
+          "startThumbName": "output",
+          "endThumbName": "vector",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

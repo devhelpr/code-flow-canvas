@@ -10,7 +10,10 @@ import { BaseNodeInfo } from '../types/base-node-info';
 
 export type InitialValues = Record<string, any>;
 export type NodeTaskFactory<T> = (
-  onUpdatedCanvas: (shouldClearExecutionHistory?: boolean) => void,
+  onUpdatedCanvas: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean
+  ) => void,
   theme?: Theme
 ) => NodeTask<T>;
 export type GetNodeTaskFactory<T> = (name: string) => NodeTaskFactory<T>;

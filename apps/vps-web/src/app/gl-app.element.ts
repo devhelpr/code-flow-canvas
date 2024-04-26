@@ -21,6 +21,7 @@ import {
   IConnectionNodeComponent,
   standardTheme,
   ElementNodeMap,
+  createCanvasApp,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -44,6 +45,7 @@ import {
 } from './consts/classes';
 import {
   serializeCompositions,
+  SerializedFlow,
   serializeElementsMap,
 } from './storage/serialize-canvas';
 import { importCompositions, importToCanvas } from './storage/import-to-canvas';
@@ -77,6 +79,13 @@ import {
 } from './gl-types/float-vec2-vec3';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
 import { getSortedNodes } from './utils/sort-nodes';
+import { ShaderCompileHistory } from './interfaces/ShaderCompileHistory';
+import {
+  hideElement,
+  hideHTMLElement,
+  showElement,
+  showHTMLElement,
+} from './utils/show-hide-element';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -87,11 +96,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   isStoring = false;
 
+  pathRange: IDOMElement | undefined = undefined;
+
   storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
   glNavbarComponent: GLNavbarComponent | undefined = undefined;
   scopeNodeDomElement: HTMLElement | undefined = undefined;
   menubarElement: IDOMElement | undefined = undefined;
-
+  historyModeExitButton: IDOMElement | undefined = undefined;
   formElement: IDOMElement | undefined = undefined;
   selectedNodeLabel: IDOMElement | undefined = undefined;
 
@@ -109,6 +120,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   orgPositionX = 0;
   orgPositionY = 0;
   canvasUpdated: (() => void) | undefined = undefined;
+
+  shaderCompileHistory: ShaderCompileHistory[] = [];
+  addCompiledShaderToHistory = false;
 
   constructor(appRootSelector: string) {
     const template = document.createElement('template');
@@ -366,13 +380,17 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       });
 
     this.canvasApp.setOnAddcomposition(this.onAddGLComposition);
-    const canvasUpdated = () => {
+    const canvasUpdated = (_?: boolean, storeOnly?: boolean) => {
       if (this.isStoring) {
         return;
       }
-      this.flowTOGLCanvas();
+      if (!storeOnly) {
+        this.flowTOGLCanvas();
+      }
       store();
-      this.setTabOrderOfNodes();
+      if (!storeOnly) {
+        this.setTabOrderOfNodes();
+      }
     };
     this.canvasUpdated = canvasUpdated;
     this.canvasApp.setOnCanvasUpdated(() => {
@@ -388,7 +406,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     setCameraAnimation(this.canvasApp);
 
-    setupGLNodeTaskRegistry();
+    setupGLNodeTaskRegistry(this.updateUniformValue);
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
@@ -443,6 +461,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
               setupGLTasksInDropdown(
                 this.selectNodeType?.domElement as HTMLSelectElement
+              );
+
+              (this.pathRange?.domElement as HTMLElement).setAttribute(
+                'value',
+                '0'
+              );
+              (this.pathRange?.domElement as HTMLElement).setAttribute(
+                'max',
+                '0'
               );
             },
           });
@@ -537,6 +564,19 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             'Exit Edit composition'
           );
 
+          this.historyModeExitButton = createElement(
+            'button',
+            {
+              class: `${navBarButton} hidden ml-auto`,
+            },
+            this.menubarElement.domElement,
+            'Exit history mode'
+          );
+
+          (
+            this.historyModeExitButton?.domElement as HTMLElement
+          ).addEventListener('click', this.exitHistoryMode);
+
           this.selectedNodeLabel = createElement(
             'div',
             {
@@ -585,6 +625,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             setupGLTasksInDropdown(
               this.selectNodeType?.domElement as HTMLSelectElement
             );
+
+            (this.pathRange?.domElement as HTMLElement).setAttribute(
+              'value',
+              '0'
+            );
+            (this.pathRange?.domElement as HTMLElement).setAttribute(
+              'max',
+              '0'
+            );
             this.isStoring = false;
           })
           .catch((error) => {
@@ -598,7 +647,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     const store = () => {
       if (this.storageProvider) {
-        const nodesList = serializeFlow();
+        const nodesList = this.serializeFlow();
         if (!nodesList) {
           return;
         }
@@ -646,6 +695,50 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.menubarContainerElement.domElement
     );
 
+    const bgRange = createElement(
+      'div',
+      {
+        class:
+          'p-2 absolute bottom-[0px] w-full h-[50px] bg-slate-200 items-center z-[1050] flex', //flex',
+        name: 'path-track-bg',
+      },
+      this.rootElement,
+      ''
+    );
+
+    this.pathRange = createElement(
+      'input',
+      {
+        type: 'range',
+        class: 'p-2 m-2 relative w-full',
+        name: 'path-track',
+        min: '0',
+        max: '100000',
+        step: '1',
+        //disabled: 'disabled',
+        value: 1,
+        input: (event) => {
+          const value = parseInt((event.target as HTMLInputElement).value);
+          if (!isNaN(value)) {
+            this.showShaderHistoryItem(value);
+          }
+        },
+      },
+      bgRange.domElement,
+      ''
+    );
+
+    const labelPathRange = createElement(
+      'label',
+      {
+        class: ' whitespace-nowrap text-black p-2',
+        for: this.pathRange.id,
+      },
+      bgRange.domElement,
+      'Timeline'
+    );
+    this.pathRange.domElement.before(labelPathRange.domElement);
+
     const initializeNodes = () => {
       if (!this.rootElement) {
         return;
@@ -663,13 +756,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           }
         }
       });
-    };
-
-    const serializeFlow = () => {
-      if (!this.canvasApp) {
-        return;
-      }
-      return serializeElementsMap(this.canvasApp.elements);
     };
 
     const getSerializeCompositions = () => {
@@ -1107,12 +1193,16 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.wheel = 1.0;
     this.positionX = 0;
     this.positionY = 0;
+    this.shaderCompileHistory = [];
   };
   setCameraTargetOnNode = (node: IRectNodeComponent<GLNodeInfo>) => {
     setTargetCameraAnimation(node.x, node.y, node.id, 1.0, true);
   };
 
-  updateGLCanvasParameters = () => {
+  updateGLCanvasParameters = (
+    storeCompiledResultInHistory = true,
+    shaderSource?: string
+  ) => {
     this.pauseRender = true;
     if (
       this.fragmentShader &&
@@ -1139,7 +1229,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.u_PositionXUniformLocation = null;
       this.u_PositionYUniformLocation = null;
 
-      this.setupShader(this.gl);
+      this.setupShader(this.gl, storeCompiledResultInHistory, shaderSource);
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       this.pauseRender = false;
     }
@@ -1310,15 +1400,24 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     return;
   };
 
-  setupShader = (gl: WebGLRenderingContext) => {
-    const fsSource = this.createFragmentShader(
-      `
+  shaderSource = '';
+  setupShader = (
+    gl: WebGLRenderingContext,
+    storeCompiledResultInHistory = true,
+    shaderSource?: string
+  ) => {
+    const fsSource =
+      shaderSource ??
+      this.createFragmentShader(
+        `
       ${this.shaderStatements}
     `,
-      this.shaderNodePreStatements
-    );
+        this.shaderNodePreStatements
+      );
     console.log('fsSource', fsSource);
     this.initShaderProgram(gl, this.vsSource, fsSource);
+    this.shaderSource = fsSource;
+
     if (!this.shaderProgram) {
       throw new Error('Unable to initialize the shader program');
     }
@@ -1373,6 +1472,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         );
       }
     });
+    if (
+      storeCompiledResultInHistory &&
+      this.canvasApp &&
+      this.canvasApp.elements.size > 0
+    ) {
+      this.addCompiledShaderToHistory = true;
+    }
   };
 
   shaderNodePreoutput = '';
@@ -1725,6 +1831,33 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     );
     this.timerCount = 0.0;
     requestAnimationFrame(this.renderLoop);
+
+    if (this.addCompiledShaderToHistory) {
+      const nodesList = this.serializeFlow();
+      if (!nodesList) {
+        return;
+      }
+      console.log(
+        'this.shaderCompileHistory.push',
+        this.shaderCompileHistory.length + 1
+      );
+      this.shaderCompileHistory.push({
+        type: 'shader',
+        shaderCode: this.shaderSource,
+        nodes: nodesList,
+        valueParameterUniforms: this.valueParameterUniforms.map((item) => {
+          return { ...item, value: item.node.nodeInfo?.formValues.value };
+        }),
+      });
+
+      (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
+      (this.pathRange?.domElement as HTMLElement).setAttribute(
+        'max',
+        (this.shaderCompileHistory.length - 1).toString()
+      );
+
+      this.addCompiledShaderToHistory = false;
+    }
   };
   drawScene = (
     gl: WebGLRenderingContext,
@@ -1779,4 +1912,179 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     gl.drawArrays(primitiveType, offset, count);
   };
   rafId = -1;
+
+  historyCanvasApp: CanvasAppInstance<GLNodeInfo> | undefined;
+  showShaderHistoryItem = (historyIndex: number) => {
+    console.log('showShaderHistoryItem', historyIndex);
+    if (historyIndex < 0) {
+      return;
+    }
+    if (historyIndex >= this.shaderCompileHistory.length) {
+      return;
+    }
+    if (this.menubarContainerElement) {
+      const menuItems = (
+        this.menubarContainerElement.domElement as unknown as HTMLElement
+      ).querySelectorAll<HTMLElement>('select,button,input');
+      menuItems.forEach((menuItem) => {
+        hideHTMLElement(menuItem);
+      });
+    }
+
+    showElement(this.historyModeExitButton);
+
+    const historyItem = this.shaderCompileHistory[historyIndex];
+    if (
+      historyItem.type === 'value' &&
+      historyItem.valueParameterUniform &&
+      historyItem.value !== undefined &&
+      historyItem.valueParameterUniform.node?.nodeInfo?.formValues
+    ) {
+      historyItem.valueParameterUniform.node.nodeInfo.formValues.value =
+        historyItem.value.toString();
+    } else if (
+      historyItem.type === 'shader' &&
+      historyItem.shaderCode &&
+      this.gl
+    ) {
+      /*
+        render historyItem.nodes on dummy canvas without interaction:
+        - disable current canvas
+        - show exit "timeline mode"
+        - hide all menu buttons
+        - create dummy canvas if it doesnt exist .. otherwise use current
+        - copy camera settings
+
+        - render nodes
+        - reset uniform values for current shader
+
+        when exit "timeline mode":
+        - hide exit button
+        - remove dummy canvas
+        - enable current canvas
+        - show all menu buttons
+
+
+        TODO : store a copy of the unifor values for this shader-source and
+             use them
+      */
+      if (!this.rootElement) {
+        return;
+      }
+
+      this.updateGLCanvasParameters(false, historyItem.shaderCode);
+      (historyItem.valueParameterUniforms ?? []).forEach((uniform) => {
+        if (
+          uniform?.node?.nodeInfo?.formValues &&
+          (uniform?.value || uniform?.value === 0)
+        ) {
+          uniform.node.nodeInfo.formValues.value = uniform.value.toString();
+        }
+      });
+
+      if (!this.historyCanvasApp) {
+        this.currentCanvasApp?.setDisableInteraction(true);
+
+        hideElement(this.canvas);
+
+        (this.canvas?.domElement as HTMLElement).classList.add(
+          'pointer-events-none'
+        );
+        this.currentCanvasApp?.setIsCameraFollowingPaused(true);
+
+        this.historyCanvasApp = createCanvasApp<GLNodeInfo>(
+          this.rootElement,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          'history-canvas',
+          undefined,
+          (): Promise<string | false> => Promise.resolve(false)
+        );
+        const camera = this.canvasApp?.getCamera();
+        this.historyCanvasApp.setCamera(
+          camera?.x ?? 0,
+          camera?.y ?? 0,
+          camera?.scale ?? 1
+        );
+        this.currentCanvasApp = this.historyCanvasApp;
+        this.currentCanvasApp?.setDisableInteraction(true);
+      }
+      this.historyCanvasApp.elements.forEach((element) => {
+        element.domElement.remove();
+        this.removeElement(element);
+      });
+
+      this.historyCanvasApp.elements.clear();
+      importToCanvas(
+        historyItem.nodes ?? [],
+        this.historyCanvasApp as unknown as CanvasAppInstance<GLNodeInfo>,
+        () => {
+          //
+        },
+        undefined,
+        0,
+        getGLNodeTaskFactory
+      );
+    }
+  };
+
+  exitHistoryMode = () => {
+    if (this.menubarContainerElement) {
+      const menuItems = (
+        this.menubarContainerElement.domElement as unknown as HTMLElement
+      ).querySelectorAll<HTMLElement>('select,button,input');
+      menuItems.forEach((menuItem) => {
+        showHTMLElement(menuItem);
+      });
+    }
+    hideElement(this.compositionEditExitButton);
+    hideElement(this.compositionEditButton);
+    hideElement(this.compositionNameButton);
+    hideElement(this.historyModeExitButton);
+
+    if (this.historyCanvasApp) {
+      this.historyCanvasApp.elements.forEach((element) => {
+        element.domElement.remove();
+        this.removeElement(element);
+      });
+      this.historyCanvasApp.elements.clear();
+      this.historyCanvasApp.canvas.domElement.remove();
+      this.historyCanvasApp = undefined;
+
+      showElement(this.canvas);
+      this.currentCanvasApp = this.canvasApp;
+      this.currentCanvasApp?.setIsCameraFollowingPaused(false);
+      this.currentCanvasApp?.setDisableInteraction(false);
+      (this.canvas?.domElement as HTMLElement).classList.remove(
+        'pointer-events-none'
+      );
+    }
+  };
+
+  updateUniformValue = (id: string, value: string) => {
+    console.log('updateUniformValue', id, value);
+    const uniform = this.valueParameterUniforms.find((u) => u.id === id);
+    if (uniform && this.pathRange) {
+      const historyItem: ShaderCompileHistory = {
+        type: 'value',
+        value: parseFloat(value),
+        valueParameterUniform: uniform,
+        valueUniformName: id,
+      };
+      this.shaderCompileHistory.push(historyItem);
+      (this.pathRange.domElement as HTMLInputElement).setAttribute(
+        'max',
+        (this.shaderCompileHistory.length - 1).toString()
+      );
+    }
+  };
+
+  serializeFlow = (): SerializedFlow | false => {
+    if (!this.canvasApp) {
+      return false;
+    }
+    return serializeElementsMap(this.canvasApp.elements);
+  };
 }

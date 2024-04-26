@@ -9,6 +9,8 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
+export type SerializedFlow = ReturnType<typeof serializeElementsMap>;
+
 export const serializeElementsMap = (elements: ElementNodeMap<NodeInfo>) => {
   const filteredElements = Array.from(elements).filter((entry) => {
     const obj = entry[1] as INodeComponent<NodeInfo>;

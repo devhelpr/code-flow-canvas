@@ -126,7 +126,11 @@ export class Connection<T> {
       'connection-id',
       id ?? ''
     );
-    const arrowIdPrefix = (id ?? crypto.randomUUID()).replace(/-/g, '');
+    const prefixId = this.canvas.id.replace(/-/g, '');
+    const arrowIdPrefix = `${prefixId}${(id ?? crypto.randomUUID()).replace(
+      /-/g,
+      ''
+    )}`;
     this.createArrowMarker(arrowIdPrefix);
 
     this.nodeComponent = createSVGNodeComponent(
