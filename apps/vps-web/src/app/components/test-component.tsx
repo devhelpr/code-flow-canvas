@@ -42,6 +42,7 @@ export const TestComponent = () => {
       Hello Test Component
       <SubComponent />
       <ul>{list}</ul>
+      {303 + 606}
       <my-element></my-element>
     </div>
   );
