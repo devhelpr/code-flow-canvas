@@ -385,6 +385,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'button',
             {
               class: `${navBarIconButton} `,
+              title: 'Export code (work in progress)',
             },
             menubarElement.domElement
           );
@@ -392,7 +393,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'span',
             {
               class: `${navBarIconButtonInnerElement} icon-file_downloadget_app`,
-              title: 'Export code (work in progress)',
             },
             this.exportCodeButton?.domElement
           );
@@ -1584,7 +1584,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (node.nodeType === NodeType.Connection) {
         return;
       }
-      if (node.nodeInfo?.type !== 'value') {
+      if (
+        node.nodeInfo?.type !== 'value' &&
+        node.nodeInfo?.type !== 'expression' &&
+        node.nodeInfo?.type !== 'show-value'
+      ) {
         canExport = false;
       }
     });
@@ -1602,7 +1606,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.canvasApp?.elements.forEach((element) => {
       const node = element as INodeComponent<NodeInfo>;
 
-      if (node.nodeInfo && node.nodeInfo.type === 'value') {
+      if (
+        (node.nodeInfo && node.nodeInfo.type === 'value') ||
+        (node.nodeInfo && node.nodeInfo.type === 'expression') ||
+        (node.nodeInfo && node.nodeInfo.type === 'show-value')
+      ) {
         if (
           !node.nodeInfo.compileInfo ||
           !node.nodeInfo.compileInfo.getGlobalCode
@@ -1663,6 +1671,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         getCodeForNode(node, outputVarName);
       }
     });
+
     downloadFile(code, 'flow.ts', 'text/javascript');
   };
 }

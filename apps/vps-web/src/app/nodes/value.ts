@@ -151,8 +151,8 @@ getValue(${input ? input : '""'},undefined,undefined,"${
           getGlobalCode: () => {
             return `\
 const replaceValuesGetValue = (
-  content: string,
-  payload: any,
+  content,
+  payload,
   keepUnknownFields = false
 ) => {
   let resultContent = content;
@@ -171,7 +171,7 @@ const replaceValuesGetValue = (
   return resultContent;
 };
 
-function getValue(input, loopIndex?: number, payload?: any, nodeValue?: string) {
+function getValue(input, loopIndex, payload, nodeValue) {
   return replaceValuesGetValue(nodeValue ?? "", {
     value: input,
     currentValue: input,

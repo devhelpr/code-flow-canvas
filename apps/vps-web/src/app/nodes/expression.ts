@@ -376,6 +376,27 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.getDependencies = getDependencies;
+
+        node.nodeInfo.compileInfo = {
+          getCode: (input: any) => {
+            compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
+            if (!compiledExpressionInfo) {
+              return 'input;';
+            }
+            return `\
+((payload) => {\
+${compiledExpressionInfo.script};\
+})({input:${input ? input : '""'}});
+`;
+          },
+          //           getGlobalCode: () => {
+          //             return `\
+          // const getExpression = (input, loopIndex, payload, nodeValue) => {
+          //   return "";
+          // }
+          // `;
+          //},
+        };
       }
       return node;
     },

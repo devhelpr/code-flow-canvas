@@ -238,6 +238,14 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
           },
         ];
         node.nodeInfo.isSettingsPopup = true;
+        node.nodeInfo.compileInfo = {
+          getCode: (input: any) => {
+            return `\
+((input) => {console.log(input);\
+return ${input ? input : '""'};})(${input ? input : '""'});\
+`;
+          },
+        };
       }
       return node;
     },
