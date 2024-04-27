@@ -43,9 +43,9 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
     });
     this.template = createTemplate(
       `<div class="w-full ${props.isLast ? '' : 'mb-2'}">
-        <label for="${props.fieldName}" class="block  mb-2 ${
-        props.settings?.textLabelColor ?? 'text-white'
-      }">${props.label ?? props.fieldName}</label>
+        <label class="block  mb-2 ${
+          props.settings?.textLabelColor ?? 'text-white'
+        }">${props.label ?? props.fieldName}</label>
         <div class="_flex flex-col table mb-3"></div>
         <button class="${secondaryNavBarButtonNomargin}"
           type="button"
