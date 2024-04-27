@@ -1,4 +1,7 @@
-import { createElement } from '@devhelpr/visual-programming-system';
+import {
+  EventHandler,
+  createElement,
+} from '@devhelpr/visual-programming-system';
 
 export const createJSXElement = (
   tag: any,
@@ -10,6 +13,22 @@ export const createJSXElement = (
   }
   const element = createElement(tag, properties, undefined, undefined)
     .domElement as unknown as HTMLElement;
+
+  if (properties) {
+    Object.entries(properties).forEach(([key, val]) => {
+      if (key === 'class') {
+        element.classList.add(...((val as string) || '').trim().split(' '));
+        return;
+      } else if (typeof val === 'function') {
+        (element as unknown as HTMLElement).addEventListener(
+          key,
+          val as EventHandler
+        );
+      } else {
+        element.setAttribute(key, (val as any).toString());
+      }
+    });
+  }
   for (const child of children) {
     if (typeof child === 'string') {
       element.innerText += child;

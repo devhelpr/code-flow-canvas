@@ -1,6 +1,23 @@
 import { createElement } from '@devhelpr/visual-programming-system';
 import { createJSXElement } from '../utils/create-jsx-element';
 
+class Button extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    const button = document.createElement('button');
+    button.innerText = 'Click Me';
+    button.addEventListener('click', () => alert('Hello VPS!'));
+
+    shadow.appendChild(button);
+  }
+}
+customElements.define('vps-button', Button);
+
 class MyElement extends HTMLElement {
   constructor() {
     super();
@@ -44,6 +61,8 @@ export const TestComponent = () => {
       <ul>{list}</ul>
       {303 + 606}
       <my-element></my-element>
+      <vps-button></vps-button>
+      <button click={() => alert('Hello VPS!')}>JSX BUTTON</button>
     </div>
   );
 };
