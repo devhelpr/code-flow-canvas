@@ -1580,6 +1580,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     return runCounter;
   };
 
+  supportedNodeTypes = ['value', 'expression', 'show-value'];
+
   exportCodeClick = () => {
     let canExport = true;
     this.canvasApp?.elements.forEach((element) => {
@@ -1587,11 +1589,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (node.nodeType === NodeType.Connection) {
         return;
       }
-      if (
-        node.nodeInfo?.type !== 'value' &&
-        node.nodeInfo?.type !== 'expression' &&
-        node.nodeInfo?.type !== 'show-value'
-      ) {
+      if (this.supportedNodeTypes.indexOf(node.nodeInfo?.type ?? '') < 0) {
         canExport = false;
       }
     });
@@ -1610,9 +1608,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       const node = element as INodeComponent<NodeInfo>;
 
       if (
-        (node.nodeInfo && node.nodeInfo.type === 'value') ||
-        (node.nodeInfo && node.nodeInfo.type === 'expression') ||
-        (node.nodeInfo && node.nodeInfo.type === 'show-value')
+        node.nodeInfo?.type &&
+        this.supportedNodeTypes.indexOf(node.nodeInfo?.type) >= 0
       ) {
         if (
           !node.nodeInfo.compileInfo ||
@@ -1666,8 +1663,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     startNodes.forEach((element) => {
       const node = element as INodeComponent<NodeInfo>;
       if (
-        (node.nodeInfo && node.nodeInfo.type === 'value') ||
-        (node.nodeInfo && node.nodeInfo.type === 'expression')
+        node.nodeInfo?.type &&
+        this.supportedNodeTypes.indexOf(node.nodeInfo?.type) >= 0
       ) {
         if (!node.nodeInfo.compileInfo || !node.nodeInfo.compileInfo.getCode) {
           return;
