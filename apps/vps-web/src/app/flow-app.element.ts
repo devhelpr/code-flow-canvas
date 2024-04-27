@@ -1650,6 +1650,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           code += `const output${lineIndex} = ${connection?.endNode?.nodeInfo?.compileInfo?.getCode?.(
             outputVar
           )}`;
+          code += `\
+
+`;
           const outputVarName = `output${lineIndex}`;
           lineIndex++;
           getCodeForNode(connection.endNode, outputVarName);
@@ -1666,6 +1669,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         code += `const output${lineIndex} = ${node.nodeInfo?.compileInfo?.getCode(
           ''
         )}`;
+        code += `\
+
+`;
         const outputVarName = `output${lineIndex}`;
         lineIndex++;
         getCodeForNode(node, outputVarName);
