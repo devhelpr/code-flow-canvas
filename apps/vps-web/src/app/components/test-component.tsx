@@ -1,48 +1,46 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-//import { createJSXElement } from '@devhelpr/visual-programming-system';
-import { getCount, setCount } from '@devhelpr/visual-programming-system';
+import { createElement } from '@devhelpr/visual-programming-system';
+import { createJSXElement } from '../utils/create-jsx-element';
 
-function Add(a: number, b: number) {
-  return a + b;
+class MyElement extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    const wrapper = document.createElement('span');
+    wrapper.setAttribute('class', 'wrapper');
+    wrapper.innerText = 'Hello, Shadow DOM';
+    createElement('div', { class: 'test' }, wrapper, SubComponent());
+
+    shadow.appendChild(wrapper);
+  }
 }
 
-export interface TestComponentProps {
-  list: { test: string }[];
-}
+customElements.define('my-element', MyElement);
 
-export const TestComponent = (props: TestComponentProps) => {
+const ChildComponent = () => {
+  return <div>ChildComponent</div>;
+};
+
+const SubComponent = () => {
+  return (
+    <div>
+      SubComponent
+      <ChildComponent />
+    </div>
+  );
+};
+
+export const TestComponent = () => {
   console.log('TestComponent constructor');
-  // return (
-  //   <div>
-  //     Hello Test Component
-  //     <button
-  //       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-  //       onclick={(event: MouseEvent) => {
-  //         console.log('click TestComponent');
-  //         ///event.preventDefault();
-  //         //event.stopPropagation();
-  //         //alert('Hello World!');
 
-  //         setCount(getCount() + 1);
-
-  //         return false;
-  //       }}
-  //     >
-  //       Click Me
-  //     </button>
-  //     <div>{2 + 3 * Add(1, 6)}</div>
-  //     <div>{getCount()}</div>
-  //     <ul>
-  //       <list:Render list={props.list}>
-  //         {(item: { test: string }) => (
-  //           <div>
-  //             <div>
-  //               <li>{item.test}</li>
-  //             </div>
-  //           </div>
-  //         )}
-  //       </list:Render>
-  //     </ul>
-  //   </div>
-  // );
+  return (
+    <div class="test hidden">
+      Hello Test Component
+      <SubComponent />
+      <my-element></my-element>
+    </div>
+  );
 };

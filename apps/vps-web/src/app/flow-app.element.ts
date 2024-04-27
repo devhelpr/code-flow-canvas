@@ -95,6 +95,7 @@ import { RunCounter } from './follow-path/run-counter';
 import { addClasses, removeClasses } from './utils/add-remove-classes';
 import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 import { downloadFile } from './utils/create-download-link';
+import { TestComponent } from './components/test-component';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -833,6 +834,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.rootElement,
       ''
     );
+
+    createElement('div', {}, this.rootElement, TestComponent());
 
     const getSliderNodeByPosition = (sliderValue: number) => {
       const max = connectionExecuteHistory.length * 1000;
