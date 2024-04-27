@@ -1665,7 +1665,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const startNodes = getStartNodes(this.canvasApp?.elements);
     startNodes.forEach((element) => {
       const node = element as INodeComponent<NodeInfo>;
-      if (node.nodeInfo && node.nodeInfo.type === 'value') {
+      if (
+        (node.nodeInfo && node.nodeInfo.type === 'value') ||
+        (node.nodeInfo && node.nodeInfo.type === 'expression')
+      ) {
         if (!node.nodeInfo.compileInfo || !node.nodeInfo.compileInfo.getCode) {
           return;
         }
