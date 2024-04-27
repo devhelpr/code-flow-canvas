@@ -19,7 +19,7 @@ export const createJSXElement = (
       element.append(...child);
       continue;
     }
-    element.appendChild(child);
+    element.append(child);
   }
 
   return element;

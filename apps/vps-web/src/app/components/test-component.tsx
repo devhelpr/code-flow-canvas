@@ -35,11 +35,13 @@ const SubComponent = () => {
 
 export const TestComponent = () => {
   console.log('TestComponent constructor');
-
+  const items = [1, 2, 3, 4, 5];
+  const list = items.map((item) => <li>{item}</li>);
   return (
     <div class="test hidden">
       Hello Test Component
       <SubComponent />
+      <ul>{list}</ul>
       <my-element></my-element>
     </div>
   );
