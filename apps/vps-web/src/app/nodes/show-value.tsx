@@ -14,12 +14,14 @@ import {
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
 import { getFormattedValue } from '../utils/getFormattedValue';
+import { createJSXElement } from '../utils/create-jsx-element';
 
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+  //let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+  let htmlElement: HTMLElement | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
@@ -29,8 +31,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     hasInitialValue = true;
     inputValues = '';
-    if (htmlNode) {
-      htmlNode.domElement.textContent = '-';
+    if (htmlElement) {
+      htmlElement.textContent = '-';
       if (rect) {
         rect.resize(120);
       }
@@ -39,15 +41,11 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = input;
-    if (htmlNode) {
+    if (htmlElement) {
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-      htmlNode.domElement.textContent = getFormattedValue(
-        input,
-        decimalCount,
-        append
-      );
+      htmlElement.textContent = getFormattedValue(input, decimalCount, append);
 
       if (rect) {
         rect.resize(120);
@@ -72,12 +70,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   };
 
   const updateVisual = (data: any) => {
-    if (htmlNode) {
-      htmlNode.domElement.textContent = getFormattedValue(
-        data,
-        decimalCount,
-        append
-      );
+    if (htmlElement) {
+      htmlElement.textContent = getFormattedValue(data, decimalCount, append);
       if (rect) {
         rect.resize(120);
       }
@@ -98,14 +92,10 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       const appendInitialValue = initalValues?.['append'] ?? '';
       decimalCount = parseInt(decimalsInitialValue) || 0;
       append = appendInitialValue;
-      htmlNode = createElement(
-        'div',
-        {
-          class: 'break-words whitespace-pre-line text-center',
-        },
-        undefined,
-        '-'
-      ) as unknown as INodeComponent<NodeInfo>;
+
+      const HTMLNode = () => (
+        <div class="break-words whitespace-pre-line text-center"></div>
+      );
 
       const wrapper = createElement(
         'div',
@@ -113,8 +103,11 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
           class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[120px] text-white`,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        HTMLNode()
       ) as unknown as INodeComponent<NodeInfo>;
+
+      htmlElement = (wrapper.domElement as HTMLElement)
+        .firstChild as HTMLElement;
 
       rect = canvasApp.createRect(
         x,
@@ -192,8 +185,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
               updated();
 
               if (!isNaN(inputValues)) {
-                if (htmlNode) {
-                  htmlNode.domElement.textContent = getFormattedValue(
+                if (htmlElement) {
+                  htmlElement.textContent = getFormattedValue(
                     inputValues,
                     decimalCount,
                     appendInitialValue
@@ -222,8 +215,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
               updated();
               append = value;
               if (!isNaN(inputValues)) {
-                if (htmlNode) {
-                  htmlNode.domElement.textContent = getFormattedValue(
+                if (htmlElement) {
+                  htmlElement.textContent = getFormattedValue(
                     inputValues,
                     decimalCount,
                     value
