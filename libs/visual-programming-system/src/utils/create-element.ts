@@ -149,7 +149,7 @@ export const createNSElement = <T>(
   domElement.id = `${nodeId}`;
   if (attributes) {
     Object.keys(attributes).forEach((key) => {
-      if (typeof attributes[key] === 'object') {
+      if (typeof attributes[key] === 'object' && key === 'style') {
         Object.keys(attributes[key]).forEach((styleProperty: string) => {
           // console.log(
           //   styleProperty,
@@ -160,6 +160,13 @@ export const createNSElement = <T>(
             (attributes[key] as unknown as any)[styleProperty]
           );
         });
+      } else if (
+        (typeof attributes[key] === 'object' ||
+          Array.isArray(attributes[key])) &&
+        key !== 'style' &&
+        key in domElement
+      ) {
+        (domElement as any)[key] = attributes[key];
       } else if (typeof attributes[key] === 'function') {
         domElement.addEventListener(key, attributes[key] as EventHandler);
       } else if (typeof attributes[key] === 'string') {
