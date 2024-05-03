@@ -60,10 +60,10 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
     this.max = max ?? 100;
     this.step = step ?? 0.1;
     this.template = createTemplate(
-      `<div class="w-full ${props.isLast ? '' : 'mb-2'} ${
+      `<div class="slider-container w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
       }">
-        <label for="${props.formId}_${props.fieldName}" class="block  mb-2 ${
+        <label for="${props.formId}_${props.fieldName}" class="block  mb-10 ${
         props.settings?.showLabel === false ? 'hidden' : ''
       } 
       ${props.settings?.textLabelColor ?? 'text-white'} ${

@@ -31,6 +31,7 @@ export const getSlider =
     let currentValue = 0;
     let triggerButton = false;
     let runCounter: RunCounter | undefined = undefined;
+    let labelElement: HTMLLabelElement | undefined = undefined;
     const initializeCompute = () => {
       currentValue = 0;
       return;
@@ -82,12 +83,13 @@ export const getSlider =
           {
             fieldType: FormFieldType.Slider,
             fieldName: 'value',
+            label: 'Slider',
             value: values?.['value'] ?? '',
             min: -1.0,
             max: 1.0,
             step: 0.01,
             settings: {
-              showLabel: false,
+              showLabel: true,
             },
             onChange: (value: string) => {
               if (!node.nodeInfo) {
@@ -137,6 +139,39 @@ export const getSlider =
       (nodeInstance) => {
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
         canvasAppInstance = nodeInstance.contextInstance;
+
+        labelElement = (
+          nodeInstance.node.domElement as HTMLElement
+        ).querySelector('form label') as HTMLLabelElement;
+
+        if (node.nodeInfo) {
+          node.nodeInfo.isSettingsPopup = true;
+          if (labelElement) {
+            labelElement.textContent =
+              node.nodeInfo.formValues?.['label'] ?? '';
+          }
+          node.nodeInfo.formElements = [
+            {
+              fieldType: FormFieldType.Text,
+              fieldName: 'label',
+              value: node.nodeInfo.formValues?.['label'] ?? '',
+              onChange: (value: string) => {
+                if (!node.nodeInfo) {
+                  return;
+                }
+                node.nodeInfo.formValues = {
+                  ...node.nodeInfo.formValues,
+                  label: value,
+                };
+                if (labelElement) {
+                  (labelElement as HTMLElement).textContent = value;
+                }
+                updated();
+                nodeInstance.rect?.resize();
+              },
+            },
+          ];
+        }
       },
       {
         category: 'UI',

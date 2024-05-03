@@ -532,3 +532,11 @@ position: relative;
 	text-align: center;
     white-space: pre-wrap;
 }
+
+.rect-node label:empty {
+	display: none;
+}
+
+.w-full.p-2:has(form > .slider-container) {
+	padding-top: 0;
+}
