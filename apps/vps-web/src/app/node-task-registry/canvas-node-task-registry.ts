@@ -145,6 +145,7 @@ import { getMediaLibraryNode } from '../nodes/media-library';
 import { RunCounter } from '../follow-path/run-counter';
 import { getCreateEventStateValueNode } from '../nodes/create-state-value';
 import { getUserInput } from '../nodes/user-input';
+import { setFlowVariable } from '../nodes/set-flow-variable';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -219,6 +220,12 @@ export const setupCanvasNodeTaskRegistry = (
   );
   registerNodeFactory('variable', getVariable);
   registerNodeFactory('set-variable', setVariable);
+  registerNodeFactory(
+    'set-flow-variable',
+    setFlowVariable,
+    'Set flow variable'
+  );
+
   registerNodeFactory(
     'button',
     getButton(animatePath, createRunCounterContext)

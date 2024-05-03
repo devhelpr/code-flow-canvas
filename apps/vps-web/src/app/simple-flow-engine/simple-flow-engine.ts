@@ -10,7 +10,6 @@ import {
   ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
-import { getNodeConnectionPairByIdWhereNodeIsEndpoint } from '../follow-path/get-node-connection-pairs';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
@@ -70,30 +69,50 @@ const handleDecoratrs = (
 };
 
 const getVariablePayload = (
-  node: IRectNodeComponent<NodeInfo>,
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  _node: IRectNodeComponent<NodeInfo>,
+  _canvasApp: CanvasAppInstance<NodeInfo>,
   scopeId?: string
 ) => {
-  const dataNodesConnectionPairs =
-    getNodeConnectionPairByIdWhereNodeIsEndpoint<NodeInfo>(
-      canvasApp,
-      node,
-      undefined,
-      undefined,
-      true
-    );
-  const payload: Record<string, unknown> = {};
-  if (dataNodesConnectionPairs) {
-    dataNodesConnectionPairs.forEach((connectionInfo) => {
-      if (connectionInfo.start) {
-        const nodeInfo = connectionInfo.start.nodeInfo as unknown as any;
-        if (nodeInfo && nodeInfo.getData) {
-          payload['variable'] = nodeInfo.getData(scopeId) ?? 0;
-        }
-      }
-    });
+  // const dataNodesConnectionPairs =
+  //   getNodeConnectionPairByIdWhereNodeIsEndpoint<NodeInfo>(
+  //     canvasApp,
+  //     node,
+  //     undefined,
+  //     undefined,
+  //     true
+  //   );
+  // const payload: Record<string, unknown> = {};
+  // if (dataNodesConnectionPairs) {
+  //   dataNodesConnectionPairs.forEach((connectionInfo) => {
+  //     if (connectionInfo.start) {
+  //       const nodeInfo = connectionInfo.start.nodeInfo as unknown as any;
+  //       if (nodeInfo && nodeInfo.getData) {
+  //         payload['variable'] = nodeInfo.getData(scopeId) ?? 0;
+  //       }
+  //     }
+  //   });
+  // }
+  // return payload;
+  const payload = flowVariableScope[scopeId ?? 'global'];
+  return payload ?? {};
+};
+
+let flowVariableScope: Record<string, Record<string, any>> = {};
+
+export const initFlowVariableScope = () => {
+  flowVariableScope = {};
+};
+
+export const setFlowVariableByScope = (
+  variableName: string,
+  value: any,
+  scopeId?: string
+) => {
+  const scope = scopeId ?? 'global';
+  if (!flowVariableScope[scope]) {
+    flowVariableScope[scope] = {};
   }
-  return payload;
+  flowVariableScope[scope][variableName] = value;
 };
 
 const triggerExecution = (
@@ -694,7 +713,7 @@ export const runNodeFromThumb = (
     'white',
     (
       _nodeId: string,
-      nextNode: INodeComponent<NodeInfo>,
+      nextNode: IRectNodeComponent<NodeInfo>,
       input: string | any[],
       connection: IConnectionNodeComponent<NodeInfo>,
       scopeId?: string
@@ -734,7 +753,7 @@ export const runNodeFromThumb = (
           });
         }
       }
-
+      const payload = getVariablePayload(nextNode, canvasApp, scopeId);
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
       //console.log('runNodeFromThumb', loopIndex, nextNode);
@@ -744,7 +763,7 @@ export const runNodeFromThumb = (
             formInfo.decorators,
             'before',
             input,
-            undefined,
+            payload,
             scopeId
           );
           if (decoratorInput === false) {
@@ -760,7 +779,7 @@ export const runNodeFromThumb = (
             .computeAsync(
               input,
               loopIndex,
-              undefined,
+              payload,
               connection?.endNodeThumb?.thumbName,
               scopeId,
               runCounter
@@ -799,7 +818,7 @@ export const runNodeFromThumb = (
             formInfo.decorators,
             'before',
             input,
-            undefined,
+            payload,
             scopeId
           );
           if (decoratorInput === false) {
@@ -814,7 +833,7 @@ export const runNodeFromThumb = (
         const computeResult = formInfo.compute(
           input,
           loopIndex,
-          undefined,
+          payload,
           connection?.endNodeThumb?.thumbName,
           scopeId,
           runCounter
