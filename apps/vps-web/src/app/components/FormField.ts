@@ -9,6 +9,7 @@ export const FormFieldType = {
   Button: 'Button',
   Array: 'Array',
   File: 'File',
+  Checkbox: 'Checkbox',
 } as const;
 
 export type FormFieldType = (typeof FormFieldType)[keyof typeof FormFieldType];
@@ -22,6 +23,10 @@ export type FormField = (
   | {
       fieldType: 'Text';
       onChange?: (value: string, formComponent: IFormsComponent) => void;
+    }
+  | {
+      fieldType: 'Checkbox';
+      onChange?: (value: boolean, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'File';
@@ -66,6 +71,10 @@ export type FormField = (
 
   settings?: {
     showLabel?: boolean;
+  };
+
+  conditions?: {
+    visibility?: (values: unknown) => boolean;
   };
 };
 

@@ -21,6 +21,7 @@ import { ArrayFieldChildComponent } from './form-fields/array';
 import { IFormsComponent } from './IFormsComponent';
 import { createFormDialog } from '../utils/create-form-dialog';
 import { FileFieldChildComponent } from './form-fields/file';
+import { CheckboxFieldChildComponent } from './form-fields/checkbox';
 
 export interface FormComponentProps {
   rootElement: HTMLElement;
@@ -172,6 +173,40 @@ export class FormsComponent
     return false;
   };
 
+  handleVisibility = (isFromRender?: boolean) => {
+    let triggerRender = false;
+    this.props.formElements.forEach((formElement) => {
+      if (formElement.conditions?.visibility) {
+        const formFieldComponent = this.components.find(
+          (component) =>
+            (component as unknown as FormField).fieldName ===
+            formElement.fieldName
+        );
+        if (formFieldComponent) {
+          const oldRender = formFieldComponent.doRender;
+          if (formElement.conditions.visibility(this.values)) {
+            formFieldComponent.doRender = true;
+          } else {
+            formFieldComponent.doRender = false;
+            console.log(
+              'Hiding field',
+              oldRender !== formFieldComponent.doRender,
+              formElement.fieldName,
+              formElement
+            );
+          }
+          if (oldRender !== formFieldComponent.doRender) {
+            triggerRender = true;
+          }
+        }
+      }
+    });
+    if (triggerRender && !isFromRender) {
+      this.previousDoRenderChildren = null;
+      this.render();
+    }
+  };
+
   onChange = (item: FormField, value: unknown) => {
     if (item.fieldType === FormFieldType.Array) {
       // hacky until I improved typescript typing
@@ -184,11 +219,16 @@ export class FormsComponent
       item.value = value as unknown as string;
       this.values[item.fieldName] = value as unknown as string;
     }
+
+    this.handleVisibility();
+
     if (item.onChange) {
       if (item.fieldType === FormFieldType.Array) {
         item.onChange(value as unknown as unknown[], this);
       } else if (item.fieldType === FormFieldType.File) {
         item.onChange(value as unknown as FileFieldValue, this);
+      } else if (item.fieldType === FormFieldType.Checkbox) {
+        item.onChange(value as unknown as boolean, this);
       } else {
         item.onChange(value as unknown as string, this);
       }
@@ -222,7 +262,7 @@ export class FormsComponent
     if (!this.values) {
       this.values = {};
     }
-    let loop = 0;
+    //let loop = 0;
     this.props.formElements.forEach((formControl, index) => {
       const settings = { ...this.props.settings, ...formControl.settings };
       if (formControl.fieldType === FormFieldType.Text) {
@@ -235,6 +275,25 @@ export class FormsComponent
           label: formControl.label,
           value:
             this.values?.[formControl.fieldName] || formControl.value || '',
+          isRow: formControl.isRow,
+          settings,
+          setValue: this.setValue,
+          onChange: (value) => this.onChange(formControl, value),
+          isLast: index === this.props.formElements.length - 1,
+          formsComponent: this,
+        });
+        this.components.push(formControlComponent);
+      } else if (formControl.fieldType === FormFieldType.Checkbox) {
+        if (!this.values?.[formControl.fieldName]) {
+          this.values[formControl.fieldName] = formControl.value || '';
+        }
+        const formControlComponent = new CheckboxFieldChildComponent(this, {
+          formId: this.props.id,
+          fieldName: formControl.fieldName,
+          label: formControl.label,
+          value:
+            (this.values?.[formControl.fieldName] as unknown as boolean) ||
+            false,
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -458,7 +517,7 @@ export class FormsComponent
         });
         this.components.push(formControlComponent);
       }
-      loop++;
+      //loop++;
       //listItemComponent.props.listItem = "updated via props";
     });
   }
@@ -474,6 +533,7 @@ export class FormsComponent
     ) {
       console.log('list items changed');
       this.createFormElements();
+      this.handleVisibility(true);
       this.previousDoRenderChildren = null;
     }
     this.oldProps = {
@@ -481,6 +541,7 @@ export class FormsComponent
       formElements: [...this.props.formElements],
     };
 
+    const oldActiveElement = document.activeElement as HTMLElement;
     // Make this smarter .. do only when needed!!?
     // an approach: only perform when doRenderChildren changes or has its initial value set
     // .. however.. the children's render method isn't called when no change is detected.. but is this a problem?
@@ -501,6 +562,10 @@ export class FormsComponent
         childElements.push(this.cancelButtonElement);
       }
       this.renderElements(childElements);
+      if (oldActiveElement) {
+        // hack to keep focus on the same element after re-render
+        oldActiveElement?.focus();
+      }
     }
   }
 }

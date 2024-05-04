@@ -112,6 +112,52 @@ export const getTestNode: NodeTaskFactory<NodeInfo> = (
             }
           },
         },
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'testField',
+          value: values?.['testField'] ?? '',
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['testField']: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+          conditions: {
+            visibility: (values: any) => {
+              console.log('visibility values', values);
+              return values?.['testField2'] === true;
+            },
+          },
+        },
+        {
+          fieldType: FormFieldType.Checkbox,
+          fieldName: 'testField2',
+          value: values?.['testField2'] ?? false,
+          onChange: (value: boolean) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              ['testField2']: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+            rect?.resize();
+          },
+        },
+
         // {
         //   fieldType: FormFieldType.File,
         //   fieldName: 'media',
