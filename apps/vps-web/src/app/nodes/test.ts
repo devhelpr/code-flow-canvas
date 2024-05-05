@@ -82,6 +82,12 @@ export const getTestNode: NodeTaskFactory<NodeInfo> = (
               fieldName: 'testField',
               fieldType: FormFieldType.Text,
               value: '',
+              conditions: {
+                visibility: (values: any) => {
+                  console.log('visibility values', values);
+                  return values?.['testField2'] === 'on';
+                },
+              },
             },
             {
               fieldName: 'testField2',

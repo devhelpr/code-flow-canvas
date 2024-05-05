@@ -32,7 +32,7 @@ export class CheckboxFieldChildComponent extends FormFieldComponent<CheckboxFiel
       `<div class="w-full form-component__input flex items-center accent-white ${
         props.isLast ? '' : 'mb-2'
       } ${props.isRow ? 'flex' : ''}">
-      <input class="block w-full mr-2"
+      <input class="block mr-2"
         name="${props.fieldName}"
         id="${props.formId}_${props.fieldName}"
         value="${props.value ?? ''}"

@@ -188,12 +188,6 @@ export class FormsComponent
             formFieldComponent.doRender = true;
           } else {
             formFieldComponent.doRender = false;
-            console.log(
-              'Hiding field',
-              oldRender !== formFieldComponent.doRender,
-              formElement.fieldName,
-              formElement
-            );
           }
           if (oldRender !== formFieldComponent.doRender) {
             triggerRender = true;

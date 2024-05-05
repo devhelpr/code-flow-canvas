@@ -81,6 +81,12 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         );
         if (cell) {
           cell.remove();
+          if (formElement.conditions?.visibility) {
+            if (!formElement.conditions.visibility(value.arrayItems)) {
+              arrayItem.appendChild(cell);
+              return;
+            }
+          }
           if (
             formElement.fieldType === FormFieldType.File &&
             formElement.isImage
