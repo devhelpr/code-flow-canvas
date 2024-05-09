@@ -22,8 +22,9 @@ import {
   IConnectionNodeComponent,
   Composition,
   standardTheme,
+  renderElement,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
-import { createJSXElement } from './utils/create-jsx-element';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
@@ -98,7 +99,7 @@ import { addClasses, removeClasses } from './utils/add-remove-classes';
 import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 import { downloadFile } from './utils/create-download-link';
 import { TestComponent } from './components/test-component';
-import { hideHTMLElement, showHTMLElement } from './utils/show-hide-element';
+import { Toolbar } from './components/toolbar';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -747,57 +748,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       (this.speedMeterElement.domElement as HTMLInputElement).value
     );
     setSpeedMeter(speedMeter);
-    let toggle = false;
-    const HTMLNode = () => (
-      <div class="relative hidden">
-        <input
-          type="text"
-          class="p-2 m-2 relative max-w-[220px] mr-0"
-          name="search-node-types"
-          autocomplete="off"
-          input={(event: InputEvent) => {
-            event.preventDefault();
-            const input = event.target as HTMLInputElement;
-            console.log('input', input.value);
-            return false;
-          }}
-        />
-        <button
-          class="text-black bg-white h-[40px] px-2 z-[10000]"
-          click={() => {
-            if (!ul) {
-              return;
-            }
-            toggle = !toggle;
-            if (toggle) {
-              showHTMLElement(ul);
-            } else {
-              hideHTMLElement(ul);
-            }
-          }}
-        >
-          <span class="icon icon-arrow_drop_down"></span>
-        </button>
-        <ul
-          name="node-types-result"
-          class="hidden absolute bg-white top-[50px] w-full"
-        >
-          <li>Node 1</li>
-          <li>Node 2</li>
-          <li>Node 3</li>
-        </ul>
-      </div>
-    );
 
-    const wrapper = createElement(
-      'div',
-      {
-        class: ``,
-      },
-      menubarElement.domElement,
-      HTMLNode()
-    ) as unknown as INodeComponent<NodeInfo>;
-    const ul = (wrapper.domElement as HTMLElement).querySelector('ul');
+    renderElement(<Toolbar />, this.rootElement);
 
     this.selectNodeType = createElement(
       'select',
@@ -891,7 +843,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       ''
     );
 
-    createElement('div', {}, this.rootElement, TestComponent());
+    renderElement(<TestComponent />, this.rootElement);
 
     const getSliderNodeByPosition = (sliderValue: number) => {
       const max = connectionExecuteHistory.length * 1000;

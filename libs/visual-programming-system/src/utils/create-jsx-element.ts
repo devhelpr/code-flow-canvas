@@ -1,22 +1,21 @@
-import {
-  EventHandler,
-  createElement,
-} from '@devhelpr/visual-programming-system';
+import { EventHandler, createElement } from './create-element';
 
 export const createJSXElement = (
   tag: any,
   properties: any,
   ...children: any[]
-) => {
+): HTMLElement => {
   if (typeof tag === 'function') {
-    return tag(properties ?? {}, children);
+    return tag(properties ?? {}, children) as HTMLElement;
   }
   const element = createElement(tag, properties, undefined, undefined)
     .domElement as unknown as HTMLElement;
 
   if (properties) {
     Object.entries(properties).forEach(([key, val]) => {
-      if (key === 'class') {
+      if (key === 'getElement' && typeof val === 'function') {
+        val(element);
+      } else if (key === 'class') {
         element.classList.add(...((val as string) || '').trim().split(' '));
         return;
       } else if (typeof val === 'function') {

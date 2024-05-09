@@ -5,6 +5,7 @@ import {
   IRectNodeComponent,
   ThumbConnectionType,
   ThumbType,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import {
@@ -14,7 +15,6 @@ import {
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
 import { getFormattedValue } from '../utils/getFormattedValue';
-import { createJSXElement } from '../utils/create-jsx-element';
 
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void

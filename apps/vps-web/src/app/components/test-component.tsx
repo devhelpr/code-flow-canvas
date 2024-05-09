@@ -1,5 +1,7 @@
-import { createElement } from '@devhelpr/visual-programming-system';
-import { createJSXElement } from '../utils/create-jsx-element';
+import {
+  createElement,
+  createJSXElement,
+} from '@devhelpr/visual-programming-system';
 
 class Button extends HTMLElement {
   constructor() {

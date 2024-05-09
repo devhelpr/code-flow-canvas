@@ -36,6 +36,29 @@ export const createOptionGroups = (
   createOptgroup('Compositions', selectNodeTypeHTMLElement);
 };
 
+export const getTaskList = () => {
+  const nodeTasks = getNodeFactoryNames();
+  const taskList: { label: string; nodeType: string; category: string }[] = [];
+  nodeTasks.forEach((nodeTask) => {
+    const factory = getNodeTaskFactory(nodeTask);
+    let categoryName = 'Default';
+    if (factory) {
+      const node = factory(() => {
+        // dummy canvasUpdated function
+      });
+      if (node.isContained) {
+        return;
+      }
+
+      categoryName = node.category || 'uncategorized';
+    }
+
+    const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
+    taskList.push({ label, nodeType: nodeTask, category: categoryName });
+  });
+  return taskList;
+};
+
 export const setupTasksInDropdown = (
   selectNodeTypeHTMLElement: HTMLSelectElement,
   isInComposition?: boolean,
