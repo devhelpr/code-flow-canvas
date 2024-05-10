@@ -78,6 +78,7 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
   isThumb?: boolean;
   canvasAppInstance?: CanvasAppInstance<T>;
   canBeResized?: boolean;
+  thumbs: IThumb[];
   setSize: (width: number, height: number) => void;
 }
 

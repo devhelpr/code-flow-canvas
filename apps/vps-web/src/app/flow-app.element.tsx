@@ -754,10 +754,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     setSpeedMeter(speedMeter);
 
     renderElement(
-      <Toolbar
+      <Toolbar<NodeInfo>
         getTaskList={getTaskList}
         addNodeType={(nodeType: string) => {
           executeCommand(this.commandRegistry, 'add-node', nodeType);
+        }}
+        getNode={(
+          nodeId: string,
+          containerNode?: IRectNodeComponent<NodeInfo> | undefined
+        ) => {
+          const node = (
+            containerNode
+              ? (containerNode.nodeInfo as any)?.canvasAppInstance?.elements
+              : this.currentCanvasApp?.elements
+          )?.get(nodeId);
+          return { node };
         }}
       />,
       this.rootElement

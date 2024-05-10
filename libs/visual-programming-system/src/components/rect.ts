@@ -165,8 +165,9 @@ export class Rect<T> {
     );
 
     const thumbConnectors: IThumbNodeComponent<T>[] = [];
-
+    this.nodeComponent.thumbs = [];
     if (thumbs) {
+      this.nodeComponent.thumbs = thumbs;
       thumbs.forEach((thumb) => {
         if (!this.nodeComponent) {
           return;

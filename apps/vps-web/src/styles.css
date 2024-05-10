@@ -545,3 +545,7 @@ position: relative;
 	max-height: calc(100dvh - 130px);
 	overflow-y: auto;
 }
+
+#node-transformer {
+	box-shadow: 0 0 8px 8px rgba(0, 0, 0, 0.5), inset 0 0 50px 8px rgba(0, 0, 0, 0.5);
+}

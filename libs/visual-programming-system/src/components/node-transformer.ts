@@ -204,9 +204,11 @@ export class NodeTransformer<T> {
     const transformerDomElement = this.nodeTransformElement
       ?.domElement as HTMLElement;
 
-    transformerDomElement.style.width = `${node.width ?? 0}px`;
-    transformerDomElement.style.height = `${node.height ?? 0}px`;
-    transformerDomElement.style.transform = `translate(${node.x}px, ${node.y}px)`;
+    transformerDomElement.style.width = `${(node.width ?? 0) + 2}px`;
+    transformerDomElement.style.height = `${(node.height ?? 0) + 2}px`;
+    transformerDomElement.style.transform = `translate(${node.x - 1}px, ${
+      node.y - 1
+    }px)`;
 
     transformerDomElement.classList.remove('hidden');
   }

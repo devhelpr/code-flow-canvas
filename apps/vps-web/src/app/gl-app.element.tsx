@@ -707,10 +707,21 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     );
 
     renderElement(
-      <Toolbar
+      <Toolbar<GLNodeInfo>
         getTaskList={getGLTaskList}
         addNodeType={(nodeType: string) => {
           executeCommand(this.commandRegistry, 'add-node', nodeType);
+        }}
+        getNode={(
+          nodeId: string,
+          containerNode?: IRectNodeComponent<GLNodeInfo> | undefined
+        ) => {
+          const node = (
+            containerNode
+              ? (containerNode.nodeInfo as any)?.canvasAppInstance?.elements
+              : this.currentCanvasApp?.elements
+          )?.get(nodeId);
+          return { node };
         }}
       />,
       this.rootElement
