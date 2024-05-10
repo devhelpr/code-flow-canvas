@@ -2,17 +2,34 @@ import {
   renderElement,
   createJSXElement,
 } from '@devhelpr/visual-programming-system';
-import { getTaskList } from '../node-task-registry/setup-select-node-types-dropdown';
+import { ITasklistItem } from '../interfaces/TaskListItem';
 
-const ToolbarItem = (props: { label: string; nodeType: string }) => {
+const ToolbarItem = (props: {
+  label: string;
+  nodeType: string;
+  hideToolbar: () => void;
+  addNodeType: (nodeType: string) => void;
+}) => {
   return (
     <li class="px-2" data-node-type={props.nodeType}>
-      {props.label}
+      <button
+        click={(event: MouseEvent) => {
+          event.preventDefault();
+          props.hideToolbar();
+          props.addNodeType(props.nodeType);
+          return false;
+        }}
+      >
+        {props.label}
+      </button>
     </li>
   );
 };
 
-export const Toolbar = () => {
+export const Toolbar = (props: {
+  getTaskList: () => ITasklistItem[];
+  addNodeType: (nodeType: string) => void;
+}) => {
   let toggle = false;
   let ul: HTMLUListElement | null = null;
   let wrapper: HTMLDivElement | null = null;
@@ -31,12 +48,12 @@ export const Toolbar = () => {
     }
   }
 
-  const taskList = getTaskList();
+  const taskList = props.getTaskList();
   const UL = () => {
     return (
       <ul
         name="node-types-result"
-        class="absolute bg-white bottom-[50px] w-full"
+        class="absolute bg-white bottom-[50px] w-full toolbar-task-list"
         getElement={(element: HTMLElement) => {
           ul = element as HTMLUListElement;
         }}
@@ -78,7 +95,20 @@ export const Toolbar = () => {
           tasks.forEach((task) => {
             if (ul) {
               renderElement(
-                <ToolbarItem label={task.label} nodeType={task.nodeType} />,
+                <ToolbarItem
+                  label={task.label}
+                  nodeType={task.nodeType}
+                  hideToolbar={() => {
+                    toggle = false;
+                    if (ul) {
+                      ul.remove();
+                      ul = null;
+                    }
+                  }}
+                  addNodeType={(nodeType: string) => {
+                    props.addNodeType(nodeType);
+                  }}
+                />,
                 ul
               );
             }

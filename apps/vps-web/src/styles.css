@@ -540,3 +540,8 @@ position: relative;
 .w-full.p-2:has(form > .slider-container) {
 	padding-top: 0;
 }
+
+.toolbar-task-list {
+	max-height: calc(100dvh - 130px);
+	overflow-y: auto;
+}

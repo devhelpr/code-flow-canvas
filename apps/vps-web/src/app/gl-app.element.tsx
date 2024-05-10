@@ -22,6 +22,8 @@ import {
   standardTheme,
   ElementNodeMap,
   createCanvasApp,
+  renderElement,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -64,9 +66,13 @@ import {
   setPositionTargetCameraAnimation,
   setTargetCameraAnimation,
 } from './follow-path/animate-path';
-import { registerCommands } from './command-handlers/register-commands';
+import {
+  executeCommand,
+  registerCommands,
+} from './command-handlers/register-commands';
 import {
   createOptionGLGroups,
+  getGLTaskList,
   setupGLTasksInDropdown,
 } from './node-task-registry/setupGLTasksInDropdown';
 import { GLNodeInfo } from './types/gl-node-info';
@@ -86,6 +92,7 @@ import {
   showElement,
   showHTMLElement,
 } from './utils/show-hide-element';
+import { Toolbar } from './components/toolbar';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -697,6 +704,16 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         class: menubarContainerClasses,
       },
       this.menubarContainerElement.domElement
+    );
+
+    renderElement(
+      <Toolbar
+        getTaskList={getGLTaskList}
+        addNodeType={(nodeType: string) => {
+          executeCommand(this.commandRegistry, 'add-node', nodeType);
+        }}
+      />,
+      this.rootElement
     );
 
     const bgRange = createElement(

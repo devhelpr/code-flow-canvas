@@ -226,7 +226,8 @@ export const createCanvasApp = <T>(
       event.target &&
       (event.target as any).closest &&
       ((event.target as any).closest('.menu') ||
-        (event.target as any).closest('.menu-container'))
+        (event.target as any).closest('.menu-container') ||
+        (event.target as any).closest('.toolbar-task-list'))
     ) {
       return;
     }

@@ -1,10 +1,40 @@
-import { createElement } from '@devhelpr/visual-programming-system';
+import { IThumb, createElement } from '@devhelpr/visual-programming-system';
 import {
   getGLNodeFactoryNames,
   getGLNodeTaskFactory,
   glNodeTaskRegistryLabels,
 } from './gl-node-task-registry';
 import { createOption } from './createOption';
+import { ITasklistItem } from '../interfaces/TaskListItem';
+
+export const getGLTaskList = () => {
+  const nodeTasks = getGLNodeFactoryNames();
+  const taskList: ITasklistItem[] = [];
+  nodeTasks.forEach((nodeTask) => {
+    let thumbs: IThumb[] = [];
+    const factory = getGLNodeTaskFactory(nodeTask);
+    let categoryName = 'Default';
+    if (factory) {
+      const node = factory(() => {
+        // dummy canvasUpdated function
+      });
+      if (node.isContained) {
+        return;
+      }
+      thumbs = node.thumbs || [];
+      categoryName = node.category || 'uncategorized';
+    }
+
+    const label = glNodeTaskRegistryLabels[nodeTask] || nodeTask;
+    taskList.push({
+      label,
+      nodeType: nodeTask,
+      category: categoryName,
+      thumbs,
+    });
+  });
+  return taskList;
+};
 
 const createOptgroup = (
   categoryName: string,

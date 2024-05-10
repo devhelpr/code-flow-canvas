@@ -1,10 +1,11 @@
-import { createElement } from '@devhelpr/visual-programming-system';
+import { IThumb, createElement } from '@devhelpr/visual-programming-system';
 import {
   canvasNodeTaskRegistryLabels,
   getNodeFactoryNames,
   getNodeTaskFactory,
 } from './canvas-node-task-registry';
 import { createOption } from './createOption';
+import { ITasklistItem } from '../interfaces/TaskListItem';
 
 const createOptgroup = (
   categoryName: string,
@@ -38,8 +39,9 @@ export const createOptionGroups = (
 
 export const getTaskList = () => {
   const nodeTasks = getNodeFactoryNames();
-  const taskList: { label: string; nodeType: string; category: string }[] = [];
+  const taskList: ITasklistItem[] = [];
   nodeTasks.forEach((nodeTask) => {
+    let thumbs: IThumb[] = [];
     const factory = getNodeTaskFactory(nodeTask);
     let categoryName = 'Default';
     if (factory) {
@@ -49,12 +51,17 @@ export const getTaskList = () => {
       if (node.isContained) {
         return;
       }
-
+      thumbs = node.thumbs || [];
       categoryName = node.category || 'uncategorized';
     }
 
     const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
-    taskList.push({ label, nodeType: nodeTask, category: categoryName });
+    taskList.push({
+      label,
+      nodeType: nodeTask,
+      category: categoryName,
+      thumbs,
+    });
   });
   return taskList;
 };

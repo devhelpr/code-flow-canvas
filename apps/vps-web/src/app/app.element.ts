@@ -363,7 +363,10 @@ export class AppElement<T> {
         }
       }
 
-      if (event.key === 'insert' || (event.ctrlKey && key === 'a')) {
+      if (
+        event.key === 'insert' ||
+        ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'a')
+      ) {
         this.removeFormElement();
         const selectedNodeInfo = getSelectedNode();
         executeCommand(

@@ -88,9 +88,13 @@ import {
 import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
-import { registerCommands } from './command-handlers/register-commands';
+import {
+  executeCommand,
+  registerCommands,
+} from './command-handlers/register-commands';
 import {
   createOptionGroups,
+  getTaskList,
   setupTasksInDropdown,
 } from './node-task-registry/setup-select-node-types-dropdown';
 import { createOption } from './node-task-registry/createOption';
@@ -749,7 +753,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
     setSpeedMeter(speedMeter);
 
-    renderElement(<Toolbar />, this.rootElement);
+    renderElement(
+      <Toolbar
+        getTaskList={getTaskList}
+        addNodeType={(nodeType: string) => {
+          executeCommand(this.commandRegistry, 'add-node', nodeType);
+        }}
+      />,
+      this.rootElement
+    );
 
     this.selectNodeType = createElement(
       'select',

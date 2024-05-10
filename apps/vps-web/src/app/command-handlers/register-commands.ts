@@ -6,6 +6,7 @@ import { CopyNodeCommand } from './copy-node-command/copy-node-command';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { ICommandContext } from './command-context';
 import { AutoAlignCommand } from './auto-align-command/auto-align-command';
+import { ReplaceNodeCommand } from './replace-node-command/replace-node-command';
 
 export const registerCommands = <T extends BaseNodeInfo>(
   commandContext: ICommandContext<T>
@@ -29,6 +30,10 @@ export const registerCommands = <T extends BaseNodeInfo>(
   commandContext.commandRegistry.set(
     'auto-align',
     new AutoAlignCommand<T>(commandContext)
+  );
+  commandContext.commandRegistry.set(
+    'replace-node',
+    new ReplaceNodeCommand<T>(commandContext)
   );
 };
 
