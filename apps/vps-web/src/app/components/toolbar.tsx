@@ -35,12 +35,12 @@ import { ITasklistItem } from '../interfaces/TaskListItem';
 
 */
 
-const ToolbarItem = (props: {
+function ToolbarItem(props: {
   label: string;
   nodeType: string;
   hideToolbar: () => void;
   addNodeType: (nodeType: string) => void;
-}) => {
+}) {
   return (
     <li class="px-2" data-node-type={props.nodeType}>
       <button
@@ -55,11 +55,12 @@ const ToolbarItem = (props: {
       </button>
     </li>
   );
-};
+}
 
 export function Toolbar<T>(props: {
   getTaskList: () => ITasklistItem[];
   addNodeType: (nodeType: string) => void;
+  replaceNode: (nodeType: string, node: IRectNodeComponent<T>) => void;
   getNode: (
     nodeId: string,
     containerNode?: IRectNodeComponent<T> | undefined
@@ -179,7 +180,14 @@ export function Toolbar<T>(props: {
               }
             }}
             addNodeType={(nodeType: string) => {
-              props.addNodeType(nodeType);
+              if (selectedNode !== undefined) {
+                props.replaceNode(
+                  nodeType,
+                  selectedNode as unknown as IRectNodeComponent<T>
+                );
+              } else {
+                props.addNodeType(nodeType);
+              }
             }}
           />,
           ul

@@ -759,6 +759,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         addNodeType={(nodeType: string) => {
           executeCommand(this.commandRegistry, 'add-node', nodeType);
         }}
+        replaceNode={(nodeType: string, node: IRectNodeComponent<NodeInfo>) => {
+          executeCommand(this.commandRegistry, 'replace-node', nodeType, node);
+        }}
         getNode={(
           nodeId: string,
           containerNode?: IRectNodeComponent<NodeInfo> | undefined

@@ -712,6 +712,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         addNodeType={(nodeType: string) => {
           executeCommand(this.commandRegistry, 'add-node', nodeType);
         }}
+        replaceNode={(
+          nodeType: string,
+          node: IRectNodeComponent<GLNodeInfo>
+        ) => {
+          executeCommand(this.commandRegistry, 'replace-node', nodeType, node);
+        }}
         getNode={(
           nodeId: string,
           containerNode?: IRectNodeComponent<GLNodeInfo> | undefined
