@@ -120,7 +120,7 @@ export const setupGLNodeTaskRegistry = (
   );
   registerGLNodeFactory('sine-node', getSineNode, 'Sine');
   registerGLNodeFactory('cosine-node', getCosineNode, 'Cosine');
-  registerGLNodeFactory('atan-node', getAtanNode, 'Atan');
+  registerGLNodeFactory('atan-node', getAtanNode, 'Arctan');
   registerGLNodeFactory('exp-node', getExpNode, 'Exp');
   registerGLNodeFactory('log-node', getLogNode, 'Log');
   registerGLNodeFactory('fract-node', getFractNode, 'Fract');

@@ -1,6 +1,8 @@
 import {
+  Theme,
   ThumbConnectionType,
   ThumbType,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import {
   InitialValues,
@@ -11,7 +13,7 @@ import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'atan';
-const labelName = 'Atan';
+const labelName = 'Arctan';
 const nodeName = 'atan-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
@@ -50,7 +52,8 @@ const thumbs = [
 ];
 
 export const getAtanNode: NodeTaskFactory<GLNodeInfo> = (
-  _updated: () => void
+  _updated: () => void,
+  theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
@@ -73,8 +76,8 @@ export const getAtanNode: NodeTaskFactory<GLNodeInfo> = (
     compute,
     initializeCompute,
     false,
-    200,
     100,
+    320,
     thumbs,
     (_values?: InitialValues) => {
       return [];
@@ -85,6 +88,10 @@ export const getAtanNode: NodeTaskFactory<GLNodeInfo> = (
     {
       hasTitlebar: false,
       category: 'Math',
-    }
+      hideTitle: true,
+      backgroundColorClassName: theme?.nodeInversedBackground,
+      textColorClassName: theme?.nodeInversedText,
+    },
+    <div class="text-base">Arctan</div>
   );
 };
