@@ -1,7 +1,9 @@
 import {
   CanvasAppInstance,
+  ElementNodeMap,
   IConnectionNodeComponent,
   IElementNode,
+  INodeComponent,
   IRectNodeComponent,
   NodeType,
   ThumbConnectionType,
@@ -184,8 +186,8 @@ export class ReplaceNodeCommand<
 
       const node = nodeTask.createVisualNode(
         canvasApp,
-        connection.x,
-        connection.y,
+        connection.endNode?.x ?? connection.x,
+        connection.endNode?.y ?? connection.y,
         undefined,
         undefined,
         containerNode
@@ -271,6 +273,24 @@ export class ReplaceNodeCommand<
         if (endNode?.update) {
           endNode.update(endNode, endNode.x, endNode.y, endNode);
         }
+        const elements = canvasApp.elements as unknown as ElementNodeMap<T>;
+
+        const updateList: INodeComponent<T>[] = [];
+        elements.forEach((e) => {
+          const elementNode = e as INodeComponent<T>;
+          if (elementNode.nodeType === NodeType.Shape) {
+            const shape = elementNode as IRectNodeComponent<T>;
+            if (shape.id !== node.id) {
+              if (shape.x >= node.x) {
+                shape.x += 200 + (node.width ?? 0);
+                updateList.push(shape);
+              }
+            }
+          }
+        });
+        updateList.forEach((e) => {
+          e.update?.(e, e.x, e.y, e);
+        });
       }
     }
   };

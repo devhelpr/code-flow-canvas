@@ -323,6 +323,7 @@ export function Toolbar<T>(props: {
         }}
       />
       <button
+        tabindex={-1}
         class="text-black bg-white h-[40px] px-2 z-[10000]"
         click={() => {
           if (!wrapper) {
