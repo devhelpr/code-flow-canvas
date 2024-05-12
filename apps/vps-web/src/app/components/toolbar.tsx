@@ -12,25 +12,6 @@ import {
 import { ITasklistItem } from '../interfaces/TaskListItem';
 import { BaseNodeInfo } from '../types/base-node-info';
 
-/*
-	TODO:
-
-	Be able to insert node in selected connection:
-
-	- get all lists of node-types that can be inserted into the select connection:
-		- input has to match (use only first thumb for now)
-			use thumb of node that is connected as endNode of the selected connection
-		- output has to match (use only first thumb for now)
-			use thumb of node that is connected as startNode of the selected connection
-
-	- when clicking node that needs to be inserted:
-		- connect current connection to the new node's input
-		- disconnect the selected connection from the endNode (store the endNode in a variable)
-		- create new connection from the new node's output to the endNode of the selected connection
-
-	- for later: shift all nodes on the right of the new node to the right by an amount of the width of the new node
-*/
-
 function ToolbarItem(props: {
   label: string;
   nodeType: string;

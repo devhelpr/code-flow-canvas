@@ -543,6 +543,7 @@ position: relative;
 
 .toolbar-task-list {
 	max-height: calc(100dvh - 130px);
+	max-height: calc(200px);
 	overflow-y: auto;
 }
 
