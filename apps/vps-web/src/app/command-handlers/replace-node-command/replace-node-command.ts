@@ -282,7 +282,7 @@ export class ReplaceNodeCommand<
             const shape = elementNode as IRectNodeComponent<T>;
             if (shape.id !== node.id) {
               if (shape.x >= node.x) {
-                shape.x += 200 + (node.width ?? 0);
+                shape.x += (endNode?.x ?? 0) - (connection.startNode?.x ?? 0);
                 updateList.push(shape);
               }
             }
@@ -291,6 +291,7 @@ export class ReplaceNodeCommand<
         updateList.forEach((e) => {
           e.update?.(e, e.x, e.y, e);
         });
+        this.canvasUpdated();
       }
     }
   };
