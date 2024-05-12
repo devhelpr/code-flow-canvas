@@ -482,6 +482,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 'max',
                 '0'
               );
+              (
+                this.pathRange?.domElement as unknown as HTMLInputElement
+              ).value = '0';
             },
           });
 
@@ -645,6 +648,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               'max',
               '0'
             );
+            (this.pathRange?.domElement as unknown as HTMLInputElement).value =
+              '0';
             this.isStoring = false;
           })
           .catch((error) => {
@@ -773,7 +778,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         for: this.pathRange.id,
       },
       bgRange.domElement,
-      'Timeline'
+      'History'
     );
     this.pathRange.domElement.before(labelPathRange.domElement);
 
@@ -1236,6 +1241,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
     (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
     (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
+    (this.pathRange?.domElement as unknown as HTMLInputElement).value = '0';
     removeAllCompositions();
   };
   onPostclearCanvas = () => {
@@ -1904,6 +1910,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         'max',
         (this.shaderCompileHistory.length - 1).toString()
       );
+      (this.pathRange?.domElement as unknown as HTMLInputElement).value = (
+        this.shaderCompileHistory.length - 1
+      ).toString();
 
       this.addCompiledShaderToHistory = false;
     }
@@ -1982,6 +1991,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     }
 
     showElement(this.historyModeExitButton);
+    hideElement(this.selectedNodeLabel);
 
     const historyItem = this.shaderCompileHistory[historyIndex];
     if (
@@ -2169,6 +2179,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     hideElement(this.compositionEditButton);
     hideElement(this.compositionNameButton);
     hideElement(this.historyModeExitButton);
+    showElement(this.selectedNodeLabel);
 
     if (this.historyCanvasApp) {
       this.historyCanvasApp.elements.forEach((element) => {
@@ -2204,6 +2215,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         'max',
         (this.shaderCompileHistory.length - 1).toString()
       );
+      (this.pathRange?.domElement as unknown as HTMLInputElement).value = (
+        this.shaderCompileHistory.length - 1
+      ).toString();
     }
   };
 
