@@ -70,6 +70,7 @@ import { getCustomNode } from '../nodes-gl/custom';
 import { getCreateVector3Node } from '../nodes-gl/create-vector3';
 import { getGradientColorNode } from '../nodes-gl/gradient-color-node';
 import { getSubtractVectorNode } from '../nodes-gl/sub-vectors';
+import { getLogNode } from '../nodes-gl/log';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -121,6 +122,7 @@ export const setupGLNodeTaskRegistry = (
   registerGLNodeFactory('cosine-node', getCosineNode, 'Cosine');
   registerGLNodeFactory('atan-node', getAtanNode, 'Atan');
   registerGLNodeFactory('exp-node', getExpNode, 'Exp');
+  registerGLNodeFactory('log-node', getLogNode, 'Log');
   registerGLNodeFactory('fract-node', getFractNode, 'Fract');
   registerGLNodeFactory(
     'fract-vector-node',

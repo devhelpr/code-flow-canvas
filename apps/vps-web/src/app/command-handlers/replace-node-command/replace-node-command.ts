@@ -27,18 +27,19 @@ export class ReplaceNodeCommand<
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
   removeElement: (element: IElementNode<T>) => void;
-  // parameter1 is the nodeType
-  // parameter2 is the id of a selected node
   execute(parameter1?: any, parameter2?: any): void {
     // parameter1 : new node-type
     // parameter2 : old node
+    /*
+      TODO:
+      
+        - add label
+        - "isInReplacceMode" flag in toolbar (reset in oa hideUL en input.oninput)
+        - "isNotInterchangable" flag in NodeInfo
+      
+    */
     console.log('ReplaceNode', parameter1, parameter2);
-    // create new node
-    // update new node's x/y parameters with the old node's x/y parameters
-    // same for width/height?
-    // connection connections to new node and disconnect from old node
-    // remove old node
-    // update canvas
+
     const oldNode = parameter2 as unknown as IRectNodeComponent<T>;
 
     const canvasApp =

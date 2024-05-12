@@ -76,7 +76,7 @@ export const createRectNode = <T extends BaseNodeInfo = NodeInfo>(
     textColorThenmeProperty?: string;
     adjustToFormContent?: boolean;
   },
-  childNode?: HTMLElement,
+  childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
   nodeInfo?: T,
   getNodeTaskFactory?: (name: string) => any,
@@ -376,7 +376,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo = NodeInfo>(
     textColorThenmeProperty?: string;
     adjustToFormContent?: boolean;
   },
-  childNode?: HTMLElement,
+  childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
   canBeUsedAsDecorator = false,
   useInCompositionOnly = false,

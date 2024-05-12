@@ -1,6 +1,8 @@
 import {
+  Theme,
   ThumbConnectionType,
   ThumbType,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import {
   InitialValues,
@@ -41,13 +43,14 @@ const thumbs = [
     color: 'white',
     label: ' ',
     name: 'color',
-    prefixLabel: 'color',
+    //    prefixLabel: '',
     thumbConstraint: 'vec3',
   },
 ];
 
 export const getMultiplyColorNode: NodeTaskFactory<GLNodeInfo> = (
-  _updated: () => void
+  _updated: () => void,
+  theme?: Theme
 ): NodeTask<GLNodeInfo> => {
   const initializeCompute = () => {
     return;
@@ -82,7 +85,14 @@ export const getMultiplyColorNode: NodeTaskFactory<GLNodeInfo> = (
     },
     {
       hasTitlebar: false,
+      hideTitle: true,
       category: 'Math',
-    }
+      backgroundColorClassName: theme?.nodeInversedBackground,
+      textColorClassName: theme?.nodeInversedText,
+    },
+    <div class="text-7xl -mt-[10px]">
+      *<br />
+      <span class="text-base block">Color</span>
+    </div>
   );
 };
