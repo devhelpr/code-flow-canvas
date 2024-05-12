@@ -3,6 +3,8 @@ import {
   IConnectionNodeComponent,
   IElementNode,
   IRectNodeComponent,
+  NodeType,
+  ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
 import { NodeTaskFactory } from '../../node-task-registry';
@@ -48,6 +50,17 @@ export class ReplaceNodeCommand<
 
     //const canvasApp = this.getCanvasApp();
     if (!canvasApp) {
+      return;
+    }
+
+    if (oldNode.nodeType === NodeType.Connection) {
+      this.insertNodeInConnection(
+        parameter1,
+        oldNode as unknown as IConnectionNodeComponent<T>
+      );
+      return;
+    }
+    if (oldNode.nodeType !== NodeType.Shape) {
       return;
     }
 
@@ -149,4 +162,116 @@ export class ReplaceNodeCommand<
       }
     }
   }
+
+  insertNodeInConnection = (
+    nodeType: string,
+    connection: IConnectionNodeComponent<T>
+  ) => {
+    const canvasApp =
+      (connection.containerNode?.nodeInfo as any)?.canvasAppInstance ??
+      this.getCanvasApp();
+
+    if (!canvasApp) {
+      return;
+    }
+
+    const containerNode = connection.containerNode as IRectNodeComponent<T>;
+
+    const factory = this.getNodeTaskFactory(nodeType);
+
+    if (factory) {
+      const nodeTask = factory(this.canvasUpdated, canvasApp.theme);
+
+      const node = nodeTask.createVisualNode(
+        canvasApp,
+        connection.x,
+        connection.y,
+        undefined,
+        undefined,
+        containerNode
+      );
+      if (node && node.nodeInfo) {
+        (node.nodeInfo as any).taskType = nodeType;
+
+        const endNode = connection.endNode;
+        const endNodeThumb = connection.endNodeThumb;
+
+        /*
+          start -> end
+          start -> newNode -newconnection-> end          
+        */
+        if (connection?.endNode?.connections) {
+          connection.endNode.connections =
+            connection.endNode?.connections?.filter(
+              (c) => c.id !== connection.id
+            );
+        }
+        node.connections.push(connection);
+        const newConnection = canvasApp.createCubicBezier(
+          connection.x,
+          connection.y,
+          connection.x,
+          connection.y,
+          connection.x,
+          connection.y,
+          connection.x,
+          connection.y,
+          false,
+          undefined,
+          undefined,
+          containerNode
+        );
+        if (newConnection && newConnection.nodeComponent) {
+          newConnection.nodeComponent.isControlled = true;
+          newConnection.nodeComponent.nodeInfo = {} as T;
+          newConnection.nodeComponent.layer = 1;
+
+          node.connections?.push(newConnection.nodeComponent);
+          endNode?.connections?.push(newConnection.nodeComponent);
+
+          newConnection.nodeComponent.startNode = node;
+          newConnection.nodeComponent.endNode = endNode;
+          newConnection.nodeComponent.startNodeThumb =
+            node.thumbConnectors?.find((t) => {
+              return (
+                t.thumbConnectionType === ThumbConnectionType.start &&
+                // t.thumbIndex ===
+                //   newConnection.nodeComponent.startNodeThumb?.thumbIndex &&
+                // t.thumbType ===
+                //   newConnection.nodeComponent.startNodeThumb?.thumbType &&
+                t.thumbConstraint ===
+                  connection.startNodeThumb?.thumbConstraint &&
+                t.maxConnections === connection.startNodeThumb?.maxConnections
+                //t.thumbName === newConnection.nodeComponent.startNodeThumb?.thumbName
+              );
+            });
+          newConnection.nodeComponent.endNodeThumb = endNodeThumb;
+
+          if (newConnection.nodeComponent.update) {
+            newConnection.nodeComponent.update();
+          }
+        }
+
+        connection.endNode = node;
+        connection.endNodeThumb = node.thumbConnectors?.find((t) => {
+          return (
+            t.thumbConnectionType === ThumbConnectionType.end &&
+            // t.thumbIndex === connection.endNodeThumb?.thumbIndex &&
+            // t.thumbType === connection.endNodeThumb?.thumbType &&
+            t.thumbConstraint === endNodeThumb?.thumbConstraint &&
+            t.maxConnections === endNodeThumb?.maxConnections
+            //t.thumbName === connection.endNodeThumb?.thumbName
+          );
+        });
+
+        if (node.update) {
+          node.update(node, node.x, node.y, node);
+        }
+
+        if (endNode?.update) {
+          endNode.update(endNode, endNode.x, endNode.y, endNode);
+        }
+      }
+    }
+  };
 }

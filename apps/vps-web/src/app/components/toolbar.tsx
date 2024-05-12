@@ -6,6 +6,8 @@ import {
   INodeComponent,
   IRectNodeComponent,
   NodeType,
+  IConnectionNodeComponent,
+  ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
 import { BaseNodeInfo } from '../types/base-node-info';
@@ -13,27 +15,20 @@ import { BaseNodeInfo } from '../types/base-node-info';
 /*
 	TODO:
 
-	- create custom canvasClick event
-	- listen to canvasClick event on body .. and close UL
-	- submit canvasClick event on body from canvas component
-	- when node is selected and item is clicked and it is a replacement node-type, then replace the node
-		if it is different then the selected node
+	Be able to insert node in selected connection:
 
+	- get all lists of node-types that can be inserted into the select connection:
+		- input has to match (use only first thumb for now)
+			use thumb of node that is connected as endNode of the selected connection
+		- output has to match (use only first thumb for now)
+			use thumb of node that is connected as startNode of the selected connection
 
-	const event = new Event("build");
+	- when clicking node that needs to be inserted:
+		- connect current connection to the new node's input
+		- disconnect the selected connection from the endNode (store the endNode in a variable)
+		- create new connection from the new node's output to the endNode of the selected connection
 
-	// Listen for the event.
-	elem.addEventListener(
-	"build",
-	(e) => {
-	//},
-	false,
-	);
-
-	// Dispatch the event.
-	elem.dispatchEvent(event);
-
-
+	- for later: shift all nodes on the right of the new node to the right by an amount of the width of the new node
 */
 
 function ToolbarItem(props: {
@@ -110,7 +105,9 @@ export function Toolbar<T>(props: {
       isInReplaceeMode = true;
       fillTaskList(
         getTasksWhichAreInterchangeableWithSelectedNode(),
-        'Replace node with:'
+        info.node?.nodeType === NodeType.Shape
+          ? 'Replace node with:'
+          : 'Insert node in connection:'
       );
     } else {
       hideUL();
@@ -118,7 +115,56 @@ export function Toolbar<T>(props: {
   });
 
   function getTasksWhichAreInterchangeableWithSelectedNode() {
-    if (!selectedNode || selectedNode.nodeType !== NodeType.Shape) {
+    if (!selectedNode) {
+      return [];
+    }
+
+    if (selectedNode.nodeType === NodeType.Connection) {
+      const connection = selectedNode as IConnectionNodeComponent<T>;
+      if (
+        connection.startNode &&
+        connection.endNode &&
+        connection.startNodeThumb &&
+        connection.endNodeThumb
+      ) {
+        return taskList.filter((task) => {
+          if (!task.nodeCannotBeReplaced && task.thumbs.length >= 2) {
+            let insertableStartThumbFound = false;
+            let insertableEndThumbFound = false;
+
+            task.thumbs.forEach((thumb) => {
+              if (
+                thumb.connectionType === ThumbConnectionType.start &&
+                //thumb.thumbType === connection.startNodeThumb?.thumbType &&
+                //thumb.thumbIndex === connection.startNodeThumb?.thumbIndex &&
+                thumb.thumbConstraint ===
+                  connection.startNodeThumb?.thumbConstraint &&
+                thumb.maxConnections ===
+                  connection.startNodeThumb?.maxConnections
+              ) {
+                insertableStartThumbFound = true;
+              }
+              if (
+                thumb.connectionType === ThumbConnectionType.end &&
+                //thumb.thumbType === connection.endNodeThumb?.thumbType &&
+                //thumb.thumbIndex === connection.endNodeThumb?.thumbIndex &&
+                thumb.thumbConstraint ===
+                  connection.endNodeThumb?.thumbConstraint &&
+                thumb.maxConnections === connection.endNodeThumb?.maxConnections
+              ) {
+                insertableEndThumbFound = true;
+              }
+            });
+
+            return insertableStartThumbFound && insertableEndThumbFound;
+          }
+          return false;
+        });
+      }
+      return [];
+    }
+
+    if (selectedNode.nodeType !== NodeType.Shape) {
       return [];
     }
     const rectNode = selectedNode as IRectNodeComponent<T>;
@@ -252,6 +298,12 @@ export function Toolbar<T>(props: {
         class="p-2 m-2 relative max-w-[220px] mr-0"
         name="search-node-types"
         autocomplete="off"
+        keyup={(event: KeyboardEvent) => {
+          if (event.key === 'Escape') {
+            (event.target as HTMLInputElement).value = '';
+            hideUL();
+          }
+        }}
         input={(event: InputEvent) => {
           event.preventDefault();
           if (!showUL()) {
@@ -261,7 +313,9 @@ export function Toolbar<T>(props: {
           const input = event.target as HTMLInputElement;
           console.log('input', input.value);
           const tasks = taskList.filter((task) =>
-            task.label.includes(input.value)
+            task.label
+              .toLocaleLowerCase()
+              .includes((input.value ?? '').toLocaleLowerCase())
           );
           fillTaskList(tasks);
 
