@@ -8,6 +8,7 @@ import {
   NodeType,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 /*
 	TODO:
@@ -71,6 +72,7 @@ export function Toolbar<T>(props: {
   let wrapper: HTMLDivElement | null = null;
   let icon: HTMLSpanElement | null = null;
   let selectedNode: INodeComponent<T> | undefined;
+  let isInReplaceeMode = false;
   function showUpIcon() {
     if (icon) {
       icon.classList.remove('icon-arrow_drop_down');
@@ -105,7 +107,11 @@ export function Toolbar<T>(props: {
       if (!showUL()) {
         return;
       }
-      fillTaskList(getTasksWhichAreInterchangeableWithSelectedNode());
+      isInReplaceeMode = true;
+      fillTaskList(
+        getTasksWhichAreInterchangeableWithSelectedNode(),
+        'Replace node with:'
+      );
     } else {
       hideUL();
     }
@@ -116,9 +122,14 @@ export function Toolbar<T>(props: {
       return [];
     }
     const rectNode = selectedNode as IRectNodeComponent<T>;
-
+    if ((rectNode.nodeInfo as BaseNodeInfo)?.nodeCannotBeReplaced) {
+      return [];
+    }
     return taskList.filter((task) => {
-      if (task.thumbs.length === rectNode.thumbs.length) {
+      if (
+        !task.nodeCannotBeReplaced &&
+        task.thumbs.length === rectNode.thumbs.length
+      ) {
         /*
 			compare thumbs:
 			- foreach task.thumb see if there's a thumb in rectNode.thumbs that has the same 
@@ -160,12 +171,14 @@ export function Toolbar<T>(props: {
     );
   };
 
-  function fillTaskList(tasks: ITasklistItem[]) {
+  function fillTaskList(tasks: ITasklistItem[], label?: string) {
     if (!ul) {
       return;
     }
     ul.innerHTML = '';
-
+    if (label) {
+      renderElement(<li class="font-bold px-2">{label}</li>, ul);
+    }
     tasks.forEach((task) => {
       if (ul) {
         renderElement(
@@ -180,7 +193,7 @@ export function Toolbar<T>(props: {
               }
             }}
             addNodeType={(nodeType: string) => {
-              if (selectedNode !== undefined) {
+              if (selectedNode !== undefined && isInReplaceeMode) {
                 props.replaceNode(
                   nodeType,
                   selectedNode as unknown as IRectNodeComponent<T>
@@ -212,6 +225,8 @@ export function Toolbar<T>(props: {
   }
 
   function hideUL() {
+    isInReplaceeMode = false;
+    showDropIcon();
     if (ul) {
       toggle = false;
       ul.remove();
@@ -219,6 +234,12 @@ export function Toolbar<T>(props: {
     }
   }
 
+  document.body.addEventListener(
+    'canvas-click' as unknown as keyof HTMLElementEventMap,
+    (_) => {
+      hideUL();
+    }
+  );
   const ToolbarComponent = () => (
     <div
       class="absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm"
@@ -236,6 +257,7 @@ export function Toolbar<T>(props: {
           if (!showUL()) {
             return;
           }
+          isInReplaceeMode = false;
           const input = event.target as HTMLInputElement;
           console.log('input', input.value);
           const tasks = taskList.filter((task) =>
@@ -253,11 +275,7 @@ export function Toolbar<T>(props: {
             return;
           }
           if (toggle) {
-            showDropIcon();
-            if (ul) {
-              ul.remove();
-              ul = null;
-            }
+            hideUL();
           }
         }}
       >

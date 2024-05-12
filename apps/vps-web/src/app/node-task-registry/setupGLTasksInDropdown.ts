@@ -14,6 +14,7 @@ export const getGLTaskList = () => {
     let thumbs: IThumb[] = [];
     const factory = getGLNodeTaskFactory(nodeTask);
     let categoryName = 'Default';
+    let nodeCannotBeReplaced = false;
     if (factory) {
       const node = factory(() => {
         // dummy canvasUpdated function
@@ -23,6 +24,7 @@ export const getGLTaskList = () => {
       }
       thumbs = node.thumbs || [];
       categoryName = node.category || 'uncategorized';
+      nodeCannotBeReplaced = node.nodeCannotBeReplaced || false;
     }
 
     const label = glNodeTaskRegistryLabels[nodeTask] || nodeTask;
@@ -31,6 +33,7 @@ export const getGLTaskList = () => {
       nodeType: nodeTask,
       category: categoryName,
       thumbs,
+      nodeCannotBeReplaced,
     });
   });
   return taskList;

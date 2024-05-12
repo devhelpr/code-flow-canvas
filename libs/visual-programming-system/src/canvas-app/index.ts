@@ -59,6 +59,8 @@ export const createCanvasApp = <T>(
   const elements = createElementMap<T>();
   const rectInstanceList = {} as Record<string, Rect<T>>;
 
+  const CanvasClickEvent = new Event('canvas-click');
+
   let variables: Record<
     string,
     {
@@ -697,6 +699,8 @@ export const createCanvasApp = <T>(
         onClickCanvas(mousePointTo.x, mousePointTo.y);
         nodeTransformer.detachNode();
         nodeSelector.removeSelector();
+
+        document.body.dispatchEvent(CanvasClickEvent);
 
         return false;
       }

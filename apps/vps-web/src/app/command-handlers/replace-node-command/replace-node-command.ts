@@ -34,7 +34,7 @@ export class ReplaceNodeCommand<
       TODO:
       
         - add label
-        - "isInReplacceMode" flag in toolbar (reset in oa hideUL en input.oninput)
+        - "isInReplaceeMode" flag in toolbar (reset in oa hideUL en input.oninput)
         - "isNotInterchangable" flag in NodeInfo
       
     */

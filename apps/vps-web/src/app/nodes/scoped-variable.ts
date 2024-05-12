@@ -577,6 +577,7 @@ export const getScopedVariable =
       family: 'flow-canvas',
       isContainer: false,
       category: 'variables',
+      nodeCannotBeReplaced: true,
       createVisualNode: (
         canvasApp: CanvasAppInstance<NodeInfo>,
         x: number,
@@ -836,6 +837,7 @@ export const getScopedVariable =
               timeout = undefined;
             }
           };
+          node.nodeInfo.nodeCannotBeReplaced = true;
         }
         return node;
       },

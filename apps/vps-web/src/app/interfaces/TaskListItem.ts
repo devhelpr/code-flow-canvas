@@ -5,4 +5,5 @@ export interface ITasklistItem {
   nodeType: string;
   category: string;
   thumbs: IThumb[];
+  nodeCannotBeReplaced?: boolean;
 }

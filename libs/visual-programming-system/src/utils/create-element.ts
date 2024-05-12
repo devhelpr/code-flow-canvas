@@ -7,7 +7,13 @@ import { createElementMap } from './create-element-map';
 
 export type EventHandler = (event: Event) => void | boolean;
 
-export const renderElement = (element: JSX.Element, parent: HTMLElement) => {
+export const renderElement = (
+  element: JSX.Element,
+  parent?: HTMLElement | null
+) => {
+  if (!parent) {
+    return;
+  }
   parent.appendChild(element as unknown as HTMLElement);
 };
 

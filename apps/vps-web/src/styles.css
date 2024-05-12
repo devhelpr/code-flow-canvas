@@ -547,6 +547,6 @@ position: relative;
 }
 
 #node-transformer {
-	box-shadow: 0 0 8px 8px rgba(59 ,130, 246, 0.5), inset 0 0 50px 8px rgba(59 ,130, 246,0.5);
-	background: rgba(59 ,130, 246, 0.5);
+	box-shadow: 0 0 8px 8px rgba(59 ,130, 246, 0.5), inset 0 0px 8px rgba(0,0,0,1);
+	/* background: rgba(59 ,130, 246, 0.5); */
 }

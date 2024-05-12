@@ -44,6 +44,7 @@ export const getTaskList = () => {
     let thumbs: IThumb[] = [];
     const factory = getNodeTaskFactory(nodeTask);
     let categoryName = 'Default';
+    let nodeCannotBeReplaced = false;
     if (factory) {
       const node = factory(() => {
         // dummy canvasUpdated function
@@ -53,6 +54,7 @@ export const getTaskList = () => {
       }
       thumbs = node.thumbs || [];
       categoryName = node.category || 'uncategorized';
+      nodeCannotBeReplaced = node.nodeCannotBeReplaced || false;
     }
 
     const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
@@ -61,6 +63,7 @@ export const getTaskList = () => {
       nodeType: nodeTask,
       category: categoryName,
       thumbs,
+      nodeCannotBeReplaced,
     });
   });
   return taskList;

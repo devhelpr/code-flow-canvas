@@ -25,6 +25,7 @@ export type NodeTask<T> = {
   isContainer?: boolean;
   isContained?: boolean;
   canBeUsedAsDecorator?: boolean;
+  nodeCannotBeReplaced?: boolean;
   childNodeTasks?: string[];
   notAllowedChildNodeTasks?: string[];
   thumbs?: IThumb[];
