@@ -29,7 +29,7 @@ const thumbs = [
     thumbIndex: 0,
     connectionType: ThumbConnectionType.start,
     color: 'white',
-    label: '#',
+    label: ' ',
     maxConnections: -1,
     name: 'output',
   },

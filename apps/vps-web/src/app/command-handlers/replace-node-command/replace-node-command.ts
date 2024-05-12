@@ -241,9 +241,8 @@ export class ReplaceNodeCommand<
                 //   newConnection.nodeComponent.startNodeThumb?.thumbIndex &&
                 // t.thumbType ===
                 //   newConnection.nodeComponent.startNodeThumb?.thumbType &&
-                t.thumbConstraint ===
-                  connection.startNodeThumb?.thumbConstraint &&
-                t.maxConnections === connection.startNodeThumb?.maxConnections
+                t.thumbConstraint === connection.startNodeThumb?.thumbConstraint // &&
+                //t.maxConnections === connection.startNodeThumb?.maxConnections
                 //t.thumbName === newConnection.nodeComponent.startNodeThumb?.thumbName
               );
             });
@@ -260,8 +259,8 @@ export class ReplaceNodeCommand<
             t.thumbConnectionType === ThumbConnectionType.end &&
             // t.thumbIndex === connection.endNodeThumb?.thumbIndex &&
             // t.thumbType === connection.endNodeThumb?.thumbType &&
-            t.thumbConstraint === endNodeThumb?.thumbConstraint &&
-            t.maxConnections === endNodeThumb?.maxConnections
+            t.thumbConstraint === endNodeThumb?.thumbConstraint //&&
+            //t.maxConnections === endNodeThumb?.maxConnections
             //t.thumbName === connection.endNodeThumb?.thumbName
           );
         });

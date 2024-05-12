@@ -27,8 +27,8 @@ const thumbs: IThumb[] = [
     connectionType: ThumbConnectionType.start,
     pathName: 'success',
     color: 'rgba(95,204,37,1)',
-    label: '#',
-    thumbConstraint: 'value',
+    //label: '#',
+    //thumbConstraint: 'value',
     name: 'success',
   },
   {
@@ -37,8 +37,8 @@ const thumbs: IThumb[] = [
     connectionType: ThumbConnectionType.start,
     pathName: 'failure',
     color: 'rgba(204,37,37,1)',
-    label: '#',
-    thumbConstraint: 'value',
+    //label: '#',
+    //thumbConstraint: 'value',
     name: 'failure',
   },
   {

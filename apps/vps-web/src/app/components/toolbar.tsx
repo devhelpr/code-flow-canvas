@@ -138,9 +138,9 @@ export function Toolbar<T>(props: {
                 //thumb.thumbType === connection.startNodeThumb?.thumbType &&
                 //thumb.thumbIndex === connection.startNodeThumb?.thumbIndex &&
                 thumb.thumbConstraint ===
-                  connection.startNodeThumb?.thumbConstraint &&
-                thumb.maxConnections ===
-                  connection.startNodeThumb?.maxConnections
+                  connection.startNodeThumb?.thumbConstraint
+                // thumb.maxConnections ===
+                //   connection.startNodeThumb?.maxConnections
               ) {
                 insertableStartThumbFound = true;
               }
@@ -149,8 +149,8 @@ export function Toolbar<T>(props: {
                 //thumb.thumbType === connection.endNodeThumb?.thumbType &&
                 //thumb.thumbIndex === connection.endNodeThumb?.thumbIndex &&
                 thumb.thumbConstraint ===
-                  connection.endNodeThumb?.thumbConstraint &&
-                thumb.maxConnections === connection.endNodeThumb?.maxConnections
+                  connection.endNodeThumb?.thumbConstraint
+                //thumb.maxConnections === connection.endNodeThumb?.maxConnections
               ) {
                 insertableEndThumbFound = true;
               }
