@@ -8,6 +8,8 @@ import {
   NodeType,
   IConnectionNodeComponent,
   ThumbConnectionType,
+  getActionNode,
+  setActionNode,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
 import { BaseNodeInfo } from '../types/base-node-info';
@@ -64,11 +66,11 @@ export function Toolbar<T>(props: {
   }
 
   const taskList = props.getTaskList();
-
+  let skipHide = false;
   createEffect(() => {
-    selectedNode = undefined;
-    const selectedNodeInfo = getSelectedNode();
+    const selectedNodeInfo = getSelectedNode() || getActionNode();
     if (selectedNodeInfo) {
+      selectedNode = undefined;
       const info = props.getNode(
         selectedNodeInfo.id,
         selectedNodeInfo.containerNode as IRectNodeComponent<T>
@@ -90,10 +92,19 @@ export function Toolbar<T>(props: {
         getTasksWhichAreInterchangeableWithSelectedNode(),
         info.node?.nodeType === NodeType.Shape
           ? 'Replace node with:'
-          : 'Insert node in connection:'
+          : (info?.node as IConnectionNodeComponent<T>)?.endNode
+          ? 'Insert node in connection:'
+          : 'Create node'
       );
+      if (selectedNodeInfo) {
+        skipHide = true;
+        setActionNode(undefined);
+      }
     } else {
-      hideUL();
+      if (!skipHide) {
+        selectedNode = undefined;
+        hideUL();
+      }
     }
   });
 
@@ -104,7 +115,34 @@ export function Toolbar<T>(props: {
 
     if (selectedNode.nodeType === NodeType.Connection) {
       const connection = selectedNode as IConnectionNodeComponent<T>;
+
       if (
+        connection.startNode &&
+        !connection.endNode &&
+        connection.startNodeThumb &&
+        !connection.endNodeThumb
+      ) {
+        return taskList.filter((task) => {
+          if (!task.nodeCannotBeReplaced && task.thumbs.length >= 2) {
+            let insertableStartThumbFound = false;
+            let insertableEndThumbFound = false;
+
+            task.thumbs.forEach((thumb) => {
+              if (
+                thumb.connectionType === ThumbConnectionType.end &&
+                thumb.thumbConstraint ===
+                  connection.startNodeThumb?.thumbConstraint
+              ) {
+                insertableStartThumbFound = true;
+                insertableEndThumbFound = true;
+              }
+            });
+
+            return insertableStartThumbFound && insertableEndThumbFound;
+          }
+          return false;
+        });
+      } else if (
         connection.startNode &&
         connection.endNode &&
         connection.startNodeThumb &&

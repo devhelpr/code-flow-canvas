@@ -1,5 +1,6 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
 import { paddingRect } from '../constants/measures';
+import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
@@ -50,7 +51,8 @@ export class RectThumb<T> extends Rect<T> {
     containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean,
     isCircle?: boolean,
-    createStraightLineConnection?: boolean
+    createStraightLineConnection?: boolean,
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
     super(
       canvas,
@@ -73,7 +75,8 @@ export class RectThumb<T> extends Rect<T> {
       id,
       containerNode,
       isStaticPosition,
-      'rect-thumb-node'
+      'rect-thumb-node',
+      setCanvasAction
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');

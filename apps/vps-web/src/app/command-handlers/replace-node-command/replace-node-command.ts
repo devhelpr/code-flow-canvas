@@ -180,7 +180,7 @@ export class ReplaceNodeCommand<
     const containerNode = connection.containerNode as IRectNodeComponent<T>;
 
     const factory = this.getNodeTaskFactory(nodeType);
-
+    let shiftNodes = false;
     if (factory) {
       const nodeTask = factory(this.canvasUpdated, canvasApp.theme);
 
@@ -209,87 +209,93 @@ export class ReplaceNodeCommand<
             );
         }
         node.connections.push(connection);
-        const newConnection = canvasApp.createCubicBezier(
-          connection.x,
-          connection.y,
-          connection.x,
-          connection.y,
-          connection.x,
-          connection.y,
-          connection.x,
-          connection.y,
-          false,
-          undefined,
-          undefined,
-          containerNode
-        );
-        if (newConnection && newConnection.nodeComponent) {
-          newConnection.nodeComponent.isControlled = true;
-          newConnection.nodeComponent.nodeInfo = {} as T;
-          newConnection.nodeComponent.layer = 1;
+        if (endNode) {
+          shiftNodes = true;
+          const newConnection = canvasApp.createCubicBezier(
+            connection.x,
+            connection.y,
+            connection.x,
+            connection.y,
+            connection.x,
+            connection.y,
+            connection.x,
+            connection.y,
+            false,
+            undefined,
+            undefined,
+            containerNode
+          );
+          if (newConnection && newConnection.nodeComponent) {
+            newConnection.nodeComponent.isControlled = true;
+            newConnection.nodeComponent.nodeInfo = {} as T;
+            newConnection.nodeComponent.layer = 1;
 
-          node.connections?.push(newConnection.nodeComponent);
-          endNode?.connections?.push(newConnection.nodeComponent);
+            node.connections?.push(newConnection.nodeComponent);
+            if (endNode) {
+              endNode?.connections?.push(newConnection.nodeComponent);
+            }
+            newConnection.nodeComponent.startNode = node;
+            newConnection.nodeComponent.endNode = endNode;
+            newConnection.nodeComponent.startNodeThumb =
+              node.thumbConnectors?.find((t) => {
+                return (
+                  t.thumbConnectionType === ThumbConnectionType.start &&
+                  t.thumbConstraint ===
+                    connection.startNodeThumb?.thumbConstraint
+                );
+              });
+            newConnection.nodeComponent.endNodeThumb = endNodeThumb;
 
-          newConnection.nodeComponent.startNode = node;
-          newConnection.nodeComponent.endNode = endNode;
-          newConnection.nodeComponent.startNodeThumb =
-            node.thumbConnectors?.find((t) => {
-              return (
-                t.thumbConnectionType === ThumbConnectionType.start &&
-                // t.thumbIndex ===
-                //   newConnection.nodeComponent.startNodeThumb?.thumbIndex &&
-                // t.thumbType ===
-                //   newConnection.nodeComponent.startNodeThumb?.thumbType &&
-                t.thumbConstraint === connection.startNodeThumb?.thumbConstraint // &&
-                //t.maxConnections === connection.startNodeThumb?.maxConnections
-                //t.thumbName === newConnection.nodeComponent.startNodeThumb?.thumbName
-              );
-            });
-          newConnection.nodeComponent.endNodeThumb = endNodeThumb;
-
-          if (newConnection.nodeComponent.update) {
-            newConnection.nodeComponent.update();
+            if (newConnection.nodeComponent.update) {
+              newConnection.nodeComponent.update();
+            }
           }
         }
 
         connection.endNode = node;
-        connection.endNodeThumb = node.thumbConnectors?.find((t) => {
-          return (
-            t.thumbConnectionType === ThumbConnectionType.end &&
-            // t.thumbIndex === connection.endNodeThumb?.thumbIndex &&
-            // t.thumbType === connection.endNodeThumb?.thumbType &&
-            t.thumbConstraint === endNodeThumb?.thumbConstraint //&&
-            //t.maxConnections === endNodeThumb?.maxConnections
-            //t.thumbName === connection.endNodeThumb?.thumbName
-          );
-        });
+        if (endNode) {
+          connection.endNodeThumb = node.thumbConnectors?.find((t) => {
+            return (
+              t.thumbConnectionType === ThumbConnectionType.end &&
+              t.thumbConstraint === endNodeThumb?.thumbConstraint //&&
+            );
+          });
+        } else {
+          connection.endNodeThumb = node.thumbConnectors?.find((t) => {
+            return (
+              t.thumbConnectionType === ThumbConnectionType.end &&
+              t.thumbConstraint === connection?.startNodeThumb?.thumbConstraint //&&
+            );
+          });
+        }
 
+        const newX = shiftNodes ? node.x : connection.endX;
         if (node.update) {
-          node.update(node, node.x, node.y, node);
+          node.update(node, newX, node.y, node);
         }
 
         if (endNode?.update) {
           endNode.update(endNode, endNode.x, endNode.y, endNode);
         }
         const elements = canvasApp.elements as unknown as ElementNodeMap<T>;
-
-        const updateList: INodeComponent<T>[] = [];
-        elements.forEach((e) => {
-          const elementNode = e as INodeComponent<T>;
-          if (elementNode.nodeType === NodeType.Shape) {
-            const shape = elementNode as IRectNodeComponent<T>;
-            if (shape.id !== node.id) {
-              if (shape.x >= node.x) {
-                shape.x += (endNode?.x ?? 0) - (connection.startNode?.x ?? 0);
-                updateList.push(shape);
+        if (shiftNodes) {
+          const updateList: INodeComponent<T>[] = [];
+          elements.forEach((e) => {
+            const elementNode = e as INodeComponent<T>;
+            if (elementNode.nodeType === NodeType.Shape) {
+              const shape = elementNode as IRectNodeComponent<T>;
+              if (shape.id !== node.id) {
+                if (shape.x >= node.x) {
+                  shape.x += (endNode?.x ?? 0) - (connection.startNode?.x ?? 0);
+                  updateList.push(shape);
+                }
               }
             }
-          }
-        });
-        updateList.forEach((e) => {
-          e.update?.(e, e.x, e.y, e);
-        });
+          });
+          updateList.forEach((e) => {
+            e.update?.(e, e.x, e.y, e);
+          });
+        }
         this.canvasUpdated();
       }
     }

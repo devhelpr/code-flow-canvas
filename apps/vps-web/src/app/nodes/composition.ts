@@ -101,7 +101,7 @@ export const getCreateCompositionNode =
           if (!composition) {
             composition = canvasApp.compositons.getComposition(compositionId);
             importToCanvas(
-              composition.nodes,
+              composition?.nodes ?? [],
               contextCanvasApp,
               () => {
                 //

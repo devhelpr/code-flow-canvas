@@ -35,6 +35,7 @@ import { thumbThreeDots } from './icons/thumb-three-dots';
 import { CubicBezierConnection } from './qubic-bezier-connection';
 import { ThumbNode } from './thumb';
 import { thumbTwoDots } from './icons/thumb-two-dots';
+import { CanvasAction } from '../enums/canvas-action';
 
 export class ThumbNodeConnector<T> extends ThumbNode<T> {
   constructor(
@@ -67,7 +68,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     label?: string,
     thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
-    containerNode?: IRectNodeComponent<T>
+    containerNode?: IRectNodeComponent<T>,
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
     super(
       canvasElement,
@@ -98,7 +100,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       thumbShape,
       canvasUpdated,
       containerNode,
-      thumb?.thumbIdentifierWithinNode
+      thumb?.thumbIdentifierWithinNode,
+      setCanvasAction
     );
 
     if (!this.nodeComponent) {
@@ -593,14 +596,6 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       }
 
       if (this.nodeComponent.thumbLinkedToNode && this.canvas) {
-        // const startConnections =
-        //   this.nodeComponent.thumbLinkedToNode?.connections.filter(
-        //     (c) => c.startNodeThumb?.id === this.nodeComponent?.id
-        //   );
-        // if (startConnections && startConnections.length > 0) {
-        //   return;
-        // }
-
         const endConnections =
           this.nodeComponent.thumbLinkedToNode?.connections.filter(
             (c) => c.endNodeThumb?.id === this.nodeComponent?.id
@@ -611,78 +606,6 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       }
 
       e.stopPropagation();
-
-      // const selectedNodeId = getSelectedNode();
-      // if (selectedNodeId) {
-      //   console.log('thumb 1');
-      //   const selectedNode = this.canvasElements?.get(
-      //     selectedNodeId.id
-      //   ) as unknown as INodeComponent<T>;
-      //   const connectionNode =
-      //     this.nodeComponent.thumbLinkedToNode?.nodeType === NodeType.Shape
-      //       ? this.nodeComponent.thumbLinkedToNode?.connections.find(
-      //           (c) => c.id === selectedNodeId.id
-      //         )
-      //       : undefined;
-      //   if (
-      //     connectionNode &&
-      //     selectedNode &&
-      //     selectedNode.nodeType === NodeType.Connection &&
-      //     this.canvas
-      //   ) {
-      //     const { x, y } = transformCameraSpaceToWorldSpace(
-      //       e.clientX,
-      //       e.clientY
-      //     );
-      //     const curve = selectedNode as unknown as IConnectionNodeComponent<T>;
-      //     const connectionThumb =
-      //       this.nodeComponent.thumbConnectionType === 'start'
-      //         ? curve.connectionStartNodeThumb
-      //         : curve.connectionEndNodeThumb;
-
-      //     // remove existing connection
-      //     const connection =
-      //       connectionThumb?.parent as unknown as IConnectionNodeComponent<T>;
-
-      //     if (this.nodeComponent?.thumbConnectionType === 'start') {
-      //       connection.startNode = undefined;
-      //       connection.startNodeThumb = undefined;
-      //     } else {
-      //       connection.endNode = undefined;
-      //       connection.endNodeThumb = undefined;
-      //     }
-
-      //     if (connectionThumb) {
-      //       this.initiateDraggingConnection(connectionThumb, x, y);
-      //     }
-
-      //     return;
-      //   }
-      // }
-
-      // disconnect connection from thumb by dragging from thumb and shift pressed
-      // if (this.nodeComponent.thumbLinkedToNode && e.shiftKey && this.canvas) {
-      //   const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
-      //   console.log('thumb 2', x, y);
-      //   const connections =
-      //     this.nodeComponent.thumbLinkedToNode?.connections.filter(
-      //       (c) => c.startNodeThumb?.id === this.nodeComponent?.id
-      //     );
-      //   if (connections && connections.length > 0) {
-      //     const curve = connections[0];
-
-      //     //this.nodeComponent.thumbLinkedToNode.connections[0];
-      //     const connectionThumb =
-      //       this.nodeComponent.thumbConnectionType === 'start'
-      //         ? curve.connectionStartNodeThumb
-      //         : curve.connectionEndNodeThumb;
-      //     if (connectionThumb) {
-      //       this.initiateDraggingConnection(connectionThumb, x, y);
-      //     }
-      //   }
-
-      //   return;
-      // }
 
       if (
         this.nodeComponent.thumbConnectionType === ThumbConnectionType.start &&
@@ -788,6 +711,10 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           throw new Error('curve not created');
         }
         this.newCurve = curve;
+
+        if (this.setCanvasAction) {
+          this.setCanvasAction(CanvasAction.newConnectionCreated, curve);
+        }
 
         if (curve && this.canvas) {
           curve.nodeComponent.startNode = this.parentRectNode;

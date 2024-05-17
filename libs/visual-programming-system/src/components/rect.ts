@@ -27,6 +27,7 @@ import { NodeType } from '../types/node-type';
 import { thumbHeight, thumbWidth } from '../constants/measures';
 import { ThumbNodeConnector } from './thumb-node-connector';
 import { NodeTransformer } from './node-transformer';
+import { CanvasAction } from '../enums/canvas-action';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -39,6 +40,7 @@ export class Rect<T> {
   protected canvasElements?: ElementNodeMap<T>;
   protected pathHiddenElement?: IElementNode<T>;
   protected canvasUpdated?: () => void;
+  protected setCanvasAction?: (canvasAction: CanvasAction) => void;
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
   public containerNode?: IRectNodeComponent<T>;
@@ -81,11 +83,13 @@ export class Rect<T> {
     id?: string,
     containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean,
-    parentNodeClassName?: string
+    parentNodeClassName?: string,
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
     this.canvas = canvas;
     this.canvasElements = elements;
     this.canvasUpdated = canvasUpdated;
+    this.setCanvasAction = setCanvasAction;
     this.nodeTransformer = nodeTransformer;
     this.nodeTransformer.detachNode();
 
@@ -216,7 +220,8 @@ export class Rect<T> {
           thumb.label,
           thumb.thumbShape ?? 'circle',
           canvasUpdated,
-          containerNode
+          containerNode,
+          setCanvasAction
         );
 
         if (!thumbNode.nodeComponent) {

@@ -1,5 +1,6 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
 import { paddingRect, totalPaddingRect } from '../constants/measures';
+import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ControlAndEndPointNodeType,
@@ -60,6 +61,7 @@ export class Connection<T> {
 
   pathHiddenElement: IElementNode<T> | null = null;
   containerNode?: INodeComponent<T>;
+  setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void;
 
   constructor(
     canvas: IElementNode<T>,
@@ -79,7 +81,8 @@ export class Connection<T> {
     canvasUpdated?: () => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
-    theme?: Theme
+    theme?: Theme,
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -96,6 +99,7 @@ export class Connection<T> {
     this.canvasElement = canvas.domElement;
     this.interactionStateMachine = interactionStateMachine;
     this.containerNode = containerNode;
+    this.setCanvasAction = setCanvasAction;
 
     this.points = {
       beginX: startX,

@@ -25,6 +25,7 @@ import { ContextRect } from '../context-components/context-rect';
 import { ContextConnection } from '../context-components/context-connection';
 import { standardTheme } from '../themes/standard';
 import { MediaLibrary } from '@devhelpr/media-library';
+import { CanvasAction } from '../enums/canvas-action';
 
 export const createContextInstanceApp = <T>(
   _canvasId?: string
@@ -96,6 +97,11 @@ export const createContextInstanceApp = <T>(
     },
     setOnCanvasClick: (
       _onClickCanvasHandler: (x: number, y: number) => void
+    ) => {
+      //
+    },
+    setCanvasAction: (
+      _setCanvasActionHandler: (canvasAction: CanvasAction) => void
     ) => {
       //
     },

@@ -811,6 +811,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
                 );
               connection.endNode = undefined;
               connection.endNodeThumb = undefined;
+            } else {
+              console.log('HERE 2 : (new) connection without end node');
             }
           }
         }

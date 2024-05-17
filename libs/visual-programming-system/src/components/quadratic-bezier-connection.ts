@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
+import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
@@ -47,7 +48,8 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     canvasUpdated?: () => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
-    theme?: Theme
+    theme?: Theme,
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
     super(
       canvas,
@@ -67,7 +69,8 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       canvasUpdated,
       id,
       containerNode,
-      theme
+      theme,
+      setCanvasAction
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');

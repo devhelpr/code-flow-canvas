@@ -10,6 +10,7 @@ import {
   createEffect,
   getSelectedNode,
   setSelectNode,
+  setActionNode,
   CanvasAppInstance,
   IRectNodeComponent,
   IThumbNodeComponent,
@@ -24,6 +25,7 @@ import {
   standardTheme,
   renderElement,
   createJSXElement,
+  CanvasAction,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -133,7 +135,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   canvasUpdated: (() => void) | undefined = undefined;
 
   exportCodeButton: IDOMElement | undefined = undefined;
-
+  canvasAction: CanvasAction = CanvasAction.idle;
+  canvasActionPayload: any = undefined;
   constructor(appRootSelector: string) {
     super(appRootSelector, undefined, standardTheme);
     if (!this.rootElement) {
@@ -142,6 +145,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (!this.canvasApp) {
       return;
     }
+    this.canvasApp.setCanvasAction((action, payload?: any) => {
+      this.canvasAction = action;
+      this.canvasActionPayload = payload;
+    });
+
     this.canvasApp.setOnAddcomposition(this.onAddFlowComposition);
     this.mediaLibary = createMediaLibrary();
     this.canvasApp.setMediaLibrary(this.mediaLibary);
@@ -582,7 +590,29 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           },
           compositions: compositions,
         };
-        this.storageProvider.saveFlow('1234', flow);
+        this.storageProvider.saveFlow('1234', flow).then(() => {
+          if (this.canvasAction === CanvasAction.newConnectionCreated) {
+            if (
+              this.canvasActionPayload &&
+              this.canvasActionPayload.nodeComponent &&
+              this.canvasActionPayload.nodeComponent.nodeType ===
+                NodeType.Connection
+            ) {
+              setActionNode({
+                id: (
+                  this.canvasActionPayload
+                    .nodeComponent as unknown as INodeComponent<NodeInfo>
+                ).id,
+                containerNode: (
+                  this.canvasActionPayload
+                    .nodeComponent as unknown as INodeComponent<unknown>
+                ).containerNode,
+              });
+            }
+          }
+          this.canvasAction = CanvasAction.idle;
+          this.canvasActionPayload = undefined;
+        });
       }
     };
 

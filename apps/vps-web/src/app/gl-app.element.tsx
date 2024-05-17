@@ -24,6 +24,8 @@ import {
   createCanvasApp,
   renderElement,
   createJSXElement,
+  CanvasAction,
+  setActionNode,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -128,6 +130,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   orgPositionY = 0;
   canvasUpdated: (() => void) | undefined = undefined;
 
+  canvasAction: CanvasAction = CanvasAction.idle;
+  canvasActionPayload: any = undefined;
+
   shaderCompileHistory: ShaderCompileHistory[] = [];
   addCompiledShaderToHistory = false;
 
@@ -147,6 +152,11 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     if (!this.canvasApp) {
       return;
     }
+    this.canvasApp.setCanvasAction((action, payload?: any) => {
+      this.canvasAction = action;
+      this.canvasActionPayload = payload;
+    });
+
     this.setupWindowResize();
     this.setupGLCanvas();
     const glcanvas = document.getElementById('glcanvas');
@@ -682,7 +692,29 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           },
           compositions: compositions,
         };
-        this.storageProvider.saveFlow('gl', flow);
+        this.storageProvider.saveFlow('gl', flow).then(() => {
+          if (this.canvasAction === CanvasAction.newConnectionCreated) {
+            if (
+              this.canvasActionPayload &&
+              this.canvasActionPayload.nodeComponent &&
+              this.canvasActionPayload.nodeComponent.nodeType ===
+                NodeType.Connection
+            ) {
+              setActionNode({
+                id: (
+                  this.canvasActionPayload
+                    .nodeComponent as unknown as INodeComponent<GLNodeInfo>
+                ).id,
+                containerNode: (
+                  this.canvasActionPayload
+                    .nodeComponent as unknown as INodeComponent<unknown>
+                ).containerNode,
+              });
+            }
+          }
+          this.canvasAction = CanvasAction.idle;
+          this.canvasActionPayload = undefined;
+        });
       }
     };
 

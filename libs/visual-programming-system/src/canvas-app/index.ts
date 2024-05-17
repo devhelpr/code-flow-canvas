@@ -41,6 +41,7 @@ import { ThumbNodeConnector } from '../components/thumb-node-connector';
 import { thumbPosition } from '../components/utils/calculate-connector-thumbs';
 import { updateThumbPrefixLabel } from '../utils/thumbs';
 import { MediaLibrary } from '@devhelpr/media-library';
+import { CanvasAction } from '../enums/canvas-action';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -101,6 +102,9 @@ export const createCanvasApp = <T>(
   let startClientDragY = 0;
   let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
   let onCanvasUpdated: (() => void) | undefined = undefined;
+  let setCanvasAction:
+    | ((canvasAction: CanvasAction, payload?: any) => void)
+    | undefined = undefined;
   let onCameraChanged: ((camera: Camera) => void) | undefined = undefined;
   let onWheelEvent:
     | ((x: number, y: number, scale: number) => void)
@@ -690,17 +694,21 @@ export const createCanvasApp = <T>(
         (!wasMoved && event.target === rootElement) ||
         event.target === canvas.domElement
       ) {
-        console.log('rootElement click', event.target, tagName);
-        event.preventDefault();
-        const mousePointTo = {
-          x: event.clientX / scaleCamera - xCamera / scaleCamera,
-          y: event.clientY / scaleCamera - yCamera / scaleCamera,
-        };
-        onClickCanvas(mousePointTo.x, mousePointTo.y);
-        nodeTransformer.detachNode();
-        nodeSelector.removeSelector();
+        const currentState =
+          interactionStateMachine.getCurrentInteractionState();
+        if (currentState?.state === InteractionState.Idle) {
+          console.log('rootElement click', event.target, tagName);
+          event.preventDefault();
+          const mousePointTo = {
+            x: event.clientX / scaleCamera - xCamera / scaleCamera,
+            y: event.clientY / scaleCamera - yCamera / scaleCamera,
+          };
+          onClickCanvas(mousePointTo.x, mousePointTo.y);
+          nodeTransformer.detachNode();
+          nodeSelector.removeSelector();
 
-        document.body.dispatchEvent(CanvasClickEvent);
+          document.body.dispatchEvent(CanvasClickEvent);
+        }
 
         return false;
       }
@@ -808,6 +816,14 @@ export const createCanvasApp = <T>(
       onClickCanvasHandler: (x: number, y: number) => void
     ) => {
       onClickCanvas = onClickCanvasHandler;
+    },
+    setCanvasAction: (
+      setCanvasActionHandler: (
+        canvasAction: CanvasAction,
+        payload?: any
+      ) => void
+    ) => {
+      setCanvasAction = setCanvasActionHandler;
     },
     resetNodeTransform: () => {
       nodeTransformer.detachNode();
@@ -1034,7 +1050,8 @@ export const createCanvasApp = <T>(
         id,
         containerNode,
         isStaticPosition,
-        parentNodeClassNames
+        parentNodeClassNames,
+        setCanvasAction
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');
@@ -1089,7 +1106,8 @@ export const createCanvasApp = <T>(
         containerNode,
         isStaticPosition,
         isCircle,
-        createStraightLineConnection
+        createStraightLineConnection,
+        setCanvasAction
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');
@@ -1132,7 +1150,8 @@ export const createCanvasApp = <T>(
         onCanvasUpdated,
         id,
         containerNode,
-        theme
+        theme,
+        setCanvasAction
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -1167,7 +1186,8 @@ export const createCanvasApp = <T>(
         onCanvasUpdated,
         id,
         containerNode,
-        theme
+        theme,
+        setCanvasAction
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -1200,7 +1220,8 @@ export const createCanvasApp = <T>(
         onCanvasUpdated,
         id,
         containerNode,
-        theme
+        theme,
+        setCanvasAction
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();

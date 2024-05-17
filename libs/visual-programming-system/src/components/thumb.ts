@@ -4,6 +4,7 @@ import {
   thumbHeight,
   thumbWidth,
 } from '../constants/measures';
+import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -29,6 +30,7 @@ export class ThumbNode<T> {
   canvasElements?: ElementNodeMap<T>;
   pathHiddenElement?: IElementNode<T>;
   canvasUpdated?: () => void;
+  setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void;
   circleElement: IDOMElement | undefined;
   interactionInfo: IPointerDownResult;
   containerNode?: IRectNodeComponent<T>;
@@ -63,7 +65,8 @@ export class ThumbNode<T> {
     _thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
     containerNode?: IRectNodeComponent<T>,
-    _thumbIdentifierWithinNode?: string
+    _thumbIdentifierWithinNode?: string,
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
     this.interactionStateMachine = interactionStateMachine;
     this.disableInteraction = disableInteraction ?? false;
@@ -73,6 +76,7 @@ export class ThumbNode<T> {
     this.canvasElements = canvasElements;
     this.pathHiddenElement = pathHiddenElement;
     this.canvasUpdated = canvasUpdated;
+    this.setCanvasAction = setCanvasAction;
     this.containerNode = containerNode;
 
     this.interactionInfo = {

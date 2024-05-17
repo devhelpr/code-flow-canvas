@@ -40,3 +40,4 @@ export * from './interfaces/composition';
 export * from './canvas-app/context-app-instance';
 export * from './themes/standard';
 export * from './interfaces/theme';
+export * from './enums/canvas-action';
