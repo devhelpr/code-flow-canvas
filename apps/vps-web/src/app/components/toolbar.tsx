@@ -92,6 +92,10 @@ export function Toolbar<T>(props: {
       isInReplaceeMode = true;
       if (actionSelectedNodeInfo && info.node?.nodeType === NodeType.Shape) {
         skipHide = true;
+        console.log(
+          'skipHide : actionSelectedNodeInfo2',
+          actionSelectedNodeInfo
+        );
         setActionNode(undefined);
         return;
       }

@@ -395,6 +395,7 @@ export class GLNavbarComponent extends Component<
             const data = JSON.parse(event.target.result.toString());
             console.log('IMPORT DATA', data);
             this.props.clearCanvas();
+
             this.props.importToCanvas(
               data.flows.flow.nodes,
               canvasApp,

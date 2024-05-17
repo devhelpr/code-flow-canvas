@@ -8,7 +8,26 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { NodeTask, NodeTaskFactory } from '../node-task-registry';
-
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    label: ' ',
+    //thumbConstraint: '',
+    name: 'output',
+    color: 'white',
+  },
+  {
+    thumbType: ThumbType.EndConnectorLeft,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    label: ' ',
+    //thumbConstraint: 'array',
+    name: 'input',
+    color: 'white',
+  },
+];
 export const getShowInput: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -97,6 +116,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
     name: 'show-input',
     family: 'flow-canvas',
     category: 'debug',
+    thumbs,
     createVisualNode: (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
@@ -133,26 +153,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         120,
         100,
         undefined,
-        [
-          {
-            thumbType: ThumbType.StartConnectorRight,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            label: ' ',
-            //thumbConstraint: '',
-            name: 'output',
-            color: 'white',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            label: ' ',
-            //thumbConstraint: 'array',
-            name: 'input',
-            color: 'white',
-          },
-        ],
+        thumbs,
         wrapper,
         {
           classNames: `p-4 rounded`,
