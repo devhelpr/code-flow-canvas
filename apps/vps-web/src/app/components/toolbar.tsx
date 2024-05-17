@@ -68,12 +68,14 @@ export function Toolbar<T>(props: {
   const taskList = props.getTaskList();
   let skipHide = false;
   createEffect(() => {
-    const selectedNodeInfo = getSelectedNode() || getActionNode();
-    if (selectedNodeInfo) {
+    const selectedNodeInfo = getSelectedNode();
+    const actionSelectedNodeInfo = getActionNode();
+    if (selectedNodeInfo || actionSelectedNodeInfo) {
       selectedNode = undefined;
       const info = props.getNode(
-        selectedNodeInfo.id,
-        selectedNodeInfo.containerNode as IRectNodeComponent<T>
+        (selectedNodeInfo || actionSelectedNodeInfo)!.id,
+        (selectedNodeInfo || actionSelectedNodeInfo)!
+          .containerNode as IRectNodeComponent<T>
       );
       selectedNode = info.node;
       console.log(
@@ -96,11 +98,16 @@ export function Toolbar<T>(props: {
           ? 'Insert node in connection:'
           : 'Create node'
       );
-      if (selectedNodeInfo) {
+      if (actionSelectedNodeInfo) {
+        console.log(
+          'skipHide : actionSelectedNodeInfo',
+          actionSelectedNodeInfo
+        );
         skipHide = true;
         setActionNode(undefined);
       }
     } else {
+      console.log('hide toolbar', skipHide);
       if (!skipHide) {
         selectedNode = undefined;
         hideUL();

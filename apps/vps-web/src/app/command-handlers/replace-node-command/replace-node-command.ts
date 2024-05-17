@@ -1,6 +1,5 @@
 import {
   CanvasAppInstance,
-  ElementNodeMap,
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
@@ -277,16 +276,19 @@ export class ReplaceNodeCommand<
         if (endNode?.update) {
           endNode.update(endNode, endNode.x, endNode.y, endNode);
         }
-        const elements = canvasApp.elements as unknown as ElementNodeMap<T>;
         if (shiftNodes) {
           const updateList: INodeComponent<T>[] = [];
-          elements.forEach((e) => {
+          this.nodes = [];
+          this.getUpstreamNodes(node);
+          console.log('getUpstreamNodes', this.nodes);
+          const shiftX = (endNode?.x ?? 0) - (connection.startNode?.x ?? 0);
+          this.nodes.forEach((e) => {
             const elementNode = e as INodeComponent<T>;
             if (elementNode.nodeType === NodeType.Shape) {
               const shape = elementNode as IRectNodeComponent<T>;
               if (shape.id !== node.id) {
                 if (shape.x >= node.x) {
-                  shape.x += (endNode?.x ?? 0) - (connection.startNode?.x ?? 0);
+                  shape.x += shiftX;
                   updateList.push(shape);
                 }
               }
@@ -298,6 +300,23 @@ export class ReplaceNodeCommand<
         }
         this.canvasUpdated();
       }
+    }
+  };
+
+  nodes: IRectNodeComponent<T>[] = [];
+  getUpstreamNodes = (node: IRectNodeComponent<T>) => {
+    if (node.connections.length > 0) {
+      node.connections.forEach((connection) => {
+        if (connection.startNode?.id === node.id) {
+          if (
+            connection.endNode &&
+            !this.nodes.find((node) => node.id === connection.endNode?.id)
+          ) {
+            this.nodes.push(connection.endNode);
+            this.getUpstreamNodes(connection.endNode);
+          }
+        }
+      });
     }
   };
 }

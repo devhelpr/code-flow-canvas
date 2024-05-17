@@ -694,21 +694,17 @@ export const createCanvasApp = <T>(
         (!wasMoved && event.target === rootElement) ||
         event.target === canvas.domElement
       ) {
-        const currentState =
-          interactionStateMachine.getCurrentInteractionState();
-        if (currentState?.state === InteractionState.Idle) {
-          console.log('rootElement click', event.target, tagName);
-          event.preventDefault();
-          const mousePointTo = {
-            x: event.clientX / scaleCamera - xCamera / scaleCamera,
-            y: event.clientY / scaleCamera - yCamera / scaleCamera,
-          };
-          onClickCanvas(mousePointTo.x, mousePointTo.y);
-          nodeTransformer.detachNode();
-          nodeSelector.removeSelector();
+        console.log('rootElement click', event.target, tagName);
+        event.preventDefault();
+        const mousePointTo = {
+          x: event.clientX / scaleCamera - xCamera / scaleCamera,
+          y: event.clientY / scaleCamera - yCamera / scaleCamera,
+        };
+        onClickCanvas(mousePointTo.x, mousePointTo.y);
+        nodeTransformer.detachNode();
+        nodeSelector.removeSelector();
 
-          document.body.dispatchEvent(CanvasClickEvent);
-        }
+        document.body.dispatchEvent(CanvasClickEvent);
 
         return false;
       }
