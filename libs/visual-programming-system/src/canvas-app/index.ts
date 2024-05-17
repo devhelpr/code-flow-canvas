@@ -427,6 +427,9 @@ export const createCanvasApp = <T>(
             setSelectNode(undefined);
           }
         } else {
+          event.stopPropagation();
+          wasMoved = true; // HACK
+
           const { x, y } = transformCameraSpaceToWorldSpace(
             event.clientX,
             event.clientY

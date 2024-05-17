@@ -10,6 +10,7 @@ import {
   ThumbConnectionType,
   getActionNode,
   setActionNode,
+  setSelectNode,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
 import { BaseNodeInfo } from '../types/base-node-info';
@@ -99,6 +100,7 @@ export function Toolbar<T>(props: {
         setActionNode(undefined);
         return;
       }
+
       fillTaskList(
         getTasksWhichAreInterchangeableWithSelectedNode(),
         info.node?.nodeType === NodeType.Shape
@@ -325,6 +327,9 @@ export function Toolbar<T>(props: {
   document.body.addEventListener(
     'canvas-click' as unknown as keyof HTMLElementEventMap,
     (_) => {
+      setActionNode(undefined);
+      setSelectNode(undefined);
+      popupTriggeredFromEffect = false;
       hideUL();
     }
   );
