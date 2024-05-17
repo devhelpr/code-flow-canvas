@@ -90,6 +90,11 @@ export function Toolbar<T>(props: {
       }
       popupTriggeredFromEffect = true;
       isInReplaceeMode = true;
+      if (actionSelectedNodeInfo && info.node?.nodeType === NodeType.Shape) {
+        skipHide = true;
+        setActionNode(undefined);
+        return;
+      }
       fillTaskList(
         getTasksWhichAreInterchangeableWithSelectedNode(),
         info.node?.nodeType === NodeType.Shape
