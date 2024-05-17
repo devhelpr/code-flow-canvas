@@ -31,8 +31,6 @@ import { getCreateVector2Node } from '../nodes-gl/create-vector2';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { Composition } from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes-gl/composition';
-import { getAtanNode } from '../nodes-gl/atan';
-import { getExpNode } from '../nodes-gl/exp';
 import { getFractNode } from '../nodes-gl/fract';
 import { getAdditiveInverseNode } from '../nodes-gl/additive-inverse';
 import { getPowNode } from '../nodes-gl/pow';
@@ -57,7 +55,6 @@ import { getConstantValue } from '../nodes-gl/constant-value';
 import { getSetVariableNode } from '../nodes-gl/set-variable';
 import { getDefineValueVariableNode } from '../nodes-gl/define-float-variable';
 import { getGetVariableNode } from '../nodes-gl/get-variable';
-import { getFloorVectorNode } from '../nodes-gl/floor-vector';
 import { getMouseNode } from '../nodes-gl/mouse-node';
 import { getWheelNode } from '../nodes-gl/wheel-node';
 import { getPositionNode } from '../nodes-gl/position-node';
@@ -71,6 +68,9 @@ import { getCreateVector3Node } from '../nodes-gl/create-vector3';
 import { getGradientColorNode } from '../nodes-gl/gradient-color-node';
 import { getSubtractVectorNode } from '../nodes-gl/sub-vectors';
 import { getLogNode } from '../nodes-gl/log';
+import { get2To1OperatorNodes } from '../nodes-gl/operator-2-to-1-nodes';
+import { getOperatorNodes } from '../nodes-gl/operator-nodes';
+import { getVec2ToVec2OperatorNodes } from '../nodes-gl/operator-vec2-to-vec2-nodes';
 
 export const glNodeTaskRegistry: NodeTypeRegistry<any> = {};
 export const glNodeTaskRegistryLabels: Record<string, string> = {};
@@ -120,8 +120,21 @@ export const setupGLNodeTaskRegistry = (
   );
   registerGLNodeFactory('sine-node', getSineNode, 'Sine');
   registerGLNodeFactory('cosine-node', getCosineNode, 'Cosine');
-  registerGLNodeFactory('atan-node', getAtanNode, 'Arctan');
-  registerGLNodeFactory('exp-node', getExpNode, 'Exp');
+
+  const twoToneOperators = get2To1OperatorNodes();
+  twoToneOperators.forEach(({ nodeFactoryFunction, label, nodeName }) => {
+    registerGLNodeFactory(nodeName, nodeFactoryFunction, label);
+  });
+
+  const operators = getOperatorNodes();
+  operators.forEach(({ nodeFactoryFunction, label, nodeName }) => {
+    registerGLNodeFactory(nodeName, nodeFactoryFunction, label);
+  });
+  const vec2Operators = getVec2ToVec2OperatorNodes();
+  vec2Operators.forEach(({ nodeFactoryFunction, label, nodeName }) => {
+    registerGLNodeFactory(nodeName, nodeFactoryFunction, label);
+  });
+
   registerGLNodeFactory('log-node', getLogNode, 'Log');
   registerGLNodeFactory('fract-node', getFractNode, 'Fract');
   registerGLNodeFactory(
@@ -284,12 +297,6 @@ export const setupGLNodeTaskRegistry = (
     'get-float-variable-node',
     getGetVariableNode,
     'Get float variable'
-  );
-
-  registerGLNodeFactory(
-    'floor-vector-node',
-    getFloorVectorNode,
-    'Floor Vector'
   );
 
   registerGLNodeFactory('break-node', getBreakNode, 'Break');

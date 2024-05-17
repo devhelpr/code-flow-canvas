@@ -49,6 +49,7 @@ export function Toolbar<T>(props: {
   let icon: HTMLSpanElement | null = null;
   let selectedNode: INodeComponent<T> | undefined;
   let isInReplaceeMode = false;
+  let popupTriggeredFromEffect = false;
   function showUpIcon() {
     if (icon) {
       icon.classList.remove('icon-arrow_drop_down');
@@ -83,6 +84,7 @@ export function Toolbar<T>(props: {
       if (!showUL()) {
         return;
       }
+      popupTriggeredFromEffect = true;
       isInReplaceeMode = true;
       fillTaskList(
         getTasksWhichAreInterchangeableWithSelectedNode(),
@@ -252,6 +254,11 @@ export function Toolbar<T>(props: {
   }
 
   function hideUL() {
+    if (popupTriggeredFromEffect) {
+      popupTriggeredFromEffect = false;
+      return;
+    }
+
     isInReplaceeMode = false;
     showDropIcon();
     if (ul) {
