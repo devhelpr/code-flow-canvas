@@ -132,11 +132,7 @@ import {
   sendNodeToNodeTree,
   sendNodeToNodeTreeNodeName,
 } from '../nodes/send-node-to-node-tree';
-import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
-  Composition,
-} from '@devhelpr/visual-programming-system';
+import { Composition } from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes/composition';
 import { getThumbInputNode } from '../nodes/thumb-input';
 import { getThumbOutputNode } from '../nodes/thumb-output';
@@ -164,8 +160,6 @@ export const getNodeFactoryNames = () => {
 };
 
 export const setupCanvasNodeTaskRegistry = (
-  animatePath: AnimatePathFunction<NodeInfo>,
-  animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>,
   createRunCounterContext: (
     isRunViaRunButton: boolean,
     shouldResetConnectionSlider: boolean
@@ -174,19 +168,13 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
 
-  registerNodeFactory(
-    'multi-trigger',
-    getMultiTrigger(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory('multi-trigger', getMultiTrigger);
   registerNodeFactory('summing-junction', getSummingJunction);
 
-  registerNodeFactory('foreach', getForEach(animatePath, animatePathFromThumb));
+  registerNodeFactory('foreach', getForEach);
   registerNodeFactory(mapNodeName, getMap);
-  registerNodeFactory(sortNodeName, getSort(animatePath, animatePathFromThumb));
-  registerNodeFactory(
-    whileNodeName,
-    getWhile(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory(sortNodeName, getSort);
+  registerNodeFactory(whileNodeName, getWhile);
 
   registerNodeFactory('expression', getExpression);
   // registerNodeFactory('expression-part', getExpressionPart);
@@ -208,10 +196,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('fetch', getFetch);
   //registerNodeFactory('canvas-node', getCanvasNode(animatePath));
   //registerNodeFactory('layout-node', getLayoutNode(animatePath));
-  registerNodeFactory(
-    'state-machine',
-    createStateMachineNode(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory('state-machine', createStateMachineNode);
   registerNodeFactory('state-compound', createStateCompound);
   registerNodeFactory(
     'create-state-event-value',
@@ -226,50 +211,35 @@ export const setupCanvasNodeTaskRegistry = (
     'Set flow variable'
   );
 
-  registerNodeFactory(
-    'button',
-    getButton(animatePath, createRunCounterContext)
-  );
+  registerNodeFactory('button', getButton(createRunCounterContext));
   registerNodeFactory(
     'user-input',
-    getUserInput(animatePath, createRunCounterContext),
+    getUserInput(createRunCounterContext),
     'User Input'
   );
-  registerNodeFactory('timer', getTimer(animatePath));
-  registerNodeFactory(
-    'slider',
-    getSlider(animatePath, createRunCounterContext)
-  );
-  registerNodeFactory('checkbox', getCheckbox(animatePath));
-  registerNodeFactory('styled-node', getStyledNode(animatePath));
+  registerNodeFactory('timer', getTimer);
+  registerNodeFactory('slider', getSlider(createRunCounterContext));
+  registerNodeFactory('checkbox', getCheckbox);
+  registerNodeFactory('styled-node', getStyledNode);
   registerNodeFactory('html-node', getHtmlNode);
   registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
   //registerNodeFactory('annotation', getAnnotation(animatePath));
 
-  registerNodeFactory('node-trigger', getNodeTrigger(animatePath));
-  registerNodeFactory('node-trigger-target', getNodeTriggerTarget(animatePath));
+  registerNodeFactory('node-trigger', getNodeTrigger);
+  registerNodeFactory('node-trigger-target', getNodeTriggerTarget);
 
-  registerNodeFactory('call-function', getCallFunction(animatePath));
-  registerNodeFactory('function', getFunction(animatePath));
-  registerNodeFactory('observe-variable', observeVariable(animatePath));
+  registerNodeFactory('call-function', getCallFunction);
+  registerNodeFactory('function', getFunction);
+  registerNodeFactory('observe-variable', observeVariable);
 
-  registerNodeFactory(
-    'sequential',
-    getSequential(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory('sequential', getSequential);
 
-  registerNodeFactory(
-    'parallel',
-    getParallel(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory('parallel', getParallel);
 
-  registerNodeFactory(
-    'split-by-case',
-    getSplitByCase(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory('split-by-case', getSplitByCase);
 
   registerNodeFactory('multiply-node', getMultiplyNode);
-  registerNodeFactory(loadTextFileNodeName, loadTextFile(animatePath));
+  registerNodeFactory(loadTextFileNodeName, loadTextFile);
   registerNodeFactory(runRegexNodeName, runRegularExpression);
   registerNodeFactory(mergeModeName, getMergeNode);
 
@@ -312,10 +282,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
   registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
 
-  registerNodeFactory(
-    dialogFormNodeName,
-    dialogFormNode(animatePath, animatePathFromThumb)
-  );
+  registerNodeFactory(dialogFormNodeName, dialogFormNode);
 
   registerNodeFactory(nodeTreeVisualizerNodeName, getNodeTreeVisualizer);
   registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);

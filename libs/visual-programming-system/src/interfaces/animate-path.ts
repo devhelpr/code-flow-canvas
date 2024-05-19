@@ -24,6 +24,7 @@ export type AnimatePathFunction<T> = (
     node1?: IDOMElement;
     node2?: IDOMElement;
     node3?: IDOMElement;
+    cursorOnly?: boolean;
   },
   offsetX?: number,
   offsetY?: number,
@@ -45,6 +46,7 @@ export type AnimatePathFromThumbFunction<T> = (
     node1?: IDOMElement;
     node2?: IDOMElement;
     node3?: IDOMElement;
+    cursorOnly?: boolean;
   },
   offsetX?: number,
   offsetY?: number,

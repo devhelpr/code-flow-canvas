@@ -265,11 +265,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     setCameraAnimation(this.canvasApp);
 
-    setupCanvasNodeTaskRegistry(
-      animatePath,
-      animatePathFromThumb,
-      this.createRunCounterContext
-    );
+    setupCanvasNodeTaskRegistry(this.createRunCounterContext);
     createIndexedDBStorageProvider()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
@@ -737,7 +733,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             run(
               this.canvasApp?.elements,
               this.canvasApp,
-              animatePath,
               (input) => {
                 console.log('run finished', input);
               },

@@ -2,7 +2,6 @@ import {
   CanvasAppInstance,
   ElementNodeMap,
   IConnectionNodeComponent,
-  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
@@ -119,22 +118,7 @@ const triggerExecution = (
   node: IRectNodeComponent<NodeInfo>,
   canvasApp: CanvasAppInstance<NodeInfo>,
   result: any,
-  animatePath: (
-    node: IRectNodeComponent<NodeInfo>,
-    color: string,
-    onNextNode?: OnNextNodeFunction<NodeInfo>,
-    onStopped?: (input: string | any[], scopeId?: string) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: undefined,
-    offsetX?: number,
-    offsetY?: number,
-    _followPathToEndThumb?: boolean,
-    _singleStep?: boolean,
-    followThumb?: string,
-    scopeId?: string,
-    runCounter?: RunCounter
-  ) => void,
+
   onStopped: undefined | ((input: string | any[], scopeId?: string) => void),
   followPath: string | undefined,
   offsetX?: number,
@@ -144,7 +128,8 @@ const triggerExecution = (
 ) => {
   let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
   if (result !== undefined) {
-    animatePath(
+    const animateFunctions = canvasApp.getAnimationFunctions();
+    animateFunctions?.animatePathFunction(
       node,
       'white',
       ((
@@ -390,22 +375,6 @@ export const getRunIndex = () => {
 export const runNode = (
   node: IRectNodeComponent<NodeInfo>,
   canvasApp: CanvasAppInstance<NodeInfo>,
-  animatePath: (
-    node: IRectNodeComponent<NodeInfo>,
-    color: string,
-    onNextNode?: OnNextNodeFunction<NodeInfo>,
-    onStopped?: (input: string | any[], scopeId?: string) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: undefined,
-    offsetX?: number,
-    offsetY?: number,
-    _followPathToEndThumb?: boolean,
-    _singleStep?: boolean,
-    followThumb?: string,
-    scopeId?: string,
-    runCounter?: RunCounter
-  ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string,
   offsetX?: number,
@@ -486,7 +455,7 @@ export const runNode = (
           node,
           canvasApp,
           result,
-          animatePath,
+
           onStopped,
           followPath,
           offsetX,
@@ -545,7 +514,6 @@ export const runNode = (
       node,
       canvasApp,
       result,
-      animatePath,
       onStopped,
       followPath,
       offsetX,
@@ -598,22 +566,6 @@ export const getStartNodes = (
 export const run = (
   nodes: ElementNodeMap<NodeInfo>,
   canvasApp: CanvasAppInstance<NodeInfo>,
-  animatePath: (
-    node: IRectNodeComponent<NodeInfo>,
-    color: string,
-    onNextNode?: OnNextNodeFunction<NodeInfo>,
-    onStopped?: (input: string | any[], scopeId?: string) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: undefined,
-    offsetX?: number,
-    offsetY?: number,
-    _followPathToEndThumb?: boolean,
-    _singleStep?: boolean,
-    followThumb?: string,
-    scopeId?: string,
-    runCounter?: RunCounter
-  ) => void,
   onFinishRun?: (input: string | any[]) => void,
   input?: string,
   offsetX?: number,
@@ -647,10 +599,10 @@ export const run = (
       cameraSet = true;
       canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
     }
+
     runNode(
       nodeComponent,
       canvasApp,
-      animatePath,
       (input: string | any[]) => {
         if (onFinishRun) {
           onFinishRun(input);
@@ -676,26 +628,6 @@ export const run = (
 export const runNodeFromThumb = (
   nodeThumb: IThumbNodeComponent<NodeInfo>,
   canvasApp: CanvasAppInstance<NodeInfo>,
-  animatePathFromThumb: (
-    node: IThumbNodeComponent<NodeInfo>,
-    color: string,
-    onNextNode?: OnNextNodeFunction<NodeInfo>,
-    onStopped?: (input: string | any[], scopeId?: string) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: {
-      node1?: IElementNode<unknown>;
-      node2?: IElementNode<unknown>;
-      node3?: IElementNode<unknown>;
-      cursorOnly?: boolean;
-    },
-    offsetX?: number,
-    offsetY?: number,
-    followPathToEndThumb?: boolean,
-    singleStep?: boolean,
-    scopeId?: string,
-    runCounter?: RunCounter
-  ) => void,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: any,
   _scopeNode?: IRectNodeComponent<NodeInfo>,
@@ -708,7 +640,8 @@ export const runNodeFromThumb = (
   let firstStoreNodeState = true;
   let followPath: string | undefined = undefined;
   let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
-  animatePathFromThumb(
+  const animateFunctions = canvasApp.getAnimationFunctions();
+  animateFunctions?.animatePathFromThumbFunction(
     nodeThumb,
     'white',
     (

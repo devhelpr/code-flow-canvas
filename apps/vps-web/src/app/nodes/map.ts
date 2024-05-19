@@ -148,11 +148,6 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
           reject();
           return;
         }
-        const animatePathFunctions = canvasAppInstance.getAnimationFunctions();
-        if (!animatePathFunctions) {
-          reject();
-          return;
-        }
         if (foreachComponent && foreachComponent.domElement) {
           foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
         }
@@ -160,7 +155,6 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
-            animatePathFunctions.animatePathFromThumbFunction,
             (outputFromMap: string | any[]) => {
               if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
                 reject();
@@ -183,7 +177,6 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
           runNodeFromThumb(
             node.thumbConnectors[0],
             canvasAppInstance,
-            animatePathFunctions.animatePathFromThumbFunction,
             (inputFromSecondRun: string | any[]) => {
               resolve({
                 result: inputFromSecondRun,

@@ -1,5 +1,4 @@
 import {
-  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   INodeComponent,
@@ -21,7 +20,6 @@ function parseStringToFloat(value: string): number {
 
 export const getUserInput =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
     createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
@@ -141,7 +139,6 @@ export const getUserInput =
                 containerNode
                   ? (containerNode.nodeInfo as any)?.canvasAppInstance
                   : canvasApp,
-                animatePath,
                 () => {
                   //
                 },

@@ -1,5 +1,4 @@
 import {
-  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   createNodeElement,
@@ -17,7 +16,6 @@ import { RunCounter } from '../follow-path/run-counter';
 
 export const getButton =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
     createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
@@ -128,7 +126,6 @@ export const getButton =
                 containerNode
                   ? (containerNode.nodeInfo as any)?.canvasAppInstance
                   : canvasApp,
-                animatePath,
                 () => {
                   //
                 },

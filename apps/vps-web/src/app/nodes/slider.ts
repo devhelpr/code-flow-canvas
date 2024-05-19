@@ -1,5 +1,4 @@
 import {
-  AnimatePathFunction,
   CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -17,7 +16,6 @@ import { FormFieldType } from '../components/FormField';
 
 export const getSlider =
   (
-    animatePath: AnimatePathFunction<NodeInfo>,
     createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
@@ -120,7 +118,6 @@ export const getSlider =
               runNode(
                 node as unknown as IRectNodeComponent<NodeInfo>,
                 canvasAppInstance,
-                animatePath,
                 undefined,
                 currentValue.toString(),
                 undefined,
