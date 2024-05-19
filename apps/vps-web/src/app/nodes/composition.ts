@@ -1,7 +1,12 @@
 import {
+  AnimatePathFunctions,
   CanvasAppInstance,
   Composition,
+  IDOMElement,
+  IRectNodeComponent,
+  IRunCounter,
   IThumb,
+  OnNextNodeFunction,
   createContextInstanceApp,
 } from '@devhelpr/visual-programming-system';
 import {
@@ -18,6 +23,7 @@ import { NodeInfo } from '../types/node-info';
 import { importToCanvas } from '../storage/import-to-canvas';
 import { run } from '../simple-flow-engine/simple-flow-engine';
 import { RunCounter } from '../follow-path/run-counter';
+import { runPath } from '../follow-path/run-path';
 
 const familyName = 'flow-canvas';
 
@@ -39,50 +45,55 @@ export const getCreateCompositionNode =
     let contextCanvasApp: CanvasAppInstance<NodeInfo> =
       createContextInstanceApp<NodeInfo>();
 
-    // const runFlowPath = (
-    //   node: IRectNodeComponent<NodeInfo>,
-    //   color: string,
-    //   onNextNode?: OnNextNodeFunction<NodeInfo>,
-    //   onStopped?: (input: string | any[]) => void,
-    //   input?: string | any[],
-    //   followPathByName?: string, // normal, success, failure, "subflow",
-    //   animatedNodes?: {
-    //     node1?: IDOMElement;
-    //     node2?: IDOMElement;
-    //     node3?: IDOMElement;
-    //   },
-    //   offsetX?: number,
-    //   offsetY?: number,
-    //   followPathToEndThumb?: boolean,
-    //   singleStep?: boolean,
-    //   followThumb?: string,
-    //   scopeId?: string,
-    //   runCounter?: RunCounter
-    // ) => {
-    //   return runPath(
-    //     contextCanvasApp,
-    //     node,
-    //     color,
-    //     onNextNode,
-    //     onStopped,
-    //     input,
-    //     followPathByName,
-    //     animatedNodes,
-    //     offsetX,
-    //     offsetY,
-    //     followPathToEndThumb,
-    //     singleStep,
-    //     followThumb,
-    //     scopeId,
-    //     runCounter
-    //   );
-    // };
+    const runFlowPath = (
+      node: IRectNodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: OnNextNodeFunction<NodeInfo>,
+      onStopped?: (input: string | any[]) => void,
+      input?: string | any[],
+      followPathByName?: string, // normal, success, failure, "subflow",
+      animatedNodes?: {
+        node1?: IDOMElement;
+        node2?: IDOMElement;
+        node3?: IDOMElement;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean,
+      followThumb?: string,
+      scopeId?: string,
+      runCounter?: IRunCounter
+    ) => {
+      return runPath(
+        contextCanvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb,
+        singleStep,
+        followThumb,
+        scopeId,
+        runCounter
+      );
+    };
     const initializeCompute = () => {
       console.log('initializeCompute composition');
       composition = undefined;
 
       // TODO : properly destroy current contextCanvasApp before creating a new one
       contextCanvasApp = createContextInstanceApp<NodeInfo>();
+
+      // TODO : implement animatePathFromThumbFunction for composition
+      contextCanvasApp.setAnimationFunctions({
+        animatePathFunction: runFlowPath,
+      } as unknown as AnimatePathFunctions<NodeInfo>);
       return;
     };
     const computeAsync = (

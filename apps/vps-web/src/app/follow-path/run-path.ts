@@ -3,6 +3,7 @@ import {
   IConnectionNodeComponent,
   IDOMElement,
   IRectNodeComponent,
+  IRunCounter,
   IThumbNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import {
@@ -36,7 +37,7 @@ export const runPathForNodeConnectionPairs = <T>(
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  runCounter?: RunCounter
+  runCounter?: IRunCounter
 ) => {
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (onStopped) {
@@ -201,7 +202,7 @@ export const runPath = <T>(
   singleStep?: boolean,
   followThumb?: string,
   scopeId?: string,
-  runCounter?: RunCounter
+  runCounter?: IRunCounter
 ) => {
   const nodeConnectionPairs = getNodeConnectionPairById<T>(
     canvasApp,

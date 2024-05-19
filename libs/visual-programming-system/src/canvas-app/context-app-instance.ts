@@ -47,6 +47,8 @@ export const createContextInstanceApp = <T>(
     Map<string, (data: any, runCounter?: any) => void>
   > = new Map();
 
+  let animationFunctions: undefined | AnimatePathFunctions<T> = undefined;
+
   const commandHandlers: Record<string, ICommandHandler> = {};
   const nodeSetStateHandlers: Record<string, SetNodeStatedHandler> = {};
   const nodeGetStateHandlers: Record<string, GetNodeStatedHandler> = {};
@@ -512,13 +514,11 @@ export const createContextInstanceApp = <T>(
     getMediaLibrary: () => {
       return undefined;
     },
-    setAnimationFunctions: (
-      _newAnimationFunctions: AnimatePathFunctions<T>
-    ) => {
-      //
+    setAnimationFunctions: (newAnimationFunctions: AnimatePathFunctions<T>) => {
+      animationFunctions = newAnimationFunctions;
     },
     getAnimationFunctions: () => {
-      return undefined;
+      return animationFunctions;
     },
   };
 };
