@@ -83,193 +83,194 @@ const isInputOfRangeValueType = (input: RangeValueType) => {
   return false;
 };
 
-export const getMap =
-  (
-    _animatePath: AnimatePathFunction<NodeInfo>,
-    animatePathFromThumb: AnimatePathFromThumbFunction<NodeInfo>
-  ) =>
-  (_updated: () => void): NodeTask<NodeInfo> => {
-    let node: IRectNodeComponent<NodeInfo>;
-    let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
-    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
-    const initializeCompute = () => {
-      if (foreachComponent && foreachComponent.domElement) {
-        foreachComponent.domElement.textContent = `${title}`;
-        const forEachDomElement = foreachComponent?.domElement as HTMLElement;
-        forEachDomElement.classList.add('bg-slate-500');
-        forEachDomElement.classList.remove(activeMapColor);
-      }
-      return;
-    };
-    const computeAsync = (
-      input: string,
-      loopIndex?: number,
-      _payload?: any,
-      _thumbName?: string,
-      scopeId?: string
-    ) => {
+export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
+  let node: IRectNodeComponent<NodeInfo>;
+  let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  const initializeCompute = () => {
+    if (foreachComponent && foreachComponent.domElement) {
+      foreachComponent.domElement.textContent = `${title}`;
       const forEachDomElement = foreachComponent?.domElement as HTMLElement;
       forEachDomElement.classList.add('bg-slate-500');
       forEachDomElement.classList.remove(activeMapColor);
+    }
+    return;
+  };
+  const computeAsync = (
+    input: string,
+    loopIndex?: number,
+    _payload?: any,
+    _thumbName?: string,
+    scopeId?: string
+  ) => {
+    const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+    forEachDomElement.classList.add('bg-slate-500');
+    forEachDomElement.classList.remove(activeMapColor);
 
-      return new Promise((resolve, reject) => {
-        if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+    return new Promise((resolve, reject) => {
+      if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+        reject();
+        return;
+      }
+
+      let values: any[] = [];
+      values = input as unknown as any[];
+      let isRange = false;
+      let forEachLength = 0;
+      let startIndex = 0;
+      let step = 1;
+      const rangeInput = input as unknown as RangeValueType;
+      if (
+        isInputOfRangeValueType(rangeInput) &&
+        rangeInput.max !== undefined &&
+        rangeInput.min !== undefined &&
+        rangeInput.step !== undefined
+      ) {
+        isRange = true;
+        startIndex = rangeInput.min;
+        step = rangeInput.step;
+        forEachLength = rangeInput.max;
+      } else {
+        if (!Array.isArray(input)) {
+          values = [input];
+        }
+        forEachLength = values.length;
+      }
+      if (foreachComponent && foreachComponent.domElement) {
+        foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
+      }
+      const output: any[] = [];
+
+      const runNext = (mapLoop: number) => {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < 2 ||
+          !canvasAppInstance
+        ) {
           reject();
           return;
         }
-
-        let values: any[] = [];
-        values = input as unknown as any[];
-        let isRange = false;
-        let forEachLength = 0;
-        let startIndex = 0;
-        let step = 1;
-        const rangeInput = input as unknown as RangeValueType;
-        if (
-          isInputOfRangeValueType(rangeInput) &&
-          rangeInput.max !== undefined &&
-          rangeInput.min !== undefined &&
-          rangeInput.step !== undefined
-        ) {
-          isRange = true;
-          startIndex = rangeInput.min;
-          step = rangeInput.step;
-          forEachLength = rangeInput.max;
-        } else {
-          if (!Array.isArray(input)) {
-            values = [input];
-          }
-          forEachLength = values.length;
+        const animatePathFunctions = canvasAppInstance.getAnimationFunctions();
+        if (!animatePathFunctions) {
+          reject();
+          return;
         }
         if (foreachComponent && foreachComponent.domElement) {
-          foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
+          foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
         }
-        const output: any[] = [];
-        const runNext = (mapLoop: number) => {
-          if (
-            !node.thumbConnectors ||
-            node.thumbConnectors.length < 2 ||
-            !canvasAppInstance
-          ) {
-            reject();
-            return;
-          }
-          if (foreachComponent && foreachComponent.domElement) {
-            foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
-          }
-          if (mapLoop < forEachLength) {
-            runNodeFromThumb(
-              node.thumbConnectors[1],
-              canvasAppInstance,
-              animatePathFromThumb,
-              (outputFromMap: string | any[]) => {
-                if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
-                  reject();
-                  return;
-                }
-                output.push(outputFromMap);
-                console.log('map runNext onstopped', mapLoop, outputFromMap);
+        if (mapLoop < forEachLength) {
+          runNodeFromThumb(
+            node.thumbConnectors[1],
+            canvasAppInstance,
+            animatePathFunctions.animatePathFromThumbFunction,
+            (outputFromMap: string | any[]) => {
+              if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
+                reject();
+                return;
+              }
+              output.push(outputFromMap);
+              console.log('map runNext onstopped', mapLoop, outputFromMap);
 
-                runNext(mapLoop + step);
-              },
-              isRange ? mapLoop : values[mapLoop],
-              node,
-              mapLoop,
-              scopeId
-            );
-          } else {
-            forEachDomElement.classList.add('bg-slate-500');
-            forEachDomElement.classList.remove(activeMapColor);
-
-            runNodeFromThumb(
-              node.thumbConnectors[0],
-              canvasAppInstance,
-              animatePathFromThumb,
-              (inputFromSecondRun: string | any[]) => {
-                resolve({
-                  result: inputFromSecondRun,
-                  output: inputFromSecondRun,
-                  followPath: undefined,
-
-                  stop: true,
-                  dummyEndpoint: true,
-                });
-              },
-              output,
-              node,
-              loopIndex,
-              scopeId
-            );
-          }
-        };
-
-        forEachDomElement.classList.remove('bg-slate-500');
-        forEachDomElement.classList.add(activeMapColor);
-        runNext(startIndex);
-      });
-    };
-
-    return {
-      name: mapNodeName,
-      family: 'flow-canvas',
-      isContainer: false,
-      category: 'iterators',
-      thumbs,
-      createVisualNode: (
-        canvasApp: CanvasAppInstance<NodeInfo>,
-        x: number,
-        y: number,
-        id?: string,
-        _initalValues?: InitialValues,
-        containerNode?: IRectNodeComponent<NodeInfo>
-      ) => {
-        canvasAppInstance = canvasApp;
-        foreachComponent = createNodeElement(
-          'div',
-          {
-            class: `inner-node bg-slate-500 p-4 rounded flex flex-row items-center justify-center text-center
-            transition-colors duration-200`,
-            style: {
-              'clip-path':
-                'polygon(20% 0%, 100% 0, 100% 100%, 20% 100%, 0% 80%, 0% 20%)',
+              runNext(mapLoop + step);
             },
-          },
-          undefined,
-          'map'
-        ) as unknown as INodeComponent<NodeInfo>;
+            isRange ? mapLoop : values[mapLoop],
+            node,
+            mapLoop,
+            scopeId
+          );
+        } else {
+          forEachDomElement.classList.add('bg-slate-500');
+          forEachDomElement.classList.remove(activeMapColor);
 
-        const rect = canvasApp.createRect(
-          x,
-          y,
-          110,
-          110,
-          undefined,
-          thumbs,
-          foreachComponent,
-          {
-            classNames: `bg-slate-500 p-4 rounded`,
-          },
-          true,
-          undefined,
-          undefined,
-          id,
-          {
-            type: mapNodeName,
-            formValues: {},
-          },
-          containerNode
-        );
-        if (!rect.nodeComponent) {
-          throw new Error('rect.nodeComponent is undefined');
-        }
+          runNodeFromThumb(
+            node.thumbConnectors[0],
+            canvasAppInstance,
+            animatePathFunctions.animatePathFromThumbFunction,
+            (inputFromSecondRun: string | any[]) => {
+              resolve({
+                result: inputFromSecondRun,
+                output: inputFromSecondRun,
+                followPath: undefined,
 
-        node = rect.nodeComponent;
-        if (node.nodeInfo) {
-          node.nodeInfo.formElements = [];
-          node.nodeInfo.computeAsync = computeAsync;
-          node.nodeInfo.initializeCompute = initializeCompute;
+                stop: true,
+                dummyEndpoint: true,
+              });
+            },
+            output,
+            node,
+            loopIndex,
+            scopeId
+          );
         }
-        return node;
-      },
-    };
+      };
+
+      forEachDomElement.classList.remove('bg-slate-500');
+      forEachDomElement.classList.add(activeMapColor);
+      runNext(startIndex);
+    });
   };
+
+  return {
+    name: mapNodeName,
+    family: 'flow-canvas',
+    isContainer: false,
+    category: 'iterators',
+    thumbs,
+    createVisualNode: (
+      canvasApp: CanvasAppInstance<NodeInfo>,
+      x: number,
+      y: number,
+      id?: string,
+      _initalValues?: InitialValues,
+      containerNode?: IRectNodeComponent<NodeInfo>
+    ) => {
+      canvasAppInstance = canvasApp;
+      foreachComponent = createNodeElement(
+        'div',
+        {
+          class: `inner-node bg-slate-500 p-4 rounded flex flex-row items-center justify-center text-center
+            transition-colors duration-200`,
+          style: {
+            'clip-path':
+              'polygon(20% 0%, 100% 0, 100% 100%, 20% 100%, 0% 80%, 0% 20%)',
+          },
+        },
+        undefined,
+        'map'
+      ) as unknown as INodeComponent<NodeInfo>;
+
+      const rect = canvasApp.createRect(
+        x,
+        y,
+        110,
+        110,
+        undefined,
+        thumbs,
+        foreachComponent,
+        {
+          classNames: `bg-slate-500 p-4 rounded`,
+        },
+        true,
+        undefined,
+        undefined,
+        id,
+        {
+          type: mapNodeName,
+          formValues: {},
+        },
+        containerNode
+      );
+      if (!rect.nodeComponent) {
+        throw new Error('rect.nodeComponent is undefined');
+      }
+
+      node = rect.nodeComponent;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = [];
+        node.nodeInfo.computeAsync = computeAsync;
+        node.nodeInfo.initializeCompute = initializeCompute;
+      }
+      return node;
+    },
+  };
+};

@@ -181,7 +181,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('summing-junction', getSummingJunction);
 
   registerNodeFactory('foreach', getForEach(animatePath, animatePathFromThumb));
-  registerNodeFactory(mapNodeName, getMap(animatePath, animatePathFromThumb));
+  registerNodeFactory(mapNodeName, getMap);
   registerNodeFactory(sortNodeName, getSort(animatePath, animatePathFromThumb));
   registerNodeFactory(
     whileNodeName,

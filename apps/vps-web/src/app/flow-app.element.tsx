@@ -236,6 +236,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         runCounter
       );
     };
+    this.canvasApp.setAnimationFunctions({
+      animatePathFunction: animatePath,
+      animatePathFromThumbFunction: animatePathFromThumb,
+    });
+
     const canvasUpdated = (shouldClearExecutionHistory = true) => {
       if (
         this.currentCanvasApp?.isContextOnly ||

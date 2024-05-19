@@ -8,6 +8,11 @@ import {
 import { OnNextNodeFunction } from './next-node-function';
 import { IRunCounter } from './run-counter';
 
+export interface AnimatePathFunctions<T> {
+  animatePathFunction: AnimatePathFunction<T>;
+  animatePathFromThumbFunction: AnimatePathFromThumbFunction<T>;
+}
+
 export type AnimatePathFunction<T> = (
   node: IRectNodeComponent<T>,
   color: string,

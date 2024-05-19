@@ -18,6 +18,7 @@ import {
   createInteractionStateMachine,
 } from '../interaction-state-machine';
 import {
+  AnimatePathFunctions,
   ICommandHandler,
   IConnectionNodeComponent,
   INodeComponent,
@@ -61,6 +62,8 @@ export const createCanvasApp = <T>(
   const rectInstanceList = {} as Record<string, Rect<T>>;
 
   const CanvasClickEvent = new Event('canvas-click');
+
+  let animationFunctions: undefined | AnimatePathFunctions<T> = undefined;
 
   let variables: Record<
     string,
@@ -1768,6 +1771,12 @@ export const createCanvasApp = <T>(
     },
     getMediaLibrary: () => {
       return mediaLibraryInstance;
+    },
+    setAnimationFunctions: (newAnimationFunctions: AnimatePathFunctions<T>) => {
+      animationFunctions = newAnimationFunctions;
+    },
+    getAnimationFunctions: () => {
+      return animationFunctions;
     },
   };
 };
