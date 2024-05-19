@@ -75,67 +75,36 @@ const createNodeFactoryFunction = (
   };
 };
 
+function createOperatorNodeInfo(
+  operator: string,
+  label: string,
+  nodeName: string,
+  fieldName: string
+) {
+  return {
+    nodeFactoryFunction: createNodeFactoryFunction(
+      operator,
+      label,
+      nodeName,
+      fieldName
+    ),
+    label: label,
+    nodeName: nodeName,
+  };
+}
+
 export const getOperatorNodes = () => {
   return [
-    {
-      nodeFactoryFunction: createNodeFactoryFunction(
-        'floor',
-        'Floor',
-        'floor-node',
-        'floor-field'
-      ),
-      label: 'Floor',
-      nodeName: 'floor-node',
-    },
-    {
-      nodeFactoryFunction: createNodeFactoryFunction(
-        'exp',
-        'Exponentiation',
-        'exp-node',
-        'exp-field'
-      ),
-      label: 'Exponentiation',
-      nodeName: 'exp-node',
-    },
-    {
-      nodeFactoryFunction: createNodeFactoryFunction(
-        'log2',
-        'Base 2 of Log',
-        'log2-node',
-        'log2-field'
-      ),
-      label: 'Base 2 of Log',
-      nodeName: 'log2-node',
-    },
-    {
-      nodeFactoryFunction: createNodeFactoryFunction(
-        'asin',
-        'Arcsine',
-        'arcsine-node',
-        'arcsin-field'
-      ),
-      label: 'Arc sine',
-      nodeName: 'arcsine-node',
-    },
-    {
-      nodeFactoryFunction: createNodeFactoryFunction(
-        'sin',
-        'Sine(simple)',
-        'sine-simple-node',
-        'arcsin-field'
-      ),
-      label: 'Sine(simple)',
-      nodeName: 'sine-simple-node',
-    },
-    {
-      nodeFactoryFunction: createNodeFactoryFunction(
-        'acos',
-        'Arccos',
-        'arcos-node',
-        'arccos-field'
-      ),
-      label: 'Arc cos',
-      nodeName: 'arccos-node',
-    },
+    createOperatorNodeInfo('floor', 'Floor', 'floor-node', 'floor-field'),
+    createOperatorNodeInfo('exp', 'Exponentiation', 'exp-node', 'exp-field'),
+    createOperatorNodeInfo('log2', 'Base 2 of Log', 'log2-node', 'log2-field'),
+    createOperatorNodeInfo('asin', 'Arcsine', 'arcsine-node', 'arcsin-field'),
+    createOperatorNodeInfo(
+      'sin',
+      'Sine(simple)',
+      'sine-simple-node',
+      'arcsin-field'
+    ),
+    createOperatorNodeInfo('acos', 'Arccos', 'arcos-node', 'arccos-field'),
   ];
 };
