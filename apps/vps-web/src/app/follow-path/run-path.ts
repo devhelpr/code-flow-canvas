@@ -11,7 +11,6 @@ import {
   getNodeConnectionPairsFromThumb,
 } from './get-node-connection-pairs';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
-import { RunCounter } from './run-counter';
 
 export const runPathForNodeConnectionPairs = <T>(
   canvasApp: CanvasAppInstance<T>,
@@ -31,6 +30,7 @@ export const runPathForNodeConnectionPairs = <T>(
     node1?: IDOMElement;
     node2?: IDOMElement;
     node3?: IDOMElement;
+    cursorOnly?: boolean;
   },
   offsetX?: number,
   offsetY?: number,
@@ -153,6 +153,7 @@ export const runPathFromThumb = <T>(
     node1?: IDOMElement;
     node2?: IDOMElement;
     node3?: IDOMElement;
+    cursorOnly?: boolean;
   },
   offsetX?: number,
   offsetY?: number,
@@ -160,7 +161,7 @@ export const runPathFromThumb = <T>(
   singleStep?: boolean,
 
   scopeId?: string,
-  runCounter?: RunCounter
+  runCounter?: IRunCounter
 ) => {
   const connectionsPairs = getNodeConnectionPairsFromThumb<T>(canvasApp, node);
 
@@ -195,6 +196,7 @@ export const runPath = <T>(
     node1?: IDOMElement;
     node2?: IDOMElement;
     node3?: IDOMElement;
+    cursorOnly?: boolean;
   },
   offsetX?: number,
   offsetY?: number,

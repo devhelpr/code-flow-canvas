@@ -1,11 +1,11 @@
 import {
-  AnimatePathFunctions,
   CanvasAppInstance,
   Composition,
   IDOMElement,
   IRectNodeComponent,
   IRunCounter,
   IThumb,
+  IThumbNodeComponent,
   OnNextNodeFunction,
   createContextInstanceApp,
 } from '@devhelpr/visual-programming-system';
@@ -23,7 +23,7 @@ import { NodeInfo } from '../types/node-info';
 import { importToCanvas } from '../storage/import-to-canvas';
 import { run } from '../simple-flow-engine/simple-flow-engine';
 import { RunCounter } from '../follow-path/run-counter';
-import { runPath } from '../follow-path/run-path';
+import { runPath, runPathFromThumb } from '../follow-path/run-path';
 
 const familyName = 'flow-canvas';
 
@@ -83,6 +83,43 @@ export const getCreateCompositionNode =
         runCounter
       );
     };
+    const runPathFromThumbFlow = (
+      node: IThumbNodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: OnNextNodeFunction<NodeInfo>,
+      onStopped?: (input: string | any[], scopeId?: string) => void,
+      input?: string | any[],
+      followPathByName?: string,
+      animatedNodes?: {
+        node1?: IDOMElement;
+        node2?: IDOMElement;
+        node3?: IDOMElement;
+        cursorOnly?: boolean;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean,
+      scopeId?: string,
+      runCounter?: IRunCounter
+    ) => {
+      return runPathFromThumb(
+        contextCanvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb,
+        singleStep,
+        scopeId,
+        runCounter
+      );
+    };
     const initializeCompute = () => {
       console.log('initializeCompute composition');
       composition = undefined;
@@ -90,10 +127,10 @@ export const getCreateCompositionNode =
       // TODO : properly destroy current contextCanvasApp before creating a new one
       contextCanvasApp = createContextInstanceApp<NodeInfo>();
 
-      // TODO : implement animatePathFromThumbFunction for composition
       contextCanvasApp.setAnimationFunctions({
         animatePathFunction: runFlowPath,
-      } as unknown as AnimatePathFunctions<NodeInfo>);
+        animatePathFromThumbFunction: runPathFromThumbFlow,
+      });
       return;
     };
     const computeAsync = (
