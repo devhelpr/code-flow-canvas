@@ -1,4 +1,6 @@
 import {
+  AnimatePathFromThumbFunction,
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   INodeComponent,
@@ -14,10 +16,6 @@ import {
   createTemplate,
 } from '@devhelpr/dom-components';
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
-import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
-} from '../follow-path/animate-path';
 
 export const getMultiTrigger =
   (

@@ -1,7 +1,3 @@
-import {
-  AnimatePathFunction,
-  AnimatePathFromThumbFunction,
-} from '../follow-path/animate-path';
 import { getStateTransition } from '../nodes/state-transition';
 import { getArray } from '../nodes/array';
 import { getButton } from '../nodes/button';
@@ -136,7 +132,11 @@ import {
   sendNodeToNodeTree,
   sendNodeToNodeTreeNodeName,
 } from '../nodes/send-node-to-node-tree';
-import { Composition } from '@devhelpr/visual-programming-system';
+import {
+  AnimatePathFromThumbFunction,
+  AnimatePathFunction,
+  Composition,
+} from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes/composition';
 import { getThumbInputNode } from '../nodes/thumb-input';
 import { getThumbOutputNode } from '../nodes/thumb-output';

@@ -1,4 +1,6 @@
 import {
+  AnimatePathFromThumbFunction,
+  AnimatePathFunction,
   CanvasAppInstance,
   IRectNodeComponent,
   ThumbConnectionType,
@@ -17,10 +19,6 @@ import {
   createTemplate,
 } from '@devhelpr/dom-components';
 import { navBarButton } from '../consts/classes';
-import {
-  AnimatePathFunction,
-  AnimatePathFromThumbFunction,
-} from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
 const formControlsfieldName = 'formControls';

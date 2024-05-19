@@ -7,11 +7,11 @@ import {
   createCanvasApp,
   IRectNodeComponent,
   ElementNodeMap,
+  AnimatePathFunction,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
 import { InitialValues, NodeTask } from '../node-task-registry';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 import { run } from '../simple-flow-engine/simple-flow-engine';
 
 export interface ComputeResult {

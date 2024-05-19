@@ -1,4 +1,5 @@
 import {
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   INodeComponent,
@@ -12,7 +13,6 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
 import { RunCounter } from '../follow-path/run-counter';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 import { getRunIndex, runNode } from '../simple-flow-engine/simple-flow-engine';
 
 function parseStringToFloat(value: string): number {

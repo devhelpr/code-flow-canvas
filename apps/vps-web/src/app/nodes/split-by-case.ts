@@ -1,4 +1,6 @@
 import {
+  AnimatePathFromThumbFunction,
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   INodeComponent,
@@ -12,10 +14,6 @@ import { NodeInfo } from '../types/node-info';
 
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
-} from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 import { RunCounter } from '../follow-path/run-counter';
 

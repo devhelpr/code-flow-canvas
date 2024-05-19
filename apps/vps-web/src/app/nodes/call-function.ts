@@ -1,4 +1,5 @@
 import {
+  AnimatePathFunction,
   CanvasAppInstance,
   INodeComponent,
   IRectNodeComponent,
@@ -11,7 +12,6 @@ import {
   runExpression,
 } from '@devhelpr/expression-compiler';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import {
   getNodeByVariableName,

@@ -26,6 +26,7 @@ import {
   renderElement,
   createJSXElement,
   CanvasAction,
+  IRunCounter,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -172,7 +173,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       singleStep?: boolean,
       followThumb?: string,
       scopeId?: string,
-      runCounter?: RunCounter
+      runCounter?: IRunCounter
     ) => {
       if (!this.currentCanvasApp) {
         throw new Error('canvasApp not defined');
@@ -213,7 +214,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       followPathToEndThumb?: boolean,
       singleStep?: boolean,
       scopeId?: string,
-      runCounter?: RunCounter
+      runCounter?: IRunCounter
     ) => {
       if (!this.currentCanvasApp) {
         throw new Error('canvasApp not defined');

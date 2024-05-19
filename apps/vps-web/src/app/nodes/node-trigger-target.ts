@@ -1,4 +1,5 @@
 import {
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   createNodeElement,
@@ -10,7 +11,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 
 export const getNodeTriggerTarget =

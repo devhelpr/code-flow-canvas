@@ -1,4 +1,5 @@
 import {
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   createNodeElement,
@@ -11,7 +12,6 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { getRunIndex, runNode } from '../simple-flow-engine/simple-flow-engine';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 import { FormFieldType } from '../components/FormField';
 import { RunCounter } from '../follow-path/run-counter';
 

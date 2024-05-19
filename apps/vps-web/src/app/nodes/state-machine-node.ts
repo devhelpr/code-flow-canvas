@@ -6,6 +6,8 @@ import {
   ThumbType,
   createCanvasApp,
   IRectNodeComponent,
+  AnimatePathFunction,
+  AnimatePathFromThumbFunction,
 } from '@devhelpr/visual-programming-system';
 import { FormFieldType } from '../components/FormField';
 import { NodeInfo } from '../types/node-info';
@@ -21,11 +23,7 @@ import {
   connectionExecuteHistory,
   runNodeFromThumb,
 } from '../simple-flow-engine/simple-flow-engine';
-import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
-  animatePathForNodeConnectionPairs,
-} from '../follow-path/animate-path';
+import { animatePathForNodeConnectionPairs } from '../follow-path/animate-path';
 import { RunCounter } from '../follow-path/run-counter';
 
 // TODO : make example with state-compound and check if correct nodes are updated (classlist)

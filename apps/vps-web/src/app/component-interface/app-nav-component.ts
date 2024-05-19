@@ -4,11 +4,9 @@ import {
   FlowNode,
   IRectNodeComponent,
   Composition,
-} from '@devhelpr/visual-programming-system';
-import {
-  AnimatePathFunction,
   AnimatePathFromThumbFunction,
-} from '../follow-path/animate-path';
+  AnimatePathFunction,
+} from '@devhelpr/visual-programming-system';
 import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
 import { NodeInfo } from '../types/node-info';
 

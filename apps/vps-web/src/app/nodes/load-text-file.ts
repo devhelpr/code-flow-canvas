@@ -1,4 +1,5 @@
 import {
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   INodeComponent,
@@ -9,7 +10,6 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 import { thumbConstraints } from '../node-task-registry/thumbConstraints';
 
 interface FileInfo {

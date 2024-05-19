@@ -1,4 +1,5 @@
 import {
+  AnimatePathFunction,
   CanvasAppInstance,
   createElement,
   createNodeElement,
@@ -10,7 +11,6 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
-import { AnimatePathFunction } from '../follow-path/animate-path';
 
 export const getCheckbox =
   (animatePath: AnimatePathFunction<NodeInfo>) =>

@@ -1,4 +1,6 @@
-export class RunCounter {
+import { IRunCounter } from '@devhelpr/visual-programming-system';
+
+export class RunCounter implements IRunCounter {
   runCounter = 0;
   incrementRunCounter() {
     this.runCounter++;
