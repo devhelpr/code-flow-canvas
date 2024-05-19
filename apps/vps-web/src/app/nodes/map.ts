@@ -1,6 +1,4 @@
 import {
-  AnimatePathFromThumbFunction,
-  AnimatePathFunction,
   CanvasAppInstance,
   createNodeElement,
   INodeComponent,

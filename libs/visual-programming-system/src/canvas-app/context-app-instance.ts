@@ -5,6 +5,7 @@ import { Rect } from '../components/rect';
 import { RectThumb } from '../components/rect-thumb';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
+  AnimatePathFunctions,
   ICommandHandler,
   IConnectionNodeComponent,
   IElementNode,
@@ -509,6 +510,14 @@ export const createContextInstanceApp = <T>(
       //
     },
     getMediaLibrary: () => {
+      return undefined;
+    },
+    setAnimationFunctions: (
+      _newAnimationFunctions: AnimatePathFunctions<T>
+    ) => {
+      //
+    },
+    getAnimationFunctions: () => {
       return undefined;
     },
   };
