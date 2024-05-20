@@ -107,6 +107,7 @@ import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 import { downloadFile } from './utils/create-download-link';
 import { TestComponent } from './components/test-component';
 import { Toolbar } from './components/toolbar';
+import { runPath, runPathFromThumb } from './follow-path/run-path';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -220,6 +221,88 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         throw new Error('canvasApp not defined');
       }
       return _animatePathFromThumb(
+        this.currentCanvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb,
+        singleStep,
+        scopeId,
+        runCounter
+      );
+    };
+
+    const runFlowPath = (
+      node: IRectNodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: OnNextNodeFunction<NodeInfo>,
+      onStopped?: (input: string | any[]) => void,
+      input?: string | any[],
+      followPathByName?: string, // normal, success, failure, "subflow",
+      animatedNodes?: {
+        node1?: IDOMElement;
+        node2?: IDOMElement;
+        node3?: IDOMElement;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean,
+      followThumb?: string,
+      scopeId?: string,
+      runCounter?: IRunCounter
+    ) => {
+      if (!this.currentCanvasApp) {
+        throw new Error('canvasApp not defined');
+      }
+      return runPath(
+        this.currentCanvasApp,
+        node,
+        color,
+        onNextNode,
+        onStopped,
+        input,
+        followPathByName,
+        animatedNodes,
+        offsetX,
+        offsetY,
+        followPathToEndThumb,
+        singleStep,
+        followThumb,
+        scopeId,
+        runCounter
+      );
+    };
+    const runPathFromThumbFlow = (
+      node: IThumbNodeComponent<NodeInfo>,
+      color: string,
+      onNextNode?: OnNextNodeFunction<NodeInfo>,
+      onStopped?: (input: string | any[], scopeId?: string) => void,
+      input?: string | any[],
+      followPathByName?: string,
+      animatedNodes?: {
+        node1?: IDOMElement;
+        node2?: IDOMElement;
+        node3?: IDOMElement;
+        cursorOnly?: boolean;
+      },
+      offsetX?: number,
+      offsetY?: number,
+      followPathToEndThumb?: boolean,
+      singleStep?: boolean,
+      scopeId?: string,
+      runCounter?: IRunCounter
+    ) => {
+      if (!this.currentCanvasApp) {
+        throw new Error('canvasApp not defined');
+      }
+      return runPathFromThumb(
         this.currentCanvasApp,
         node,
         color,
@@ -773,6 +856,20 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           timerList.forEach((timer) => {
             timer[1](); // call timer canceler
           });
+          if (!this.canvasApp) {
+            return;
+          }
+          if (speedMeter === 750) {
+            this.canvasApp.setAnimationFunctions({
+              animatePathFunction: runFlowPath,
+              animatePathFromThumbFunction: runPathFromThumbFlow,
+            });
+          } else {
+            this.canvasApp.setAnimationFunctions({
+              animatePathFunction: animatePath,
+              animatePathFromThumbFunction: animatePathFromThumb,
+            });
+          }
         },
       },
       menubarElement.domElement,
