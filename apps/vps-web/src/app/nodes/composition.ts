@@ -23,7 +23,11 @@ import { NodeInfo } from '../types/node-info';
 import { importToCanvas } from '../storage/import-to-canvas';
 import { run } from '../simple-flow-engine/simple-flow-engine';
 import { RunCounter } from '../follow-path/run-counter';
-import { runPath, runPathFromThumb } from '../follow-path/run-path';
+import {
+  runPath,
+  runPathForNodeConnectionPairs,
+  runPathFromThumb,
+} from '../follow-path/run-path';
 
 const familyName = 'flow-canvas';
 
@@ -130,6 +134,7 @@ export const getCreateCompositionNode =
       contextCanvasApp.setAnimationFunctions({
         animatePathFunction: runFlowPath,
         animatePathFromThumbFunction: runPathFromThumbFlow,
+        animatePathFromConnectionPairFunction: runPathForNodeConnectionPairs,
       });
       return;
     };

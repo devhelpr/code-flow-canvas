@@ -11,7 +11,36 @@ import { IRunCounter } from './run-counter';
 export interface AnimatePathFunctions<T> {
   animatePathFunction: AnimatePathFunction<T>;
   animatePathFromThumbFunction: AnimatePathFromThumbFunction<T>;
+  animatePathFromConnectionPairFunction: AnimatePathFromConnectionPairFunction<T>;
 }
+
+export type AnimatePathFromConnectionPairFunction<T> = (
+  canvasApp: CanvasAppInstance<T>,
+  nodeConnectionPairs:
+    | false
+    | {
+        start: IRectNodeComponent<T>;
+        end: IRectNodeComponent<T>;
+        connection: IConnectionNodeComponent<T>;
+      }[],
+  color: string,
+  onNextNode?: OnNextNodeFunction<T>,
+  onStopped?: (input: string | any[], scopeId?: string) => void,
+  input?: string | any[],
+  _followPathByName?: string,
+  animatedNodes?: {
+    node1?: IDOMElement;
+    node2?: IDOMElement;
+    node3?: IDOMElement;
+    cursorOnly?: boolean;
+  },
+  offsetX?: number,
+  offsetY?: number,
+  _followPathToEndThumb?: boolean,
+  singleStep?: boolean,
+  scopeId?: string,
+  runCounter?: IRunCounter
+) => void;
 
 export type AnimatePathFunction<T> = (
   node: IRectNodeComponent<T>,

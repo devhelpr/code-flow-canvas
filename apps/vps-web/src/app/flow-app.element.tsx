@@ -51,6 +51,7 @@ import {
   setTargetCameraAnimation,
   setPositionTargetCameraAnimation,
   setOnFrame,
+  animatePathForNodeConnectionPairs,
 } from './follow-path/animate-path';
 import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
 import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
@@ -107,7 +108,11 @@ import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 import { downloadFile } from './utils/create-download-link';
 import { TestComponent } from './components/test-component';
 import { Toolbar } from './components/toolbar';
-import { runPath, runPathFromThumb } from './follow-path/run-path';
+import {
+  runPath,
+  runPathForNodeConnectionPairs,
+  runPathFromThumb,
+} from './follow-path/run-path';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -322,6 +327,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.canvasApp.setAnimationFunctions({
       animatePathFunction: animatePath,
       animatePathFromThumbFunction: animatePathFromThumb,
+      animatePathFromConnectionPairFunction: animatePathForNodeConnectionPairs,
     });
 
     const canvasUpdated = (shouldClearExecutionHistory = true) => {
@@ -863,11 +869,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             this.canvasApp.setAnimationFunctions({
               animatePathFunction: runFlowPath,
               animatePathFromThumbFunction: runPathFromThumbFlow,
+              animatePathFromConnectionPairFunction:
+                runPathForNodeConnectionPairs,
             });
           } else {
             this.canvasApp.setAnimationFunctions({
               animatePathFunction: animatePath,
               animatePathFromThumbFunction: animatePathFromThumb,
+              animatePathFromConnectionPairFunction:
+                animatePathForNodeConnectionPairs,
             });
           }
         },

@@ -21,7 +21,6 @@ import {
   connectionExecuteHistory,
   runNodeFromThumb,
 } from '../simple-flow-engine/simple-flow-engine';
-import { animatePathForNodeConnectionPairs } from '../follow-path/animate-path';
 import { RunCounter } from '../follow-path/run-counter';
 
 // TODO : make example with state-compound and check if correct nodes are updated (classlist)
@@ -213,7 +212,7 @@ export const createStateMachineNode = (
       if (!stateMachine && canvasAppInstance) {
         stateMachine = createStateMachine(canvasAppInstance);
       }
-      if (stateMachine) {
+      if (stateMachine && rootCanvasApp) {
         const stateEvent =
           typeof input === 'object' ? (input as any).stateEvent : input;
         const nextStateTransition = transitionToState(stateMachine, stateEvent);
@@ -224,7 +223,10 @@ export const createStateMachineNode = (
           nextStateTransition.transition.connectionIn?.startNode &&
           nextStateTransition.transition.connectionIn?.endNode
         ) {
-          animatePathForNodeConnectionPairs(
+          //rootCanvasApp
+          const animateFunctions = rootCanvasApp.getAnimationFunctions();
+
+          animateFunctions?.animatePathFromConnectionPairFunction(
             canvasAppInstance!,
             [
               {
@@ -240,7 +242,8 @@ export const createStateMachineNode = (
                 nextStateTransition.transition.connectionOut?.startNode &&
                 nextStateTransition.transition.connectionOut?.endNode
               ) {
-                animatePathForNodeConnectionPairs(
+                const animateFunctions = rootCanvasApp!.getAnimationFunctions();
+                animateFunctions?.animatePathFromConnectionPairFunction(
                   canvasAppInstance!,
                   [
                     {
