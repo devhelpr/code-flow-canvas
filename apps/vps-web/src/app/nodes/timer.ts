@@ -18,7 +18,16 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
   let interval: any = undefined;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initialTimer = 1000;
+  let timerIsBusy = false;
   const initializeCompute = () => {
+    if (interval) {
+      clearInterval(interval);
+    }
+    interval = undefined;
+    timerIsBusy = false;
+    (divElement.domElement as HTMLElement).classList.remove('loader');
+    divElement.domElement.textContent =
+      node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
     return;
   };
   const compute = (
@@ -34,14 +43,21 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
       };
     }
     const timer = () => {
-      divElement.domElement.textContent =
-        node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
-      (divElement.domElement as HTMLElement).classList.remove('loader');
+      if (timerIsBusy) {
+        return;
+      }
+      timerIsBusy = true;
+      // divElement.domElement.textContent =
+      //   node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
+      //(divElement.domElement as HTMLElement).classList.remove('loader');
+
       if (canvasAppInstance && node) {
         runNode(
           node,
           canvasAppInstance,
-          undefined,
+          () => {
+            timerIsBusy = false;
+          },
           {
             trigger: 'TIMER',
             input,
@@ -56,12 +72,12 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
     };
 
     if (interval) {
-      clearTimeout(interval);
+      clearInterval(interval);
     }
 
     divElement.domElement.textContent = '';
     (divElement.domElement as HTMLElement).classList.add('loader');
-    interval = setTimeout(
+    interval = setInterval(
       timer,
       parseInt(node?.nodeInfo?.formValues['timer'] || initialTimer.toString())
     );
@@ -186,6 +202,7 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
           }
           interval = undefined;
         };
+        node.nodeInfo.isSettingsPopup = true;
       }
       return node;
     },

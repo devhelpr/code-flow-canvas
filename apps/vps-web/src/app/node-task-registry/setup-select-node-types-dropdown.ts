@@ -49,7 +49,7 @@ export const getTaskList = () => {
       const node = factory(() => {
         // dummy canvasUpdated function
       });
-      if (node.isContained) {
+      if (node.isContained || node.useInCompositionOnly) {
         return;
       }
       thumbs = node.thumbs || [];
