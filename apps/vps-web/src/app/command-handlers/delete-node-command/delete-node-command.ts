@@ -79,6 +79,7 @@ export class DeleteNodeCommand<
       });
       this.canvasUpdated();
       this.getCanvasApp()?.resetNodeSelector();
+      return;
     }
     if (typeof parameter1 !== 'string') {
       return;
