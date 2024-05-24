@@ -75,7 +75,8 @@ export class NavbarComponent extends Component<
           <option value="parallel-merge-flow.json">Parallel and merge</option>
           <option value="fibonacci-flow.json">Fibonacci</option>
           <option value="celsius-fahrenheit-converter.json">Celsius to Fahrenheit converter</option>
-          <option value="quicksort-flow.json">Quicksort</option>    
+          <option value="quicksort-flow.json">Quicksort</option>
+          <option value="pid-controller-flow.json">PID controller</option>
         </select>
         <children></children>
       </div>`

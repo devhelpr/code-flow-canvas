@@ -23,7 +23,7 @@ function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
       const matches = childNode.textContent.match(/{{[\s\S]+?}}/gm);
       if (matches) {
         matches.forEach((match) => {
-          console.log('expression', match.slice(2, -2));
+          //console.log('expression', match.slice(2, -2));
           const info = compileExpressionAsInfo(match.slice(2, -2));
           const expressionFunction = (
             new Function('payload', `${info.script}`) as unknown as (
@@ -31,8 +31,9 @@ function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
             ) => any
           ).bind(info.bindings);
           try {
-            const result = expressionFunction({});
-            console.log('result', result);
+            expressionFunction({});
+            //const result = expressionFunction({});
+            //console.log('result', result);
             //
           } catch (error) {
             console.error('replaceExpressionScript error', error);
@@ -59,7 +60,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     min-w-full min-h-full">Click to edit HTML</div>`;
 
   const setHTML = (value: string) => {
-    console.log('setHTML start', value);
+    //console.log('setHTML start', value);
     try {
       const splitted = (value ?? '').toString().split(':');
       if (splitted.length === 2) {
@@ -77,7 +78,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
 
       if (oldHtml === '' || oldHtml !== htmlString) {
         oldHtml = htmlString;
-        console.log('htmlString', htmlString);
+        //console.log('htmlString', htmlString);
         if (isEmpty || !hasHTMLDoctype) {
           (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
         } else {
@@ -85,17 +86,20 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           createStructuredExpressionsMarkup(htmlString);
           htmlString = `${htmlString}
             <script>
+
               window["input"] = window["input"] || [];
-              window.addEventListener('message', (event) => {                
-                console.log('Received message:', event.data, window.parent["createStructuredExpressionsMarkup"]);
+              window.addEventListener('message', (event) => {  
+                window['createElement'] = window.parent['createElement'];
+
+                //console.log('Received message:', event.data, window.parent["createStructuredExpressionsMarkup"]);
                 const html = document.body.innerHTML;
                 const expressions = window.parent["createStructuredExpressionsMarkup"](html);
-                console.log('expressions', expressions);
-                console.log('html', expressions.markup);
+                //console.log('expressions', expressions);
+                //console.log('html', expressions.markup);
 
                 const traverseDOMTree = window.parent['traverseDOMTree'];
                 const compileExpressionAsInfo = window.parent['compileExpressionAsInfo'];
-                console.log('traverseDOMTree', traverseDOMTree);
+                //console.log('traverseDOMTree', traverseDOMTree);
                 traverseDOMTree(document.body,compileExpressionAsInfo);
 
                 const value = JSON.parse(event.data);
@@ -103,13 +107,13 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
 
 
                 const onExecute = window["onExecute"];
-                console.log('onExecute', onExecute, value, window["input"] );
+                //console.log('onExecute', onExecute, value, window["input"] );
                 if (onExecute) {
                  
-                  console.log('onExecute is defined', event.data);
+                  //console.log('onExecute is defined', event.data);
                   onExecute(value);
                 } else {
-                  console.log('onExecute is undefined');
+                  //console.log('onExecute is undefined');
                 }
               });            
 
@@ -137,18 +141,19 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
 
         (window as any)['traverseDOMTree'] = traverseDOMTree;
         (window as any)['compileExpressionAsInfo'] = compileExpressionAsInfo;
+        (window as any)['createElement'] = createElement;
 
         // can't send structured data which contains code...
         const data = JSON.stringify(value);
-        console.log('setHTML', data);
+        //console.log('setHTML', data);
 
         if (iframeWasCreated) {
           setTimeout(() => {
-            console.log('postMessage', data);
+            //console.log('postMessage', data);
             if (iframe.contentWindow) {
               iframe.contentWindow.postMessage(data);
             }
-          }, 200);
+          }, 10);
         } else {
           iframe.contentWindow.postMessage(data);
         }
@@ -193,7 +198,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     ) => {
       const initialValue = initalValues?.['html'] || defaultHTML;
       let aiPrompt = initalValues?.['aiprompt'] || '';
-      console.log('iframe', width, height);
+      //console.log('iframe', width, height);
       const formElements = [
         {
           fieldType: FormFieldType.TextArea,
@@ -203,12 +208,12 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             if (!node.nodeInfo) {
               return;
             }
-            console.log('html-node onchange', value);
+            //console.log('html-node onchange', value);
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               html: value,
             };
-            console.log('onChange', node.nodeInfo);
+            //console.log('onChange', node.nodeInfo);
             if (updated) {
               setHTML(currentInput);
               updated();
@@ -252,19 +257,19 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
                   message: aiPrompt,
                 }),
               }).then((response) => {
-                console.log('response', response);
+                //console.log('response', response);
                 response.json().then((json) => {
                   if (!node.nodeInfo) {
                     resolve();
                     return;
                   }
-                  console.log('json', json);
+                  //console.log('json', json);
                   const html = json.message;
                   node.nodeInfo.formValues = {
                     ...node.nodeInfo.formValues,
                     html: html,
                   };
-                  console.log('currentinput after prompting', currentInput);
+                  //console.log('currentinput after prompting', currentInput);
 
                   if (updated) {
                     updated();
