@@ -353,6 +353,19 @@ export class AppElement<T> {
           return;
         }
         this.removeFormElement();
+
+        const selectedNodes = this.currentCanvasApp?.getSelectedNodes();
+        if (selectedNodes) {
+          executeCommand(
+            this.commandRegistry,
+            'delete-node',
+            undefined,
+            selectedNodes
+          );
+
+          return;
+        }
+
         const selectedNodeInfo = getSelectedNode();
         if (selectedNodeInfo) {
           executeCommand(

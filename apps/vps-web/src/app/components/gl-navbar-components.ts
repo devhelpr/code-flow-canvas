@@ -1,9 +1,7 @@
 import {
   Flow,
-  IConnectionNodeComponent,
   INodeComponent,
   IRectNodeComponent,
-  NodeType,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
@@ -281,68 +279,77 @@ export class GLNavbarComponent extends Component<
     canvasApp.resetNodeTransform();
     this.lastAddedNode = null;
     const nodeInfo = this.getSelectedNodeInfo();
+    const selectedNodes = this.props?.getCanvasApp()?.getSelectedNodes();
+    if (selectedNodes) {
+      this.props.executeCommand('delete-node', undefined, selectedNodes);
 
+      return;
+    }
+
+    this.props.getCanvasApp()?.resetNodeTransform();
     if (nodeInfo) {
       const node = nodeInfo.node;
-      if (node.nodeType === NodeType.Connection) {
-        // Remove the connection from the start and end nodes
-        const connection = node as IConnectionNodeComponent<GLNodeInfo>;
-        if (connection.startNode) {
-          connection.startNode.connections =
-            connection.startNode?.connections?.filter(
-              (c) => c.id !== connection.id
-            );
-        }
-        if (connection.endNode) {
-          connection.endNode.connections =
-            connection.endNode?.connections?.filter(
-              (c) => c.id !== connection.id
-            );
-        }
-      } else if (node.nodeType === NodeType.Shape) {
-        //does the shape have connections? yes.. remove the link between the connection and the node
-        // OR .. remove the connection as well !?
-        const shapeNode = node as IRectNodeComponent<GLNodeInfo>;
-        if (shapeNode.connections) {
-          shapeNode.connections.forEach((c) => {
-            const connection = canvasApp.elements?.get(
-              c.id
-            ) as IConnectionNodeComponent<GLNodeInfo>;
-            if (connection) {
-              if (connection.startNode?.id === node.id) {
-                connection.startNode = undefined;
-                connection.startNodeThumb = undefined;
-              }
-              if (connection.endNode?.id === node.id) {
-                connection.endNode = undefined;
-                connection.endNodeThumb = undefined;
-              }
-            }
-          });
-        }
-      } else {
-        return;
-      }
+      this.props.executeCommand('delete-node', node.id);
 
-      if (
-        nodeInfo.selectedNodeInfo.containerNode &&
-        nodeInfo.selectedNodeInfo.containerNode.nodeInfo
-      ) {
-        (
-          nodeInfo?.selectedNodeInfo
-            ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
-        )?.nodeInfo?.canvasAppInstance?.resetNodeTransform();
-        (
-          nodeInfo?.selectedNodeInfo
-            ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
-        )?.nodeInfo?.canvasAppInstance?.deleteElement(
-          nodeInfo.selectedNodeInfo.id
-        );
-        this.props.removeElement(node);
-      } else {
-        this.props.removeElement(node);
-        canvasApp.deleteElement(nodeInfo.selectedNodeInfo.id);
-      }
+      // if (node.nodeType === NodeType.Connection) {
+      //   // Remove the connection from the start and end nodes
+      //   const connection = node as IConnectionNodeComponent<GLNodeInfo>;
+      //   if (connection.startNode) {
+      //     connection.startNode.connections =
+      //       connection.startNode?.connections?.filter(
+      //         (c) => c.id !== connection.id
+      //       );
+      //   }
+      //   if (connection.endNode) {
+      //     connection.endNode.connections =
+      //       connection.endNode?.connections?.filter(
+      //         (c) => c.id !== connection.id
+      //       );
+      //   }
+      // } else if (node.nodeType === NodeType.Shape) {
+      //   //does the shape have connections? yes.. remove the link between the connection and the node
+      //   // OR .. remove the connection as well !?
+      //   const shapeNode = node as IRectNodeComponent<GLNodeInfo>;
+      //   if (shapeNode.connections) {
+      //     shapeNode.connections.forEach((c) => {
+      //       const connection = canvasApp.elements?.get(
+      //         c.id
+      //       ) as IConnectionNodeComponent<GLNodeInfo>;
+      //       if (connection) {
+      //         if (connection.startNode?.id === node.id) {
+      //           connection.startNode = undefined;
+      //           connection.startNodeThumb = undefined;
+      //         }
+      //         if (connection.endNode?.id === node.id) {
+      //           connection.endNode = undefined;
+      //           connection.endNodeThumb = undefined;
+      //         }
+      //       }
+      //     });
+      //   }
+      // } else {
+      //   return;
+      // }
+
+      // if (
+      //   nodeInfo.selectedNodeInfo.containerNode &&
+      //   nodeInfo.selectedNodeInfo.containerNode.nodeInfo
+      // ) {
+      //   (
+      //     nodeInfo?.selectedNodeInfo
+      //       ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
+      //   )?.nodeInfo?.canvasAppInstance?.resetNodeTransform();
+      //   (
+      //     nodeInfo?.selectedNodeInfo
+      //       ?.containerNode as unknown as IRectNodeComponent<GLNodeInfo>
+      //   )?.nodeInfo?.canvasAppInstance?.deleteElement(
+      //     nodeInfo.selectedNodeInfo.id
+      //   );
+      //   this.props.removeElement(node);
+      // } else {
+      //   this.props.removeElement(node);
+      //   canvasApp.deleteElement(nodeInfo.selectedNodeInfo.id);
+      // }
       setSelectNode(undefined);
       this.props.canvasUpdated();
     }
@@ -489,5 +496,6 @@ export const GLNavbarMenu = (props: GenericAppNavComponentsProps<any>) => {
     removeElement: props.removeElement,
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,
+    executeCommand: props.executeCommand,
   });
 };

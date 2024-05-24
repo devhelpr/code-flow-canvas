@@ -1778,5 +1778,12 @@ export const createCanvasApp = <T>(
     getAnimationFunctions: () => {
       return animationFunctions;
     },
+    getSelectedNodes: () => {
+      return nodeSelector.getSelectedNodes();
+    },
+    resetNodeSelector: () => {
+      nodeSelector.selectionWasPlacedOrMoved = false;
+      nodeSelector.removeSelector();
+    },
   };
 };

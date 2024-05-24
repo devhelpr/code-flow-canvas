@@ -1,8 +1,6 @@
 import {
-  IConnectionNodeComponent,
   INodeComponent,
   IRectNodeComponent,
-  NodeType,
   getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
@@ -281,71 +279,79 @@ export class NavbarComponent extends Component<
 
   onClickDelete = (event: Event) => {
     event.preventDefault();
+    const selectedNodes = this.props?.getCanvasApp()?.getSelectedNodes();
+    if (selectedNodes) {
+      this.props.executeCommand('delete-node', undefined, selectedNodes);
+
+      return;
+    }
     const nodeInfo = this.getSelectedNodeInfo();
     this.props.getCanvasApp()?.resetNodeTransform();
     if (nodeInfo) {
       const node = nodeInfo.node;
-      if (node.nodeType === NodeType.Connection) {
-        // Remove the connection from the start and end nodes
-        const connection = node as IConnectionNodeComponent<NodeInfo>;
-        if (connection.startNode) {
-          connection.startNode.connections =
-            connection.startNode?.connections?.filter(
-              (c) => c.id !== connection.id
-            );
-        }
-        if (connection.endNode) {
-          connection.endNode.connections =
-            connection.endNode?.connections?.filter(
-              (c) => c.id !== connection.id
-            );
-        }
-      } else if (node.nodeType === NodeType.Shape) {
-        //does the shape have connections? yes.. remove the link between the connection and the node
-        // OR .. remove the connection as well !?
-        const shapeNode = node as IRectNodeComponent<NodeInfo>;
-        if (shapeNode.connections) {
-          shapeNode.connections.forEach((c) => {
-            const connection = this.props
-              .getCanvasApp()
-              ?.elements?.get(c.id) as IConnectionNodeComponent<NodeInfo>;
-            if (connection) {
-              if (connection.startNode?.id === node.id) {
-                connection.startNode = undefined;
-                connection.startNodeThumb = undefined;
-              }
-              if (connection.endNode?.id === node.id) {
-                connection.endNode = undefined;
-                connection.endNodeThumb = undefined;
-              }
-            }
-          });
-        }
-      } else {
-        return;
-      }
+      this.props.executeCommand('delete-node', node.id);
 
-      if (nodeInfo.selectedNodeInfo.containerNode) {
-        (
-          nodeInfo?.selectedNodeInfo
-            ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
-        )?.nodeInfo?.canvasAppInstance?.resetNodeTransform();
-        (
-          nodeInfo?.selectedNodeInfo
-            ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
-        )?.nodeInfo?.canvasAppInstance?.deleteElement(
-          nodeInfo.selectedNodeInfo.id
-        );
-        this.props.removeElement(
-          node
-          // (
-          //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-          // ).nodeInfo.canvasAppInstance
-        );
-      } else {
-        this.props.removeElement(node);
-        this.props.getCanvasApp()?.deleteElement(nodeInfo.selectedNodeInfo.id);
-      }
+      // if (node.nodeType === NodeType.Connection) {
+      //   // Remove the connection from the start and end nodes
+      //   const connection = node as IConnectionNodeComponent<NodeInfo>;
+      //   if (connection.startNode) {
+      //     connection.startNode.connections =
+      //       connection.startNode?.connections?.filter(
+      //         (c) => c.id !== connection.id
+      //       );
+      //   }
+      //   if (connection.endNode) {
+      //     connection.endNode.connections =
+      //       connection.endNode?.connections?.filter(
+      //         (c) => c.id !== connection.id
+      //       );
+      //   }
+      // } else if (node.nodeType === NodeType.Shape) {
+      //   //does the shape have connections? yes.. remove the link between the connection and the node
+      //   // OR .. remove the connection as well !?
+      //   const shapeNode = node as IRectNodeComponent<NodeInfo>;
+      //   if (shapeNode.connections) {
+      //     shapeNode.connections.forEach((c) => {
+      //       const connection = this.props
+      //         .getCanvasApp()
+      //         ?.elements?.get(c.id) as IConnectionNodeComponent<NodeInfo>;
+      //       if (connection) {
+      //         if (connection.startNode?.id === node.id) {
+      //           connection.startNode = undefined;
+      //           connection.startNodeThumb = undefined;
+      //         }
+      //         if (connection.endNode?.id === node.id) {
+      //           connection.endNode = undefined;
+      //           connection.endNodeThumb = undefined;
+      //         }
+      //       }
+      //     });
+      //   }
+      // } else {
+      //   return;
+      // }
+
+      // if (nodeInfo.selectedNodeInfo.containerNode) {
+      //   (
+      //     nodeInfo?.selectedNodeInfo
+      //       ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+      //   )?.nodeInfo?.canvasAppInstance?.resetNodeTransform();
+      //   (
+      //     nodeInfo?.selectedNodeInfo
+      //       ?.containerNode as unknown as IRectNodeComponent<NodeInfo>
+      //   )?.nodeInfo?.canvasAppInstance?.deleteElement(
+      //     nodeInfo.selectedNodeInfo.id
+      //   );
+      //   this.props.removeElement(
+      //     node
+      //     // (
+      //     //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+      //     // ).nodeInfo.canvasAppInstance
+      //   );
+      // } else {
+      //   this.props.removeElement(node);
+      //   this.props.getCanvasApp()?.deleteElement(nodeInfo.selectedNodeInfo.id);
+      // }
       setSelectNode(undefined);
       this.props.canvasUpdated();
     }
@@ -550,5 +556,6 @@ export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,
     showPopup: props.showPopup,
+    executeCommand: props.executeCommand,
   });
 };

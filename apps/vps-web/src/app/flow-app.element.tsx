@@ -379,6 +379,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             showPopup: this.positionPopup,
+            executeCommand: (
+              command: string,
+              parameter1: any,
+              parameter2: any
+            ) =>
+              executeCommand(
+                this.commandRegistry,
+                command,
+                parameter1,
+                parameter2
+              ),
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
               canvasApp: CanvasAppInstance<NodeInfo>,
@@ -540,6 +551,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             rootElement: this.rootElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
+            executeCommand: (
+              command: string,
+              parameter1: any,
+              parameter2: any
+            ) =>
+              executeCommand(
+                this.commandRegistry,
+                command,
+                parameter1,
+                parameter2
+              ),
             showPopup: (node: IRectNodeComponent<NodeInfo>) => {
               if (node.nodeInfo?.isSettingsPopup) {
                 const selectedNodeInfo = getSelectedNode();

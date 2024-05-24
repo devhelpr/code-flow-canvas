@@ -33,6 +33,11 @@ export interface AppNavComponentsProps<T> {
     compositions?: Record<string, Composition<T>>
   ) => void;
   showPopup: (node: IRectNodeComponent<NodeInfo>) => void;
+  executeCommand: (
+    commandName: string,
+    parameter1?: any,
+    parameter2?: any
+  ) => void;
 }
 
 export interface GenericAppNavComponentsProps<T> {
@@ -54,5 +59,10 @@ export interface GenericAppNavComponentsProps<T> {
     nestedLevel?: number,
     getNodeTaskFactory?: (name: string) => any,
     compositions?: Record<string, Composition<T>>
+  ) => void;
+  executeCommand: (
+    commandName: string,
+    parameter1?: any,
+    parameter2?: any
   ) => void;
 }

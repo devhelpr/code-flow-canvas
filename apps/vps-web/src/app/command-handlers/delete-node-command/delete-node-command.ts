@@ -2,6 +2,7 @@ import {
   CanvasAppInstance,
   IConnectionNodeComponent,
   IElementNode,
+  INodeComponent,
   IRectNodeComponent,
   NodeType,
   setSelectNode,
@@ -25,12 +26,60 @@ export class DeleteNodeCommand<
   canvasUpdated: () => void;
   removeElement: (element: IElementNode<T>) => void;
   // parameter1 is the id of a selected node
-  execute(parameter1?: any, _parameter2?: any): void {
+  execute(parameter1?: any, parameter2?: any): void {
     const canvasApp = this.getCanvasApp();
     if (!canvasApp) {
       return;
     }
-    console.log('AddNode flow-app');
+    console.log('DeleteNode flow-app');
+    if (parameter1 === undefined && Array.isArray(parameter2)) {
+      const selectedNodes = parameter2 as INodeComponent<T>[];
+      selectedNodes.forEach((node) => {
+        if (node.nodeType === NodeType.Connection) {
+          // Remove the connection from the start and end nodes
+          const connection = node as IConnectionNodeComponent<T>;
+          if (connection.startNode) {
+            connection.startNode.connections =
+              connection.startNode?.connections?.filter(
+                (c) => c.id !== connection.id
+              );
+          }
+          if (connection.endNode) {
+            connection.endNode.connections =
+              connection.endNode?.connections?.filter(
+                (c) => c.id !== connection.id
+              );
+          }
+        } else if (node.nodeType === NodeType.Shape) {
+          //does the shape have connections? yes.. remove the link between the connection and the node
+          // AND .. remove the connection as well !?
+          const shapeNode = node as IRectNodeComponent<T>;
+          if (shapeNode.connections) {
+            shapeNode.connections.forEach((c) => {
+              const connection = this.getCanvasApp()?.elements?.get(
+                c.id
+              ) as IConnectionNodeComponent<T>;
+              if (connection) {
+                if (connection.startNode?.id === node.id) {
+                  connection.startNode = undefined;
+                  connection.startNodeThumb = undefined;
+                }
+                if (connection.endNode?.id === node.id) {
+                  connection.endNode = undefined;
+                  connection.endNodeThumb = undefined;
+                }
+                this.removeElement(connection);
+                this.getCanvasApp()?.deleteElement(connection.id);
+              }
+            });
+          }
+        }
+        this.removeElement(node);
+        this.getCanvasApp()?.deleteElement(node.id);
+      });
+      this.canvasUpdated();
+      this.getCanvasApp()?.resetNodeSelector();
+    }
     if (typeof parameter1 !== 'string') {
       return;
     }

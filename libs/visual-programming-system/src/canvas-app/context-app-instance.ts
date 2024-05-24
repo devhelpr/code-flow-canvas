@@ -520,5 +520,11 @@ export const createContextInstanceApp = <T>(
     getAnimationFunctions: () => {
       return animationFunctions;
     },
+    getSelectedNodes: (): false | INodeComponent<T>[] => {
+      return false;
+    },
+    resetNodeSelector: () => {
+      //
+    },
   };
 };

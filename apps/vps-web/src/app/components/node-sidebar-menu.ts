@@ -388,5 +388,6 @@ export const NodeSidebarMenuComponents = (
     importToCanvas: props.importToCanvas,
     setIsStoring: props.setIsStoring,
     showPopup: props.showPopup,
+    executeCommand: props.executeCommand,
   });
 };

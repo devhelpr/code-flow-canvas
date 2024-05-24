@@ -454,6 +454,17 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             rootElement: this.menubarElement.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
+            executeCommand: (
+              command: string,
+              parameter1: any,
+              parameter2: any
+            ) =>
+              executeCommand(
+                this.commandRegistry,
+                command,
+                parameter1,
+                parameter2
+              ),
             importToCanvas: (
               nodesList: FlowNode<GLNodeInfo>[],
               canvasApp: CanvasAppInstance<GLNodeInfo>,

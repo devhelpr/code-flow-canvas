@@ -48,6 +48,7 @@ export class NodeSelector<T> {
   canCreateComposition = false;
   isInContainer = false;
   selectedNodes: INodeComponent<T>[] = [];
+  selectedConnections: IConnectionNodeComponent<T>[] = [];
   elements: ElementNodeMap<T> = new Map();
   orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
   compositions: Compositions<T>;
@@ -199,6 +200,7 @@ export class NodeSelector<T> {
         event.clientY
       );
       this.selectedNodes = [];
+      this.selectedConnections = [];
 
       this.resizeMode = 'right-bottom';
       this.orgX = x;
@@ -368,6 +370,17 @@ export class NodeSelector<T> {
           ) {
             this.selectedNodes.push(nodeComponent);
           }
+        } else if (nodeComponent.nodeType === NodeType.Connection) {
+          const connection =
+            nodeComponent as unknown as IConnectionNodeComponent<T>;
+          if (
+            connection.x > this.orgX &&
+            connection.endX < this.orgX + this.orgWidth &&
+            connection.y > this.orgY &&
+            connection.endY < this.orgY + this.orgHeight
+          ) {
+            this.selectedConnections.push(connection);
+          }
         }
       });
     }
@@ -452,6 +465,7 @@ export class NodeSelector<T> {
     if (!this.selectionWasPlacedOrMoved) {
       this.visibilityResizeControls(false);
       this.selectedNodes = [];
+      this.selectedConnections = [];
     }
     this.selectionWasPlacedOrMoved = false;
   };
@@ -645,5 +659,16 @@ export class NodeSelector<T> {
       this.selectionWasPlacedOrMoved = false;
       this.removeSelector();
     });
+  };
+
+  getSelectedNodes = () => {
+    if (
+      (this.nodeSelectorElement?.domElement as HTMLElement).classList.contains(
+        'hidden'
+      )
+    ) {
+      return false;
+    }
+    return [...this.selectedNodes, ...this.selectedConnections];
   };
 }
