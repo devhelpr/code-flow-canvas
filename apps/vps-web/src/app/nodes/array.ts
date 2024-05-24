@@ -515,6 +515,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.setValue = setValue;
+        node.nodeInfo.showFormOnlyInPopup = true;
 
         node.nodeInfo.updateVisual = updateVisual;
 

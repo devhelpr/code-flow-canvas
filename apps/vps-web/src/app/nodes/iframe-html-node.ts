@@ -86,7 +86,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           createStructuredExpressionsMarkup(htmlString);
           htmlString = `${htmlString}
             <script>
-
+              window['createElement'] = window.parent['createElement'];
               window["input"] = window["input"] || [];
               window.addEventListener('message', (event) => {  
                 window['createElement'] = window.parent['createElement'];
