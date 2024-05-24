@@ -11,7 +11,7 @@
           "x": 291.19234420117937,
           "y": -165.795597268076,
           "width": 119.99991139806126,
-          "height": 112.00007497926674,
+          "height": 112.00001866697761,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -30,7 +30,7 @@
           "x": 117.90397278164556,
           "y": -164.97994896373183,
           "width": 120.00002402263952,
-          "height": 111.99996235468848,
+          "height": 112.00001866697761,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -46,10 +46,10 @@
         },
         {
           "id": "2c6435b0-977f-4206-b9bf-9addb1d700aa",
-          "x": -71.24471502057321,
-          "y": -175.36931726569108,
+          "x": -71.24473698513326,
+          "y": -175.369251619276,
           "width": 120.00002402263952,
-          "height": 111.99996235468848,
+          "height": 112.00001866697761,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -67,8 +67,8 @@
           "id": "859cd4d5-ec1d-4db9-8c63-2d4ba0fe925a",
           "x": 315.49675898331355,
           "y": 8.996732733560528,
-          "width": 119.99999001333066,
-          "height": 112.00002946836335,
+          "width": 119.9999942311704,
+          "height": 111.99997098969,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -86,8 +86,8 @@
           "id": "c45edd31-da61-4c6b-bd3f-6afacebb310b",
           "x": 123.13543234287549,
           "y": 7.841571991042244,
-          "width": 119.99999001333066,
-          "height": 112.00002946836335,
+          "width": 120.00005329634304,
+          "height": 112.00003005486262,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -106,7 +106,7 @@
           "x": -58.75004580265895,
           "y": 18.02682954497677,
           "width": 120.00002402263952,
-          "height": 111.99996235468848,
+          "height": 112.00001866697761,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -122,15 +122,15 @@
         },
         {
           "id": "2cec11c4-67cc-4003-ac73-ad40b3cde53b",
-          "x": 3889.90100344138,
-          "y": 576.8153277697481,
+          "x": 3875.278245263779,
+          "y": 583.2877314555687,
           "width": 200,
           "height": 162,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
             "formValues": {
-              "value": "416",
+              "value": "407",
               "valueSliderSettings": "{\"min\":0,\"max\":500,\"step\":1}",
               "label": "input"
             },
@@ -282,8 +282,8 @@
           "id": "14a68397-09be-4f5b-a7e5-35e784797207",
           "x": 2831.0710641315427,
           "y": 251.6582059598434,
-          "width": 119.99999001333066,
-          "height": 56.000047058560625,
+          "width": 119.99987610082515,
+          "height": 56.00004456001763,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -298,8 +298,8 @@
           "id": "f147b482-094e-4726-ab76-054fbe85c921",
           "x": 573.241431064874,
           "y": 10.730366650640303,
-          "width": 119.99999001333066,
-          "height": 112.00002946836335,
+          "width": 119.9999942311704,
+          "height": 111.99997098969,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -379,8 +379,8 @@
           "id": "2f5df833-7491-45a6-898c-d2cd32188811",
           "x": 3714.774193636923,
           "y": 263.5554261669481,
-          "width": 119.99999001333066,
-          "height": 56.000047058560625,
+          "width": 119.99963984013463,
+          "height": 56.00004456001763,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -393,23 +393,23 @@
         },
         {
           "id": "575e355e-e7d0-45e9-8298-929f742528f6",
-          "x": 3979.882576411788,
-          "y": 97.00652067708984,
+          "x": 3978.9256582376747,
+          "y": 99.28422722677387,
           "width": 490.9681896605357,
           "height": 397.757826311184,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n<style>\n.wrapper {\n  display:flex;\n  flex-direction:row;\n  gap: 4px;\n  height: 100vh;\n  align-items: flex-end;\n  justify-content:center;\n  padding: 4px;\n}\n.bar {\n  transition: height 50ms;\n  height: 0%;\n  width:5%;\n  border-top-left-radius: 2px;\n  border-top-right-radius: 2px;\n  background: rgb(180,58,95);\n  background: linear-gradient(180deg, \n    rgba(180,58,95,1) 0%, rgba(253,29,29,1) 50%, \n    rgba(252,176,69,1) 100%);\n}\n</style>\n</head>\n<body class=\"bg-white\">\n\n<div class=\"min-h-screen flex wrapper\" id=\"inner\">\n    \n</div>\n\n<script>\n    // Initialize the global variable \"input\"\n    window.input = window.input ;\n    let inputstream = [];\n    let initialized = false;\n    // Function to rerender the UI\n    function rerenderUI() {\n       if (!initialized && window[\"createElement\"]) {\n          initialized = true;\n         let loop = 0;\n         while (loop < 30) {\n           createElement?.(\"div\",{\n                        class: \"bar\",\n                         id: `bar-${loop}`,\n                         style: `--bar-height:${0}%;`\n                      },\n                      document.getElementById(\"inner\"),\n                      )\n              loop++;\n          }\n        }\n        if (window.input !== undefined) {\n            inputstream.push(window.input);\n            inputstream = inputstream.slice(-30);\n             inputstream.forEach((item,index) => {\n                    const percentage = 100 *(Math.min(200,parseFloat(item))/200);\n\n            const element = document.getElementById(`bar-${index}`);\n               element?.style.setProperty('height', `${percentage}%`);\n                 })\n            }\n    }\n\n    // Attach the rerenderUI function to the global onExecute method\n    window.onExecute = rerenderUI;\n\n    \n    rerenderUI();\n</script>\n\n</body>\n</html>",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n<style>\n.wrapper {\n  display:flex;\n  flex-direction:row;\n  gap: 4px;\n  height: 100vh;\n  align-items: flex-end;\n  justify-content:center;\n  padding: 4px;\n\n  transform: translate3d(0, 0, 0); \n}\n.bar {\n  transform-origin: bottom;\n  transform: translate3d(0, 0, 0) scale(1 , var(--bar-y));  \n  transition: transform 450ms ease-out;\n  height: 100%;\n  width:5%;\n  border-top-left-radius: 2px;\n  border-top-right-radius: 2px;\n  background: rgb(180,58,95);\n  background: linear-gradient(180deg, \n    rgba(180,58,95,1) 0%, rgba(253,29,29,1) 50%, \n    rgba(252,176,69,1) 100%);\n}\n</style>\n</head>\n<body class=\"bg-white\">\n\n<div class=\"min-h-screen flex wrapper\" id=\"inner\">\n    \n</div>\n\n<script>\n    // Initialize the global variable \"input\"\n    window.input = window.input ;\n    let inputstream = [];\n    let initialized = false;\n    // Function to rerender the UI\n    function rerenderUI() {\n       if (!initialized && window[\"createElement\"]) {\n          initialized = true;\n         let loop = 0;\n         while (loop < 30) {\n           createElement?.(\"div\",{\n                        class: \"bar\",\n                         id: `bar-${loop}`,\n                         style: `--bar-height:${0}%;--bar-y:0;`\n                      },\n                      document.getElementById(\"inner\"),\n                      )\n              loop++;\n          }\n        }\n        if (window.input !== undefined) {\n            inputstream.push(window.input);\n            inputstream = inputstream.slice(-30);\n             inputstream.forEach((item,index) => {\n                    const percentage = (Math.min(200,parseFloat(item))/200);\n\n            const element = document.getElementById(`bar-${index}`);\n               element?.style.setProperty('--bar-y', `${percentage.toFixed(2)}`);\n                 })\n            }\n    }\n\n    // Attach the rerenderUI function to the global onExecute method\n    window.onExecute = rerenderUI;\n\n    \n    rerenderUI();\n</script>\n\n</body>\n</html>",
               "aiprompt": ""
             }
           }
         },
         {
           "id": "9cc44420-7c00-4b84-8d36-f430425cb75b",
-          "x": 4089.90100344138,
-          "y": 657.8153277697481,
+          "x": 4075.278245263779,
+          "y": 664.2877314555687,
           "endX": 4273.959526405653,
           "endY": 672.1786377997438,
           "startNodeId": "2cec11c4-67cc-4003-ac73-ad40b3cde53b",
@@ -588,7 +588,7 @@
         },
         {
           "id": "bcc5b3c7-06ea-4feb-9f8b-ba9cc82896aa",
-          "x": 2951.0710541448734,
+          "x": 2951.070940232368,
           "y": 281.6582059598434,
           "endX": 3071.749778276313,
           "endY": 279.3641101658958,
@@ -618,10 +618,10 @@
         },
         {
           "id": "ad18c35b-e1cd-4e33-b27f-1aed8b2ff231",
-          "x": 3834.7741836502537,
+          "x": 3834.7738334770575,
           "y": 293.5554261669481,
-          "endX": 3979.882576411788,
-          "endY": 295.8854338326818,
+          "endX": 3978.9256582376747,
+          "endY": 298.16314038236584,
           "startNodeId": "2f5df833-7491-45a6-898c-d2cd32188811",
           "endNodeId": "575e355e-e7d0-45e9-8298-929f742528f6",
           "startThumbName": "output",
