@@ -5,6 +5,7 @@ import {
   INodeComponent,
   IRectNodeComponent,
   NodeType,
+  getSelectedNode,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
@@ -84,7 +85,12 @@ export class DeleteNodeCommand<
     if (typeof parameter1 !== 'string') {
       return;
     }
-    const node = canvasApp.elements.get(parameter1) as IRectNodeComponent<T>;
+    const nodeInfo = this.getSelectedNodeInfo();
+    if (!nodeInfo) {
+      return;
+    }
+    //const node = canvasApp.elements.get(parameter1) as IRectNodeComponent<T>;
+    const node = nodeInfo?.node;
     if (!node) {
       console.log('node not found in canvas');
       return;
@@ -127,14 +133,55 @@ export class DeleteNodeCommand<
           }
         });
       }
-    } else {
-      return;
     }
+    // } else {
+    //   return;
+    // }
 
-    this.removeElement(node);
-    canvasApp.deleteElement(node.id);
+    if (node.containerNode) {
+      (
+        (node.containerNode as unknown as IRectNodeComponent<T>)
+          ?.nodeInfo as any
+      )?.canvasAppInstance?.resetNodeTransform();
+      (
+        (node?.containerNode as unknown as IRectNodeComponent<T>)
+          ?.nodeInfo as any
+      )?.canvasAppInstance?.deleteElement(node.id);
+      this.removeElement(
+        node
+        // (
+        //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
+        // ).nodeInfo.canvasAppInstance
+      );
+    } else {
+      this.removeElement(node);
+      this.getCanvasApp()?.deleteElement(node.id);
+    }
+    // this.removeElement(node);
+    // canvasApp.deleteElement(node.id);
 
     setSelectNode(undefined);
     this.canvasUpdated();
   }
+
+  getSelectedNodeInfo = () => {
+    const nodeElementId = getSelectedNode();
+    if (nodeElementId) {
+      const node = nodeElementId.containerNode
+        ? ((
+            (nodeElementId?.containerNode as unknown as IRectNodeComponent<T>)
+              ?.nodeInfo as any
+          )?.canvasAppInstance?.elements?.get(
+            nodeElementId.id
+          ) as INodeComponent<T>)
+        : (this.getCanvasApp()?.elements?.get(
+            nodeElementId.id
+          ) as INodeComponent<T>);
+
+      if (node) {
+        return { selectedNodeInfo: nodeElementId, node };
+      }
+    }
+    return false;
+  };
 }
