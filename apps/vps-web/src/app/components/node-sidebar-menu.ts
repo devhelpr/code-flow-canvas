@@ -48,12 +48,12 @@ export class NodeSidebarMenuComponent extends Component<
     super(parent, props);
     this.template = createTemplate(
       `<div class="z-20 flex flex-col absolute right-0 top-1/2 bg-slate-700 -translate-y-1/2 p-[4px] rounded-l-lg">
-      <button class="${navBarButtonNomargin} flex  w-[32px] h-[32px] mb-1"><span class="icon icon-tune text-[16px]"></span></button>
-      <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L1</button>
-      <button class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L2</button>
-      <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-layers text-[22px]"></span></button>
-      <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-arrow_forward text-[22px]"></span></button>
-      <button class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px]">F</button>
+      <button title="Node properties" class="${navBarButtonNomargin} flex  w-[32px] h-[32px] mb-1"><span class="icon icon-tune text-[16px]"></span></button>
+      <button title="Assign node to layer1" class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L1</button>
+      <button title="Assign node to layer2" class="${navBarButtonNomargin} flex items-center w-[32px] h-[32px] mb-1">L2</button>
+      <button title="Toggle between layer 1 and 2" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-layers text-[22px]"></span></button>
+      <button title="Show node dependencies" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-arrow_forward text-[22px]"></span></button>
+      <button title="Follow node execution" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] hidden">F</button>
 
 		  <children></children>
 		</div>`

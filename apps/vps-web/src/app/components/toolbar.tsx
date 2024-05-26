@@ -100,22 +100,28 @@ export function Toolbar<T>(props: {
         setActionNode(undefined);
         return;
       }
-
-      fillTaskList(
-        getTasksWhichAreInterchangeableWithSelectedNode(),
-        info.node?.nodeType === NodeType.Shape
-          ? 'Replace node with:'
-          : (info?.node as IConnectionNodeComponent<T>)?.endNode
-          ? 'Insert node in connection:'
-          : 'Create node'
-      );
-      if (actionSelectedNodeInfo) {
-        console.log(
-          'skipHide : actionSelectedNodeInfo',
-          actionSelectedNodeInfo
+      const taskList = getTasksWhichAreInterchangeableWithSelectedNode();
+      if (taskList.length > 1) {
+        fillTaskList(
+          taskList,
+          info.node?.nodeType === NodeType.Shape
+            ? 'Replace node with:'
+            : (info?.node as IConnectionNodeComponent<T>)?.endNode
+            ? 'Insert node in connection:'
+            : 'Create node'
         );
-        skipHide = true;
-        setActionNode(undefined);
+
+        if (actionSelectedNodeInfo) {
+          console.log(
+            'skipHide : actionSelectedNodeInfo',
+            actionSelectedNodeInfo
+          );
+          skipHide = true;
+          setActionNode(undefined);
+        }
+      } else {
+        popupTriggeredFromEffect = false;
+        hideUL();
       }
     } else {
       console.log('hide toolbar', skipHide);
@@ -335,14 +341,14 @@ export function Toolbar<T>(props: {
   );
   const ToolbarComponent = () => (
     <div
-      class="absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm"
+      class="absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm max-w-full w-max"
       getElement={(element: HTMLElement) => {
         wrapper = element as HTMLDivElement;
       }}
     >
       <input
         type="text"
-        class="p-2 m-2 relative max-w-[220px] mr-0"
+        class="p-2 m-2 relative max-w-[220px] mr-0 w-[calc(100%-50px)]"
         name="search-node-types"
         autocomplete="off"
         keyup={(event: KeyboardEvent) => {
