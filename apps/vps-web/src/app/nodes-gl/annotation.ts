@@ -5,38 +5,38 @@ import {
   INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
 } from '../node-task-registry';
 import { FormFieldType } from '../components/FormField';
+import { GLNodeInfo } from '../types/gl-node-info';
 
-export const getAnnotation: NodeTaskFactory<NodeInfo> = (
+export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
   updated: () => void
-): NodeTask<NodeInfo> => {
-  let node: IRectNodeComponent<NodeInfo>;
+): NodeTask<GLNodeInfo> => {
+  let node: IRectNodeComponent<GLNodeInfo>;
   const initializeCompute = () => {
     return;
   };
-  const compute = () => {
-    return {
-      result: true,
-    };
-  };
+  // const compute = () => {
+  //   return {
+  //     result: true,
+  //   };
+  // };
 
   return {
     name: 'annotation',
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: CanvasAppInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<GLNodeInfo>
     ) => {
       const formElements = [
         {
@@ -93,7 +93,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
           class: `relative`,
         },
         undefined
-      ) as unknown as INodeComponent<NodeInfo>;
+      ) as unknown as INodeComponent<GLNodeInfo>;
 
       const textArea = createElement(
         'div',
@@ -145,7 +145,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
       node = rect.nodeComponent;
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;
-        node.nodeInfo.compute = compute;
+        //node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.nodeCannotBeReplaced = true;
