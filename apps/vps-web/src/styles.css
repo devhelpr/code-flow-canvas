@@ -473,6 +473,10 @@ position: relative;
 	@apply bg-slate-300;
 }
 
+#textAreaContainer form input,
+#textAreaContainer form textarea,
+#textAreaContainer form select,
+.inner-node form select, 
 .inner-node form input {
 	@apply text-black;
 }

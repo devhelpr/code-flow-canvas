@@ -142,6 +142,7 @@ import { RunCounter } from '../follow-path/run-counter';
 import { getCreateEventStateValueNode } from '../nodes/create-state-value';
 import { getUserInput } from '../nodes/user-input';
 import { setFlowVariable } from '../nodes/set-flow-variable';
+import { getAnnotation } from '../nodes/annotation';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -223,7 +224,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory('styled-node', getStyledNode);
   registerNodeFactory('html-node', getHtmlNode);
   registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
-  //registerNodeFactory('annotation', getAnnotation(animatePath));
+  registerNodeFactory('annotation', getAnnotation);
 
   registerNodeFactory('node-trigger', getNodeTrigger);
   registerNodeFactory('node-trigger-target', getNodeTriggerTarget);

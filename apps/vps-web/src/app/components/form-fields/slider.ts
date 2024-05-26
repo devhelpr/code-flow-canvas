@@ -106,7 +106,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         props.fieldName
       }_max" class="absolute right-0 text-xs w-[40px] appearance-none hidden"></input>
           </div>
-          <div class="flex w-full justify-center relative">
+          <div class="flex w-full justify-center relative h-[18px]">
             <label class="absolute left-0 text-xs" for=${props.formId}_${
         props.fieldName
       }_min">min</label>
