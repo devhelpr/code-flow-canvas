@@ -10,8 +10,8 @@
           "id": "e25f2b6a-fc6e-4539-b1fb-55ffaf65a50a",
           "x": 291.19234420117937,
           "y": -165.795597268076,
-          "width": 120.00005236717674,
-          "height": 112.00006257335428,
+          "width": 120.00008079682522,
+          "height": 111.99997607491912,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -29,8 +29,8 @@
           "id": "1ba28fb2-463c-4bcf-ae6a-29c25ae9d2b3",
           "x": 117.90397278164556,
           "y": -164.97994896373183,
-          "width": 120.00005236717674,
-          "height": 111.99995984343424,
+          "width": 119.99995662751137,
+          "height": 111.99997607491912,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -48,8 +48,8 @@
           "id": "2c6435b0-977f-4206-b9bf-9addb1d700aa",
           "x": -71.24471502057321,
           "y": -175.36931726569108,
-          "width": 119.99984690733663,
-          "height": 111.99995984343424,
+          "width": 119.99995662751137,
+          "height": 111.99997607491912,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -67,8 +67,8 @@
           "id": "859cd4d5-ec1d-4db9-8c63-2d4ba0fe925a",
           "x": 315.4967111910729,
           "y": 8.996742837984918,
-          "width": 119.99998418711607,
-          "height": 111.99997608143072,
+          "width": 119.99999922894675,
+          "height": 111.99999928035031,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -86,8 +86,8 @@
           "id": "c45edd31-da61-4c6b-bd3f-6afacebb310b",
           "x": 125.88525047391889,
           "y": 10.591357461889842,
-          "width": 119.99998418711607,
-          "height": 111.99997608143072,
+          "width": 119.99999922894675,
+          "height": 111.99999928035031,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -105,8 +105,8 @@
           "id": "af326c3a-b2d5-41e9-89fe-add571886aa0",
           "x": -58.75004580265895,
           "y": 18.02682954497677,
-          "width": 120.00005236717674,
-          "height": 112.00006257335428,
+          "width": 120.00000967524632,
+          "height": 111.99999661873834,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -130,7 +130,7 @@
           "nodeInfo": {
             "type": "slider",
             "formValues": {
-              "value": "153",
+              "value": "155",
               "valueSliderSettings": "{\"min\":0,\"max\":500,\"step\":1}",
               "label": "input"
             },
@@ -158,7 +158,7 @@
           "id": "402c9b64-0b07-4ca7-b343-20e9e2e88859",
           "x": 374.9378371053225,
           "y": 242.69128709521752,
-          "width": 200,
+          "width": 200.00003051757812,
           "height": 112,
           "nodeType": "Shape",
           "nodeInfo": {
@@ -282,8 +282,8 @@
           "id": "14a68397-09be-4f5b-a7e5-35e784797207",
           "x": 2831.0712036727155,
           "y": 251.65813376731924,
-          "width": 119.99998418711607,
-          "height": 55.9999193416333,
+          "width": 119.99999922894675,
+          "height": 55.999999640175155,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -298,8 +298,8 @@
           "id": "f147b482-094e-4726-ab76-054fbe85c921",
           "x": 577.0429643486272,
           "y": 14.531887727851128,
-          "width": 120.00012158528018,
-          "height": 111.99997608143072,
+          "width": 119.99999922894675,
+          "height": 111.99999928035031,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -379,8 +379,8 @@
           "id": "2f5df833-7491-45a6-898c-d2cd32188811",
           "x": 3714.774193636923,
           "y": 263.5554261669481,
-          "width": 120.0002589834443,
-          "height": 56.000056739797415,
+          "width": 120.00018962806969,
+          "height": 55.999999640175155,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -393,23 +393,23 @@
         },
         {
           "id": "575e355e-e7d0-45e9-8298-929f742528f6",
-          "x": 3979.882507492857,
-          "y": 97.00647941011576,
+          "x": 3979.8819876992234,
+          "y": 97.00649544838178,
           "width": 490.9681896605357,
           "height": 397.757826311184,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n<style>\n.wrapper {\n  display:flex;\n  flex-direction:row;\n  gap: 4px;\n  height: 100vh;\n  align-items: flex-end;\n  justify-content:center;\n  padding: 4px;\n}\n.bar {\n  transition: height 50ms ease-in-out;\n  height: 0%;\n  width:5%;\n  border-top-left-radius: 2px;\n  border-top-right-radius: 2px;\n  background: rgb(180,58,95);\n  background: linear-gradient(180deg, \n    rgba(180,58,95,1) 0%, rgba(253,29,29,1) 50%, \n    rgba(252,176,69,1) 100%);\n}\n</style>\n</head>\n<body class=\"bg-white\">\n\n<div class=\"min-h-screen flex wrapper\" id=\"inner\">\n    \n</div>\n\n<script>\n    // Initialize the global variable \"input\"\n    window.input = window.input ;\n    let inputstream = [];\n    let initialized = false;\n    // Function to rerender the UI\n    function rerenderUI() {\n       if (!initialized && window[\"createElement\"]) {\n          initialized = true;\n         let loop = 0;\n         while (loop < 30) {\n           createElement?.(\"div\",{\n                        class: \"bar\",\n                         id: `bar-${loop}`,\n                         style: `--bar-height:${0}%;`\n                      },\n                      document.getElementById(\"inner\"),\n                      )\n              loop++;\n          }\n        }\n        if (window.input !== undefined) {\n            inputstream.push(window.input);\n            inputstream = inputstream.slice(-30);\n             inputstream.forEach((item,index) => {\n                    const percentage = 100 *(Math.min(200,parseFloat(item))/200);\n\n            const element = document.getElementById(`bar-${index}`);\n               element?.style.setProperty('height', `${percentage}%`);\n                 })\n            }\n    }\n\n    // Attach the rerenderUI function to the global onExecute method\n    window.onExecute = rerenderUI;\n\n    \n    rerenderUI();\n</script>\n\n</body>\n</html>",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n<style>\n.wrapper {\n  display:flex;\n  flex-direction:row;\n  gap: 4px;\n  height: 100vh;\n  align-items: flex-end;\n  justify-content:center;\n  padding: 4px;\n}\n.bar {\n  /*transition: height 50ms ease-in-out;*/\n  height: 0%;\n  width:5%;\n  border-top-left-radius: 2px;\n  border-top-right-radius: 2px;\n  background: rgb(180,58,95);\n  background: linear-gradient(180deg, \n    rgba(180,58,95,1) 0%, rgba(253,29,29,1) 50%, \n    rgba(252,176,69,1) 100%);\n}\n</style>\n</head>\n<body class=\"bg-white\">\n\n<div class=\"min-h-screen flex wrapper\" id=\"inner\">\n    \n</div>\n\n<script>\n    // Initialize the global variable \"input\"\n    window.input = window.input ;\n    let inputstream = [];\n    let initialized = false;\n    // Function to rerender the UI\n    function rerenderUI() {\n       if (!initialized && window[\"createElement\"]) {\n          initialized = true;\n         let loop = 0;\n         while (loop < 30) {\n           createElement?.(\"div\",{\n                        class: \"bar\",\n                         id: `bar-${loop}`,\n                         style: `--bar-height:${0}%;`\n                      },\n                      document.getElementById(\"inner\"),\n                      )\n              loop++;\n          }\n        }\n        if (window.input !== undefined) {\n            inputstream.push(window.input);\n            inputstream = inputstream.slice(-30);\n             inputstream.forEach((item,index) => {\n                    const percentage = 100 *(Math.min(200,parseFloat(item))/200);\n\n            const element = document.getElementById(`bar-${index}`);\n               element?.style.setProperty('height', `${percentage}%`);\n                 })\n            }\n    }\n\n    // Attach the rerenderUI function to the global onExecute method\n    window.onExecute = rerenderUI;\n\n    \n    rerenderUI();\n</script>\n\n</body>\n</html>",
               "aiprompt": ""
             }
           }
         },
         {
           "id": "acdfc0af-68ab-476f-a8fc-d932a1be6524",
-          "x": -200.3387926948223,
-          "y": -529.0671979420235,
+          "x": -199.0074207861212,
+          "y": -529.0671579128524,
           "width": 200,
           "height": 180,
           "nodeType": "Shape",
@@ -427,8 +427,8 @@
         },
         {
           "id": "40bfaddb-fc8a-4f89-90eb-94b956a4cafc",
-          "x": 119.9522429544354,
-          "y": -499.945579073674,
+          "x": 119.95225490078967,
+          "y": -499.94562533407066,
           "width": 200,
           "height": 128,
           "nodeType": "Shape",
@@ -513,8 +513,8 @@
         },
         {
           "id": "1215d209-ea3f-4275-a4f0-4cb6df4ab048",
-          "x": 1680.5905760053229,
-          "y": -914.3263071766103,
+          "x": 1680.5904555474713,
+          "y": -914.3262420812733,
           "width": 600.4688568707417,
           "height": 146.3984666139191,
           "nodeType": "Shape",
@@ -526,7 +526,27 @@
               "fontWeight": true
             },
             "isSettingsPopup": true,
-            "nodeCannotBeReplaced": true
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "d6b60e02-9df0-45d0-81a4-7d8ee8827af8",
+          "x": 1697.0802498470596,
+          "y": -738.7265751818602,
+          "width": 808.2523124338926,
+          "height": 674.3798266807927,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "A proportional-integral-derivative controller (PID\ncontroller or three-term controller) is a control\nloop mechanism employing feedback that is\nwidely used in industrial control systems and a\nvariety of other applications requiring\ncontinuously modulated control.",
+              "fontSize": "27.1",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
           }
         },
         {
@@ -546,7 +566,7 @@
         },
         {
           "id": "fcae635a-db8f-448e-881b-e5a3ef21d588",
-          "x": 574.9378371053225,
+          "x": 574.9378676229006,
           "y": 298.6912870952175,
           "endX": 698.7441844958789,
           "endY": 294.7969409126724,
@@ -711,7 +731,7 @@
         },
         {
           "id": "bcc5b3c7-06ea-4feb-9f8b-ba9cc82896aa",
-          "x": 2951.0711878598313,
+          "x": 2951.071202901662,
           "y": 281.6581337673192,
           "endX": 3071.749778276313,
           "endY": 279.3641101658958,
@@ -741,10 +761,10 @@
         },
         {
           "id": "ad18c35b-e1cd-4e33-b27f-1aed8b2ff231",
-          "x": 3834.7744526203674,
+          "x": 3834.7743832649926,
           "y": 293.5554261669481,
-          "endX": 3979.882507492857,
-          "endY": 295.8853925657078,
+          "endX": 3979.8819876992234,
+          "endY": 295.88540860397376,
           "startNodeId": "2f5df833-7491-45a6-898c-d2cd32188811",
           "endNodeId": "575e355e-e7d0-45e9-8298-929f742528f6",
           "startThumbName": "output",
@@ -756,10 +776,10 @@
         },
         {
           "id": "d34aa986-1f05-4162-a105-fb023212890e",
-          "x": -0.33879269482230256,
-          "y": -439.06719794202354,
-          "endX": 119.9522429544354,
-          "endY": -435.945579073674,
+          "x": 0.9925792138787983,
+          "y": -439.0671579128524,
+          "endX": 119.95225490078967,
+          "endY": -435.94562533407066,
           "startNodeId": "acdfc0af-68ab-476f-a8fc-d932a1be6524",
           "endNodeId": "40bfaddb-fc8a-4f89-90eb-94b956a4cafc",
           "startThumbName": "output",
@@ -800,23 +820,56 @@
           "nodeInfo": {}
         },
         {
-          "id": "d6b60e02-9df0-45d0-81a4-7d8ee8827af8",
-          "x": 1695.998400309733,
-          "y": -743.90242296054,
-          "width": 565.3045644838443,
-          "height": 243.89056551549928,
+          "id": "3364b928-ae1a-4c8b-807b-8c532f1d4701",
+          "x": 3440.6006494825765,
+          "y": 753.5651481195114,
+          "width": 200.00001145808505,
+          "height": 128.00001288800124,
           "nodeType": "Shape",
           "nodeInfo": {
-            "type": "annotation",
+            "type": "set-variable",
             "formValues": {
-              "annotation": "A proportional–integral–derivative controller (PID\ncontroller or three-term controller) is a control\nloop mechanism employing feedback that is\nwidely used in industrial control systems and a\nvariety of other applications requiring\ncontinuously modulated control.",
-              "fontSize": "27.1",
-              "fontWeight": "false"
+              "variableName": "current"
             },
-            "isSettingsPopup": true,
-            "nodeCannotBeReplaced": true,
-            "taskType": "annotation"
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "taskType": "set-variable"
           }
+        },
+        {
+          "id": "ba6a1368-949d-4320-bde4-d1f9eba7a6ea",
+          "x": 3157.237910360975,
+          "y": 725.3777798241478,
+          "width": 176.99998133042055,
+          "height": 180.00000041688205,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "slider",
+            "formValues": {
+              "value": "130",
+              "valueSliderSettings": "{\"min\":50,\"max\":150,\"step\":1}",
+              "label": "KP"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "isSettingsPopup": true,
+            "taskType": "slider"
+          }
+        },
+        {
+          "id": "7508268a-83f6-4576-ae1e-491885c19126",
+          "x": 3334.237891691396,
+          "y": 815.3777800325888,
+          "endX": 3440.6006494825765,
+          "endY": 817.565154563512,
+          "startNodeId": "ba6a1368-949d-4320-bde4-d1f9eba7a6ea",
+          "endNodeId": "3364b928-ae1a-4c8b-807b-8c532f1d4701",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
         }
       ]
     }

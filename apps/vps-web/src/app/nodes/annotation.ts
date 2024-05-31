@@ -36,7 +36,9 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
       const formElements = [
         {
@@ -64,6 +66,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
             }
             node.nodeInfo.formValues['fontSize'] = value;
             (textArea.domElement as HTMLElement).style.fontSize = `${value}px`;
+
             rect.resize();
             updated();
           },
@@ -90,7 +93,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
       const componentWrapper = createNodeElement(
         'div',
         {
-          class: `relative`,
+          class: `relative overflow-hidden`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
@@ -99,7 +102,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
         'div',
         {
           type: 'annotation',
-          class: `relative block text-white bg-transparent h-auto whitespace-pre`,
+          class: `relative block text-white bg-transparent h-auto whitespace-pre-wrap`,
         },
         componentWrapper.domElement
       );
@@ -109,15 +112,15 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
       const rect = canvasApp.createRect(
         x,
         y,
-        240,
-        100,
+        width ?? 240,
+        height ?? 100,
         undefined,
         [],
         componentWrapper,
         {
           classNames: `p-4 bg-transparent `,
         },
-        false,
+        true,
         undefined,
         undefined,
         id,
