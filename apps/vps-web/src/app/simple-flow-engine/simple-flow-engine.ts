@@ -600,6 +600,23 @@ export const run = (
       canvasApp.setCamera(-nodeComponent.x, -nodeComponent.y, 0.5);
     }
 
+    let inputPayload: any = undefined;
+    let useInput = input;
+    if (nodeComponent.nodeInfo?.canBeStartedByTrigger) {
+      inputPayload = {
+        trigger: true,
+      } as unknown as string;
+      if (
+        nodeComponent.nodeInfo?.readPropertyFromNodeInfoForInitialTrigger &&
+        nodeComponent.nodeInfo?.formValues
+      ) {
+        useInput =
+          nodeComponent.nodeInfo?.formValues[
+            nodeComponent.nodeInfo.readPropertyFromNodeInfoForInitialTrigger
+          ];
+      }
+    }
+
     runNode(
       nodeComponent,
       canvasApp,
@@ -608,13 +625,15 @@ export const run = (
           onFinishRun(input);
         }
       },
-      input,
+      useInput,
       offsetX,
       offsetY,
       undefined,
       undefined,
       undefined,
-      runCounter
+      runCounter,
+      undefined,
+      inputPayload
     );
   });
   if (!isRunning) {

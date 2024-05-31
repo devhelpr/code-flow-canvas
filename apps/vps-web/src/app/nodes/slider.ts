@@ -34,13 +34,17 @@ export const getSlider =
       currentValue = 0;
       return;
     };
-    const compute = (input: string): IComputeResult => {
+    const compute = (
+      input: string,
+      _loopIndex?: number,
+      payload?: any
+    ): IComputeResult => {
       try {
         currentValue = parseFloat(input) || 0;
       } catch {
         currentValue = 0;
       }
-      if (triggerButton) {
+      if (triggerButton || payload?.trigger) {
         triggerButton = false;
         return {
           result: currentValue,
@@ -142,6 +146,9 @@ export const getSlider =
         ).querySelector('form label') as HTMLLabelElement;
 
         if (node.nodeInfo) {
+          node.nodeInfo.canBeStartedByTrigger = true;
+          node.nodeInfo.readPropertyFromNodeInfoForInitialTrigger = 'value';
+
           node.nodeInfo.isSettingsPopup = true;
           if (labelElement) {
             labelElement.textContent =

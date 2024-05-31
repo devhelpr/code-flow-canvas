@@ -10,8 +10,8 @@
           "id": "e25f2b6a-fc6e-4539-b1fb-55ffaf65a50a",
           "x": 291.19234420117937,
           "y": -165.795597268076,
-          "width": 120.00008079682522,
-          "height": 111.99997607491912,
+          "width": 119.99997785081977,
+          "height": 111.99991335412545,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -29,8 +29,8 @@
           "id": "1ba28fb2-463c-4bcf-ae6a-29c25ae9d2b3",
           "x": 117.90397278164556,
           "y": -164.97994896373183,
-          "width": 119.99995662751137,
-          "height": 111.99997607491912,
+          "width": 119.99997785081977,
+          "height": 112.00005472549616,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -48,8 +48,8 @@
           "id": "2c6435b0-977f-4206-b9bf-9addb1d700aa",
           "x": -71.24471502057321,
           "y": -175.36931726569108,
-          "width": 119.99995662751137,
-          "height": 111.99997607491912,
+          "width": 119.99997785081977,
+          "height": 112.00005472549616,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -67,8 +67,8 @@
           "id": "859cd4d5-ec1d-4db9-8c63-2d4ba0fe925a",
           "x": 315.4967111910729,
           "y": 8.996742837984918,
-          "width": 119.99995662751137,
-          "height": 112.00010024423297,
+          "width": 119.99996796090363,
+          "height": 111.99998204050789,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -86,8 +86,8 @@
           "id": "c45edd31-da61-4c6b-bd3f-6afacebb310b",
           "x": 125.88525047391889,
           "y": 10.591357461889842,
-          "width": 120.00001871216828,
-          "height": 111.99997607491912,
+          "width": 120.0000575383874,
+          "height": 112.00016119547543,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -105,8 +105,8 @@
           "id": "af326c3a-b2d5-41e9-89fe-add571886aa0",
           "x": -58.75004580265895,
           "y": 18.02682954497677,
-          "width": 119.99995662751137,
-          "height": 112.00010024423297,
+          "width": 120.00000157842081,
+          "height": 112.00000609419551,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -136,6 +136,8 @@
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
+            "canBeStartedByTrigger": true,
+            "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
         },
@@ -282,8 +284,8 @@
           "id": "14a68397-09be-4f5b-a7e5-35e784797207",
           "x": 2831.0712036727155,
           "y": 251.65813376731924,
-          "width": 119.99970828888367,
-          "height": 55.99998803745956,
+          "width": 119.99978880593609,
+          "height": 56.000080597737714,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -298,8 +300,8 @@
           "id": "f147b482-094e-4726-ab76-054fbe85c921",
           "x": 577.0429643486272,
           "y": 14.531887727851128,
-          "width": 119.99995662751137,
-          "height": 111.99997607491912,
+          "width": 119.99996796090363,
+          "height": 111.99998204050789,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -379,8 +381,8 @@
           "id": "2f5df833-7491-45a6-898c-d2cd32188811",
           "x": 3714.774193636923,
           "y": 263.5554261669481,
-          "width": 120.00020496613905,
-          "height": 55.99998803745956,
+          "width": 119.99978880593609,
+          "height": 56.000080597737714,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -422,6 +424,8 @@
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
+            "canBeStartedByTrigger": true,
+            "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
         },
@@ -443,39 +447,43 @@
         },
         {
           "id": "0e91b5a0-0f2d-4c52-88d5-1efe5d0b50fb",
-          "x": 428.8031254074899,
-          "y": -537.0112471785325,
+          "x": 428.80316226031545,
+          "y": -537.6941244374884,
           "width": 199.99996948242188,
           "height": 180,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
             "formValues": {
-              "value": "0.01",
-              "valueSliderSettings": "{\"min\":0.01,\"max\":1,\"step\":0.01}",
+              "value": "0.21",
+              "valueSliderSettings": "{\"min\":0.01,\"max\":0.25,\"step\":0.001}",
               "label": "KI"
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
+            "canBeStartedByTrigger": true,
+            "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
         },
         {
           "id": "33b0fd40-36c7-4adf-9536-0ac8eebdc06d",
-          "x": 1052.1945372437372,
-          "y": -514.6870868271326,
+          "x": 1052.19457228735,
+          "y": -513.999613828717,
           "width": 200,
           "height": 180,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
             "formValues": {
-              "value": "0.01",
-              "valueSliderSettings": "{\"min\":0.01,\"max\":1,\"step\":0.01}",
+              "value": "0.08",
+              "valueSliderSettings": "{\"min\":0.01,\"max\":0.25,\"step\":0.001}",
               "label": "KD"
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
+            "canBeStartedByTrigger": true,
+            "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
         },
@@ -567,20 +575,22 @@
         },
         {
           "id": "ba6a1368-949d-4320-bde4-d1f9eba7a6ea",
-          "x": 3157.237768293558,
-          "y": 725.3777794560436,
+          "x": 3157.2377778326227,
+          "y": 725.3778432110046,
           "width": 200,
           "height": 180,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
             "formValues": {
-              "value": "130",
+              "value": "72",
               "valueSliderSettings": "{\"min\":50,\"max\":150,\"step\":1}",
               "label": "Current"
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
+            "canBeStartedByTrigger": true,
+            "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
         },
@@ -766,7 +776,7 @@
         },
         {
           "id": "bcc5b3c7-06ea-4feb-9f8b-ba9cc82896aa",
-          "x": 2951.070911961599,
+          "x": 2951.0709924786515,
           "y": 281.6581337673192,
           "endX": 3071.749778276313,
           "endY": 279.3641101658958,
@@ -796,7 +806,7 @@
         },
         {
           "id": "ad18c35b-e1cd-4e33-b27f-1aed8b2ff231",
-          "x": 3834.774398603062,
+          "x": 3834.773982442859,
           "y": 293.5554261669481,
           "endX": 3979.8819876992234,
           "endY": 295.88540860397376,
@@ -826,8 +836,8 @@
         },
         {
           "id": "c4eea3c7-e863-4008-bddd-ad743e3a492b",
-          "x": 628.8030948899118,
-          "y": -447.01124717853247,
+          "x": 628.8031317427374,
+          "y": -447.6941244374884,
           "endX": 720.8220287416549,
           "endY": -448.050512470214,
           "startNodeId": "0e91b5a0-0f2d-4c52-88d5-1efe5d0b50fb",
@@ -841,8 +851,8 @@
         },
         {
           "id": "4332e92e-70b8-4f1a-9acb-6a3f793b50e9",
-          "x": 1252.1945372437372,
-          "y": -424.6870868271326,
+          "x": 1252.19457228735,
+          "y": -423.999613828717,
           "endX": 1369.0427164677208,
           "endY": -421.8036176314403,
           "startNodeId": "33b0fd40-36c7-4adf-9536-0ac8eebdc06d",
@@ -856,8 +866,8 @@
         },
         {
           "id": "7508268a-83f6-4576-ae1e-491885c19126",
-          "x": 3357.237768293558,
-          "y": 815.3777794560436,
+          "x": 3357.2377778326227,
+          "y": 815.3778432110046,
           "endX": 3440.6006494825765,
           "endY": 817.5651481195114,
           "startNodeId": "ba6a1368-949d-4320-bde4-d1f9eba7a6ea",

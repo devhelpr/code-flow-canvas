@@ -24,6 +24,8 @@ export interface BaseNodeInfo {
   useInCompositionOnly?: boolean;
   nodeCannotBeReplaced?: boolean;
   isAnnotation?: boolean;
+  canBeStartedByTrigger?: boolean;
+  readPropertyFromNodeInfoForInitialTrigger?: string;
 
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;

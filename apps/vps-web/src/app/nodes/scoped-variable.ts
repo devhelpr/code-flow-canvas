@@ -289,6 +289,11 @@ export const getScopedVariable =
       const variableScopeType = isGlobal ? 'global' : 'scope dependent';
       return `${description} (${variableScopeType})`;
     }
+
+    function getLabelAsHtml(description: string) {
+      const variableScopeType = isGlobal ? 'global' : 'scope dependent';
+      return `${description}<br />(${variableScopeType})`;
+    }
     const initializeCompute = () => {
       const variableName = node?.nodeInfo?.formValues?.['variableName'] ?? '';
       lastStoredDataState = undefined;
@@ -315,8 +320,8 @@ export const getScopedVariable =
             (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
           }
         } else if (htmlNode) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel(currentValue.toString());
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
+            getLabelAsHtml(currentValue.toString());
         }
         canvasAppInstance?.setVariable(
           variableName,
@@ -414,8 +419,8 @@ export const getScopedVariable =
       }
       if (htmlNode) {
         if (fieldType === 'value') {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel(getFormattedValue(lastStoredDataState, 2, ''));
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
+            getLabelAsHtml(getFormattedValue(lastStoredDataState, 2, ''));
 
           if (rect) {
             rect.resize(120);
