@@ -72,7 +72,7 @@ export class Rect<T> {
     height: number,
     text?: string,
     thumbs?: IThumb[],
-    markup?: string | INodeComponent<T>,
+    markup?: string | INodeComponent<T> | HTMLElement,
     layoutProperties?: {
       classNames?: string;
     },
@@ -851,7 +851,7 @@ export class Rect<T> {
       offsetY?: number,
       thumb?: IThumbNodeComponent<T>
     ) => { x: number; y: number },
-    markup?: string | INodeComponent<T>,
+    markup?: string | INodeComponent<T> | HTMLElement,
     layoutProperties?: {
       classNames?: string;
     },
@@ -935,9 +935,21 @@ export class Rect<T> {
         );
       }
     } else if (markup !== undefined) {
-      astElement = markup as unknown as INodeComponent<T>;
-      rectContainerElement.domElement.appendChild(astElement.domElement);
-      rectContainerElement.elements.set(astElement.id, astElement);
+      if (markup instanceof HTMLElement) {
+        rectContainerElement.domElement.appendChild(
+          markup as unknown as HTMLElement
+        );
+        astElement = {
+          domElement: markup as unknown as HTMLElement,
+          id: crypto.randomUUID(),
+        };
+
+        rectContainerElement.elements.set(astElement.id, astElement);
+      } else {
+        astElement = markup as unknown as INodeComponent<T>;
+        rectContainerElement.domElement.appendChild(astElement.domElement);
+        rectContainerElement.elements.set(astElement.id, astElement);
+      }
     } else {
       throw new Error('No markup or INodeComponent');
     }

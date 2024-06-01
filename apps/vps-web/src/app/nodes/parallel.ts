@@ -173,7 +173,7 @@ export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
       const jsxComponentWrapper = createNodeElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 pl-8 rounded flex flex-row justify-center items-center`,
+          class: `inner-node bg-white text-black p-4 pl-8 rounded flex flex-row justify-center items-center`,
           style: {
             'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
           },

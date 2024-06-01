@@ -161,7 +161,7 @@ export const createContextInstanceApp = <T>(
       _height: number,
       _text?: string,
       thumbs?: IThumb[],
-      _markup?: string | INodeComponent<T>,
+      _markup?: string | INodeComponent<T> | HTMLElement,
       _layoutProperties?: {
         classNames?: string;
       },

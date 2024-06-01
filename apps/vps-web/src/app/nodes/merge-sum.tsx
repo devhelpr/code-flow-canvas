@@ -1,11 +1,10 @@
 import {
   CanvasAppInstance,
-  INodeComponent,
   IRectNodeComponent,
   IThumb,
   ThumbConnectionType,
   ThumbType,
-  createNodeElement,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import {
@@ -168,15 +167,28 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
       canvasAppInstance = canvasApp;
       //contextInstance = canvasApp;
 
-      const jsxComponentWrapper = createNodeElement(
-        'div',
-        {
-          class: `inner-node bg-slate-500 p-4 rounded flex flex-row justify-center items-center`,
-          style: {},
-        },
-        undefined,
-        'Sum'
-      ) as unknown as INodeComponent<NodeInfo>;
+      const Component = () => (
+        <div class="inner-node bg-white text-black p-4 rounded flex flex-col justify-center items-center min-w-[150px]">
+          {/* <div class="w-full h-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              fill="#000000"
+              version="1.1"
+              viewBox="0 0 484.21 484.21"
+              xml:space="preserve"
+              width="64px"
+              height="64px"
+            >
+              <g>
+                <path d="M395.527,97.043V55.352H124.537l159.46,171.507c9.983,10.749,9.848,27.458-0.319,38.026L126.017,428.861h269.504v-25.18   c0-15.256,12.413-27.668,27.674-27.668c15.256,0,27.681,12.412,27.681,27.668v52.848c0,15.262-12.419,27.681-27.681,27.681H61.014   c-11.106,0-21.107-6.603-25.464-16.834c-4.359-10.226-2.189-22.012,5.509-30.026l184.584-191.964L40.743,46.521   c-7.492-8.068-9.496-19.798-5.101-29.899C40.042,6.525,50.005,0,61.014,0h362.188c15.255,0,27.68,12.413,27.68,27.68v69.363   c0,15.259-12.419,27.677-27.68,27.677C407.94,124.72,395.527,112.308,395.527,97.043z" />
+              </g>
+            </svg>
+          </div> */}
+          <div class="text-7xl">&#8721;</div>
+          <div>Sum</div>
+        </div>
+      );
       const nodeThumbs: IThumb[] = [...thumbs];
       const additionalThumbsLength =
         initalValues?.['input-thumbs']?.length ?? 0;
@@ -199,7 +211,7 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
         110,
         undefined,
         nodeThumbs,
-        jsxComponentWrapper,
+        Component() as unknown as HTMLElement,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
