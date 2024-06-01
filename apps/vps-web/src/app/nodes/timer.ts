@@ -11,6 +11,7 @@ import { NodeInfo } from '../types/node-info';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { runNode } from '../simple-flow-engine/simple-flow-engine';
 import { FormFieldType } from '../components/FormField';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -30,12 +31,15 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
       node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
     return;
   };
+
+  let initTimer: undefined | (() => void) = undefined;
   const compute = (
     input: string,
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    _runCounter?: RunCounter
   ) => {
     if ((input as any)?.trigger === 'TIMER') {
       return {
@@ -75,12 +79,24 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
       clearInterval(interval);
     }
 
-    divElement.domElement.textContent = '';
-    (divElement.domElement as HTMLElement).classList.add('loader');
-    interval = setInterval(
-      timer,
-      parseInt(node?.nodeInfo?.formValues['timer'] || initialTimer.toString())
-    );
+    initTimer = () => {
+      divElement.domElement.textContent = '';
+      (divElement.domElement as HTMLElement).style.setProperty(
+        '--timer',
+        `${
+          parseInt(
+            node?.nodeInfo?.formValues['timer'] || initialTimer.toString()
+          ) / 50
+        }s`
+      );
+      (divElement.domElement as HTMLElement).classList.add('loader');
+
+      interval = setInterval(
+        timer,
+        parseInt(node?.nodeInfo?.formValues['timer'] || initialTimer.toString())
+      );
+    };
+    initTimer();
 
     return {
       result: false,
@@ -114,12 +130,21 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
             if (!node.nodeInfo) {
               return;
             }
+            if (interval) {
+              clearInterval(interval);
+              interval = 0;
+            } else {
+              divElement.domElement.textContent =
+                node.nodeInfo.formValues['timer'] || initialTimer.toString();
+            }
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               timer: value,
             };
-            divElement.domElement.textContent =
-              node.nodeInfo.formValues['timer'] || initialTimer.toString();
+
+            if (initTimer) {
+              initTimer();
+            }
 
             if (updated) {
               updated();

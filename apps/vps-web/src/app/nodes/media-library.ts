@@ -68,7 +68,7 @@ export const getMediaLibraryNode: NodeTaskFactory<NodeInfo> = (
           fieldName: 'files',
           label: 'Media files',
           value: initialInputType,
-          values: initialInputType,
+          //values: initialInputType,
           formElements: [
             {
               fieldName: 'mediaFile',

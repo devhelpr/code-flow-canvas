@@ -17,19 +17,23 @@ export type FormFieldType = (typeof FormFieldType)[keyof typeof FormFieldType];
 export type FormField = (
   | {
       fieldType: 'Select';
+      value: string;
       options: { value: string; label: string }[];
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Text';
+      value: string;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Checkbox';
+      value: string;
       onChange?: (value: boolean, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'File';
+      value: string;
       onChange?: (
         value: FileFieldValue,
         formComponent: IFormsComponent
@@ -38,16 +42,19 @@ export type FormField = (
     }
   | {
       fieldType: 'Button';
+      value: string;
       caption: string;
       onButtonClick?: () => Promise<void> | void;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'TextArea';
+      value: string;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Slider';
+      value: string;
       min?: number;
       max?: number;
       step?: number;
@@ -55,18 +62,20 @@ export type FormField = (
     }
   | {
       fieldType: 'Color';
+      value: string;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
       fieldType: 'Array';
       formElements: FormField[];
-      values: unknown[];
+      //values: unknown[];
+      value: unknown[];
       onChange?: (value: unknown[], formComponent: IFormsComponent) => void;
     }
 ) & {
   fieldName: string;
   label?: string;
-  value: string;
+
   isRow?: boolean;
 
   settings?: {

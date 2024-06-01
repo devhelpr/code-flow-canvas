@@ -778,13 +778,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       (this.runButton?.domElement as HTMLButtonElement).disabled = false;
       this.resetConnectionSlider();
 
-      let hasUIElements = false;
+      let hasUIElements = true;
       this.currentCanvasApp?.elements.forEach((node) => {
         if (node.nodeInfo?.isUINode) {
           hasUIElements = true;
         }
       });
       if (hasUIElements) {
+        (this.runButton?.domElement as HTMLButtonElement).click();
         (this.runButton?.domElement as HTMLButtonElement).disabled = true;
       }
     };
@@ -1588,6 +1589,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           return {
             ...item,
             value: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
+            //values: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
           };
         }
       ),

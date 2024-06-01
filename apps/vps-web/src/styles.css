@@ -153,6 +153,7 @@ rect-node:has(.hover) > .shape-circle,
 
 
 .loader {
+	--timer: 1s;
 	width: 24px;
 	height: 24px;
 	border: 2px solid #FFF;
@@ -160,7 +161,7 @@ rect-node:has(.hover) > .shape-circle,
 	display: inline-block;
 	position: relative;
 	box-sizing: border-box;
-	animation: rotation 1s linear infinite;
+	animation: rotation var(--timer) linear infinite;
 }
 .loader::after {
 	content: '';  

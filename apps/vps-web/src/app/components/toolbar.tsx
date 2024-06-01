@@ -348,6 +348,7 @@ export function Toolbar<T>(props: {
     >
       <input
         type="text"
+        placeholder="Search node types"
         class="p-2 m-2 relative max-w-[220px] mr-0 w-[calc(100%-50px)]"
         name="search-node-types"
         autocomplete="off"

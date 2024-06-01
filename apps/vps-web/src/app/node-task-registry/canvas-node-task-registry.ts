@@ -143,6 +143,7 @@ import { getCreateEventStateValueNode } from '../nodes/create-state-value';
 import { getUserInput } from '../nodes/user-input';
 import { setFlowVariable } from '../nodes/set-flow-variable';
 import { getAnnotation } from '../nodes/annotation';
+import { getMergeSumNode, sumMergeModeName } from '../nodes/merge-sum';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -243,7 +244,7 @@ export const setupCanvasNodeTaskRegistry = (
   registerNodeFactory(loadTextFileNodeName, loadTextFile);
   registerNodeFactory(runRegexNodeName, runRegularExpression);
   registerNodeFactory(mergeModeName, getMergeNode);
-
+  registerNodeFactory(sumMergeModeName, getMergeSumNode);
   registerNodeFactory(replaceStringMapNodeName, replaceStringMap);
 
   registerNodeFactory(splitStringNodeName, splitString);

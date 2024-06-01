@@ -197,7 +197,7 @@ export const getGradientColorNode: NodeTaskFactory<GLNodeInfo> = (
           fieldType: FormFieldType.Array,
           fieldName: 'gradients',
           value: initialInputType,
-          values: initialInputType,
+          //values: initialInputType,
           formElements: [
             {
               fieldType: FormFieldType.Slider,

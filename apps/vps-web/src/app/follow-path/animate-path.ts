@@ -340,16 +340,21 @@ export const animatePathForNodeConnectionPairs = <T>(
   scopeId?: string,
   runCounter?: IRunCounter
 ) => {
-  if (animatedNodes?.node1 && animatedNodes?.node2 && animatedNodes?.node3) {
+  if (animatedNodes?.node1) {
     canvasApp?.elements.delete(animatedNodes?.node1.id);
     animatedNodes.node1.domElement?.remove();
     animatedNodes.node1 = undefined;
-    canvasApp?.elements.delete(animatedNodes?.node2.id);
-    animatedNodes.node2.domElement?.remove();
-    animatedNodes.node2 = undefined;
+  }
+  if (animatedNodes?.node3) {
     animatedNodes.node3.domElement?.remove();
     animatedNodes.node3 = undefined;
   }
+  if (animatedNodes?.node2) {
+    canvasApp?.elements.delete(animatedNodes?.node2.id);
+    animatedNodes.node2.domElement?.remove();
+    animatedNodes.node2 = undefined;
+  }
+
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (onStopped) {
       //console.log('animatePath onStopped4', input);

@@ -41,7 +41,7 @@ export interface FormComponentProps {
 }
 
 export type FormValues = {
-  [key: string]: string;
+  [key: string]: unknown;
 };
 
 export interface Props {
@@ -204,7 +204,7 @@ export class FormsComponent
   onChange = (item: FormField, value: unknown) => {
     if (item.fieldType === FormFieldType.Array) {
       // hacky until I improved typescript typing
-      item.value = value as unknown as string;
+      item.value = value as unknown as unknown[];
       this.values[item.fieldName] = value as unknown as string;
     } else if (item.fieldType === FormFieldType.File) {
       item.value = value as unknown as string;
@@ -268,7 +268,9 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            this.values?.[formControl.fieldName] || formControl.value || '',
+            (this.values?.[formControl.fieldName] as string) ||
+            formControl.value ||
+            '',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -302,7 +304,9 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            this.values?.[formControl.fieldName] || formControl.value || '',
+            (this.values?.[formControl.fieldName] as string) ||
+            formControl.value ||
+            '',
           isRow: formControl.isRow,
           settings,
           setValue: this.setValue,
@@ -320,7 +324,9 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            this.values?.[formControl.fieldName] || formControl.value || '',
+            (this.values?.[formControl.fieldName] as string) ||
+            formControl.value ||
+            '',
           isRow: formControl.isRow,
           settings,
           options: formControl.options,
@@ -340,7 +346,9 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            this.values?.[formControl.fieldName] || formControl.value || '0.0',
+            (this.values?.[formControl.fieldName] as string) ||
+            formControl.value ||
+            '0.0',
           isRow: formControl.isRow,
           min: formControl.min,
           max: formControl.max,
@@ -352,7 +360,9 @@ export class FormsComponent
           onGetSettings: () => {
             return this.values?.[`${formControl.fieldName}SliderSettings`]
               ? JSON.parse(
-                  this.values[`${formControl.fieldName}SliderSettings`]
+                  this.values[
+                    `${formControl.fieldName}SliderSettings`
+                  ] as string
                 )
               : {
                   min: formControl.min,
@@ -390,7 +400,7 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            this.values?.[formControl.fieldName] ||
+            (this.values?.[formControl.fieldName] as string) ||
             formControl.value ||
             '#000000',
           isRow: formControl.isRow,
@@ -410,7 +420,9 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           value:
-            this.values?.[formControl.fieldName] || formControl.value || '',
+            (this.values?.[formControl.fieldName] as string) ||
+            formControl.value ||
+            '',
           settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
@@ -436,7 +448,7 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           formElements: formControl.formElements,
-          values: formControl.values,
+          values: formControl.value as unknown as unknown[],
           settings,
           isLast: index === this.props.formElements.length - 1,
           setValue: this.setValue,
@@ -478,14 +490,18 @@ export class FormsComponent
                 undefined
               );
               element.style.backgroundColor =
-                data?.toString() ?? this.values[formElement.fieldName] ?? '';
+                data?.toString() ??
+                (this.values[formElement.fieldName] as string) ??
+                '';
               return element;
             }
             const element = createElement(
               'div',
               'whitespace-nowrap',
               undefined,
-              data?.toString() ?? this.values[formElement.fieldName] ?? ''
+              data?.toString() ??
+                (this.values[formElement.fieldName] as string) ??
+                ''
             );
 
             return element;

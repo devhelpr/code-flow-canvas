@@ -11,6 +11,7 @@ import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../simple-flow-engine/simple-flow-engine';
 import { InitialValues, NodeTask } from '../node-task-registry';
 import { RunCounter } from '../follow-path/run-counter';
+import { FormFieldType } from '../components/FormField';
 
 const thumbs = [
   {
@@ -38,7 +39,7 @@ const thumbs = [
   },
 ];
 
-export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
+export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
 
@@ -64,6 +65,9 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
       }
       let seq1Ran = false;
       let seq2Ran = false;
+      let parallelRunCount =
+        node.nodeInfo?.formValues?.['output-thumbs']?.length ?? 0;
+
       runNodeFromThumb(
         node.thumbConnectors[0],
         canvasAppInstance,
@@ -74,7 +78,7 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
             return;
           }
           seq1Ran = true;
-          if (seq2Ran) {
+          if (seq2Ran && parallelRunCount === 0) {
             resolve({
               result: inputFromFirstRun,
               output: inputFromFirstRun,
@@ -98,7 +102,7 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
           seq2Ran = true;
           console.log('Parallel inputFromSecondRun', inputFromSecondRun);
 
-          if (seq1Ran) {
+          if (seq1Ran && parallelRunCount === 0) {
             resolve({
               result: inputFromSecondRun,
               output: inputFromSecondRun,
@@ -114,6 +118,40 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
         runCounter,
         true
       );
+
+      let loop = 0;
+      const maxLoop = parallelRunCount;
+      while (loop < maxLoop) {
+        const thumb = node.thumbConnectors.find(
+          (thumb) => thumb.thumbName === `output${3 + loop}`
+        );
+        if (thumb) {
+          runNodeFromThumb(
+            thumb,
+            canvasAppInstance,
+            (inputFromRun: string | any[]) => {
+              parallelRunCount--;
+              console.log('Parallel inputFromRun', inputFromRun);
+
+              if (seq1Ran && seq2Ran && parallelRunCount === 0) {
+                resolve({
+                  result: inputFromRun,
+                  output: inputFromRun,
+                  stop: true,
+                  dummyEndpoint: true,
+                });
+              }
+            },
+            input,
+            node,
+            loopIndex,
+            scopeId,
+            runCounter,
+            true
+          );
+        }
+        loop++;
+      }
     });
   };
 
@@ -128,7 +166,7 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
       x: number,
       y: number,
       id?: string,
-      _initalValues?: InitialValues,
+      initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       canvasAppInstance = canvasApp;
@@ -143,6 +181,20 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
         undefined,
         'parallel'
       ) as unknown as INodeComponent<NodeInfo>;
+      const nodeThumbs = [...thumbs];
+      const additionalThumbsLength =
+        initalValues?.['output-thumbs']?.length ?? 0;
+
+      for (let i = 0; i < additionalThumbsLength; i++) {
+        nodeThumbs.push({
+          thumbType: ThumbType.StartConnectorRight,
+          thumbIndex: i + 2,
+          connectionType: ThumbConnectionType.start,
+          color: 'white',
+          label: ' ',
+          name: `output${i + 3}`,
+        });
+      }
 
       const rect = canvasApp.createRect(
         x,
@@ -150,28 +202,83 @@ export const getParallel = (_updated: () => void): NodeTask<NodeInfo> => {
         110,
         110,
         undefined,
-        thumbs,
+        nodeThumbs,
         jsxComponentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        true,
+        false,
         undefined,
         undefined,
         id,
         {
           type: 'parallel',
-          formValues: {},
+          formValues: {
+            'output-thumbs': initalValues?.['output-thumbs'] ?? [],
+          },
         },
         containerNode
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
+      rect.resize();
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {
-        node.nodeInfo.formElements = [];
+        node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Array,
+            fieldName: 'output-thumbs',
+            label: 'Output thumbs',
+            value: initalValues?.['output-thumbs'] ?? [],
+            //values: initalValues?.['output-thumbs'] ?? [],
+            formElements: [
+              {
+                fieldName: 'thumbName',
+                fieldType: FormFieldType.Text,
+                value: '',
+              },
+            ],
+            onChange: (values: unknown[]) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              const oldThumbsLength =
+                node.nodeInfo.formValues?.['output-thumbs']?.length ?? 0;
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['output-thumbs']: [...values],
+              };
+              const newThumbLength = values.length - oldThumbsLength;
+              if (newThumbLength > 0) {
+                for (let i = 0; i < newThumbLength; i++) {
+                  if (node) {
+                    canvasAppInstance?.addThumbToNode(
+                      {
+                        thumbType: ThumbType.StartConnectorRight,
+                        thumbIndex: i + oldThumbsLength + 2,
+                        connectionType: ThumbConnectionType.start,
+                        color: 'white',
+                        label: ' ',
+                        name: `output${i + oldThumbsLength + 3}`,
+                      },
+                      node
+                    );
+                  }
+                }
+              }
+              node?.update?.();
+              if (updated) {
+                updated();
+              }
+              if (rect) {
+                rect.resize();
+              }
+            },
+          },
+        ];
+        node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
       }

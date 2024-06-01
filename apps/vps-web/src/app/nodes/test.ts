@@ -70,7 +70,7 @@ export const getTestNode: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.Array,
           fieldName: 'array',
           value: initialInputType,
-          values: initialInputType,
+          //values: initialInputType,
           //[
           //   {
           //     testField: 'test',
