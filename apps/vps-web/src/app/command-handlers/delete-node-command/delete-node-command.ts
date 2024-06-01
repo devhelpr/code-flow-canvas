@@ -89,7 +89,6 @@ export class DeleteNodeCommand<
     if (!nodeInfo) {
       return;
     }
-    //const node = canvasApp.elements.get(parameter1) as IRectNodeComponent<T>;
     const node = nodeInfo?.node;
     if (!node) {
       console.log('node not found in canvas');
@@ -133,10 +132,22 @@ export class DeleteNodeCommand<
           }
         });
       }
+    } else if (node.nodeType === NodeType.Connection) {
+      // Remove the connection from the start and end nodes
+      const connection = node as IConnectionNodeComponent<T>;
+      if (connection.startNode) {
+        connection.startNode.connections =
+          connection.startNode?.connections?.filter(
+            (c) => c.id !== connection.id
+          );
+      }
+      if (connection.endNode) {
+        connection.endNode.connections =
+          connection.endNode?.connections?.filter(
+            (c) => c.id !== connection.id
+          );
+      }
     }
-    // } else {
-    //   return;
-    // }
 
     if (node.containerNode) {
       (
@@ -147,18 +158,11 @@ export class DeleteNodeCommand<
         (node?.containerNode as unknown as IRectNodeComponent<T>)
           ?.nodeInfo as any
       )?.canvasAppInstance?.deleteElement(node.id);
-      this.removeElement(
-        node
-        // (
-        //   nodeElementId.containerNode as unknown as IRectNodeComponent<NodeInfo>
-        // ).nodeInfo.canvasAppInstance
-      );
+      this.removeElement(node);
     } else {
       this.removeElement(node);
       this.getCanvasApp()?.deleteElement(node.id);
     }
-    // this.removeElement(node);
-    // canvasApp.deleteElement(node.id);
 
     setSelectNode(undefined);
     this.canvasUpdated();
