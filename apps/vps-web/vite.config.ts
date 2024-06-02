@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 //import jsxCompiler from './vite/vite-plugin-jsx-compiler';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 //import mkcert from 'vite-plugin-mkcert';
+import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   root: __dirname,
@@ -27,11 +28,11 @@ export default defineConfig({
 
   // Uncomment this if you are using workers.
   // worker: {
-  //  plugins: [
-  //    viteTsConfigPaths({
-  //      root: '../../',
-  //    }),
-  //  ],
+  //   plugins: [
+  //     viteTsConfigPaths({
+  //       root: '../../',
+  //     }),
+  //   ],
   // },
 
   test: {

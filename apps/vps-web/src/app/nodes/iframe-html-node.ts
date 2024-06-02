@@ -204,6 +204,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           fieldType: FormFieldType.TextArea,
           fieldName: 'html',
           value: initialValue,
+          isCodeEditor: true,
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
@@ -226,6 +227,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           fieldName: 'aiprompt',
           label: 'AI Prompt to generate HTML',
           value: aiPrompt,
+
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;

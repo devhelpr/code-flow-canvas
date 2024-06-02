@@ -142,7 +142,7 @@ export class AppElement<T> {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-600 hidden overflow-auto text-white',
+          'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-600 hidden overflow-x-visible overflow-y-auto text-white',
         wheel: (event) => {
           event.stopPropagation();
         },

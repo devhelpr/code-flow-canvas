@@ -5,6 +5,8 @@ import {
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 import { BaseFormFieldProps, FormFieldComponent } from './field';
+import * as monaco from 'monaco-editor';
+import { IFormsComponent } from '../IFormsComponent';
 
 export interface TextAreaFieldProps extends BaseFormFieldProps {
   formId: string;
@@ -12,6 +14,7 @@ export interface TextAreaFieldProps extends BaseFormFieldProps {
   value: string;
   label?: string;
   isLast?: boolean;
+  isCodeEditor?: boolean;
   onChange?: (value: string) => void;
 }
 
@@ -24,11 +27,26 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
   constructor(parent: BaseComponent | null, props: TextAreaFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
-    this.template = createTemplate(
-      `<div class="w-full mb-2">
+
+    if (props.isCodeEditor) {
+      this.template = createTemplate(
+        `<div class="w-full mb-2 code-editor" id="${props.formId}_${
+          props.fieldName
+        }">
+          <label for="${props.formId}_${props.fieldName}" class="block mb-2 ${
+          props.settings?.textLabelColor ?? 'text-white'
+        }">${props.label || props.fieldName}</label>
+          <div id="${props.formId}_${
+          props.fieldName
+        }__" class="w-full h-64"></div>
+          </div>`
+      );
+    } else {
+      this.template = createTemplate(
+        `<div class="w-full mb-2">
         <label for="${props.formId}_${props.fieldName}" class="block mb-2 ${
-        props.settings?.textLabelColor ?? 'text-white'
-      }">${props.label || props.fieldName}</label>
+          props.settings?.textLabelColor ?? 'text-white'
+        }">${props.label || props.fieldName}</label>
         <textarea class="block w-full p-1" 
           rows="10"
           name="${props.fieldName}"
@@ -36,7 +54,8 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
           id="${props.formId}_${props.fieldName}"
           type="text"></textarea>
         </div>`
-    );
+      );
+    }
 
     this.mount();
   }
@@ -53,24 +72,38 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
       if (this.element) {
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
-        this.textarea = this.label.nextSibling as HTMLTextAreaElement;
-        this.renderList.push(this.label, this.textarea);
-        this.textarea.addEventListener('input', this.onInput);
-        this.textarea.value = this.props.value;
-        trackNamedSignal(
-          `${this.props.formId}_${this.props.fieldName}`,
-          (value) => {
-            console.log(
-              'trackNamedSignal',
-              this.props.formId,
-              this.props.fieldName,
-              value
-            );
-            if (this.textarea) {
-              this.textarea.value = value;
+        if (this.props.isCodeEditor) {
+          this.initialRender = true;
+          this.renderList.push(this.label);
+          // monaco.editor.create(
+          //   document.getElementById(
+          //     `#${this.props.formId}_${this.props.fieldName}`
+          //   )!,
+          //   {
+          //     value: "function hello() {\n\talert('Hello world!');\n}",
+          //     language: 'javascript',
+          //   }
+          // );
+        } else {
+          this.textarea = this.label.nextSibling as HTMLTextAreaElement;
+          this.renderList.push(this.label, this.textarea);
+          this.textarea.addEventListener('input', this.onInput);
+          this.textarea.value = this.props.value;
+          trackNamedSignal(
+            `${this.props.formId}_${this.props.fieldName}`,
+            (value) => {
+              console.log(
+                'trackNamedSignal',
+                this.props.formId,
+                this.props.fieldName,
+                value
+              );
+              if (this.textarea) {
+                this.textarea.value = value;
+              }
             }
-          }
-        );
+          );
+        }
       }
     }
     this.isMounted = true;
@@ -80,6 +113,9 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     if (this.element && this.element.remove) {
       // remove only removes the connection between parent and node
       this.element.remove();
+    }
+    if (this.editorInstance) {
+      this.editorInstance.dispose();
     }
     this.isMounted = false;
   }
@@ -100,7 +136,7 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
   render() {
     super.render();
     if (!this.element) return;
-    if (!this.textarea) return;
+    if (!this.textarea && !this.props.isCodeEditor) return;
 
     this.oldProps = this.props;
 
@@ -110,7 +146,40 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
 
     if (this.initialRender) {
       this.initialRender = false;
-      this.renderElements([this.textarea]);
+      if (this.props.isCodeEditor) {
+        this.renderElements([this.label]);
+      } else {
+        this.renderElements([this.textarea]);
+      }
     }
   }
+  editorInstance: monaco.editor.IStandaloneCodeEditor | null = null;
+  onAfterRender = (_formComponent: IFormsComponent) => {
+    if (this.props.isCodeEditor) {
+      setTimeout(() => {
+        try {
+          const container = document.getElementById(
+            `${this.props.formId}_${this.props.fieldName}`
+          )!;
+          console.log('monaco.editor.create', container);
+          const editor = monaco.editor.create(container, {
+            value: this.props.value, //"function hello() {\n\talert('Hello world!');\n}",
+            language: 'html',
+          });
+          if (editor) {
+            this.editorInstance = editor;
+            editor.getModel()?.onDidChangeContent((_event) => {
+              console.log('editor onDidChangeContent', editor.getValue());
+
+              if (this.props.onChange) {
+                this.props.onChange(editor.getValue());
+              }
+            });
+          }
+        } catch (e) {
+          console.error('monaco.editor.create', e);
+        }
+      }, 0);
+    }
+  };
 }

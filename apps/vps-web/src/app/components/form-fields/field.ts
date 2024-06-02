@@ -6,6 +6,7 @@ export class FormFieldComponent<T> extends Component<T> {
   public setValue(_value: string): void {
     //
   }
+  onAfterRender?: (formComponent: IFormsComponent) => void;
 }
 
 export interface BaseFormFieldProps {

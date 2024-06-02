@@ -16,6 +16,7 @@ export interface ArrayFieldProps extends BaseFormFieldProps {
   isLast?: boolean;
   values: unknown[];
   formElements: FormField[];
+  hideDeleteButton?: boolean;
   createFormDialog: (
     formElements: FormField[],
     values?: unknown
@@ -111,7 +112,11 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         createTemplate(
           `<div class="table-cell align-middle array-item__cell array-item__cell ml-auto">
             <a href="#" class="array-item__edit"><span class="icon icon-createmode_editedit"></span></a>
-            <a href="#" class="array-item__delete"><span class="icon icon-delete"></span></a>
+            ${
+              this.props.hideDeleteButton
+                ? ''
+                : '<a href="#" class="array-item__delete"><span class="icon icon-delete"></span></a>'
+            }
           </div>`
         )
       );

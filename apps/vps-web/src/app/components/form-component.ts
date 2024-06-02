@@ -419,6 +419,7 @@ export class FormsComponent
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
+          isCodeEditor: formControl.isCodeEditor,
           value:
             (this.values?.[formControl.fieldName] as string) ||
             formControl.value ||
@@ -447,6 +448,7 @@ export class FormsComponent
           formId: this.props.id,
           fieldName: formControl.fieldName,
           label: formControl.label,
+          hideDeleteButton: formControl.hideDeleteButton,
           formElements: formControl.formElements,
           values: formControl.value as unknown as unknown[],
           settings,
@@ -577,6 +579,16 @@ export class FormsComponent
         oldActiveElement?.focus();
       }
     }
+    this.props.formElements.forEach((formElement) => {
+      const formFieldComponent = this.components.find(
+        (component) =>
+          (component as unknown as FormField).fieldName ===
+          formElement.fieldName
+      ) as FormFieldComponent<any> | undefined;
+      if (formFieldComponent && formFieldComponent.onAfterRender) {
+        formFieldComponent && formFieldComponent.onAfterRender(this);
+      }
+    });
   }
 }
 

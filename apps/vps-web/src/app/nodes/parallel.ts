@@ -232,6 +232,7 @@ export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
             fieldName: 'output-thumbs',
             label: 'Output thumbs',
             value: initalValues?.['output-thumbs'] ?? [],
+            hideDeleteButton: true,
             //values: initalValues?.['output-thumbs'] ?? [],
             formElements: [
               {

@@ -50,6 +50,7 @@ export type FormField = (
   | {
       fieldType: 'TextArea';
       value: string;
+      isCodeEditor?: boolean;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
@@ -68,6 +69,7 @@ export type FormField = (
   | {
       fieldType: 'Array';
       formElements: FormField[];
+      hideDeleteButton?: boolean;
       //values: unknown[];
       value: unknown[];
       onChange?: (value: unknown[], formComponent: IFormsComponent) => void;
