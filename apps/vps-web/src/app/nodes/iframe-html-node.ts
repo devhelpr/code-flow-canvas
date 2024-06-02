@@ -320,13 +320,6 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            color: 'white',
-            label: '',
-          },
-          {
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
