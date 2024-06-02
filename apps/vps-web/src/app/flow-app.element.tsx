@@ -788,7 +788,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       });
       if (hasUIElements) {
         (this.runButton?.domElement as HTMLButtonElement).click();
-        (this.runButton?.domElement as HTMLButtonElement).disabled = true;
+        // the below happens in the click handler itself
+        //(this.runButton?.domElement as HTMLButtonElement).disabled = true;
       }
     };
 
@@ -825,6 +826,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         name: 'run-flow',
         click: (event) => {
           event.preventDefault();
+
           (this.runButton?.domElement as HTMLButtonElement).disabled = true;
           //this.clearPathExecution();
           setRunCounterUpdateElement(
@@ -849,6 +851,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               this.canvasApp,
               (input) => {
                 console.log('run finished', input);
+                if (runCounter.runCounter <= 0) {
+                  (this.runButton?.domElement as HTMLButtonElement).disabled =
+                    false;
+                  (this.pathRange?.domElement as HTMLButtonElement).disabled =
+                    false;
+                }
               },
               undefined,
               undefined,
@@ -857,6 +865,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               false
             );
           }
+
           return false;
         },
       },

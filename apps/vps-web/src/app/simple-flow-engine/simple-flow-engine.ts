@@ -621,8 +621,10 @@ export const run = (
       nodeComponent,
       canvasApp,
       (input: string | any[]) => {
-        if (onFinishRun) {
-          onFinishRun(input);
+        if (runCounter?.runCounter !== undefined) {
+          if (onFinishRun && runCounter?.runCounter <= 0) {
+            onFinishRun(input);
+          }
         }
       },
       useInput,
