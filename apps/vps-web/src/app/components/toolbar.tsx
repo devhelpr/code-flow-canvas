@@ -254,7 +254,7 @@ export function Toolbar<T>(props: {
     return (
       <ul
         name="node-types-result"
-        class="absolute bg-white bottom-[50px] w-full toolbar-task-list"
+        class="absolute bg-white bottom-[40px] w-full toolbar-task-list"
         getElement={(element: HTMLElement) => {
           ul = element as HTMLUListElement;
         }}
@@ -341,7 +341,7 @@ export function Toolbar<T>(props: {
   );
   const ToolbarComponent = () => (
     <div
-      class="absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm max-w-full w-max"
+      class="flex whitespace-nowrap absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm max-w-full w-max"
       getElement={(element: HTMLElement) => {
         wrapper = element as HTMLDivElement;
       }}
@@ -349,7 +349,7 @@ export function Toolbar<T>(props: {
       <input
         type="text"
         placeholder="Search node types"
-        class="p-2 m-2 relative max-w-[220px] mr-0 w-[calc(100%-50px)]"
+        class="p-1 m-1 relative max-w-[220px] mr-0 w-[calc(100%-50px)]"
         name="search-node-types"
         autocomplete="off"
         keyup={(event: KeyboardEvent) => {
@@ -378,7 +378,7 @@ export function Toolbar<T>(props: {
       />
       <button
         tabindex={-1}
-        class="text-black bg-white h-[40px] px-2 z-[10000]"
+        class="text-black bg-white h-[40px] ml-auto px-1 z-[10000]"
         click={() => {
           if (!wrapper) {
             return;
