@@ -52,6 +52,7 @@ import {
   setPositionTargetCameraAnimation,
   setOnFrame,
   animatePathForNodeConnectionPairs,
+  setStopAnimations,
 } from './follow-path/animate-path';
 import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
 import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
@@ -445,6 +446,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 event.preventDefault();
                 event.stopPropagation();
                 if (confirm('Are you sure you want to clear the canvas?')) {
+                  setStopAnimations();
                   this.clearCanvas();
                   store();
                 }

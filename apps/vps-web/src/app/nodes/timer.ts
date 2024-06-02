@@ -223,7 +223,7 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.delete = () => {
           if (interval) {
-            clearTimeout(interval);
+            clearInterval(interval);
           }
           interval = undefined;
         };

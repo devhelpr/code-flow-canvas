@@ -79,6 +79,10 @@ let onFrame: undefined | ((elapsed: number) => void) = undefined;
 export function setOnFrame(handler: (elapsed: number) => void) {
   onFrame = handler;
 }
+let isStopAnimation = false;
+export const setStopAnimations = () => {
+  isStopAnimation = true;
+};
 
 let lastTime: number | undefined = undefined;
 export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
@@ -150,7 +154,15 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
 
         let loop = nodeAnimation.animationLoop;
 
-        if (
+        if (isStopAnimation) {
+          testCircle && canvasApp?.elements.delete(testCircle.id);
+          testCircle?.domElement?.remove();
+
+          message && canvasApp?.elements.delete(message.id);
+          message?.domElement?.remove();
+
+          nodeAnimationMap.delete(key);
+        } else if (
           start &&
           end &&
           connection &&
@@ -305,6 +317,9 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
         }
       }
     });
+    if (isStopAnimation) {
+      isStopAnimation = false;
+    }
     requestAnimationFrame(animateCamera);
   };
   requestAnimationFrame(animateCamera);
