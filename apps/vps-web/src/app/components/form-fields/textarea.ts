@@ -163,6 +163,7 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
           )!;
           console.log('monaco.editor.create', container);
           const editor = monaco.editor.create(container, {
+            fixedOverflowWidgets: true,
             value: this.props.value, //"function hello() {\n\talert('Hello world!');\n}",
             language: 'html',
           });
