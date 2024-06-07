@@ -12,7 +12,7 @@ export interface TLDrawNodeCore {
   typeName: string;
 }
 
-export type TLDrawNode = TLDrawNodeCore | Record<string, any>;
+export type TLDrawNode = TLDrawNodeCore & Record<string, any>;
 
 export type TLDrawShapeNode = TLDrawNode & {
   parentId: string;

@@ -1,4 +1,9 @@
-import { TLDrawGroupNode, TLDrawShapeNode, TlDrawFile } from './tldraw-schema';
+import {
+  TLDrawGroupNode,
+  TLDrawNode,
+  TLDrawShapeNode,
+  TlDrawFile,
+} from './tldraw-schema';
 
 export const tldrawEmptyFile: TlDrawFile = {
   tldrawFileFormatVersion: 1,
@@ -156,4 +161,62 @@ export const tldrawEmptyGroupNode: TLDrawGroupNode = {
   index: 'a1',
   props: {},
   typeName: 'shape',
+};
+
+export const tldrawEmptyArrowNode: TLDrawShapeNode = {
+  x: 648.119140625,
+  y: 282.390625,
+  rotation: 0,
+  isLocked: false,
+  opacity: 1,
+  meta: {},
+  id: 'shape:zXeMP_1QdU9QgiQuk4Pzv',
+  type: 'arrow',
+  parentId: 'page:page',
+  index: 'a3',
+  props: {
+    dash: 'draw',
+    size: 'm',
+    fill: 'none',
+    color: 'black',
+    labelColor: 'black',
+    bend: -31.381061908684,
+    start: { x: 7.548828125, y: 4.02734375 },
+    end: { x: 132.5625, y: 111.8125 },
+    arrowheadStart: 'none',
+    arrowheadEnd: 'arrow',
+    text: '',
+    labelPosition: 0.5,
+    font: 'draw',
+  },
+  typeName: 'shape',
+};
+
+export const bindingEnd: TLDrawNode = {
+  meta: {},
+  id: 'binding:vdxYuWZMffX3AhylEAYNX',
+  type: 'arrow',
+  fromId: 'shape:zXeMP_1QdU9QgiQuk4Pzv',
+  toId: 'shape:n8EpcswZ1VmmRt5X3UIYp',
+  props: {
+    isPrecise: true,
+    isExact: false,
+    normalizedAnchor: { x: 0.5, y: 0.5 },
+    terminal: 'end',
+  },
+  typeName: 'binding',
+};
+export const bindingStart: TLDrawNode = {
+  meta: {},
+  id: 'binding:gsSeF86J9Nk64f_CHdpzX',
+  type: 'arrow',
+  fromId: 'shape:zXeMP_1QdU9QgiQuk4Pzv',
+  toId: 'shape:KFLW2aJzqFwzAbddUMnLz',
+  props: {
+    isPrecise: true,
+    isExact: false,
+    normalizedAnchor: { x: 0.5, y: 0.5 },
+    terminal: 'start',
+  },
+  typeName: 'binding',
 };
