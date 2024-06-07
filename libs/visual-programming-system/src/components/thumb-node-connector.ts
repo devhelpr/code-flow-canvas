@@ -300,12 +300,22 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       );
     }
     elements.set(this.nodeComponent.id, this.nodeComponent);
+
+    const rectBounds = (
+      innerCircle.domElement as HTMLElement
+    ).getBoundingClientRect();
+    let nodeThumbWidth = thumbWidth;
+    let nodeThumbHeight = thumbHeight;
+    if (rectBounds) {
+      nodeThumbWidth = rectBounds.width;
+      nodeThumbHeight = rectBounds.height;
+    }
     this.nodeComponent.connectionControllerType = connectionControllerType;
     this.nodeComponent.x = xInitial ? parseInt(xInitial.toString()) : 0;
     this.nodeComponent.y = yInitial ? parseInt(yInitial.toString()) : 0;
     this.nodeComponent.nodeType = nodeType;
-    this.nodeComponent.width = thumbWidth;
-    this.nodeComponent.height = thumbHeight;
+    this.nodeComponent.width = nodeThumbWidth;
+    this.nodeComponent.height = nodeThumbHeight;
     this.nodeComponent.offsetX = 0;
     this.nodeComponent.offsetY = 0;
     this.nodeComponent.radius = thumbRadius;
