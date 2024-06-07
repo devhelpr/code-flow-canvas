@@ -47,11 +47,22 @@ export const exportTldraw = (exportInfo: Exporter) => {
     tldrawNode.meta = {
       nodeInfo: cleanNodeInfo,
     };
+    let additionalData = '';
+    const fieldName = node.nodeInfo?.formElements?.[0]?.fieldName;
+    if (fieldName) {
+      const value = node.nodeInfo?.formValues?.[fieldName];
+      if (value) {
+        additionalData = `${value}`;
+      }
+    }
     tldrawNode.x = node.x - tldrawGroup.x;
     tldrawNode.y = node.y - tldrawGroup.y;
     tldrawNode.props.w = node.width ?? 0;
     tldrawNode.props.h = node.height ?? 0;
     tldrawNode.props.text = node.nodeInfo?.type ?? '';
+    if (additionalData) {
+      tldrawNode.props.text += `\n${additionalData}`;
+    }
     tldrawNode.index = `b${groupIndex.toString().padStart(8, '1')}`;
     tldrawExport.records.push(tldrawNode);
     groupIndex++;
