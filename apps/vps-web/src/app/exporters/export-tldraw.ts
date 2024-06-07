@@ -27,9 +27,6 @@ export const exportTldraw = (exportInfo: Exporter) => {
     if (node.containerNode) {
       return;
     }
-    if (node.nodeInfo?.isComposition) {
-      return;
-    }
     const tldrawGroup = structuredClone(tldrawEmptyGroupNode);
     tldrawGroup.id = `shape:${node.id}_group`;
     tldrawGroup.x = node.x;
@@ -98,9 +95,6 @@ export const exportTldraw = (exportInfo: Exporter) => {
     const node = element as IConnectionNodeComponent<NodeInfo>;
 
     if (node.containerNode) {
-      return;
-    }
-    if (node.nodeInfo?.isComposition) {
       return;
     }
 

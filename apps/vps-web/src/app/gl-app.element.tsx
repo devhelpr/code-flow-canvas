@@ -44,6 +44,8 @@ import {
   menubarClasses,
   menubarContainerClasses,
   navBarButton,
+  navBarIconButton,
+  navBarIconButtonInnerElement,
   navBarOutlineButton,
   navBarPrimaryButton,
 } from './consts/classes';
@@ -85,7 +87,12 @@ import {
   vec3Type,
   vec4Type,
 } from './gl-types/float-vec2-vec3';
-import { addClasses, removeClasses } from './utils/add-remove-classes';
+import {
+  addClasses,
+  addClassesHTMLElement,
+  removeClasses,
+  removeClassesHTMLElement,
+} from './utils/add-remove-classes';
 import { getSortedNodes } from './utils/sort-nodes';
 import { ShaderCompileHistory } from './interfaces/ShaderCompileHistory';
 import {
@@ -95,6 +102,8 @@ import {
   showHTMLElement,
 } from './utils/show-hide-element';
 import { Toolbar } from './components/toolbar';
+import { exportTldraw } from './exporters/export-tldraw';
+import { downloadFile } from './utils/create-download-link';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -114,6 +123,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   historyModeExitButton: IDOMElement | undefined = undefined;
   formElement: IDOMElement | undefined = undefined;
   selectedNodeLabel: IDOMElement | undefined = undefined;
+  exportExternalButton: HTMLElement | undefined = undefined;
 
   focusedNode: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   runButton: IDOMElement | undefined = undefined;
@@ -588,6 +598,30 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             },
             this.menubarElement.domElement,
             'Create composition'
+          );
+
+          renderElement(
+            <button
+              title="Export to external (work in progress - currently to tldraw)"
+              click={() => {
+                if (!this.canvasApp) {
+                  return;
+                }
+                exportTldraw({
+                  canvasApp: this.canvasApp,
+                  downloadFile,
+                });
+              }}
+              getElement={(element: HTMLElement) => {
+                this.exportExternalButton = element;
+                element.setAttribute('class', navBarIconButton);
+              }}
+            >
+              <span
+                class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
+              ></span>
+            </button>,
+            this.menubarElement.domElement as HTMLElement
           );
 
           this.compositionEditExitButton = createElement(
@@ -1238,6 +1272,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.glNavbarComponent?.onEditComposition();
     addClasses(this.clearCanvasButton, ['hidden']);
     addClasses(this.resetStateButton, ['hidden']);
+    addClassesHTMLElement(this.exportExternalButton, ['hidden']);
   }
 
   onExitEditComposition() {
@@ -1249,6 +1284,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.glNavbarComponent?.onExitEditComposition();
     removeClasses(this.clearCanvasButton, ['hidden']);
     removeClasses(this.resetStateButton, ['hidden']);
+
+    removeClassesHTMLElement(this.exportExternalButton, ['hidden']);
   }
 
   getSelectTaskElement = () => {
