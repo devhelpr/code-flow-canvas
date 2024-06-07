@@ -35,7 +35,6 @@ import { FormComponent } from './components/form-component';
 
 import {
   connectionExecuteHistory,
-  getStartNodes,
   increaseRunIndex,
   initFlowVariableScope,
   resetRunIndex,
@@ -114,6 +113,7 @@ import {
   runPathForNodeConnectionPairs,
   runPathFromThumb,
 } from './follow-path/run-path';
+import { exportTldraw } from './exporters/export-tldraw';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -506,7 +506,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'button',
             {
               class: `${navBarIconButton} `,
-              title: 'Export code (work in progress)',
+              title:
+                'Export to external (work in progress - currently to tldraw)',
             },
             menubarElement.domElement
           );
@@ -788,8 +789,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       });
       if (hasUIElements) {
         (this.runButton?.domElement as HTMLButtonElement).click();
-        // the below happens in the click handler itself
-        //(this.runButton?.domElement as HTMLButtonElement).disabled = true;
+        (this.runButton?.domElement as HTMLButtonElement).disabled = true;
       }
     };
 
@@ -826,7 +826,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         name: 'run-flow',
         click: (event) => {
           event.preventDefault();
-
           (this.runButton?.domElement as HTMLButtonElement).disabled = true;
           //this.clearPathExecution();
           setRunCounterUpdateElement(
@@ -851,12 +850,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               this.canvasApp,
               (input) => {
                 console.log('run finished', input);
-                if (runCounter.runCounter <= 0) {
-                  (this.runButton?.domElement as HTMLButtonElement).disabled =
-                    false;
-                  (this.pathRange?.domElement as HTMLButtonElement).disabled =
-                    false;
-                }
               },
               undefined,
               undefined,
@@ -865,7 +858,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               false
             );
           }
-
           return false;
         },
       },
@@ -1787,107 +1779,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     return runCounter;
   };
 
-  supportedNodeTypes = ['value', 'expression', 'show-value'];
-
   exportCodeClick = () => {
-    let canExport = true;
-    this.canvasApp?.elements.forEach((element) => {
-      const node = element as INodeComponent<NodeInfo>;
-      if (node.nodeType === NodeType.Connection) {
-        return;
-      }
-      if (this.supportedNodeTypes.indexOf(node.nodeInfo?.type ?? '') < 0) {
-        canExport = false;
-      }
-    });
-    if (!canExport) {
-      alert(
-        'Only value nodes can currently be exported (this feature is under development).'
-      );
+    if (!this.canvasApp) {
       return;
     }
-    if (!this.canvasApp?.elements) {
-      return;
-    }
-    let code = '';
-    const globalsSet: Record<string, boolean> = {};
-    this.canvasApp?.elements.forEach((element) => {
-      const node = element as INodeComponent<NodeInfo>;
-
-      if (
-        node.nodeInfo?.type &&
-        this.supportedNodeTypes.indexOf(node.nodeInfo?.type) >= 0
-      ) {
-        if (
-          !node.nodeInfo.compileInfo ||
-          !node.nodeInfo.compileInfo.getGlobalCode
-        ) {
-          return;
-        }
-        if (!globalsSet[node.nodeInfo?.type]) {
-          code += node.nodeInfo?.compileInfo?.getGlobalCode();
-        }
-        globalsSet[node.nodeInfo?.type] = true;
-      }
+    exportTldraw({
+      canvasApp: this.canvasApp,
+      downloadFile,
     });
-    const getConnections = (node: INodeComponent<NodeInfo>) => {
-      const connections: IConnectionNodeComponent<NodeInfo>[] = [];
-      if (this.canvasApp?.elements) {
-        this.canvasApp?.elements.forEach((element) => {
-          const connection = element as IConnectionNodeComponent<NodeInfo>;
-          if (connection.nodeType === NodeType.Connection) {
-            if (connection.startNode?.id === node.id) {
-              connections.push(connection);
-            }
-          }
-        });
-      }
-      return connections;
-    };
-
-    let lineIndex = 0;
-
-    const getCodeForNode = (
-      node: INodeComponent<NodeInfo>,
-      outputVar: string
-    ) => {
-      const connections = getConnections(node);
-      connections.forEach((connection) => {
-        if (connection.endNode) {
-          code += `const output${lineIndex} = ${connection?.endNode?.nodeInfo?.compileInfo?.getCode?.(
-            outputVar
-          )}`;
-          code += `\
-
-`;
-          const outputVarName = `output${lineIndex}`;
-          lineIndex++;
-          getCodeForNode(connection.endNode, outputVarName);
-        }
-      });
-    };
-    const startNodes = getStartNodes(this.canvasApp?.elements);
-    startNodes.forEach((element) => {
-      const node = element as INodeComponent<NodeInfo>;
-      if (
-        node.nodeInfo?.type &&
-        this.supportedNodeTypes.indexOf(node.nodeInfo?.type) >= 0
-      ) {
-        if (!node.nodeInfo.compileInfo || !node.nodeInfo.compileInfo.getCode) {
-          return;
-        }
-        code += `const output${lineIndex} = ${node.nodeInfo?.compileInfo?.getCode(
-          ''
-        )}`;
-        code += `\
-
-`;
-        const outputVarName = `output${lineIndex}`;
-        lineIndex++;
-        getCodeForNode(node, outputVarName);
-      }
-    });
-
-    downloadFile(code, 'flow.ts', 'text/javascript');
   };
 }
