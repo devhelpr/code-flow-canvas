@@ -135,7 +135,7 @@ export const tldrawShapeNode: TLDrawShapeNode = {
     labelColor: 'black',
     fill: 'none',
     dash: 'draw',
-    size: 'm',
+    size: 's',
     font: 'draw',
     text: '',
     align: 'middle',
