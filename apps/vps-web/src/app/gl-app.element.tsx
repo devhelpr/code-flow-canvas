@@ -602,6 +602,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
           renderElement(
             <button
+              class={`${navBarIconButton}`}
               title="Export to external (work in progress - currently to tldraw)"
               click={() => {
                 if (!this.canvasApp) {
@@ -614,7 +615,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               }}
               getElement={(element: HTMLElement) => {
                 this.exportExternalButton = element;
-                element.setAttribute('class', navBarIconButton);
               }}
             >
               <span

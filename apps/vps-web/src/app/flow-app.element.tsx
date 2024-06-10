@@ -103,7 +103,12 @@ import {
 } from './node-task-registry/setup-select-node-types-dropdown';
 import { createOption } from './node-task-registry/createOption';
 import { RunCounter } from './follow-path/run-counter';
-import { addClasses, removeClasses } from './utils/add-remove-classes';
+import {
+  addClasses,
+  addClassesHTMLElement,
+  removeClasses,
+  removeClassesHTMLElement,
+} from './utils/add-remove-classes';
 import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 import { downloadFile } from './utils/create-download-link';
 import { TestComponent } from './components/test-component';
@@ -114,6 +119,8 @@ import {
   runPathFromThumb,
 } from './follow-path/run-path';
 import { exportTldraw } from './exporters/export-tldraw';
+import { createUploadJSONFileInput } from './utils/create-upload-input';
+import { syncFromTldraw } from './exporters/sync-from-tldraw';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -142,7 +149,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   mediaLibary: MediaLibrary | undefined = undefined;
   canvasUpdated: (() => void) | undefined = undefined;
 
-  exportCodeButton: IDOMElement | undefined = undefined;
+  exportCodeButton: HTMLElement | undefined = undefined;
   canvasAction: CanvasAction = CanvasAction.idle;
   canvasActionPayload: any = undefined;
   constructor(appRootSelector: string) {
@@ -502,26 +509,63 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             'Create composition'
           );
 
-          this.exportCodeButton = createElement(
-            'button',
-            {
-              class: `${navBarIconButton} `,
-              title:
-                'Export to external (work in progress - currently to tldraw)',
-            },
-            menubarElement.domElement
-          );
-          createElement(
-            'span',
-            {
-              class: `${navBarIconButtonInnerElement} icon-file_downloadget_app`,
-            },
-            this.exportCodeButton?.domElement
+          renderElement(
+            <button
+              class={`${navBarIconButton}`}
+              title="Export to external (work in progress - currently to tldraw)"
+              click={() => {
+                if (!this.canvasApp) {
+                  return;
+                }
+                exportTldraw({
+                  canvasApp: this.canvasApp,
+                  downloadFile,
+                });
+              }}
+              getElement={(element: HTMLElement) => {
+                this.exportCodeButton = element;
+              }}
+            >
+              <span
+                class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
+              ></span>
+            </button>,
+            menubarElement.domElement as HTMLElement
           );
 
-          this.exportCodeButton.domElement.addEventListener('click', () => {
-            this.exportCodeClick();
-          });
+          renderElement(
+            <button
+              class={`${navBarIconButton}`}
+              title="Sync from external (work in progress - currently to tldraw)"
+              click={() => {
+                createUploadJSONFileInput()
+                  .then((data) => {
+                    if (!this.canvasApp) {
+                      return;
+                    }
+                    if (data) {
+                      console.log('data', data);
+                      syncFromTldraw(data, {
+                        canvasApp: this.canvasApp,
+                        downloadFile,
+                      });
+                    }
+                    //alert('File imported');
+                  })
+                  .catch(() => {
+                    // alert('Cancel or error importing file');
+                  });
+              }}
+              getElement={(_element: HTMLElement) => {
+                //this.syncWithExternalButton = element;
+              }}
+            >
+              <span
+                class={`${navBarIconButtonInnerElement} icon-file_upload`}
+              ></span>
+            </button>,
+            menubarElement.domElement as HTMLElement
+          );
           this.compositionEditExitButton = createElement(
             'button',
             {
@@ -1697,7 +1741,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     addClasses(this.runButton, ['hidden']);
     addClasses(this.speedMeterElement, ['hidden']);
 
-    addClasses(this.exportCodeButton, ['hidden']);
+    addClassesHTMLElement(this.exportCodeButton, ['hidden']);
   }
 
   onExitEditComposition() {
@@ -1713,7 +1757,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     removeClasses(this.runButton, ['hidden']);
     removeClasses(this.speedMeterElement, ['hidden']);
 
-    removeClasses(this.exportCodeButton, ['hidden']);
+    removeClassesHTMLElement(this.exportCodeButton, ['hidden']);
   }
 
   onImported = () => {
@@ -1777,15 +1821,5 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     });
     return runCounter;
-  };
-
-  exportCodeClick = () => {
-    if (!this.canvasApp) {
-      return;
-    }
-    exportTldraw({
-      canvasApp: this.canvasApp,
-      downloadFile,
-    });
   };
 }

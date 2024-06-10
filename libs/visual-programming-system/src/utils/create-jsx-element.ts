@@ -16,7 +16,8 @@ export const createJSXElement = (
       if (key === 'getElement' && typeof val === 'function') {
         val(element);
       } else if (key === 'class') {
-        element.classList.add(...((val as string) || '').trim().split(' '));
+        element.setAttribute('class', (val as string) || '');
+        //element.classList.add(...((val as string) || '').trim().split(' '));
         return;
       } else if (typeof val === 'function') {
         (element as unknown as HTMLElement).addEventListener(

@@ -41,7 +41,8 @@ export const exportTldraw = (exportInfo: Exporter) => {
     const cleanNodeInfo = cleanupNodeInfoForSerializing(node.nodeInfo);
 
     let groupIndex = 1;
-    tldrawNode.meta = {
+    tldrawGroup.meta = {
+      isFlowNode: true,
       nodeInfo: cleanNodeInfo,
     };
     let additionalData = '';
