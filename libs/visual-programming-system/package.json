@@ -1,12 +1,12 @@
 {
   "name": "@devhelpr/visual-programming-system",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "commonjs",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@devhelpr/media-library": "0.0.3",
-    "@devhelpr/dom-components": "0.0.3"
+    "@devhelpr/dom-components": "0.0.3",
+    "@devhelpr/media-library": "0.0.3"
   }
 }
