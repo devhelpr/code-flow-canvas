@@ -3,6 +3,7 @@ import {
   IConnectionNodeComponent,
   INodeComponent,
   NodeType,
+  ThumbConnectionType,
   cleanupNodeInfoForSerializing,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
@@ -63,8 +64,8 @@ const exportNodesToTldraw = (
     }
     tldrawNode.x = node.x - tldrawGroup.x;
     tldrawNode.y = node.y - tldrawGroup.y;
-    tldrawNode.props.w = node.width ?? 0;
-    tldrawNode.props.h = node.height ?? 0;
+    tldrawNode.props.w = node.width || 1;
+    tldrawNode.props.h = node.height || 1;
 
     if (node.nodeInfo?.canvasAppInstance) {
       tldrawNode.props.align = 'start';
@@ -89,26 +90,36 @@ const exportNodesToTldraw = (
     tldrawNode.index = `b${groupIndex.toString().padStart(8, '1')}`;
     tldrawExport.records.push(tldrawNode);
     groupIndex++;
-    node.thumbConnectors?.forEach((thumb) => {
-      const tldrawThumb = structuredClone(tldrawShapeNode);
-      tldrawThumb.id = `shape:${node.id}_thumb_${thumb.thumbName}`;
-      tldrawThumb.parentId = tldrawGroup.id;
-      // tldrawThumb.meta = {
-      //   thumb: thumb,
-      // };
-      tldrawThumb.x = thumb.x - tldrawNode.x - (thumb.width ?? 0) / 2;
-      tldrawThumb.y = thumb.y - tldrawNode.y - (thumb.height ?? 0) / 2;
-      tldrawThumb.props.w = thumb.width ?? 0;
-      tldrawThumb.props.h = thumb.height ?? 0;
-      tldrawThumb.props.fill = 'semi';
-      //tldrawThumb.props.text = thumb.thumbName;
-      tldrawThumb.index = `c${groupIndex.toString().padStart(8, '1')}`;
-      tldrawExport.records.push(tldrawThumb);
-      groupIndex++;
-      if (groupIndex % 10 === 0) {
+    let isRectThumb = false;
+    if (
+      node.thumbConnectors?.length === 1 &&
+      node.thumbConnectors[0].thumbConnectionType ===
+        ThumbConnectionType.startOrEnd
+    ) {
+      isRectThumb = true;
+    }
+    if (!isRectThumb) {
+      node.thumbConnectors?.forEach((thumb) => {
+        const tldrawThumb = structuredClone(tldrawShapeNode);
+        tldrawThumb.id = `shape:${node.id}_thumb_${thumb.thumbName}`;
+        tldrawThumb.parentId = tldrawGroup.id;
+        // tldrawThumb.meta = {
+        //   thumb: thumb,
+        // };
+        tldrawThumb.x = thumb.x - tldrawNode.x - (thumb.width ?? 0) / 2;
+        tldrawThumb.y = thumb.y - tldrawNode.y - (thumb.height ?? 0) / 2;
+        tldrawThumb.props.w = thumb.width || 1;
+        tldrawThumb.props.h = thumb.height || 1;
+        tldrawThumb.props.fill = 'semi';
+        //tldrawThumb.props.text = thumb.thumbName;
+        tldrawThumb.index = `c${groupIndex.toString().padStart(8, '1')}`;
+        tldrawExport.records.push(tldrawThumb);
         groupIndex++;
-      }
-    });
+        if (groupIndex % 10 === 0) {
+          groupIndex++;
+        }
+      });
+    }
 
     if (node.nodeInfo?.canvasAppInstance) {
       exportNodesToTldraw(
@@ -132,6 +143,55 @@ const exportNodesToTldraw = (
       return;
     }
     if (!node.startNode || !node.endNode) {
+      return;
+    }
+
+    let isRectThumb = false;
+    if (
+      node.startNode.thumbConnectors?.length === 1 &&
+      node.startNode.thumbConnectors?.[0].thumbConnectionType ===
+        ThumbConnectionType.startOrEnd
+    ) {
+      isRectThumb = true;
+    }
+    if (
+      node.endNode.thumbConnectors?.length === 1 &&
+      node.endNode.thumbConnectors?.[0].thumbConnectionType ===
+        ThumbConnectionType.startOrEnd
+    ) {
+      isRectThumb = true;
+    }
+    if (isRectThumb) {
+      const connection = structuredClone(tldrawEmptyArrowNode);
+      connection.id = `shape:${node.id}`;
+      connection.parentId = 'page:page';
+      connection.x = node.x;
+      connection.y = node.y;
+      connection.meta = {
+        nodeInfo: cleanupNodeInfoForSerializing(node.nodeInfo),
+      };
+      connection.props.start.x = 0;
+      connection.props.start.y = 0;
+      connection.props.end.x = (node.endX ?? 0) - node.x;
+      connection.props.end.y = (node.endY ?? 0) - node.y;
+      connection.index = `a${index.toString().padStart(8, '1')}`;
+      tldrawExport.records.push(connection);
+      index++;
+      if (index % 10 === 0) {
+        index++;
+      }
+
+      const connectionBindingStart = structuredClone(bindingStart);
+      connectionBindingStart.id = `binding:${node.id}_binding_start`;
+      connectionBindingStart.fromId = connection.id;
+      connectionBindingStart.toId = `shape:${node.startNode.id}`;
+      tldrawExport.records.push(connectionBindingStart);
+
+      const connectionBindingEnd = structuredClone(bindingEnd);
+      connectionBindingEnd.id = `binding:${node.id}_binding_end`;
+      connectionBindingEnd.fromId = connection.id;
+      connectionBindingEnd.toId = `shape:${node.endNode.id}`;
+      tldrawExport.records.push(connectionBindingEnd);
       return;
     }
     const connection = structuredClone(tldrawEmptyArrowNode);
