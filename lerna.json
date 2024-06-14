@@ -1,0 +1,11 @@
+{
+  "packages": ["packages/*", "apps/*", "libs/*"],
+  "useNx": true,
+  "version": "independent",
+  "npmClient": "npm",
+  "command": {
+    "publish": {
+      "npmClient": "npm"
+    }
+  }
+}
