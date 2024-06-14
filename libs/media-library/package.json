@@ -1,7 +1,6 @@
 {
   "name": "@devhelpr/media-library",
-  "version": "0.0.1",
-  "dependencies": {},
+  "version": "0.0.2",
   "main": "./index.js",
   "module": "./index.mjs",
   "typings": "./index.d.ts"
