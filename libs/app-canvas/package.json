@@ -1,6 +1,9 @@
 {
   "name": "@devhelpr/app-canvas",
   "version": "0.0.2",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@devhelpr/expression-compiler": "^0.0.36",
     "@devhelpr/markup-compiler": "^0.0.16",
@@ -9,5 +12,6 @@
   },
   "main": "./index.js",
   "module": "./index.mjs",
-  "typings": "./index.d.ts"
+  "typings": "./index.d.ts",
+  "gitHead": "a3a00c7b0d745f8fac7770325d945630eb84b7f9"
 }
