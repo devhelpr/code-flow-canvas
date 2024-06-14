@@ -1,7 +1,7 @@
 {
   "name": "vps-web-root",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "see license in license.md",
   "scripts": {
     "start": "nx serve vps-web",
     "startapi": "nx serve vps-api",
