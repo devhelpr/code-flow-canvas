@@ -8,6 +8,11 @@ npx nx g @nrwl/js:lib [name] --publishable --importPath [npm package name]
 npx nx g @nrwl/js:lib dom-components --publishable --importPath @devhelpr/dom-components
 npx nx g @nrwl/js:lib media-library --publishable --importPath @devhelpr/media-library
 
+npx nx g @nrwl/js:lib app-canvas --publishable --importPath @devhelpr/app-canvas
+
+.. when running the above command, choose root libs/...
+
+
 ## deno 
 
 npx nx g @nx/deno:app vps-api --frontendProject vps-web
