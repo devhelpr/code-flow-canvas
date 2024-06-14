@@ -1,7 +1,7 @@
 {
   "name": "media-library",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "media-library/src",
+  "sourceRoot": "libs/media-library/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/media-library"
+        "outputPath": "dist/libs/media-library"
       },
       "configurations": {
         "development": {
@@ -29,7 +29,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/media-library"
+        "reportsDirectory": "../../coverage/libs/media-library"
       }
     },
     "lint": {

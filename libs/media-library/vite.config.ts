@@ -25,7 +25,7 @@ export default defineConfig({
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
-    outDir: '../../dist/media-library',
+    outDir: '../../dist/libs/media-library',
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
@@ -55,7 +55,7 @@ export default defineConfig({
 
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/media-library',
+      reportsDirectory: '../../coverage/libs/media-library',
       provider: 'v8',
     },
   },
