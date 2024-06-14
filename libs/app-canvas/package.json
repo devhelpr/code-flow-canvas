@@ -1,7 +1,12 @@
 {
   "name": "@devhelpr/app-canvas",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "@devhelpr/visual-programming-system": "0.0.3",
+    "@devhelpr/expression-compiler": "^0.0.36",
+    "@devhelpr/markup-compiler": "^0.0.16",
+    "@devhelpr/media-library": "0.0.3"
+  },
   "main": "./index.js",
   "module": "./index.mjs",
   "typings": "./index.d.ts"

@@ -4,5 +4,9 @@
   "type": "commonjs",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@devhelpr/media-library": "0.0.3",
+    "@devhelpr/dom-components": "0.0.3"
   }
 }
