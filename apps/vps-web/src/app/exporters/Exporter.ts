@@ -1,7 +1,7 @@
 import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export interface Exporter {
-  canvasApp: CanvasAppInstance<NodeInfo>;
+  canvasApp: CanvasAppInstance<BaseNodeInfo>;
   downloadFile: (data: any, name: string, dataType: string) => void;
 }

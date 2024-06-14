@@ -1,4 +1,5 @@
 import {
+  ElementNodeMap,
   IConnectionNodeComponent,
   INodeComponent,
   NodeType,
@@ -14,24 +15,31 @@ import {
   tldrawEmptyGroupNode,
   tldrawShapeNode,
 } from './tldraw/tldraw-emtpy-file';
+import { BaseNodeInfo } from '../types/base-node-info';
+import { TlDrawFile } from './tldraw/tldraw-schema';
 
-export const exportTldraw = (exportInfo: Exporter) => {
-  const tldrawExport = structuredClone(tldrawEmptyFile);
-
+const exportNodesToTldraw = (
+  exportInfo: Exporter,
+  tldrawExport: TlDrawFile,
+  parentId: undefined | string,
+  elements: ElementNodeMap<BaseNodeInfo>
+) => {
   let index = 1;
-  exportInfo.canvasApp?.elements.forEach((element) => {
+  elements.forEach((element) => {
     const node = element as INodeComponent<NodeInfo>;
+
     if (node.nodeType === NodeType.Connection) {
       return;
     }
-    if (node.containerNode) {
-      return;
-    }
+
     const tldrawGroup = structuredClone(tldrawEmptyGroupNode);
     tldrawGroup.id = `shape:${node.id}_group`;
     tldrawGroup.x = node.x;
     tldrawGroup.y = node.y;
     tldrawGroup.index = `b${index.toString().padStart(8, '1')}`;
+    if (parentId) {
+      tldrawGroup.parentId = parentId;
+    }
     tldrawExport.records.push(tldrawGroup);
 
     const tldrawNode = structuredClone(tldrawShapeNode);
@@ -57,9 +65,26 @@ export const exportTldraw = (exportInfo: Exporter) => {
     tldrawNode.y = node.y - tldrawGroup.y;
     tldrawNode.props.w = node.width ?? 0;
     tldrawNode.props.h = node.height ?? 0;
-    tldrawNode.props.text = node.nodeInfo?.type ?? '';
-    if (additionalData) {
-      tldrawNode.props.text += `\n${additionalData}`;
+
+    if (node.nodeInfo?.canvasAppInstance) {
+      tldrawNode.props.align = 'start';
+      tldrawNode.props.verticalAlign = 'start';
+    }
+
+    if (node.nodeInfo?.isComposition && node.nodeInfo?.compositionId) {
+      const composition = exportInfo.canvasApp.compositons.getComposition(
+        node.nodeInfo?.compositionId
+      );
+      if (composition) {
+        tldrawNode.props.text = composition.name;
+      } else {
+        tldrawNode.props.text = 'Composition';
+      }
+    } else {
+      tldrawNode.props.text = node.nodeInfo?.type ?? '';
+      if (additionalData) {
+        tldrawNode.props.text += `\n${additionalData}`;
+      }
     }
     tldrawNode.index = `b${groupIndex.toString().padStart(8, '1')}`;
     tldrawExport.records.push(tldrawNode);
@@ -85,6 +110,14 @@ export const exportTldraw = (exportInfo: Exporter) => {
       }
     });
 
+    if (node.nodeInfo?.canvasAppInstance) {
+      exportNodesToTldraw(
+        exportInfo,
+        tldrawExport,
+        tldrawGroup.id,
+        node.nodeInfo.canvasAppInstance.elements
+      );
+    }
     index++;
     if (index % 10 === 0) {
       index++;
@@ -92,12 +125,8 @@ export const exportTldraw = (exportInfo: Exporter) => {
   });
 
   index = 1;
-  exportInfo.canvasApp?.elements.forEach((element) => {
+  elements.forEach((element) => {
     const node = element as IConnectionNodeComponent<NodeInfo>;
-
-    if (node.containerNode) {
-      return;
-    }
 
     if (node.nodeType !== NodeType.Connection) {
       return;
@@ -136,6 +165,17 @@ export const exportTldraw = (exportInfo: Exporter) => {
     connectionBindingEnd.toId = `shape:${node.endNode.id}_thumb_${node.endNodeThumb?.thumbName}`;
     tldrawExport.records.push(connectionBindingEnd);
   });
+};
+
+export const exportTldraw = (exportInfo: Exporter) => {
+  const tldrawExport = structuredClone(tldrawEmptyFile);
+
+  exportNodesToTldraw(
+    exportInfo,
+    tldrawExport,
+    undefined,
+    exportInfo.canvasApp.elements
+  );
   exportInfo.downloadFile(
     JSON.stringify(tldrawExport),
     'tldraw.tldr',
