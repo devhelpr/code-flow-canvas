@@ -10,7 +10,7 @@
     "graph": "nx graph",
     "playwright": "nx e2e vps-web",
     "reset": "nx reset",
-    "versionandpublishpackages": "lerna publish --no-private --access public"
+    "versionandpublishpackages": "lerna publish --no-private"
   },
   "private": true,
   "dependencies": {
