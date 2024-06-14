@@ -4,6 +4,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "url": "https://github.com/devhelpr/code-flow-canvas"
+  },
+  "license": "see license in license.md",
   "dependencies": {
     "@devhelpr/expression-compiler": "^0.0.36",
     "@devhelpr/markup-compiler": "^0.0.16",
