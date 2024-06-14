@@ -1,5 +1,8 @@
 {
   "name": "@devhelpr/visual-programming-system",
   "version": "0.0.2",
-  "type": "commonjs"
+  "type": "commonjs",
+  "publishConfig": {
+    "access": "public"
+  }
 }
