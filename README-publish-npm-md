@@ -11,7 +11,7 @@ These packages are published to npm in this order:
 
 - clear dist/libs folder
 - clear .nx/cache
-- update package versions
+- update package versions and dependencies
 - commit and push changes
 - npm run build-all
 - cd to dist/libs
