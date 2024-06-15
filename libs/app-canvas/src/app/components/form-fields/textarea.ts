@@ -5,8 +5,8 @@ import {
 } from '@devhelpr/dom-components';
 import { trackNamedSignal } from '@devhelpr/visual-programming-system';
 import { BaseFormFieldProps, FormFieldComponent } from './field';
-import * as monaco from 'monaco-editor';
-import { IFormsComponent } from '../IFormsComponent';
+//import * as monaco from 'monaco-editor';
+//import { IFormsComponent } from '../IFormsComponent';
 
 export interface TextAreaFieldProps extends BaseFormFieldProps {
   formId: string;
@@ -72,19 +72,12 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
       if (this.element) {
         this.element.remove();
         this.label = this.element.firstChild as HTMLLabelElement;
-        if (this.props.isCodeEditor) {
-          this.initialRender = true;
-          this.renderList.push(this.label);
-          // monaco.editor.create(
-          //   document.getElementById(
-          //     `#${this.props.formId}_${this.props.fieldName}`
-          //   )!,
-          //   {
-          //     value: "function hello() {\n\talert('Hello world!');\n}",
-          //     language: 'javascript',
-          //   }
-          // );
-        } else {
+        // if (this.props.isCodeEditor) {
+        //   this.initialRender = true;
+        //   this.renderList.push(this.label);
+
+        // } else
+        {
           this.textarea = this.label.nextSibling as HTMLTextAreaElement;
           this.renderList.push(this.label, this.textarea);
           this.textarea.addEventListener('input', this.onInput);
@@ -114,9 +107,9 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
       // remove only removes the connection between parent and node
       this.element.remove();
     }
-    if (this.editorInstance) {
-      this.editorInstance.dispose();
-    }
+    // if (this.editorInstance) {
+    //   this.editorInstance.dispose();
+    // }
     this.isMounted = false;
   }
 
@@ -138,6 +131,9 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     if (!this.element) return;
     if (!this.textarea && !this.props.isCodeEditor) return;
 
+    // REMOVE THIS when isCodeEditor is working
+    if (!this.textarea) return;
+
     this.oldProps = this.props;
 
     if (this.textarea) {
@@ -146,41 +142,42 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
 
     if (this.initialRender) {
       this.initialRender = false;
-      if (this.props.isCodeEditor) {
-        this.renderElements([this.label]);
-      } else {
+      // if (this.props.isCodeEditor) {
+      //   this.renderElements([this.label]);
+      // } else
+      {
         this.renderElements([this.textarea]);
       }
     }
   }
-  editorInstance: monaco.editor.IStandaloneCodeEditor | null = null;
-  onAfterRender = (_formComponent: IFormsComponent) => {
-    if (this.props.isCodeEditor) {
-      setTimeout(() => {
-        try {
-          const container = document.getElementById(
-            `${this.props.formId}_${this.props.fieldName}`
-          )!;
-          console.log('monaco.editor.create', container);
-          const editor = monaco.editor.create(container, {
-            fixedOverflowWidgets: true,
-            value: this.props.value, //"function hello() {\n\talert('Hello world!');\n}",
-            language: 'html',
-          });
-          if (editor) {
-            this.editorInstance = editor;
-            editor.getModel()?.onDidChangeContent((_event) => {
-              console.log('editor onDidChangeContent', editor.getValue());
+  // editorInstance: monaco.editor.IStandaloneCodeEditor | null = null;
+  // onAfterRender = (_formComponent: IFormsComponent) => {
+  //   if (this.props.isCodeEditor) {
+  //     setTimeout(() => {
+  //       try {
+  //         const container = document.getElementById(
+  //           `${this.props.formId}_${this.props.fieldName}`
+  //         )!;
+  //         console.log('monaco.editor.create', container);
+  //         const editor = monaco.editor.create(container, {
+  //           fixedOverflowWidgets: true,
+  //           value: this.props.value, //"function hello() {\n\talert('Hello world!');\n}",
+  //           language: 'html',
+  //         });
+  //         if (editor) {
+  //           this.editorInstance = editor;
+  //           editor.getModel()?.onDidChangeContent((_event) => {
+  //             console.log('editor onDidChangeContent', editor.getValue());
 
-              if (this.props.onChange) {
-                this.props.onChange(editor.getValue());
-              }
-            });
-          }
-        } catch (e) {
-          console.error('monaco.editor.create', e);
-        }
-      }, 0);
-    }
-  };
+  //             if (this.props.onChange) {
+  //               this.props.onChange(editor.getValue());
+  //             }
+  //           });
+  //         }
+  //       } catch (e) {
+  //         console.error('monaco.editor.create', e);
+  //       }
+  //     }, 0);
+  //   }
+  // };
 }

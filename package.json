@@ -6,7 +6,7 @@
     "start": "nx serve vps-web",
     "startapi": "nx serve vps-api",
     "build": "nx build vps-web",
-    "build-all": "nx run-many --all --target=build",
+    "build-all": "nx run-many --all --target=build --skip-nx-cache",
     "test": "nx run-many --all --target=test",
     "graph": "nx graph",
     "playwright": "nx e2e vps-web",
