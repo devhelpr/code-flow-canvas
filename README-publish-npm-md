@@ -1,0 +1,19 @@
+# Publish library packages to npm
+
+These packages are published to npm in this order:
+
+- @devhelpr/media-library
+- @devhelpr/dom-components
+- @devhelpr/visual-programming-system
+- @devhelpr/app-canvas
+
+## Publish steps
+
+- clear dist/libs folder
+- clear .nx/cache
+- update package versions
+- commit and push changes
+- npm run build-all
+- cd to dist/libs
+- from each dist folder for the above packages:
+  - npm publish --access public
