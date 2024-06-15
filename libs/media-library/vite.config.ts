@@ -6,7 +6,7 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/media-library',
+  cacheDir: '../../node_modules/.vite/libs/media-library',
 
   plugins: [
     nxViteTsPaths(),

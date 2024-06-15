@@ -5,7 +5,8 @@
   "npmClient": "npm",
   "command": {
     "publish": {
-      "npmClient": "npm"
+      "npmClient": "npm",
+      "directory": "{workspaceRoot}/dist/{projectRoot}"
     }
   }
 }
