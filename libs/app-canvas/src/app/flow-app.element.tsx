@@ -118,6 +118,7 @@ import {
 import { exportTldraw } from './exporters/export-tldraw';
 import { createUploadJSONFileInput } from './utils/create-upload-input';
 import { syncFromTldraw } from './exporters/sync-from-tldraw';
+import { StorageProvider } from './storage/StorageProvider';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
@@ -148,8 +149,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   exportCodeButton: HTMLElement | undefined = undefined;
   canvasAction: CanvasAction = CanvasAction.idle;
   canvasActionPayload: any = undefined;
-  constructor(appRootSelector: string) {
-    super(appRootSelector, undefined, standardTheme);
+
+  constructor(
+    appRootSelector: string,
+    storageProvider?: StorageProvider<NodeInfo>
+  ) {
+    super(appRootSelector, undefined, standardTheme, storageProvider);
     if (!this.rootElement) {
       return;
     }
@@ -359,7 +364,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     setCameraAnimation(this.canvasApp);
 
     setupCanvasNodeTaskRegistry(this.createRunCounterContext);
-    createIndexedDBStorageProvider<NodeInfo>()
+
+    const storageProviderPromise = this.storageProvider
+      ? Promise.resolve(this.storageProvider)
+      : createIndexedDBStorageProvider<NodeInfo>();
+    storageProviderPromise
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
         this.isStoring = true;

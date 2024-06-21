@@ -88,7 +88,8 @@ export class AppElement<T extends BaseNodeInfo> {
   constructor(
     appRootSelector: string,
     customTemplate?: HTMLTemplateElement,
-    theme?: Theme
+    theme?: Theme,
+    storageProvider?: StorageProvider<T>
   ) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
@@ -102,7 +103,9 @@ export class AppElement<T extends BaseNodeInfo> {
     if (!this.appRootElement) {
       return;
     }
-
+    if (storageProvider) {
+      this.storageProvider = storageProvider;
+    }
     const template = document.createElement('template');
     template.innerHTML = `
   <div class="min-h-dvh w-full ${

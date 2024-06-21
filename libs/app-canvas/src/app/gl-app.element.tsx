@@ -101,6 +101,7 @@ import {
 import { Toolbar } from './components/toolbar';
 import { exportTldraw } from './exporters/export-tldraw';
 import { downloadFile } from './utils/create-download-link';
+import { StorageProvider } from './storage/StorageProvider';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -142,7 +143,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   shaderCompileHistory: ShaderCompileHistory[] = [];
   addCompiledShaderToHistory = false;
 
-  constructor(appRootSelector: string) {
+  constructor(
+    appRootSelector: string,
+    storageProvider?: StorageProvider<GLNodeInfo>
+  ) {
     const template = document.createElement('template');
     template.innerHTML = `<div>
       <div class="min-h-dvh w-1/2 ${standardTheme.background} overflow-hidden touch-none" id="root" >
@@ -150,7 +154,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       <canvas id="glcanvas" class="gl-canvas"></canvas></div>
     `;
 
-    super(appRootSelector, template, standardTheme);
+    super(appRootSelector, template, standardTheme, storageProvider);
 
     if (!this.rootElement) {
       return;
@@ -434,7 +438,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     setCameraAnimation(this.canvasApp);
 
     setupGLNodeTaskRegistry(this.updateUniformValue);
-    createIndexedDBStorageProvider<GLNodeInfo>()
+
+    const storageProviderPromise = this.storageProvider
+      ? Promise.resolve(this.storageProvider)
+      : createIndexedDBStorageProvider<GLNodeInfo>();
+
+    storageProviderPromise
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
         this.isStoring = true;
