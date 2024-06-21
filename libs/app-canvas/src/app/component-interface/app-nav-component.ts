@@ -7,14 +7,15 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
 } from '@devhelpr/visual-programming-system';
-import { FlowrunnerIndexedDbStorageProvider } from '../storage/indexeddb-storage-provider';
 import { NodeInfo } from '../types/node-info';
+import { StorageProvider } from '../storage/StorageProvider';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export interface AppNavComponentsProps<T> {
+export interface AppNavComponentsProps<T extends BaseNodeInfo> {
   rootAppElement: HTMLElement;
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
-  storageProvider: FlowrunnerIndexedDbStorageProvider;
+  storageProvider: StorageProvider<T>;
   initializeNodes: () => void;
   clearCanvas: () => void;
   animatePath: AnimatePathFunction<T>;
@@ -40,11 +41,11 @@ export interface AppNavComponentsProps<T> {
   ) => void;
 }
 
-export interface GenericAppNavComponentsProps<T> {
+export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {
   rootAppElement: HTMLElement;
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
-  storageProvider: FlowrunnerIndexedDbStorageProvider;
+  storageProvider: StorageProvider<T>;
   initializeNodes: () => void;
   clearCanvas: () => void;
   canvasUpdated: () => void;

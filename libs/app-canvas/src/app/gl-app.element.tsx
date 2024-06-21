@@ -32,10 +32,7 @@ import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
 import { FormComponent } from './components/form-component';
 
-import {
-  createIndexedDBStorageProvider,
-  FlowrunnerIndexedDbStorageProvider,
-} from './storage/indexeddb-storage-provider';
+import { createIndexedDBStorageProvider } from './storage/indexeddb-storage-provider';
 import {
   GLNavbarComponent,
   GLNavbarMenu,
@@ -116,7 +113,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   pathRange: IDOMElement | undefined = undefined;
 
-  storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
   glNavbarComponent: GLNavbarComponent | undefined = undefined;
   scopeNodeDomElement: HTMLElement | undefined = undefined;
   menubarElement: IDOMElement | undefined = undefined;
@@ -438,7 +434,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     setCameraAnimation(this.canvasApp);
 
     setupGLNodeTaskRegistry(this.updateUniformValue);
-    createIndexedDBStorageProvider()
+    createIndexedDBStorageProvider<GLNodeInfo>()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
         this.isStoring = true;

@@ -56,10 +56,7 @@ import {
 import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
 import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
-import {
-  createIndexedDBStorageProvider,
-  FlowrunnerIndexedDbStorageProvider,
-} from './storage/indexeddb-storage-provider';
+import { createIndexedDBStorageProvider } from './storage/indexeddb-storage-provider';
 import { getPointOnConnection } from './follow-path/point-on-connection';
 import { AppComponents } from './components/app-components';
 import {
@@ -131,7 +128,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   isStoring = false;
 
-  storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
   navbarComponent: NavbarComponent | undefined = undefined;
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
@@ -363,7 +359,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     setCameraAnimation(this.canvasApp);
 
     setupCanvasNodeTaskRegistry(this.createRunCounterContext);
-    createIndexedDBStorageProvider()
+    createIndexedDBStorageProvider<NodeInfo>()
       .then((storageProvider) => {
         console.log('storageProvider', storageProvider);
         this.isStoring = true;

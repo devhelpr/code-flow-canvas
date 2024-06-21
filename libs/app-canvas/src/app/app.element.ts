@@ -38,7 +38,7 @@ import {
   setCameraAnimation,
   setPositionTargetCameraAnimation,
 } from './follow-path/animate-path';
-import { FlowrunnerIndexedDbStorageProvider } from './storage/indexeddb-storage-provider';
+import { StorageProvider } from './storage/StorageProvider';
 import { executeCommand } from './command-handlers/register-commands';
 import { getSortedNodes } from './utils/sort-nodes';
 import { getStartNodes } from './utils/start-nodes';
@@ -48,7 +48,7 @@ import { importToCanvas } from './storage/import-to-canvas';
 import { hideElement, showElement } from './utils/show-hide-element';
 import { createInputDialog } from './utils/create-input-dialog';
 
-export class AppElement<T> {
+export class AppElement<T extends BaseNodeInfo> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -60,7 +60,7 @@ export class AppElement<T> {
   canvas?: IElementNode<T> = undefined;
   canvasApp?: CanvasAppInstance<T> = undefined;
   currentCanvasApp?: CanvasAppInstance<T> = undefined;
-  storageProvider: FlowrunnerIndexedDbStorageProvider | undefined = undefined;
+  storageProvider: StorageProvider<T> | undefined = undefined;
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
 
