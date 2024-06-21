@@ -237,248 +237,22 @@ export class AppElement<T extends BaseNodeInfo> {
   };
 
   metaKeyDown = false;
+  tabKeyWasUsed = false;
+  keyDownHandler = (event: KeyboardEvent) => {
+    const cmdKey = 91;
+    this.metaKeyDown = false;
+    if (event.keyCode === cmdKey) {
+      this.metaKeyDown = true;
+    } else if (event.key === 'Tab') {
+      this.tabKeyWasUsed = true;
+      console.log('TAB KEY WAS USED');
+      if (!document.activeElement || document.activeElement === document.body) {
+        console.log('TAB KEY WAS USED but no activeElement');
+        const element = document.querySelector("[tabindex='1']") as HTMLElement;
+        if (element) {
+          element.focus();
 
-  initializeCommandHandlers = () => {
-    let tabKeyWasUsed = false;
-
-    window.addEventListener('keydown', (event) => {
-      const cmdKey = 91;
-      this.metaKeyDown = false;
-      if (event.keyCode === cmdKey) {
-        this.metaKeyDown = true;
-      } else if (event.key === 'Tab') {
-        tabKeyWasUsed = true;
-        console.log('TAB KEY WAS USED');
-        if (
-          !document.activeElement ||
-          document.activeElement === document.body
-        ) {
-          console.log('TAB KEY WAS USED but no activeElement');
-          const element = document.querySelector(
-            "[tabindex='1']"
-          ) as HTMLElement;
-          if (element) {
-            element.focus();
-
-            const id = element.getAttribute('data-node-id');
-            if (id) {
-              const node = this.currentCanvasApp?.elements.get(
-                id
-              ) as IRectNodeComponent<T>;
-              if (node) {
-                this.focusedNode = node;
-              }
-              if (node && node.x && node.y && this.currentCanvasApp) {
-                console.log('focusin node found', node);
-                this.setCameraTargetOnNode(node);
-                this.currentCanvasApp.selectNode(node);
-                this.removeFormElement();
-              }
-            }
-          }
-        } else {
-          console.log(
-            'TAB KEY WAS USED and activeElement found',
-            document.activeElement
-          );
-        }
-      } else {
-        // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
-        if (event.key !== 'Shift') {
-          tabKeyWasUsed = false;
-
-          console.log('TAB KEY WAS NOT USED', event.key);
-        }
-      }
-
-      const key = event.key.toLowerCase();
-      const inInputControle =
-        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-          (event.target as HTMLElement)?.tagName
-        ) >= 0;
-      if (!inInputControle) {
-        if (
-          (event.ctrlKey || event.metaKey || this.metaKeyDown) &&
-          key === 'c'
-        ) {
-          event.preventDefault();
-          this.removeFormElement();
-          const selectedNodeInfo = getSelectedNode();
-          executeCommand(
-            this.commandRegistry,
-            'copy-node',
-            this.getSelectTaskElement().value,
-            selectedNodeInfo?.id
-          );
-          return false;
-        }
-        if (
-          (event.ctrlKey || event.metaKey || this.metaKeyDown) &&
-          key === 'v'
-        ) {
-          event.preventDefault();
-          this.removeFormElement();
-          const selectedNodeInfo = getSelectedNode();
-          executeCommand(
-            this.commandRegistry,
-            'paste-node',
-            this.getSelectTaskElement().value,
-            selectedNodeInfo?.id
-          );
-          return false;
-        }
-        if (
-          (event.ctrlKey || event.metaKey || this.metaKeyDown) &&
-          key === 'l'
-        ) {
-          event.preventDefault();
-          this.removeFormElement();
-          const selectedNodeInfo = getSelectedNode();
-          executeCommand(
-            this.commandRegistry,
-            'auto-align',
-            this.getSelectTaskElement().value,
-            selectedNodeInfo?.id
-          );
-          return false;
-        }
-      }
-      return true;
-    });
-    window.addEventListener('keyup', (event) => {
-      console.log('keyup', event.key, event.ctrlKey);
-      const key = event.key.toLowerCase();
-      const inInputControle =
-        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-          (event.target as HTMLElement)?.tagName
-        ) >= 0;
-      if (key === 'backspace' || key === 'delete') {
-        if (inInputControle) {
-          return;
-        }
-        this.removeFormElement();
-
-        const selectedNodes = this.currentCanvasApp?.getSelectedNodes();
-        if (selectedNodes) {
-          executeCommand(
-            this.commandRegistry,
-            'delete-node',
-            undefined,
-            selectedNodes
-          );
-
-          return;
-        }
-
-        const selectedNodeInfo = getSelectedNode();
-        if (selectedNodeInfo) {
-          executeCommand(
-            this.commandRegistry,
-            'delete-node',
-            selectedNodeInfo.id
-          );
-        }
-      }
-
-      if (
-        event.key === 'insert' ||
-        ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'a')
-      ) {
-        this.removeFormElement();
-        const selectedNodeInfo = getSelectedNode();
-        executeCommand(
-          this.commandRegistry,
-          'add-node',
-          this.getSelectTaskElement().value,
-          selectedNodeInfo?.id
-        );
-      }
-
-      if (event.ctrlKey && key === 'enter') {
-        this.run();
-      }
-
-      if (key === 'escape') {
-        const currentFocusedNode = this.focusedNode;
-        this.removeFormElement();
-        this.popupNode = undefined;
-        if (currentFocusedNode) {
-          (currentFocusedNode.domElement as HTMLElement).focus();
-        }
-      }
-
-      if (event.shiftKey && key === '!') {
-        if (
-          ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
-            (event.target as HTMLElement)?.tagName
-          ) >= 0
-        ) {
-          return true;
-        }
-        if (this.currentCanvasApp) {
-          event.preventDefault();
-          this.currentCanvasApp.centerCamera();
-          return false;
-        }
-      }
-
-      if (event.ctrlKey && key === 'i') {
-        console.log('ctrl + i', this.focusedNode);
-        let currentFocusedNode = this.focusedNode;
-        this.popupNode = this.focusedNode;
-        if (this.focusedNode && this.currentCanvasApp) {
-          this.currentCanvasApp.selectNode(this.focusedNode);
-        } else {
-          const selectedNodeInfo = getSelectedNode();
-          if (selectedNodeInfo) {
-            const node = this.currentCanvasApp?.elements.get(
-              selectedNodeInfo.id
-            ) as IRectNodeComponent<T>;
-            if (node && this.currentCanvasApp) {
-              this.focusedNode = node;
-              this.popupNode = this.focusedNode;
-              currentFocusedNode = node;
-              this.currentCanvasApp.selectNode(this.focusedNode);
-            }
-          }
-        }
-
-        this.positionPopup(this.focusedNode as IRectNodeComponent<T>);
-        const inputInPopup = document.querySelector(
-          '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
-        );
-        if (inputInPopup) {
-          (inputInPopup as HTMLInputElement).focus();
-        }
-        if (currentFocusedNode) {
-          this.focusedNode = currentFocusedNode;
-        }
-      }
-
-      return true;
-    });
-
-    window.addEventListener('pointerdown', (_event) => {
-      tabKeyWasUsed = false;
-    });
-
-    document.addEventListener('focusout', (_event) => {
-      console.log('focusout');
-      this.focusedNode = undefined;
-    });
-    document.addEventListener('focusin', (_event) => {
-      console.log('focusin');
-      document.body.scrollTop = 0;
-      document.body.scrollLeft = 0;
-      if (this.rootElement) {
-        this.rootElement.scrollTop = 0;
-        this.rootElement.scrollLeft = 0;
-      }
-      const activeElement = document.activeElement;
-      if (activeElement && tabKeyWasUsed) {
-        const closestRectNode = activeElement.closest('.rect-node');
-        if (closestRectNode) {
-          const id = closestRectNode.getAttribute('data-node-id');
+          const id = element.getAttribute('data-node-id');
           if (id) {
             const node = this.currentCanvasApp?.elements.get(
               id
@@ -496,13 +270,246 @@ export class AppElement<T extends BaseNodeInfo> {
         }
       } else {
         console.log(
-          'FOCUSIN activeElement not found or tabKeyWasUsed is false',
-          tabKeyWasUsed
+          'TAB KEY WAS USED and activeElement found',
+          document.activeElement
         );
       }
-      tabKeyWasUsed = false;
-    });
+    } else {
+      // this is a workaround for shift-tab... the next element which is tabbed to doesn't get focus
+      if (event.key !== 'Shift') {
+        this.tabKeyWasUsed = false;
+
+        console.log('TAB KEY WAS NOT USED', event.key);
+      }
+    }
+
+    const key = event.key.toLowerCase();
+    const inInputControle =
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0;
+    if (!inInputControle) {
+      if ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'c') {
+        event.preventDefault();
+        this.removeFormElement();
+        const selectedNodeInfo = getSelectedNode();
+        executeCommand(
+          this.commandRegistry,
+          'copy-node',
+          this.getSelectTaskElement().value,
+          selectedNodeInfo?.id
+        );
+        return false;
+      }
+      if ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'v') {
+        event.preventDefault();
+        this.removeFormElement();
+        const selectedNodeInfo = getSelectedNode();
+        executeCommand(
+          this.commandRegistry,
+          'paste-node',
+          this.getSelectTaskElement().value,
+          selectedNodeInfo?.id
+        );
+        return false;
+      }
+      if ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'l') {
+        event.preventDefault();
+        this.removeFormElement();
+        const selectedNodeInfo = getSelectedNode();
+        executeCommand(
+          this.commandRegistry,
+          'auto-align',
+          this.getSelectTaskElement().value,
+          selectedNodeInfo?.id
+        );
+        return false;
+      }
+    }
+    return true;
   };
+
+  keyUpHandler = (event: KeyboardEvent) => {
+    console.log('keyup', event.key, event.ctrlKey);
+    const key = event.key.toLowerCase();
+    const inInputControle =
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+        (event.target as HTMLElement)?.tagName
+      ) >= 0;
+    if (key === 'backspace' || key === 'delete') {
+      if (inInputControle) {
+        return;
+      }
+      this.removeFormElement();
+
+      const selectedNodes = this.currentCanvasApp?.getSelectedNodes();
+      if (selectedNodes) {
+        executeCommand(
+          this.commandRegistry,
+          'delete-node',
+          undefined,
+          selectedNodes
+        );
+
+        return;
+      }
+
+      const selectedNodeInfo = getSelectedNode();
+      if (selectedNodeInfo) {
+        executeCommand(
+          this.commandRegistry,
+          'delete-node',
+          selectedNodeInfo.id
+        );
+      }
+    }
+
+    if (
+      event.key === 'insert' ||
+      ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'a')
+    ) {
+      this.removeFormElement();
+      const selectedNodeInfo = getSelectedNode();
+      executeCommand(
+        this.commandRegistry,
+        'add-node',
+        this.getSelectTaskElement().value,
+        selectedNodeInfo?.id
+      );
+    }
+
+    if (event.ctrlKey && key === 'enter') {
+      this.run();
+    }
+
+    if (key === 'escape') {
+      const currentFocusedNode = this.focusedNode;
+      this.removeFormElement();
+      this.popupNode = undefined;
+      if (currentFocusedNode) {
+        (currentFocusedNode.domElement as HTMLElement).focus();
+      }
+    }
+
+    if (event.shiftKey && key === '!') {
+      if (
+        ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+          (event.target as HTMLElement)?.tagName
+        ) >= 0
+      ) {
+        return true;
+      }
+      if (this.currentCanvasApp) {
+        event.preventDefault();
+        this.currentCanvasApp.centerCamera();
+        return false;
+      }
+    }
+
+    if (event.ctrlKey && key === 'i') {
+      console.log('ctrl + i', this.focusedNode);
+      let currentFocusedNode = this.focusedNode;
+      this.popupNode = this.focusedNode;
+      if (this.focusedNode && this.currentCanvasApp) {
+        this.currentCanvasApp.selectNode(this.focusedNode);
+      } else {
+        const selectedNodeInfo = getSelectedNode();
+        if (selectedNodeInfo) {
+          const node = this.currentCanvasApp?.elements.get(
+            selectedNodeInfo.id
+          ) as IRectNodeComponent<T>;
+          if (node && this.currentCanvasApp) {
+            this.focusedNode = node;
+            this.popupNode = this.focusedNode;
+            currentFocusedNode = node;
+            this.currentCanvasApp.selectNode(this.focusedNode);
+          }
+        }
+      }
+
+      this.positionPopup(this.focusedNode as IRectNodeComponent<T>);
+      const inputInPopup = document.querySelector(
+        '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
+      );
+      if (inputInPopup) {
+        (inputInPopup as HTMLInputElement).focus();
+      }
+      if (currentFocusedNode) {
+        this.focusedNode = currentFocusedNode;
+      }
+    }
+
+    return true;
+  };
+
+  pointerDownHandler = () => {
+    this.tabKeyWasUsed = false;
+  };
+  focusOutHandler = () => {
+    console.log('focusout');
+    this.focusedNode = undefined;
+  };
+  focusInHandler = () => {
+    console.log('focusin');
+    document.body.scrollTop = 0;
+    document.body.scrollLeft = 0;
+    if (this.rootElement) {
+      this.rootElement.scrollTop = 0;
+      this.rootElement.scrollLeft = 0;
+    }
+    const activeElement = document.activeElement;
+    if (activeElement && this.tabKeyWasUsed) {
+      const closestRectNode = activeElement.closest('.rect-node');
+      if (closestRectNode) {
+        const id = closestRectNode.getAttribute('data-node-id');
+        if (id) {
+          const node = this.currentCanvasApp?.elements.get(
+            id
+          ) as IRectNodeComponent<T>;
+          if (node) {
+            this.focusedNode = node;
+          }
+          if (node && node.x && node.y && this.currentCanvasApp) {
+            console.log('focusin node found', node);
+            this.setCameraTargetOnNode(node);
+            this.currentCanvasApp.selectNode(node);
+            this.removeFormElement();
+          }
+        }
+      }
+    } else {
+      console.log(
+        'FOCUSIN activeElement not found or tabKeyWasUsed is false',
+        this.tabKeyWasUsed
+      );
+    }
+    this.tabKeyWasUsed = false;
+  };
+
+  initializeCommandHandlers = () => {
+    window.addEventListener('keydown', this.keyDownHandler);
+    window.addEventListener('keyup', this.keyUpHandler);
+
+    window.addEventListener('pointerdown', this.pointerDownHandler);
+
+    document.addEventListener('focusout', this.focusOutHandler);
+    document.addEventListener('focusin', this.focusInHandler);
+  };
+
+  public destroy() {
+    window.removeEventListener('keydown', this.keyDownHandler);
+    window.removeEventListener('keyup', this.keyUpHandler);
+
+    window.removeEventListener('pointerdown', this.pointerDownHandler);
+
+    document.removeEventListener('focusout', this.focusOutHandler);
+    document.removeEventListener('focusin', this.focusInHandler);
+    this.canvasApp?.destoyCanvasApp();
+    this.canvasApp?.canvas?.domElement.remove();
+    this.rootElement?.remove();
+    this.canvasApp = undefined;
+    this.rootElement = undefined;
+  }
 
   setCameraTargetOnNode = (_node: IRectNodeComponent<T>) => {
     //

@@ -18,6 +18,7 @@ if (url.pathname === '/example') {
     };
 
     new module.FlowAppElement('#app-root', storageProvider, true);
+    //result.destroy();
   });
 } else if (url.pathname === '/gl') {
   import('./app/gl-app.element').then((module) => {
