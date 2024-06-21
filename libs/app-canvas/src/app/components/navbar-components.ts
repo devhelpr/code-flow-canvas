@@ -57,7 +57,9 @@ export class NavbarComponent extends Component<
     super(parent, props);
 
     // <button class="${navBarButton}">Import script</button>
-
+    if (props.isReadOnly) {
+      return;
+    }
     this.template = createTemplate(
       `<div class="inline-flex items-center content-center">
         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
@@ -557,5 +559,6 @@ export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
     setIsStoring: props.setIsStoring,
     showPopup: props.showPopup,
     executeCommand: props.executeCommand,
+    isReadOnly: props.isReadOnly,
   });
 };

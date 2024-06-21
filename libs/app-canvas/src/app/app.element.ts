@@ -89,7 +89,8 @@ export class AppElement<T extends BaseNodeInfo> {
     appRootSelector: string,
     customTemplate?: HTMLTemplateElement,
     theme?: Theme,
-    storageProvider?: StorageProvider<T>
+    storageProvider?: StorageProvider<T>,
+    _isReadOnly?: boolean
   ) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work

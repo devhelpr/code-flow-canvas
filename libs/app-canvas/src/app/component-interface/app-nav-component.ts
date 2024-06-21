@@ -39,6 +39,7 @@ export interface AppNavComponentsProps<T extends BaseNodeInfo> {
     parameter1?: any,
     parameter2?: any
   ) => void;
+  isReadOnly?: boolean;
 }
 
 export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {

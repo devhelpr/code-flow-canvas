@@ -1,0 +1,78 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "054132af-4d2f-48ed-b239-f5129dd35288",
+          "x": 278.1417731356699,
+          "y": -252.38925449323074,
+          "width": 120.0000152454518,
+          "height": 87.99999523574688,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "variable",
+            "formValues": {
+              "variableName": "counter",
+              "initialValue": "0",
+              "fieldType": "value",
+              "fieldValueType": "number"
+            },
+            "isVariable": true,
+            "nodeCannotBeReplaced": true
+          }
+        },
+        {
+          "id": "06256fee-1157-4f80-8886-1767f926a909",
+          "x": -37.90894974259744,
+          "y": -64.8632664406205,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "counter + 1",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "c9c55ec2-6475-4945-a680-1966d46e3676",
+          "x": 279.0786499813757,
+          "y": -73.60697032267876,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "counter"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "a3cabe53-a367-45f3-964b-304c4236a61b",
+          "x": 162.09105025740257,
+          "y": -8.863266440620507,
+          "endX": 279.0786499813757,
+          "endY": -9.606970322678762,
+          "startNodeId": "06256fee-1157-4f80-8886-1767f926a909",
+          "endNodeId": "c9c55ec2-6475-4945-a680-1966d46e3676",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

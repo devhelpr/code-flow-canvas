@@ -152,9 +152,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   constructor(
     appRootSelector: string,
-    storageProvider?: StorageProvider<NodeInfo>
+    storageProvider?: StorageProvider<NodeInfo>,
+    isReadOnly?: boolean
   ) {
-    super(appRootSelector, undefined, standardTheme, storageProvider);
+    super(
+      appRootSelector,
+      undefined,
+      standardTheme,
+      storageProvider,
+      isReadOnly
+    );
     if (!this.rootElement) {
       return;
     }
@@ -378,6 +385,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
         if (this.storageProvider && this.canvasApp && this.rootElement) {
           this.navbarComponent = NavbarComponents({
+            isReadOnly: isReadOnly,
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
@@ -434,152 +442,152 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               canvasUpdated();
             },
           });
-
-          this.resetStateButton = createElement(
-            'button',
-            {
-              class: navBarButton,
-              click: (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                initializeNodes();
-                return false;
+          if (!isReadOnly) {
+            this.resetStateButton = createElement(
+              'button',
+              {
+                class: navBarButton,
+                click: (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  initializeNodes();
+                  return false;
+                },
               },
-            },
-            menubarElement.domElement,
-            'Reset state'
-          );
+              menubarElement.domElement,
+              'Reset state'
+            );
 
-          this.clearCanvasButton = createElement(
-            'button',
-            {
-              class: navBarOutlineButton,
-              click: (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (confirm('Are you sure you want to clear the canvas?')) {
-                  setStopAnimations();
-                  this.clearCanvas();
-                  store();
-                }
-                return false;
+            this.clearCanvasButton = createElement(
+              'button',
+              {
+                class: navBarOutlineButton,
+                click: (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (confirm('Are you sure you want to clear the canvas?')) {
+                    setStopAnimations();
+                    this.clearCanvas();
+                    store();
+                  }
+                  return false;
+                },
               },
-            },
-            menubarElement.domElement,
-            'Clear canvas'
-          );
+              menubarElement.domElement,
+              'Clear canvas'
+            );
 
-          this.compositionEditButton = createElement(
-            'button',
-            {
-              class: `${navBarPrimaryButton} hidden`,
-              click: (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.editFlowComposition();
-                return false;
+            this.compositionEditButton = createElement(
+              'button',
+              {
+                class: `${navBarPrimaryButton} hidden`,
+                click: (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  this.editFlowComposition();
+                  return false;
+                },
               },
-            },
-            menubarElement.domElement,
-            'Edit composition'
-          );
+              menubarElement.domElement,
+              'Edit composition'
+            );
 
-          this.compositionNameButton = createElement(
-            'button',
-            {
-              class: `${navBarButton} hidden`,
-              click: (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.editCompositionName();
-                return false;
+            this.compositionNameButton = createElement(
+              'button',
+              {
+                class: `${navBarButton} hidden`,
+                click: (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  this.editCompositionName();
+                  return false;
+                },
               },
-            },
-            menubarElement.domElement,
-            'Edit composition name'
-          );
+              menubarElement.domElement,
+              'Edit composition name'
+            );
 
-          this.compositionCreateButton = createElement(
-            'button',
-            {
-              class: `${navBarButton}`,
-              click: (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.createFlowComposition();
-                return false;
+            this.compositionCreateButton = createElement(
+              'button',
+              {
+                class: `${navBarButton}`,
+                click: (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  this.createFlowComposition();
+                  return false;
+                },
               },
-            },
-            menubarElement.domElement,
-            'Create composition'
-          );
+              menubarElement.domElement,
+              'Create composition'
+            );
 
-          renderElement(
-            <button
-              class={`${navBarIconButton}`}
-              title="Export to external (work in progress - currently to tldraw)"
-              click={() => {
-                if (!this.canvasApp) {
-                  return;
-                }
-                exportTldraw({
-                  canvasApp: this.canvasApp,
-                  downloadFile,
-                });
-              }}
-              getElement={(element: HTMLElement) => {
-                this.exportCodeButton = element;
-              }}
-            >
-              <span
-                class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
-              ></span>
-            </button>,
-            menubarElement.domElement as HTMLElement
-          );
-
-          renderElement(
-            <button
-              class={`${navBarIconButton}`}
-              title="Sync from external (work in progress - currently to tldraw)"
-              click={() => {
-                createUploadJSONFileInput()
-                  .then((data) => {
-                    if (!this.canvasApp) {
-                      return;
-                    }
-                    if (data) {
-                      console.log('data', data);
-                      syncFromTldraw(data, {
-                        canvasApp: this.canvasApp,
-                        downloadFile,
-                      });
-                    }
-                    //alert('File imported');
-                  })
-                  .catch(() => {
-                    // alert('Cancel or error importing file');
+            renderElement(
+              <button
+                class={`${navBarIconButton}`}
+                title="Export to external (work in progress - currently to tldraw)"
+                click={() => {
+                  if (!this.canvasApp) {
+                    return;
+                  }
+                  exportTldraw({
+                    canvasApp: this.canvasApp,
+                    downloadFile,
                   });
-              }}
-              getElement={(_element: HTMLElement) => {
-                //this.syncWithExternalButton = element;
-              }}
-            >
-              <span
-                class={`${navBarIconButtonInnerElement} icon-file_upload`}
-              ></span>
-            </button>,
-            menubarElement.domElement as HTMLElement
-          );
-          this.compositionEditExitButton = createElement(
-            'button',
-            {
-              class: `${navBarButton} ml-auto hidden`,
-            },
-            menubarElement.domElement,
-            'Exit Edit composition'
-          );
+                }}
+                getElement={(element: HTMLElement) => {
+                  this.exportCodeButton = element;
+                }}
+              >
+                <span
+                  class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
+                ></span>
+              </button>,
+              menubarElement.domElement as HTMLElement
+            );
 
+            renderElement(
+              <button
+                class={`${navBarIconButton}`}
+                title="Sync from external (work in progress - currently to tldraw)"
+                click={() => {
+                  createUploadJSONFileInput()
+                    .then((data) => {
+                      if (!this.canvasApp) {
+                        return;
+                      }
+                      if (data) {
+                        console.log('data', data);
+                        syncFromTldraw(data, {
+                          canvasApp: this.canvasApp,
+                          downloadFile,
+                        });
+                      }
+                      //alert('File imported');
+                    })
+                    .catch(() => {
+                      // alert('Cancel or error importing file');
+                    });
+                }}
+                getElement={(_element: HTMLElement) => {
+                  //this.syncWithExternalButton = element;
+                }}
+              >
+                <span
+                  class={`${navBarIconButtonInnerElement} icon-file_upload`}
+                ></span>
+              </button>,
+              menubarElement.domElement as HTMLElement
+            );
+            this.compositionEditExitButton = createElement(
+              'button',
+              {
+                class: `${navBarButton} ml-auto hidden`,
+              },
+              menubarElement.domElement,
+              'Exit Edit composition'
+            );
+          }
           this.selectedNodeLabel = createElement(
             'div',
             {
@@ -589,102 +597,104 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             menubarElement.domElement
           );
 
-          NodeSidebarMenuComponents({
-            clearCanvas: this.clearCanvas,
-            initializeNodes: initializeNodes,
-            storageProvider: this.storageProvider,
-            selectNodeType: this.selectNodeType
-              ?.domElement as HTMLSelectElement,
-            animatePath: animatePath,
-            animatePathFromThumb: animatePathFromThumb,
-            canvasUpdated: canvasUpdated,
-            getCanvasApp: () => this.currentCanvasApp,
-            removeElement: this.removeElement,
-            rootElement: this.rootElement as HTMLElement,
-            rootAppElement: this.rootElement as HTMLElement,
-            setIsStoring: setIsStoring,
-            executeCommand: (
-              command: string,
-              parameter1: any,
-              parameter2: any
-            ) =>
-              executeCommand(
-                this.commandRegistry,
-                command,
-                parameter1,
-                parameter2
-              ),
-            showPopup: (node: IRectNodeComponent<NodeInfo>) => {
-              if (node.nodeInfo?.isSettingsPopup) {
-                const selectedNodeInfo = getSelectedNode();
-                if (selectedNodeInfo) {
-                  this.showFormPopup(node, selectedNodeInfo);
+          if (!isReadOnly) {
+            NodeSidebarMenuComponents({
+              clearCanvas: this.clearCanvas,
+              initializeNodes: initializeNodes,
+              storageProvider: this.storageProvider,
+              selectNodeType: this.selectNodeType
+                ?.domElement as HTMLSelectElement,
+              animatePath: animatePath,
+              animatePathFromThumb: animatePathFromThumb,
+              canvasUpdated: canvasUpdated,
+              getCanvasApp: () => this.currentCanvasApp,
+              removeElement: this.removeElement,
+              rootElement: this.rootElement as HTMLElement,
+              rootAppElement: this.rootElement as HTMLElement,
+              setIsStoring: setIsStoring,
+              executeCommand: (
+                command: string,
+                parameter1: any,
+                parameter2: any
+              ) =>
+                executeCommand(
+                  this.commandRegistry,
+                  command,
+                  parameter1,
+                  parameter2
+                ),
+              showPopup: (node: IRectNodeComponent<NodeInfo>) => {
+                if (node.nodeInfo?.isSettingsPopup) {
+                  const selectedNodeInfo = getSelectedNode();
+                  if (selectedNodeInfo) {
+                    this.showFormPopup(node, selectedNodeInfo);
+                  }
+                  return;
                 }
-                return;
-              }
-              if (!node.nodeInfo?.showFormOnlyInPopup) {
-                return;
-              }
+                if (!node.nodeInfo?.showFormOnlyInPopup) {
+                  return;
+                }
 
-              this.popupNode = node;
+                this.popupNode = node;
 
-              if (this.currentCanvasApp) {
+                if (this.currentCanvasApp) {
+                  this.focusedNode = node;
+                  this.popupNode = this.focusedNode;
+                  this.currentCanvasApp.selectNode(this.focusedNode);
+                }
+
+                this.positionPopup(
+                  this.focusedNode as IRectNodeComponent<NodeInfo>
+                );
+                const inputInPopup = document.querySelector(
+                  '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
+                );
+                if (inputInPopup) {
+                  (inputInPopup as HTMLInputElement).focus();
+                }
+
                 this.focusedNode = node;
-                this.popupNode = this.focusedNode;
-                this.currentCanvasApp.selectNode(this.focusedNode);
-              }
+              },
+              importToCanvas: (
+                nodesList: FlowNode<NodeInfo>[],
+                canvasApp: CanvasAppInstance<NodeInfo>,
+                canvasUpdated: () => void,
+                containerNode?: IRectNodeComponent<NodeInfo>,
+                nestedLevel?: number,
+                getNodeTaskFactory?: (name: string) => any,
+                compositions: Record<string, Composition<NodeInfo>> = {}
+              ) => {
+                this.isStoring = true;
+                removeAllCompositions();
+                importCompositions<NodeInfo>(compositions, canvasApp);
+                registerCompositionNodes(
+                  this.canvasApp?.compositons?.getAllCompositions() ?? {}
+                );
+                importToCanvas(
+                  nodesList,
+                  canvasApp,
+                  canvasUpdated,
+                  containerNode,
+                  nestedLevel,
+                  getNodeTaskFactory,
+                  this.onImported
+                );
+                this.isStoring = false;
+                canvasUpdated();
+              },
+            }) as unknown as HTMLElement;
 
-              this.positionPopup(
-                this.focusedNode as IRectNodeComponent<NodeInfo>
-              );
-              const inputInPopup = document.querySelector(
-                '#textAreaContainer input, #textAreaContainer textarea, #textAreaContainer select'
-              );
-              if (inputInPopup) {
-                (inputInPopup as HTMLInputElement).focus();
-              }
-
-              this.focusedNode = node;
-            },
-            importToCanvas: (
-              nodesList: FlowNode<NodeInfo>[],
-              canvasApp: CanvasAppInstance<NodeInfo>,
-              canvasUpdated: () => void,
-              containerNode?: IRectNodeComponent<NodeInfo>,
-              nestedLevel?: number,
-              getNodeTaskFactory?: (name: string) => any,
-              compositions: Record<string, Composition<NodeInfo>> = {}
-            ) => {
-              this.isStoring = true;
-              removeAllCompositions();
-              importCompositions<NodeInfo>(compositions, canvasApp);
-              registerCompositionNodes(
-                this.canvasApp?.compositons?.getAllCompositions() ?? {}
-              );
-              importToCanvas(
-                nodesList,
-                canvasApp,
-                canvasUpdated,
-                containerNode,
-                nestedLevel,
-                getNodeTaskFactory,
-                this.onImported
-              );
-              this.isStoring = false;
-              canvasUpdated();
-            },
-          }) as unknown as HTMLElement;
-
-          registerCommands<NodeInfo>({
-            rootElement: this.rootElement,
-            getCanvasApp: () => this.currentCanvasApp,
-            canvasUpdated: canvasUpdated,
-            removeElement: this.removeElement,
-            getNodeTaskFactory,
-            commandRegistry: this.commandRegistry,
-            setupTasksInDropdown,
-          });
-          this.clearCanvas();
+            registerCommands<NodeInfo>({
+              rootElement: this.rootElement,
+              getCanvasApp: () => this.currentCanvasApp,
+              canvasUpdated: canvasUpdated,
+              removeElement: this.removeElement,
+              getNodeTaskFactory,
+              commandRegistry: this.commandRegistry,
+              setupTasksInDropdown,
+            });
+            this.clearCanvas();
+          }
         }
 
         setOnFrame((_elapsed) => {
@@ -966,44 +976,53 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     );
     setSpeedMeter(speedMeter);
 
-    renderElement(
-      <Toolbar<NodeInfo>
-        getTaskList={getTaskList}
-        addNodeType={(nodeType: string) => {
-          executeCommand(this.commandRegistry, 'add-node', nodeType);
-        }}
-        replaceNode={(nodeType: string, node: IRectNodeComponent<NodeInfo>) => {
-          executeCommand(this.commandRegistry, 'replace-node', nodeType, node);
-        }}
-        getNode={(
-          nodeId: string,
-          containerNode?: IRectNodeComponent<NodeInfo> | undefined
-        ) => {
-          const node = (
-            containerNode
-              ? (containerNode.nodeInfo as any)?.canvasAppInstance?.elements
-              : this.currentCanvasApp?.elements
-          )?.get(nodeId);
-          return { node };
-        }}
-      />,
-      this.rootElement
-    );
+    if (!isReadOnly) {
+      renderElement(
+        <Toolbar<NodeInfo>
+          getTaskList={getTaskList}
+          addNodeType={(nodeType: string) => {
+            executeCommand(this.commandRegistry, 'add-node', nodeType);
+          }}
+          replaceNode={(
+            nodeType: string,
+            node: IRectNodeComponent<NodeInfo>
+          ) => {
+            executeCommand(
+              this.commandRegistry,
+              'replace-node',
+              nodeType,
+              node
+            );
+          }}
+          getNode={(
+            nodeId: string,
+            containerNode?: IRectNodeComponent<NodeInfo> | undefined
+          ) => {
+            const node = (
+              containerNode
+                ? (containerNode.nodeInfo as any)?.canvasAppInstance?.elements
+                : this.currentCanvasApp?.elements
+            )?.get(nodeId);
+            return { node };
+          }}
+        />,
+        this.rootElement
+      );
 
-    this.selectNodeType = createElement(
-      'select',
-      {
-        type: 'select',
-        class: 'p-2 m-2 relative max-w-[220px]', //top-[60px]',
-        name: 'select-node-type',
-        change: (_event) => {
-          //
+      this.selectNodeType = createElement(
+        'select',
+        {
+          type: 'select',
+          class: 'p-2 m-2 relative max-w-[220px]', //top-[60px]',
+          name: 'select-node-type',
+          change: (_event) => {
+            //
+          },
         },
-      },
-      menubarElement.domElement,
-      ''
-    );
-
+        menubarElement.domElement,
+        ''
+      );
+    }
     const setupTasksForContainerTaskInDropdown = (
       allowedNodeTasks: string[]
     ) => {
