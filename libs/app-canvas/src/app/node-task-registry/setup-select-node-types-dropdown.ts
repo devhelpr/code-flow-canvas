@@ -1,11 +1,11 @@
 import { IThumb, createElement } from '@devhelpr/visual-programming-system';
+import { createOption } from './createOption';
+import { ITasklistItem } from '../interfaces/TaskListItem';
 import {
   canvasNodeTaskRegistryLabels,
   getNodeFactoryNames,
   getNodeTaskFactory,
-} from './canvas-node-task-registry';
-import { createOption } from './createOption';
-import { ITasklistItem } from '../interfaces/TaskListItem';
+} from '@devhelpr/web-flow-executor';
 
 const createOptgroup = (
   categoryName: string,

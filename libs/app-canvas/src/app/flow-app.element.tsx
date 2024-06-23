@@ -27,11 +27,11 @@ import {
   createJSXElement,
   CanvasAction,
   IRunCounter,
+  FormComponent,
+  OnNextNodeFunction,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
-
-import { FormComponent } from './components/form-component';
 
 import {
   connectionExecuteHistory,
@@ -40,7 +40,6 @@ import {
   resetRunIndex,
   run,
 } from './simple-flow-engine/simple-flow-engine';
-import { NodeInfo } from './types/node-info';
 import {
   setSpeedMeter,
   timers,
@@ -54,7 +53,6 @@ import {
   setStopAnimations,
 } from './follow-path/animate-path';
 import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
-import { OnNextNodeFunction } from './follow-path/OnNextNodeFunction';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
 import { createIndexedDBStorageProvider } from './storage/indexeddb-storage-provider';
 import { getPointOnConnection } from './follow-path/point-on-connection';
@@ -73,15 +71,7 @@ import {
   navBarPrimaryButton,
   navBarIconButton,
 } from './consts/classes';
-import {
-  canvasNodeTaskRegistryLabels,
-  getNodeFactoryNames,
-  getNodeTaskFactory,
-  registerComposition,
-  registerCompositionNodes,
-  removeAllCompositions,
-  setupCanvasNodeTaskRegistry,
-} from './node-task-registry/canvas-node-task-registry';
+
 import {
   serializeCompositions,
   serializeElementsMap,
@@ -99,7 +89,6 @@ import {
   setupTasksInDropdown,
 } from './node-task-registry/setup-select-node-types-dropdown';
 import { createOption } from './node-task-registry/createOption';
-import { RunCounter } from './follow-path/run-counter';
 import {
   addClasses,
   addClassesHTMLElement,
@@ -110,15 +99,24 @@ import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
 import { downloadFile } from './utils/create-download-link';
 import { TestComponent } from './components/test-component';
 import { Toolbar } from './components/toolbar';
-import {
-  runPath,
-  runPathForNodeConnectionPairs,
-  runPathFromThumb,
-} from './follow-path/run-path';
 import { exportTldraw } from './exporters/export-tldraw';
 import { createUploadJSONFileInput } from './utils/create-upload-input';
 import { syncFromTldraw } from './exporters/sync-from-tldraw';
 import { StorageProvider } from './storage/StorageProvider';
+import {
+  NodeInfo,
+  RunCounter,
+  canvasNodeTaskRegistryLabels,
+  getNodeFactoryNames,
+  getNodeTaskFactory,
+  registerComposition,
+  registerCompositionNodes,
+  removeAllCompositions,
+  runPath,
+  runPathForNodeConnectionPairs,
+  runPathFromThumb,
+  setupCanvasNodeTaskRegistry,
+} from '@devhelpr/web-flow-executor';
 
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];

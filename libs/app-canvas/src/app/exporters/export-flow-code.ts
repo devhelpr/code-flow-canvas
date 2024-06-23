@@ -3,9 +3,9 @@ import {
   INodeComponent,
   NodeType,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import { getStartNodes } from '../simple-flow-engine/simple-flow-engine';
 import { Exporter } from './Exporter';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 export const exportCode = (exportInfo: Exporter) => {
   let canExport = true;

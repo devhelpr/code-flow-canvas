@@ -1,11 +1,11 @@
 import {
   CanvasAppInstance,
   ICommandHandler,
+  BaseNodeInfo,
+  NodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
-import { NodeTaskFactory } from '../../node-task-registry';
 import { CommandHandler } from '../command-handler/command-handler';
 import { CopyNodeCommand } from '../copy-node-command/copy-node-command';
-import { BaseNodeInfo } from '../../types/base-node-info';
 import { ICommandContext } from '../command-context';
 
 export class PasteNodeCommand<

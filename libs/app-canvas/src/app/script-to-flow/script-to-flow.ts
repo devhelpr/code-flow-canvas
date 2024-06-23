@@ -10,7 +10,7 @@ import {
   IASTReturnNode,
 } from '@devhelpr/expression-compiler/lib/interfaces/ast';
 import { FlowNode, LineType } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 /*
   TODO:

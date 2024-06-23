@@ -1,5 +1,7 @@
-import { CanvasAppInstance } from '@devhelpr/visual-programming-system';
-import { BaseNodeInfo } from '../types/base-node-info';
+import {
+  CanvasAppInstance,
+  BaseNodeInfo,
+} from '@devhelpr/visual-programming-system';
 
 export interface Exporter {
   canvasApp: CanvasAppInstance<BaseNodeInfo>;

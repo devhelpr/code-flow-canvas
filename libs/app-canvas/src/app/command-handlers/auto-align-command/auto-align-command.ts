@@ -1,16 +1,16 @@
 import {
+  BaseNodeInfo,
   CanvasAppInstance,
   ICommandHandler,
   IConnectionNodeComponent,
   INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
+  NodeTaskFactory,
   ThumbType,
   calculateConnectorY,
 } from '@devhelpr/visual-programming-system';
-import { NodeTaskFactory } from '../../node-task-registry';
 import { CommandHandler } from '../command-handler/command-handler';
-import { BaseNodeInfo } from '../../types/base-node-info';
 import { ICommandContext } from '../command-context';
 import { getStartNodes } from '../../utils/start-nodes';
 

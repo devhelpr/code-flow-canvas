@@ -6,10 +6,10 @@ import {
   IRectNodeComponent,
   NodeType,
   ThumbConnectionType,
+  BaseNodeInfo,
+  NodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
-import { NodeTaskFactory } from '../../node-task-registry';
-import { BaseNodeInfo } from '../../types/base-node-info';
 import { ICommandContext } from '../command-context';
 
 export class ReplaceNodeCommand<

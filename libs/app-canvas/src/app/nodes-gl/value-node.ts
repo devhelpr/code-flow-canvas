@@ -1,11 +1,12 @@
 import {
+  FormFieldType,
   IRectNodeComponent,
+  InitialValues,
+  NodeTask,
   ThumbConnectionType,
   ThumbType,
+  visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/FormField';
-import { InitialValues, NodeTask } from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 // TODO : add wrapper function for injecting "add to history" function

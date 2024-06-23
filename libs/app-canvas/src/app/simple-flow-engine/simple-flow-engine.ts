@@ -6,14 +6,13 @@ import {
   IRectNodeComponent,
   IThumbNodeComponent,
   NodeType,
+  OnNextNodeFunction,
   ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 import { getFollowNodeExecution } from '../follow-path/followNodeExecution';
-import { NodeInfo } from '../types/node-info';
-import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
-import { RunCounter } from '../follow-path/run-counter';
 import { updateRunCounterElement } from '../follow-path/updateRunCounterElement';
+import { NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);

@@ -2,15 +2,13 @@ import {
   CanvasAppInstance,
   createElement,
   createNodeElement,
+  FormFieldType,
+  InitialValues,
   INodeComponent,
   IRectNodeComponent,
-} from '@devhelpr/visual-programming-system';
-import {
-  InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { FormFieldType } from '../components/FormField';
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (

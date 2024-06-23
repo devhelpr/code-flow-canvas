@@ -1,9 +1,3 @@
-import {
-  GetNodeTaskFactory,
-  NodeTaskFactory,
-  NodeTypeRegistry,
-  RegisterComposition,
-} from './node-task-registry';
 import { getCircleNode } from '../nodes-gl/circle-node';
 import { getValueNode } from '../nodes-gl/value-node';
 import { getColorNode } from '../nodes-gl/color-node';
@@ -29,7 +23,13 @@ import { getAbsoluteNode } from '../nodes-gl/absolute';
 import { getSubtractNode } from '../nodes-gl/subtraction';
 import { getCreateVector2Node } from '../nodes-gl/create-vector2';
 import { GLNodeInfo } from '../types/gl-node-info';
-import { Composition } from '@devhelpr/visual-programming-system';
+import {
+  Composition,
+  GetNodeTaskFactory,
+  NodeTaskFactory,
+  NodeTypeRegistry,
+  RegisterComposition,
+} from '@devhelpr/visual-programming-system';
 import { getCreateCompositionNode } from '../nodes-gl/composition';
 import { getFractNode } from '../nodes-gl/fract';
 import { getAdditiveInverseNode } from '../nodes-gl/additive-inverse';

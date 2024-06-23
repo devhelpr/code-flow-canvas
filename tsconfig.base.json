@@ -10,7 +10,7 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2021", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -20,7 +20,8 @@
       "@devhelpr/media-library": ["libs/media-library/src/index.ts"],
       "@devhelpr/visual-programming-system": [
         "libs/visual-programming-system/src/index.ts"
-      ]
+      ],
+      "@devhelpr/web-flow-executor": ["libs/web-flow-executor/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

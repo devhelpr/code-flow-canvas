@@ -11,9 +11,9 @@ import {
   getActionNode,
   setActionNode,
   setSelectNode,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
-import { BaseNodeInfo } from '../types/base-node-info';
 
 function ToolbarItem(props: {
   label: string;

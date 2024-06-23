@@ -5,8 +5,8 @@ import {
   NodeType,
   ThumbConnectionType,
   cleanupNodeInfoForSerializing,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import { Exporter } from './Exporter';
 import {
   bindingEnd,
@@ -16,8 +16,8 @@ import {
   tldrawEmptyGroupNode,
   tldrawShapeNode,
 } from './tldraw/tldraw-emtpy-file';
-import { BaseNodeInfo } from '../types/base-node-info';
 import { TlDrawFile } from './tldraw/tldraw-schema';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 const exportNodesToTldraw = (
   exportInfo: Exporter,

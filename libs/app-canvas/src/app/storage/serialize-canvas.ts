@@ -7,7 +7,7 @@ import {
   Composition,
   cleanupNodeInfoForSerializing,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 export type SerializedFlow = ReturnType<typeof serializeElementsMap>;
 

@@ -26,7 +26,6 @@
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
       "cache": true
     },
-
     "@nx/vite:test": {
       "inputs": ["default", "^production"],
       "cache": true

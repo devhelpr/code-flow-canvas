@@ -6,10 +6,10 @@ import {
   Composition,
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import { StorageProvider } from '../storage/StorageProvider';
-import { BaseNodeInfo } from '../types/base-node-info';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 export interface AppNavComponentsProps<T extends BaseNodeInfo> {
   rootAppElement: HTMLElement;

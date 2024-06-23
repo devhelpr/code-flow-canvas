@@ -26,11 +26,10 @@ import {
   createJSXElement,
   CanvasAction,
   setActionNode,
+  FormComponent,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
-
-import { FormComponent } from './components/form-component';
 
 import { createIndexedDBStorageProvider } from './storage/indexeddb-storage-provider';
 import {

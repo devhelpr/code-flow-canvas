@@ -1,7 +1,7 @@
 import { INodeComponent } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import { Exporter } from './Exporter';
 import { TLDrawShapeNode, TlDrawFile } from './tldraw/tldraw-schema';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 export const syncFromTldraw = async (
   tldrawFile: TlDrawFile,

@@ -1,13 +1,14 @@
 import {
   CanvasAppInstance,
   createElement,
+  InitialValues,
   INodeComponent,
   IRectNodeComponent,
+  NodeTask,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
-import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 export const getSplitColorsNode = (

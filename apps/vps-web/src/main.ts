@@ -1,9 +1,9 @@
 import { Flow } from '@devhelpr/visual-programming-system';
 import flowData from './example-data/counter.json';
-import { NodeInfo } from '@devhelpr/app-canvas';
 
 const url = new URL(window.location.href);
 import './userWorker';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 if (url.pathname === '/example') {
   import('./app/flow-app.element').then((module) => {
     const storageProvider = {

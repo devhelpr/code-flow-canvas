@@ -1,9 +1,9 @@
 import {
-  InitialValues,
-  NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
+  NodeTask,
+  visualNodeFactory,
+  InitialValues,
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'break';

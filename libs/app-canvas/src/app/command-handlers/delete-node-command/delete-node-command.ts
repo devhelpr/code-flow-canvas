@@ -7,9 +7,9 @@ import {
   NodeType,
   getSelectedNode,
   setSelectNode,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
-import { BaseNodeInfo } from '../../types/base-node-info';
 import { ICommandContext } from '../command-context';
 
 export class DeleteNodeCommand<

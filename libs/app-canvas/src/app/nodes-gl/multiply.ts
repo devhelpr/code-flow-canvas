@@ -1,14 +1,12 @@
 import {
-  Theme,
-  ThumbConnectionType,
-  ThumbType,
-} from '@devhelpr/visual-programming-system';
-import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
+  Theme,
+  ThumbConnectionType,
+  ThumbType,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 import {
   createElementFromTemplate,

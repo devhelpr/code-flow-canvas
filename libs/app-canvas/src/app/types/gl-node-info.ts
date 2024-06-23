@@ -1,5 +1,8 @@
-import { CanvasAppInstance, IThumb } from '@devhelpr/visual-programming-system';
-import { BaseNodeInfo } from './base-node-info';
+import {
+  CanvasAppInstance,
+  IThumb,
+  BaseNodeInfo,
+} from '@devhelpr/visual-programming-system';
 
 export interface GLNodeInfo extends BaseNodeInfo {
   taskType?: string;

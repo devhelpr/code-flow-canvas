@@ -3,15 +3,13 @@ import {
   Composition,
   FlowNode,
   IThumb,
-  NodeType,
-  ThumbConnectionType,
-} from '@devhelpr/visual-programming-system';
-import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
+  NodeType,
+  ThumbConnectionType,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { getSortedNodes } from '../utils/sort-nodes';
 

@@ -10,6 +10,10 @@ npx nx g @nrwl/js:lib media-library --publishable --importPath @devhelpr/media-l
 
 npx nx g @nrwl/js:lib app-canvas --publishable --importPath @devhelpr/app-canvas
 
+npx nx g @nrwl/js:lib web-flow-executor --publishable --importPath @devhelpr/web-flow-executor
+
+.. choose vitest for running test
+.. choose vite for bundling
 .. when running the above command, choose root libs/...
 
 

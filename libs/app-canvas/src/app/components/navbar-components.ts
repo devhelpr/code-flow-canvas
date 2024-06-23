@@ -11,8 +11,6 @@ import {
   navBarPrimaryIconButton,
 } from '../consts/classes';
 
-import { NodeInfo } from '../types/node-info';
-import { getNodeTaskFactory } from '../node-task-registry/canvas-node-task-registry';
 import {
   BaseComponent,
   Component,
@@ -32,6 +30,7 @@ import {
   addClassesHTMLElement,
   removeClassesHTMLElement,
 } from '../utils/add-remove-classes';
+import { NodeInfo, getNodeTaskFactory } from '@devhelpr/web-flow-executor';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>

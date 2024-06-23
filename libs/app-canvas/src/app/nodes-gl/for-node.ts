@@ -8,9 +8,10 @@ import {
   IDOMElement,
   ThumbConnectionType,
   ThumbType,
+  InitialValues,
+  NodeTask,
 } from '@devhelpr/visual-programming-system';
 
-import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { getLoop } from '../shapes/loop';
 

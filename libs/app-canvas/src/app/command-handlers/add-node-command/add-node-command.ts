@@ -1,6 +1,8 @@
 import {
+  BaseNodeInfo,
   CanvasAppInstance,
   IRectNodeComponent,
+  NodeTaskFactory,
   ThumbConnectionType,
   ThumbType,
   calculateConnectorY,
@@ -9,13 +11,11 @@ import {
   getThumbNodeByName,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
-import { NodeTaskFactory } from '../../node-task-registry';
 import {
   createTemplate,
   createElementFromTemplate,
 } from '@devhelpr/dom-components';
 import { navbarButtonWithoutMargin } from '../../consts/classes';
-import { BaseNodeInfo } from '../../types/base-node-info';
 import { ICommandContext } from '../command-context';
 
 export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {

@@ -1,16 +1,12 @@
 import {
-  ThumbConnectionType,
-  ThumbType,
-} from '@devhelpr/visual-programming-system';
-import {
+  IComputeResult,
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import {
-  IComputeResult,
+  ThumbConnectionType,
+  ThumbType,
   visualNodeFactory,
-} from '../node-task-registry/createRectNode';
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'uv';

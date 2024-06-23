@@ -17,11 +17,11 @@ import {
   INodeComponent,
   getSelectedNode,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
 import {
   getFollowNodeExecution,
   setFollowNodeExecution,
 } from '../follow-path/followNodeExecution';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 export class NodeSidebarMenuComponent extends Component<
   AppNavComponentsProps<NodeInfo>

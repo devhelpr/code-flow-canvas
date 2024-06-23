@@ -1,15 +1,13 @@
 import {
+  FormFieldType,
   IRectNodeComponent,
-  ThumbConnectionType,
-  ThumbType,
-} from '@devhelpr/visual-programming-system';
-import { FormFieldType } from '../components/FormField';
-import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
+  ThumbConnectionType,
+  ThumbType,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 export const getConstantValue: NodeTaskFactory<GLNodeInfo> = (

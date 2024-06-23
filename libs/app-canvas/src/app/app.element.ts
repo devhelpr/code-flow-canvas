@@ -30,6 +30,9 @@ import {
   standardTheme,
   IThumb,
   ElementNodeMap,
+  BaseNodeInfo,
+  GetNodeTaskFactory,
+  RegisterComposition,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -42,8 +45,6 @@ import { StorageProvider } from './storage/StorageProvider';
 import { executeCommand } from './command-handlers/register-commands';
 import { getSortedNodes } from './utils/sort-nodes';
 import { getStartNodes } from './utils/start-nodes';
-import { GetNodeTaskFactory, RegisterComposition } from './node-task-registry';
-import { BaseNodeInfo } from './types/base-node-info';
 import { importToCanvas } from './storage/import-to-canvas';
 import { hideElement, showElement } from './utils/show-hide-element';
 import { createInputDialog } from './utils/create-input-dialog';

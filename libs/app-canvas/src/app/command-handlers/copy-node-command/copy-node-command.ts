@@ -1,11 +1,11 @@
 import {
+  BaseNodeInfo,
   CanvasAppInstance,
   IRectNodeComponent,
+  NodeTaskFactory,
   NodeType,
 } from '@devhelpr/visual-programming-system';
-import { NodeTaskFactory } from '../../node-task-registry';
 import { CommandHandler } from '../command-handler/command-handler';
-import { BaseNodeInfo } from '../../types/base-node-info';
 import { ICommandContext } from '../command-context';
 
 export class CopyNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {

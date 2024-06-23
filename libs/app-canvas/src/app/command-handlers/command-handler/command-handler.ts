@@ -1,4 +1,4 @@
-import { BaseNodeInfo } from '../../types/base-node-info';
+import { BaseNodeInfo } from '@devhelpr/visual-programming-system';
 import { ICommandContext } from '../command-context';
 
 export class CommandHandler<T extends BaseNodeInfo> {

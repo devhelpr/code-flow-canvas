@@ -1,16 +1,17 @@
 import {
   CanvasAppInstance,
   createElement,
+  FormComponent,
+  FormFieldType,
+  InitialValues,
   INodeComponent,
   IRectNodeComponent,
+  NodeTask,
   ThumbConnectionType,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 
-import { InitialValues, NodeTask } from '../node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
-import { FormFieldType } from '../components/FormField';
-import { FormComponent } from '../components/form-component';
 import { vec2Type } from '../gl-types/float-vec2-vec3';
 
 const thumbs = [

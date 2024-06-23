@@ -1,14 +1,12 @@
 import {
-  ThumbConnectionType,
-  ThumbType,
-  createElement,
-} from '@devhelpr/visual-programming-system';
-import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
+  ThumbConnectionType,
+  ThumbType,
+  createElement,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { registerGLSLFunction } from './custom-glsl-functions-registry';
 import { vec2Type } from '../gl-types/float-vec2-vec3';

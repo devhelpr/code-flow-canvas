@@ -1,9 +1,11 @@
-import { ICommandHandler } from '@devhelpr/visual-programming-system';
+import {
+  BaseNodeInfo,
+  ICommandHandler,
+} from '@devhelpr/visual-programming-system';
 import { AddNodeCommand } from './add-node-command/add-node-command';
 import { DeleteNodeCommand } from './delete-node-command/delete-node-command';
 import { PasteNodeCommand } from './paste-node-command/paste-node-command';
 import { CopyNodeCommand } from './copy-node-command/copy-node-command';
-import { BaseNodeInfo } from '../types/base-node-info';
 import { ICommandContext } from './command-context';
 import { AutoAlignCommand } from './auto-align-command/auto-align-command';
 import { ReplaceNodeCommand } from './replace-node-command/replace-node-command';

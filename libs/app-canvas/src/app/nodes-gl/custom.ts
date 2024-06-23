@@ -1,16 +1,15 @@
 import {
+  FormFieldType,
   IRectNodeComponent,
-  ThumbConnectionType,
-  ThumbType,
-} from '@devhelpr/visual-programming-system';
-import {
   InitialValues,
   NodeTask,
   NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
+  ThumbConnectionType,
+  ThumbType,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
+
 import { GLNodeInfo } from '../types/gl-node-info';
-import { FormFieldType } from '../components/FormField';
 
 // this is the escape hatch
 

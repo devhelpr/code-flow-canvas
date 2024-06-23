@@ -9,8 +9,8 @@ import {
   NodeType,
   getThumbNodeByIdentifierWithinNode,
   getThumbNodeByName,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
-import { BaseNodeInfo } from '../types/base-node-info';
 
 export const importToCanvas = <T extends BaseNodeInfo>(
   nodesList: FlowNode<T>[],

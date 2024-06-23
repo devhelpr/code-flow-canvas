@@ -1,11 +1,12 @@
 import {
+  InitialValues,
+  NodeTask,
   Theme,
   ThumbConnectionType,
   ThumbType,
   createJSXElement,
+  visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
-import { InitialValues, NodeTask } from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const familyName = 'flow-canvas';

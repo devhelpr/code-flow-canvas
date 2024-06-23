@@ -1,7 +1,6 @@
-import { Flow } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '../types/node-info';
-import { BaseNodeInfo } from '../types/base-node-info';
+import { Flow, BaseNodeInfo } from '@devhelpr/visual-programming-system';
 import { StorageProvider } from './StorageProvider';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 interface ITransaction {
   flowId: string;

@@ -2,8 +2,8 @@ import {
   CanvasAppInstance,
   IElementNode,
   ICommandHandler,
+  NodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
-import { NodeTaskFactory } from '../node-task-registry';
 
 export interface ICommandContext<T> {
   rootElement: HTMLElement;

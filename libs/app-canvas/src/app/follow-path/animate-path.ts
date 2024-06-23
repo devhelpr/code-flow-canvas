@@ -8,16 +8,16 @@ import {
   IThumbNodeComponent,
   NodeAnimationNextNode,
   NodeAnimatonInfo,
+  BaseNodeInfo,
+  OnNextNodeFunction,
 } from '@devhelpr/visual-programming-system';
+import { getPointOnConnection } from './point-on-connection';
+import { followNodeExecution } from './followNodeExecution';
+import { updateRunCounterElement } from './updateRunCounterElement';
 import {
   getNodeConnectionPairById,
   getNodeConnectionPairsFromThumb,
-} from './get-node-connection-pairs';
-import { getPointOnConnection } from './point-on-connection';
-import { followNodeExecution } from './followNodeExecution';
-import { OnNextNodeFunction } from './OnNextNodeFunction';
-import { BaseNodeInfo } from '../types/base-node-info';
-import { updateRunCounterElement } from './updateRunCounterElement';
+} from '@devhelpr/web-flow-executor';
 
 function getLoopIncrement() {
   return 0.25;

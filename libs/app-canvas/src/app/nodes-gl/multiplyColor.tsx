@@ -1,15 +1,13 @@
 import {
+  InitialValues,
+  NodeTask,
+  NodeTaskFactory,
   Theme,
   ThumbConnectionType,
   ThumbType,
   createJSXElement,
+  visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
-import {
-  InitialValues,
-  NodeTask,
-  NodeTaskFactory,
-} from '../node-task-registry';
-import { visualNodeFactory } from '../node-task-registry/createRectNode';
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'multiply-color';
