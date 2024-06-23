@@ -1,16 +1,18 @@
+import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
 import {
-  CanvasAppInstance,
-  Composition,
-  ElementNodeMap,
   FlowNode,
-  IElementNode,
   IRectNodeComponent,
-  LineType,
-  NodeType,
+  ElementNodeMap,
+  IElementNode,
+} from '../interfaces';
+import { Composition } from '../interfaces/composition';
+import { NodeTaskFactory } from '../interfaces/node-task-registry';
+import { NodeType, LineType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
+import {
   getThumbNodeByIdentifierWithinNode,
   getThumbNodeByName,
-  BaseNodeInfo,
-} from '@devhelpr/visual-programming-system';
+} from '../utils/thumbs';
 
 export const importToCanvas = <T extends BaseNodeInfo>(
   nodesList: FlowNode<T>[],
@@ -18,7 +20,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
   canvasUpdated: () => void,
   containerNode?: IRectNodeComponent<T>,
   nestedLevel?: number,
-  getNodeTaskFactory?: (name: string) => any,
+  getNodeTaskFactory?: (name: string) => NodeTaskFactory<T>,
   onImported?: () => void
 ) => {
   console.log('importToCanvas', nestedLevel);
@@ -64,7 +66,8 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                     );
 
                     const child = childNodeTask.createVisualNode(
-                      canvasVisualNode.nodeInfo.canvasAppInstance,
+                      canvasVisualNode.nodeInfo
+                        .canvasAppInstance as unknown as CanvasAppInstance<T>,
                       element.x,
                       element.y,
                       element.id,
@@ -87,9 +90,11 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                         element.elements as unknown as FlowNode<T>[],
                         child.nodeInfo.canvasAppInstance,
                         canvasUpdated,
-                        child,
+                        child as unknown as IRectNodeComponent<BaseNodeInfo>,
                         nestedLevel ? nestedLevel + 2 : 2,
-                        getNodeTaskFactory
+                        getNodeTaskFactory as unknown as (
+                          name: string
+                        ) => NodeTaskFactory<BaseNodeInfo>
                       );
                     }
                   }
@@ -149,7 +154,10 @@ export const importToCanvas = <T extends BaseNodeInfo>(
 
                   const curve =
                     node.lineType === LineType.BezierCubic
-                      ? canvasVisualNode?.nodeInfo?.canvasAppInstance?.createCubicBezier(
+                      ? (
+                          canvasVisualNode?.nodeInfo
+                            ?.canvasAppInstance as unknown as CanvasAppInstance<T>
+                        )?.createCubicBezier(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
                           end?.x ?? node.endX ?? 0,
@@ -163,7 +171,10 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                           node.id,
                           canvasVisualNode
                         )
-                      : canvasVisualNode?.nodeInfo?.canvasAppInstance?.createQuadraticBezier(
+                      : (
+                          canvasVisualNode?.nodeInfo
+                            ?.canvasAppInstance as unknown as CanvasAppInstance<T>
+                        )?.createQuadraticBezier(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
                           end?.x ?? node.endX ?? 0,
@@ -179,7 +190,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                     return;
                   }
                   curve.nodeComponent.isControlled = true;
-                  curve.nodeComponent.nodeInfo = {};
+                  curve.nodeComponent.nodeInfo = {} as unknown as T;
                   curve.nodeComponent.layer = node.layer ?? 1;
 
                   if (start && curve.nodeComponent) {
@@ -193,7 +204,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                               start: true,
                               end: false,
                             }
-                          )
+                          ) || undefined
                         : getThumbNodeByName<T>(
                             node.startThumbName ?? '',
                             start,
@@ -215,7 +226,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                               start: false,
                               end: true,
                             }
-                          )
+                          ) || undefined
                         : getThumbNodeByName<T>(node.endThumbName ?? '', end, {
                             start: false,
                             end: true,

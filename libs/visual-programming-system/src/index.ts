@@ -53,3 +53,4 @@ export * from './constants/thumbConstraints';
 export * from './utils/getFormattedValue';
 export * from './utils/replace-values';
 export * from './utils/create-form-dialog';
+export * from './import/import-to-canvas';

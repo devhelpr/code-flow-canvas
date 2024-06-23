@@ -1,3 +1,5 @@
+import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
+
 export interface INodeDecorator {
   taskType: string;
   formValues?: any;
@@ -26,6 +28,8 @@ export interface BaseNodeInfo {
   isAnnotation?: boolean;
   canBeStartedByTrigger?: boolean;
   readPropertyFromNodeInfoForInitialTrigger?: string;
+
+  canvasAppInstance?: CanvasAppInstance<BaseNodeInfo>;
 
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;

@@ -27,6 +27,8 @@ import {
   CanvasAction,
   setActionNode,
   FormComponent,
+  importCompositions,
+  importToCanvas,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -50,7 +52,6 @@ import {
   SerializedFlow,
   serializeElementsMap,
 } from './storage/serialize-canvas';
-import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { AppElement } from './app.element';
 import {
   getGLNodeFactoryNames,

@@ -12,6 +12,7 @@ import {
   NodeTaskFactory,
   OnNextNodeFunction,
   createContextInstanceApp,
+  importToCanvas,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
@@ -30,7 +31,7 @@ export const getCreateCompositionNode =
     thumbs: IThumb[],
     compositionId: string,
     name: string,
-    _getNodeFactory: (name: string) => NodeTaskFactory<NodeInfo>
+    getNodeFactory: (name: string) => NodeTaskFactory<NodeInfo>
   ): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     const fieldName = 'composition';
@@ -146,16 +147,16 @@ export const getCreateCompositionNode =
 
             // TODO FIX THIS!!!!!
 
-            // importToCanvas(
-            //   composition?.nodes ?? [],
-            //   contextCanvasApp,
-            //   () => {
-            //     //
-            //   },
-            //   undefined,
-            //   0,
-            //   getNodeFactory
-            // );
+            importToCanvas(
+              composition?.nodes ?? [],
+              contextCanvasApp,
+              () => {
+                //
+              },
+              undefined,
+              0,
+              getNodeFactory
+            );
           }
         }
         if (composition) {

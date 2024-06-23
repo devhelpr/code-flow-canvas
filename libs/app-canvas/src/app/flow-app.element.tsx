@@ -29,6 +29,8 @@ import {
   IRunCounter,
   FormComponent,
   OnNextNodeFunction,
+  importCompositions,
+  importToCanvas,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -76,7 +78,6 @@ import {
   serializeCompositions,
   serializeElementsMap,
 } from './storage/serialize-canvas';
-import { importCompositions, importToCanvas } from './storage/import-to-canvas';
 import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
 import {
