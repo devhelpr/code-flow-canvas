@@ -1,6 +1,6 @@
 {
   "name": "@devhelpr/app-canvas",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "publishConfig": {
     "access": "public"
   },
@@ -9,12 +9,12 @@
   },
   "license": "see license in license.md",
   "dependencies": {
+    "@devhelpr/dom-components": "^0.0.6",
     "@devhelpr/expression-compiler": "^0.0.36",
     "@devhelpr/markup-compiler": "^0.0.16",
-    "@devhelpr/media-library": "^0.0.6",
-    "@devhelpr/visual-programming-system": "^0.0.8",
-    "@devhelpr/dom-components": "^0.0.5",
-    "@devhelpr/web-flow-executor": "^0.0.1"
+    "@devhelpr/media-library": "^0.0.7",
+    "@devhelpr/visual-programming-system": "^0.0.9",
+    "@devhelpr/web-flow-executor": "^0.0.2"
   },
   "main": "./index.js",
   "module": "./index.mjs",
