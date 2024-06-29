@@ -1411,6 +1411,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         }
       }
+      if (isReadOnly) {
+        return;
+      }
 
       this.removeFormElement();
       if (selectedNodeInfo && this.selectedNodeLabel) {
