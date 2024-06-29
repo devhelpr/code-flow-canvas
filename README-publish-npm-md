@@ -9,10 +9,11 @@ These packages are published to npm in this order:
 
 ## Publish steps
 
-- clear dist/libs folder
-- clear .nx/cache (happens by running build-all command)
-- update package versions and dependencies
-- commit and push changes
+- npm run version (bumps just version)
+//- clear dist/libs folder
+//- clear .nx/cache (happens by running build-all command)
+//- update package versions and dependencies
+//- commit and push changes
 - npm run build-all
 - cd to dist/libs
 - from each dist folder for the above packages:
