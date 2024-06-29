@@ -6,6 +6,7 @@ These packages are published to npm in this order:
 - @devhelpr/dom-components
 - @devhelpr/visual-programming-system
 - @devhelpr/app-canvas
+- @devhelpr/web-flow-executor
 
 ## Publish steps
 
