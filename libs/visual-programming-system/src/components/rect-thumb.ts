@@ -136,10 +136,7 @@ export class RectThumb<T> extends Rect<T> {
           parentY = parentCoordinates.y - paddingRect;
         }
       }
-      let { x, y } = transformCameraSpaceToWorldSpace(
-        event.clientX,
-        event.clientY
-      );
+      let { x, y } = transformCameraSpaceToWorldSpace(event.pageX, event.pageY);
       const xorg = x;
       const yorg = y;
       x = x - parentX;

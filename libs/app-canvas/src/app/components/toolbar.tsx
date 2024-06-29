@@ -82,6 +82,7 @@ export function Toolbar<T>(props: {
       console.log(
         'Toolbar selectedNodeInfo',
         selectedNodeInfo,
+        actionSelectedNodeInfo,
         //info,
         getTasksWhichAreInterchangeableWithSelectedNode()
       );

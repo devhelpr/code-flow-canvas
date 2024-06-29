@@ -546,8 +546,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     );
 
     const rectCamera = transformCameraSpaceToWorldSpace(
-      elementRect.x,
-      elementRect.y
+      elementRect.x + window.scrollX,
+      elementRect.y + window.scrollY
     );
 
     let parentX = 0;
@@ -660,7 +660,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           }
         }
 
-        let { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+        let { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
         const xorg = x;
         const yorg = y;
         x = x - parentX;
@@ -753,7 +753,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+      const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
 
       let parentX = 0;
       let parentY = 0;
@@ -791,8 +791,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
 
       // TODO : check if wihtin container... then use container x/y as parentX/Y....
       const rectCamera = transformCameraSpaceToWorldSpace(
-        elementRect.x,
-        elementRect.y
+        elementRect.x + window.scrollX,
+        elementRect.y + window.scrollY
       );
 
       const interactionInfoResult = pointerDown(
@@ -823,7 +823,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     }
 
     if (this.nodeComponent && this.nodeComponent.domElement) {
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+      const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
       pointerMove(
         x,
         y,
@@ -885,7 +885,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       return;
     }
     this.resetNodeThumbInteraction();
-    const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+    const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
     pointerUp(
       x,
       y,

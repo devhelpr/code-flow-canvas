@@ -196,8 +196,8 @@ export class NodeSelector<T> {
       this.visibilityResizeControls(true);
       this.resizeSameWidthAndHeight = event.shiftKey;
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.clientX,
-        event.clientY
+        event.pageX,
+        event.pageY
       );
       this.selectedNodes = [];
       this.selectedConnections = [];
@@ -260,8 +260,8 @@ export class NodeSelector<T> {
   onPointerDownSelector = (event: PointerEvent) => {
     if (this.interactionStateMachine && this.nodeSelectorElement) {
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.clientX,
-        event.clientY
+        event.pageX,
+        event.pageY
       );
       this.selectionWasPlacedOrMoved = true;
 

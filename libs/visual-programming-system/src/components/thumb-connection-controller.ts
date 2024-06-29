@@ -243,7 +243,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (this.disableInteraction) {
       return;
     }
-    const element = document.elementFromPoint(event.clientX, event.clientY);
+    const element = document.elementFromPoint(event.pageX, event.pageY);
 
     if (
       !this.nodeComponent ||
@@ -297,8 +297,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     );
 
     const rectCamera = transformCameraSpaceToWorldSpace(
-      elementRect.x,
-      elementRect.y
+      elementRect.x + window.scrollX,
+      elementRect.y + window.scrollY
     );
 
     let parentX = 0;
@@ -406,10 +406,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             ? connection.connectionStartNodeThumb
             : undefined;
         if (connectionThumb) {
-          const { x, y } = transformCameraSpaceToWorldSpace(
-            e.clientX,
-            e.clientY
-          );
+          const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
           let parentX = 0;
           let parentY = 0;
           if (this.nodeComponent?.parent?.containerNode) {
@@ -451,10 +448,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             : undefined;
 
         if (connectionThumb) {
-          const { x, y } = transformCameraSpaceToWorldSpace(
-            e.clientX,
-            e.clientY
-          );
+          const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
           connection.endNode = undefined;
           connection.endNodeThumb = undefined;
 
@@ -498,7 +492,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+      const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
 
       let parentX = 0;
       let parentY = 0;
@@ -536,8 +530,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
 
       // TODO : check if wihtin container... then use container x/y as parentX/Y....
       const rectCamera = transformCameraSpaceToWorldSpace(
-        elementRect.x,
-        elementRect.y
+        elementRect.x + window.scrollX,
+        elementRect.y + window.scrollY
       );
 
       const interactionInfoResult = pointerDown(
@@ -573,7 +567,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (!this.nodeComponent) {
       return;
     }
-    let element = document.elementFromPoint(event.clientX, event.clientY);
+    let element = document.elementFromPoint(event.pageX, event.pageY);
     let dispatchEventToNode = false;
     if (element && element !== event.target && element.id !== 'root') {
       if (element.getAttribute('data-nodecomponent')) {
@@ -615,8 +609,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     ) {
       this.oldElement = null;
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.clientX,
-        event.clientY
+        event.pageX,
+        event.pageY
       );
       pointerMove(
         x,
@@ -634,7 +628,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (this.disableInteraction) {
       return;
     }
-    const element = document.elementFromPoint(event.clientX, event.clientY);
+    const element = document.elementFromPoint(event.pageX, event.pageY);
 
     if (!this.nodeComponent) {
       return;
@@ -664,8 +658,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         'none';
       if (!skipevent) {
         const { x, y } = transformCameraSpaceToWorldSpace(
-          event.clientX,
-          event.clientY
+          event.pageX,
+          event.pageY
         );
         pointerUp(
           x,

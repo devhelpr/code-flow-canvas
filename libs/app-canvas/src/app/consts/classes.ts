@@ -32,7 +32,7 @@ export const invertedNavBarButtonNomargin = `rounded-md bg-white text-slate-500 
 export const secondaryNavBarButtonNomargin = `rounded-md bg-white text-slate-500 p-2 hover:bg-blue-500 hover:text-white select-none whitespace-nowrap
  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white`;
 
-export const menubarClasses = `menu fixed top-0 z-[1050] flex flex-row flex-nowrap 
+export const menubarClasses = `menu absolute top-0 z-[1050] flex flex-row flex-nowrap 
     items-center justify-start h-[58px]  bg-slate-700 w-full
     whitespace-nowrap overflow-x-scroll`;
 export const menubarContainerClasses = `menu-container flex flex-row flex-nowrap 

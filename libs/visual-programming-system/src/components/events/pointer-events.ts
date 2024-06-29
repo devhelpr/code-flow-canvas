@@ -18,6 +18,14 @@ export const pointerDown = <T>(
   let yOffsetWithinElementOnFirstClick = 0;
   let offsetXhelper = 0;
 
+  const canvasBoundingRect = (
+    canvasNode.domElement as HTMLElement
+  ).getBoundingClientRect();
+  const boundingOffsetX = 0;
+  const boundingOffsetY = 0; // -canvasBoundingRect.y; //-(element.domElement as HTMLElement).scrollTop; //window.scrollY;
+
+  console.log('canvasBoundingRect', y, canvasBoundingRect.y);
+
   // this fixes moving elements that have a xOffset (like the node-tree-visualizer)
   if (element && element.domElement) {
     const offsetX =
@@ -26,6 +34,21 @@ export const pointerDown = <T>(
     if (offsetX) {
       offsetXhelper = parseFloat(offsetX);
     }
+
+    // const boundingRect = (
+    //   canvasNode.domElement as HTMLElement
+    // ).getBoundingClientRect();
+    // boundingOffsetX = boundingRect.x;
+    // boundingOffsetY = boundingRect.y;
+    // console.log(
+    //   'boundingRect',
+    //   boundingRect.x,
+    //   boundingRect.y,
+    //   boundingRect.left,
+    //   boundingRect.top,
+    //   x,
+    //   y
+    // );
   }
 
   if (
@@ -39,8 +62,8 @@ export const pointerDown = <T>(
         pointerMove,
         pointerUp,
         interactionInfo: {
-          xOffsetWithinElementOnFirstClick: x + offsetXhelper,
-          yOffsetWithinElementOnFirstClick: y,
+          xOffsetWithinElementOnFirstClick: x + offsetXhelper + boundingOffsetX,
+          yOffsetWithinElementOnFirstClick: y + boundingOffsetY,
         },
       },
       element,
@@ -48,8 +71,8 @@ export const pointerDown = <T>(
       canvasNode
     )
   ) {
-    xOffsetWithinElementOnFirstClick = x + offsetXhelper;
-    yOffsetWithinElementOnFirstClick = y;
+    xOffsetWithinElementOnFirstClick = x + offsetXhelper + boundingOffsetX;
+    yOffsetWithinElementOnFirstClick = y + boundingOffsetY;
 
     if (element?.nodeType === NodeType.Shape) {
       // .. this is a hack to make sure that the element is always on top
@@ -109,7 +132,9 @@ export const pointerMove = <T>(
         element.update(
           element,
           x - interactionInfo.xOffsetWithinElementOnFirstClick,
-          y - interactionInfo.yOffsetWithinElementOnFirstClick,
+          y -
+            //canvasBoundingRect.y -
+            interactionInfo.yOffsetWithinElementOnFirstClick,
           element
         );
       }
@@ -180,7 +205,9 @@ export const pointerUp = <T>(
           element.update(
             element,
             x - interactionInfo.xOffsetWithinElementOnFirstClick,
-            y - interactionInfo.yOffsetWithinElementOnFirstClick,
+            y -
+              //canvasBoundingRect.y -
+              interactionInfo.yOffsetWithinElementOnFirstClick,
             element
           );
         }

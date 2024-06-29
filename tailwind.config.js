@@ -4,6 +4,7 @@ const { join } = require('path');
 
 module.exports = {
   content: [
+    join(__dirname, 'apps/vps-web/index.html'),
     join(
       __dirname,
       'apps/**/{src,pages,components}/**/*!(*.stories|*.spec).{ts,tsx,html}'

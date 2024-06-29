@@ -53,7 +53,10 @@ export const createCanvasApp = <T>(
   canvasId?: string,
   customTheme?: Theme,
   onEditCompositionName?: () => Promise<string | false>,
-  isNodeContainer?: boolean
+  isNodeContainer?: boolean,
+  _appRootElement?: HTMLElement,
+  heightSpaceForHeaderFooterToolbars?: number,
+  widthSpaceForSideToobars?: number
 ) => {
   const theme = customTheme ?? standardTheme;
   const interactionStateMachine =
@@ -127,6 +130,9 @@ export const createCanvasApp = <T>(
     },
     rootElement
   );
+  const boundingBox = (
+    canvas.domElement as HTMLElement
+  ).getBoundingClientRect();
 
   const nodeTransformer = new NodeTransformer(
     canvas.domElement,
@@ -270,10 +276,13 @@ export const createCanvasApp = <T>(
 
     const scaleBy = scaleFactor;
 
+    const clientY = event.pageY;
+    const clientX = event.pageX;
+    //console.log(event.pageY, event.pageY, event.pageY);
     if (canvas.domElement) {
       const mousePointTo = {
-        x: event.clientX / scaleCamera - xCamera / scaleCamera,
-        y: event.clientY / scaleCamera - yCamera / scaleCamera,
+        x: clientX / scaleCamera - xCamera / scaleCamera,
+        y: clientY / scaleCamera - yCamera / scaleCamera,
       };
 
       let newScale = scaleCamera * scaleBy;
@@ -285,8 +294,8 @@ export const createCanvasApp = <T>(
       }
 
       const newPos = {
-        x: -(mousePointTo.x - event.clientX / newScale) * newScale,
-        y: -(mousePointTo.y - event.clientY / newScale) * newScale,
+        x: -(mousePointTo.x - clientX / newScale) * newScale,
+        y: -(mousePointTo.y - clientY / newScale) * newScale,
       };
 
       if (onWheelEvent) {
@@ -377,8 +386,8 @@ export const createCanvasApp = <T>(
           }
         } else {
           const { x, y } = transformCameraSpaceToWorldSpace(
-            event.clientX,
-            event.clientY
+            event.pageX,
+            event.pageY
           );
 
           currentState.target.pointerMove &&
@@ -434,8 +443,8 @@ export const createCanvasApp = <T>(
           wasMoved = true; // HACK
 
           const { x, y } = transformCameraSpaceToWorldSpace(
-            event.clientX,
-            event.clientY
+            event.pageX,
+            event.pageY
           );
 
           currentState.target.pointerUp &&
@@ -859,11 +868,19 @@ export const createCanvasApp = <T>(
         onCameraChanged({ x: xCamera, y: yCamera, scale: scaleCamera });
       }
 
+      let boudingBoxCorrectionX = 0;
+      let boudingBoxCorrectionY = 0;
+      const scrollLeft = 0; //window.scrollX;
+      const scrollTopHelper = 0; //window.scrollY;
+      boudingBoxCorrectionX = boundingBox.x + scrollLeft;
+      boudingBoxCorrectionY = boundingBox.y + scrollTopHelper;
+
+      //console.log(scrollTopHelper, boundingBox.y);
       (canvas.domElement as unknown as HTMLElement).style.transform =
         'translate(' +
-        xCamera +
+        (xCamera - boudingBoxCorrectionX) +
         'px,' +
-        yCamera +
+        (yCamera - boudingBoxCorrectionY) +
         'px) ' +
         'scale(' +
         scaleCamera +
@@ -928,6 +945,7 @@ export const createCanvasApp = <T>(
         const helperScale = rootWidth / helperWidth;
         const helperHeight = maxY - minY;
         const helperScaleHeight = rootHeight / helperHeight;
+
         const width = maxX - minX + 120 / helperScale;
         const height = maxY - minY + 240 / helperScaleHeight;
 
@@ -961,14 +979,25 @@ export const createCanvasApp = <T>(
           'rootHeight',
           rootHeight
         );
+
+        //const boundingRect = rootElement.getBoundingClientRect();
+
+        // const boudingBoxCorrectionX = -175 + boundingBox.x * 2; // 400; //;
+        // const boudingBoxCorrectionY = -180 + -boundingBox.y * 4; // -500; //boundingBox.y;
+        const boudingBoxCorrectionX =
+          -boundingBox.x - (widthSpaceForSideToobars ?? 0); // 32; //-230; //-boundingBox.x; // 400; //;
+        const boudingBoxCorrectionY =
+          -boundingBox.y - (heightSpaceForHeaderFooterToolbars ?? 0); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
         xCamera =
           rootWidth / 2 -
           (scale * width) / 2 -
-          scale * (minX - 60 / helperScale);
+          scale * (minX + (-60 + 60) / helperScale) -
+          boudingBoxCorrectionX;
         yCamera =
           rootHeight / 2 -
           (scale * height) / 2 -
-          scale * (minY - 120 / helperScaleHeight);
+          scale * (minY + (-120 + 120) / helperScaleHeight) -
+          boudingBoxCorrectionY;
         scaleCamera = scale;
 
         console.log('centerCamera', xCamera, yCamera, scaleCamera);

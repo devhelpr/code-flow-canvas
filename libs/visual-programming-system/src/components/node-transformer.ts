@@ -283,8 +283,8 @@ export class NodeTransformer<T> {
         'pointer-events-none'
       );
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.clientX,
-        event.clientY
+        event.pageX,
+        event.pageY
       );
 
       this.orgX = this.attachedNode.x;

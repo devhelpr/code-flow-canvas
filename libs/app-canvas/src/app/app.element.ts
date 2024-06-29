@@ -92,7 +92,9 @@ export class AppElement<T extends BaseNodeInfo> {
     customTemplate?: HTMLTemplateElement,
     theme?: Theme,
     storageProvider?: StorageProvider<T>,
-    _isReadOnly?: boolean
+    _isReadOnly?: boolean,
+    heightSpaceForHeaderFooterToolbars?: number,
+    widthSpaceForSideToobars?: number
   ) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
@@ -110,8 +112,9 @@ export class AppElement<T extends BaseNodeInfo> {
       this.storageProvider = storageProvider;
     }
     const template = document.createElement('template');
+    // min-h-dvh
     template.innerHTML = `
-  <div class="min-h-dvh w-full ${
+  <div class="h-full w-full ${
     (theme ?? standardTheme).background
   } overflow-hidden touch-none" id="root" >
   </div>
@@ -135,7 +138,11 @@ export class AppElement<T extends BaseNodeInfo> {
       undefined,
       undefined,
       theme ?? standardTheme,
-      this.showEditCompositionNameDialog
+      this.showEditCompositionNameDialog,
+      undefined,
+      this.appRootElement as HTMLElement,
+      heightSpaceForHeaderFooterToolbars,
+      widthSpaceForSideToobars
     );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;

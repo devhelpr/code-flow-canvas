@@ -306,8 +306,9 @@ export const createRectNode = <T extends BaseNodeInfo>(
   const node = rect.nodeComponent;
   if (node.nodeInfo) {
     const domElement = node.domElement as HTMLElement;
-    domElement.setAttribute('data-node-type', nodeTypeName);
-
+    if (domElement) {
+      domElement.setAttribute('data-node-type', nodeTypeName);
+    }
     node.nodeInfo.formElements = formElements;
     if (isAsyncCompute) {
       (node.nodeInfo as any).computeAsync = compute as (
@@ -478,10 +479,12 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
       );
       onCreatedNode(nodeInstance, containerNode);
       nodeInstance.node.label = nodeTitle;
-      if (settings?.adjustToFormContent) {
-        nodeInstance?.rect?.resize();
-      } else {
-        nodeInstance?.rect?.resize(width);
+      if (nodeInstance?.rect?.resize) {
+        if (settings?.adjustToFormContent) {
+          nodeInstance?.rect?.resize();
+        } else {
+          nodeInstance?.rect?.resize(width);
+        }
       }
       return nodeInstance.node as IRectNodeComponent<T>;
     },

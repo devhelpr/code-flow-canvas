@@ -145,7 +145,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   constructor(
     appRootSelector: string,
-    storageProvider?: StorageProvider<GLNodeInfo>
+    storageProvider?: StorageProvider<GLNodeInfo>,
+    heightSpaceForHeaderFooterToolbars?: number,
+    widthSpaceForSideToobars?: number
   ) {
     const template = document.createElement('template');
     template.innerHTML = `<div>
@@ -154,7 +156,15 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       <canvas id="glcanvas" class="gl-canvas"></canvas></div>
     `;
 
-    super(appRootSelector, template, standardTheme, storageProvider);
+    super(
+      appRootSelector,
+      template,
+      standardTheme,
+      storageProvider,
+      undefined,
+      heightSpaceForHeaderFooterToolbars,
+      widthSpaceForSideToobars
+    );
 
     if (!this.rootElement) {
       return;

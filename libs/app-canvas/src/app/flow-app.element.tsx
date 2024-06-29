@@ -152,14 +152,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   constructor(
     appRootSelector: string,
     storageProvider?: StorageProvider<NodeInfo>,
-    isReadOnly?: boolean
+    isReadOnly?: boolean,
+    heightSpaceForHeaderFooterToolbars?: number,
+    widthSpaceForSideToobars?: number
   ) {
     super(
       appRootSelector,
       undefined,
       standardTheme,
       storageProvider,
-      isReadOnly
+      isReadOnly,
+      heightSpaceForHeaderFooterToolbars,
+      widthSpaceForSideToobars
     );
     if (!this.rootElement) {
       return;
@@ -772,16 +776,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               this.canvasActionPayload.nodeComponent.nodeType ===
                 NodeType.Connection
             ) {
-              setActionNode({
-                id: (
-                  this.canvasActionPayload
-                    .nodeComponent as unknown as INodeComponent<NodeInfo>
-                ).id,
-                containerNode: (
-                  this.canvasActionPayload
-                    .nodeComponent as unknown as INodeComponent<unknown>
-                ).containerNode,
-              });
+              if (!this.canvasActionPayload.nodeComponent.endNode) {
+                setActionNode({
+                  id: (
+                    this.canvasActionPayload
+                      .nodeComponent as unknown as INodeComponent<NodeInfo>
+                  ).id,
+                  containerNode: (
+                    this.canvasActionPayload
+                      .nodeComponent as unknown as INodeComponent<unknown>
+                  ).containerNode,
+                });
+              }
             }
           }
           this.canvasAction = CanvasAction.idle;

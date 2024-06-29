@@ -44,7 +44,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
     inputValues = '';
     if (htmlNode) {
       htmlNode.domElement.textContent = 'Input';
-      if (rect) {
+      if (rect && rect.resize) {
         rect.resize(240);
       }
     }
@@ -72,7 +72,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       } else {
         htmlNode.domElement.textContent = (inputValues || '-').toString();
       }
-      if (rect) {
+      if (rect && rect.resize) {
         rect.resize(240);
       }
     }

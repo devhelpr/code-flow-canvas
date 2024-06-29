@@ -1010,13 +1010,22 @@ export class Rect<T> {
 
       // todo : use offsetY ?? because of mobile keyboard?
       //  .. if window.visualViewport.offsetTop gebruiken??
+
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.clientX,
-        event.clientY - (window?.visualViewport?.offsetTop ?? 0)
+        event.pageX,
+        event.pageY - (window?.visualViewport?.offsetTop ?? 0)
       );
+
       const rect = transformCameraSpaceToWorldSpace(
-        elementRect.x,
-        elementRect.y
+        elementRect.x + window.scrollX,
+        elementRect.y + window.scrollY
+      );
+      console.log(
+        'event.pageY',
+        //event.clientY - elementRect.y,
+
+        y,
+        rect.y
       );
       const bbox = this.getBBoxPath(this.points);
 
