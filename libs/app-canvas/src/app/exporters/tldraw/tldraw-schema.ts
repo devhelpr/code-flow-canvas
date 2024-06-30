@@ -1,3 +1,5 @@
+import { ExportFile } from '../export-interface/core-export';
+
 /*
   tldraw format notes:
   - big list of objects
@@ -28,7 +30,7 @@ export type TLDrawGroupNode = TLDrawNode & {
   index: string;
 };
 
-export interface TlDrawFile {
+export interface TlDrawFile extends ExportFile {
   tldrawFileFormatVersion: number;
   schema: object;
   records: TLDrawNode[];

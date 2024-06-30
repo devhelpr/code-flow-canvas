@@ -1,7 +1,7 @@
 import { OCWGFile } from './ocwg-schema';
 
 export const ocwgEmptyFile: OCWGFile = {
-  schema_version: '1.0',
+  schema_version: '0.1',
   nodes: {},
   relations: {},
   schemas: {},

@@ -31,6 +31,7 @@ import {
   OnNextNodeFunction,
   importCompositions,
   importToCanvas,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -119,6 +120,31 @@ import {
   setupCanvasNodeTaskRegistry,
 } from '@devhelpr/web-flow-executor';
 
+export class CodeFlowWebAppCanvas {
+  appRootSelector?: string;
+  storageProvider?: StorageProvider<NodeInfo>;
+  isReadOnly?: boolean;
+  heightSpaceForHeaderFooterToolbars?: number;
+  widthSpaceForSideToobars?: number;
+  onStoreFlow?: (
+    flow: Flow<NodeInfo>,
+    canvasApp: CanvasAppInstance<BaseNodeInfo>
+  ) => void;
+  render() {
+    if (!this.appRootSelector) {
+      throw new Error('appRootSelector is required');
+    }
+    new FlowAppElement(
+      this.appRootSelector,
+      this.storageProvider,
+      this.isReadOnly,
+      this.heightSpaceForHeaderFooterToolbars,
+      this.widthSpaceForSideToobars,
+      this.onStoreFlow
+    );
+  }
+}
+
 export class FlowAppElement extends AppElement<NodeInfo> {
   public static observedAttributes = [];
 
@@ -149,12 +175,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   canvasAction: CanvasAction = CanvasAction.idle;
   canvasActionPayload: any = undefined;
 
+  onStoreFlow?: (
+    flow: Flow<NodeInfo>,
+    canvasApp: CanvasAppInstance<BaseNodeInfo>
+  ) => void;
+
   constructor(
     appRootSelector: string,
     storageProvider?: StorageProvider<NodeInfo>,
     isReadOnly?: boolean,
     heightSpaceForHeaderFooterToolbars?: number,
-    widthSpaceForSideToobars?: number
+    widthSpaceForSideToobars?: number,
+    onStoreFlow?: (
+      flow: Flow<NodeInfo>,
+      canvasApp: CanvasAppInstance<BaseNodeInfo>
+    ) => void
   ) {
     super(
       appRootSelector,
@@ -171,6 +206,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (!this.canvasApp) {
       return;
     }
+    this.onStoreFlow = onStoreFlow;
     this.canvasApp.setCanvasAction((action, payload?: any) => {
       this.canvasAction = action;
       this.canvasActionPayload = payload;
@@ -716,6 +752,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
             }
+
             removeAllCompositions();
             importCompositions<NodeInfo>(flow.compositions, this.canvasApp);
             registerCompositionNodes(
@@ -736,6 +773,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             setupTasksInDropdown(
               this.selectNodeType?.domElement as HTMLSelectElement
             );
+            if (this.onStoreFlow) {
+              this.onStoreFlow(flow, this.canvasApp);
+            }
             this.isStoring = false;
           })
           .catch((error) => {
@@ -768,6 +808,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           },
           compositions: compositions,
         };
+        if (this.onStoreFlow && this.canvasApp) {
+          this.onStoreFlow(flow, this.canvasApp);
+        }
         this.storageProvider.saveFlow('1234', flow).then(() => {
           if (this.canvasAction === CanvasAction.newConnectionCreated) {
             if (

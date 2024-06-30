@@ -1,1 +1,5 @@
-export { FlowAppElement } from '@devhelpr/app-canvas';
+export {
+  FlowAppElement,
+  CodeFlowWebAppCanvas,
+  OCWGExporter,
+} from '@devhelpr/app-canvas';

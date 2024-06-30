@@ -3,6 +3,7 @@ const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const { join } = require('path');
 
 module.exports = {
+  important: '.code-flow-canvas',
   content: [
     join(__dirname, 'apps/vps-web/index.html'),
     join(
@@ -19,4 +20,7 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  corePlugins: {
+    preflight: true,
+  },
 };
