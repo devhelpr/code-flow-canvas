@@ -44,7 +44,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       schema_version: '0.1',
       x: node.x,
       y: node.y,
-      properties: { nodeInfo: nodeInfo },
+      properties: {
+        width: node.width ?? 0,
+        height: node.height ?? 0,
+        nodeInfo: nodeInfo,
+      },
       fallback: nodeText,
     };
     if (this.file?.nodes) {
