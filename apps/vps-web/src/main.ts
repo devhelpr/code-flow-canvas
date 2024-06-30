@@ -35,6 +35,7 @@ if (url.pathname === '/run-flow') {
 } else if (url.pathname === '/ocwg') {
   ocwgElement.classList.remove('hidden');
   ocwgElement.classList.add('flex');
+  const ocwgExport = document.getElementById('ocwg-export')!;
   import('./app/flow-app.element').then((module) => {
     const app = new module.CodeFlowWebAppCanvas();
     app.appRootSelector = '#app-root';
@@ -48,7 +49,7 @@ if (url.pathname === '/run-flow') {
         },
       });
       const file = ocwg.convertToExportFile();
-      ocwgElement.innerHTML = JSON.stringify(file, null, 2);
+      ocwgExport.innerHTML = JSON.stringify(file, null, 2);
     };
     app.render();
   });
