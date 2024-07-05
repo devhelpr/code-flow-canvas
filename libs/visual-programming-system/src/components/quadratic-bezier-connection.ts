@@ -49,7 +49,8 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     id?: string,
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
-    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
+    rootElement?: HTMLElement
   ) {
     super(
       canvas,
@@ -70,7 +71,8 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       id,
       containerNode,
       theme,
-      setCanvasAction
+      setCanvasAction,
+      rootElement
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
@@ -137,7 +139,12 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       undefined,
       undefined,
       undefined,
-      false // disableInteraction
+      false, // disableInteraction
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      rootElement
     );
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode.nodeComponent is undefined');
@@ -190,7 +197,19 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       undefined,
       undefined,
       undefined,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      rootElement
     );
     if (!endPointNode.nodeComponent) {
       throw new Error('endPointNode.nodeComponent is undefined');

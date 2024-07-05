@@ -18,6 +18,7 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
+import { getPointerPos } from '../utils/pointer-pos';
 import { pointerDown } from './events/pointer-events';
 import {
   onCubicCalculateControlPoints,
@@ -58,6 +59,7 @@ export class Connection<T> {
   canvas: IElementNode<T> | undefined;
   canvasElement: DOMElementNode;
   interactionStateMachine: InteractionStateMachine<T>;
+  protected rootElement?: HTMLElement;
 
   pathHiddenElement: IElementNode<T> | null = null;
   containerNode?: INodeComponent<T>;
@@ -82,7 +84,8 @@ export class Connection<T> {
     id?: string,
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
-    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
+    rootElement?: HTMLElement
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -100,6 +103,7 @@ export class Connection<T> {
     this.interactionStateMachine = interactionStateMachine;
     this.containerNode = containerNode;
     this.setCanvasAction = setCanvasAction;
+    this.rootElement = rootElement;
 
     this.points = {
       beginX: startX,
@@ -307,10 +311,21 @@ export class Connection<T> {
         endOffsetY
       );
 
-      const { x, y } = transformCameraSpaceToWorldSpace(e.clientX, e.clientY);
+      if (!this.canvas || !this.rootElement) {
+        return;
+      }
+      const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        e
+      );
+      const { x, y } = transformCameraSpaceToWorldSpace(
+        pointerXPos,
+        pointerYPos
+      );
       const rect = transformCameraSpaceToWorldSpace(
-        elementRect.x,
-        elementRect.y
+        elementRect.x - rootX,
+        elementRect.y - rootY
       );
 
       let parentX = 0;

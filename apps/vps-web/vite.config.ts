@@ -7,6 +7,7 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   root: __dirname,
+  optimizeDeps: { exclude: ['pyodide'] },
   build: {
     outDir: '../../dist/apps/vps-web',
     reportCompressedSize: true,

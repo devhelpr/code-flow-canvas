@@ -40,7 +40,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
   ): string {
     const ocwgNode: OCWGNode = {
       id: `shape:${node.id}`,
-      schema: '@ocwg/code-flow-canvas-node',
+      schema: '@code-flow-canvas/node',
       schema_version: '0.1',
       x: node.x,
       y: node.y,

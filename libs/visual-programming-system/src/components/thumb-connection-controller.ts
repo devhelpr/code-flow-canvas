@@ -18,10 +18,12 @@ import {
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils';
+import { getPointerPos } from '../utils/pointer-pos';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 import { ThumbNode } from './thumb';
 
 export class ThumbConnectionController<T> extends ThumbNode<T> {
+  rootElement: HTMLElement | undefined = undefined;
   constructor(
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
@@ -51,7 +53,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     label?: string,
     thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
-    containerNode?: IRectNodeComponent<T>
+    containerNode?: IRectNodeComponent<T>,
+    rootElement?: HTMLElement
   ) {
     super(
       canvasElement,
@@ -88,6 +91,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       throw new Error('nodeComponent is undefined');
     }
 
+    this.rootElement = rootElement;
     if (connectionControllerType !== undefined) {
       (this.nodeComponent.domElement as HTMLElement).classList.add(
         `connection-controller-${connectionControllerType}`
@@ -283,22 +287,24 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     x: number,
     y: number
   ) => {
-    if (!this.canvas) {
+    if (!this.canvas || !this.rootElement) {
       return;
     }
 
     const elementRect = (
       connectionThumb.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
-
+    const rootBounds = (
+      this.rootElement as HTMLElement
+    ).getBoundingClientRect();
     console.log(
       'connection-controller THUMB initiateDraggingConnection',
       connectionThumb
     );
 
     const rectCamera = transformCameraSpaceToWorldSpace(
-      elementRect.x + window.scrollX,
-      elementRect.y + window.scrollY
+      elementRect.x - rootBounds.x, //+ window.scrollX,
+      elementRect.y - rootBounds.y //+ window.scrollY
     );
 
     let parentX = 0;
@@ -405,8 +411,16 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
           ConnectionControllerType.begin
             ? connection.connectionStartNodeThumb
             : undefined;
-        if (connectionThumb) {
-          const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
+        if (connectionThumb && this.rootElement) {
+          const { pointerXPos, pointerYPos } = getPointerPos(
+            this.canvas.domElement as HTMLElement,
+            this.rootElement,
+            e
+          );
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            pointerXPos,
+            pointerYPos
+          );
           let parentX = 0;
           let parentY = 0;
           if (this.nodeComponent?.parent?.containerNode) {
@@ -447,8 +461,16 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             ? connection.connectionEndNodeThumb
             : undefined;
 
-        if (connectionThumb) {
-          const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
+        if (connectionThumb && this.rootElement) {
+          const { pointerXPos, pointerYPos } = getPointerPos(
+            this.canvas.domElement as HTMLElement,
+            this.rootElement,
+            e
+          );
+          const { x, y } = transformCameraSpaceToWorldSpace(
+            pointerXPos,
+            pointerYPos
+          );
           connection.endNode = undefined;
           connection.endNodeThumb = undefined;
 
@@ -487,12 +509,19 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       if (this.nodeComponent.isControlled) {
         return;
       }
+      if (!this.canvas || !this.rootElement) {
+        return;
+      }
 
-      const elementRect = (
-        this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
-      ).getBoundingClientRect();
-
-      const { x, y } = transformCameraSpaceToWorldSpace(e.pageX, e.pageY);
+      const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        e
+      );
+      const { x, y } = transformCameraSpaceToWorldSpace(
+        pointerXPos,
+        pointerYPos
+      );
 
       let parentX = 0;
       let parentY = 0;
@@ -528,10 +557,14 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         this.nodeComponent?.parent?.containerNode
       );
 
+      const elementRect = (
+        this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
+      ).getBoundingClientRect();
+
       // TODO : check if wihtin container... then use container x/y as parentX/Y....
       const rectCamera = transformCameraSpaceToWorldSpace(
-        elementRect.x + window.scrollX,
-        elementRect.y + window.scrollY
+        elementRect.x - rootX,
+        elementRect.y - rootY
       );
 
       const interactionInfoResult = pointerDown(
@@ -605,12 +638,19 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (
       !dispatchEventToNode &&
       this.nodeComponent &&
-      this.nodeComponent.domElement
+      this.nodeComponent.domElement &&
+      this.canvas &&
+      this.rootElement
     ) {
       this.oldElement = null;
+      const { pointerXPos, pointerYPos } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        event
+      );
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.pageX,
-        event.pageY
+        pointerXPos,
+        pointerYPos
       );
       pointerMove(
         x,
@@ -653,13 +693,18 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       skipevent = true;
     }
 
-    if (this.nodeComponent.domElement) {
+    if (this.nodeComponent.domElement && this.canvas && this.rootElement) {
       (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
         'none';
       if (!skipevent) {
+        const { pointerXPos, pointerYPos } = getPointerPos(
+          this.canvas.domElement as HTMLElement,
+          this.rootElement,
+          event
+        );
         const { x, y } = transformCameraSpaceToWorldSpace(
-          event.pageX,
-          event.pageY
+          pointerXPos,
+          pointerYPos
         );
         pointerUp(
           x,

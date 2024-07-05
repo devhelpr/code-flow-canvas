@@ -28,6 +28,7 @@ import { thumbHeight, thumbWidth } from '../constants/measures';
 import { ThumbNodeConnector } from './thumb-node-connector';
 import { NodeTransformer } from './node-transformer';
 import { CanvasAction } from '../enums/canvas-action';
+import { getPointerPos } from '../utils/pointer-pos';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -43,6 +44,7 @@ export class Rect<T> {
   protected setCanvasAction?: (canvasAction: CanvasAction) => void;
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
+  protected rootElement?: HTMLElement;
   public containerNode?: IRectNodeComponent<T>;
 
   protected minHeight = 0;
@@ -84,7 +86,8 @@ export class Rect<T> {
     containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean,
     parentNodeClassName?: string,
-    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
+    rootElement?: HTMLElement
   ) {
     this.canvas = canvas;
     this.canvasElements = elements;
@@ -92,6 +95,7 @@ export class Rect<T> {
     this.setCanvasAction = setCanvasAction;
     this.nodeTransformer = nodeTransformer;
     this.nodeTransformer.detachNode();
+    this.rootElement = rootElement;
 
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
@@ -221,7 +225,8 @@ export class Rect<T> {
           thumb.thumbShape ?? 'circle',
           canvasUpdated,
           containerNode,
-          setCanvasAction
+          setCanvasAction,
+          rootElement
         );
 
         if (!thumbNode.nodeComponent) {
@@ -1003,7 +1008,7 @@ export class Rect<T> {
       return;
     }
 
-    if (this.nodeComponent && this.canvas) {
+    if (this.nodeComponent && this.canvas && this.rootElement) {
       const elementRect = (
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
@@ -1011,22 +1016,52 @@ export class Rect<T> {
       // todo : use offsetY ?? because of mobile keyboard?
       //  .. if window.visualViewport.offsetTop gebruiken??
 
+      const {
+        pointerXPos,
+        pointerYPos,
+        canvasX,
+        canvasY,
+        rootX,
+        rootY,
+        eventClientX,
+        eventClientY,
+        eventPageX,
+        eventPageY,
+      } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        event
+      );
+      console.log(
+        'pointerPos',
+        pointerXPos,
+        pointerYPos,
+        canvasX,
+        canvasY,
+        rootX,
+        rootY,
+        'events',
+        eventClientX,
+        eventClientY,
+        eventPageX,
+        eventPageY
+      );
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.pageX,
-        event.pageY - (window?.visualViewport?.offsetTop ?? 0)
+        pointerXPos,
+        pointerYPos - (window?.visualViewport?.offsetTop ?? 0)
       );
 
       const rect = transformCameraSpaceToWorldSpace(
-        elementRect.x + window.scrollX,
-        elementRect.y + window.scrollY
+        elementRect.x - rootX, //+ window.scrollX,
+        elementRect.y - rootY //+ window.scrollY
       );
-      console.log(
-        'event.pageY',
-        //event.clientY - elementRect.y,
+      // console.log(
+      //   'event.pageY',
+      //   //event.clientY - elementRect.y,
 
-        y,
-        rect.y
-      );
+      //   y,
+      //   rect.y
+      // );
       const bbox = this.getBBoxPath(this.points);
 
       let parentX = 0;

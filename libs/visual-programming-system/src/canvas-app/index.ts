@@ -43,6 +43,7 @@ import { thumbPosition } from '../components/utils/calculate-connector-thumbs';
 import { updateThumbPrefixLabel } from '../utils/thumbs';
 import { MediaLibrary } from '@devhelpr/media-library';
 import { CanvasAction } from '../enums/canvas-action';
+import { getPointerPos } from '../utils/pointer-pos';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -130,9 +131,14 @@ export const createCanvasApp = <T>(
     },
     rootElement
   );
+
+  // chwck if this causes scroll issue after refresh
+  // .. if getBoundingClientRect is called in setCamera then it has a weird side effect
+  // .. (scree flickers)
   const boundingBox = (
     canvas.domElement as HTMLElement
   ).getBoundingClientRect();
+  const scrollY = (canvas.domElement as HTMLElement).offsetTop;
 
   const nodeTransformer = new NodeTransformer(
     canvas.domElement,
@@ -275,10 +281,12 @@ export const createCanvasApp = <T>(
     const scaleFactor = 1 + delta * 0.05;
 
     const scaleBy = scaleFactor;
+    const boundingRect = rootElement.getBoundingClientRect();
+    const clientX = event.clientX - boundingRect.x;
+    const clientY = event.clientY - boundingRect.y;
+    console.log('wheel', boundingRect.y, event.clientY, event.pageY, clientY);
 
-    const clientY = event.pageY;
-    const clientX = event.pageX;
-    //console.log(event.pageY, event.pageY, event.pageY);
+    //console.log('wheel', clientY, clientX);
     if (canvas.domElement) {
       const mousePointTo = {
         x: clientX / scaleCamera - xCamera / scaleCamera,
@@ -312,6 +320,18 @@ export const createCanvasApp = <T>(
     if (isZoomingViaTouch) {
       return;
     }
+
+    // const boundingRect = (
+    //   canvas.domElement as HTMLElement
+    // ).getBoundingClientRect();
+    // const pointerXPos = event.pageX - boundingRect.x;
+    // const pointerYPos = event.pageY - boundingRect.y;
+
+    const { pointerXPos, pointerYPos } = getPointerPos(
+      canvas.domElement as HTMLElement,
+      rootElement,
+      event
+    );
 
     //const canvasRect = canvas.domElement.getBoundingClientRect();
     if (
@@ -386,8 +406,8 @@ export const createCanvasApp = <T>(
           }
         } else {
           const { x, y } = transformCameraSpaceToWorldSpace(
-            event.pageX,
-            event.pageY
+            pointerXPos,
+            pointerYPos
           );
 
           currentState.target.pointerMove &&
@@ -412,6 +432,12 @@ export const createCanvasApp = <T>(
     if (disableInteraction) {
       return;
     }
+    const { pointerXPos, pointerYPos } = getPointerPos(
+      canvas.domElement as HTMLElement,
+      rootElement,
+      event
+    );
+
     const currentState = interactionStateMachine.getCurrentInteractionState();
     if (
       currentState.state === InteractionState.Moving &&
@@ -443,8 +469,8 @@ export const createCanvasApp = <T>(
           wasMoved = true; // HACK
 
           const { x, y } = transformCameraSpaceToWorldSpace(
-            event.pageX,
-            event.pageY
+            pointerXPos,
+            pointerYPos
           );
 
           currentState.target.pointerUp &&
@@ -872,9 +898,16 @@ export const createCanvasApp = <T>(
       let boudingBoxCorrectionY = 0;
       const scrollLeft = 0; //window.scrollX;
       const scrollTopHelper = 0; //window.scrollY;
-      boudingBoxCorrectionX = boundingBox.x + scrollLeft;
-      boudingBoxCorrectionY = boundingBox.y + scrollTopHelper;
 
+      const boundingRectHelper = rootElement.getBoundingClientRect();
+      boudingBoxCorrectionX = 0; //boundingBox.x + scrollLeft;
+      boudingBoxCorrectionY = 0; //boundingRectHelper.y + scrollTopHelper;
+      // console.log(
+      //   'canvas getBoundingClientRect',
+
+      //   boundingRectHelper.y,
+      //   boundingBox.y
+      // );
       //console.log(scrollTopHelper, boundingBox.y);
       (canvas.domElement as unknown as HTMLElement).style.transform =
         'translate(' +
@@ -984,10 +1017,16 @@ export const createCanvasApp = <T>(
 
         // const boudingBoxCorrectionX = -175 + boundingBox.x * 2; // 400; //;
         // const boudingBoxCorrectionY = -180 + -boundingBox.y * 4; // -500; //boundingBox.y;
-        const boudingBoxCorrectionX =
-          -boundingBox.x - (widthSpaceForSideToobars ?? 0); // 32; //-230; //-boundingBox.x; // 400; //;
-        const boudingBoxCorrectionY =
-          -boundingBox.y - (heightSpaceForHeaderFooterToolbars ?? 0); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
+        // const boudingBoxCorrectionX =
+        //   -boundingBox.x - (widthSpaceForSideToobars ?? 0); // 32; //-230; //-boundingBox.x; // 400; //;
+        // const boudingBoxCorrectionY =
+        //   -boundingBox.y - (heightSpaceForHeaderFooterToolbars ?? 0); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
+
+        const boudingBoxCorrectionX = -(widthSpaceForSideToobars ?? 0); // 32; //-230; //-boundingBox.x; // 400; //;
+        const boudingBoxCorrectionY = -(
+          heightSpaceForHeaderFooterToolbars ?? 0
+        ); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
+
         xCamera =
           rootWidth / 2 -
           (scale * width) / 2 -
@@ -1082,7 +1121,8 @@ export const createCanvasApp = <T>(
         containerNode,
         isStaticPosition,
         parentNodeClassNames,
-        setCanvasAction
+        setCanvasAction,
+        rootElement
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');
@@ -1182,7 +1222,8 @@ export const createCanvasApp = <T>(
         id,
         containerNode,
         theme,
-        setCanvasAction
+        setCanvasAction,
+        rootElement
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -1218,7 +1259,8 @@ export const createCanvasApp = <T>(
         id,
         containerNode,
         theme,
-        setCanvasAction
+        setCanvasAction,
+        rootElement
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -1252,7 +1294,8 @@ export const createCanvasApp = <T>(
         id,
         containerNode,
         theme,
-        setCanvasAction
+        setCanvasAction,
+        rootElement
       );
       if (onCanvasUpdated) {
         onCanvasUpdated();
@@ -1478,7 +1521,9 @@ export const createCanvasApp = <T>(
         thumb.label,
         thumb.thumbShape ?? 'circle',
         onCanvasUpdated,
-        rectInstance.containerNode
+        rectInstance.containerNode,
+        undefined,
+        rootElement
       );
 
       if (!thumbNode.nodeComponent) {

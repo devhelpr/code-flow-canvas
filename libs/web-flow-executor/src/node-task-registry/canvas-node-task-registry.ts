@@ -158,6 +158,9 @@ export const registerNodeFactory = (
     canvasNodeTaskRegistryLabels[name] = label;
   }
 };
+
+export type RegisterNodeFactoryFunction = typeof registerNodeFactory;
+
 export const getNodeFactoryNames = () => {
   return Object.keys(canvasNodeTaskRegistry).sort();
 };
@@ -166,7 +169,10 @@ export const setupCanvasNodeTaskRegistry = (
   createRunCounterContext: (
     isRunViaRunButton: boolean,
     shouldResetConnectionSlider: boolean
-  ) => RunCounter
+  ) => RunCounter,
+  registerExternalNodes?: (
+    registerNodeFactory: RegisterNodeFactoryFunction
+  ) => void
 ) => {
   registerNodeFactory('start-node', getStart);
   registerNodeFactory('end-node', getEnd);
@@ -299,6 +305,8 @@ export const setupCanvasNodeTaskRegistry = (
     getMediaLibraryNode,
     'Media Library'
   );
+
+  registerExternalNodes?.(registerNodeFactory);
 };
 
 export const getNodeTaskFactory = (name: string) => {

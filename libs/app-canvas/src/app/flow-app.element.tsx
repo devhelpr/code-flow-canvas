@@ -107,6 +107,7 @@ import { syncFromTldraw } from './exporters/sync-from-tldraw';
 import { StorageProvider } from './storage/StorageProvider';
 import {
   NodeInfo,
+  RegisterNodeFactoryFunction,
   RunCounter,
   canvasNodeTaskRegistryLabels,
   getNodeFactoryNames,
@@ -130,6 +131,9 @@ export class CodeFlowWebAppCanvas {
     flow: Flow<NodeInfo>,
     canvasApp: CanvasAppInstance<BaseNodeInfo>
   ) => void;
+  registerExternalNodes?: (
+    registerNodeFactory: RegisterNodeFactoryFunction
+  ) => void;
   render() {
     if (!this.appRootSelector) {
       throw new Error('appRootSelector is required');
@@ -140,7 +144,8 @@ export class CodeFlowWebAppCanvas {
       this.isReadOnly,
       this.heightSpaceForHeaderFooterToolbars,
       this.widthSpaceForSideToobars,
-      this.onStoreFlow
+      this.onStoreFlow,
+      this.registerExternalNodes
     );
   }
 }
@@ -174,6 +179,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   exportCodeButton: HTMLElement | undefined = undefined;
   canvasAction: CanvasAction = CanvasAction.idle;
   canvasActionPayload: any = undefined;
+  cancelCameraAnimation: (() => void) | undefined = undefined;
 
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
@@ -189,6 +195,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     onStoreFlow?: (
       flow: Flow<NodeInfo>,
       canvasApp: CanvasAppInstance<BaseNodeInfo>
+    ) => void,
+    registerExternalNodes?: (
+      registerNodeFactory: RegisterNodeFactoryFunction
     ) => void
   ) {
     super(
@@ -407,9 +416,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       canvasUpdated();
     });
 
-    setCameraAnimation(this.canvasApp);
+    this.cancelCameraAnimation = setCameraAnimation(this.canvasApp);
 
-    setupCanvasNodeTaskRegistry(this.createRunCounterContext);
+    setupCanvasNodeTaskRegistry(
+      this.createRunCounterContext,
+      registerExternalNodes
+    );
 
     const storageProviderPromise = this.storageProvider
       ? Promise.resolve(this.storageProvider)
@@ -1626,6 +1638,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.canvasApp?.setonDragCanvasEvent((x, y) => {
       setPositionTargetCameraAnimation(x, y);
     });
+  }
+
+  public override destroy() {
+    this.cancelCameraAnimation?.();
+    super.destroy();
   }
 
   showFormPopup = (

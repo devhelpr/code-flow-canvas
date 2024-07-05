@@ -5,6 +5,6 @@ export const ocwgEmptyFile: OCWGFile = {
   nodes: {},
   relations: {},
   schemas: {
-    '@ocwg/code-flow-canvas-node': '@ocwg/rectangle',
+    '@code-flow-canvas/node': '@ocwg/rectangle',
   },
 };
