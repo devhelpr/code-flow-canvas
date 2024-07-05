@@ -65,21 +65,55 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
 
   override exportConnection(
     _context: OCWGInfo,
-    _nodeInfo: BaseNodeInfo,
+    nodeInfo: BaseNodeInfo,
     node: IConnectionNodeComponent<BaseNodeInfo>
   ): void {
     if (!node.startNode || !node.endNode) {
       return;
     }
+    const ocwgNode: OCWGNode = {
+      id: `shape:${node.id}`,
+      schema: '@code-flow-canvas/connection',
+      schema_version: '0.1',
+      x: node.x,
+      y: node.y,
+      properties: {
+        width: node.width ?? 0,
+        height: node.height ?? 0,
+        nodeInfo: nodeInfo,
+      },
+      fallback: 'connection',
+    };
+    if (this.file?.nodes) {
+      this.file.nodes[ocwgNode.id] = ocwgNode;
+    }
     return;
   }
   override exportMultiPortConnection(
     _context: OCWGInfo,
-    _nodeInfo: BaseNodeInfo,
+    nodeInfo: BaseNodeInfo,
     node: IConnectionNodeComponent<BaseNodeInfo>
   ): void {
     if (!node.startNode || !node.endNode) {
       return;
+    }
+    const ocwgNode: OCWGNode = {
+      id: `connection:${node.id}`,
+      schema: '@code-flow-canvas/connection',
+      schema_version: '0.1',
+      x: node.x,
+      y: node.y,
+      properties: {
+        width: node.width ?? 0,
+        height: node.height ?? 0,
+        nodeInfo: nodeInfo,
+        startNodeId: `shape:${node.startNode.id}`,
+        endNodeId: `shape:${node.endNode.id}`,
+      },
+      fallback: 'connection',
+    };
+    if (this.file?.nodes) {
+      this.file.nodes[ocwgNode.id] = ocwgNode;
     }
     return;
   }
