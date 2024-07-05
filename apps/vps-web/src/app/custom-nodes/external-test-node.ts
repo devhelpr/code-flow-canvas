@@ -1,7 +1,6 @@
 import {
   FormField,
   IComputeResult,
-  IRectNodeComponent,
   InitialValues,
   NodeTask,
   ThumbConnectionType,
@@ -45,7 +44,7 @@ export const getExternalTestNode =
   (pyodide: PyodideInterface) =>
   // (): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
-    let node: IRectNodeComponent<NodeInfo>;
+    //let node: IRectNodeComponent<NodeInfo>;
     ///let rect: Rect<NodeInfo> | undefined;
     const initializeCompute = () => {
       return;
@@ -88,12 +87,12 @@ export const getExternalTestNode =
       200,
       100,
       thumbs,
-      (values?: InitialValues): FormField[] => {
+      (_values?: InitialValues): FormField[] => {
         return [];
       },
-      (nodeInstance) => {
+      (_nodeInstance) => {
         //rect = nodeInstance.rect;
-        node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+        //node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
         //rect?.resize();
       },
       {

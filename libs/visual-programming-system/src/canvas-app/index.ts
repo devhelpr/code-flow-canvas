@@ -132,14 +132,6 @@ export const createCanvasApp = <T>(
     rootElement
   );
 
-  // chwck if this causes scroll issue after refresh
-  // .. if getBoundingClientRect is called in setCamera then it has a weird side effect
-  // .. (scree flickers)
-  const boundingBox = (
-    canvas.domElement as HTMLElement
-  ).getBoundingClientRect();
-  const scrollY = (canvas.domElement as HTMLElement).offsetTop;
-
   const nodeTransformer = new NodeTransformer(
     canvas.domElement,
     interactionStateMachine
@@ -896,19 +888,8 @@ export const createCanvasApp = <T>(
 
       let boudingBoxCorrectionX = 0;
       let boudingBoxCorrectionY = 0;
-      const scrollLeft = 0; //window.scrollX;
-      const scrollTopHelper = 0; //window.scrollY;
-
-      const boundingRectHelper = rootElement.getBoundingClientRect();
       boudingBoxCorrectionX = 0; //boundingBox.x + scrollLeft;
       boudingBoxCorrectionY = 0; //boundingRectHelper.y + scrollTopHelper;
-      // console.log(
-      //   'canvas getBoundingClientRect',
-
-      //   boundingRectHelper.y,
-      //   boundingBox.y
-      // );
-      //console.log(scrollTopHelper, boundingBox.y);
       (canvas.domElement as unknown as HTMLElement).style.transform =
         'translate(' +
         (xCamera - boudingBoxCorrectionX) +
