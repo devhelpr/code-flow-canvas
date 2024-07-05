@@ -127,6 +127,7 @@ export class CodeFlowWebAppCanvas {
   isReadOnly?: boolean;
   heightSpaceForHeaderFooterToolbars?: number;
   widthSpaceForSideToobars?: number;
+  flowId?: string;
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
     canvasApp: CanvasAppInstance<BaseNodeInfo>
@@ -145,7 +146,8 @@ export class CodeFlowWebAppCanvas {
       this.heightSpaceForHeaderFooterToolbars,
       this.widthSpaceForSideToobars,
       this.onStoreFlow,
-      this.registerExternalNodes
+      this.registerExternalNodes,
+      this.flowId
     );
   }
 }
@@ -181,6 +183,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   canvasActionPayload: any = undefined;
   cancelCameraAnimation: (() => void) | undefined = undefined;
 
+  flowId = '1234';
+
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
     canvasApp: CanvasAppInstance<BaseNodeInfo>
@@ -198,7 +202,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     ) => void,
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction
-    ) => void
+    ) => void,
+    flowId?: string
   ) {
     super(
       appRootSelector,
@@ -215,6 +220,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (!this.canvasApp) {
       return;
     }
+    if (flowId) {
+      this.flowId = flowId;
+    }
+
     this.onStoreFlow = onStoreFlow;
     this.canvasApp.setCanvasAction((action, payload?: any) => {
       this.canvasAction = action;
@@ -759,7 +768,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         });
         storageProvider
-          .getFlow('1234')
+          .getFlow(this.flowId)
           .then((flow) => {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
@@ -811,7 +820,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         const flow: Flow<NodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
-          id: '1234',
+          id: this.flowId,
           flows: {
             flow: {
               flowType: 'flow',
@@ -823,7 +832,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         if (this.onStoreFlow && this.canvasApp) {
           this.onStoreFlow(flow, this.canvasApp);
         }
-        this.storageProvider.saveFlow('1234', flow).then(() => {
+        this.storageProvider.saveFlow(this.flowId, flow).then(() => {
           if (this.canvasAction === CanvasAction.newConnectionCreated) {
             if (
               this.canvasActionPayload &&
