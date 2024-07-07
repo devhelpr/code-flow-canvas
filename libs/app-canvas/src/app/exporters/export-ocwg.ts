@@ -36,7 +36,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     nodeText: string,
     _isContainer: boolean,
     _isRectThumb: boolean,
-    _parentId?: string
+    parentId?: string
   ): string {
     const ocwgNode: OCWGNode = {
       id: `shape:${node.id}`,
@@ -53,6 +53,18 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     };
     if (this.file?.nodes) {
       this.file.nodes[ocwgNode.id] = ocwgNode;
+    }
+    if (parentId && this.file) {
+      if (!this.file.relations[parentId]) {
+        this.file.relations[parentId] = {
+          schema: '@ocwg/set',
+          schema_version: '0.1',
+          members: [],
+          name: parentId,
+        };
+      }
+
+      this.file.relations[parentId].members.push(ocwgNode.id);
     }
     return ocwgNode.id;
   }
@@ -81,6 +93,12 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
         width: node.width ?? 0,
         height: node.height ?? 0,
         nodeInfo: nodeInfo,
+        start: {
+          connected_to: `shape:${node.startNode.id}`,
+        },
+        end: {
+          connected_to: `shape:${node.endNode.id}`,
+        },
       },
       fallback: 'connection',
     };

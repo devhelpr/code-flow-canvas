@@ -11,19 +11,16 @@ export type OCWGNode = {
   fallback?: string;
 };
 
-export type OCWGRelation = {
-  id: string;
-  schema: string;
+export type OCWGSet = {
+  schema: '@ocwg/set';
   schema_version: string;
+  members: Array<string>;
   name: string;
-  properties?: {
-    [key: string]: any;
-  };
 };
 export type OCWGFile = {
   schema_version: string;
   nodes: Record<string, OCWGNode>;
-  relations: Record<string, OCWGRelation>;
+  relations: Record<string, OCWGSet>;
   schemas: {
     [key: string]: any;
   };
