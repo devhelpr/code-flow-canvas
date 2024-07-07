@@ -13,6 +13,7 @@ import { ocwgEmptyFile } from './ocwg/ocwg-empty-file';
 interface OCWGInfo {
   index: number;
 }
+const nodeInfoPropertyName = '@code-flow-canvas/node-properties';
 
 export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
   constructor(exportInfo: Exporter) {
@@ -47,7 +48,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       properties: {
         width: node.width ?? 0,
         height: node.height ?? 0,
-        nodeInfo: nodeInfo,
+        [nodeInfoPropertyName]: nodeInfo,
       },
       fallback: nodeText,
     };
@@ -92,7 +93,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       properties: {
         width: node.width ?? 0,
         height: node.height ?? 0,
-        nodeInfo: nodeInfo,
+        [nodeInfoPropertyName]: nodeInfo,
         start: {
           connected_to: `shape:${node.startNode.id}`,
         },
@@ -124,7 +125,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       properties: {
         width: node.width ?? 0,
         height: node.height ?? 0,
-        nodeInfo: nodeInfo,
+        [nodeInfoPropertyName]: nodeInfo,
         start: {
           connected_to: `shape:${node.startNode.id}`,
           portName: node.startNodeThumb?.thumbName,
