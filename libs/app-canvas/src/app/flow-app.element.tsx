@@ -128,6 +128,7 @@ export class CodeFlowWebAppCanvas {
   heightSpaceForHeaderFooterToolbars?: number;
   widthSpaceForSideToobars?: number;
   flowId?: string;
+  clearPresetRegistry?: boolean;
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
     canvasApp: CanvasAppInstance<BaseNodeInfo>
@@ -147,7 +148,8 @@ export class CodeFlowWebAppCanvas {
       this.widthSpaceForSideToobars,
       this.onStoreFlow,
       this.registerExternalNodes,
-      this.flowId
+      this.flowId,
+      this.clearPresetRegistry
     );
   }
 }
@@ -203,7 +205,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction
     ) => void,
-    flowId?: string
+    flowId?: string,
+    clearPresetRegistry?: boolean
   ) {
     super(
       appRootSelector,
@@ -429,7 +432,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     setupCanvasNodeTaskRegistry(
       this.createRunCounterContext,
-      registerExternalNodes
+      registerExternalNodes,
+      clearPresetRegistry
     );
 
     const storageProviderPromise = this.storageProvider

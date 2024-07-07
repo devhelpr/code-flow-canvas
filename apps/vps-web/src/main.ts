@@ -78,6 +78,7 @@ if (url.pathname === '/run-flow') {
     ) => {
       registerNodeFactory('test-external-node', getExternalTestNode(pyodide));
     };
+    //app.clearPresetRegistry = true;
     app.render();
   });
 } else {

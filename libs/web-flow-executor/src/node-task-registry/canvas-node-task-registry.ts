@@ -172,139 +172,145 @@ export const setupCanvasNodeTaskRegistry = (
   ) => RunCounter,
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction
-  ) => void
+  ) => void,
+  clearPresetRegistry?: boolean
 ) => {
-  registerNodeFactory('start-node', getStart);
-  registerNodeFactory('end-node', getEnd);
+  if (!clearPresetRegistry) {
+    registerNodeFactory('start-node', getStart);
+    registerNodeFactory('end-node', getEnd);
 
-  registerNodeFactory('multi-trigger', getMultiTrigger);
-  registerNodeFactory('summing-junction', getSummingJunction);
+    registerNodeFactory('multi-trigger', getMultiTrigger);
+    registerNodeFactory('summing-junction', getSummingJunction);
 
-  registerNodeFactory('foreach', getForEach);
-  registerNodeFactory(mapNodeName, getMap);
-  registerNodeFactory(sortNodeName, getSort);
-  registerNodeFactory(whileNodeName, getWhile);
+    registerNodeFactory('foreach', getForEach);
+    registerNodeFactory(mapNodeName, getMap);
+    registerNodeFactory(sortNodeName, getSort);
+    registerNodeFactory(whileNodeName, getWhile);
 
-  registerNodeFactory('expression', getExpression);
-  // registerNodeFactory('expression-part', getExpressionPart);
-  // registerNodeFactory('expression-execute', getExpressionExecute);
-  registerNodeFactory('value', getValue);
+    registerNodeFactory('expression', getExpression);
+    // registerNodeFactory('expression-part', getExpressionPart);
+    // registerNodeFactory('expression-execute', getExpressionExecute);
+    registerNodeFactory('value', getValue);
 
-  registerNodeFactory('send-command', getSendCommand);
+    registerNodeFactory('send-command', getSendCommand);
 
-  registerNodeFactory('gate', getGate);
-  registerNodeFactory('if-condition', getIfCondition);
-  registerNodeFactory('array', getArray);
-  registerNodeFactory('show-object', getShowObject);
-  registerNodeFactory('show-input', getShowInput);
-  registerNodeFactory('show-value', getShowValue);
-  registerNodeFactory('show-image', getShowImage);
-  registerNodeFactory('sum', getSum);
-  registerNodeFactory('state', getState);
-  registerNodeFactory('state-transition', getStateTransition);
-  registerNodeFactory('fetch', getFetch);
-  //registerNodeFactory('canvas-node', getCanvasNode(animatePath));
-  //registerNodeFactory('layout-node', getLayoutNode(animatePath));
-  registerNodeFactory('state-machine', createStateMachineNode);
-  registerNodeFactory('state-compound', createStateCompound);
-  registerNodeFactory(
-    'create-state-event-value',
-    getCreateEventStateValueNode,
-    'Event state-value'
-  );
-  registerNodeFactory('variable', getVariable);
-  registerNodeFactory('set-variable', setVariable);
-  registerNodeFactory(
-    'set-flow-variable',
-    setFlowVariable,
-    'Set flow variable'
-  );
+    registerNodeFactory('gate', getGate);
+    registerNodeFactory('if-condition', getIfCondition);
+    registerNodeFactory('array', getArray);
+    registerNodeFactory('show-object', getShowObject);
+    registerNodeFactory('show-input', getShowInput);
+    registerNodeFactory('show-value', getShowValue);
+    registerNodeFactory('show-image', getShowImage);
+    registerNodeFactory('sum', getSum);
+    registerNodeFactory('state', getState);
+    registerNodeFactory('state-transition', getStateTransition);
+    registerNodeFactory('fetch', getFetch);
+    //registerNodeFactory('canvas-node', getCanvasNode(animatePath));
+    //registerNodeFactory('layout-node', getLayoutNode(animatePath));
+    registerNodeFactory('state-machine', createStateMachineNode);
+    registerNodeFactory('state-compound', createStateCompound);
+    registerNodeFactory(
+      'create-state-event-value',
+      getCreateEventStateValueNode,
+      'Event state-value'
+    );
+    registerNodeFactory('variable', getVariable);
+    registerNodeFactory('set-variable', setVariable);
+    registerNodeFactory(
+      'set-flow-variable',
+      setFlowVariable,
+      'Set flow variable'
+    );
 
-  registerNodeFactory('button', getButton(createRunCounterContext));
-  registerNodeFactory(
-    'user-input',
-    getUserInput(createRunCounterContext),
-    'User Input'
-  );
-  registerNodeFactory('timer', getTimer);
-  registerNodeFactory('slider', getSlider(createRunCounterContext));
-  registerNodeFactory('checkbox', getCheckbox);
-  registerNodeFactory('styled-node', getStyledNode);
-  registerNodeFactory('html-node', getHtmlNode);
-  registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
-  registerNodeFactory('annotation', getAnnotation);
+    registerNodeFactory('button', getButton(createRunCounterContext));
+    registerNodeFactory(
+      'user-input',
+      getUserInput(createRunCounterContext),
+      'User Input'
+    );
+    registerNodeFactory('timer', getTimer);
+    registerNodeFactory('slider', getSlider(createRunCounterContext));
+    registerNodeFactory('checkbox', getCheckbox);
+    registerNodeFactory('styled-node', getStyledNode);
+    registerNodeFactory('html-node', getHtmlNode);
+    registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
+    registerNodeFactory('annotation', getAnnotation);
 
-  registerNodeFactory('node-trigger', getNodeTrigger);
-  registerNodeFactory('node-trigger-target', getNodeTriggerTarget);
+    registerNodeFactory('node-trigger', getNodeTrigger);
+    registerNodeFactory('node-trigger-target', getNodeTriggerTarget);
 
-  registerNodeFactory('call-function', getCallFunction);
-  registerNodeFactory('function', getFunction);
-  registerNodeFactory('observe-variable', observeVariable);
+    registerNodeFactory('call-function', getCallFunction);
+    registerNodeFactory('function', getFunction);
+    registerNodeFactory('observe-variable', observeVariable);
 
-  registerNodeFactory('sequential', getSequential);
+    registerNodeFactory('sequential', getSequential);
 
-  registerNodeFactory('parallel', getParallel);
+    registerNodeFactory('parallel', getParallel);
 
-  registerNodeFactory('split-by-case', getSplitByCase);
+    registerNodeFactory('split-by-case', getSplitByCase);
 
-  registerNodeFactory('multiply-node', getMultiplyNode);
-  registerNodeFactory(loadTextFileNodeName, loadTextFile);
-  registerNodeFactory(runRegexNodeName, runRegularExpression);
-  registerNodeFactory(mergeModeName, getMergeNode);
-  registerNodeFactory(sumMergeModeName, getMergeSumNode);
-  registerNodeFactory(replaceStringMapNodeName, replaceStringMap);
+    registerNodeFactory('multiply-node', getMultiplyNode);
+    registerNodeFactory(loadTextFileNodeName, loadTextFile);
+    registerNodeFactory(runRegexNodeName, runRegularExpression);
+    registerNodeFactory(mergeModeName, getMergeNode);
+    registerNodeFactory(sumMergeModeName, getMergeSumNode);
+    registerNodeFactory(replaceStringMapNodeName, replaceStringMap);
 
-  registerNodeFactory(splitStringNodeName, splitString);
-  registerNodeFactory(createSetNodeName, createSet);
-  registerNodeFactory(createArrayNodeName, createArray);
-  registerNodeFactory(intersectSetsNodeName, getInsersectSetsNode);
-  registerNodeFactory(setSizeNodeName, getSetSizeNode);
-  registerNodeFactory('merge', getMergeNode);
-  registerNodeFactory(rangeNodeName, getRangeNode);
-  registerNodeFactory(scopeVariableNodeName, getScopedVariable(false));
+    registerNodeFactory(splitStringNodeName, splitString);
+    registerNodeFactory(createSetNodeName, createSet);
+    registerNodeFactory(createArrayNodeName, createArray);
+    registerNodeFactory(intersectSetsNodeName, getInsersectSetsNode);
+    registerNodeFactory(setSizeNodeName, getSetSizeNode);
+    registerNodeFactory('merge', getMergeNode);
+    registerNodeFactory(rangeNodeName, getRangeNode);
+    registerNodeFactory(scopeVariableNodeName, getScopedVariable(false));
 
-  // dictionary nodes
-  registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
-  registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
-  registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
-  registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
+    // dictionary nodes
+    registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
+    registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
+    registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
+    registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
 
-  // array nodes
-  registerNodeFactory(initializeArrayariableNodeName, initializeArrayVariable);
-  registerNodeFactory(pushValueToArrayVariableNodeName, pushArrayVariable);
-  registerNodeFactory(getArraySizeNodeName, getArraySize);
-  registerNodeFactory(getArrayNodeName, getArrayVariable);
-  registerNodeFactory(getArrayVariableNodeName, getArrayValueByIndex);
-  registerNodeFactory(
-    setArrayValueByIndexVariableNodeName,
-    setArrayValueByIndexVariable
-  );
-  registerNodeFactory(setArrayNodeName, setArrayVariable);
-  registerNodeFactory(popArrayVariableNodeName, popArrayValue);
+    // array nodes
+    registerNodeFactory(
+      initializeArrayariableNodeName,
+      initializeArrayVariable
+    );
+    registerNodeFactory(pushValueToArrayVariableNodeName, pushArrayVariable);
+    registerNodeFactory(getArraySizeNodeName, getArraySize);
+    registerNodeFactory(getArrayNodeName, getArrayVariable);
+    registerNodeFactory(getArrayVariableNodeName, getArrayValueByIndex);
+    registerNodeFactory(
+      setArrayValueByIndexVariableNodeName,
+      setArrayValueByIndexVariable
+    );
+    registerNodeFactory(setArrayNodeName, setArrayVariable);
+    registerNodeFactory(popArrayVariableNodeName, popArrayValue);
 
-  registerNodeFactory(sortArrayNodeName, getSortArrayNode);
-  registerNodeFactory(joinArrayNodeName, joinArray);
-  registerNodeFactory(reverseArrayNodeName, reverseArray);
-  registerNodeFactory(getHasArrayDataNodeName, getHasArrayDataVariable);
+    registerNodeFactory(sortArrayNodeName, getSortArrayNode);
+    registerNodeFactory(joinArrayNodeName, joinArray);
+    registerNodeFactory(reverseArrayNodeName, reverseArray);
+    registerNodeFactory(getHasArrayDataNodeName, getHasArrayDataVariable);
 
-  // grid nodes
-  registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
-  registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
+    // grid nodes
+    registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
+    registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
 
-  registerNodeFactory(dialogFormNodeName, dialogFormNode);
+    registerNodeFactory(dialogFormNodeName, dialogFormNode);
 
-  registerNodeFactory(nodeTreeVisualizerNodeName, getNodeTreeVisualizer);
-  registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);
+    registerNodeFactory(nodeTreeVisualizerNodeName, getNodeTreeVisualizer);
+    registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);
 
-  registerNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
-  registerNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
+    registerNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
+    registerNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
 
-  registerNodeFactory('test-node', getTestNode, 'Test Node');
-  registerNodeFactory(
-    'media-library-node',
-    getMediaLibraryNode,
-    'Media Library'
-  );
+    registerNodeFactory('test-node', getTestNode, 'Test Node');
+    registerNodeFactory(
+      'media-library-node',
+      getMediaLibraryNode,
+      'Media Library'
+    );
+  }
 
   registerExternalNodes?.(registerNodeFactory);
 };
