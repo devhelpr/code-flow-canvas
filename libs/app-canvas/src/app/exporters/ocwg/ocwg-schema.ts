@@ -19,8 +19,8 @@ export type OCWGSet = {
 };
 export type OCWGFile = {
   schema_version: string;
-  nodes: Record<string, OCWGNode>;
-  relations: Record<string, OCWGSet>;
+  nodes: OCWGNode[];
+  relations: OCWGSet[];
   schemas: {
     [key: string]: any;
   };

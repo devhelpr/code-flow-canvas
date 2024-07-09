@@ -2,8 +2,8 @@ import { OCWGFile } from './ocwg-schema';
 
 export const ocwgEmptyFile: OCWGFile = {
   schema_version: '0.1',
-  nodes: {},
-  relations: {},
+  nodes: [],
+  relations: [],
   schemas: {
     '@code-flow-canvas/node': '@ocwg/rectangle',
   },

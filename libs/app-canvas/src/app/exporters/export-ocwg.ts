@@ -53,19 +53,21 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       fallback: nodeText,
     };
     if (this.file?.nodes) {
-      this.file.nodes[ocwgNode.id] = ocwgNode;
+      this.file.nodes.push(ocwgNode);
     }
     if (parentId && this.file) {
-      if (!this.file.relations[parentId]) {
-        this.file.relations[parentId] = {
-          schema: '@ocwg/set',
+      const relation = this.file.relations.find((r) => r.name === parentId);
+      if (relation) {
+        relation.members.push(ocwgNode.id);
+      } else {
+        const relation = {
+          schema: '@ocwg/set' as const,
           schema_version: '0.1',
-          members: [],
+          members: [ocwgNode.id],
           name: parentId,
         };
+        this.file.relations.push(relation);
       }
-
-      this.file.relations[parentId].members.push(ocwgNode.id);
     }
     return ocwgNode.id;
   }
@@ -104,7 +106,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       fallback: 'connection',
     };
     if (this.file?.nodes) {
-      this.file.nodes[ocwgNode.id] = ocwgNode;
+      this.file.nodes.push(ocwgNode);
     }
     return;
   }
@@ -138,7 +140,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       fallback: 'connection',
     };
     if (this.file?.nodes) {
-      this.file.nodes[ocwgNode.id] = ocwgNode;
+      this.file.nodes.push(ocwgNode);
     }
     return;
   }
