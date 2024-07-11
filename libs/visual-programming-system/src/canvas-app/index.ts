@@ -402,18 +402,35 @@ export const createCanvasApp = <T>(
             pointerYPos
           );
 
-          currentState.target.pointerMove &&
-            currentState.target.pointerMove(
-              x,
-              y,
-              currentState.element,
-              canvas,
-              currentState.target.interactionInfo,
-              interactionStateMachine
-            );
+          const rect = currentState?.element as IRectNodeComponent<T>;
+          // console.log(
+          //   'pointermove canvas',
+          //   canvas.id,
+          //   rect?.canvasAppInstance?.canvas?.id,
+          //   rect?.containerNode?.id,
+          //   rect?.canvasAppInstance?.canvas?.id !== canvas.id
+          // );
+          if (
+            rect?.containerNode?.id === canvas.id ||
+            rect?.canvasAppInstance?.canvas?.id !== canvas.id ||
+            !rect?.canvasAppInstance?.canvas?.id
+            //true
+          ) {
+            event.preventDefault();
+            event.stopPropagation();
+            currentState.target.pointerMove &&
+              currentState.target.pointerMove(
+                x,
+                y,
+                currentState.element,
+                canvas,
+                currentState.target.interactionInfo,
+                interactionStateMachine
+              );
 
-          if (onCameraChanged) {
-            onCameraChanged(getCamera());
+            if (onCameraChanged) {
+              onCameraChanged(getCamera());
+            }
           }
         }
       }
@@ -457,23 +474,36 @@ export const createCanvasApp = <T>(
             setSelectNode(undefined);
           }
         } else {
-          event.stopPropagation();
-          wasMoved = true; // HACK
-
-          const { x, y } = transformCameraSpaceToWorldSpace(
-            pointerXPos,
-            pointerYPos
+          const rect = currentState?.element as IRectNodeComponent<T>;
+          console.log(
+            'pointerup canvas',
+            canvas.id,
+            rect?.containerNode?.id,
+            rect?.canvasAppInstance?.canvas?.id,
+            rect?.canvasAppInstance?.canvas?.id !== canvas.id
           );
-
-          currentState.target.pointerUp &&
-            currentState.target.pointerUp(
-              x,
-              y,
-              currentState.element,
-              canvas,
-              currentState.target.interactionInfo,
-              interactionStateMachine
+          if (
+            rect?.containerNode?.id === canvas.id ||
+            rect?.canvasAppInstance?.canvas?.id !== canvas.id ||
+            !rect?.canvasAppInstance?.canvas?.id
+          ) {
+            event.stopPropagation();
+            wasMoved = true; // HACK
+            const { x, y } = transformCameraSpaceToWorldSpace(
+              pointerXPos,
+              pointerYPos
             );
+
+            currentState.target.pointerUp &&
+              currentState.target.pointerUp(
+                x,
+                y,
+                currentState.element,
+                canvas,
+                currentState.target.interactionInfo,
+                interactionStateMachine
+              );
+          }
         }
       }
     } else {

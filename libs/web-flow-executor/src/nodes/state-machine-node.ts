@@ -624,9 +624,12 @@ export const createStateMachineNode = (
       }
 
       if (htmlNode.domElement) {
+        // TODO : fix why this inner cointainer canvas sends
+        // double mouse events to the parent canvas/outer rect and causes
+        // bad coordinate transform on mouseup
         canvasAppInstance = createCanvasApp<NodeInfo>(
           htmlNode.domElement as HTMLElement,
-          false,
+          false, //disableInteraction
           true,
           '',
           canvasApp.interactionStateMachine,
@@ -635,6 +638,7 @@ export const createStateMachineNode = (
           undefined,
           true
         );
+        console.log('canvasAppInstance', canvasAppInstance.canvas.id);
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;
 
         const inputInstance = canvasAppInstance.createRect(
@@ -721,8 +725,8 @@ export const createStateMachineNode = (
           stateMachine = undefined;
         });
 
-        rect.addUpdateEventListener((target, x, y, initiator) => {
-          console.log('rect update', target, x, y, initiator);
+        rect.addUpdateEventListener((target, _x, _y, _initiator) => {
+          //console.log('rect update', target, x, y, initiator);
           if (target) {
             outputInstance.nodeComponent?.update?.(
               outputInstance.nodeComponent,

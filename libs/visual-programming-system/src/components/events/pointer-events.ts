@@ -200,14 +200,16 @@ export const pointerUp = <T>(
             x,
             y,
             interactionInfo.xOffsetWithinElementOnFirstClick,
-            interactionInfo.yOffsetWithinElementOnFirstClick
+            interactionInfo.yOffsetWithinElementOnFirstClick,
+            x - interactionInfo.xOffsetWithinElementOnFirstClick,
+            y -
+              //canvasBoundingRect.y -
+              interactionInfo.yOffsetWithinElementOnFirstClick
           );
           element.update(
             element,
             x - interactionInfo.xOffsetWithinElementOnFirstClick,
-            y -
-              //canvasBoundingRect.y -
-              interactionInfo.yOffsetWithinElementOnFirstClick,
+            y - interactionInfo.yOffsetWithinElementOnFirstClick,
             element
           );
         }

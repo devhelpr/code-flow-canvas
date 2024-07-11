@@ -272,7 +272,7 @@ export class Rect<T> {
       hasStaticWidthHeight ?? false
     );
 
-    // WARNING! .. if this is not done, then thumb positioning is incorrect after loading flow
+    // WARNING! .. if this is not done, then thumb positioning is incoraddUpdateEventListenerafter loading flow
     //  for thumb-types EndConnecterCenter and StartConnectorCenter
     this.cachedWidth = -1;
     this.cachedHeight = -1;
@@ -1051,10 +1051,12 @@ export class Rect<T> {
         pointerYPos - (window?.visualViewport?.offsetTop ?? 0)
       );
 
-      const rect = transformCameraSpaceToWorldSpace(
-        elementRect.x - rootX, //+ window.scrollX,
-        elementRect.y - rootY //+ window.scrollY
-      );
+      const rect = this.containerNode
+        ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
+        : transformCameraSpaceToWorldSpace(
+            elementRect.x - rootX,
+            elementRect.y - rootY
+          );
       // console.log(
       //   'event.pageY',
       //   //event.clientY - elementRect.y,
@@ -1221,7 +1223,6 @@ export class Rect<T> {
         };
 
         const bbox = this.getBBoxPath(pathPoints);
-
         const divDomElement = this.nodeComponent
           .domElement as unknown as HTMLElement;
         divDomElement.style.width = `${bbox.width}px`;
@@ -1297,6 +1298,7 @@ export class Rect<T> {
         };
 
         const bbox = this.getBBoxPath(pathPoints);
+        console.log('update', bbox.x, bbox.y);
 
         const divDomElement = this.nodeComponent
           .domElement as unknown as HTMLElement;
