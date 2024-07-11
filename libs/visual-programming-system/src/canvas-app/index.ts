@@ -1189,7 +1189,8 @@ export const createCanvasApp = <T>(
         isStaticPosition,
         isCircle,
         createStraightLineConnection,
-        setCanvasAction
+        setCanvasAction,
+        rootElement
       );
       if (!rectInstance || !rectInstance.nodeComponent) {
         throw new Error('rectInstance is undefined');

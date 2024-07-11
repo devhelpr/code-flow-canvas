@@ -52,7 +52,8 @@ export class RectThumb<T> extends Rect<T> {
     isStaticPosition?: boolean,
     isCircle?: boolean,
     createStraightLineConnection?: boolean,
-    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
+    setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
+    rootElement?: HTMLElement
   ) {
     super(
       canvas,
@@ -76,7 +77,8 @@ export class RectThumb<T> extends Rect<T> {
       containerNode,
       isStaticPosition,
       'rect-thumb-node',
-      setCanvasAction
+      setCanvasAction,
+      rootElement
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');
@@ -121,6 +123,9 @@ export class RectThumb<T> extends Rect<T> {
 
   protected override onPointerDown = (event: PointerEvent) => {
     if (event.shiftKey && this.canvasElements) {
+      // const elementRect = (
+      //   this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
+      // ).getBoundingClientRect();
       let parentX = 0;
       let parentY = 0;
       if (this.containerNode) {
