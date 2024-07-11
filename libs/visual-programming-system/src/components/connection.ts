@@ -323,10 +323,12 @@ export class Connection<T> {
         pointerXPos,
         pointerYPos
       );
-      const rect = transformCameraSpaceToWorldSpace(
-        elementRect.x - rootX,
-        elementRect.y - rootY
-      );
+      const rect = this.containerNode
+        ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
+        : transformCameraSpaceToWorldSpace(
+            elementRect.x - rootX,
+            elementRect.y - rootY
+          );
 
       let parentX = 0;
       let parentY = 0;

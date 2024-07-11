@@ -913,7 +913,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       (this.runButton?.domElement as HTMLButtonElement).disabled = false;
       this.resetConnectionSlider();
 
-      let hasUIElements = true;
+      let hasUIElements = (this.currentCanvasApp?.elements?.size ?? 0) > 0;
       this.currentCanvasApp?.elements.forEach((node) => {
         if (node.nodeInfo?.isUINode) {
           hasUIElements = true;
@@ -1786,6 +1786,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   onPreclearCanvas = () => {
     this.clearPathExecution();
     removeAllCompositions();
+    initFlowVariableScope();
+
+    resetRunIndex();
+    (this.runButton?.domElement as HTMLButtonElement).disabled = false;
+    this.resetConnectionSlider();
   };
 
   onPostclearCanvas = () => {
