@@ -73,16 +73,16 @@ if (url.pathname === '/run-flow') {
       currentOcwgExport = JSON.stringify(file, null, 2);
       //ocwgExport.innerHTML = JSON.stringify(file, null, 2);
       renderElement(
-        <div>
+        <div class="border-t border-solid border-slate-200">
           {JSON.stringify(file, null, 2)
             .split(/\r?\n|\r|\n/g)
             .map((line: string, index: number) => (
               <div class="relative">
                 <span
-                  class="absolute px-2 w-16 after:content-[attr(data-line-number)] text-slate-500 select-none"
+                  class="absolute px-2 text-right w-16 bg-slate-200 after:content-[attr(data-line-number)] text-slate-500 select-none"
                   data-line-number={index + 1}
                 ></span>
-                <span class="ml-12  pl-2">{line}</span>
+                <span class="ml-12  pl-5">{line}</span>
               </div>
             ))}
         </div>,
