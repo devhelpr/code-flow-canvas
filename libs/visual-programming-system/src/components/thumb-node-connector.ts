@@ -533,44 +533,71 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
     x: number,
-    y: number
+    y: number,
+    rootX: number,
+    rootY: number
   ) => {
     if (!this.canvas || !this.rootElement) {
       return;
     }
 
-    const elementRect = (
-      connectionThumb.domElement as unknown as HTMLElement | SVGElement
-    ).getBoundingClientRect();
-    const rootBounds = (
-      this.rootElement as HTMLElement
-    ).getBoundingClientRect();
+    // TODO: use different reference ??? maybe the node-thumb ??
+    const elementRect =
+      //connectionThumb.domElement as unknown as HTMLElement | SVGElement
+      (
+        this.nodeComponent?.domElement as unknown as HTMLElement | SVGElement
+      ).getBoundingClientRect();
+    // const rootBounds = (
+    //   this.rootElement as HTMLElement
+    // ).getBoundingClientRect();
+
+    // const rectCamera = transformCameraSpaceToWorldSpace(
+    //   elementRect.x - rootBounds.x, // window.scrollX,
+    //   elementRect.y - rootBounds.y // window.scrollY
+    // );
+
+    const rectCamera = this.containerNode
+      ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
+      : transformCameraSpaceToWorldSpace(
+          elementRect.x - rootX,
+          elementRect.y - rootY
+        );
+
+    const parentX = 0;
+    const parentY = 0;
+    // if (this.containerNode) {
+    //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+    //     const parentCoordinates =
+    //       this.containerNode?.getParentedCoordinates() ?? {
+    //         x: 0,
+    //         y: 0,
+    //       };
+    //     // parentX = this.containerNode.x - paddingRect;
+    //     // parentY = this.containerNode.y - paddingRect;
+    //     parentX = parentCoordinates.x; // + paddingRect;
+    //     parentY = parentCoordinates.y + paddingRect;
+    //   }
+    // }
 
     console.log(
       'node-connector THUMB initiateDraggingConnection',
-      connectionThumb
+      this.canvas.id,
+      this.canvas,
+      connectionThumb,
+      this.containerNode,
+      elementRect.x,
+      elementRect.y,
+      // x - rectCamera.x + parentX - paddingRect,
+      // y - rectCamera.y + parentY,
+      // x + parentX,
+      // y + parentY
+      rectCamera.x,
+      rectCamera.y
+      // parentX,
+      // parentY
+      // x,
+      // y
     );
-
-    const rectCamera = transformCameraSpaceToWorldSpace(
-      elementRect.x - rootBounds.x, // window.scrollX,
-      elementRect.y - rootBounds.y // window.scrollY
-    );
-
-    let parentX = 0;
-    let parentY = 0;
-    if (this.containerNode) {
-      if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-        const parentCoordinates =
-          this.containerNode?.getParentedCoordinates() ?? {
-            x: 0,
-            y: 0,
-          };
-        // parentX = this.containerNode.x - paddingRect;
-        // parentY = this.containerNode.y - paddingRect;
-        parentX = parentCoordinates.x; // + paddingRect;
-        parentY = parentCoordinates.y + paddingRect;
-      }
-    }
 
     const interactionInfoResult = pointerDown(
       x - rectCamera.x + parentX - paddingRect,
@@ -672,7 +699,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         if (!this.canvas) {
           return;
         }
-        const { pointerXPos, pointerYPos } = getPointerPos(
+        const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
           this.canvas.domElement as HTMLElement,
           this.rootElement,
           e
@@ -692,11 +719,11 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           this.canvasElements,
           x,
           y,
-          x,
+          x + 40,
           y,
-          x,
+          x + 20,
           y,
-          x,
+          x + 40,
           y,
           false,
           undefined,
@@ -708,6 +735,19 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           this.rootElement
         );
 
+        // Waarom is x/y kleiner dan 0?
+        console.log(
+          'x y',
+          event?.target,
+          xorg,
+          yorg,
+          x,
+          y,
+          parentX,
+          parentY,
+          this.canvas.domElement as HTMLElement,
+          this.rootElement
+        );
         if (curve.nodeComponent?.connectionEndNodeThumb) {
           const circleDomElement =
             curve.nodeComponent?.connectionEndNodeThumb.getThumbCircleElement?.();
@@ -749,7 +789,11 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           this.setCanvasAction(CanvasAction.newConnectionCreated, curve);
         }
 
-        if (curve && this.canvas) {
+        if (
+          curve &&
+          this.canvas
+          //curve.nodeComponent.connectionEndNodeThumb
+        ) {
           curve.nodeComponent.startNode = this.parentRectNode;
           curve.nodeComponent.startNodeThumb = this.nodeComponent;
           this.parentRectNode.connections?.push(curve.nodeComponent);
@@ -758,11 +802,21 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
             curve.nodeComponent.isData = true;
           }
 
-          if (curve.nodeComponent.update) {
-            curve.nodeComponent.update();
-          }
+          // uncommenting this causes a weird initial positioning issue when dragging a new
+          // connection from a node/thumb-node-connector
 
-          this.initiateDraggingConnection(curve.endPointElement, xorg, yorg);
+          // if (curve.nodeComponent.update) {
+          //   curve.nodeComponent.update();
+          // }
+
+          this.initiateDraggingConnection(
+            curve.endPointElement,
+            //curve.nodeComponent.connectionEndNodeThumb,
+            xorg + parentX,
+            yorg + parentY,
+            rootX,
+            rootY
+          );
         }
 
         return;
@@ -872,6 +926,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         pointerXPos,
         pointerYPos
       );
+      //console.log('pointermove thumb-node-connector', x, y);
       pointerMove(
         x,
         y,

@@ -1,10 +1,5 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
-import {
-  thumbRadius,
-  thumbWidth,
-  thumbHeight,
-  paddingRect,
-} from '../constants/measures';
+import { thumbRadius, thumbWidth, thumbHeight } from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -285,7 +280,11 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
     x: number,
-    y: number
+    y: number,
+    rootX: number,
+    rootY: number,
+    _parentXcaller: number,
+    _parentYcaller: number
   ) => {
     if (!this.canvas || !this.rootElement) {
       return;
@@ -294,34 +293,54 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     const elementRect = (
       connectionThumb.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
-    const rootBounds = (
-      this.rootElement as HTMLElement
-    ).getBoundingClientRect();
+    // const rootBounds = (
+    //   this.rootElement as HTMLElement
+    // ).getBoundingClientRect();
+
+    // const rectCamera = transformCameraSpaceToWorldSpace(
+    //   elementRect.x - rootBounds.x, //+ window.scrollX,
+    //   elementRect.y - rootBounds.y //+ window.scrollY
+    // );
+
+    const rectCamera = this.nodeComponent?.parent?.containerNode
+      ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
+      : transformCameraSpaceToWorldSpace(
+          elementRect.x - rootX,
+          elementRect.y - rootY
+        );
+
+    const parentX = 0;
+    const parentY = 0;
+    // if (this.containerNode) {
+    //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+    //     const parentCoordinates =
+    //       this.containerNode?.getParentedCoordinates() ?? {
+    //         x: 0,
+    //         y: 0,
+    //       };
+    //     // parentX = this.containerNode.x - paddingRect;
+    //     // parentY = this.containerNode.y - paddingRect;
+    //     parentX = parentCoordinates.x - paddingRect;
+    //     parentY = parentCoordinates.y - paddingRect;
+    //   }
+    // }
+
     console.log(
       'connection-controller THUMB initiateDraggingConnection',
-      connectionThumb
+      this.canvas,
+      connectionThumb,
+      this.nodeComponent?.parent?.containerNode,
+      elementRect.x,
+      elementRect.y,
+      //x,
+      //y
+      rectCamera.x,
+      rectCamera.y
+      // parentX,
+      // parentY
+      // x - parentXcaller,
+      // y - parentYcaller
     );
-
-    const rectCamera = transformCameraSpaceToWorldSpace(
-      elementRect.x - rootBounds.x, //+ window.scrollX,
-      elementRect.y - rootBounds.y //+ window.scrollY
-    );
-
-    let parentX = 0;
-    let parentY = 0;
-    if (this.containerNode) {
-      if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-        const parentCoordinates =
-          this.containerNode?.getParentedCoordinates() ?? {
-            x: 0,
-            y: 0,
-          };
-        // parentX = this.containerNode.x - paddingRect;
-        // parentY = this.containerNode.y - paddingRect;
-        parentX = parentCoordinates.x - paddingRect;
-        parentY = parentCoordinates.y - paddingRect;
-      }
-    }
 
     const interactionInfoResult = pointerDown(
       x - rectCamera.x + parentX,
@@ -352,15 +371,15 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
   };
 
   onPointerDown = (e: PointerEvent) => {
-    console.log(
-      'connection-controller onPointerDown',
-      this.disableInteraction,
-      this.nodeComponent?.connectionControllerType,
-      e.target,
-      this.nodeComponent?.id,
-      this.nodeComponent?.parent &&
-        this.nodeComponent?.parent.nodeType === NodeType.Connection
-    );
+    // console.log(
+    //   'connection-controller onPointerDown',
+    //   // this.disableInteraction,
+    //   // this.nodeComponent?.connectionControllerType,
+    //   e.target,
+    //   // this.nodeComponent?.id,
+    //   // this.nodeComponent?.parent &&
+    //   //   this.nodeComponent?.parent.nodeType === NodeType.Connection
+    // );
     if (this.disableInteraction) {
       return;
     }
@@ -401,7 +420,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
 
       e.stopPropagation();
 
-      // loopup connection to with this connection-controller as start point
+      // lookup connection to with this connection-controller as start point
       const connection = this.nodeComponent
         .parent as unknown as IConnectionNodeComponent<T>;
 
@@ -412,7 +431,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             ? connection.connectionStartNodeThumb
             : undefined;
         if (connectionThumb && this.rootElement) {
-          const { pointerXPos, pointerYPos } = getPointerPos(
+          const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
             this.canvas.domElement as HTMLElement,
             this.rootElement,
             e
@@ -444,11 +463,15 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
           }
           connection.startNode = undefined;
           connection.startNodeThumb = undefined;
-          console.log('thumb 2 start', x, y);
+          console.log('x y', event?.target, x, y);
           this.initiateDraggingConnection(
             connectionThumb,
             x + parentX,
-            y + parentY
+            y + parentY,
+            rootX,
+            rootY,
+            parentX,
+            parentY
           );
           return;
         }
@@ -462,7 +485,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             : undefined;
 
         if (connectionThumb && this.rootElement) {
-          const { pointerXPos, pointerYPos } = getPointerPos(
+          const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
             this.canvas.domElement as HTMLElement,
             this.rootElement,
             e
@@ -496,11 +519,15 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             }
           }
 
-          console.log('thumb 2 end', x, y);
+          console.log('x y (2)', event?.target, x, y);
           this.initiateDraggingConnection(
             connectionThumb,
             x + parentX,
-            y + parentY
+            y + parentY,
+            rootX,
+            rootY,
+            parentX,
+            parentY
           );
           return;
         }
@@ -543,29 +570,32 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
           }
         }
       }
-      console.log(
-        'connection-controller thumb 3',
-        x,
-        y,
-        this.nodeComponent?.nodeType,
-        this.nodeComponent?.thumbType,
-        this.nodeComponent?.thumbConnectionType,
-        'parent',
-        this.nodeComponent?.parent,
-        'containers',
-        this.containerNode,
-        this.nodeComponent?.parent?.containerNode
-      );
+      // console.log(
+      //   'connection-controller thumb 3',
+      //   x,
+      //   y,
+      //   this.nodeComponent?.nodeType,
+      //   this.nodeComponent?.thumbType,
+      //   this.nodeComponent?.thumbConnectionType,
+      //   'parent',
+      //   this.nodeComponent?.parent,
+      //   'containers',
+      //   this.containerNode,
+      //   this.nodeComponent?.parent?.containerNode
+      // );
+      console.log('x y (3)', event?.target, x, y);
 
       const elementRect = (
         this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
       ).getBoundingClientRect();
 
       // TODO : check if wihtin container... then use container x/y as parentX/Y....
-      const rectCamera = transformCameraSpaceToWorldSpace(
-        elementRect.x - rootX,
-        elementRect.y - rootY
-      );
+      const rectCamera = this.nodeComponent?.parent?.containerNode
+        ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
+        : transformCameraSpaceToWorldSpace(
+            elementRect.x - rootX,
+            elementRect.y - rootY
+          );
 
       const interactionInfoResult = pointerDown(
         x - rectCamera.x + parentX,

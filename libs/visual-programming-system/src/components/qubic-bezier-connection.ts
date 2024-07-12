@@ -67,6 +67,10 @@ export class CubicBezierConnection<T> extends Connection<T> {
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
     }
+    this.nodeComponent.x = startX;
+    this.nodeComponent.y = startY;
+    this.nodeComponent.endX = endX;
+    this.nodeComponent.endY = endY;
     this.nodeComponent.lineType = LineType.BezierCubic;
     this.nodeComponent.isControlled = isControlled;
     this.nodeComponent.onClick = () => {

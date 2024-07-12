@@ -380,7 +380,6 @@ export class Connection<T> {
     initiator?: INodeComponent<T>,
     inUpdateLoop?: boolean
   ) => {
-    //console.log('inUpdateLoop', inUpdateLoop);
     const connection = target as unknown as IConnectionNodeComponent<T>;
     if (!target && x === undefined && y === undefined && !initiator) {
       // eslint-disable-next-line no-console
@@ -563,13 +562,13 @@ export class Connection<T> {
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
       } else {
-        if (initiator.nodeType === NodeType.Connection) {
-          if (!connection.startNode && connection.endNode) {
-            console.log('CONNECTion without startNode with endNode');
-          } else if (connection.startNode && connection.endNode) {
-            console.log('CONNECTion with startNode with endNode');
-          }
-        }
+        // if (initiator.nodeType === NodeType.Connection) {
+        //   if (!connection.startNode && connection.endNode) {
+        //     console.log('CONNECTion without startNode with endNode');
+        //   } else if (connection.startNode && connection.endNode) {
+        //     console.log('CONNECTion with startNode with endNode');
+        //   }
+        // }
         const isStaticStart = connection.startNode?.isStaticPosition ?? false;
         const isStaticEnd = connection.endNode?.isStaticPosition ?? false;
         const diffC1x = this.points.cx1 - this.points.beginX;

@@ -1,4 +1,8 @@
-import { Flow } from '@devhelpr/visual-programming-system';
+import {
+  Flow,
+  createJSXElement,
+  renderElement,
+} from '@devhelpr/visual-programming-system';
 import flowData from './example-data/counter.json';
 import { loadPyodide } from 'pyodide';
 const url = new URL(window.location.href);
@@ -50,6 +54,14 @@ if (url.pathname === '/run-flow') {
     ) => {
       //
     };
+    let currentOcwgExport = '';
+    ocwgElement
+      .querySelector('#ocwg-copy-to-clipboard')
+      ?.addEventListener('click', () => {
+        if (currentOcwgExport) {
+          navigator.clipboard.writeText(currentOcwgExport);
+        }
+      });
     app.onStoreFlow = (_flow, canvasApp) => {
       const ocwg = new module.OCWGExporter({
         canvasApp: canvasApp,
@@ -58,7 +70,24 @@ if (url.pathname === '/run-flow') {
         },
       });
       const file = ocwg.convertToExportFile();
-      ocwgExport.innerHTML = JSON.stringify(file, null, 2);
+      currentOcwgExport = JSON.stringify(file, null, 2);
+      //ocwgExport.innerHTML = JSON.stringify(file, null, 2);
+      renderElement(
+        <div>
+          {JSON.stringify(file, null, 2)
+            .split(/\r?\n|\r|\n/g)
+            .map((line: string, index: number) => (
+              <div class="relative">
+                <span
+                  class="absolute px-2 w-16 after:content-[attr(data-line-number)] text-slate-500 select-none"
+                  data-line-number={index + 1}
+                ></span>
+                <span class="ml-12  pl-2">{line}</span>
+              </div>
+            ))}
+        </div>,
+        ocwgExport
+      );
     };
     app.render();
   });

@@ -129,6 +129,18 @@ export const pointerMove = <T>(
 
     if (interactionState && element && element.domElement) {
       if (element.update) {
+        // console.log(
+        //   'pointer-events pointerMove',
+        //   element.nodeType,
+        //   x - interactionInfo.xOffsetWithinElementOnFirstClick,
+        //   y -
+        //     //canvasBoundingRect.y -
+        //     interactionInfo.yOffsetWithinElementOnFirstClick,
+        //   x,
+        //   y,
+        //   interactionInfo.xOffsetWithinElementOnFirstClick,
+        //   interactionInfo.yOffsetWithinElementOnFirstClick
+        // );
         element.update(
           element,
           x - interactionInfo.xOffsetWithinElementOnFirstClick,

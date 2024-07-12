@@ -1298,7 +1298,7 @@ export class Rect<T> {
         };
 
         const bbox = this.getBBoxPath(pathPoints);
-        console.log('update', bbox.x, bbox.y);
+        //console.log('update', bbox.x, bbox.y);
 
         const divDomElement = this.nodeComponent
           .domElement as unknown as HTMLElement;

@@ -53,9 +53,16 @@
       id="ocwg"
       class="hidden bg-white overflow-auto flex-col z-[1000] fixed w-[384px] h-[384px] bottom-[80px] right-[40px]"
     >
-      <h1 class="font-bold text-xl mb-4">OpenCanvas(OCWG) WiP Export</h1>
+      <div class="mb-4 flex">
+        <h1 class="font-bold text-xl">OpenCanvas(OCWG) WiP Export</h1>
+        <button
+          id="ocwg-copy-to-clipboard"
+          title="Copy to clipboard"
+          class="ml-auto mr-3 icon icon-content_copy"
+        ></button>
+      </div>
       <div id="ocwg-export" class="flex whitespace-pre font-mono"></div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
