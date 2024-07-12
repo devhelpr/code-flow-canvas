@@ -600,7 +600,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     );
 
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x + parentX - paddingRect,
+      x - rectCamera.x + parentX - (this.containerNode ? 0 : paddingRect),
       y - rectCamera.y + parentY,
       connectionThumb,
       this.canvas,
@@ -719,11 +719,11 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           this.canvasElements,
           x,
           y,
-          x + 40,
+          x, //+ 40,
           y,
-          x + 20,
+          x, // + 20,
           y,
-          x + 40,
+          x, //+ 40,
           y,
           false,
           undefined,
@@ -805,9 +805,11 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           // uncommenting this causes a weird initial positioning issue when dragging a new
           // connection from a node/thumb-node-connector
 
-          // if (curve.nodeComponent.update) {
-          //   curve.nodeComponent.update();
-          // }
+          if (!this.containerNode) {
+            if (curve.nodeComponent.update) {
+              curve.nodeComponent.update();
+            }
+          }
 
           this.initiateDraggingConnection(
             curve.endPointElement,
