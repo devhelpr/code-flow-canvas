@@ -98,9 +98,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
         [nodeInfoPropertyName]: nodeInfo,
         start: {
           connected_to: `shape:${node.startNode.id}`,
+          port_name: 'output',
         },
         end: {
           connected_to: `shape:${node.endNode.id}`,
+          port_name: 'input',
         },
       },
       fallback: 'connection',
@@ -130,11 +132,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
         [nodeInfoPropertyName]: nodeInfo,
         start: {
           connected_to: `shape:${node.startNode.id}`,
-          portName: node.startNodeThumb?.thumbName,
+          port_name: node.startNodeThumb?.thumbName,
         },
         end: {
           connected_to: `shape:${node.endNode.id}`,
-          portName: node.endNodeThumb?.thumbName,
+          port_name: node.endNodeThumb?.thumbName,
         },
       },
       fallback: 'connection',

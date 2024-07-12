@@ -15,6 +15,7 @@ import {
 import { getSelectedNode } from '../reactivity';
 import { NodeType } from '../types';
 import { createElement } from '../utils/create-element';
+import { getPointerPos } from '../utils/pointer-pos';
 import { pointerDown } from './events/pointer-events';
 import { LineConnection } from './line-connection';
 import { NodeTransformer } from './node-transformer';
@@ -122,6 +123,9 @@ export class RectThumb<T> extends Rect<T> {
   }
 
   protected override onPointerDown = (event: PointerEvent) => {
+    if (!this.canvas || !this.rootElement) {
+      return false;
+    }
     if (event.shiftKey && this.canvasElements) {
       // const elementRect = (
       //   this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
@@ -141,7 +145,12 @@ export class RectThumb<T> extends Rect<T> {
           parentY = parentCoordinates.y - paddingRect;
         }
       }
-      let { x, y } = transformCameraSpaceToWorldSpace(event.pageX, event.pageY);
+      const { pointerXPos, pointerYPos } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        event
+      );
+      let { x, y } = transformCameraSpaceToWorldSpace(pointerXPos, pointerYPos);
       const xorg = x;
       const yorg = y;
       x = x - parentX;
