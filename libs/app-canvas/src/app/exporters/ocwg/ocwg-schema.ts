@@ -11,6 +11,16 @@ export type OCWGNode = {
   fallback?: string;
 };
 
+export type OCWGEdge = {
+  id: string;
+  name: string;
+  schema: '@ocwg/edge';
+  schema_version: '1.0';
+  from: string;
+  to: string;
+};
+export type OCWGRelation = OCWGSet | OCWGEdge;
+
 export type OCWGSet = {
   schema: '@ocwg/set';
   schema_version: string;
@@ -20,7 +30,7 @@ export type OCWGSet = {
 export type OCWGFile = {
   schema_version: string;
   nodes: OCWGNode[];
-  relations: OCWGSet[];
+  relations: OCWGRelation[];
   schemas: {
     [key: string]: any;
   };

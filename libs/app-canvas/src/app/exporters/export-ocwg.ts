@@ -57,7 +57,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     }
     if (parentId && this.file) {
       const relation = this.file.relations.find((r) => r.name === parentId);
-      if (relation) {
+      if (relation && relation.schema === '@ocwg/set') {
         relation.members.push(ocwgNode.id);
       } else {
         const relation = {
@@ -110,6 +110,19 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     if (this.file?.nodes) {
       this.file.nodes.push(ocwgNode);
     }
+    if (this.file?.relations) {
+      {
+        const relation = {
+          id: node.id,
+          name: `${node.id}-edge`,
+          schema: '@ocwg/edge' as const,
+          schema_version: '1.0' as const,
+          from: `shape:${node.startNode.id}`,
+          to: `shape:${node.endNode.id}`,
+        };
+        this.file.relations.push(relation);
+      }
+    }
     return;
   }
   override exportMultiPortConnection(
@@ -143,6 +156,19 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     };
     if (this.file?.nodes) {
       this.file.nodes.push(ocwgNode);
+    }
+    if (this.file?.relations) {
+      {
+        const relation = {
+          id: node.id,
+          name: `${node.id}-edge`,
+          schema: '@ocwg/edge' as const,
+          schema_version: '1.0' as const,
+          from: `shape:${node.startNode.id}`,
+          to: `shape:${node.endNode.id}`,
+        };
+        this.file.relations.push(relation);
+      }
     }
     return;
   }

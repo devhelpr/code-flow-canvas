@@ -51,7 +51,7 @@
     </div>
     <div
       id="ocwg"
-      class="hidden bg-white overflow-auto flex-col z-[1000] fixed w-[384px] h-[384px] bottom-[80px] right-[40px]"
+      class="hidden bg-white z-[1000] fixed w-[384px] h-[384px] bottom-[80px] right-[40px] grid grid-rows-[auto_1fr]"
     >
       <div class="flex">
         <h1 class="font-bold text-xl p-2">OpenCanvas(OCWG) WiP Export</h1>
@@ -61,7 +61,10 @@
           class="ml-auto mr-3 icon icon-content_copy"
         ></button>
       </div>
-      <div id="ocwg-export" class="flex whitespace-pre font-mono"></div>
+      <div
+        id="ocwg-export"
+        class="flex whitespace-pre font-mono overflow-auto"
+      ></div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

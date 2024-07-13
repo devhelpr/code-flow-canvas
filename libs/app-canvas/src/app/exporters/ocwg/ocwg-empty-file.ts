@@ -8,7 +8,7 @@ export const ocwgEmptyFile: OCWGFile = {
     '@code-flow-canvas/node': {
       $schema:
         'https://www.canvasprotocol.org/schema/draft/2024-06/@ocwg/rectangle',
-      $id: 'https://demo.codeflowcanvas.io/schema/draft/2024-07/@code-flow-canvas/node',
+      $id: 'https://demo.codeflowcanvas.io/schema/draft-0.0.1/code-flow-canvas-node.json',
       properties: {
         '@code-flow-canvas/node-properties': {
           type: 'object',
@@ -18,7 +18,7 @@ export const ocwgEmptyFile: OCWGFile = {
     '@code-flow-canvas/connection': {
       $schema:
         'https://www.canvasprotocol.org/schema/draft/2024-06/@ocwg/arrow',
-      $id: 'https://demo.codeflowcanvas.io/schema/draft/2024-07/@code-flow-canvas/connection',
+      $id: 'https://demo.codeflowcanvas.io/schema/draft-0.0.1/code-flow-canvas-connection.json',
       properties: {
         '@code-flow-canvas/node-properties': {
           type: 'object',
