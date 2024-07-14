@@ -8,9 +8,9 @@ export function ocwgPage() {
   renderElement(
     <div
       id="ocwg"
-      class="hidden bg-white z-[1000] fixed w-[384px] h-[384px] bottom-[80px] right-[40px] grid grid-rows-[auto_1fr]"
+      class="hidden bg-white z-[10000] overflow-hidden fixed w-[384px] h-[384px] bottom-[80px] right-[40px] grid grid-rows-[auto_1fr]"
     >
-      <div class="flex">
+      <div class="flex flex-wrap">
         <h1 class="font-bold text-xl p-2">OpenCanvas(OCWG) WiP Export</h1>
         <button
           id="ocwg-copy-to-clipboard"
