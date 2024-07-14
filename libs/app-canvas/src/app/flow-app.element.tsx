@@ -1795,6 +1795,21 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onPostclearCanvas = () => {
     setupTasksInDropdown(this.selectNodeType?.domElement as HTMLSelectElement);
+    if (this.onStoreFlow && this.canvasApp) {
+      const flow: Flow<NodeInfo> = {
+        schemaType: 'flow',
+        schemaVersion: '0.0.1',
+        id: this.flowId,
+        flows: {
+          flow: {
+            flowType: 'flow',
+            nodes: [],
+          },
+        },
+        compositions: {},
+      };
+      this.onStoreFlow(flow, this.canvasApp);
+    }
   };
 
   clearPathExecution = () => {

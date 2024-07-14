@@ -85,6 +85,7 @@ export function ocwgPage() {
       });
       const file = ocwg.convertToExportFile();
       currentOcwgExport = JSON.stringify(file, null, 2);
+      ocwgExport.innerHTML = '';
       //ocwgExport.innerHTML = JSON.stringify(file, null, 2);
       renderElement(
         <div class="border-t border-solid border-slate-200">
