@@ -77,6 +77,10 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
     }
+    this.nodeComponent.x = startX;
+    this.nodeComponent.y = startY;
+    this.nodeComponent.endX = endX;
+    this.nodeComponent.endY = endY;
     this.nodeComponent.lineType = LineType.BezierQuadratic;
     this.nodeComponent.isControlled = isControlled;
     this.nodeComponent.onClick = () => {
@@ -232,7 +236,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-
+      //console.log('endPointNode.nodeComponent.update', x, y);
       // if (this.nodeComponent?.endNode) {
       //   endPointNode.setDisableInteraction();
       // }
@@ -445,14 +449,14 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
         const width = (this.nodeComponent.endNode.width ?? 0) + spacingAABB * 2;
         const height =
           (this.nodeComponent.endNode.height ?? 0) + spacingAABB * 2;
-        console.log(
-          'xleft',
-          this.nodeComponent.endNode.id,
-          xleft,
-          yleft,
-          width,
-          height
-        );
+        // console.log(
+        //   'xleft',
+        //   this.nodeComponent.endNode.id,
+        //   xleft,
+        //   yleft,
+        //   width,
+        //   height
+        // );
         const AABBLeftIntersect = calculateQuadraticBezierLineIntersections(
           { x: split1.curve2.x1, y: split1.curve2.y1 },
           { x: split1.curve2.c1x, y: split1.curve2.c1y },

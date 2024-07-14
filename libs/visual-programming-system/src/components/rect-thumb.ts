@@ -240,7 +240,10 @@ export class RectThumb<T> extends Rect<T> {
             undefined,
             this.canvasUpdated,
             undefined,
-            this.containerNode
+            this.containerNode,
+            undefined,
+            undefined,
+            this.rootElement
           )
         : new QuadraticBezierConnection<T>(
             this.canvas as unknown as INodeComponent<T>,
@@ -258,7 +261,10 @@ export class RectThumb<T> extends Rect<T> {
             undefined,
             this.canvasUpdated,
             undefined,
-            this.containerNode
+            this.containerNode,
+            undefined,
+            undefined,
+            this.rootElement
           );
 
       if (!curve || !curve.nodeComponent || !curve.endPointElement) {
@@ -281,9 +287,9 @@ export class RectThumb<T> extends Rect<T> {
           curve.nodeComponent.isData = true;
         }
 
-        if (curve.nodeComponent.update) {
-          curve.nodeComponent.update();
-        }
+        // if (curve.nodeComponent.update) {
+        //   curve.nodeComponent.update();
+        // }
 
         this.initiateDraggingConnection(
           curve.endPointElement,
@@ -307,13 +313,9 @@ export class RectThumb<T> extends Rect<T> {
     if (!this.canvas) {
       return;
     }
-    console.log(
-      'RECT-THUMB initiateDraggingConnection',
-      this.nodeComponent,
-      connectionThumb
-    );
+
     const elementRect = (
-      connectionThumb.domElement as unknown as HTMLElement | SVGElement
+      this.nodeComponent?.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
 
     const rectCamera = transformCameraSpaceToWorldSpace(
@@ -336,18 +338,38 @@ export class RectThumb<T> extends Rect<T> {
         parentY = parentCoordinates.y - paddingRect;
       }
     }
+    console.log(
+      'RECT-THUMB initiateDraggingConnection',
+      this.nodeComponent,
+      connectionThumb,
+      x,
+      y,
+      parentX,
+      parentY,
+      rectCamera.x,
+      rectCamera.y,
+      x - rectCamera.x + parentX,
+      y - rectCamera.y + parentY
+    );
 
     const interactionInfoResult = pointerDown(
       x - rectCamera.x + parentX,
       y - rectCamera.y + parentY,
       connectionThumb,
-      this.containerNode
-        ? (this.containerNode.nodeInfo as any)?.canvasAppInstance?.canvas
-            ?.domElement
-        : this.canvas.domElement,
+      this.canvas,
+      // this.containerNode
+      //   ? (this.containerNode.nodeInfo as any)?.canvasAppInstance?.canvas
+      //       ?.domElement
+      //   : this.canvas.domElement,
       this.interactionStateMachine
     );
+
     if (interactionInfoResult && connectionThumb.initPointerDown) {
+      console.log(
+        'xoffset yoffset',
+        interactionInfoResult.xOffsetWithinElementOnFirstClick,
+        interactionInfoResult.yOffsetWithinElementOnFirstClick
+      );
       connectionThumb.initPointerDown(
         interactionInfoResult.xOffsetWithinElementOnFirstClick,
         interactionInfoResult.yOffsetWithinElementOnFirstClick

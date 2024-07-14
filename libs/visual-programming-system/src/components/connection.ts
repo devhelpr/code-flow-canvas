@@ -881,12 +881,12 @@ export class Connection<T> {
       this.nodeComponent?.id &&
       connectionsFromSameoutput.length > 0
     ) {
-      console.log(
-        'update all connections from same output',
-        initiator?.id,
-        inUpdateLoop,
-        connectionsFromSameoutput
-      );
+      // console.log(
+      //   'update all connections from same output',
+      //   initiator?.id,
+      //   inUpdateLoop,
+      //   connectionsFromSameoutput
+      // );
       if (
         !initiator ||
         (initiator &&

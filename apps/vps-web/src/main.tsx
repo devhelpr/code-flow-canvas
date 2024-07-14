@@ -1,115 +1,23 @@
-import {
-  Flow,
-  createJSXElement,
-  renderElement,
-} from '@devhelpr/visual-programming-system';
-import flowData from './example-data/counter.json';
-import { loadPyodide } from 'pyodide';
 const url = new URL(window.location.href);
 import './userWorker';
-import {
-  NodeInfo,
-  RegisterNodeFactoryFunction,
-} from '@devhelpr/web-flow-executor';
+import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
 import { runFlow } from './app/run-flow';
-import { getExternalTestNode } from './app/custom-nodes/external-test-node';
+import { ocwgPage } from './app/pages/ocwg';
+import { pythonPage } from './app/pages/python';
+import { examplePage } from './app/pages/example';
 
-const appElement = document.getElementById('app-root')!;
-const pageElement = document.getElementById('page-root')!;
-const ocwgElement = document.getElementById('ocwg')!;
 if (url.pathname === '/run-flow') {
   runFlow();
 } else if (url.pathname === '/example') {
-  import('./app/flow-app.element').then((module) => {
-    const storageProvider = {
-      getFlow: async (_flowId: string) => {
-        return new Promise<Flow<NodeInfo>>((resolve, _reject) => {
-          resolve(flowData as Flow<NodeInfo>);
-        });
-      },
-      saveFlow: async (_flowId: string, _flow: any) => {
-        return Promise.resolve();
-      },
-    };
-    appElement.classList.add('hidden');
-    pageElement.classList.remove('hidden');
-    new module.FlowAppElement('#page-app-root', storageProvider, true, 20, 32);
-    //result.destroy();
-  });
+  examplePage();
 } else if (url.pathname === '/gl') {
   import('./app/gl-app.element').then((module) => {
     new module.GLAppElement('#app-root');
   });
 } else if (url.pathname === '/ocwg') {
-  ocwgElement.classList.remove('hidden');
-  ocwgElement.classList.add('flex');
-  const ocwgExport = document.getElementById('ocwg-export')!;
-  import('./app/flow-app.element').then(async (module) => {
-    const app = new module.CodeFlowWebAppCanvas();
-    app.appRootSelector = '#app-root';
-    app.heightSpaceForHeaderFooterToolbars = 100;
-    app.widthSpaceForSideToobars = 32;
-    app.registerExternalNodes = (
-      _registerNodeFactory: RegisterNodeFactoryFunction
-    ) => {
-      //
-    };
-    let currentOcwgExport = '';
-    ocwgElement
-      .querySelector('#ocwg-copy-to-clipboard')
-      ?.addEventListener('click', () => {
-        if (currentOcwgExport) {
-          navigator.clipboard.writeText(currentOcwgExport);
-        }
-      });
-    app.onStoreFlow = (_flow, canvasApp) => {
-      const ocwg = new module.OCWGExporter({
-        canvasApp: canvasApp,
-        downloadFile: (_data: any, _name: string, _dataType: string) => {
-          //
-        },
-      });
-      const file = ocwg.convertToExportFile();
-      currentOcwgExport = JSON.stringify(file, null, 2);
-      //ocwgExport.innerHTML = JSON.stringify(file, null, 2);
-      renderElement(
-        <div class="border-t border-solid border-slate-200">
-          {JSON.stringify(file, null, 2)
-            .split(/\r?\n|\r|\n/g)
-            .map((line: string, index: number) => (
-              <div class="relative">
-                <span
-                  class="absolute px-2 text-right w-16 bg-slate-200 after:content-[attr(data-line-number)] text-slate-500 select-none"
-                  data-line-number={index + 1}
-                ></span>
-                <span class="ml-12  pl-5">{line}</span>
-              </div>
-            ))}
-        </div>,
-        ocwgExport
-      );
-    };
-    app.render();
-  });
+  ocwgPage();
 } else if (url.pathname === '/python') {
-  import('./app/flow-app.element').then(async (module) => {
-    const pyodide = await loadPyodide({
-      indexURL: 'pyodide',
-    });
-    await pyodide.loadPackage('numpy');
-    const app = new module.CodeFlowWebAppCanvas();
-    app.flowId = 'python-flow';
-    app.appRootSelector = '#app-root';
-    app.heightSpaceForHeaderFooterToolbars = 100;
-    app.widthSpaceForSideToobars = 32;
-    app.registerExternalNodes = (
-      registerNodeFactory: RegisterNodeFactoryFunction
-    ) => {
-      registerNodeFactory('test-external-node', getExternalTestNode(pyodide));
-    };
-    //app.clearPresetRegistry = true;
-    app.render();
-  });
+  pythonPage();
 } else {
   import('./app/flow-app.element').then(async (module) => {
     new module.FlowAppElement(

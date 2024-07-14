@@ -18,13 +18,13 @@ export const pointerDown = <T>(
   let yOffsetWithinElementOnFirstClick = 0;
   let offsetXhelper = 0;
 
-  const canvasBoundingRect = (
-    canvasNode.domElement as HTMLElement
-  ).getBoundingClientRect();
+  // const canvasBoundingRect = (
+  //   canvasNode.domElement as HTMLElement
+  // ).getBoundingClientRect();
   const boundingOffsetX = 0;
   const boundingOffsetY = 0; // -canvasBoundingRect.y; //-(element.domElement as HTMLElement).scrollTop; //window.scrollY;
 
-  console.log('canvasBoundingRect', y, canvasBoundingRect.y);
+  //console.log('canvasBoundingRect', y, canvasBoundingRect.y);
 
   // this fixes moving elements that have a xOffset (like the node-tree-visualizer)
   if (element && element.domElement) {
@@ -82,16 +82,16 @@ export const pointerDown = <T>(
       // );
     }
 
-    console.log(
-      'update pointerDown',
-      element.id,
-      element?.nodeType,
-      element?.parent?.nodeType,
-      x,
-      y,
-      xOffsetWithinElementOnFirstClick,
-      yOffsetWithinElementOnFirstClick
-    );
+    // console.log(
+    //   'update pointerDown',
+    //   element.id,
+    //   element?.nodeType,
+    //   element?.parent?.nodeType,
+    //   x,
+    //   y,
+    //   xOffsetWithinElementOnFirstClick,
+    //   yOffsetWithinElementOnFirstClick
+    // );
 
     if (element.pointerDown) {
       element.pointerDown();
@@ -129,18 +129,6 @@ export const pointerMove = <T>(
 
     if (interactionState && element && element.domElement) {
       if (element.update) {
-        // console.log(
-        //   'pointer-events pointerMove',
-        //   element.nodeType,
-        //   x - interactionInfo.xOffsetWithinElementOnFirstClick,
-        //   y -
-        //     //canvasBoundingRect.y -
-        //     interactionInfo.yOffsetWithinElementOnFirstClick,
-        //   x,
-        //   y,
-        //   interactionInfo.xOffsetWithinElementOnFirstClick,
-        //   interactionInfo.yOffsetWithinElementOnFirstClick
-        // );
         element.update(
           element,
           x - interactionInfo.xOffsetWithinElementOnFirstClick,
