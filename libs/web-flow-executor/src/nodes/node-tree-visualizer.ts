@@ -172,6 +172,10 @@ export const getNodeTreeVisualizer = (
         id: node.id,
       };
     }
+    console.log(
+      'getNodeStatedHandler',
+      (htmlNode.domElement as unknown as HTMLElement).innerHTML
+    );
     return {
       data: (htmlNode.domElement as unknown as HTMLElement).innerHTML,
       id: node.id,
@@ -179,6 +183,7 @@ export const getNodeTreeVisualizer = (
   };
 
   const setNodeStatedHandler = (_id: string, data: any) => {
+    console.log('setNodeStatedHandler', data);
     if (htmlNode) {
       (htmlNode.domElement as unknown as HTMLElement).innerHTML = data;
     }

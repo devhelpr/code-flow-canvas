@@ -317,7 +317,12 @@ export class RectThumb<T> extends Rect<T> {
     const elementRect = (
       this.nodeComponent?.domElement as unknown as HTMLElement | SVGElement
     ).getBoundingClientRect();
-
+    console.log(
+      'RECT-THUMB initiateDraggingConnection',
+      elementRect,
+      this.nodeComponent?.width,
+      this.nodeComponent?.height
+    );
     const rectCamera = transformCameraSpaceToWorldSpace(
       elementRect.x,
       elementRect.y
@@ -338,19 +343,19 @@ export class RectThumb<T> extends Rect<T> {
         parentY = parentCoordinates.y - paddingRect;
       }
     }
-    console.log(
-      'RECT-THUMB initiateDraggingConnection',
-      this.nodeComponent,
-      connectionThumb,
-      x,
-      y,
-      parentX,
-      parentY,
-      rectCamera.x,
-      rectCamera.y,
-      x - rectCamera.x + parentX,
-      y - rectCamera.y + parentY
-    );
+    // console.log(
+    //   'RECT-THUMB initiateDraggingConnection',
+    //   this.nodeComponent,
+    //   connectionThumb,
+    //   x,
+    //   y,
+    //   parentX,
+    //   parentY,
+    //   rectCamera.x,
+    //   rectCamera.y,
+    //   x - rectCamera.x + parentX,
+    //   y - rectCamera.y + parentY
+    // );
 
     const interactionInfoResult = pointerDown(
       x - rectCamera.x + parentX,

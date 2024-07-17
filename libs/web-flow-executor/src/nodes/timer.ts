@@ -157,7 +157,7 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-sky-900 p-4 rounded text-center`,
+          class: `inner-node bg-sky-900 p-4 rounded text-center flex justify-center`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;

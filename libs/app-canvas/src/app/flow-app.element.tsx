@@ -37,13 +37,6 @@ import {
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
 import {
-  connectionExecuteHistory,
-  increaseRunIndex,
-  initFlowVariableScope,
-  resetRunIndex,
-  run,
-} from './simple-flow-engine/simple-flow-engine';
-import {
   setSpeedMeter,
   timers,
   animatePath as _animatePath,
@@ -110,11 +103,16 @@ import {
   RegisterNodeFactoryFunction,
   RunCounter,
   canvasNodeTaskRegistryLabels,
+  connectionExecuteHistory,
   getNodeFactoryNames,
   getNodeTaskFactory,
+  increaseRunIndex,
+  initFlowVariableScope,
   registerComposition,
   registerCompositionNodes,
   removeAllCompositions,
+  resetRunIndex,
+  run,
   runPath,
   runPathForNodeConnectionPairs,
   runPathFromThumb,
