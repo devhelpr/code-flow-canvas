@@ -133,14 +133,16 @@ export const createCanvasApp = <T>(
   );
 
   const nodeTransformer = new NodeTransformer(
-    canvas.domElement,
+    canvas,
+    rootElement,
     interactionStateMachine
   );
 
   const compositons = new Compositions<T>();
 
   const nodeSelector = new NodeSelector<T>(
-    canvas.domElement,
+    canvas,
+    rootElement,
     interactionStateMachine,
     elements,
     !isNodeContainer,

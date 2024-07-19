@@ -5,7 +5,6 @@ import {
   InteractionStateMachine,
 } from '../interaction-state-machine';
 import {
-  DOMElementNode,
   ElementNodeMap,
   FlowNode,
   IConnectionNodeComponent,
@@ -20,6 +19,7 @@ import {
 import { Composition } from '../interfaces/composition';
 import { NodeType } from '../types';
 import { createElement } from '../utils';
+import { getPointerPos } from '../utils/pointer-pos';
 import {
   mapConnectionToFlowNode,
   mapShapeNodeToFlowNode,
@@ -33,6 +33,9 @@ const transformPosBL = '-translate-x-[50%] translate-y-[50%]';
 const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
 
 export class NodeSelector<T> {
+  private canvas: IElementNode<T> | undefined;
+  private rootElement: HTMLElement;
+
   nodeSelectorElement: IDOMElement | undefined;
   interactionStateMachine: InteractionStateMachine<T> | undefined;
 
@@ -64,7 +67,8 @@ export class NodeSelector<T> {
   onEditCompositionName: () => Promise<string | false>;
 
   constructor(
-    rootElement: DOMElementNode,
+    canvas: IElementNode<T>,
+    rootElement: HTMLElement,
     interactionStateMachine: InteractionStateMachine<T>,
     elements: ElementNodeMap<T>,
     canCreateComposition: boolean,
@@ -72,6 +76,8 @@ export class NodeSelector<T> {
     onEditCompositionName: () => Promise<string | false>,
     isInContainer = false
   ) {
+    this.rootElement = rootElement;
+    this.canvas = canvas;
     this.interactionStateMachine = interactionStateMachine;
     this.elements = elements;
     this.compositions = compositions;
@@ -88,7 +94,7 @@ export class NodeSelector<T> {
         pointerdown: this.onPointerDownSelector,
         pointermove: this.onPointerMove,
       },
-      rootElement
+      canvas.domElement
     );
 
     this.leftTop = createElement(
@@ -192,12 +198,23 @@ export class NodeSelector<T> {
       // for now... no selections in containers (positioning is incorrect)
       return;
     }
-    if (this.interactionStateMachine && this.nodeSelectorElement) {
+    if (
+      this.interactionStateMachine &&
+      this.nodeSelectorElement &&
+      this.canvas
+    ) {
       this.visibilityResizeControls(true);
       this.resizeSameWidthAndHeight = event.shiftKey;
+
+      const { pointerXPos, pointerYPos } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        event
+      );
+
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.pageX,
-        event.pageY
+        pointerXPos,
+        pointerYPos
       );
       this.selectedNodes = [];
       this.selectedConnections = [];
@@ -258,10 +275,19 @@ export class NodeSelector<T> {
   };
 
   onPointerDownSelector = (event: PointerEvent) => {
-    if (this.interactionStateMachine && this.nodeSelectorElement) {
+    if (
+      this.interactionStateMachine &&
+      this.nodeSelectorElement &&
+      this.canvas
+    ) {
+      const { pointerXPos, pointerYPos } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        event
+      );
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.pageX,
-        event.pageY
+        pointerXPos,
+        pointerYPos
       );
       this.selectionWasPlacedOrMoved = true;
 

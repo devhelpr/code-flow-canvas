@@ -4,7 +4,6 @@ import {
   InteractionStateMachine,
 } from '../interaction-state-machine';
 import {
-  DOMElementNode,
   IDOMElement,
   IElementNode,
   INodeComponent,
@@ -12,6 +11,7 @@ import {
   IRectNodeComponent,
 } from '../interfaces';
 import { createElement } from '../utils';
+import { getPointerPos } from '../utils/pointer-pos';
 
 const pointerCursor = 'pointer-events-auto';
 const resizeThumbSize = 'w-[8px] h-[8px]';
@@ -34,13 +34,17 @@ const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
 const transformNodeList: NodeTransformer<unknown>[] = [];
 
 export class NodeTransformer<T> {
+  private canvas: IElementNode<T> | undefined;
+  private rootElement: HTMLElement;
   constructor(
-    rootElement: DOMElementNode,
+    canvas: IElementNode<T>,
+    rootElement: HTMLElement,
     interactionStateMachine: InteractionStateMachine<T>
   ) {
     this.id = crypto.randomUUID();
     transformNodeList.push(this as NodeTransformer<unknown>);
-
+    this.rootElement = rootElement;
+    this.canvas = canvas;
     this.interactionStateMachine = interactionStateMachine;
     this.nodeTransformElement = createElement(
       'div',
@@ -49,7 +53,7 @@ export class NodeTransformer<T> {
         class:
           'hidden absolute top-0 left-0 z-[2000] border-white border-2 pointer-events-none rounded',
       },
-      rootElement
+      canvas.domElement
     );
     (this.nodeTransformElement as INodeComponent<T>).update = (
       _target?: INodeComponent<T> | undefined,
@@ -270,10 +274,16 @@ export class NodeTransformer<T> {
   orgHeight = 0;
   resizeSameWidthAndHeight = false;
   onPointerDown = (event: PointerEvent) => {
-    if (this.interactionStateMachine && this.attachedNode) {
+    if (this.interactionStateMachine && this.attachedNode && this.canvas) {
       console.log(
         'pointerDown nodetransformer',
         (event.target as HTMLElement).getAttribute('data-ResizeMode')
+      );
+
+      const { pointerXPos, pointerYPos } = getPointerPos(
+        this.canvas.domElement as HTMLElement,
+        this.rootElement,
+        event
       );
       this.resizeSameWidthAndHeight = event.shiftKey;
       (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
@@ -283,8 +293,8 @@ export class NodeTransformer<T> {
         'pointer-events-none'
       );
       const { x, y } = transformCameraSpaceToWorldSpace(
-        event.pageX,
-        event.pageY
+        pointerXPos,
+        pointerYPos
       );
 
       this.orgX = this.attachedNode.x;
