@@ -69,6 +69,9 @@ export const createRectNode = <T extends BaseNodeInfo>(
     backgroundThemeProperty?: string;
     textColorThenmeProperty?: string;
     adjustToFormContent?: boolean;
+    isRectThumb?: boolean;
+    isCircleRectThumb?: boolean;
+    rectThumbWithStraightConnections?: boolean;
   },
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
@@ -90,24 +93,53 @@ export const createRectNode = <T extends BaseNodeInfo>(
     });
   }
 
-  const componentWrapper = createNodeElement<T>(
-    'div',
-    {
-      class: `inner-node relative flex flex-col ${
+  const componentWrapper =
+    settings?.isRectThumb && settings.isCircleRectThumb
+      ? (createNodeElement<T>(
+          'div',
+          {
+            class: `inner-node
+      flex items-center justify-center 
+      rounded-full
+      ${settings?.adjustToFormContent ? 'w-min' : 'w-[50px] '}
+      h-[50px] 
+      overflow-hidden text-center
+      ${
         (settings?.backgroundThemeProperty &&
           (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
         settings?.backgroundColorClassName ??
         canvasApp.theme.nodeBackground
       } ${
-        (settings?.textColorThenmeProperty &&
-          (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
-        settings?.textColorClassName ??
-        canvasApp.theme.nodeText
-      } rounded ${showTitlebar ? '' : 'py-2'}      
+              (settings?.textColorThenmeProperty &&
+                (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
+              settings?.textColorClassName ??
+              canvasApp.theme.nodeText
+            }
+      `,
+            style: {
+              'clip-path': 'circle(50%)',
+            },
+          },
+          undefined
+        ) as unknown as INodeComponent<T>)
+      : (createNodeElement<T>(
+          'div',
+          {
+            class: `inner-node relative flex flex-col ${
+              (settings?.backgroundThemeProperty &&
+                (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
+              settings?.backgroundColorClassName ??
+              canvasApp.theme.nodeBackground
+            } ${
+              (settings?.textColorThenmeProperty &&
+                (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
+              settings?.textColorClassName ??
+              canvasApp.theme.nodeText
+            } rounded ${showTitlebar ? '' : 'py-2'}      
       ${settings?.adjustToFormContent ? 'w-min' : ''}`,
-    },
-    undefined
-  ) as unknown as INodeComponent<T>;
+          },
+          undefined
+        ) as unknown as INodeComponent<T>);
 
   // decorators before
   if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
@@ -272,32 +304,60 @@ export const createRectNode = <T extends BaseNodeInfo>(
       topLabel.domElement as HTMLElement
     );
   }
-  const rect = canvasApp.createRect(
-    x,
-    y,
-    width,
-    height,
-    undefined,
-    thumbs,
-    componentWrapper,
-    {
-      classNames: ``,
-    },
-    settings?.adjustToFormContent
-      ? false
-      : settings?.hasStaticWidthHeight ?? false,
-    undefined,
-    undefined,
-    id,
-    {
-      type: nodeTypeName,
-      formValues: initialValues ?? {},
-      decorators: nodeInfo?.decorators,
-    } as T,
-    containerNode,
-    undefined,
-    `rect-node${nodeInfo?.isComposition ? ' composition-node' : ''}`
-  );
+  const rect = settings?.isRectThumb
+    ? canvasApp.createRectThumb(
+        x,
+        y,
+        width,
+        height,
+        undefined,
+        thumbs,
+        componentWrapper,
+        {
+          classNames: ``,
+        },
+        settings?.adjustToFormContent
+          ? false
+          : settings?.hasStaticWidthHeight ?? false,
+        undefined,
+        undefined,
+        id,
+        {
+          type: nodeTypeName,
+          formValues: initialValues ?? {},
+          decorators: nodeInfo?.decorators,
+        } as T,
+        containerNode,
+        undefined,
+        settings.isCircleRectThumb,
+        settings.rectThumbWithStraightConnections
+      )
+    : canvasApp.createRect(
+        x,
+        y,
+        width,
+        height,
+        undefined,
+        thumbs,
+        componentWrapper,
+        {
+          classNames: ``,
+        },
+        settings?.adjustToFormContent
+          ? false
+          : settings?.hasStaticWidthHeight ?? false,
+        undefined,
+        undefined,
+        id,
+        {
+          type: nodeTypeName,
+          formValues: initialValues ?? {},
+          decorators: nodeInfo?.decorators,
+        } as T,
+        containerNode,
+        undefined,
+        `rect-node${nodeInfo?.isComposition ? ' composition-node' : ''}`
+      );
 
   if (!rect.nodeComponent) {
     throw new Error('rect.nodeComponent is undefined');
@@ -370,6 +430,9 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     backgroundThemeProperty?: string;
     textColorThenmeProperty?: string;
     adjustToFormContent?: boolean;
+    isRectThumb?: boolean;
+    isCircleRectThumb?: boolean;
+    rectThumbWithStraightConnections?: boolean;
   },
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,

@@ -190,7 +190,8 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                     return;
                   }
                   curve.nodeComponent.isControlled = true;
-                  curve.nodeComponent.nodeInfo = {} as unknown as T;
+                  curve.nodeComponent.nodeInfo = (node.nodeInfo ??
+                    {}) as unknown as T;
                   curve.nodeComponent.layer = node.layer ?? 1;
 
                   if (start && curve.nodeComponent) {
@@ -362,7 +363,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
         return;
       }
       curve.nodeComponent.isControlled = true;
-      curve.nodeComponent.nodeInfo = {} as T;
+      curve.nodeComponent.nodeInfo = node.nodeInfo ?? ({} as T);
       curve.nodeComponent.layer = node.layer ?? 1;
 
       if (start && curve.nodeComponent) {

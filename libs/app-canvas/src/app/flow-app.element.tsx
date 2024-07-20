@@ -32,6 +32,7 @@ import {
   importCompositions,
   importToCanvas,
   BaseNodeInfo,
+  IFormsComponent,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -1512,29 +1513,72 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             setTargetCameraAnimation(node.x, node.y, node.id, 1.0);
           }
         }
+        let formElements: any[] = [];
+        let formElementsViaConnection = false;
         const nodeInfo: any = node?.nodeInfo ?? {};
         if (
           node &&
           (node as INodeComponent<NodeInfo>).nodeType === NodeType.Connection
         ) {
-          (
-            this.editPopupContainer?.domElement as unknown as HTMLElement
-          ).classList.add('hidden');
-          (
-            this.editPopupLineContainer?.domElement as unknown as HTMLElement
-          ).classList.add('hidden');
+          if (
+            (node?.startNode?.nodeInfo as BaseNodeInfo)?.outputConnectionInfo
+          ) {
+            const outputConnectionInfo = (
+              node?.startNode?.nodeInfo as BaseNodeInfo
+            ).outputConnectionInfo;
+            if (outputConnectionInfo?.form) {
+              formElements = outputConnectionInfo.form.map((orgFormElement) => {
+                const formElement = { ...orgFormElement };
+                formElement.value =
+                  node.nodeInfo?.formValues?.[formElement.fieldName] ?? '';
+                formElement.onChange = (
+                  value: string,
+                  _formComponent: IFormsComponent
+                ) => {
+                  if (!node.nodeInfo) {
+                    return;
+                  }
+                  node.nodeInfo.formValues = {
+                    ...node.nodeInfo.formValues,
+                    [formElement.fieldName]: value,
+                  };
+                  console.log('onChange', node.nodeInfo);
+                  const element = document.querySelector(
+                    `[id="${node.id}_connection-value-label"]`
+                  );
+                  if (element) {
+                    element.textContent = parseFloat(value).toFixed(2);
+                  }
+                  if (this.canvasUpdated) {
+                    this.canvasUpdated();
+                  }
+                };
+                return formElement;
+              });
+              formElementsViaConnection = true;
+            }
+          } else {
+            (
+              this.editPopupContainer?.domElement as unknown as HTMLElement
+            ).classList.add('hidden');
+            (
+              this.editPopupLineContainer?.domElement as unknown as HTMLElement
+            ).classList.add('hidden');
 
-          (
-            this.editPopupEditingNodeIndicator
-              ?.domElement as unknown as HTMLElement
-          ).classList.add('hidden');
+            (
+              this.editPopupEditingNodeIndicator
+                ?.domElement as unknown as HTMLElement
+            ).classList.add('hidden');
 
-          (
-            this.editPopupEditingNodeIndicator
-              ?.domElement as unknown as HTMLElement
-          ).classList.remove('editing-node-indicator');
+            (
+              this.editPopupEditingNodeIndicator
+                ?.domElement as unknown as HTMLElement
+            ).classList.remove('editing-node-indicator');
 
-          return;
+            return;
+          }
+        } else {
+          formElements = (nodeInfo as any)?.formElements ?? [];
         }
 
         console.log('nodeInfo', nodeInfo);
@@ -1553,9 +1597,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
         if (
           getFollowNodeExecution() ||
-          (((nodeInfo as any)?.formElements ?? []).length <= 1 &&
+          (formElements.length <= 1 &&
             !(
-              nodeInfo.showFormOnlyInPopup && nodeInfo.formElements.length >= 1
+              (nodeInfo.showFormOnlyInPopup || formElementsViaConnection) &&
+              formElements.length >= 1
             )) ||
           nodeInfo.isSettingsPopup
         ) {
@@ -1578,7 +1623,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           return;
         }
 
-        this.showFormPopup(node, selectedNodeInfo);
+        this.showFormPopup(node, selectedNodeInfo, formElements);
         currentSelectedNode = undefined;
       } else {
         if (this.selectedNodeLabel) {
@@ -1658,7 +1703,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   showFormPopup = (
     node: IRectNodeComponent<NodeInfo>,
-    selectedNodeInfo: SelectedNodeInfo
+    selectedNodeInfo: SelectedNodeInfo,
+    formElements?: any[]
   ) => {
     const formElementInstance = createElement(
       'div',
@@ -1688,7 +1734,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             : this.currentCanvasApp?.elements
         )?.get(selectedNodeInfo.id);
         if (node) {
-          if ((node.nodeInfo as any).formElements) {
+          if (
+            (node.nodeInfo as any).formElements ||
+            node.nodeType === NodeType.Connection
+          ) {
             (node.nodeInfo as any).formValues = values;
             Object.entries(values).forEach(([key, value]) => {
               console.log(
@@ -1734,15 +1783,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           (currentFocusNode.domElement as HTMLElement).focus();
         }
       },
-      formElements: ((node?.nodeInfo as any)?.formElements ?? []).map(
-        (item: any) => {
-          return {
-            ...item,
-            value: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
-            //values: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
-          };
-        }
-      ),
+      formElements: (
+        formElements ||
+        ((node?.nodeInfo as any)?.formElements ?? [])
+      ).map((item: any) => {
+        return {
+          ...item,
+          value: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
+          //values: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
+        };
+      }),
     }) as unknown as HTMLElement;
     console.log('before positionPopup1');
     this.positionPopup(node);
@@ -1762,11 +1812,29 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onShouldPositionPopup = (node: IRectNodeComponent<NodeInfo>) => {
     const nodeInfo = node?.nodeInfo ?? {};
+    let formElements: any[] = [];
     if (node && node.nodeType === NodeType.Connection) {
-      return false;
+      const connection = node as unknown as IConnectionNodeComponent<NodeInfo>;
+      if (
+        (connection?.startNode?.nodeInfo as BaseNodeInfo)?.outputConnectionInfo
+      ) {
+        const outputConnectionInfo = (
+          connection?.startNode?.nodeInfo as BaseNodeInfo
+        ).outputConnectionInfo;
+
+        if (!outputConnectionInfo?.form) {
+          return false;
+        } else {
+          formElements = outputConnectionInfo.form;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      formElements = (nodeInfo as any)?.formElements ?? [];
     }
 
-    if ((nodeInfo?.formElements ?? []).length === 0) {
+    if ((formElements ?? []).length === 0) {
       return false;
     }
     if (!this.formElement) {

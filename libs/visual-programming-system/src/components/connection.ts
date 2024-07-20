@@ -7,6 +7,7 @@ import {
   DOMElementNode,
   ElementNodeMap,
   IConnectionNodeComponent,
+  IDOMElement,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -16,7 +17,7 @@ import { Theme } from '../interfaces/theme';
 import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
-import { createNSElement } from '../utils/create-element';
+import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
 import { getPointerPos } from '../utils/pointer-pos';
 import { pointerDown } from './events/pointer-events';
@@ -24,6 +25,7 @@ import {
   onCubicCalculateControlPoints,
   onGetConnectionToThumbOffset,
 } from './utils/calculate-cubic-control-points';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 const standardControlPointDistance = 150;
 
@@ -64,6 +66,7 @@ export class Connection<T> {
   pathHiddenElement: IElementNode<T> | null = null;
   containerNode?: INodeComponent<T>;
   setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void;
+  textElement: IDOMElement | undefined = undefined;
 
   constructor(
     canvas: IElementNode<T>,
@@ -161,6 +164,9 @@ export class Connection<T> {
     this.nodeComponent.delete = () => {
       if (this.svgParent) {
         this.svgParent.domElement.remove();
+      }
+      if (this.textElement) {
+        this.textElement.domElement.remove();
       }
     };
 
@@ -386,6 +392,46 @@ export class Connection<T> {
       // update all in this condition...
     }
 
+    if (
+      (this.nodeComponent?.startNode?.nodeInfo as BaseNodeInfo)
+        ?.outputConnectionInfo?.text &&
+      !this.textElement
+    ) {
+      const info = (this.nodeComponent?.startNode?.nodeInfo as BaseNodeInfo)
+        ?.outputConnectionInfo;
+      let text = info?.text;
+      if (
+        info?.fieldName &&
+        (this.nodeComponent?.nodeInfo as BaseNodeInfo)?.formValues?.[
+          info?.fieldName
+        ]
+      ) {
+        text = parseFloat(
+          (this.nodeComponent?.nodeInfo as BaseNodeInfo)?.formValues?.[
+            info?.fieldName
+          ]
+        ).toFixed(2);
+      }
+
+      this.textElement = createElement(
+        'div',
+        {
+          class: `connection-value-label absolute top-0 left-0 cursor-pointer pointer-events-none text-white bg-black px-1 z-10 text-xs`,
+          style: {
+            transform: `translate(${
+              (this.points.beginX + this.points.endX) / 2
+            }px, ${(this.points.beginY + this.points.endY) / 2}px)`,
+          },
+          id: `${this.nodeComponent?.id}_connection-value-label`,
+        },
+        this.canvasElement,
+        text,
+        `${this.nodeComponent?.id}_connection-value-label`
+      );
+    } else if (!this.nodeComponent?.startNode && this.textElement) {
+      this.textElement.domElement.remove();
+      this.textElement = undefined;
+    }
     if (this.nodeComponent && this.nodeComponent.layer) {
       const layer = this.nodeComponent.layer ?? 1;
       const parentDomElement = this.svgParent?.domElement as SVGElement;
@@ -874,6 +920,19 @@ export class Connection<T> {
       svgParentElement.style.transform = `translate(${bbox.x}px, ${bbox.y}px)`;
     }
 
+    if (this.textElement?.domElement) {
+      (
+        this.textElement.domElement as HTMLElement
+      ).style.transform = `translate(calc(${
+        (this.points.beginX + this.points.endX) / 2
+      }px - 50%), calc(${
+        (this.points.beginY + this.points.endY) / 2
+      }px - 50%))`;
+
+      // (
+      //   this.textElement.domElement as HTMLElement
+      // ).style.transform = `translate(calc(${this.points.endX}px - 50%), calc(${this.points.endY}px - 50%))`;
+    }
     const connectionsFromSameoutput =
       this.getMultipleConnectionsFromSameOutput();
     if (

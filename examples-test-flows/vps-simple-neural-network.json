@@ -1,0 +1,387 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "23f56a95-a206-4a89-932b-2ac9d4130a90",
+          "x": -19.480888475376723,
+          "y": -440.66471486932187,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "d15ca4d1-88cc-4dc2-9ba6-926c28bf49b9",
+          "x": 243.03632929646267,
+          "y": -327.3329477411007,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "b79c23b9-b188-47d9-85ae-d51c39d3cec9",
+          "x": -295.53822517650815,
+          "y": -471.39754378013106,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-input-node",
+            "formValues": {
+              "value": "81"
+            },
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "0ab5e195-90d9-4523-8375-61c64c2f43b2",
+          "x": -296.6674229988691,
+          "y": -197.81815011801262,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-input-node",
+            "formValues": {
+              "value": "199"
+            },
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "635ed8d1-fb3d-4dbe-af3b-892c69c2bef1",
+          "x": -23.826130354676252,
+          "y": -227.70572470633832,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-node",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "70df5e3e-7cca-4879-aafe-f12b0d91627a",
+          "x": -260.83947604279825,
+          "y": -633.5357485321098,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-input-node",
+            "formValues": {
+              "value": "1"
+            },
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "1faed61a-db5b-4029-87b1-7ec23b6ee46d",
+          "x": -21.902299948139852,
+          "y": -642.9135234557082,
+          "width": 100,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "neural-input-node",
+            "formValues": {
+              "value": "1"
+            },
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "outputConnectionInfo": {
+              "text": "Weight",
+              "fieldName": "weight",
+              "form": [
+                {
+                  "fieldType": "Slider",
+                  "fieldName": "weight",
+                  "label": "Weight",
+                  "value": "0",
+                  "min": -1,
+                  "max": 1,
+                  "step": 0.01
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "9794c7ff-719e-4e2b-b259-ac33fea29098",
+          "x": 30.519111524623277,
+          "y": -390.66471486932187,
+          "endX": 293.03632929646267,
+          "endY": -277.3329477411007,
+          "startNodeId": "23f56a95-a206-4a89-932b-2ac9d4130a90",
+          "endNodeId": "d15ca4d1-88cc-4dc2-9ba6-926c28bf49b9",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "-0.69"
+            }
+          }
+        },
+        {
+          "id": "1775088c-2e31-4704-ade8-7604263ee2e7",
+          "x": -245.53822517650815,
+          "y": -421.39754378013106,
+          "endX": 30.519111524623277,
+          "endY": -390.66471486932187,
+          "startNodeId": "b79c23b9-b188-47d9-85ae-d51c39d3cec9",
+          "endNodeId": "23f56a95-a206-4a89-932b-2ac9d4130a90",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "0.63"
+            }
+          }
+        },
+        {
+          "id": "7d9840b8-8f87-4223-98d2-4786a0e287a5",
+          "x": -246.66742299886909,
+          "y": -147.81815011801262,
+          "endX": 30.519111524623277,
+          "endY": -390.66471486932187,
+          "startNodeId": "0ab5e195-90d9-4523-8375-61c64c2f43b2",
+          "endNodeId": "23f56a95-a206-4a89-932b-2ac9d4130a90",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "-0.53"
+            }
+          }
+        },
+        {
+          "id": "dbb371b8-a1c6-455e-8adb-ce46637a72eb",
+          "x": -245.53822517650815,
+          "y": -421.39754378013106,
+          "endX": 26.173869645323748,
+          "endY": -177.70572470633832,
+          "startNodeId": "b79c23b9-b188-47d9-85ae-d51c39d3cec9",
+          "endNodeId": "635ed8d1-fb3d-4dbe-af3b-892c69c2bef1",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "0.26"
+            }
+          }
+        },
+        {
+          "id": "055cb96a-50ff-48c2-bdcd-e19c105cdee1",
+          "x": -246.66742299886909,
+          "y": -147.81815011801262,
+          "endX": 26.173869645323748,
+          "endY": -177.70572470633832,
+          "startNodeId": "0ab5e195-90d9-4523-8375-61c64c2f43b2",
+          "endNodeId": "635ed8d1-fb3d-4dbe-af3b-892c69c2bef1",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "9eb128b9-1920-4c0e-879c-9b0477140409",
+          "x": 26.173869645323748,
+          "y": -177.70572470633832,
+          "endX": 293.03632929646267,
+          "endY": -277.3329477411007,
+          "startNodeId": "635ed8d1-fb3d-4dbe-af3b-892c69c2bef1",
+          "endNodeId": "d15ca4d1-88cc-4dc2-9ba6-926c28bf49b9",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "9d7a759e-7cc6-4fe1-908a-d3674edaabbd",
+          "x": -210.83947604279825,
+          "y": -583.5357485321098,
+          "endX": 30.519111524623277,
+          "endY": -390.66471486932187,
+          "startNodeId": "70df5e3e-7cca-4879-aafe-f12b0d91627a",
+          "endNodeId": "23f56a95-a206-4a89-932b-2ac9d4130a90",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "0.39"
+            }
+          }
+        },
+        {
+          "id": "9290cd06-5b0c-486d-917d-b29038b62adf",
+          "x": -210.83947604279825,
+          "y": -583.5357485321098,
+          "endX": 26.173869645323748,
+          "endY": -177.70572470633832,
+          "startNodeId": "70df5e3e-7cca-4879-aafe-f12b0d91627a",
+          "endNodeId": "635ed8d1-fb3d-4dbe-af3b-892c69c2bef1",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "0.48"
+            }
+          }
+        },
+        {
+          "id": "02867d1a-9479-4a38-a994-3c218324132c",
+          "x": 28.097700051860148,
+          "y": -592.9135234557082,
+          "endX": 293.03632929646267,
+          "endY": -277.3329477411007,
+          "startNodeId": "1faed61a-db5b-4029-87b1-7ec23b6ee46d",
+          "endNodeId": "d15ca4d1-88cc-4dc2-9ba6-926c28bf49b9",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {
+            "formValues": {
+              "weight": "0.53"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

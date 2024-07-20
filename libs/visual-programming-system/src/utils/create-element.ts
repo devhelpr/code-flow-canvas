@@ -84,7 +84,7 @@ export const createNodeElement = <T>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
-  content?: string | HTMLElement,
+  content?: string | HTMLElement | JSX.Element,
   id?: string
 ): IElementNode<T> => {
   const nodeId = id ?? crypto.randomUUID();

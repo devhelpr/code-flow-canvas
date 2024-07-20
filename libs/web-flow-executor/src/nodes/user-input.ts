@@ -60,7 +60,10 @@ export const getUserInput =
       } else {
         currentValue = parseStringToFloat(input);
         if (!isNaN(currentValue)) {
-          if (inputElement) {
+          if (
+            inputElement //&&
+            //!document.activeElement?.isSameNode(inputElement)
+          ) {
             inputElement.value = currentValue.toFixed(decimalCount);
           }
           // return {

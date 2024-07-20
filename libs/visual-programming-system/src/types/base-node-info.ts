@@ -29,6 +29,11 @@ export interface BaseNodeInfo {
   canBeStartedByTrigger?: boolean;
   readPropertyFromNodeInfoForInitialTrigger?: string;
 
+  outputConnectionInfo?: {
+    text: string;
+    fieldName: string;
+    form?: any[];
+  };
   canvasAppInstance?: CanvasAppInstance<BaseNodeInfo>;
 
   initializeCompute?: () => void;

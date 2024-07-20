@@ -11,9 +11,10 @@ import {
   IRectNodeComponent,
   IThumb,
   IThumbNodeComponent,
+  ThumbConnectionType,
 } from '../interfaces';
 import { getSelectedNode } from '../reactivity';
-import { NodeType } from '../types';
+import { ConnectionControllerType, NodeType } from '../types';
 import { createElement } from '../utils/create-element';
 import { getPointerPos } from '../utils/pointer-pos';
 import { pointerDown } from './events/pointer-events';
@@ -278,12 +279,27 @@ export class RectThumb<T> extends Rect<T> {
         this.nodeComponent.thumbConnectors &&
         this.nodeComponent.thumbConnectors.length > 0
       ) {
+        const thumbConnector = this.nodeComponent.thumbConnectors.find(
+          (thumbConnector) => {
+            if (
+              thumbConnector.thumbConnectionType ===
+                ThumbConnectionType.start ||
+              thumbConnector.thumbConnectionType ===
+                ThumbConnectionType.startOrEnd
+            ) {
+              return true;
+            }
+            return false;
+          }
+        );
+        if (!thumbConnector) {
+          return false;
+        }
         curve.nodeComponent.startNode = this.nodeComponent;
-        curve.nodeComponent.startNodeThumb =
-          this.nodeComponent.thumbConnectors?.[0];
+        curve.nodeComponent.startNodeThumb = thumbConnector; //this.nodeComponent.thumbConnectors?.[0];
         this.nodeComponent.connections?.push(curve.nodeComponent);
 
-        if (curve.nodeComponent.startNodeThumb.isDataPort) {
+        if (thumbConnector.isDataPort) {
           curve.nodeComponent.isData = true;
         }
 
@@ -430,19 +446,73 @@ export class RectThumb<T> extends Rect<T> {
         state.element.nodeType === NodeType.ConnectionController
       ) {
         canReceiveDrop = true;
+        const draggedConnectionController: IConnectionNodeComponent<T> =
+          state.element as unknown as IConnectionNodeComponent<T>;
         if (
           this.nodeComponent.thumbConnectors &&
           this.nodeComponent.thumbConnectors.length > 0 &&
-          (state.element as unknown as any).parent.startNodeThumb
+          (state.element as unknown as any).parent.startNodeThumb &&
+          draggedConnectionController.connectionControllerType ===
+            ConnectionControllerType.end
         ) {
           const thumb = (state.element as unknown as any).parent.startNodeThumb;
           if (thumb) {
-            canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
-              this.nodeComponent.thumbConnectors[0],
-              state.element as unknown as IConnectionNodeComponent<T>,
-              thumb
+            const thumbConnector = this.nodeComponent.thumbConnectors.find(
+              (thumbConnector) => {
+                if (
+                  thumbConnector.thumbConnectionType ===
+                    ThumbConnectionType.end ||
+                  thumbConnector.thumbConnectionType ===
+                    ThumbConnectionType.startOrEnd
+                ) {
+                  return true;
+                }
+                return false;
+              }
             );
-            console.log('RECT-THUMB canReceiveDrop', canReceiveDrop);
+            if (thumbConnector) {
+              canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
+                thumbConnector,
+                state.element as unknown as IConnectionNodeComponent<T>,
+                thumb
+              );
+              console.log('RECT-THUMB canReceiveDrop', canReceiveDrop);
+            } else {
+              canReceiveDrop = false;
+            }
+          }
+        } else if (
+          this.nodeComponent.thumbConnectors &&
+          this.nodeComponent.thumbConnectors.length > 0 &&
+          (state.element as unknown as any).parent.endNodeThumb &&
+          draggedConnectionController.connectionControllerType ===
+            ConnectionControllerType.begin
+        ) {
+          const thumb = (state.element as unknown as any).parent.endNodeThumb;
+          if (thumb) {
+            const thumbConnector = this.nodeComponent.thumbConnectors.find(
+              (thumbConnector) => {
+                if (
+                  thumbConnector.thumbConnectionType ===
+                    ThumbConnectionType.start ||
+                  thumbConnector.thumbConnectionType ===
+                    ThumbConnectionType.startOrEnd
+                ) {
+                  return true;
+                }
+                return false;
+              }
+            );
+            if (thumbConnector) {
+              canReceiveDrop = this.nodeComponent.onCanReceiveDroppedComponent(
+                thumbConnector,
+                state.element as unknown as IConnectionNodeComponent<T>,
+                thumb
+              );
+              console.log('RECT-THUMB canReceiveDrop', canReceiveDrop);
+            } else {
+              canReceiveDrop = false;
+            }
           }
         }
 

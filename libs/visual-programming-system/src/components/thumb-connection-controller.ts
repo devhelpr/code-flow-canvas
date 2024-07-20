@@ -798,13 +798,39 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         const connection = this.nodeComponent
           .parent as unknown as IConnectionNodeComponent<T>;
         if (connection) {
-          if (rectNode.thumbConnectors?.[0].thumbType === ThumbType.Center) {
+          const thumbConnector = rectNode.thumbConnectors?.find(
+            (thumbConnector) => {
+              if (
+                this.nodeComponent?.connectionControllerType ===
+                  ConnectionControllerType.begin &&
+                (thumbConnector.thumbConnectionType ===
+                  ThumbConnectionType.start ||
+                  thumbConnector.thumbConnectionType ===
+                    ThumbConnectionType.startOrEnd)
+              ) {
+                return true;
+              } else if (
+                this.nodeComponent?.connectionControllerType ===
+                  ConnectionControllerType.end &&
+                (thumbConnector.thumbConnectionType ===
+                  ThumbConnectionType.end ||
+                  thumbConnector.thumbConnectionType ===
+                    ThumbConnectionType.startOrEnd)
+              ) {
+                return true;
+              }
+              return false;
+            }
+          );
+
+          if (thumbConnector) {
+            //rectNode.thumbConnectors?.[0].thumbType === ThumbType.Center) {
             if (
               this.nodeComponent.connectionControllerType ===
               ConnectionControllerType.begin
             ) {
               connection.startNode = rectNode;
-              connection.startNodeThumb = rectNode.thumbConnectors?.[0];
+              connection.startNodeThumb = thumbConnector; //rectNode.thumbConnectors?.[0];
 
               rectNode.connections?.push(connection);
 
@@ -822,7 +848,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
               );
             } else {
               connection.endNode = rectNode;
-              connection.endNodeThumb = rectNode.thumbConnectors?.[0];
+              connection.endNodeThumb = thumbConnector; //rectNode.thumbConnectors?.[0];
 
               rectNode.connections?.push(connection);
 

@@ -603,7 +603,7 @@ export class AppElement<T extends BaseNodeInfo> {
       this.editPopupLineContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
 
-    const sidebar = this.editPopupContainer
+    const popupContainer = this.editPopupContainer
       ?.domElement as unknown as HTMLElement;
     const nodeComponent = this.popupNode as INodeComponent<T>;
 
@@ -629,10 +629,18 @@ export class AppElement<T extends BaseNodeInfo> {
     const xCamera = camera?.x ?? 0;
     const yCamera = camera?.y ?? 0;
     const scaleCamera = camera?.scale ?? 1;
-    const xNode = parentX + nodeComponent.x;
-    const yNode = parentY + nodeComponent.y;
+    let xNode = parentX + nodeComponent.x;
+    let yNode = parentY + nodeComponent.y;
     const widthNode = nodeComponent.width ?? 0;
     const heightNode = nodeComponent.height ?? 0;
+
+    if (nodeComponent.nodeType === NodeType.Connection) {
+      const connection = nodeComponent as IConnectionNodeComponent<T>;
+      if (connection) {
+        xNode = (connection.x + (connection.endX ?? 0)) / 2 + parentX;
+        yNode = (connection.y + (connection.endY ?? 0)) / 2 + parentY;
+      }
+    }
 
     const rootClientRect = this.rootElement?.getBoundingClientRect();
     let x = xCamera + xNode * scaleCamera + widthNode * scaleCamera + 100;
@@ -650,8 +658,8 @@ export class AppElement<T extends BaseNodeInfo> {
       y = (rootClientRect?.height ?? 0) - 380 - 80;
     }
 
-    sidebar.style.left = `${x}px`;
-    sidebar.style.top = `${y}px`;
+    popupContainer.style.left = `${x}px`;
+    popupContainer.style.top = `${y}px`;
 
     const lineContainer = this.editPopupLineContainer
       ?.domElement as unknown as HTMLElement;

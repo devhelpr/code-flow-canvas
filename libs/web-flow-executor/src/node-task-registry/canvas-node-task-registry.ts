@@ -146,6 +146,9 @@ import { getAnnotation } from '../nodes/annotation';
 import { getMergeSumNode, sumMergeModeName } from '../nodes/merge-sum';
 import { NodeInfo } from '../types/node-info';
 
+import { getNeuralNode } from '../nodes/neural-node';
+import { getNeuralInputNode } from '../nodes/neural-input-node';
+
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
@@ -310,6 +313,8 @@ export const setupCanvasNodeTaskRegistry = (
       getMediaLibraryNode,
       'Media Library'
     );
+    registerNodeFactory('neural-node', getNeuralNode);
+    registerNodeFactory('neural-input-node', getNeuralInputNode);
   }
 
   registerExternalNodes?.(registerNodeFactory);

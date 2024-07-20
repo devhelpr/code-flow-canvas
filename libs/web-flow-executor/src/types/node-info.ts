@@ -1,6 +1,7 @@
 import {
   BaseNodeInfo,
   CanvasAppInstance,
+  IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { RunCounter } from '../follow-path/run-counter';
 import { StateMachine } from '../state-machine';
@@ -12,7 +13,8 @@ export interface NodeInfo extends BaseNodeInfo {
     payload?: any,
     thumbName?: string,
     scopeId?: string,
-    runCounter?: RunCounter
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
   ) => any;
   computeAsync?: (
     input: any,
@@ -20,7 +22,8 @@ export interface NodeInfo extends BaseNodeInfo {
     payload?: any,
     thumbName?: string,
     scopeId?: string,
-    runCounter?: RunCounter
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
   ) => Promise<any>;
   canvasAppInstance?: CanvasAppInstance<NodeInfo>;
   setValue?: ((values: any[]) => void) | ((values: string) => void);

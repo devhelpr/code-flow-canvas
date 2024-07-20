@@ -154,8 +154,16 @@ const triggerExecution = (
         };
         storeNodeStates();
         if (runCounter) {
-          //if (!runCounter.pushCallstack(`${scopeId}_${connection.id}`)) {
+          if (nextNode.nodeInfo?.type === 'user-input') {
+            console.log(
+              'trigger user-input',
+              `${scopeId}_${connection.startNode?.id}_${nextNode.id}_${
+                connection.endNodeThumb?.thumbName ?? ''
+              }`
+            );
+          }
           if (
+            nextNode.nodeInfo?.type === 'user-input' &&
             !runCounter.pushCallstack(
               `${scopeId}_${nextNode.id}_${
                 connection.endNodeThumb?.thumbName ?? ''
@@ -197,7 +205,8 @@ const triggerExecution = (
             payload,
             connection?.endNodeThumb?.thumbName,
             scopeId,
-            runCounter
+            runCounter,
+            connection
           );
 
           return new Promise((resolve, reject) => {
@@ -276,7 +285,8 @@ const triggerExecution = (
             payload,
             connection?.endNodeThumb?.thumbName,
             scopeId,
-            runCounter
+            runCounter,
+            connection
           );
           result = computeResult.result;
 
@@ -395,7 +405,10 @@ export const runNode = (
       thumbName = endThumbs[0].thumbName;
     }
 
-    if (!runCounter.pushCallstack(`${scopeId}_${node.id}_${thumbName}`)) {
+    if (
+      node.nodeInfo?.type === 'user-input' &&
+      !runCounter.pushCallstack(`${scopeId}_${node.id}_${thumbName}`)
+    ) {
       if (onStopped) {
         onStopped(input ?? '', scopeId);
       }
@@ -434,7 +447,8 @@ export const runNode = (
         payload,
         connection?.endNodeThumb?.thumbName,
         scopeId,
-        runCounter
+        runCounter,
+        connection
       )
       .then((computeResult: any) => {
         result = computeResult.result;
@@ -483,7 +497,8 @@ export const runNode = (
       payload,
       connection?.endNodeThumb?.thumbName,
       scopeId,
-      runCounter
+      runCounter,
+      connection
     );
 
     result = computeResult.result;
@@ -683,8 +698,7 @@ export const runNodeFromThumb = (
 
       if (runCounter) {
         if (
-          //!runCounter.pushCallstack(`${nextNode.id}_${nodeThumb.thumbName}`)
-          //!runCounter.pushCallstack(`${scopeId}_${connection.id}`)
+          nextNode.nodeInfo?.type === 'user-input' &&
           !runCounter.pushCallstack(
             `${scopeId}_${nextNode.id}_${
               connection.endNodeThumb?.thumbName ?? ''
@@ -730,7 +744,8 @@ export const runNodeFromThumb = (
               payload,
               connection?.endNodeThumb?.thumbName,
               scopeId,
-              runCounter
+              runCounter,
+              connection
             )
             .then((computeResult: any) => {
               result = computeResult.result;
@@ -784,7 +799,8 @@ export const runNodeFromThumb = (
           payload,
           connection?.endNodeThumb?.thumbName,
           scopeId,
-          runCounter
+          runCounter,
+          connection
         );
         result = computeResult.result;
         followPath = computeResult.followPath;
