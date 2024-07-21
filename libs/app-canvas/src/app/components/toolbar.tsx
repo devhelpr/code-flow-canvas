@@ -101,6 +101,19 @@ export function Toolbar<T>(props: {
         setActionNode(undefined);
         return;
       }
+      if (info.node?.nodeType === NodeType.Connection) {
+        const outputConnectionInfo = (
+          (info.node as IConnectionNodeComponent<T>).startNode
+            ?.nodeInfo as BaseNodeInfo
+        ).outputConnectionInfo;
+        if (outputConnectionInfo) {
+          popupTriggeredFromEffect = false;
+          // skipHide = true;
+          // setActionNode(undefined);
+          hideUL();
+          return;
+        }
+      }
       const taskList = getTasksWhichAreInterchangeableWithSelectedNode();
       if (taskList.length > 1) {
         fillTaskList(

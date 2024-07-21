@@ -135,9 +135,7 @@ export const getNeuralNode: NodeTaskFactory<NodeInfo> = (
         connection?.endNode &&
         connection?.endNode?.id === nodeComponent?.id
       ) {
-        const weight = parseFloat(
-          connection?.nodeInfo?.formValues?.weight ?? '1'
-        );
+        const weight = connection?.nodeInfo?.formValues?.weight ?? 0;
         sumValue += localValues[connection.id] * weight;
         //localValues[connection.id] = undefined;
       }
@@ -148,7 +146,9 @@ export const getNeuralNode: NodeTaskFactory<NodeInfo> = (
         '.neural-node-value'
       );
       if (element) {
-        element.textContent = activationValue.toFixed(2);
+        element.textContent = `${sumValue.toFixed(
+          2
+        )} | ${activationValue.toFixed(2)}`;
       }
     }
 
@@ -207,6 +207,7 @@ export const getNeuralNode: NodeTaskFactory<NodeInfo> = (
       isCircleRectThumb: true,
       rectThumbWithStraightConnections: true,
       hasStaticWidthHeight: true,
+      backgroundColorClassName: 'bg-stone-600',
     },
     <Text />
   );

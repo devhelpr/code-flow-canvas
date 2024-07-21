@@ -154,16 +154,8 @@ const triggerExecution = (
         };
         storeNodeStates();
         if (runCounter) {
-          if (nextNode.nodeInfo?.type === 'user-input') {
-            console.log(
-              'trigger user-input',
-              `${scopeId}_${connection.startNode?.id}_${nextNode.id}_${
-                connection.endNodeThumb?.thumbName ?? ''
-              }`
-            );
-          }
           if (
-            nextNode.nodeInfo?.type === 'user-input' &&
+            nextNode.nodeInfo?.isUINode &&
             !runCounter.pushCallstack(
               `${scopeId}_${nextNode.id}_${
                 connection.endNodeThumb?.thumbName ?? ''
@@ -406,7 +398,7 @@ export const runNode = (
     }
 
     if (
-      node.nodeInfo?.type === 'user-input' &&
+      node.nodeInfo?.isUINode &&
       !runCounter.pushCallstack(`${scopeId}_${node.id}_${thumbName}`)
     ) {
       if (onStopped) {
@@ -698,7 +690,7 @@ export const runNodeFromThumb = (
 
       if (runCounter) {
         if (
-          nextNode.nodeInfo?.type === 'user-input' &&
+          nextNode.nodeInfo?.isUINode &&
           !runCounter.pushCallstack(
             `${scopeId}_${nextNode.id}_${
               connection.endNodeThumb?.thumbName ?? ''

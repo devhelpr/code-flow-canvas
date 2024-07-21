@@ -76,6 +76,7 @@ export class NavbarComponent extends Component<
           <option value="celsius-fahrenheit-converter.json">Celsius to Fahrenheit converter</option>
           <option value="quicksort-flow.json">Quicksort</option>
           <option value="pid-controller-flow.json">PID controller</option>
+          <option value="simple-neural-network.json">Simple neural network</option>
         </select>
         <children></children>
       </div>`

@@ -33,6 +33,7 @@ export interface BaseNodeInfo {
     text: string;
     fieldName: string;
     form?: any[];
+    onChanged?: () => void;
   };
   canvasAppInstance?: CanvasAppInstance<BaseNodeInfo>;
 

@@ -1530,24 +1530,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               formElements = outputConnectionInfo.form.map((orgFormElement) => {
                 const formElement = { ...orgFormElement };
                 formElement.value =
-                  node.nodeInfo?.formValues?.[formElement.fieldName] ?? '';
+                  node.nodeInfo?.formValues?.[formElement.fieldName] ?? 0;
                 formElement.onChange = (
                   value: string,
                   _formComponent: IFormsComponent
                 ) => {
                   if (!node.nodeInfo) {
-                    return;
+                    node.nodeInfo = {
+                      formValues: {},
+                    };
                   }
+                  const floatValue = parseFloat(value);
                   node.nodeInfo.formValues = {
                     ...node.nodeInfo.formValues,
-                    [formElement.fieldName]: value,
+                    [formElement.fieldName]: floatValue,
                   };
                   console.log('onChange', node.nodeInfo);
                   const element = document.querySelector(
                     `[id="${node.id}_connection-value-label"]`
                   );
                   if (element) {
-                    element.textContent = parseFloat(value).toFixed(2);
+                    element.textContent = floatValue.toFixed(2);
+                  }
+                  if (outputConnectionInfo.onChanged) {
+                    outputConnectionInfo.onChanged();
                   }
                   if (this.canvasUpdated) {
                     this.canvasUpdated();

@@ -6,7 +6,6 @@ import {
   visualNodeFactory,
   IConnectionNodeComponent,
   FormFieldType,
-  IFormsComponent,
   createJSXElement,
   CanvasAppInstance,
 } from '@devhelpr/visual-programming-system';
@@ -15,9 +14,9 @@ import { IRectNodeComponent } from '../../../visual-programming-system/src';
 import { RunCounter } from '../follow-path/run-counter';
 import { getRunIndex, runNode } from '../flow-engine/flow-engine';
 
-const fieldName = 'neural-input-node';
-const labelName = 'Neural Input Node';
-export const nodeName = 'neural-input-node';
+const fieldName = 'neural-bias-node';
+const labelName = 'Neural bias Node';
+export const nodeName = 'neural-bias-node';
 const familyName = 'flow-canvas';
 const thumbs = [
   {
@@ -30,21 +29,21 @@ const thumbs = [
   },
 ];
 
-export const getNeuralInputNode =
+export const getNeuralBiasNode =
   (
     createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
     ) => RunCounter
   ) =>
-  (updated: () => void): NodeTask<any> => {
+  (_updated: () => void): NodeTask<any> => {
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
     let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
     const initializeCompute = () => {
       //
     };
 
-    const Text = () => <div class="neural-node-value">value</div>;
+    const Text = () => <div class="neural-node-value">Bias</div>;
 
     const compute = (
       _input: string,
@@ -55,13 +54,9 @@ export const getNeuralInputNode =
       _runCounter?: RunCounter,
       _inputConnection?: IConnectionNodeComponent<NodeInfo>
     ) => {
-      // const value = parseFloat(
-      //   nodeComponent?.nodeInfo?.formValues['value'] ?? '0'
-      // );
-      const value = nodeComponent?.nodeInfo?.formValues['value'] ?? 0;
       return {
-        result: value,
-        output: value,
+        result: 1,
+        output: 1,
         followPath: undefined,
       };
     };
@@ -77,64 +72,8 @@ export const getNeuralInputNode =
       100,
       100,
       thumbs,
-      (values?: InitialValues) => {
-        return [
-          {
-            fieldType: FormFieldType.Slider,
-            fieldName: 'value',
-            label: 'Value',
-            value: values?.['value'] ?? 0,
-            min: 0,
-            max: 255,
-            step: 1,
-            onChange: (value: string, _formComponent: IFormsComponent) => {
-              if (!nodeComponent?.nodeInfo) {
-                return;
-              }
-              const floatValue = parseFloat(value);
-              nodeComponent.nodeInfo.formValues = {
-                ...nodeComponent.nodeInfo.formValues,
-                value: floatValue,
-              };
-              const element = (
-                nodeComponent.domElement as HTMLElement
-              ).querySelector('.neural-node-value');
-              if (!element) {
-                return;
-              }
-              element.textContent = floatValue.toString();
-              console.log('onChange', nodeComponent.nodeInfo);
-
-              // TODO : trigger flow from this node
-
-              if (updated) {
-                updated();
-              }
-
-              if (!nodeComponent || !canvasApp) {
-                return;
-              }
-              runNode(
-                nodeComponent,
-                canvasApp,
-                () => {
-                  //
-                },
-                '',
-                undefined,
-                undefined,
-                getRunIndex(),
-                undefined,
-                undefined,
-                createRunCounterContext(false, false),
-                false,
-                {
-                  trigger: true,
-                }
-              );
-            },
-          },
-        ];
+      (_values?: InitialValues) => {
+        return [];
       },
       (nodeInstance) => {
         canvasApp = nodeInstance.contextInstance;
@@ -182,13 +121,6 @@ export const getNeuralInputNode =
         if (!nodeComponent.domElement) {
           return;
         }
-        const element = (nodeComponent.domElement as HTMLElement).querySelector(
-          '.neural-node-value'
-        );
-        if (!element) {
-          return;
-        }
-        element.textContent = nodeComponent.nodeInfo.formValues['value'] ?? 0;
       },
       {
         hasTitlebar: false,
@@ -198,8 +130,7 @@ export const getNeuralInputNode =
         isCircleRectThumb: true,
         rectThumbWithStraightConnections: true,
         hasStaticWidthHeight: true,
-        hasFormInPopup: true,
-        backgroundColorClassName: 'bg-white',
+        backgroundColorClassName: 'bg-slate-400',
         textColorClassName: 'text-black',
       },
       <Text />

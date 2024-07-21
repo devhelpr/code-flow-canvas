@@ -300,7 +300,7 @@ export const getUserInput =
           node.nodeInfo.initializeCompute = initializeCompute;
 
           node.nodeInfo.isSettingsPopup = true;
-          node.nodeInfo.isUINode = true;
+          node.nodeInfo.isUINode = true; // TODO : use isUINode for detecting loops in pushCallback / flow-engine
         }
         return node;
       },
