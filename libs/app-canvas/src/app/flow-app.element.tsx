@@ -33,6 +33,7 @@ import {
   importToCanvas,
   BaseNodeInfo,
   IFormsComponent,
+  FlowChangeType,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -48,6 +49,7 @@ import {
   setOnFrame,
   animatePathForNodeConnectionPairs,
   setStopAnimations,
+  getIsStopAnimations,
 } from './follow-path/animate-path';
 import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
@@ -177,7 +179,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   speedMeterElement: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
   mediaLibary: MediaLibrary | undefined = undefined;
-  canvasUpdated: (() => void) | undefined = undefined;
+  canvasUpdated:
+    | ((
+        shouldClearExecutionHistory?: boolean,
+        isStoreOnly?: boolean,
+        flowChangeType?: FlowChangeType
+      ) => void)
+    | undefined = undefined;
 
   exportCodeButton: HTMLElement | undefined = undefined;
   canvasAction: CanvasAction = CanvasAction.idle;
@@ -405,27 +413,56 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       animatePathFromConnectionPairFunction: animatePathForNodeConnectionPairs,
     });
 
-    const canvasUpdated = (shouldClearExecutionHistory = true) => {
+    const canvasUpdated = (
+      shouldClearExecutionHistory = true,
+      _isStoreOnly?: boolean,
+      flowChangeType: FlowChangeType = FlowChangeType.Unknown
+    ) => {
       if (
         this.currentCanvasApp?.isContextOnly ||
         this.currentCanvasApp?.isComposition
       ) {
         return;
       }
-      console.log('canvasUpdated', shouldClearExecutionHistory);
+      console.log('canvasUpdated', shouldClearExecutionHistory, flowChangeType);
       if (this.isStoring) {
         return;
       }
 
       this.resetConnectionSlider(shouldClearExecutionHistory);
+
+      if (
+        flowChangeType === FlowChangeType.AddNode ||
+        flowChangeType === FlowChangeType.AddConnection ||
+        flowChangeType === FlowChangeType.UpdateConnection
+      ) {
+        console.log('TRIGGER RUN!', getIsStopAnimations());
+        resetRunIndex();
+        (this.runButton?.domElement as HTMLButtonElement).disabled = false;
+        setStopAnimations();
+        // Wait until isStopAnimations is set to false
+        const interval = setInterval(() => {
+          if (!getIsStopAnimations()) {
+            clearInterval(interval);
+            this.run();
+          }
+        }, 0);
+      }
       store();
+
       console.log('canvasUpdated before setTabOrderOfNodes');
       this.setTabOrderOfNodes();
     };
     this.canvasUpdated = canvasUpdated;
-    this.canvasApp.setOnCanvasUpdated(() => {
-      canvasUpdated();
-    });
+    this.canvasApp.setOnCanvasUpdated(
+      (
+        shouldClearExecutionHistory?: boolean,
+        isStoreOnly?: boolean,
+        flowChangeType?: FlowChangeType
+      ) => {
+        canvasUpdated(shouldClearExecutionHistory, isStoreOnly, flowChangeType);
+      }
+    );
 
     this.cancelCameraAnimation = setCameraAnimation(this.canvasApp);
 

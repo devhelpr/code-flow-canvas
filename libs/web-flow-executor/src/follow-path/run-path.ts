@@ -5,11 +5,9 @@ import {
   IRectNodeComponent,
   IRunCounter,
   IThumbNodeComponent,
-} from '@devhelpr/visual-programming-system';
-import {
   getNodeConnectionPairById,
   getNodeConnectionPairsFromThumb,
-} from './get-node-connection-pairs';
+} from '@devhelpr/visual-programming-system';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 
 export const runPathForNodeConnectionPairs = <T>(

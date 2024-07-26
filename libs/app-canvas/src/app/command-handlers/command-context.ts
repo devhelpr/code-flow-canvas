@@ -3,12 +3,17 @@ import {
   IElementNode,
   ICommandHandler,
   NodeTaskFactory,
+  FlowChangeType,
 } from '@devhelpr/visual-programming-system';
 
 export interface ICommandContext<T> {
   rootElement: HTMLElement;
   getCanvasApp: () => CanvasAppInstance<T> | undefined;
-  canvasUpdated: () => void;
+  canvasUpdated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void;
   removeElement: (element: IElementNode<T>) => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;

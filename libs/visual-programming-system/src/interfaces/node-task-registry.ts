@@ -1,4 +1,4 @@
-import { IThumb, IRectNodeComponent, INodeComponent } from '.';
+import { IThumb, IRectNodeComponent, INodeComponent, FlowChangeType } from '.';
 import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { InitialValues } from '../types/values';
@@ -8,7 +8,8 @@ import { Theme } from './theme';
 export type NodeTaskFactory<T> = (
   onUpdatedCanvas: (
     shouldClearExecutionHistory?: boolean,
-    isStoreOnly?: boolean
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
   ) => void,
   theme?: Theme
 ) => NodeTask<T>;

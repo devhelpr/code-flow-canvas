@@ -1,6 +1,7 @@
 import {
   BaseNodeInfo,
   CanvasAppInstance,
+  FlowChangeType,
   IRectNodeComponent,
   NodeTaskFactory,
   ThumbConnectionType,
@@ -29,7 +30,11 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
   }
   rootElement: HTMLElement;
   getCanvasApp: () => CanvasAppInstance<T> | undefined;
-  canvasUpdated: () => void;
+  canvasUpdated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
 
@@ -179,7 +184,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
       return;
     }
     if (this.addNodeType(parameter1)) {
-      this.canvasUpdated();
+      this.canvasUpdated(undefined, undefined, FlowChangeType.AddNode);
     }
   }
 

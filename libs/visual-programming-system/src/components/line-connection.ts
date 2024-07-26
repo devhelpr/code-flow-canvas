@@ -138,7 +138,8 @@ export class LineConnection<T> extends Connection<T> {
       undefined,
       undefined,
       undefined,
-      rootElement
+      rootElement,
+      this
     );
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode.nodeComponent is undefined');
@@ -209,7 +210,8 @@ export class LineConnection<T> extends Connection<T> {
       undefined,
       undefined,
       undefined,
-      rootElement
+      rootElement,
+      this
     );
     if (!endPointNode.nodeComponent) {
       throw new Error('endPointNode.nodeComponent is undefined');

@@ -26,8 +26,16 @@ import {
   onGetConnectionToThumbOffset,
 } from './utils/calculate-cubic-control-points';
 import { BaseNodeInfo } from '../types/base-node-info';
+import { FlowChangeType } from '../interfaces';
 
 const standardControlPointDistance = 150;
+
+export enum ConnectionUpdateState {
+  AddConnection = 'AddConnection',
+  UpdateConnection = 'UpdateConnection',
+  DeleteConnection = 'DeleteConnection',
+  ConnectConnection = 'ConnectConnection',
+}
 
 export class Connection<T> {
   nodeComponent?: IConnectionNodeComponent<T>;
@@ -68,6 +76,8 @@ export class Connection<T> {
   setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void;
   textElement: IDOMElement | undefined = undefined;
 
+  connectionUpdateState: ConnectionUpdateState | undefined = undefined;
+
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -83,7 +93,11 @@ export class Connection<T> {
     pathHiddenElement: IElementNode<T>,
     isDashed = false,
     onCalculateControlPoints = onCubicCalculateControlPoints,
-    canvasUpdated?: () => void,
+    canvasUpdated?: (
+      shouldClearExecutionHistory?: boolean,
+      isStoreOnly?: boolean,
+      flowChangeType?: FlowChangeType
+    ) => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
@@ -251,8 +265,27 @@ export class Connection<T> {
     this.nodeComponent.update = this.onUpdate;
 
     this.nodeComponent.updateEnd = () => {
+      console.log('Connection updateEnd', this.connectionUpdateState);
+      let flowChangeType: FlowChangeType | undefined = undefined;
+      if (this.connectionUpdateState) {
+        switch (this.connectionUpdateState) {
+          case ConnectionUpdateState.AddConnection:
+            flowChangeType = FlowChangeType.AddConnection;
+            break;
+          case ConnectionUpdateState.UpdateConnection:
+            flowChangeType = FlowChangeType.UpdateConnection;
+            break;
+          case ConnectionUpdateState.DeleteConnection:
+            flowChangeType = FlowChangeType.DeleteConnection;
+            break;
+          case ConnectionUpdateState.ConnectConnection:
+            flowChangeType = FlowChangeType.UpdateConnection;
+            break;
+        }
+      }
+      this.connectionUpdateState = undefined;
       if (canvasUpdated) {
-        canvasUpdated();
+        canvasUpdated(undefined, undefined, flowChangeType);
       }
     };
 

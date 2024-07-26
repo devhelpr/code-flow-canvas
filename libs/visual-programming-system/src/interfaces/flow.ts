@@ -52,3 +52,13 @@ export interface FlowNode<T> {
   elements?: FlowNode<T>[];
   connections?: FlowNode<T>[];
 }
+
+export enum FlowChangeType {
+  Unknown = 'Unknown',
+  AddNode = 'AddNode',
+  DeleteNode = 'DeleteNode',
+  UpdateNode = 'UpdateNode',
+  AddConnection = 'AddConnection',
+  DeleteConnection = 'DeleteConnection',
+  UpdateConnection = 'UpdateConnection',
+}

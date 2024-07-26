@@ -10,14 +10,12 @@ import {
   NodeAnimatonInfo,
   BaseNodeInfo,
   OnNextNodeFunction,
+  getNodeConnectionPairById,
+  getNodeConnectionPairsFromThumb,
 } from '@devhelpr/visual-programming-system';
 import { getPointOnConnection } from './point-on-connection';
 import { followNodeExecution } from './followNodeExecution';
 import { updateRunCounterElement } from './updateRunCounterElement';
-import {
-  getNodeConnectionPairById,
-  getNodeConnectionPairsFromThumb,
-} from '@devhelpr/web-flow-executor';
 
 function getLoopIncrement() {
   return 0.25;
@@ -80,6 +78,9 @@ export function setOnFrame(handler: (elapsed: number) => void) {
   onFrame = handler;
 }
 let isStopAnimation = false;
+export const getIsStopAnimations = () => {
+  return isStopAnimation;
+};
 export const setStopAnimations = () => {
   isStopAnimation = true;
 };

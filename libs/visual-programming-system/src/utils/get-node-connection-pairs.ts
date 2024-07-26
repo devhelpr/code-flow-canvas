@@ -1,9 +1,9 @@
+import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
 import {
-  CanvasAppInstance,
-  IConnectionNodeComponent,
   IRectNodeComponent,
+  IConnectionNodeComponent,
   IThumbNodeComponent,
-} from '@devhelpr/visual-programming-system';
+} from '../interfaces';
 
 export const getNodeConnectionPairById = <T>(
   _canvasApp: CanvasAppInstance<T>,

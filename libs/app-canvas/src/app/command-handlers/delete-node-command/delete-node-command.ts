@@ -8,6 +8,7 @@ import {
   getSelectedNode,
   setSelectNode,
   BaseNodeInfo,
+  FlowChangeType,
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
 import { ICommandContext } from '../command-context';
@@ -24,7 +25,11 @@ export class DeleteNodeCommand<
   }
   rootElement: HTMLElement;
   getCanvasApp: () => CanvasAppInstance<T> | undefined;
-  canvasUpdated: () => void;
+  canvasUpdated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void;
   removeElement: (element: IElementNode<T>) => void;
   // parameter1 is the id of a selected node
   execute(parameter1?: any, parameter2?: any): void {
@@ -78,7 +83,7 @@ export class DeleteNodeCommand<
         this.removeElement(node);
         this.getCanvasApp()?.deleteElement(node.id);
       });
-      this.canvasUpdated();
+      this.canvasUpdated(undefined, undefined, FlowChangeType.DeleteNode);
       this.getCanvasApp()?.resetNodeSelector();
       return;
     }

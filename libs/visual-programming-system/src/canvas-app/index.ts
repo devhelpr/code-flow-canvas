@@ -19,6 +19,7 @@ import {
 } from '../interaction-state-machine';
 import {
   AnimatePathFunctions,
+  FlowChangeType,
   ICommandHandler,
   IConnectionNodeComponent,
   INodeComponent,
@@ -108,7 +109,13 @@ export const createCanvasApp = <T>(
   let startClientDragX = 0;
   let startClientDragY = 0;
   let onClickCanvas: ((x: number, y: number) => void) | undefined = undefined;
-  let onCanvasUpdated: (() => void) | undefined = undefined;
+  let onCanvasUpdated:
+    | ((
+        shouldClearExecutionHistory?: boolean,
+        _isStoreOnly?: boolean,
+        _flowChangeType?: FlowChangeType
+      ) => void)
+    | undefined = undefined;
   let setCanvasAction:
     | ((canvasAction: CanvasAction, payload?: any) => void)
     | undefined = undefined;
@@ -1143,7 +1150,7 @@ export const createCanvasApp = <T>(
       rectInstanceList[rectInstance.nodeComponent.id] = rectInstance;
       rectInstance.nodeComponent.nodeInfo = nodeInfo;
       if (onCanvasUpdated) {
-        onCanvasUpdated();
+        onCanvasUpdated(undefined, undefined, FlowChangeType.AddNode);
       }
       return rectInstance;
     },
@@ -1199,7 +1206,7 @@ export const createCanvasApp = <T>(
       }
       rectInstance.nodeComponent.nodeInfo = nodeInfo;
       if (onCanvasUpdated) {
-        onCanvasUpdated();
+        onCanvasUpdated(undefined, undefined, FlowChangeType.AddNode);
       }
       return rectInstance;
     },
@@ -1239,8 +1246,9 @@ export const createCanvasApp = <T>(
         setCanvasAction,
         rootElement
       );
+      curve.connectionUpdateState = undefined;
       if (onCanvasUpdated) {
-        onCanvasUpdated();
+        onCanvasUpdated(undefined, undefined, FlowChangeType.AddConnection);
       }
       return curve;
     },
@@ -1276,8 +1284,9 @@ export const createCanvasApp = <T>(
         setCanvasAction,
         rootElement
       );
+      curve.connectionUpdateState = undefined;
       if (onCanvasUpdated) {
-        onCanvasUpdated();
+        onCanvasUpdated(undefined, undefined, FlowChangeType.AddConnection);
       }
       return curve;
     },
@@ -1311,8 +1320,9 @@ export const createCanvasApp = <T>(
         setCanvasAction,
         rootElement
       );
+      line.connectionUpdateState = undefined;
       if (onCanvasUpdated) {
-        onCanvasUpdated();
+        onCanvasUpdated(undefined, undefined, FlowChangeType.AddConnection);
       }
       return line;
     },

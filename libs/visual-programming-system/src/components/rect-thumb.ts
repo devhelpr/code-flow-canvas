@@ -210,6 +210,12 @@ export class RectThumb<T> extends Rect<T> {
 
             console.log('thumb 2 end', x, y);
             if (connection.connectionEndNodeThumb) {
+              if (connection.endNode) {
+                connection.endNode.connections =
+                  connection.endNode.connections.filter((connection) => {
+                    return connection.id !== connection.id;
+                  });
+              }
               connection.endNode = undefined;
               connection.endNodeThumb = undefined;
 

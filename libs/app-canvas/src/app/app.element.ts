@@ -155,7 +155,7 @@ export class AppElement<T extends BaseNodeInfo> {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-[400px] h-[380px] z-[1020] p-2 bg-slate-600 hidden overflow-x-visible overflow-y-auto text-white',
+          'absolute w-[400px] max-h-[380px]  h-[fit-content] z-[1020] p-3 pb-6 bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
         wheel: (event) => {
           event.stopPropagation();
         },
@@ -661,6 +661,8 @@ export class AppElement<T extends BaseNodeInfo> {
     popupContainer.style.left = `${x}px`;
     popupContainer.style.top = `${y}px`;
 
+    const popupContainerBounds = popupContainer.getBoundingClientRect();
+
     const lineContainer = this.editPopupLineContainer
       ?.domElement as unknown as HTMLElement;
 
@@ -673,8 +675,32 @@ export class AppElement<T extends BaseNodeInfo> {
 
     lineContainer.style.top = `${y < yLine ? y : yLine}px`;
     lineContainer.style.width = `${x - xLine < 0 ? xLine - x : x - xLine}px`;
-    lineContainer.style.height = `${1000}px`; // heightNode * scaleCamera
 
+    const halfHeightPopup = popupContainerBounds.height / 2;
+
+    const orgContainerY = y < yLine ? y : yLine;
+    const startY = (y < yLine ? yLine - y : 0) + heightNode * scaleCamera;
+    const endY = (yLine < y ? y - yLine : 0) + halfHeightPopup;
+    let containerHeight = 0;
+
+    let containerY = 0;
+    let lineStartY = 0;
+    let lineEndY = 0;
+    if (endY < startY) {
+      containerHeight = startY - endY;
+      containerY = startY - containerHeight + orgContainerY;
+      lineStartY = Math.abs(startY - endY) + 5;
+      lineEndY = 5;
+    } else {
+      containerHeight = endY - startY;
+      containerY = startY + orgContainerY;
+      lineStartY = 5;
+      lineEndY = Math.abs(endY - startY) + 5;
+    }
+
+    lineContainer.style.top = `${containerY - 5}px`;
+    lineContainer.style.width = `${x - xLine < 0 ? xLine - x : x - xLine}px`;
+    lineContainer.style.height = `${containerHeight + 10}px`;
     const indicatorElement = this.editPopupEditingNodeIndicator
       ?.domElement as unknown as HTMLElement;
     indicatorElement.style.left = `${
@@ -686,21 +712,37 @@ export class AppElement<T extends BaseNodeInfo> {
 
     (this.editPopupLinePath?.domElement as SVGPathElement).setAttribute(
       'd',
-      `M0 ${(y < yLine ? yLine - y : 0) + heightNode * scaleCamera} 
-       L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
-        (yLine < y ? y - yLine : 0) + 170
-      }`
+      `M0 ${lineStartY} 
+       L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${lineEndY}`
     );
 
     (this.editPopupLineEndPath?.domElement as SVGPathElement).setAttribute(
       'd',
       `M${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
-        (yLine < y ? y - yLine : 0) + 170 - 5
-      }
+        lineEndY - 5 ////(yLine < y ? y - yLine : 0) + halfHeightPopup
+      } 
       L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
-        (yLine < y ? y - yLine : 0) + 170 + 5
+        lineEndY + 5 //(yLine < y ? y - yLine : 0) + halfHeightPopup +
       }`
     );
+
+    // (this.editPopupLinePath?.domElement as SVGPathElement).setAttribute(
+    //   'd',
+    //   `M0 ${(y < yLine ? yLine - y : 0) + heightNode * scaleCamera}
+    //    L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
+    //     (yLine < y ? y - yLine : 0) + halfHeightPopup //170
+    //   }`
+    // );
+
+    // (this.editPopupLineEndPath?.domElement as SVGPathElement).setAttribute(
+    //   'd',
+    //   `M${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
+    //     (yLine < y ? y - yLine : 0) + halfHeightPopup - 5
+    //   }
+    //   L${(x - xLine < 0 ? xLine - x : x - xLine) - 5} ${
+    //     (yLine < y ? y - yLine : 0) + halfHeightPopup + 5
+    //   }`
+    // );
   };
 
   setTabOrderForNode = (

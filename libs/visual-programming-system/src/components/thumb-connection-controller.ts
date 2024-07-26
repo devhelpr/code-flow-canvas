@@ -14,11 +14,13 @@ import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils';
 import { getPointerPos } from '../utils/pointer-pos';
+import { Connection, ConnectionUpdateState } from './connection';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 import { ThumbNode } from './thumb';
 
 export class ThumbConnectionController<T> extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
+  connectionInstance: Connection<T> | undefined = undefined;
   constructor(
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
@@ -49,7 +51,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     thumbShape?: 'circle' | 'diamond',
     canvasUpdated?: () => void,
     containerNode?: IRectNodeComponent<T>,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    connectionInstance?: Connection<T>
   ) {
     super(
       canvasElement,
@@ -85,6 +88,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
     }
+    this.connectionInstance = connectionInstance;
 
     this.rootElement = rootElement;
     if (connectionControllerType !== undefined) {
@@ -369,7 +373,8 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       domNodeElement.classList.add('dragging');
     }
   };
-
+  previousStartNode: IRectNodeComponent<T> | undefined = undefined;
+  previousEndNode: IRectNodeComponent<T> | undefined = undefined;
   onPointerDown = (e: PointerEvent) => {
     // console.log(
     //   'connection-controller onPointerDown',
@@ -461,6 +466,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
               }
             }
           }
+          this.previousStartNode = connection.startNode;
           connection.startNode = undefined;
           connection.startNodeThumb = undefined;
           console.log('x y', event?.target, x, y);
@@ -494,6 +500,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             pointerXPos,
             pointerYPos
           );
+          this.previousEndNode = connection.endNode;
           connection.endNode = undefined;
           connection.endNodeThumb = undefined;
 
@@ -829,10 +836,22 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
               this.nodeComponent.connectionControllerType ===
               ConnectionControllerType.begin
             ) {
+              if (this.previousStartNode) {
+                this.previousStartNode.connections =
+                  this.previousStartNode.connections?.filter(
+                    (c) => c.id !== connection.id
+                  );
+
+                this.previousStartNode = undefined;
+              }
               connection.startNode = rectNode;
               connection.startNodeThumb = thumbConnector; //rectNode.thumbConnectors?.[0];
 
               rectNode.connections?.push(connection);
+              if (this.connectionInstance) {
+                this.connectionInstance.connectionUpdateState =
+                  ConnectionUpdateState.ConnectConnection;
+              }
 
               if (connection.startNode?.isThumb) {
                 this.setDisableInteraction();
@@ -849,8 +868,25 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             } else {
               connection.endNode = rectNode;
               connection.endNodeThumb = thumbConnector; //rectNode.thumbConnectors?.[0];
+              if (this.previousEndNode) {
+                this.previousEndNode.connections =
+                  this.previousEndNode.connections?.filter(
+                    (c) => c.id !== connection.id
+                  );
 
+                this.previousEndNode = undefined;
+              }
               rectNode.connections?.push(connection);
+              console.log(
+                'CONNECTION CONNECTED TO END NODE',
+                connection,
+                rectNode
+              );
+
+              if (this.connectionInstance) {
+                this.connectionInstance.connectionUpdateState =
+                  ConnectionUpdateState.ConnectConnection;
+              }
 
               if (connection.endNode?.isThumb) {
                 this.setDisableInteraction();
