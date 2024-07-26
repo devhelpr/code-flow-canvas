@@ -29,6 +29,7 @@ import { ThumbNodeConnector } from './thumb-node-connector';
 import { NodeTransformer } from './node-transformer';
 import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
+import { FlowChangeType } from '../interfaces';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -40,7 +41,11 @@ export class Rect<T> {
   protected canvas: IElementNode<T> | undefined;
   protected canvasElements?: ElementNodeMap<T>;
   protected pathHiddenElement?: IElementNode<T>;
-  protected canvasUpdated?: () => void;
+  protected canvasUpdated?: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void;
   protected setCanvasAction?: (canvasAction: CanvasAction) => void;
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
@@ -81,7 +86,11 @@ export class Rect<T> {
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,
-    canvasUpdated?: () => void,
+    canvasUpdated?: (
+      shouldClearExecutionHistory?: boolean,
+      isStoreOnly?: boolean,
+      flowChangeType?: FlowChangeType
+    ) => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
     isStaticPosition?: boolean,
@@ -614,7 +623,11 @@ export class Rect<T> {
         );
 
         if (this.canvasUpdated) {
-          this.canvasUpdated();
+          this.canvasUpdated(
+            undefined,
+            undefined,
+            FlowChangeType.UpdateConnection
+          );
         }
       }
     };
