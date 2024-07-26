@@ -433,6 +433,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
       if (
         flowChangeType === FlowChangeType.AddNode ||
+        flowChangeType === FlowChangeType.UpdateNode ||
         flowChangeType === FlowChangeType.AddConnection ||
         flowChangeType === FlowChangeType.UpdateConnection
       ) {

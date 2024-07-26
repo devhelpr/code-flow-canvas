@@ -2,6 +2,7 @@ import {
   CanvasAppInstance,
   createElement,
   createNodeElement,
+  FlowChangeType,
   FormComponent,
   FormFieldType,
   FormsComponent,
@@ -57,7 +58,11 @@ export const parseInput = (input: string, inputType: string) => {
 };
 
 export const getExpression: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: IDOMElement | undefined = undefined;
@@ -271,7 +276,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
               }
             }
             if (updated) {
-              updated();
+              updated(undefined, undefined, FlowChangeType.UpdateNode);
             }
           },
         },
