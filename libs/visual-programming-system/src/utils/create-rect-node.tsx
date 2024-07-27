@@ -60,6 +60,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
+    additionalInnerNodeClassNames?: string;
     hasFormInPopup?: boolean;
     hasStaticWidthHeight?: boolean;
     hideFromNodeTypeSelector?: boolean;
@@ -126,6 +127,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
           'div',
           {
             class: `inner-node relative flex flex-col ${
+              settings?.additionalInnerNodeClassNames ?? ''
+            } ${
               (settings?.backgroundThemeProperty &&
                 (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
               settings?.backgroundColorClassName ??
@@ -419,6 +422,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     hasTitlebar?: boolean;
     childNodeWrapperClass?: string;
     additionalClassNames?: string;
+    additionalInnerNodeClassNames?: string;
     hasFormInPopup?: boolean;
     hasStaticWidthHeight?: boolean;
     decoratorTitle?: string;

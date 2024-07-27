@@ -77,6 +77,7 @@ export const getSlider =
           color: 'white',
           label: '#',
           thumbConstraint: 'value',
+          prefixIcon: 'icon-bolt',
         },
       ],
       (values?: InitialValues) => {
@@ -146,6 +147,7 @@ export const getSlider =
 
         if (node.nodeInfo) {
           node.nodeInfo.canBeStartedByTrigger = true;
+          node.nodeInfo.isUINode = true;
           node.nodeInfo.readPropertyFromNodeInfoForInitialTrigger = 'value';
 
           node.nodeInfo.isSettingsPopup = true;
@@ -178,6 +180,7 @@ export const getSlider =
       },
       {
         category: 'UI',
+        additionalInnerNodeClassNames: 'border-[2px] border-solid pt-5',
       }
     );
   };

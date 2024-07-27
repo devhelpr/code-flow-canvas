@@ -1047,6 +1047,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         type: 'range',
         class: 'p-2 m-2 relative ', //top-[60px]',
         name: 'speed',
+        title: 'Flow run speed (max = realtime)',
         min: '1',
         max: '750',
         value: '375',
