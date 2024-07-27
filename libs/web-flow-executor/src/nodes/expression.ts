@@ -77,8 +77,10 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         payloadProperties: string[];
       }
     | undefined = undefined;
+  let executionRunCounter = 0;
   const initializeCompute = () => {
     currentValue = 0;
+    executionRunCounter = 0;
     compiledExpressionInfo = undefined;
     return;
   };
@@ -91,7 +93,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
   const compute = (
     input: string,
-    loopIndex?: number,
+    _loopIndexloopIndex?: number,
     payload?: any,
     _thumbName?: string,
     scopeId?: string
@@ -136,6 +138,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       } else if (typeof input === 'object') {
         inputAsObject = input;
       }
+
       const payloadForExpression = {
         input: inputAsString,
         currentValue: currentValue,
@@ -143,8 +146,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         array: input,
         current: currentValue,
         last: currentValue,
-        index: loopIndex ?? 0,
-        runIteration: loopIndex ?? 0,
+        index: executionRunCounter ?? 0,
+        runIteration: executionRunCounter ?? 0,
         random: Math.round(Math.random() * 100),
         ...payload,
         ...inputAsObject,
@@ -185,6 +188,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       if (expression !== '' && result === undefined) {
         throw new Error("Expression couldn't be run");
       }
+      executionRunCounter++;
     } catch (error) {
       result = undefined;
       if (errorNode) {
