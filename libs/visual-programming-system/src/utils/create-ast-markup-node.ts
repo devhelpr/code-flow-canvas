@@ -51,7 +51,8 @@ export const createASTNodeElement = <T>(
   parentElement: DOMElementNode,
   elements: ElementNodeMap<T>,
   expressions?: Record<string, object>,
-  scopeId?: string
+  scopeId?: string,
+  payload?: any
 ) => {
   let element: IElementNode<T> | undefined = undefined;
   const elementProperties: any = {};
@@ -61,7 +62,7 @@ export const createASTNodeElement = <T>(
   let text = astNode.value ?? '';
   if (astNode.type === 'EXPRESSION') {
     const compiledExpression = compileExpression(astNode.value || '');
-    text = runExpression(compiledExpression, {});
+    text = runExpression(compiledExpression, payload ?? {});
   }
   let dontFollowChildren = false;
   if (astNode.tagName === 'script') {

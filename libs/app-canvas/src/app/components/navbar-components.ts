@@ -69,6 +69,7 @@ export class NavbarComponent extends Component<
         <select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
+          <option value="basic-condition.json">Basic condition</option>
           <option value="simple-state-machine.json">Simple statemachine</option>
           <option value="simple-state-machine-image-brightness.json">Simple state machine with image and brightness</option>
           <option value="parallel-merge-flow.json">Parallel and merge</option>

@@ -2,7 +2,6 @@ import {
   CanvasAppInstance,
   createElement,
   createNodeElement,
-  FormContext,
   FormFieldType,
   IDOMElement,
   InitialValues,
@@ -18,13 +17,14 @@ import { createStructuredExpressionsMarkup } from '../utils/replace-expression-s
 
 function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
   const childNodes = node.childNodes;
+  //console.log('traverseDOMTree', childNodes);
   for (let i = 0; i < childNodes.length; i++) {
     const childNode = childNodes[i];
     if (childNode.textContent) {
       const matches = childNode.textContent.match(/{{[\s\S]+?}}/gm);
       if (matches) {
         matches.forEach((match) => {
-          //console.log('expression', match.slice(2, -2));
+          console.log('expression', match.slice(2, -2));
           const info = compileExpressionAsInfo(match.slice(2, -2));
           const expressionFunction = (
             new Function('payload', `${info.script}`) as unknown as (
@@ -84,7 +84,8 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
         } else {
           (divNode.domElement as HTMLElement).innerHTML = '';
-          createStructuredExpressionsMarkup(htmlString);
+          const result = createStructuredExpressionsMarkup(htmlString);
+          console.log('createStructuredExpressionsMarkup result', result);
           htmlString = `${htmlString}
             <script>
               window['createElement'] = window.parent['createElement'];
@@ -205,7 +206,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           fieldType: FormFieldType.TextArea,
           fieldName: 'html',
           value: initialValue,
-          isCodeEditor: true,
+          isCodeEditor: false, //true,
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
@@ -223,70 +224,70 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           },
         },
 
-        {
-          fieldType: FormFieldType.TextArea,
-          fieldName: 'aiprompt',
-          label: 'AI Prompt to generate HTML',
-          value: aiPrompt,
+        // {
+        //   fieldType: FormFieldType.TextArea,
+        //   fieldName: 'aiprompt',
+        //   label: 'AI Prompt to generate HTML',
+        //   value: aiPrompt,
 
-          onChange: (value: string) => {
-            if (!node.nodeInfo) {
-              return;
-            }
+        //   onChange: (value: string) => {
+        //     if (!node.nodeInfo) {
+        //       return;
+        //     }
 
-            aiPrompt = value;
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              aiprompt: value,
-            };
+        //     aiPrompt = value;
+        //     node.nodeInfo.formValues = {
+        //       ...node.nodeInfo.formValues,
+        //       aiprompt: value,
+        //     };
 
-            if (updated) {
-              updated();
-            }
-          },
-        },
-        {
-          fieldType: FormFieldType.Button,
-          fieldName: 'execute',
-          caption: 'Get HTML from AI',
-          onButtonClick: (formContext: FormContext) => {
-            return new Promise<void>((resolve, _reject) => {
-              fetch('http://localhost:3000/create-ui', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  message: aiPrompt,
-                }),
-              }).then((response) => {
-                //console.log('response', response);
-                response.json().then((json) => {
-                  if (!node.nodeInfo) {
-                    resolve();
-                    return;
-                  }
-                  //console.log('json', json);
-                  const html = json.message;
-                  node.nodeInfo.formValues = {
-                    ...node.nodeInfo.formValues,
-                    html: html,
-                  };
-                  //console.log('currentinput after prompting', currentInput);
+        //     if (updated) {
+        //       updated();
+        //     }
+        //   },
+        // },
+        // {
+        //   fieldType: FormFieldType.Button,
+        //   fieldName: 'execute',
+        //   caption: 'Get HTML from AI',
+        //   onButtonClick: (formContext: FormContext) => {
+        //     return new Promise<void>((resolve, _reject) => {
+        //       fetch('http://localhost:3000/create-ui', {
+        //         method: 'POST',
+        //         headers: {
+        //           'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //           message: aiPrompt,
+        //         }),
+        //       }).then((response) => {
+        //         //console.log('response', response);
+        //         response.json().then((json) => {
+        //           if (!node.nodeInfo) {
+        //             resolve();
+        //             return;
+        //           }
+        //           //console.log('json', json);
+        //           const html = json.message;
+        //           node.nodeInfo.formValues = {
+        //             ...node.nodeInfo.formValues,
+        //             html: html,
+        //           };
+        //           //console.log('currentinput after prompting', currentInput);
 
-                  if (updated) {
-                    updated();
-                  }
-                  formContext.setFormFieldValue('html', html);
-                  setTimeout(() => {
-                    setHTML(currentInput);
-                  }, 0);
-                  resolve();
-                });
-              });
-            });
-          },
-        },
+        //           if (updated) {
+        //             updated();
+        //           }
+        //           formContext.setFormFieldValue('html', html);
+        //           setTimeout(() => {
+        //             setHTML(currentInput);
+        //           }, 0);
+        //           resolve();
+        //         });
+        //       });
+        //     });
+        //   },
+        // },
       ];
 
       const componentWrapper = createNodeElement(
@@ -326,6 +327,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
+            maxConnections: -1,
           },
         ],
         componentWrapper,
@@ -353,6 +355,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
+        node.nodeInfo.showFormOnlyInPopup = true;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
           html: initialValue || defaultHTML,

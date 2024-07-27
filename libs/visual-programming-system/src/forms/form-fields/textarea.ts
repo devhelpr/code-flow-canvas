@@ -28,20 +28,23 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     super(parent, props);
     this.fieldName = props.fieldName;
 
-    if (props.isCodeEditor) {
-      this.template = createTemplate(
-        `<div class="w-full mb-2 code-editor" id="${props.formId}_${
-          props.fieldName
-        }">
-          <label for="${props.formId}_${props.fieldName}" class="block mb-2 ${
-          props.settings?.textLabelColor ?? 'text-white'
-        }">${props.label || props.fieldName}</label>
-          <div id="${props.formId}_${
-          props.fieldName
-        }__" class="w-full h-64"></div>
-          </div>`
-      );
-    } else {
+    // temp disabled code editor
+
+    // if (props.isCodeEditor) {
+    //   this.template = createTemplate(
+    //     `<div class="w-full mb-2 code-editor" id="${props.formId}_${
+    //       props.fieldName
+    //     }">
+    //       <label for="${props.formId}_${props.fieldName}" class="block mb-2 ${
+    //       props.settings?.textLabelColor ?? 'text-white'
+    //     }">${props.label || props.fieldName}</label>
+    //       <div id="${props.formId}_${
+    //       props.fieldName
+    //     }__" class="w-full h-64"></div>
+    //       </div>`
+    //   );
+    // } else
+    {
       this.template = createTemplate(
         `<div class="w-full mb-2">
         <label for="${props.formId}_${props.fieldName}" class="block mb-2 ${

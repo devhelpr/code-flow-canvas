@@ -16,6 +16,17 @@ import { NodeInfo } from '../types/node-info';
 import { compileMarkup } from '@devhelpr/markup-compiler';
 import { createStructuredExpressionsMarkup } from '../utils/replace-expression-script';
 
+/*
+  example HTML:
+
+  <div class="bg-sky-800 text-white 
+    flex items-center justify-center
+    min-w-[200px] min-h-[200px]"
+style="background:{{input}}"
+>{{input}}</div>
+
+*/
+
 export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let divNode: IElementNode<NodeInfo>;
@@ -72,6 +83,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   //   });
   // };
   const setHTML = (value: string) => {
+    console.log('setHTML', value);
     try {
       const splitted = (value ?? '').toString().split(':');
       if (splitted.length === 2) {
@@ -79,6 +91,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       } else {
         variables['value'] = value;
       }
+      variables['input'] = value;
       if (!astElement) {
         const htmlString = node?.nodeInfo?.formValues['html'] || defaultHTML;
         structuredMarkup = createStructuredExpressionsMarkup(htmlString);
@@ -90,9 +103,16 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             divNode.domElement,
             divNode.elements,
             structuredMarkup.expressions,
-            node?.id
+            node?.id,
+            {
+              input: value,
+            }
           );
-          console.log('compiledMarkup', compiledMarkup);
+          console.log(
+            'compiledMarkup',
+            compiledMarkup,
+            structuredMarkup.expressions
+          );
         }
       }
       if (astElement && structuredMarkup) {
@@ -245,19 +265,20 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         100,
         undefined,
         [
-          {
-            thumbType: ThumbType.StartConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            color: 'white',
-            label: '',
-          },
+          // {
+          //   thumbType: ThumbType.StartConnectorCenter,
+          //   thumbIndex: 0,
+          //   connectionType: ThumbConnectionType.start,
+          //   color: 'white',
+          //   label: '',
+          // },
           {
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
             label: ' ',
+            maxConnections: -1,
           },
         ],
         componentWrapper,
