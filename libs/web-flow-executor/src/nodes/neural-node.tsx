@@ -135,7 +135,7 @@ export const getNeuralNode: NodeTaskFactory<NodeInfo> = (
         connection?.endNode &&
         connection?.endNode?.id === nodeComponent?.id
       ) {
-        const weight = connection?.nodeInfo?.formValues?.weight ?? 0;
+        const weight = connection?.nodeInfo?.formValues?.weight ?? 1;
         sumValue += localValues[connection.id] * weight;
         //localValues[connection.id] = undefined;
       }

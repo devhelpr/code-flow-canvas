@@ -49,6 +49,7 @@ export function Toolbar<T>(props: {
   let toggle = false;
   let ul: HTMLUListElement | null = null;
   let wrapper: HTMLDivElement | null = null;
+  let input: HTMLInputElement | null = null;
   let icon: HTMLSpanElement | null = null;
   let selectedNode: INodeComponent<T> | undefined;
   let isInReplaceeMode = false;
@@ -353,6 +354,25 @@ export function Toolbar<T>(props: {
       hideUL();
     }
   );
+
+  const showTaskList = () => {
+    if (!input) {
+      return;
+    }
+
+    if (!showUL()) {
+      return;
+    }
+
+    isInReplaceeMode = false;
+    console.log('input', input.value);
+    const tasks = taskList.filter((task) =>
+      task.label
+        .toLocaleLowerCase()
+        .includes((input?.value ?? '').toLocaleLowerCase())
+    );
+    fillTaskList(tasks);
+  };
   const ToolbarComponent = () => (
     <div
       class="flex whitespace-nowrap absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm max-w-full w-max"
@@ -366,6 +386,9 @@ export function Toolbar<T>(props: {
         class="p-1 m-1 relative max-w-[220px] mr-0 w-[calc(100%-50px)]"
         name="search-node-types"
         autocomplete="off"
+        getElement={(element: HTMLElement) => {
+          input = element as HTMLInputElement;
+        }}
         keyup={(event: KeyboardEvent) => {
           if (event.key === 'Escape') {
             (event.target as HTMLInputElement).value = '';
@@ -374,18 +397,8 @@ export function Toolbar<T>(props: {
         }}
         input={(event: InputEvent) => {
           event.preventDefault();
-          if (!showUL()) {
-            return;
-          }
-          isInReplaceeMode = false;
-          const input = event.target as HTMLInputElement;
-          console.log('input', input.value);
-          const tasks = taskList.filter((task) =>
-            task.label
-              .toLocaleLowerCase()
-              .includes((input.value ?? '').toLocaleLowerCase())
-          );
-          fillTaskList(tasks);
+
+          showTaskList();
 
           return false;
         }}
@@ -399,6 +412,8 @@ export function Toolbar<T>(props: {
           }
           if (toggle) {
             hideUL();
+          } else {
+            showTaskList();
           }
         }}
       >
