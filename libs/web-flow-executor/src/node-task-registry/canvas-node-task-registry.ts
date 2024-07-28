@@ -152,6 +152,7 @@ import { NodeInfo } from '../types/node-info';
 import { getNeuralNode } from '../nodes/neural-node';
 import { getNeuralInputNode } from '../nodes/neural-input-node';
 import { getNeuralBiasNode } from '../nodes/neural-bias-node';
+import { getNeuralOutputNode } from '../nodes/neural-output-node';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -329,6 +330,8 @@ export const setupCanvasNodeTaskRegistry = (
       'neural-bias-node',
       getNeuralBiasNode(createRunCounterContext)
     );
+
+    registerNodeFactory('neural-output-node', getNeuralOutputNode);
   }
 
   registerExternalNodes?.(registerNodeFactory);
