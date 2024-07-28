@@ -358,14 +358,19 @@ export const getScopedVariable =
         rect.resize(120);
       }
 
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = undefined;
-      }
+      if (!canvasAppInstance?.isContextOnly) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = undefined;
+        }
 
-      (componentWrapper.domElement as unknown as HTMLElement).classList.remove(
-        'border-green-200'
-      );
+        (
+          componentWrapper.domElement as unknown as HTMLElement
+        ).classList.remove('border-white');
+        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
+          'border-transparent'
+        );
+      }
 
       return;
     };
@@ -379,24 +384,6 @@ export const getScopedVariable =
     };
 
     const getData = (parameter?: any, scopeId?: string) => {
-      if (!canvasAppInstance?.isContextOnly) {
-        if (timeout) {
-          clearTimeout(timeout);
-          timeout = undefined;
-        }
-        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
-          'border-orange-200'
-        );
-        timeout = setTimeout(() => {
-          (
-            componentWrapper?.domElement as unknown as HTMLElement
-          ).classList.remove('border-orange-200');
-
-          (
-            componentWrapper?.domElement as unknown as HTMLElement
-          ).classList.remove('border-green-200');
-        }, 250);
-      }
       return getDataForFieldType(parameter, scopeId);
     };
 
@@ -412,6 +399,29 @@ export const getScopedVariable =
       }
 
       visualizeData(lastStoredDataState);
+
+      if (!canvasAppInstance?.isContextOnly) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = undefined;
+        }
+        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
+          'border-white'
+        );
+        (
+          componentWrapper.domElement as unknown as HTMLElement
+        ).classList.remove('border-transparent');
+
+        timeout = setTimeout(() => {
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          ).classList.remove('border-white');
+
+          (componentWrapper.domElement as unknown as HTMLElement).classList.add(
+            'border-transparent'
+          );
+        }, 250);
+      }
     };
 
     const visualizeData = (lastStoredDataState: any) => {
@@ -469,21 +479,6 @@ export const getScopedVariable =
             }
           }
         }
-        if (timeout) {
-          clearTimeout(timeout);
-          timeout = undefined;
-        }
-        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
-          'border-green-200'
-        );
-        timeout = setTimeout(() => {
-          (
-            componentWrapper?.domElement as unknown as HTMLElement
-          ).classList.remove('border-green-200');
-          (
-            componentWrapper?.domElement as unknown as HTMLElement
-          ).classList.remove('border-orange-200');
-        }, 250);
       }
     };
 
@@ -774,7 +769,7 @@ export const getScopedVariable =
         componentWrapper = createNodeElement(
           'div',
           {
-            class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node bg-blue-600 text-white p-4 rounded text-center`,
+            class: `border-[2px] border-solid transition duration-500 ease-in-out inner-node bg-blue-600 text-white p-4 rounded text-center`,
           },
           undefined,
           htmlNode.domElement as unknown as HTMLElement
@@ -837,7 +832,11 @@ export const getScopedVariable =
 
             (
               componentWrapper?.domElement as unknown as HTMLElement
-            ).classList.remove('border-green-200');
+            ).classList.remove('border-white');
+            (
+              componentWrapper?.domElement as unknown as HTMLElement
+            ).classList.add('border-transparent');
+
             if (timeout) {
               clearTimeout(timeout);
               timeout = undefined;

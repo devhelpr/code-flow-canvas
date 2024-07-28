@@ -19,10 +19,21 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let variableName = '';
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let timeout: any = undefined;
+  let componentWrapper: INodeComponent<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
     if (canvasAppInstance && variableName) {
       canvasAppInstance.removeObserveVariable(node.id, variableName);
       setupObserveVariable();
+    }
+    if (componentWrapper) {
+      (componentWrapper.domElement as HTMLElement).classList.add(
+        'border-transparent'
+      );
     }
     return;
   };
@@ -68,6 +79,31 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
         node.id,
         variableName,
         (value, runCounter?: any) => {
+          if (timeout) {
+            clearTimeout(timeout);
+            timeout = undefined;
+          }
+          if (componentWrapper) {
+            (componentWrapper.domElement as HTMLElement).classList.remove(
+              'border-transparent'
+            );
+          }
+          if (componentWrapper) {
+            (componentWrapper.domElement as HTMLElement).classList.add(
+              'border-white'
+            );
+          }
+          timeout = setTimeout(() => {
+            if (componentWrapper) {
+              (componentWrapper.domElement as HTMLElement).classList.remove(
+                'border-white'
+              );
+              (componentWrapper.domElement as HTMLElement).classList.add(
+                'border-transparent'
+              );
+            }
+          }, 250);
+
           console.log('observeVariable', value, runCounter);
           if (canvasAppInstance) {
             runNode(
@@ -138,10 +174,10 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
 
       setupObserveVariable();
 
-      const componentWrapper = createElement(
+      componentWrapper = createElement(
         'div',
         {
-          class: `relative`,
+          class: `relative observer-node border-[2px] border-solid rounded transition duration-500 ease-in-out`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
