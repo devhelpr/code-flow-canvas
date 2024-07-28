@@ -1,6 +1,10 @@
 import { IRunCounter } from '@devhelpr/visual-programming-system';
 
 export class RunCounter implements IRunCounter {
+  constructor() {
+    this.runId = crypto.randomUUID();
+  }
+  runId: string;
   runCounter = 0;
   incrementRunCounter() {
     this.runCounter++;

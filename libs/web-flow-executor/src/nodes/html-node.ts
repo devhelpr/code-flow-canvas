@@ -92,6 +92,12 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         variables['value'] = value;
       }
       variables['input'] = value;
+      if (typeof value === 'object') {
+        variables = {
+          ...variables,
+          ...(value as any),
+        };
+      }
       if (!astElement) {
         const htmlString = node?.nodeInfo?.formValues['html'] || defaultHTML;
         structuredMarkup = createStructuredExpressionsMarkup(htmlString);

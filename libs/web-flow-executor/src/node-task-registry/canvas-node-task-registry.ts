@@ -144,6 +144,9 @@ import { getUserInput } from '../nodes/user-input';
 import { setFlowVariable } from '../nodes/set-flow-variable';
 import { getAnnotation } from '../nodes/annotation';
 import { getMergeSumNode, sumMergeModeName } from '../nodes/merge-sum';
+
+import { getObjectNode, objectNodeName } from '../nodes/object-node';
+
 import { NodeInfo } from '../types/node-info';
 
 import { getNeuralNode } from '../nodes/neural-node';
@@ -258,6 +261,9 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory(runRegexNodeName, runRegularExpression);
     registerNodeFactory(mergeModeName, getMergeNode);
     registerNodeFactory(sumMergeModeName, getMergeSumNode);
+
+    registerNodeFactory(objectNodeName, getObjectNode);
+
     registerNodeFactory(replaceStringMapNodeName, replaceStringMap);
 
     registerNodeFactory(splitStringNodeName, splitString);

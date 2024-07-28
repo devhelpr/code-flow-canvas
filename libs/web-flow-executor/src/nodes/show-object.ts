@@ -32,7 +32,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string | any[]) => {
-    inputValues = input;
+    inputValues = typeof input === 'object' ? input : {};
     if (htmlNode) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -95,7 +95,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
           class: 'break-words whitespace-pre-line',
         },
         undefined,
-        'Input'
+        '{}'
       ) as unknown as INodeComponent<NodeInfo>;
 
       const wrapper = createElement(

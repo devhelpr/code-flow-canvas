@@ -11,8 +11,9 @@ import {
   createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { RunCounter } from '../follow-path/run-counter';
 
-export const sumMergeModeName = 'merge-sum';
+export const objectNodeName = 'object-node';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -20,91 +21,72 @@ const thumbs = [
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    maxConnections: 1,
-  },
-  {
-    thumbType: ThumbType.EndConnectorLeft,
-    thumbIndex: 0,
-    connectionType: ThumbConnectionType.end,
-    color: 'white',
-    label: ' ',
-    name: 'a',
-    maxConnections: 1,
-    prefixLabel: '',
-  },
-  {
-    thumbType: ThumbType.EndConnectorLeft,
-    thumbIndex: 1,
-    connectionType: ThumbConnectionType.end,
-    color: 'white',
-    label: ' ',
-    name: 'b',
-    maxConnections: 1,
-    prefixLabel: '',
+    maxConnections: -1,
   },
 ];
 
-export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
+export const getObjectNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<any> => {
   //let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
-    values = { global: { value1: undefined, value2: undefined } };
+    values = { global: {} };
     return;
   };
 
   let values = {
-    global: {
-      value1: undefined,
-      value2: undefined,
-    },
-  } as Record<string, Record<string, string | undefined>>;
+    global: {},
+  } as Record<
+    string,
+    Record<
+      string,
+      | {
+          value: any;
+          name: string;
+        }
+      | undefined
+    >
+  >;
 
   const compute = (
     input: string,
     _loopIndex?: number,
     _payload?: any,
     thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     const extraInputCount =
       node.nodeInfo?.formValues?.['input-thumbs']?.length ?? 0;
     if (scopeId && !values[scopeId]) {
-      values[scopeId] = {
-        value1: undefined,
-        value2: undefined,
-      };
+      values[scopeId] = {};
     }
-    const localValues = values[scopeId ?? 'global'];
-    if (thumbName === 'a') {
-      localValues['value1'] = input;
-    } else {
-      if (thumbName === 'b') {
-        localValues['value2'] = input;
-      } else if (
-        node &&
-        node.thumbConnectors &&
-        thumbName?.startsWith('input')
-      ) {
-        const thumb = node.thumbConnectors.find(
-          (thumb) => thumb.thumbName === thumbName
-        );
-        if (thumb) {
-          const thumbIndex = thumb.thumbIndex;
-          if (thumbIndex !== undefined) {
-            const inputIndex = thumbIndex;
-            if (inputIndex < extraInputCount + 2) {
-              localValues[`input${inputIndex}`] = input;
-            }
+    if (runCounter?.runId && !values[runCounter?.runId]) {
+      values[runCounter?.runId] = {};
+    }
+    const localValues = values[runCounter?.runId ?? scopeId ?? 'global'];
+    if (node && node.thumbConnectors && thumbName?.startsWith('input')) {
+      const thumb = node.thumbConnectors.find(
+        (thumb) => thumb.thumbName === thumbName
+      );
+      if (thumb) {
+        const thumbIndex = thumb.thumbIndex;
+        if (thumbIndex !== undefined) {
+          const inputIndex = thumbIndex;
+          if (inputIndex < extraInputCount) {
+            localValues[`input${inputIndex}`] = {
+              name: thumb?.prefixLabel?.trim() ?? thumbName,
+              value: input,
+            };
           }
         }
       }
     }
     let loop = 0;
     while (loop < extraInputCount) {
-      if (localValues[`input${loop + 2}`] === undefined) {
+      if (localValues[`input${loop}`] === undefined) {
         return {
           result: undefined,
           output: undefined,
@@ -114,45 +96,26 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
       }
       loop++;
     }
-    if (
-      localValues['value1'] === undefined ||
-      localValues['value2'] === undefined
-    ) {
-      return {
-        result: undefined,
-        output: undefined,
-        stop: true,
-        followPath: undefined,
-      };
-    }
-    const value1 = localValues['value1'];
-    const value2 = localValues['value2'];
-    localValues['value1'] = undefined;
-    localValues['value2'] = undefined;
-    let sum = 0;
+    const outputObject: any = {};
     loop = 0;
     while (loop < extraInputCount) {
-      sum += Number(localValues[`input${loop + 2}`]);
-      localValues[`input${loop + 2}`] = undefined;
+      const currentObject = localValues[`input${loop}`];
+      if (currentObject) {
+        outputObject[currentObject.name] = currentObject.value;
+      }
+      localValues[`input${loop}`] = undefined;
       loop++;
     }
-
-    // if (contextInstance && scopeId) {
-    //   contextInstance.registerTempVariable('a', value1, scopeId);
-    //   contextInstance.registerTempVariable('b', value2, scopeId);
-    // }
-    // console.log('merge', scopeId, value1, value2, {
-    //   ...contextInstance?.getVariables(scopeId),
-    // });
+    values[runCounter?.runId ?? scopeId ?? 'global'] = {};
     return {
-      result: value1 + value2 + sum,
-      output: value1 + value2 + sum,
+      result: outputObject,
+      output: outputObject,
       followPath: undefined,
     };
   };
 
   return {
-    name: sumMergeModeName,
+    name: objectNodeName,
     family: 'flow-canvas',
     category: 'flow-control',
     isContainer: false,
@@ -169,9 +132,11 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
       //contextInstance = canvasApp;
 
       const Component = () => (
-        <div class="inner-node bg-white text-black p-4 rounded flex flex-col justify-center items-center min-w-[150px] clip-merge">
-          <div class="text-7xl">&#8721;</div>
-          <div>Sum</div>
+        <div
+          title="Edit 'Node properties' (via sidebar) to edit/add object properties"
+          class="inner-node bg-white text-black p-4 rounded flex flex-col justify-center items-center min-w-[150px]"
+        >
+          <div></div>
         </div>
       );
       const nodeThumbs: IThumb[] = [...thumbs];
@@ -181,11 +146,13 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
       for (let i = 0; i < additionalThumbsLength; i++) {
         nodeThumbs.push({
           thumbType: ThumbType.EndConnectorLeft,
-          thumbIndex: i + 2,
+          thumbIndex: i,
           connectionType: ThumbConnectionType.end,
           color: 'white',
+          prefixLabel: initalValues?.['input-thumbs'][i]?.thumbName,
           label: ' ',
-          name: `input${i + 3}`,
+          name: `input${i + 1}`,
+          maxConnections: -1,
         });
       }
 
@@ -205,12 +172,14 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
         undefined,
         id,
         {
-          type: sumMergeModeName,
+          type: objectNodeName,
           formValues: {
             'input-thumbs': initalValues?.['input-thumbs'] ?? [],
           },
         },
-        containerNode
+        containerNode,
+        undefined,
+        'object-node'
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
@@ -233,11 +202,21 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
                 fieldType: FormFieldType.Text,
                 value: '',
               },
+              {
+                fieldName: 'dataType',
+                fieldType: FormFieldType.Select,
+                value: 'string',
+                options: [
+                  { label: 'String', value: 'string' },
+                  { label: 'Number', value: 'number' },
+                ],
+              },
             ],
             onChange: (values: unknown[]) => {
               if (!node.nodeInfo) {
                 return;
               }
+
               const oldThumbsLength =
                 node.nodeInfo.formValues?.['input-thumbs']?.length ?? 0;
               node.nodeInfo.formValues = {
@@ -251,11 +230,15 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
                     canvasAppInstance?.addThumbToNode(
                       {
                         thumbType: ThumbType.EndConnectorLeft,
-                        thumbIndex: i + oldThumbsLength + 2,
+                        thumbIndex: i + oldThumbsLength,
                         connectionType: ThumbConnectionType.end,
                         color: 'white',
                         label: ' ',
-                        name: `input${i + oldThumbsLength + 3}`,
+                        name: `input${i + oldThumbsLength + 1}`,
+                        prefixLabel: (values as any)[i + oldThumbsLength]?.[
+                          'thumbName'
+                        ],
+                        maxConnections: -1,
                       },
                       node
                     );
