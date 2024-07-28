@@ -179,7 +179,7 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
         },
         containerNode,
         undefined,
-        'object-node'
+        'object-node rect-node'
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
