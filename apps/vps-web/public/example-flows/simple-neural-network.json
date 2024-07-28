@@ -8,8 +8,8 @@
       "nodes": [
         {
           "id": "db2b54e8-c68b-47aa-bb25-920f3e9e55b9",
-          "x": -168.76585020552528,
-          "y": -305.4968778442732,
+          "x": -168.76580923086425,
+          "y": -305.49682071934154,
           "width": 100,
           "height": 100,
           "nodeType": "Shape",
@@ -100,25 +100,25 @@
         },
         {
           "id": "4121ebc2-cfb0-4d45-bbe4-012c6a30015b",
-          "x": 1030.8202093936186,
-          "y": -248.62012009864162,
+          "x": 1742.8465563412424,
+          "y": 119.37900094232992,
           "width": 200,
           "height": 112,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "expression",
             "formValues": {
-              "expression": "0.5*(input-10)*(input-10)",
+              "expression": "0.5*(output-expected)*(output-expected)",
               "inputType": "number"
             }
           }
         },
         {
           "id": "8d9b0bcf-bff4-4e00-9c08-eed2e820bdbc",
-          "x": 1397.841072121991,
-          "y": -211.52239886862066,
-          "width": 119.99990961032614,
-          "height": 80.00004474299966,
+          "x": 2331.3657084790334,
+          "y": 143.34148664687876,
+          "width": 120.00003587536114,
+          "height": 79.99998149494053,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input"
@@ -126,8 +126,8 @@
         },
         {
           "id": "b38261d8-8fa6-49ed-a8bf-0f39deb3e787",
-          "x": 718.3971265426635,
-          "y": -271.32388022914245,
+          "x": 718.3971661016645,
+          "y": -270.00842255166043,
           "width": 100,
           "height": 100,
           "nodeType": "Shape",
@@ -139,9 +139,99 @@
           }
         },
         {
+          "id": "f17ab14c-c2cd-4a23-8428-ff2b420362b0",
+          "x": -618.9870609497,
+          "y": -533.3527555030144,
+          "width": 346.91058261915475,
+          "height": 226.53415307712868,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "This is a work-in-progress neural network. Currently it doesn't do anything besides forward propagation.\n\nTraining the neural network using backward propagation will follow as soon as I understand it good enough to implement it.",
+              "fontSize": "16",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "45def263-c249-4628-8e6a-d50ad73f0c2a",
+          "x": 1416.5538802661263,
+          "y": -185.56723038322298,
+          "width": 150.00006103515625,
+          "height": 105,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "object-node",
+            "formValues": {
+              "input-thumbs": [
+                {
+                  "thumbName": "output",
+                  "dataType": "number"
+                },
+                {
+                  "thumbName": "expected",
+                  "dataType": "number"
+                }
+              ]
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "16a2547c-012b-40d7-9c96-92f22b961cf5",
+          "x": 1024.1440355421703,
+          "y": 63.05294918824279,
+          "width": 200.00003051757812,
+          "height": 132,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "slider",
+            "formValues": {
+              "value": "10",
+              "valueSliderSettings": "{\"min\":-1,\"max\":10,\"step\":0.01}"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "canBeStartedByTrigger": true,
+            "isUINode": true,
+            "readPropertyFromNodeInfoForInitialTrigger": "value",
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "1de64db1-671e-4935-94ed-edbbde585ce3",
+          "x": 1741.2007761531306,
+          "y": -221.7394707044346,
+          "width": 239.9998172189209,
+          "height": 151.99999665686218,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-object"
+          }
+        },
+        {
+          "id": "9af02a99-afc6-4e12-9db9-ca893f17dcec",
+          "x": 994.2842317255867,
+          "y": -243.90259294546289,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "input",
+              "inputType": "number"
+            }
+          }
+        },
+        {
           "id": "6daab682-e40f-4e76-840e-53f5da1ded73",
-          "x": -118.76585020552528,
-          "y": -255.49687784427317,
+          "x": -118.76580923086425,
+          "y": -255.49682071934154,
           "endX": 447.28209395283324,
           "endY": -215.20641635896834,
           "startNodeId": "db2b54e8-c68b-47aa-bb25-920f3e9e55b9",
@@ -153,7 +243,7 @@
           "layer": 1,
           "nodeInfo": {
             "formValues": {
-              "weight": 0.7
+              "weight": -0.4
             }
           }
         },
@@ -216,8 +306,8 @@
         },
         {
           "id": "52207115-25b4-4ab5-b1b0-07707397a36c",
-          "x": -118.76585020552528,
-          "y": -255.49687784427317,
+          "x": -118.76580923086425,
+          "y": -255.49682071934154,
           "endX": 454.3212698364773,
           "endY": -71.85289847386821,
           "startNodeId": "db2b54e8-c68b-47aa-bb25-920f3e9e55b9",
@@ -254,10 +344,10 @@
         },
         {
           "id": "de701273-31ef-4fab-933e-cc631a1c1a71",
-          "x": 1230.8202093936186,
-          "y": -192.62012009864162,
-          "endX": 1397.841072121991,
-          "endY": -181.52239886862066,
+          "x": 1942.8465563412424,
+          "y": 175.37900094232992,
+          "endX": 2331.3657084790334,
+          "endY": 173.34148664687876,
           "startNodeId": "4121ebc2-cfb0-4d45-bbe4-012c6a30015b",
           "endNodeId": "8d9b0bcf-bff4-4e00-9c08-eed2e820bdbc",
           "startThumbName": "output",
@@ -271,8 +361,8 @@
           "id": "257ca1a5-d4cd-43f7-a865-01fcff75afda",
           "x": 475.32241901848863,
           "y": -472.3414030838496,
-          "endX": 768.3971265426635,
-          "endY": -221.32388022914245,
+          "endX": 768.3971661016645,
+          "endY": -220.00842255166043,
           "startNodeId": "f8bfe753-bcba-47d1-bdc1-304d6dc871a3",
           "endNodeId": "b38261d8-8fa6-49ed-a8bf-0f39deb3e787",
           "startThumbName": "output",
@@ -290,8 +380,8 @@
           "id": "3f66c413-0154-498e-ba86-afefceef1996",
           "x": 447.28209395283324,
           "y": -215.20641635896834,
-          "endX": 768.3971265426635,
-          "endY": -221.32388022914245,
+          "endX": 768.3971661016645,
+          "endY": -220.00842255166043,
           "startNodeId": "004a7483-ac10-426e-aa15-c67ef366ccaf",
           "endNodeId": "b38261d8-8fa6-49ed-a8bf-0f39deb3e787",
           "startThumbName": "output",
@@ -309,8 +399,8 @@
           "id": "80ec8b1b-2a6c-4ac0-b5c5-1d638b91c55a",
           "x": 454.3212698364773,
           "y": -71.85289847386821,
-          "endX": 768.3971265426635,
-          "endY": -221.32388022914245,
+          "endX": 768.3971661016645,
+          "endY": -220.00842255166043,
           "startNodeId": "6ce41b80-47ea-45fc-81c6-26188f2e38d4",
           "endNodeId": "b38261d8-8fa6-49ed-a8bf-0f39deb3e787",
           "startThumbName": "output",
@@ -325,13 +415,58 @@
           }
         },
         {
-          "id": "0cddd603-f784-4278-bbd8-f3359d691450",
-          "x": 768.3971265426635,
-          "y": -221.32388022914245,
-          "endX": 1030.8202093936186,
-          "endY": -192.62012009864162,
-          "startNodeId": "b38261d8-8fa6-49ed-a8bf-0f39deb3e787",
+          "id": "1fe762b7-dcc1-4750-bdf3-458dcc793673",
+          "x": 1224.1440660597484,
+          "y": 129.0529491882428,
+          "endX": 1416.5538802661263,
+          "endY": -105.56723038322298,
+          "startNodeId": "16a2547c-012b-40d7-9c96-92f22b961cf5",
+          "endNodeId": "45def263-c249-4628-8e6a-d50ad73f0c2a",
+          "startThumbName": "output",
+          "endThumbName": "input2",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "77bdf71a-a96c-4e84-a711-51619d8f05f4",
+          "x": 1566.5539413012825,
+          "y": -133.06723038322298,
+          "endX": 1742.8465563412424,
+          "endY": 175.37900094232992,
+          "startNodeId": "45def263-c249-4628-8e6a-d50ad73f0c2a",
           "endNodeId": "4121ebc2-cfb0-4d45-bbe4-012c6a30015b",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "f4182804-331f-4765-aae7-0833ffd9d9c3",
+          "x": 1566.5539413012825,
+          "y": -133.06723038322298,
+          "endX": 1741.2007761531306,
+          "endY": -191.7394707044346,
+          "startNodeId": "45def263-c249-4628-8e6a-d50ad73f0c2a",
+          "endNodeId": "1de64db1-671e-4935-94ed-edbbde585ce3",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "8d86b48b-8227-4714-9108-a4ba9c45bc3c",
+          "x": 768.3971661016645,
+          "y": -220.00842255166043,
+          "endX": 994.2842317255867,
+          "endY": -187.90259294546289,
+          "startNodeId": "b38261d8-8fa6-49ed-a8bf-0f39deb3e787",
+          "endNodeId": "9af02a99-afc6-4e12-9db9-ca893f17dcec",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "Straight",
@@ -340,17 +475,112 @@
           "nodeInfo": {}
         },
         {
-          "id": "f17ab14c-c2cd-4a23-8428-ff2b420362b0",
-          "x": -618.9870609497,
-          "y": -533.3527555030144,
-          "width": 346.91058261915475,
-          "height": 226.53415307712868,
+          "id": "6bfa1f7a-cf82-4085-b2b8-646b5db41f7f",
+          "x": 1194.2842317255868,
+          "y": -187.90259294546289,
+          "endX": 1416.5538802661263,
+          "endY": -155.56723038322298,
+          "startNodeId": "9af02a99-afc6-4e12-9db9-ca893f17dcec",
+          "endNodeId": "45def263-c249-4628-8e6a-d50ad73f0c2a",
+          "startThumbName": "output",
+          "endThumbName": "input1",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "8d4c04ee-ddb3-475e-8253-c1e1d358cedd",
+          "x": -180.66124202646745,
+          "y": 126.33833007203346,
+          "width": 240,
+          "height": 100,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "annotation",
             "formValues": {
-              "annotation": "This is a work-in-progress neural network. Currently it doesn't do anything besides forward propagation.\n\nTraining the neural network using backward propagation will follow as soon as I understand it good enough to implement it.",
-              "fontSize": "16",
+              "annotation": "input layer",
+              "fontSize": "30.1",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true,
+            "taskType": "annotation"
+          }
+        },
+        {
+          "id": "a2261eca-63b5-4c78-b9c7-1d70a8341f8e",
+          "x": 375.77527236771476,
+          "y": 125.60993835133561,
+          "width": 240,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "hidden layer",
+              "fontSize": "30.1",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true,
+            "taskType": "annotation"
+          }
+        },
+        {
+          "id": "c745f35f-1caa-4a48-95c8-fd36d90fc735",
+          "x": 690.9781941855438,
+          "y": 121.69561937012448,
+          "width": 240,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "output layer",
+              "fontSize": "31.1",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true,
+            "taskType": "annotation"
+          }
+        },
+        {
+          "id": "1a9e33a4-f407-4a72-8d7f-63b5effb562d",
+          "x": 1747.6726784423195,
+          "y": 323.13129768664373,
+          "width": 240,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "calculate error",
+              "fontSize": "30.1",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true,
+            "taskType": "annotation"
+          }
+        },
+        {
+          "id": "2ceb3b32-41ea-4f27-96cc-eabd28cb2779",
+          "x": 1019.9560771003166,
+          "y": 250.64827661517842,
+          "width": 240,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "expected value",
+              "fontSize": "30.1",
               "fontWeight": "false"
             },
             "isSettingsPopup": true,
