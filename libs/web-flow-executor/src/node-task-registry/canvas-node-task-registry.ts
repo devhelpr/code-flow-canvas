@@ -321,7 +321,7 @@ export const setupCanvasNodeTaskRegistry = (
       getMediaLibraryNode,
       'Media Library'
     );
-    registerNodeFactory('neural-node', getNeuralNode);
+    registerNodeFactory('neural-node', getNeuralNode(createRunCounterContext));
     registerNodeFactory(
       'neural-input-node',
       getNeuralInputNode(createRunCounterContext)

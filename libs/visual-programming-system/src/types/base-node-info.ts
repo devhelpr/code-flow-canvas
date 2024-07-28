@@ -1,4 +1,5 @@
 import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
+import { IConnectionNodeComponent } from '../interfaces';
 
 export interface INodeDecorator {
   taskType: string;
@@ -33,7 +34,7 @@ export interface BaseNodeInfo {
     text: string;
     fieldName: string;
     form?: any[];
-    onChanged?: () => void;
+    onChanged?: (connection: IConnectionNodeComponent<BaseNodeInfo>) => void;
   };
   canvasAppInstance?: CanvasAppInstance<BaseNodeInfo>;
 

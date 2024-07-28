@@ -1592,7 +1592,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                     element.textContent = floatValue.toFixed(2);
                   }
                   if (outputConnectionInfo.onChanged) {
-                    outputConnectionInfo.onChanged();
+                    outputConnectionInfo.onChanged(node);
                   }
                   if (this.canvasUpdated) {
                     this.canvasUpdated();
