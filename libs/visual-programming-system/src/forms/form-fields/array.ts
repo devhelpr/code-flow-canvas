@@ -145,15 +145,19 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
           }
           return false;
         });
-        editCell.lastChild?.addEventListener('click', (event) => {
-          event.preventDefault();
-          this.values = this.values.filter((v) => v.id !== value.id);
+        if (!this.props.hideDeleteButton) {
+          editCell.lastChild?.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.values = this.values.filter((v) => v.id !== value.id);
 
-          this.render();
-          this.array?.querySelector(`[data-array-id="${value.id}"]`)?.remove();
-          this.props.onChange?.(this.values.map((value) => value.arrayItems));
-          return false;
-        });
+            this.render();
+            this.array
+              ?.querySelector(`[data-array-id="${value.id}"]`)
+              ?.remove();
+            this.props.onChange?.(this.values.map((value) => value.arrayItems));
+            return false;
+          });
+        }
         arrayItem.appendChild(editCell);
       }
 
