@@ -32,7 +32,7 @@ const thumbs = [
 
 export const getNeuralInputNode =
   (
-    createRunCounterContext: (
+    _createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
     ) => RunCounter
@@ -40,6 +40,7 @@ export const getNeuralInputNode =
   (updated: () => void): NodeTask<any> => {
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
     let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
+    let currentRunCounter: RunCounter | undefined;
     const initializeCompute = () => {
       //
     };
@@ -52,12 +53,13 @@ export const getNeuralInputNode =
       _payload?: any,
       _thumbName?: string,
       _scopeId?: string,
-      _runCounter?: RunCounter,
+      runCounter?: RunCounter,
       _inputConnection?: IConnectionNodeComponent<NodeInfo>
     ) => {
       // const value = parseFloat(
       //   nodeComponent?.nodeInfo?.formValues['value'] ?? '0'
       // );
+      currentRunCounter = runCounter;
       const value = nodeComponent?.nodeInfo?.formValues['value'] ?? 0;
       return {
         result: value,
@@ -126,7 +128,7 @@ export const getNeuralInputNode =
                 getRunIndex(),
                 undefined,
                 undefined,
-                createRunCounterContext(false, false),
+                currentRunCounter, //createRunCounterContext(false, false),
                 false,
                 {
                   trigger: true,
@@ -171,7 +173,7 @@ export const getNeuralInputNode =
               getRunIndex(),
               undefined,
               undefined,
-              createRunCounterContext(false, false),
+              currentRunCounter, //createRunCounterContext(false, false),
               false,
               {
                 trigger: true,

@@ -45,7 +45,7 @@ function sigmoid(z: number) {
 
 export const getNeuralNode =
   (
-    createRunCounterContext: (
+    _createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
     ) => RunCounter
@@ -55,6 +55,7 @@ export const getNeuralNode =
 
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
     let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
+    let currentRunCounter: RunCounter | undefined;
     const initializeCompute = () => {
       values = { global: {} };
 
@@ -86,9 +87,10 @@ export const getNeuralNode =
       _payload?: any,
       _thumbName?: string,
       scopeId?: string,
-      _runCounter?: RunCounter,
+      runCounter?: RunCounter,
       inputConnection?: IConnectionNodeComponent<NodeInfo>
     ) => {
+      currentRunCounter = runCounter;
       if (!inputConnection) {
         return {
           result: undefined,
@@ -224,7 +226,7 @@ export const getNeuralNode =
               getRunIndex(),
               connection,
               undefined,
-              createRunCounterContext(false, false),
+              currentRunCounter, //createRunCounterContext(false, false),
               false,
               {
                 trigger: true,

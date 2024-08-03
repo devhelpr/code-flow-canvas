@@ -31,7 +31,7 @@ const thumbs = [
 
 export const getNeuralBiasNode =
   (
-    createRunCounterContext: (
+    _createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
     ) => RunCounter
@@ -39,6 +39,7 @@ export const getNeuralBiasNode =
   (_updated: () => void): NodeTask<any> => {
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
     let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
+    let currentRunCounter: RunCounter | undefined;
     const initializeCompute = () => {
       //
     };
@@ -51,9 +52,10 @@ export const getNeuralBiasNode =
       _payload?: any,
       _thumbName?: string,
       _scopeId?: string,
-      _runCounter?: RunCounter,
+      runCounter?: RunCounter,
       _inputConnection?: IConnectionNodeComponent<NodeInfo>
     ) => {
+      currentRunCounter = runCounter;
       return {
         result: 1,
         output: 1,
@@ -110,7 +112,7 @@ export const getNeuralBiasNode =
               getRunIndex(),
               undefined,
               undefined,
-              createRunCounterContext(false, false),
+              currentRunCounter, //createRunCounterContext(false, false),
               false,
               {
                 trigger: true,
