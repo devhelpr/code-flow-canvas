@@ -7,6 +7,7 @@ import {
   IThumbNodeComponent,
   NodeType,
   ThumbConnectionType,
+  hasNodeInputs,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 import { NodeInfo } from '../types/node-info';
@@ -156,6 +157,7 @@ const triggerExecution = (
         if (runCounter) {
           if (
             nextNode.nodeInfo?.isUINode &&
+            hasNodeInputs(nextNode) &&
             !runCounter.pushCallstack(
               `${scopeId}_${nextNode.id}_${
                 connection.endNodeThumb?.thumbName ?? ''
@@ -399,6 +401,7 @@ export const runNode = (
 
     if (
       node.nodeInfo?.isUINode &&
+      hasNodeInputs(node) &&
       !runCounter.pushCallstack(`${scopeId}_${node.id}_${thumbName}`)
     ) {
       if (onStopped) {
@@ -691,6 +694,7 @@ export const runNodeFromThumb = (
       if (runCounter) {
         if (
           nextNode.nodeInfo?.isUINode &&
+          hasNodeInputs(nextNode) &&
           !runCounter.pushCallstack(
             `${scopeId}_${nextNode.id}_${
               connection.endNodeThumb?.thumbName ?? ''

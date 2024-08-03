@@ -37,6 +37,26 @@ function ToolbarItem(props: {
   );
 }
 
+function compare(value1?: string | string[], value2?: string | string[]) {
+  if (typeof value1 === 'string' && typeof value2 === 'string') {
+    return value1 === value2;
+  }
+  if (
+    Array.isArray(value1) &&
+    Array.isArray(value2) &&
+    value1.length === value2.length
+  ) {
+    let isEqual = true;
+    value1.forEach((value) => {
+      if (value2.indexOf(value) < 0) {
+        isEqual = false;
+      }
+    });
+    return isEqual;
+  }
+  return false;
+}
+
 export function Toolbar<T>(props: {
   getTaskList: () => ITasklistItem[];
   addNodeType: (nodeType: string) => void;
@@ -195,12 +215,8 @@ export function Toolbar<T>(props: {
             task.thumbs.forEach((thumb) => {
               if (
                 thumb.connectionType === ThumbConnectionType.start &&
-                //thumb.thumbType === connection.startNodeThumb?.thumbType &&
-                //thumb.thumbIndex === connection.startNodeThumb?.thumbIndex &&
                 thumb.thumbConstraint ===
                   connection.startNodeThumb?.thumbConstraint
-                // thumb.maxConnections ===
-                //   connection.startNodeThumb?.maxConnections
               ) {
                 insertableStartThumbFound = true;
               }
@@ -251,7 +267,7 @@ export function Toolbar<T>(props: {
               rectThumb.thumbType === thumb.thumbType &&
               rectThumb.connectionType === thumb.connectionType &&
               rectThumb.thumbIndex === thumb.thumbIndex &&
-              rectThumb.thumbConstraint === thumb.thumbConstraint &&
+              compare(rectThumb.thumbConstraint, thumb.thumbConstraint) &&
               rectThumb.maxConnections === thumb.maxConnections &&
               !thumbsIndexesMatched.includes(rectIndex)
             ) {

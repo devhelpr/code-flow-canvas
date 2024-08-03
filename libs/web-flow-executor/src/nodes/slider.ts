@@ -15,7 +15,7 @@ import { RunCounter } from '../follow-path/run-counter';
 
 export const getSlider =
   (
-    createRunCounterContext: (
+    _createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
     ) => RunCounter
@@ -27,21 +27,34 @@ export const getSlider =
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
     let triggerButton = false;
-    let runCounter: RunCounter | undefined = undefined;
+    //let runCounter: RunCounter | undefined = undefined;
     let labelElement: HTMLLabelElement | undefined = undefined;
+
+    let currentRunCounter: RunCounter | undefined;
+
     const initializeCompute = () => {
       currentValue = 0;
+      if (timer !== undefined) {
+        clearInterval(timer);
+        timer = undefined;
+      }
       return;
     };
     const compute = (
       input: string,
       _loopIndex?: number,
-      payload?: any
+      payload?: any,
+      _thumbName?: string,
+      _scopeId?: string,
+      runCounter?: RunCounter
     ): IComputeResult => {
       try {
         currentValue = parseFloat(input) || 0;
       } catch {
         currentValue = 0;
+      }
+      if (!triggerButton) {
+        currentRunCounter = runCounter;
       }
       if (triggerButton || payload?.trigger) {
         triggerButton = false;
@@ -58,7 +71,7 @@ export const getSlider =
         followPath: undefined,
       };
     };
-
+    let timer: number | undefined;
     return visualNodeFactory(
       'slider',
       'Value',
@@ -117,21 +130,52 @@ export const getSlider =
                 return;
               }
               triggerButton = true;
-              runCounter = createRunCounterContext(false, false);
+              //const runCounter = createRunCounterContext(false, false);
               currentValue = parseFloat(value);
-              runNode(
-                node as unknown as IRectNodeComponent<NodeInfo>,
-                canvasAppInstance,
-                undefined,
-                currentValue.toString(),
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                runCounter,
-                false
-              );
+
+              function start() {
+                if (!canvasAppInstance) {
+                  return;
+                }
+                console.log('start()');
+
+                runNode(
+                  node as unknown as IRectNodeComponent<NodeInfo>,
+                  canvasAppInstance,
+                  () => {
+                    console.log(
+                      'STOPPED RUN-NODE from slider',
+                      currentRunCounter?.runCounter === 0
+                    );
+                  },
+                  currentValue.toString(),
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined, //crypto.randomUUID(),
+                  currentRunCounter,
+                  false
+                );
+              }
+              if (timer === undefined && currentRunCounter?.runCounter === 0) {
+                // && timer === undefined && currentRunCounter?.runCounter === 0) {
+                start();
+              } else {
+                if (timer !== undefined) {
+                  clearInterval(timer);
+                  timer = undefined;
+                }
+                timer = setInterval(() => {
+                  if (currentRunCounter?.runCounter === 0) {
+                    if (timer !== undefined) {
+                      clearInterval(timer);
+                      timer = undefined;
+                    }
+                    start();
+                  }
+                }, 0) as unknown as number;
+              }
             },
           },
         ];
@@ -149,7 +193,12 @@ export const getSlider =
           node.nodeInfo.canBeStartedByTrigger = true;
           node.nodeInfo.isUINode = true;
           node.nodeInfo.readPropertyFromNodeInfoForInitialTrigger = 'value';
-
+          node.nodeInfo.delete = () => {
+            if (timer !== undefined) {
+              clearInterval(timer);
+              timer = undefined;
+            }
+          };
           node.nodeInfo.isSettingsPopup = true;
           if (labelElement) {
             labelElement.textContent =

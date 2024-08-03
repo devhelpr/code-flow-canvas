@@ -97,16 +97,22 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
       loop++;
     }
     const outputObject: any = {};
+    const resetOnTrigger = node.nodeInfo?.formValues?.['clearMode'] === true;
+    console.log('resetOnTrigger', resetOnTrigger);
     loop = 0;
     while (loop < extraInputCount) {
       const currentObject = localValues[`input${loop}`];
       if (currentObject) {
         outputObject[currentObject.name] = currentObject.value;
       }
-      localValues[`input${loop}`] = undefined;
+      if (resetOnTrigger) {
+        localValues[`input${loop}`] = undefined;
+      }
       loop++;
     }
-    values[runCounter?.runId ?? scopeId ?? 'global'] = {};
+    if (resetOnTrigger) {
+      values[runCounter?.runId ?? scopeId ?? 'global'] = {};
+    }
     return {
       result: outputObject,
       output: outputObject,
@@ -175,6 +181,7 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
           type: objectNodeName,
           formValues: {
             'input-thumbs': initalValues?.['input-thumbs'] ?? [],
+            clearMode: initalValues?.['clearMode'] ?? 'false',
           },
         },
         containerNode,
@@ -251,6 +258,27 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
               }
               if (rect) {
                 rect.resize();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Checkbox,
+            fieldName: 'clearMode',
+            label: 'Clear properties after all inputs received data',
+            value: initalValues?.['clearMode'] ?? 'false',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues?.['input-thumbs']?.length ?? 0;
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['clearMode']: value,
+              };
+              node?.update?.();
+              if (updated) {
+                updated();
               }
             },
           },
