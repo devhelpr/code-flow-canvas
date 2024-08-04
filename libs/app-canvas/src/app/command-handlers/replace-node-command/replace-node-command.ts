@@ -185,8 +185,8 @@ export class ReplaceNodeCommand<
 
       const node = nodeTask.createVisualNode(
         canvasApp,
-        connection.endNode?.x ?? connection.x,
-        connection.endNode?.y ?? connection.y,
+        connection.endNode?.x ?? connection.endX,
+        connection.endNode?.y ?? connection.endY,
         undefined,
         undefined,
         containerNode
