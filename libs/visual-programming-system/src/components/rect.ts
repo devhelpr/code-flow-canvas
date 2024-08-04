@@ -46,7 +46,10 @@ export class Rect<T> {
     isStoreOnly?: boolean,
     flowChangeType?: FlowChangeType
   ) => void;
-  protected setCanvasAction?: (canvasAction: CanvasAction) => void;
+  protected setCanvasAction?: (
+    canvasAction: CanvasAction,
+    payload?: any
+  ) => void;
   protected interactionStateMachine: InteractionStateMachine<T>;
   protected hasStaticWidthHeight?: boolean;
   protected rootElement?: HTMLElement;

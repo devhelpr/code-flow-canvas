@@ -1105,6 +1105,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               node
             );
           }}
+          getCanvasAction={() => this.canvasAction}
+          canvasAppInstance={this.canvasApp}
           getNode={(
             nodeId: string,
             containerNode?: IRectNodeComponent<NodeInfo> | undefined

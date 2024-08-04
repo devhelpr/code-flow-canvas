@@ -309,6 +309,10 @@ export class RectThumb<T> extends Rect<T> {
           curve.nodeComponent.isData = true;
         }
 
+        if (this.setCanvasAction) {
+          this.setCanvasAction(CanvasAction.newConnectionCreated, curve);
+        }
+
         // if (curve.nodeComponent.update) {
         //   curve.nodeComponent.update();
         // }

@@ -12,6 +12,8 @@ import {
   setActionNode,
   setSelectNode,
   BaseNodeInfo,
+  CanvasAppInstance,
+  CanvasAction,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
 
@@ -65,6 +67,8 @@ export function Toolbar<T>(props: {
     nodeId: string,
     containerNode?: IRectNodeComponent<T> | undefined
   ) => { node: INodeComponent<T> | undefined };
+  canvasAppInstance: CanvasAppInstance<T>;
+  getCanvasAction: () => CanvasAction;
 }) {
   let toggle = false;
   let ul: HTMLUListElement | null = null;
@@ -122,7 +126,10 @@ export function Toolbar<T>(props: {
         setActionNode(undefined);
         return;
       }
-      if (info.node?.nodeType === NodeType.Connection) {
+      if (
+        info.node?.nodeType === NodeType.Connection &&
+        props.getCanvasAction() !== CanvasAction.newConnectionCreated
+      ) {
         const outputConnectionInfo = (
           (info.node as IConnectionNodeComponent<T>).startNode
             ?.nodeInfo as BaseNodeInfo

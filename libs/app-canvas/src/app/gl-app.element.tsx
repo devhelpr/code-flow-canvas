@@ -815,6 +815,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         ) => {
           executeCommand(this.commandRegistry, 'replace-node', nodeType, node);
         }}
+        canvasAppInstance={this.canvasApp}
+        getCanvasAction={() => this.canvasAction}
         getNode={(
           nodeId: string,
           containerNode?: IRectNodeComponent<GLNodeInfo> | undefined
