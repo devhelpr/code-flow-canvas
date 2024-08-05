@@ -449,7 +449,7 @@ export class Connection<T> {
       this.textElement = createElement(
         'div',
         {
-          class: `connection-value-label absolute top-0 left-0 cursor-pointer pointer-events-none text-white bg-black px-1 z-10 text-xs`,
+          class: `connection-value-label absolute top-0 left-0 cursor-pointer pointer-events-none text-white bg-black px-1 z-[5] text-xs`,
           style: {
             transform: `translate(${
               (this.points.beginX + this.points.endX) / 2

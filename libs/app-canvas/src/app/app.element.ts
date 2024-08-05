@@ -155,7 +155,7 @@ export class AppElement<T extends BaseNodeInfo> {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-[400px] max-h-[380px]  h-[fit-content] z-[1020] p-3 pb-6 bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
+          'absolute w-[400px] max-h-[380px]  h-[fit-content] z-[20020] p-3 pb-6 bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
         wheel: (event) => {
           event.stopPropagation();
         },
@@ -641,21 +641,23 @@ export class AppElement<T extends BaseNodeInfo> {
         yNode = (connection.y + (connection.endY ?? 0)) / 2 + parentY;
       }
     }
+    const maxContentBounds = popupContainer.getBoundingClientRect();
 
     const rootClientRect = this.rootElement?.getBoundingClientRect();
-    let x = xCamera + xNode * scaleCamera + widthNode * scaleCamera + 100;
+    let x = xCamera + xNode * scaleCamera + widthNode * scaleCamera + 200;
     if (x < 10) {
       x = 10;
     }
     if (x + 400 - 10 > (rootClientRect?.width ?? 0)) {
       x = (rootClientRect?.width ?? 0) - 400 - 10;
     }
-    let y = yCamera + yNode * scaleCamera;
+    let y = yCamera + yNode * scaleCamera + 100;
     if (y < 50) {
       y = 50;
     }
-    if (y + 380 > (rootClientRect?.height ?? 0) - 80) {
-      y = (rootClientRect?.height ?? 0) - 380 - 80;
+    const maxHeightConstant = Math.min(maxContentBounds.height, 380);
+    if (y + maxHeightConstant > (rootClientRect?.height ?? 0) - 80) {
+      y = (rootClientRect?.height ?? 0) - maxHeightConstant - 80;
     }
 
     popupContainer.style.left = `${x}px`;
