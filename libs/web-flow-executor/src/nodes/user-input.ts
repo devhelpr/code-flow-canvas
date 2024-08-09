@@ -77,7 +77,7 @@ export const getUserInput =
         stop,
       };
     };
-
+    let changeTimeout: any = null;
     return {
       name: 'user-input',
       family: 'flow-canvas',
@@ -138,27 +138,33 @@ export const getUserInput =
                 return;
               }
               currentValue = tempValue;
-
-              runNode(
-                containerNode ?? node,
-                containerNode
-                  ? (containerNode.nodeInfo as any)?.canvasAppInstance
-                  : canvasApp,
-                () => {
-                  //
-                },
-                currentValue.toString(),
-                undefined,
-                undefined,
-                getRunIndex(),
-                undefined,
-                undefined,
-                createRunCounterContext(false, false),
-                false,
-                {
-                  trigger: true,
-                }
-              );
+              if (changeTimeout) {
+                clearTimeout(changeTimeout);
+                changeTimeout = null;
+              }
+              changeTimeout = setTimeout(() => {
+                changeTimeout = null;
+                runNode(
+                  containerNode ?? node,
+                  containerNode
+                    ? (containerNode.nodeInfo as any)?.canvasAppInstance
+                    : canvasApp,
+                  () => {
+                    //
+                  },
+                  currentValue.toString(),
+                  undefined,
+                  undefined,
+                  getRunIndex(),
+                  undefined,
+                  undefined,
+                  createRunCounterContext(false, false),
+                  false,
+                  {
+                    trigger: true,
+                  }
+                );
+              }, 150);
             },
           },
         ];

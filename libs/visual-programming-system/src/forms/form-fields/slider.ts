@@ -333,6 +333,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         clearTimeout(this.changeTimeout);
       }
       this.changeTimeout = setTimeout(() => {
+        this.changeTimeout = null;
         if (this.props.onChange) {
           this.props.onChange(input.value);
         }
