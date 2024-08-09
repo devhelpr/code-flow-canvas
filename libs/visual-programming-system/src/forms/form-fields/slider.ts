@@ -336,8 +336,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         if (this.props.onChange) {
           this.props.onChange(input.value);
         }
-      }, 20);
-      //this.props.onChange(input.value);
+      }, 15);
     }
   };
   override render() {
