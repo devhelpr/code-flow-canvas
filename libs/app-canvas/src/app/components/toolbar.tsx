@@ -93,17 +93,39 @@ export function Toolbar<T>(props: {
 
   const taskList = props.getTaskList();
   let skipHide = false;
-  createEffect(() => {
+
+  function setSelectedNode() {
+    selectedNode = undefined;
     const selectedNodeInfo = getSelectedNode();
     const actionSelectedNodeInfo = getActionNode();
     if (selectedNodeInfo || actionSelectedNodeInfo) {
-      selectedNode = undefined;
       const info = props.getNode(
         (selectedNodeInfo || actionSelectedNodeInfo)!.id,
         (selectedNodeInfo || actionSelectedNodeInfo)!
           .containerNode as IRectNodeComponent<T>
       );
       selectedNode = info.node;
+      return info;
+    }
+
+    return undefined;
+  }
+
+  createEffect(() => {
+    const selectedNodeInfo = getSelectedNode();
+    const actionSelectedNodeInfo = getActionNode();
+    if (selectedNodeInfo || actionSelectedNodeInfo) {
+      // selectedNode = undefined;
+      // const info = props.getNode(
+      //   (selectedNodeInfo || actionSelectedNodeInfo)!.id,
+      //   (selectedNodeInfo || actionSelectedNodeInfo)!
+      //     .containerNode as IRectNodeComponent<T>
+      // );
+      // selectedNode = info.node;
+      const info = setSelectedNode();
+      if (!info) {
+        return;
+      }
       console.log(
         'Toolbar selectedNodeInfo',
         selectedNodeInfo,
@@ -176,7 +198,7 @@ export function Toolbar<T>(props: {
 
   function getTasksWhichAreInterchangeableWithSelectedNode() {
     if (!selectedNode) {
-      return [];
+      return taskList;
     }
 
     if (selectedNode.nodeType === NodeType.Connection) {
@@ -308,34 +330,40 @@ export function Toolbar<T>(props: {
     if (label) {
       renderElement(<li class="font-bold px-2">{label}</li>, ul);
     }
-    tasks.forEach((task) => {
-      if (ul) {
-        renderElement(
-          <ToolbarItem
-            label={task.label}
-            nodeType={task.nodeType}
-            hideToolbar={() => {
-              toggle = false;
-              if (ul) {
-                ul.remove();
-                ul = null;
-              }
-            }}
-            addNodeType={(nodeType: string) => {
-              if (selectedNode !== undefined && isInReplaceeMode) {
-                props.replaceNode(
-                  nodeType,
-                  selectedNode as unknown as IRectNodeComponent<T>
-                );
-              } else {
-                props.addNodeType(nodeType);
-              }
-            }}
-          />,
-          ul
-        );
-      }
-    });
+    tasks
+      .filter((task) =>
+        task.label
+          .toLocaleLowerCase()
+          .includes((input?.value ?? '').toLocaleLowerCase())
+      )
+      .forEach((task) => {
+        if (ul) {
+          renderElement(
+            <ToolbarItem
+              label={task.label}
+              nodeType={task.nodeType}
+              hideToolbar={() => {
+                toggle = false;
+                if (ul) {
+                  ul.remove();
+                  ul = null;
+                }
+              }}
+              addNodeType={(nodeType: string) => {
+                if (selectedNode !== undefined && isInReplaceeMode) {
+                  props.replaceNode(
+                    nodeType,
+                    selectedNode as unknown as IRectNodeComponent<T>
+                  );
+                } else {
+                  props.addNodeType(nodeType);
+                }
+              }}
+            />,
+            ul
+          );
+        }
+      });
   }
 
   function showUL() {
@@ -386,13 +414,16 @@ export function Toolbar<T>(props: {
     if (!showUL()) {
       return;
     }
-
-    isInReplaceeMode = false;
+    setSelectedNode();
+    if (!selectedNode) {
+      isInReplaceeMode = false;
+    }
     console.log('input', input.value);
-    const tasks = taskList.filter((task) =>
-      task.label
-        .toLocaleLowerCase()
-        .includes((input?.value ?? '').toLocaleLowerCase())
+    const tasks = getTasksWhichAreInterchangeableWithSelectedNode().filter(
+      (task) =>
+        task.label
+          .toLocaleLowerCase()
+          .includes((input?.value ?? '').toLocaleLowerCase())
     );
     fillTaskList(tasks);
   };
