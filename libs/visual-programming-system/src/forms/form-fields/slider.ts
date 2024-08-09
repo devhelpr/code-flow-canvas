@@ -313,6 +313,8 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
     this.isMounted = false;
   }
 
+  changeTimeout: any = null;
+
   onInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
     // console.log(input.value);
@@ -327,7 +329,15 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
       this.valueLabel.style.left = `calc(${newVal}% + ${8 - newVal * 0.15}px)`;
     }
     if (this.props.onChange) {
-      this.props.onChange(input.value);
+      if (this.changeTimeout) {
+        clearTimeout(this.changeTimeout);
+      }
+      this.changeTimeout = setTimeout(() => {
+        if (this.props.onChange) {
+          this.props.onChange(input.value);
+        }
+      }, 20);
+      //this.props.onChange(input.value);
     }
   };
   override render() {
