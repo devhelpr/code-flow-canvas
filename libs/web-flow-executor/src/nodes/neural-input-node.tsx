@@ -136,6 +136,25 @@ export const getNeuralInputNode =
               );
             },
           },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'neural-node-name',
+            label: 'name',
+            value: values?.['neural-node-name'] ?? '',
+            onChange: (value: string) => {
+              if (!nodeComponent || !nodeComponent.nodeInfo) {
+                return;
+              }
+              nodeComponent.nodeInfo.formValues = {
+                ...nodeComponent.nodeInfo.formValues,
+                ['neural-node-name']: value,
+              };
+              console.log('onChange', nodeComponent.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
         ];
       },
       (nodeInstance) => {

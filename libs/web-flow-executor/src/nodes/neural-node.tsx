@@ -50,7 +50,7 @@ export const getNeuralNode =
       shouldResetConnectionSlider: boolean
     ) => RunCounter
   ) =>
-  (_updated: () => void): NodeTask<any> => {
+  (updated: () => void): NodeTask<any> => {
     const Text = () => <div class="neural-node-value">value</div>;
 
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
@@ -187,8 +187,28 @@ export const getNeuralNode =
       100,
       100,
       thumbs,
-      (_values?: InitialValues) => {
-        return [];
+      (values?: InitialValues) => {
+        return [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'neural-node-name',
+            label: 'name',
+            value: values?.['neural-node-name'] ?? '',
+            onChange: (value: string) => {
+              if (!nodeComponent || !nodeComponent.nodeInfo) {
+                return;
+              }
+              nodeComponent.nodeInfo.formValues = {
+                ...nodeComponent.nodeInfo.formValues,
+                ['neural-node-name']: value,
+              };
+              console.log('onChange', nodeComponent.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+        ];
       },
       (nodeInstance) => {
         canvasApp = nodeInstance.contextInstance;
@@ -244,6 +264,7 @@ export const getNeuralNode =
         rectThumbWithStraightConnections: true,
         hasStaticWidthHeight: true,
         backgroundColorClassName: 'bg-stone-600',
+        hasFormInPopup: true,
       },
       <Text />
     );

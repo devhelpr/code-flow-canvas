@@ -7,6 +7,7 @@ import {
   visualNodeFactory,
   IConnectionNodeComponent,
   createJSXElement,
+  FormFieldType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { IRectNodeComponent } from '../../../visual-programming-system/src';
@@ -37,7 +38,7 @@ const thumbs = [
 ];
 
 export const getNeuralOutputNode: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  updated: () => void
 ): NodeTask<any> => {
   const Text = () => <div class="neural-node-value">value</div>;
 
@@ -170,8 +171,28 @@ export const getNeuralOutputNode: NodeTaskFactory<NodeInfo> = (
     100,
     100,
     thumbs,
-    (_values?: InitialValues) => {
-      return [];
+    (values?: InitialValues) => {
+      return [
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'neural-node-name',
+          label: 'name',
+          value: values?.['neural-node-name'] ?? '',
+          onChange: (value: string) => {
+            if (!nodeComponent || !nodeComponent.nodeInfo) {
+              return;
+            }
+            nodeComponent.nodeInfo.formValues = {
+              ...nodeComponent.nodeInfo.formValues,
+              ['neural-node-name']: value,
+            };
+            console.log('onChange', nodeComponent.nodeInfo);
+            if (updated) {
+              updated();
+            }
+          },
+        },
+      ];
     },
     (nodeInstance) => {
       nodeComponent = nodeInstance.node as IRectNodeComponent<NodeInfo>;
@@ -186,6 +207,7 @@ export const getNeuralOutputNode: NodeTaskFactory<NodeInfo> = (
       rectThumbWithStraightConnections: true,
       hasStaticWidthHeight: true,
       backgroundColorClassName: 'bg-sky-600',
+      hasFormInPopup: true,
     },
     <Text />
   );
