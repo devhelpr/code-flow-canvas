@@ -206,7 +206,7 @@ export const createStateMachineNode = (
     scopeId?: string,
     runCounter?: RunCounter
   ) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       let flow1Ran = false;
       let flow2Ran = false;
       let runFlows = false;
@@ -430,7 +430,12 @@ export const createStateMachineNode = (
         }
       }
       if (!runFlows) {
-        reject();
+        //reject();
+        resolve({
+          result: false,
+          output: false,
+          stop: true,
+        });
       }
     });
   };

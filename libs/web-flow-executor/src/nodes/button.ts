@@ -13,11 +13,11 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
-import { runNode, getRunIndex } from '../flow-engine/flow-engine';
+import { runNode } from '../flow-engine/flow-engine';
 
 export const getButton =
   (
-    createRunCounterContext: (
+    _createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
     ) => RunCounter
@@ -40,7 +40,9 @@ export const getButton =
       _scopeId?: string,
       runCounterCompute?: RunCounter
     ) => {
-      runCounter = runCounterCompute;
+      if (!triggerButton) {
+        runCounter = runCounterCompute;
+      }
       try {
         currentValue = parseFloat(input) || 0;
       } catch {
@@ -120,7 +122,7 @@ export const getButton =
                 return;
               }
               triggerButton = true;
-              runCounter = createRunCounterContext(false, false);
+              //runCounter = createRunCounterContext(false, false);
 
               runNode(
                 containerNode ?? node,
@@ -135,7 +137,7 @@ export const getButton =
                   : currentValue.toString(),
                 undefined,
                 undefined,
-                getRunIndex(),
+                undefined,
                 undefined,
                 undefined,
                 runCounter,
@@ -166,14 +168,14 @@ export const getButton =
                   label: '',
                   //thumbConstraint: 'value',
                 },
-                {
-                  thumbType: ThumbType.EndConnectorCenter,
-                  thumbIndex: 0,
-                  connectionType: ThumbConnectionType.end,
-                  color: 'white',
-                  label: ' ',
-                  //thumbConstraint: 'value',
-                },
+                // {
+                //   thumbType: ThumbType.EndConnectorCenter,
+                //   thumbIndex: 0,
+                //   connectionType: ThumbConnectionType.end,
+                //   color: 'white',
+                //   label: ' ',
+                //   //thumbConstraint: 'value',
+                // },
               ],
           componentWrapper,
           {
