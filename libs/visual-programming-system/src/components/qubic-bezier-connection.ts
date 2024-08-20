@@ -280,7 +280,121 @@ export class CubicBezierConnection<T> extends Connection<T> {
       const isConnectingToRectThumb = false;
       // this.nodeComponent?.endNodeThumb?.thumbType === ThumbType.Center;
 
-      if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
+      const isLeftToLeftConnectors =
+        this.nodeComponent?.startNodeThumb?.thumbType ===
+          ThumbType.StartConnectorCenterLeft &&
+        this.nodeComponent?.endNodeThumb?.thumbType ===
+          ThumbType.EndConnectorCenter;
+
+      const isLeftToRightConnectors =
+        this.nodeComponent?.startNodeThumb?.thumbType ===
+          ThumbType.StartConnectorCenterLeft &&
+        this.nodeComponent?.endNodeThumb?.thumbType ===
+          ThumbType.EndConnectorCenterRight;
+
+      const isRightToRightCenterConnectors =
+        this.nodeComponent?.startNodeThumb?.thumbType ===
+          ThumbType.StartConnectorCenter &&
+        this.nodeComponent?.endNodeThumb?.thumbType ===
+          ThumbType.EndConnectorCenterRight;
+      if (isLeftToLeftConnectors && !isConnectingToRectThumb) {
+        const XDistance =
+          this.points.endX > this.points.beginX
+            ? this.points.beginX - this.points.endX
+            : 0;
+
+        const path = `
+      M${this.points.beginX - startOffsetX} ${this.points.beginY + startOffsetY}
+    
+      L${this.points.endX - endOffsetX - 40 + XDistance} ${
+          this.points.beginY + startOffsetY
+        }
+
+      C${this.points.endX - endOffsetX - 60 + XDistance} ${
+          this.points.beginY + startOffsetY
+        }
+    
+      ${this.points.endX - endOffsetX - 60 + XDistance} ${
+          this.points.beginY + startOffsetY
+        }
+    
+      ${this.points.endX - endOffsetX - 60 + XDistance} ${
+          this.points.beginY + startOffsetY - 20
+        }
+
+     
+      
+      L${this.points.endX - endOffsetX - 60 + XDistance} ${
+          this.points.endY + endOffsetY + 20
+        }
+      
+      C${this.points.endX - endOffsetX - 60 + XDistance} ${
+          this.points.endY + endOffsetY
+        }
+      
+      ${this.points.endX - endOffsetX - 60 + XDistance} ${
+          this.points.endY + endOffsetY
+        }
+
+      ${this.points.endX - endOffsetX - 30}  ${this.points.endY + endOffsetY}
+
+      L${this.points.endX - endOffsetX - 30} ${this.points.endY + endOffsetY}
+
+    `;
+
+        (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+          'd',
+          path
+        );
+      } else if (isRightToRightCenterConnectors && !isConnectingToRectThumb) {
+        const XDistance =
+          this.points.endX - this.points.beginX < 0
+            ? 0
+            : this.points.endX - this.points.beginX;
+        const YDistance =
+          this.points.endY > this.points.beginY
+            ? Math.max(-20, -this.points.endY - this.points.beginY)
+            : 20;
+        (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+          'd',
+          `
+              M${this.points.beginX + startOffsetX} ${
+            this.points.beginY + startOffsetY
+          }
+        
+              C${this.points.beginX + startOffsetX + 20 + XDistance} ${
+            this.points.beginY + startOffsetY
+          }
+        
+              ${this.points.beginX + startOffsetX + 20 + XDistance} ${
+            this.points.beginY + startOffsetY
+          }
+        
+              ${this.points.beginX + startOffsetX + 20 + XDistance} ${
+            this.points.beginY + startOffsetY + 20 + YDistance
+          }
+              
+              L${this.points.beginX + startOffsetX + 20 + XDistance} ${
+            this.points.endY + startOffsetY - 20 + YDistance
+          }
+              
+              C${this.points.beginX + startOffsetX + 20 + XDistance} ${
+            this.points.endY + startOffsetY
+          }
+        
+              ${this.points.beginX + startOffsetX + 20 + XDistance} ${
+            this.points.endY + startOffsetY
+          }
+        
+              ${this.points.endX - endOffsetX} ${this.points.endY + endOffsetY}
+        
+              `
+        );
+      } else if (
+        !isLeftToRightConnectors &&
+        this.points.beginX > this.points.endX &&
+        !isConnectingToRectThumb
+      ) {
         const bottomY = this.getLowestYPosition() + 40;
         (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
           'd',
@@ -325,14 +439,30 @@ export class CubicBezierConnection<T> extends Connection<T> {
           `
         );
       } else {
-        (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
-          'd',
-          `M${this.points.beginX + startOffsetX} ${
-            this.points.beginY + startOffsetY
-          } C${this.points.cx1} ${this.points.cy1} ${this.points.cx2} ${
-            this.points.cy2
-          }  ${this.points.endX + endOffsetX} ${this.points.endY + endOffsetY}`
-        );
+        if (
+          !isLeftToRightConnectors &&
+          this.points.beginX > this.points.endX &&
+          !isConnectingToRectThumb
+        ) {
+          (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+            'd',
+            `M${this.points.beginX - startOffsetX} ${
+              this.points.beginY + startOffsetY
+            } 
+            ${this.points.endX - endOffsetX} ${this.points.endY + endOffsetY}`
+          );
+        } else {
+          (this.pathHiddenElement?.domElement as HTMLElement).setAttribute(
+            'd',
+            `M${this.points.beginX + startOffsetX} ${
+              this.points.beginY + startOffsetY
+            } C${this.points.cx1} ${this.points.cy1} ${this.points.cx2} ${
+              this.points.cy2
+            }  ${this.points.endX + endOffsetX} ${
+              this.points.endY + endOffsetY
+            }`
+          );
+        }
       }
     }
   }
@@ -433,7 +563,153 @@ export class CubicBezierConnection<T> extends Connection<T> {
     this.nodeComponent.hasMultipleOutputs = false;
 
     const isConnectingToRectThumb = false;
-    if (this.points.beginX > this.points.endX && !isConnectingToRectThumb) {
+
+    const isLeftToLeftConnectors =
+      this.nodeComponent?.startNodeThumb?.thumbType ===
+        ThumbType.StartConnectorCenterLeft &&
+      this.nodeComponent?.endNodeThumb?.thumbType ===
+        ThumbType.EndConnectorCenter;
+
+    const isLeftToRightConnectors =
+      this.nodeComponent?.startNodeThumb?.thumbType ===
+        ThumbType.StartConnectorCenterLeft &&
+      this.nodeComponent?.endNodeThumb?.thumbType ===
+        ThumbType.EndConnectorCenterRight;
+
+    const isRightToRightCenterConnectors =
+      this.nodeComponent?.startNodeThumb?.thumbType ===
+        ThumbType.StartConnectorCenter &&
+      this.nodeComponent?.endNodeThumb?.thumbType ===
+        ThumbType.EndConnectorCenterRight;
+
+    if (isLeftToRightConnectors) {
+      path = `
+    
+          M${this.points.beginX - bbox.x - startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+          
+          C${this.points.cx1 - bbox.x} ${this.points.cy1 - bbox.y} ${
+        this.points.cx2 - bbox.x
+      } 
+          
+          ${this.points.cy2 - bbox.y}  ${
+        this.points.endX - bbox.x - endOffsetX
+      } ${this.points.endY - bbox.y + endOffsetY}`;
+    } else if (isLeftToLeftConnectors && !isConnectingToRectThumb) {
+      const XDistance =
+        this.points.endX > this.points.beginX
+          ? this.points.beginX - this.points.endX
+          : 0;
+      const YDistance =
+        this.points.endY > this.points.beginY
+          ? Math.max(-40, -this.points.endY - this.points.beginY)
+          : Math.max(
+              Math.min(20, this.points.beginY - this.points.endY - 20),
+              -20
+            );
+
+      const endExtraOffsetY = 0;
+      path = `
+      M${this.points.beginX - bbox.x - startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+    
+      L${this.points.endX - bbox.x - endOffsetX - 40 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      C${this.points.endX - bbox.x - endOffsetX - 60 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+    
+      ${this.points.endX - bbox.x - endOffsetX - 60 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+    
+      ${this.points.endX - bbox.x - endOffsetX - 60 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY - 20 - YDistance
+      }
+
+     
+      
+      L${this.points.endX - bbox.x - endOffsetX - 60 + XDistance} ${
+        this.points.endY - bbox.y + endOffsetY + 20 + YDistance
+      }
+      
+      C${this.points.endX - bbox.x - endOffsetX - 60 + XDistance} ${
+        this.points.endY - bbox.y + endOffsetY + endExtraOffsetY
+      }
+      
+      ${this.points.endX - bbox.x - endOffsetX - 60 + XDistance} ${
+        this.points.endY - bbox.y + endOffsetY + endExtraOffsetY
+      }
+
+      ${this.points.endX - bbox.x - endOffsetX - 40 + XDistance}  ${
+        this.points.endY - bbox.y + endOffsetY + endExtraOffsetY
+      }
+
+      L${this.points.endX - bbox.x - endOffsetX - 40} ${
+        this.points.endY - bbox.y + endOffsetY + endExtraOffsetY
+      }
+
+    `;
+    } else if (isRightToRightCenterConnectors && !isConnectingToRectThumb) {
+      const XDistance =
+        this.points.endX - this.points.beginX < 0
+          ? 0
+          : this.points.endX - this.points.beginX;
+      path = `
+      M${this.points.beginX - bbox.x + startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      C${this.points.beginX - bbox.x + startOffsetX + 20 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX + 20 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX + 20 + XDistance} ${
+        this.points.beginY - bbox.y + startOffsetY + 20
+      }
+      
+      L${this.points.beginX - bbox.x + startOffsetX + 20 + XDistance} ${
+        this.points.endY - bbox.y + startOffsetY - 20
+      }
+      
+      C${this.points.beginX - bbox.x + startOffsetX + 20 + XDistance} ${
+        this.points.endY - bbox.y + startOffsetY
+      }
+
+      ${this.points.beginX - bbox.x + startOffsetX + 20 + XDistance} ${
+        this.points.endY - bbox.y + startOffsetY
+      }
+
+      ${this.points.endX - bbox.x - endOffsetX} ${
+        this.points.endY - bbox.y + endOffsetY
+      }
+
+      `;
+    } else if (
+      false
+      // isRightToLeftConnectors &&
+      // this.points.beginX > this.points.endX &&
+      // !isConnectingToRectThumb
+    ) {
+      path = `M${this.points.beginX - bbox.x - startOffsetX} ${
+        this.points.beginY - bbox.y + startOffsetY
+      }    
+     ${this.points.endX - bbox.x - endOffsetX} ${
+        this.points.endY - bbox.y + endOffsetY
+      }`;
+    } else if (
+      !isLeftToRightConnectors &&
+      this.points.beginX > this.points.endX &&
+      !isConnectingToRectThumb
+    ) {
       this.nodeComponent.isLoopBack = true;
       const bottomY = this.getLowestYPosition() + 40;
       path = `

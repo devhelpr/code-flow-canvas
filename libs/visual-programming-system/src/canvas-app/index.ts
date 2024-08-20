@@ -201,7 +201,7 @@ export const createCanvasApp = <T>(
     }
 
     if (
-      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0 ||
       (event.target !== rootElement && event.target !== canvas.domElement)
@@ -336,11 +336,19 @@ export const createCanvasApp = <T>(
 
     //const canvasRect = canvas.domElement.getBoundingClientRect();
     if (
-      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0 ||
       (event.target !== rootElement && event.target !== canvas.domElement)
     ) {
+      if ((event.target as HTMLElement)?.tagName === 'CANVAS') {
+        console.log(
+          'pointermove canvas',
+          (event.target as HTMLElement)?.tagName
+        );
+        return;
+      }
+
       if (
         !(event.target as unknown as any).closest ||
         !(event.target as unknown as any).closest(`#${canvasId ?? 'canvas'}`)

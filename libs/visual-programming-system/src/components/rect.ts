@@ -1012,7 +1012,7 @@ export class Rect<T> {
       this.nodeComponent?.nodeInfo
     );
     if (
-      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
+      ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0
     )

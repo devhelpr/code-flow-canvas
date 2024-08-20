@@ -157,6 +157,45 @@ import { getNeuralOutputNode } from '../nodes/neural-output-node';
 import { initArrayNodeName, initArrayVariable } from '../nodes/init-array';
 import { getNeuralTrainTestNode } from '../nodes/neural-train-test-node';
 
+import {
+  getNeuralNodeTrainOutputLayerNode,
+  neuralNodeTrainOutputLayerName,
+} from '../nodes/neural-node-train-output-layer';
+
+import {
+  getNeuralNodeOutputLayerNode,
+  neuralNodeOutputLayerName,
+} from '../nodes/neural-node-output-layer';
+
+import {
+  getNeuralNodeInputLayerNode,
+  neuralNodeInputLayerName,
+} from '../nodes/neural-node-input-layer';
+
+import {
+  getNeuralNodeHiddenLayerNode,
+  neuralNodeHiddenLayerName,
+} from '../nodes/neural-node-hidden-layer';
+
+import {
+  getNeuralNodeTrainHiddenLayerNode,
+  neuralNodeTrainHiddenLayerName,
+} from '../nodes/neural-node-train-hidden-layer';
+
+import {
+  getNeuralMnistTrainingDataNode,
+  neuralMnistTrainingDataName,
+} from '../nodes/neural-mnist-training-data';
+
+import {
+  getNeuralManualDrawableCanvasNode,
+  neuralManualDrawableCanvasInputNodeName,
+} from '../nodes/neural-manual-drawable-canvas-input';
+
+import {
+  neuralTestTrainingDataName,
+  getNeuralTestTrainingNode,
+} from '../nodes/neural-test-training';
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
@@ -341,6 +380,36 @@ export const setupCanvasNodeTaskRegistry = (
       'neural-train-test-node',
       getNeuralTrainTestNode(createRunCounterContext)
     );
+
+    registerNodeFactory(
+      neuralNodeTrainHiddenLayerName,
+      getNeuralNodeTrainHiddenLayerNode
+    );
+    registerNodeFactory(
+      neuralNodeTrainOutputLayerName,
+      getNeuralNodeTrainOutputLayerNode
+    );
+    registerNodeFactory(
+      neuralNodeOutputLayerName,
+      getNeuralNodeOutputLayerNode
+    );
+
+    registerNodeFactory(neuralNodeInputLayerName, getNeuralNodeInputLayerNode);
+    registerNodeFactory(
+      neuralNodeHiddenLayerName,
+      getNeuralNodeHiddenLayerNode
+    );
+
+    registerNodeFactory(
+      neuralMnistTrainingDataName,
+      getNeuralMnistTrainingDataNode
+    );
+    registerNodeFactory(
+      neuralManualDrawableCanvasInputNodeName,
+      getNeuralManualDrawableCanvasNode
+    );
+
+    registerNodeFactory(neuralTestTrainingDataName, getNeuralTestTrainingNode);
   }
 
   registerExternalNodes?.(registerNodeFactory);

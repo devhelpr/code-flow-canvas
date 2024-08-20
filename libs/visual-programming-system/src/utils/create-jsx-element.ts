@@ -1,4 +1,5 @@
-import { EventHandler, createElement } from './create-element';
+import { IDOMElement } from '../interfaces';
+import { EventHandler, createElement, createNSElement } from './create-element';
 
 export const createJSXElement = (
   tag: any,
@@ -8,8 +9,18 @@ export const createJSXElement = (
   if (typeof tag === 'function') {
     return tag(properties ?? {}, children) as HTMLElement;
   }
-  const element = createElement(tag, properties, undefined, undefined)
-    .domElement as unknown as HTMLElement;
+  const element =
+    tag === 'svg' || tag === 'path' || tag === 'circle' || tag === 'rect'
+      ? ((
+          createNSElement(
+            tag,
+            properties,
+            undefined,
+            undefined
+          ) as unknown as IDOMElement
+        ).domElement as unknown as HTMLElement)
+      : (createElement(tag, properties, undefined, undefined)
+          .domElement as unknown as HTMLElement);
 
   if (properties) {
     Object.entries(properties).forEach(([key, val]) => {

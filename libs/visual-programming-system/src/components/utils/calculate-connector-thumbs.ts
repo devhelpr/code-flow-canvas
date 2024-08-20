@@ -15,11 +15,26 @@ export const calculateConnectorX = (thumbType: ThumbType, width: number) => {
     return width;
   }
 
+  if (thumbType === ThumbType.StartConnectorLeft) {
+    return 0;
+  }
+
+  if (thumbType === ThumbType.StartConnectorCenterLeft) {
+    return 0;
+  }
+
+  if (thumbType === ThumbType.EndConnectorCenterRight) {
+    return width;
+  }
+
   if (thumbType === ThumbType.EndConnectorCenter) {
     return 0;
   }
   if (thumbType === ThumbType.EndConnectorLeft) {
     return 0;
+  }
+  if (thumbType === ThumbType.EndConnectorRight) {
+    return width;
   }
 
   if (thumbType === ThumbType.EndConnectorTop) {
@@ -47,6 +62,8 @@ export const calculateConnectorY = <T>(
 ) => {
   const { scale } = getCamera();
   if (
+    thumbType === ThumbType.StartConnectorCenterLeft ||
+    thumbType === ThumbType.EndConnectorCenterRight ||
     thumbType === ThumbType.StartConnectorCenter ||
     thumbType === ThumbType.EndConnectorCenter ||
     thumbType === ThumbType.Center
@@ -145,7 +162,18 @@ export const thumbPosition = <T>(
     };
   }
 
-  if (thumbType === ThumbType.EndConnectorLeft) {
+  if (thumbType === ThumbType.EndConnectorRight) {
+    return {
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index,
+        thumb
+      ),
+    };
+  } else if (thumbType === ThumbType.EndConnectorLeft) {
     return {
       x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
@@ -157,6 +185,17 @@ export const thumbPosition = <T>(
       ),
     };
   } else if (thumbType === ThumbType.EndConnectorCenter) {
+    return {
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index,
+        thumb
+      ),
+    };
+  } else if (thumbType === ThumbType.EndConnectorCenterRight) {
     return {
       x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(
@@ -184,7 +223,18 @@ export const thumbPosition = <T>(
     };
   }
 
-  if (thumbType === ThumbType.StartConnectorRight) {
+  if (thumbType === ThumbType.StartConnectorLeft) {
+    return {
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
+      y: calculateConnectorY<T>(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index,
+        thumb
+      ),
+    };
+  } else if (thumbType === ThumbType.StartConnectorRight) {
     return {
       x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY<T>(
@@ -196,6 +246,17 @@ export const thumbPosition = <T>(
       ),
     };
   } else if (thumbType === ThumbType.StartConnectorCenter) {
+    return {
+      x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
+      y: calculateConnectorY(
+        thumbType,
+        rectNode?.width ?? 0,
+        rectNode?.height ?? 0,
+        index,
+        thumb
+      ),
+    };
+  } else if (thumbType === ThumbType.StartConnectorCenterLeft) {
     return {
       x: calculateConnectorX(thumbType, rectNode?.width ?? 0),
       y: calculateConnectorY(

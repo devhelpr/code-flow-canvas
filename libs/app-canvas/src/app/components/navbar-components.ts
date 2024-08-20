@@ -78,6 +78,7 @@ export class NavbarComponent extends Component<
           <option value="quicksort-flow.json">Quicksort</option>
           <option value="pid-controller-flow.json">PID controller</option>
           <option value="simple-neural-network.json">Simple neural network</option>
+          <option value="neural-mnist-training.json">Neural network MNIST training & testing</option>
         </select>
         <children></children>
       </div>`

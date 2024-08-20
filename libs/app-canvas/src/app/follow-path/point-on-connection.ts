@@ -65,6 +65,20 @@ export const getPointOnConnection = <T>(
 
   const ratio = Math.min(percentage, 1);
 
+  const isLeftToLeftConnectors =
+    connection?.startNodeThumb?.thumbType ===
+      ThumbType.StartConnectorCenterLeft &&
+    connection?.endNodeThumb?.thumbType === ThumbType.EndConnectorCenter;
+
+  const isRightToRightCenterConnectors =
+    connection?.startNodeThumb?.thumbType === ThumbType.StartConnectorCenter &&
+    connection?.endNodeThumb?.thumbType === ThumbType.EndConnectorCenterRight;
+
+  const isLeftToRightConnectors =
+    connection?.startNodeThumb?.thumbType ===
+      ThumbType.StartConnectorCenterLeft &&
+    connection?.endNodeThumb?.thumbType === ThumbType.EndConnectorCenterRight;
+
   if (connection.hasMultipleOutputs) {
     if (connection.pathElement?.domElement) {
       const path = connection.pathElement?.domElement as SVGPathElement;
@@ -84,13 +98,67 @@ export const getPointOnConnection = <T>(
           10,
       };
     }
+    return {
+      x: 0,
+      y: 0,
+    };
+  } else if (
+    isRightToRightCenterConnectors &&
+    connection.pathElement?.domElement
+  ) {
+    const path = connection.pathElement?.domElement as SVGPathElement;
+    const pathLength = path.getTotalLength();
+    const point = path.getPointAtLength(pathLength * ratio);
+
+    const loopBackXOffset = 0;
+
+    return {
+      x:
+        point.x +
+        (startHelper.x > endHelper.x
+          ? endHelper.x + startOffsetX
+          : startHelper.x + startOffsetX) +
+        tx -
+        loopBackXOffset -
+        10,
+      y:
+        point.y +
+        ty +
+        (startHelper.y > endHelper.y
+          ? endHelper.y + endOffsetY
+          : startHelper.y + startOffsetY) -
+        10,
+    };
+  } else if (isLeftToLeftConnectors) {
+    if (connection.pathElement?.domElement) {
+      const path = connection.pathElement?.domElement as SVGPathElement;
+      const pathLength = path.getTotalLength();
+      const point = path.getPointAtLength(pathLength * ratio);
+
+      const loopBackXOffset = isLeftToLeftConnectors ? 20 : 0;
+
+      return {
+        x: point.x + endHelper.x + endOffsetX + tx - loopBackXOffset - 10,
+        y:
+          point.y +
+          ty +
+          (startHelper.y > endHelper.y
+            ? endHelper.y + endOffsetY
+            : startHelper.y - startOffsetY) -
+          10,
+      };
+    }
+    return {
+      x: 0,
+      y: 0,
+    };
   } else if (connection.isLoopBack) {
     if (connection.pathElement?.domElement) {
       const path = connection.pathElement?.domElement as SVGPathElement;
       const pathLength = path.getTotalLength();
       const point = path.getPointAtLength(pathLength * ratio);
 
-      const loopBackXOffset = 20;
+      const loopBackXOffset = isLeftToRightConnectors ? 0 : 20;
 
       return {
         x: point.x + endHelper.x + endOffsetX + tx - loopBackXOffset - 10,
@@ -103,8 +171,11 @@ export const getPointOnConnection = <T>(
           10,
       };
     }
-  }
-  if (connection.lineType === LineType.Straight) {
+    return {
+      x: 0,
+      y: 0,
+    };
+  } else if (connection.lineType === LineType.Straight) {
     const { xStart, yStart, xEnd, yEnd } = getLinePoints(
       connection,
       { x: paddingRect, y: paddingRect },
@@ -123,9 +194,7 @@ export const getPointOnConnection = <T>(
       x: xStart + xHelper * ratio,
       y: yStart + yHelper * ratio,
     };
-  }
-
-  if (connection.lineType === LineType.BezierQuadratic) {
+  } else if (connection.lineType === LineType.BezierQuadratic) {
     const spacingAABB = 10;
     let t = 0;
     let tEnd = 1;
@@ -268,6 +337,24 @@ export const getPointOnConnection = <T>(
       }
     );
   } else {
+    if (isLeftToRightConnectors) {
+      return getPointOnCubicBezierCurve(
+        ratio,
+        {
+          x: startHelper.x + tx - startOffsetX,
+          y: startHelper.y + ty + startOffsetY,
+        },
+        {
+          x: startHelper.cx + tx,
+          y: startHelper.cy + ty,
+        },
+        {
+          x: endHelper.cx + tx,
+          y: endHelper.cy + ty,
+        },
+        { x: endHelper.x + tx - endOffsetX, y: endHelper.y + ty + endOffsetY }
+      );
+    }
     return getPointOnCubicBezierCurve(
       ratio,
       {

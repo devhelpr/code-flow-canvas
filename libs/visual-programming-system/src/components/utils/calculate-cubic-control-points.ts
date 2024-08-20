@@ -168,6 +168,34 @@ export const onCubicCalculateControlPoints = <T>(
         cy: cy,
         nodeType,
       };
+    } else if (thumbType === ThumbType.StartConnectorLeft) {
+      const { distance, thumbFactor } = getFactor(
+        x,
+        y,
+        connectedNodeX,
+        connectedNodeY
+      );
+      const cx =
+        x -
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) -
+        controlPointCurvingDistance * thumbFactor;
+
+      let cy = y;
+      if (connectedNode && connectedNodeX > x) {
+        if (connectedNodeY > y) {
+          cy += 250;
+        } else {
+          cy -= 250;
+        }
+      }
+
+      return {
+        x: x,
+        y: y,
+        cx: cx,
+        cy: cy,
+        nodeType,
+      };
     }
 
     const { distance, thumbFactor } = getFactor(
@@ -185,12 +213,21 @@ export const onCubicCalculateControlPoints = <T>(
       controlPointCurvingDistance * thumbFactor * yHelper;
     let cy = y;
 
+    if (thumbType === ThumbType.StartConnectorCenterLeft) {
+      cx =
+        x -
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) *
+          yHelper -
+        controlPointCurvingDistance * thumbFactor * yHelper;
+    }
+
     const isConnectingToRectThumb =
       connectedNodeThumb?.thumbType === ThumbType.Center;
     if (
       !isConnectingToRectThumb &&
       connectedNode &&
-      connectedNode.x < rectNode.x
+      connectedNode.x < rectNode.x &&
+      thumbType !== ThumbType.StartConnectorCenterLeft
     ) {
       cx += 250;
       if (connectedNode.y < rectNode.y) {
@@ -216,6 +253,7 @@ export const onCubicCalculateControlPoints = <T>(
         }
       }
     }
+
     return {
       x: x,
       y: y,
@@ -337,6 +375,29 @@ export const onCubicCalculateControlPoints = <T>(
         cy: cy,
         nodeType,
       };
+    } else if (thumbType === ThumbType.EndConnectorRight) {
+      const { distance, thumbFactor } = getFactor(
+        x,
+        y,
+        connectedNodeX,
+        connectedNodeY
+      );
+      let cx =
+        x +
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
+        controlPointCurvingDistance * thumbFactor;
+
+      const cy = y;
+      if (cx > connectedNodeX) {
+        cx = connectedNodeX;
+      }
+      return {
+        x: x,
+        y: y,
+        cx: cx,
+        cy: cy,
+        nodeType,
+      };
     }
 
     const { distance, thumbFactor } = getFactor(
@@ -354,8 +415,18 @@ export const onCubicCalculateControlPoints = <T>(
       (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) * yHelper -
       controlPointCurvingDistance * thumbFactor * yHelper;
 
+    if (thumbType === ThumbType.EndConnectorCenterRight) {
+      cx =
+        x +
+        (controlPointDistance ?? (connectedNode ? distance : 0) ?? 0) +
+        controlPointCurvingDistance * thumbFactor;
+    }
     let cy = y;
-    if (connectedNode && connectedNodeX > x) {
+    if (
+      connectedNode &&
+      connectedNodeX > x &&
+      thumbType !== ThumbType.EndConnectorCenterRight
+    ) {
       if (connectedNodeY > y) {
         cy += 500;
       } else {
@@ -363,7 +434,11 @@ export const onCubicCalculateControlPoints = <T>(
       }
     }
 
-    if (connectedNode && x > connectedNodeX) {
+    if (
+      connectedNode &&
+      x > connectedNodeX &&
+      thumbType !== ThumbType.EndConnectorCenterRight
+    ) {
       const centerX = x - (x - connectedNodeX) / 2;
       const xDistance = Math.abs(connectedNodeX - x);
       if (cx < centerX && xDistance > minDistance) {

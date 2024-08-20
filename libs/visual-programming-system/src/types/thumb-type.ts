@@ -17,6 +17,9 @@ export const ThumbType = {
   EndConnectorBottom: 'EndConnectorBottom',
   StartConnectorCenter: 'StartConnectorCenter',
   EndConnectorCenter: 'EndConnectorCenter',
+  StartConnectorCenterLeft: 'StartConnectorCenterLeft',
+  EndConnectorCenterRight: 'EndConnectorCenterRight',
+
   Center: 'Center',
 } as const;
 

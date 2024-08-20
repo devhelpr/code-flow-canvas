@@ -70,7 +70,11 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         });
         htmlNode.domElement.textContent = output;
       } else {
-        htmlNode.domElement.textContent = (inputValues || '-').toString();
+        if (typeof inputValues === 'number') {
+          htmlNode.domElement.textContent = (inputValues ?? '-').toString();
+        } else {
+          htmlNode.domElement.textContent = (inputValues || '-').toString();
+        }
       }
       if (rect && rect.resize) {
         rect.resize(240);

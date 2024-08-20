@@ -144,10 +144,20 @@ const triggerExecution = (
         const storeNodeStates = () => {
           const nodeStates = canvasApp.getNodeStates();
           if (!canvasApp.isContextOnly) {
+            let inputToHistory: any = input;
+            let inputAsObject: any = input;
+            if (
+              inputAsObject &&
+              typeof inputAsObject === 'object' &&
+              inputAsObject.connectionHistory === false
+            ) {
+              inputToHistory = undefined;
+            }
+
             lastConnectionExecutionHistory = {
               connection:
                 connection as unknown as IConnectionNodeComponent<NodeInfo>,
-              connectionValue: input,
+              connectionValue: inputToHistory,
               nodeStates: nodeStates,
             };
             connectionExecuteHistory.push(lastConnectionExecutionHistory);
@@ -678,10 +688,19 @@ export const runNodeFromThumb = (
     ) => {
       const storeNodeStates = () => {
         if (!canvasApp.isContextOnly) {
+          let inputToHistory: any = input;
+          let inputAsObject: any = input;
+          if (
+            inputAsObject &&
+            typeof inputAsObject === 'object' &&
+            inputAsObject.connectionHistory === false
+          ) {
+            inputToHistory = undefined;
+          }
           lastConnectionExecutionHistory = {
             connection:
               connection as unknown as IConnectionNodeComponent<NodeInfo>,
-            connectionValue: input,
+            connectionValue: inputToHistory,
             nodeStates: canvasApp.getNodeStates(),
             cursorOnly: firstStoreNodeState && showCursorOnly === true,
           };
