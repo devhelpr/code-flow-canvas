@@ -10,7 +10,11 @@ export const createJSXElement = (
     return tag(properties ?? {}, children) as HTMLElement;
   }
   const element =
-    tag === 'svg' || tag === 'path' || tag === 'circle' || tag === 'rect'
+    tag === 'svg' ||
+    tag === 'path' ||
+    tag === 'circle' ||
+    tag === 'rect' ||
+    tag === 'line'
       ? ((
           createNSElement(
             tag,

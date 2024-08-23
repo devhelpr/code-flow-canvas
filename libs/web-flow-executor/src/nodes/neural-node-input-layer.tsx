@@ -11,6 +11,8 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
+import { navBarButton } from '../consts/classes';
+import { showNeuralNetworkView } from './neural-network-utils/neural-network-view';
 
 export const neuralNodeInputLayerName = 'neural-node-input-layer';
 const thumbs = [
@@ -184,9 +186,16 @@ export const getNeuralNodeInputLayerNode: NodeTaskFactory<NodeInfo> = (
               (neuralNodeCountElement = element)
             }
           ></div>
+          <button
+            class={`${navBarButton}`}
+            click={() => {
+              showNeuralNetworkView(canvasApp.rootElement, nodeComponent);
+            }}
+          >
+            View Neural Network
+          </button>
         </div>
       );
-      //  <button class={`${navBarButton}`}>View Neural Network</button>
 
       const rect = canvasApp.createRect(
         x,
