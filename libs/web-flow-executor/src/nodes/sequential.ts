@@ -11,7 +11,6 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RunCounter } from '../follow-path/run-counter';
-import { run } from 'node:test';
 
 export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;

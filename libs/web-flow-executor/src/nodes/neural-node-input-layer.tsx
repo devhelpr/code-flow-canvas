@@ -186,6 +186,7 @@ export const getNeuralNodeInputLayerNode: NodeTaskFactory<NodeInfo> = (
           ></div>
         </div>
       );
+      //  <button class={`${navBarButton}`}>View Neural Network</button>
 
       const rect = canvasApp.createRect(
         x,
