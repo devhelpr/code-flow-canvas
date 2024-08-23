@@ -35,7 +35,7 @@ export const getNodesByNeuralLayerType = (
   canvasAppInstance: CanvasAppInstance<NodeInfo>
 ): IRectNodeComponent<NodeInfo>[] => {
   const nodes: IRectNodeComponent<NodeInfo>[] = [];
-  Array.from(canvasAppInstance.elements).every((itemPair) => {
+  Array.from(canvasAppInstance.elements).every((itemPair: any) => {
     const element = itemPair![1] as unknown as IRectNodeComponent<NodeInfo>;
     if (element.nodeInfo?.type === nodeType) {
       nodes.push(element as IRectNodeComponent<NodeInfo>);

@@ -39,5 +39,6 @@ export const getPointOnQuadraticBezierCurve = (
       (1 - t) * (1 - t) * start.y +
       2 * (1 - t) * t * controlPoint.y +
       t * t * end.y,
+    pathLength: t * 100,
   };
 };

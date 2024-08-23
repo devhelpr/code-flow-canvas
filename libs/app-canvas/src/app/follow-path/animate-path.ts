@@ -20,9 +20,9 @@ import { updateRunCounterElement } from './updateRunCounterElement';
 function getLoopIncrement() {
   return 0.25;
 }
-function getMaxLoop() {
-  return 1.015;
-}
+// function getMaxLoop() {
+//   return 1.015;
+// }
 
 export const timers: Map<NodeJS.Timer, () => void> = new Map();
 
@@ -200,9 +200,12 @@ export function setCameraAnimation<T>(canvasApp: CanvasAppInstance<T>) {
               bezierCurvePoints.x + (offsetX ?? 0)
             }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
           }
-          loop += getLoopIncrement() * elapsed * (0.0001 * speedMeter);
+          ///loop += getLoopIncrement() * elapsed * (0.0001 * speedMeter);
+          loop += getLoopIncrement() * elapsed * (0.01 * speedMeter);
           nodeAnimation.animationLoop = loop;
-          if (loop > getMaxLoop()) {
+
+          //if (loop > getMaxLoop()) {
+          if (loop >= bezierCurvePoints.pathLength) {
             loop = 0;
 
             nodeAnimationMap.delete(key);
