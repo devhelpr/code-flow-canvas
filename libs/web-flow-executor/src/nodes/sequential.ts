@@ -10,6 +10,8 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
+import { RunCounter } from '../follow-path/run-counter';
+import { run } from 'node:test';
 
 export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -23,7 +25,8 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     return new Promise((resolve, reject) => {
       if (
@@ -61,13 +64,15 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
             input,
             node,
             loopIndex,
-            scopeId
+            scopeId,
+            runCounter
           );
         },
         input,
         node,
         loopIndex,
-        scopeId
+        scopeId,
+        runCounter
       );
     });
   };
@@ -89,7 +94,7 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
       const jsxComponentWrapper = createNodeElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded pl-6 flex flex-row justify-center items-center`,
+          class: `inner-node bg-white text-black p-4 rounded pl-6 flex flex-row justify-center items-center`,
           style: {
             'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
           },
@@ -110,7 +115,7 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             color: 'white',
-            label: ' ',
+            label: '1',
             name: 'output1',
           },
           {
@@ -118,7 +123,7 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
             thumbIndex: 1,
             connectionType: ThumbConnectionType.start,
             color: 'white',
-            label: ' ',
+            label: '2',
             name: 'output2',
           },
           {
