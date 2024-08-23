@@ -152,7 +152,7 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
           const weightToOutputNode =
             nodeComponent.nodeInfo?.formValues?.['weights']?.[
               loopHiddenOrOutput
-            ][loop] ?? 0;
+            ]?.[loop] ?? 0;
           weightedOutputs[loopHiddenOrOutput].push(
             weightToOutputNode * activationValue
           );

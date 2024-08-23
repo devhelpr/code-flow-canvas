@@ -14,6 +14,13 @@ import { RunCounter } from '../follow-path/run-counter';
 import { navBarButton } from '../consts/classes';
 import { showNeuralNetworkView } from './neural-network-utils/neural-network-view';
 
+/*
+  TODO : 
+    - add small info button to show the inputs and weights in a dialog
+     ... other layers should the bias as well
+    
+*/
+
 export const neuralNodeInputLayerName = 'neural-node-input-layer';
 const thumbs = [
   {

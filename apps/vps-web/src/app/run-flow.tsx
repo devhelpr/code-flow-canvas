@@ -6,7 +6,9 @@ import {
   IThumbNodeComponent,
   OnNextNodeFunction,
   createContextInstanceApp,
+  createJSXElement,
   importToCanvas,
+  renderElement,
 } from '@devhelpr/visual-programming-system';
 import {
   NodeInfo,
@@ -23,6 +25,29 @@ import flowData from '../example-data/counter.json';
 
 export const runFlow = () => {
   const canvasApp = createContextInstanceApp<NodeInfo>();
+  document.body
+    .querySelectorAll('div:not(.run-flow-container)')
+    .forEach((el) => {
+      el.remove();
+    });
+  const rootElement = document.getElementById('run-flow-container')!;
+  let resultElement: HTMLDivElement | undefined = undefined;
+  renderElement(
+    <div>
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        click={() => {
+          runFlow();
+        }}
+      >
+        Click to increase counter
+      </button>
+      <div
+        getElement={(element: HTMLDivElement) => (resultElement = element)}
+      ></div>
+    </div>,
+    rootElement
+  );
 
   const runPathFromThumbFlow = (
     node: IThumbNodeComponent<NodeInfo>,
@@ -148,33 +173,39 @@ export const runFlow = () => {
   });
 
   //let startAgain = true;
-
-  run(
-    canvasApp?.elements,
-    canvasApp,
-    (input) => {
-      console.log('run finished', input);
-      //   if (startAgain) {
-      //     startAgain = false;
-      //     run(
-      //       canvasApp?.elements,
-      //       canvasApp,
-      //       () => {
-      //         //
-      //       },
-      //       undefined,
-      //       undefined,
-      //       undefined,
-      //       runCounter,
-      //       false
-      //     );
-      //   }
-    },
-    undefined,
-    undefined,
-    undefined,
-    runCounter,
-    false
-  );
+  function runFlow() {
+    run(
+      canvasApp?.elements,
+      canvasApp,
+      (input) => {
+        console.log('run finished', input);
+        if (resultElement) {
+          const element = resultElement as HTMLDivElement;
+          element.textContent = `counter: ${input.toString()}`;
+        }
+        //   if (startAgain) {
+        //     startAgain = false;
+        //     run(
+        //       canvasApp?.elements,
+        //       canvasApp,
+        //       () => {
+        //         //
+        //       },
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       runCounter,
+        //       false
+        //     );
+        //   }
+      },
+      undefined,
+      undefined,
+      undefined,
+      runCounter,
+      false
+    );
+  }
+  runFlow();
   return;
 };

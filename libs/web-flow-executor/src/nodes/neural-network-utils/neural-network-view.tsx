@@ -217,3 +217,21 @@ export const showNeuralNetworkView = (
     dialogElement!.showModal();
   }
 };
+
+/*
+	visualisation that I want:
+	
+	- determine the lowest node count in all the layers
+	- max nodes that can be displayed in a layer is 10 but use the lowesr node count of all layers if it's < 10
+
+	- if a layer has more nodes , then show max 10 nodes ..the first 5 and the last 5
+	   ... in the middle their should be small dots to indicate that there are more nodes
+	   ... the amount of dots depend on the total node count of that layer relative to other layers
+
+				- layer with the lowest node count has 3 dots
+				- next layer in order has 4 dots
+				- and so on...
+			
+	- in a layer never show more nodes then the next layer shows and it should be an even count of nodes
+	
+*/
