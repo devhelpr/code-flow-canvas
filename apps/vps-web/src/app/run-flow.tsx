@@ -4,20 +4,24 @@ import {
   renderElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
-//import flowData from '../example-data/counter.json';
 import celsiusFahrenheitFlow from '../example-data/celsius-fahrenheit-converter.json';
 import { FlowEngine } from './flow-engine/flow-engine';
 
-export const runFlow = () => {
-  const flowEngine = new FlowEngine();
-  flowEngine.initiliaze(
-    celsiusFahrenheitFlow.flows.flow.nodes as FlowNode<NodeInfo>[]
-  );
+function clearBody() {
   document.body
     .querySelectorAll('div:not(.run-flow-container)')
     .forEach((el) => {
       el.remove();
     });
+}
+
+export const runFlow = () => {
+  clearBody();
+  const flowEngine = new FlowEngine();
+  flowEngine.initiliaze(
+    celsiusFahrenheitFlow.flows.flow.nodes as FlowNode<NodeInfo>[]
+  );
+
   const rootElement = document.getElementById('run-flow-container')!;
   let resultElement: HTMLDivElement | undefined = undefined;
   let celciusElement: HTMLInputElement | undefined = undefined;
@@ -38,15 +42,7 @@ export const runFlow = () => {
   });
 
   renderElement(
-    <div>
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        click={() => {
-          runFlow();
-        }}
-      >
-        Click to increase counter
-      </button>
+    <div class="w-[clamp(240px,100%,1024px)] mx-auto">
       <div
         getElement={(element: HTMLDivElement) => (resultElement = element)}
       ></div>
@@ -56,7 +52,7 @@ export const runFlow = () => {
           getElement={(element: HTMLInputElement) => {
             celciusElement = element;
           }}
-          class="form-control border border-solid border-black selection:bg-blue-500 selection:text-white"
+          class="border border-solid border-black "
           name="celsius"
           input={(event: InputEvent) => {
             const input = event.target as HTMLInputElement;
@@ -69,7 +65,7 @@ export const runFlow = () => {
           getElement={(element: HTMLInputElement) => {
             fahrenheitElement = element;
           }}
-          class="form-control border border-solid border-black"
+          class="border border-solid border-black"
           name="fahrenheit"
           input={(event: InputEvent) => {
             const input = event.target as HTMLInputElement;
