@@ -60,6 +60,13 @@ export const createContextInstanceApp = <T>(
   const rootElement = undefined as unknown as HTMLElement;
   const interactionStateMachine =
     undefined as unknown as InteractionStateMachine<T>;
+  let onNodeMessage: ((keyName: string, value: any) => void) | undefined =
+    undefined;
+
+  let listeners: {
+    key: string;
+    listener: (key: string, value: any) => void;
+  }[] = [];
   return {
     elements,
     canvas,
@@ -80,6 +87,39 @@ export const createContextInstanceApp = <T>(
       ) => void
     ) => {
       //
+    },
+    setOnNodeMessage: (event: (keyName: string, value: any) => void) => {
+      onNodeMessage = event;
+    },
+    sendMessageFromNode: (key: string, value: any) => {
+      if (onNodeMessage) {
+        onNodeMessage(key, value);
+      }
+    },
+
+    sendMessageToNode: (key: string, value: any) => {
+      listeners.forEach((l) => {
+        if (l.key === key) {
+          l.listener(key, value);
+        }
+      });
+    },
+    registerNodeKeyListener: (
+      key: string,
+      listener: (key: string, value: any) => void
+    ) => {
+      listeners.push({
+        key,
+        listener,
+      });
+    },
+    removeNodeKeyListener: (
+      key: string,
+      listener: (key: string, value: any) => void
+    ) => {
+      listeners = listeners.filter(
+        (l) => l.key !== key && l.listener !== listener
+      );
     },
     addComposition: (_composition: Composition<T>) => {
       //
@@ -371,7 +411,7 @@ export const createContextInstanceApp = <T>(
         tempVariables[scopeId][variableName] = data;
       } else if (variableName && variables[variableName]) {
         variables[variableName].setData(data, scopeId);
-        if (!isInitializing) {
+        if (isInitializing) {
           return;
         }
         const map = variableObservers.get(`${variableName}`);

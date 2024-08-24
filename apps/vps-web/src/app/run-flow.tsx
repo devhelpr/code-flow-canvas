@@ -1,30 +1,18 @@
 import {
   FlowNode,
-  IDOMElement,
-  IRectNodeComponent,
-  IRunCounter,
-  IThumbNodeComponent,
-  OnNextNodeFunction,
-  createContextInstanceApp,
   createJSXElement,
-  importToCanvas,
   renderElement,
 } from '@devhelpr/visual-programming-system';
-import {
-  NodeInfo,
-  RunCounter,
-  getNodeTaskFactory,
-  increaseRunIndex,
-  run,
-  runPath,
-  runPathForNodeConnectionPairs,
-  runPathFromThumb,
-  setupCanvasNodeTaskRegistry,
-} from '@devhelpr/web-flow-executor';
-import flowData from '../example-data/counter.json';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
+//import flowData from '../example-data/counter.json';
+import celsiusFahrenheitFlow from '../example-data/celsius-fahrenheit-converter.json';
+import { FlowEngine } from './flow-engine/flow-engine';
 
 export const runFlow = () => {
-  const canvasApp = createContextInstanceApp<NodeInfo>();
+  const flowEngine = new FlowEngine();
+  flowEngine.initiliaze(
+    celsiusFahrenheitFlow.flows.flow.nodes as FlowNode<NodeInfo>[]
+  );
   document.body
     .querySelectorAll('div:not(.run-flow-container)')
     .forEach((el) => {
@@ -32,6 +20,23 @@ export const runFlow = () => {
     });
   const rootElement = document.getElementById('run-flow-container')!;
   let resultElement: HTMLDivElement | undefined = undefined;
+  let celciusElement: HTMLInputElement | undefined = undefined;
+  let fahrenheitElement: HTMLInputElement | undefined = undefined;
+
+  flowEngine.canvasApp.setOnNodeMessage((key, value) => {
+    console.log('onNodeMessage', key, value);
+    if (key === 'celsius') {
+      if (celciusElement) {
+        celciusElement.value = value;
+      }
+    }
+    if (key === 'fahrenheit') {
+      if (fahrenheitElement) {
+        fahrenheitElement.value = value;
+      }
+    }
+  });
+
   renderElement(
     <div>
       <button
@@ -45,167 +50,39 @@ export const runFlow = () => {
       <div
         getElement={(element: HTMLDivElement) => (resultElement = element)}
       ></div>
+      <div class="flex flex-col">
+        <label>Celcius</label>
+        <input
+          getElement={(element: HTMLInputElement) => {
+            celciusElement = element;
+          }}
+          class="form-control border border-solid border-black selection:bg-blue-500 selection:text-white"
+          name="celsius"
+          input={(event: InputEvent) => {
+            const input = event.target as HTMLInputElement;
+            console.log('celsius input', input.value);
+            flowEngine.canvasApp.sendMessageToNode('celsius', input.value);
+          }}
+        />
+        <label>Fahrenheit</label>
+        <input
+          getElement={(element: HTMLInputElement) => {
+            fahrenheitElement = element;
+          }}
+          class="form-control border border-solid border-black"
+          name="fahrenheit"
+          input={(event: InputEvent) => {
+            const input = event.target as HTMLInputElement;
+            console.log('fahrenheit input', input.value);
+            flowEngine.canvasApp.sendMessageToNode('fahrenheit', input.value);
+          }}
+        />
+      </div>
     </div>,
     rootElement
   );
 
-  const runPathFromThumbFlow = (
-    node: IThumbNodeComponent<NodeInfo>,
-    color: string,
-    onNextNode?: OnNextNodeFunction<NodeInfo>,
-    onStopped?: (input: string | any[], scopeId?: string) => void,
-    input?: string | any[],
-    followPathByName?: string,
-    animatedNodes?: {
-      node1?: IDOMElement;
-      node2?: IDOMElement;
-      node3?: IDOMElement;
-      cursorOnly?: boolean;
-    },
-    offsetX?: number,
-    offsetY?: number,
-    followPathToEndThumb?: boolean,
-    singleStep?: boolean,
-    scopeId?: string,
-    runCounter?: IRunCounter
-  ) => {
-    return runPathFromThumb(
-      canvasApp,
-      node,
-      color,
-      onNextNode,
-      onStopped,
-      input,
-      followPathByName,
-      animatedNodes,
-      offsetX,
-      offsetY,
-      followPathToEndThumb,
-      singleStep,
-      scopeId,
-      runCounter
-    );
-  };
+  flowEngine.run();
 
-  const runFlowPath = (
-    node: IRectNodeComponent<NodeInfo>,
-    color: string,
-    onNextNode?: OnNextNodeFunction<NodeInfo>,
-    onStopped?: (input: string | any[]) => void,
-    input?: string | any[],
-    followPathByName?: string, // normal, success, failure, "subflow",
-    animatedNodes?: {
-      node1?: IDOMElement;
-      node2?: IDOMElement;
-      node3?: IDOMElement;
-    },
-    offsetX?: number,
-    offsetY?: number,
-    followPathToEndThumb?: boolean,
-    singleStep?: boolean,
-    followThumb?: string,
-    scopeId?: string,
-    runCounter?: IRunCounter
-  ) => {
-    return runPath(
-      canvasApp,
-      node,
-      color,
-      onNextNode,
-      onStopped,
-      input,
-      followPathByName,
-      animatedNodes,
-      offsetX,
-      offsetY,
-      followPathToEndThumb,
-      singleStep,
-      followThumb,
-      scopeId,
-      runCounter
-    );
-  };
-
-  setupCanvasNodeTaskRegistry(() => {
-    const runCounter = new RunCounter();
-    runCounter.setRunCounterResetHandler(() => {
-      if (runCounter.runCounter <= 0) {
-        console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
-        increaseRunIndex();
-      } else {
-        console.log(
-          'setRunCounterResetHandler: runCounter.runCounter > 0',
-          runCounter.runCounter
-        );
-      }
-    });
-    return runCounter;
-  });
-
-  importToCanvas(
-    flowData.flows.flow.nodes as FlowNode<NodeInfo>[],
-    canvasApp,
-    () => {
-      //
-    },
-    undefined,
-    0,
-    getNodeTaskFactory
-  );
-
-  canvasApp.setAnimationFunctions({
-    animatePathFunction: runFlowPath,
-    animatePathFromThumbFunction: runPathFromThumbFlow,
-    animatePathFromConnectionPairFunction: runPathForNodeConnectionPairs,
-  });
-
-  const runCounter = new RunCounter();
-  runCounter.setRunCounterResetHandler(() => {
-    if (runCounter.runCounter <= 0) {
-      console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
-      increaseRunIndex();
-    } else {
-      console.log(
-        'setRunCounterResetHandler: runCounter.runCounter > 0',
-        runCounter.runCounter
-      );
-    }
-  });
-
-  //let startAgain = true;
-  function runFlow() {
-    run(
-      canvasApp?.elements,
-      canvasApp,
-      (input) => {
-        console.log('run finished', input);
-        if (resultElement) {
-          const element = resultElement as HTMLDivElement;
-          element.textContent = `counter: ${input.toString()}`;
-        }
-        //   if (startAgain) {
-        //     startAgain = false;
-        //     run(
-        //       canvasApp?.elements,
-        //       canvasApp,
-        //       () => {
-        //         //
-        //       },
-        //       undefined,
-        //       undefined,
-        //       undefined,
-        //       runCounter,
-        //       false
-        //     );
-        //   }
-      },
-      undefined,
-      undefined,
-      undefined,
-      runCounter,
-      false
-    );
-  }
-  runFlow();
   return;
 };

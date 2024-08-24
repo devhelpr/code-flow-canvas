@@ -31,8 +31,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
     inputValues = '';
     if (htmlElement) {
       htmlElement.textContent = '-';
-      if (rect) {
-        rect.resize(120);
+      if (rect && rect.resize) {
+        rect?.resize(120);
       }
     }
     return;
@@ -45,8 +45,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       }
       htmlElement.textContent = getFormattedValue(input, decimalCount, append);
 
-      if (rect) {
-        rect.resize(120);
+      if (rect && rect.resize) {
+        rect?.resize(120);
       }
     }
     return {

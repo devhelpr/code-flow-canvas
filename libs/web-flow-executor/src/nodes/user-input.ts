@@ -28,6 +28,7 @@ export const getUserInput =
     ) => RunCounter
   ) =>
   (updated: () => void, theme?: Theme): NodeTask<NodeInfo> => {
+    let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let form: FormsComponent | undefined = undefined;
     let inputElement: HTMLInputElement | undefined = undefined;
@@ -66,6 +67,14 @@ export const getUserInput =
           ) {
             inputElement.value = currentValue.toFixed(decimalCount);
           }
+
+          if (node.nodeInfo?.formValues['label']) {
+            canvasAppInstance?.sendMessageFromNode(
+              node.nodeInfo?.formValues['label'],
+              currentValue.toFixed(decimalCount)
+            );
+          }
+
           // return {
           //   result: currentValue.toFixed(decimalCount),
           //   followPath: undefined,
@@ -90,6 +99,7 @@ export const getUserInput =
         initalValues?: InitialValues,
         containerNode?: IRectNodeComponent<NodeInfo>
       ) => {
+        canvasAppInstance = canvasApp;
         const initialValue = initalValues?.['label'] ?? '';
         const decimalsInitialValue = initalValues?.['decimals'] ?? '0';
         decimalCount = parseInt(decimalsInitialValue) || 0;
@@ -269,10 +279,21 @@ export const getUserInput =
                 if (!node.nodeInfo) {
                   return;
                 }
+                if (node.nodeInfo.formValues['label']) {
+                  canvasApp.removeNodeKeyListener(
+                    node.nodeInfo.formValues['label'],
+                    listener
+                  );
+                }
                 node.nodeInfo.formValues = {
                   ...node.nodeInfo.formValues,
                   label: value,
                 };
+                canvasApp.registerNodeKeyListener(
+                  node.nodeInfo.formValues['label'],
+                  listener
+                );
+
                 if (labelElement) {
                   labelElement.textContent = value;
                 }
@@ -307,6 +328,81 @@ export const getUserInput =
 
           node.nodeInfo.isSettingsPopup = true;
           node.nodeInfo.isUINode = true; // TODO : use isUINode for detecting loops in pushCallback / flow-engine
+
+          const listener = (_key: string, value: any) => {
+            // currentValue = parseStringToFloat(value);
+            // if (!isNaN(currentValue)) {
+            //   if (inputElement) {
+            //     inputElement.value = currentValue.toFixed(decimalCount);
+            //   }
+            // }
+
+            if (!node.nodeInfo) {
+              return;
+            }
+
+            const min = 0;
+            const max = decimalCount;
+            const dot = decimalCount === 0 ? '' : '[.,]?';
+            const regex = new RegExp(`^-?(\\d+(?:${dot}\\d{${min},${max}}))`);
+            if (!regex.test(value)) {
+              console.log('regex.test(value) failed', value);
+              return;
+            } else {
+              const matches = value.match(regex);
+              if (matches) {
+                value = matches[0];
+                console.log('matches', matches[0], min, max, dot, value);
+              }
+            }
+            const tempValue = parseStringToFloat(value);
+            if (isNaN(tempValue)) {
+              return;
+            }
+            currentValue = tempValue;
+            if (changeTimeout) {
+              clearTimeout(changeTimeout);
+              changeTimeout = null;
+            }
+            changeTimeout = setTimeout(() => {
+              changeTimeout = null;
+              runNode(
+                containerNode ?? node,
+                containerNode
+                  ? (containerNode.nodeInfo as any)?.canvasAppInstance
+                  : canvasApp,
+                () => {
+                  //
+                },
+                currentValue.toString(),
+                undefined,
+                undefined,
+                getRunIndex(),
+                undefined,
+                undefined,
+                createRunCounterContext(false, false),
+                false,
+                {
+                  trigger: true,
+                }
+              );
+            }, 150);
+          };
+          if (node.nodeInfo.formValues['label']) {
+            canvasApp.registerNodeKeyListener(
+              node.nodeInfo.formValues['label'],
+              listener
+            );
+
+            node.nodeInfo.delete = () => {
+              if (node.nodeInfo?.formValues['label']) {
+                canvasApp.removeNodeKeyListener(
+                  node.nodeInfo.formValues['label'],
+                  listener
+                );
+              }
+            };
+          }
         }
         return node;
       },
