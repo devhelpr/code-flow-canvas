@@ -140,8 +140,6 @@ export const showNeuralNetworkView = (
             r={nodeRadius}
             cx={
               spaceBetweenLayers * loopLayers +
-              nodeSpace +
-              nodeRadius +
               (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
             }
             cy={height / 2 - layerHeight / 2 + y}
@@ -160,8 +158,6 @@ export const showNeuralNetworkView = (
               r={dotRadius}
               cx={
                 spaceBetweenLayers * loopLayers +
-                nodeSpace +
-                nodeRadius +
                 (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
               }
               cy={height / 2 - layerHeight / 2 + y}
@@ -179,8 +175,6 @@ export const showNeuralNetworkView = (
             r={nodeRadius}
             cx={
               spaceBetweenLayers * loopLayers +
-              nodeSpace +
-              nodeRadius +
               (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
             }
             cy={height / 2 - layerHeight / 2 + y}
@@ -210,13 +204,12 @@ export const showNeuralNetworkView = (
           while (loopCurrent < currentLayerNodeCount) {
             const x1 =
               spaceBetweenLayers * (loopLayers - 1) +
-              nodeSpace +
-              nodeRadius * 2 +
+              nodeRadius +
               loopLayers * (nodeRadius * 2 + nodeSpace);
             const x2 =
               spaceBetweenLayers * loopLayers +
-              nodeSpace +
-              (loopLayers + 1) * (nodeRadius * 2 + nodeSpace);
+              (loopLayers + 1) * (nodeRadius * 2 + nodeSpace) -
+              nodeRadius;
             let y1 =
               height / 2 -
               previousLayerHeight / 2 +
@@ -256,7 +249,6 @@ export const showNeuralNetworkView = (
 
     const width =
       (layersInfo.length + 1) * (nodeRadius * 2 + nodeSpace) +
-      nodeSpace +
       spaceBetweenLayers * layerCounts.length;
     svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
     svgElement.setAttribute('height', `${height}px`);
