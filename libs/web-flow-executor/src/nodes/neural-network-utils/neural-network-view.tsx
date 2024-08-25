@@ -38,7 +38,7 @@ export const showNeuralNetworkView = (
   let dialogElement: any = undefined;
   renderElement(
     <dialog
-      class={'max-h-[100vh] overflow-auto'}
+      class={'max-h-[100vh] overflow-auto text-center'}
       getElement={(element: HTMLDialogElement) =>
         (dialogElement = element as HTMLDialogElement)
       }
@@ -74,7 +74,7 @@ export const showNeuralNetworkView = (
     );
     let height = 0;
 
-    const nodeRadius = 10;
+    const nodeRadius = 15;
     const nodeSpace = 50;
     const spaceBetweenLayers = 600;
 
@@ -126,6 +126,15 @@ export const showNeuralNetworkView = (
 
     let loopLayers = 0;
     while (loopLayers < layersInfo.length) {
+      let color = '#D2E8C8';
+      // C9CAE9
+      // E9D1C9
+      if (loopLayers > 0) {
+        color = '#C9CAE9';
+      }
+      if (loopLayers > 0 && loopLayers === layersInfo.length - 1) {
+        color = '#E9D1C9';
+      }
       const actualNodeCount = layersInfo[loopLayers].nodeCount;
       const currentLayerNodeCount = layersInfo[loopLayers].clampedNodeCount;
       const layerHeight =
@@ -138,6 +147,7 @@ export const showNeuralNetworkView = (
       while (loop < halfNodeCount) {
         renderElement(
           <circle
+            fill={color}
             r={nodeRadius}
             cx={
               spaceBetweenLayers * loopLayers +
@@ -156,7 +166,7 @@ export const showNeuralNetworkView = (
               (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
             }
             y={height / 2 - layerHeight / 2 + y}
-            stroke="white"
+            stroke="black"
             dy=".3em"
             font-size="10px"
           >
@@ -190,6 +200,7 @@ export const showNeuralNetworkView = (
       while (loop < currentLayerNodeCount) {
         renderElement(
           <circle
+            fill={color}
             r={nodeRadius}
             cx={
               spaceBetweenLayers * loopLayers +
@@ -207,7 +218,7 @@ export const showNeuralNetworkView = (
               (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
             }
             y={height / 2 - layerHeight / 2 + y}
-            stroke="white"
+            stroke="black"
             dy=".3em"
             font-size="10px"
           >
