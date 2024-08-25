@@ -1,6 +1,35 @@
 import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
 import { IConnectionNodeComponent } from '../interfaces';
 
+export interface IMetaField {
+  propertyName?: string;
+  displayName?: string;
+}
+
+export interface IMatrixMetaField extends IMetaField {
+  type: 'matrix';
+  getRowCount: () => number;
+  getColumnCount: () => number;
+}
+
+export interface IArrayMetaField extends IMetaField {
+  type: 'array';
+  getCount: () => number;
+}
+
+export interface IOtherMetaField extends IMetaField {
+  type: 'string' | 'info' | 'custom';
+  description?: string;
+  getDescription?: () => string;
+  renderCustom?: () => JSX.Element;
+}
+
+export type AllMetaFieldTypes =
+  | IMetaField
+  | IMatrixMetaField
+  | IArrayMetaField
+  | IOtherMetaField;
+
 export interface INodeDecorator {
   taskType: string;
   formValues?: any;
@@ -46,4 +75,7 @@ export interface BaseNodeInfo {
   formValues?: any;
   decorators?: INodeDecorator[];
   update?: () => void;
+
+  meta?: AllMetaFieldTypes[];
+  metaInputs?: AllMetaFieldTypes[];
 }

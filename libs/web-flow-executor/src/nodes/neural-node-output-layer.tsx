@@ -381,6 +381,36 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
 
         neuralNodeCountElement!.textContent =
           nodeComponent.nodeInfo.formValues?.['neural-layer-node-count'] ?? '';
+
+        nodeComponent.nodeInfo.meta = [
+          {
+            getDescription: () => {
+              return `Output layer for neural network (${
+                parseInt(
+                  nodeComponent?.nodeInfo?.formValues?.[
+                    'neural-layer-node-count'
+                  ]
+                ) ?? 0
+              } nodes)`;
+            },
+
+            type: 'info',
+          },
+          {
+            propertyName: 'bias',
+            displayName: 'Bias',
+            type: 'array',
+            getCount: () => {
+              return (
+                parseInt(
+                  nodeComponent?.nodeInfo?.formValues?.[
+                    'neural-layer-node-count'
+                  ]
+                ) ?? 0
+              );
+            },
+          },
+        ];
       }
       return nodeComponent;
     },

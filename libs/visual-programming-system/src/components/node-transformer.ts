@@ -10,8 +10,10 @@ import {
   IPointerDownResult,
   IRectNodeComponent,
 } from '../interfaces';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils';
 import { getPointerPos } from '../utils/pointer-pos';
+import { showMetaViewDialog } from './meta-view-dialog/meta-view-dialog';
 
 const pointerCursor = 'pointer-events-auto';
 const resizeThumbSize = 'w-[8px] h-[8px]';
@@ -31,9 +33,9 @@ const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
     - visibilty of moveNodePanel
 */
 
-const transformNodeList: NodeTransformer<unknown>[] = [];
+const transformNodeList: NodeTransformer<BaseNodeInfo>[] = [];
 
-export class NodeTransformer<T> {
+export class NodeTransformer<T extends BaseNodeInfo> {
   private canvas: IElementNode<T> | undefined;
   private rootElement: HTMLElement;
   constructor(
@@ -42,7 +44,7 @@ export class NodeTransformer<T> {
     interactionStateMachine: InteractionStateMachine<T>
   ) {
     this.id = crypto.randomUUID();
-    transformNodeList.push(this as NodeTransformer<unknown>);
+    transformNodeList.push(this as unknown as NodeTransformer<BaseNodeInfo>);
     this.rootElement = rootElement;
     this.canvas = canvas;
     this.interactionStateMachine = interactionStateMachine;
@@ -147,6 +149,28 @@ export class NodeTransformer<T> {
       this.moveNodesPanel.domElement
     );
 
+    this.metaInfoInspector = createElement(
+      'div',
+      {
+        class: `${pointerCursor}
+        w-[32px] h-[32px] text-white
+        hidden
+        text-[32px]
+        icon icon-info_outline
+        cursor-pointer`,
+        click: () => {
+          if (this.attachedNode) {
+            showMetaViewDialog(
+              this.attachedNode as unknown as IRectNodeComponent<BaseNodeInfo>
+            );
+          }
+        },
+
+        //pointerdown: this.onPointerDown,
+      },
+      this.moveNodesPanel.domElement
+    );
+
     // this.inividualNodeMover = createElement(
     //   'div',
     //   {
@@ -193,6 +217,8 @@ export class NodeTransformer<T> {
   downstreamNodesMover: IDOMElement | undefined;
   inividualNodeMover: IDOMElement | undefined;
 
+  metaInfoInspector: IDOMElement | undefined;
+
   previouslyAttachedNode: IRectNodeComponent<T> | undefined;
   attachedNode: IRectNodeComponent<T> | undefined;
 
@@ -202,6 +228,15 @@ export class NodeTransformer<T> {
     }
     this.attachedNode = node;
 
+    if (node.nodeInfo?.meta && node.nodeInfo?.meta.length > 0) {
+      (this.metaInfoInspector?.domElement as HTMLElement).classList.remove(
+        'hidden'
+      );
+    } else {
+      (this.metaInfoInspector?.domElement as HTMLElement).classList.add(
+        'hidden'
+      );
+    }
     this.detachRegisteredNodes();
 
     this.visibilityResizeControls(node.canBeResized ?? true);
@@ -226,6 +261,7 @@ export class NodeTransformer<T> {
   detachNode(isVisited = false) {
     this.previouslyAttachedNode = this.attachedNode;
     this.attachedNode = undefined;
+    (this.metaInfoInspector?.domElement as HTMLElement).classList.add('hidden');
     (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
       'hidden'
     );

@@ -40,6 +40,22 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<any> => {
   let nodeComponent: IRectNodeComponent<NodeInfo>;
   let neuralNodeCountElement: HTMLDivElement | undefined = undefined;
+
+  function getHiddenOrOutputLayer() {
+    let hiddenLayer: IRectNodeComponent<NodeInfo> | undefined = undefined;
+    nodeComponent.connections?.forEach((connection) => {
+      if (
+        connection.startNode?.id === nodeComponent.id &&
+        (connection.endNode?.nodeInfo?.type === 'neural-node-hidden-layer' ||
+          connection.endNode?.nodeInfo?.type === 'neural-node-output-layer') &&
+        connection.endNode?.nodeInfo?.formValues
+      ) {
+        hiddenLayer = connection.endNode;
+      }
+    });
+
+    return hiddenLayer as IRectNodeComponent<NodeInfo> | undefined;
+  }
   const initializeCompute = () => {
     return;
   };
@@ -403,7 +419,66 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
         nodeComponent.nodeInfo.initializeCompute = initializeCompute;
         neuralNodeCountElement!.textContent =
           nodeComponent.nodeInfo.formValues?.['neural-layer-node-count'] ?? '';
+
+        nodeComponent.nodeInfo.meta = [
+          {
+            getDescription: () => {
+              const hiddenLayer = getHiddenOrOutputLayer();
+              return `Hidden layer for neural network\nHolds weights per hidden/output node (${
+                parseInt(
+                  hiddenLayer?.nodeInfo?.formValues?.['neural-layer-node-count']
+                ) ?? 0
+              }) for each hidden layer node (${
+                parseInt(
+                  nodeComponent?.nodeInfo?.formValues?.[
+                    'neural-layer-node-count'
+                  ]
+                ) ?? 0
+              })`;
+            },
+
+            type: 'info',
+          },
+          {
+            propertyName: 'bias',
+            displayName: 'Bias',
+            type: 'array',
+            getCount: () => {
+              return (
+                parseInt(
+                  nodeComponent?.nodeInfo?.formValues?.[
+                    'neural-layer-node-count'
+                  ]
+                ) ?? 0
+              );
+            },
+          },
+          {
+            propertyName: 'weights',
+            displayName: 'Weights',
+            type: 'matrix',
+            getColumnCount: () => {
+              return (
+                parseInt(
+                  nodeComponent?.nodeInfo?.formValues?.[
+                    'neural-layer-node-count'
+                  ]
+                ) ?? 0
+              );
+            },
+
+            getRowCount: () => {
+              const hiddenLayer = getHiddenOrOutputLayer();
+              return (
+                parseInt(
+                  hiddenLayer?.nodeInfo?.formValues?.['neural-layer-node-count']
+                ) ?? 0
+              );
+            },
+          },
+        ];
       }
+
       return nodeComponent;
     },
   };

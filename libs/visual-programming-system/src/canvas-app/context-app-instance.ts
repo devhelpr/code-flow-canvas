@@ -27,6 +27,7 @@ import { ContextConnection } from '../context-components/context-connection';
 import { standardTheme } from '../themes/standard';
 import { MediaLibrary } from '@devhelpr/media-library';
 import { CanvasAction } from '../enums/canvas-action';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export const createContextInstanceApp = <T>(
   _canvasId?: string
@@ -72,7 +73,7 @@ export const createContextInstanceApp = <T>(
     canvas,
     rootElement,
     interactionStateMachine,
-    nodeTransformer: undefined as unknown as NodeTransformer<T>,
+    nodeTransformer: undefined as unknown as NodeTransformer<BaseNodeInfo>,
     compositons,
     isContextOnly: true,
     isComposition: false,

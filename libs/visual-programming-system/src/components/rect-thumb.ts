@@ -15,6 +15,7 @@ import {
 } from '../interfaces';
 import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, NodeType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils/create-element';
 import { getPointerPos } from '../utils/pointer-pos';
 import { pointerDown } from './events/pointer-events';
@@ -32,7 +33,7 @@ export class RectThumb<T> extends Rect<T> {
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
-    nodeTransformer: NodeTransformer<T>,
+    nodeTransformer: NodeTransformer<BaseNodeInfo>,
     pathHiddenElement: IElementNode<T>,
     elements: ElementNodeMap<T>,
     startX: number,

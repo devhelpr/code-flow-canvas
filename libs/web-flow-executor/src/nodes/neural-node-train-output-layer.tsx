@@ -128,13 +128,6 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
           // Output fout berekenen
           const outputErrors = [];
           for (let i = 0; i < currentLayerNodeCount; i++) {
-            // outputErrors.push(
-            //   Math.pow(
-            //     layerInput.expectedOutput?.[i] - layerInput.outputs?.[i],
-            //     2
-            //   ) // / 2 //currentLayerNodeCount
-            // );
-
             outputErrors.push(
               layerInput.outputs?.[i] - layerInput.expectedOutput?.[i]
             );
@@ -152,24 +145,10 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
             );
           }
 
-          //const hiddenErrors = [];
           const nodeHiddenLayer = hiddenLayer! as IRectNodeComponent<NodeInfo>;
           const weights =
             nodeHiddenLayer.nodeInfo?.formValues?.['weights'] ?? [];
           const orgWeights = weights.map((row: number[]) => [...row]);
-          // for (let i = 0; i < inputLayerNodeCount; i++) {
-          //   let error = 0;
-          //   for (let j = 0; j < currentLayerNodeCount; j++) {
-          //     error += weights[i][j] * outputDeltas[j];
-          //   }
-          //   hiddenErrors.push(error);
-          // }
-          /*
-            probleem: hier worden de gewichten van de hidden layer tbv output layer aangepast
-            ... echter moet nog berekend worden wat de delta's zijn van de gewichten vd input layer naar de hidden layer
-            ... en daar zijn de oorspronkelijke gewichten van de hidden layer voor nodig
-
-          */
 
           const hiddenOutputs = layerInput.hiddenLayers[hiddenLayerName];
           for (let i = 0; i < currentLayerNodeCount; i++) {

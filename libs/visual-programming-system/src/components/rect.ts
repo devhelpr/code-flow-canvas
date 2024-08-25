@@ -30,13 +30,14 @@ import { NodeTransformer } from './node-transformer';
 import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
 import { FlowChangeType } from '../interfaces';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
   public isStaticPosition?: boolean;
 
   protected rectInfo: ReturnType<typeof this.createRectElement>;
-  protected nodeTransformer: NodeTransformer<T>;
+  protected nodeTransformer: NodeTransformer<BaseNodeInfo>;
 
   protected canvas: IElementNode<T> | undefined;
   protected canvasElements?: ElementNodeMap<T>;
@@ -73,7 +74,7 @@ export class Rect<T> {
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
-    nodeTransformer: NodeTransformer<T>,
+    nodeTransformer: NodeTransformer<BaseNodeInfo>,
     pathHiddenElement: IElementNode<T>,
     elements: ElementNodeMap<T>,
     startX: number,
@@ -306,7 +307,9 @@ export class Rect<T> {
         containerNode: this.nodeComponent
           .containerNode as unknown as IRectNodeComponent<unknown>,
       });
-      this.nodeTransformer.attachNode(this.nodeComponent);
+      this.nodeTransformer.attachNode(
+        this.nodeComponent as unknown as IRectNodeComponent<BaseNodeInfo>
+      );
     };
     this.nodeComponent.connections = [];
   }

@@ -22,6 +22,7 @@ import {
   FlowChangeType,
   ICommandHandler,
   IConnectionNodeComponent,
+  IElementNode,
   INodeComponent,
   IRectNodeComponent,
   IThumb,
@@ -45,6 +46,7 @@ import { updateThumbPrefixLabel } from '../utils/thumbs';
 import { MediaLibrary } from '@devhelpr/media-library';
 import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -140,9 +142,9 @@ export const createCanvasApp = <T>(
   );
 
   const nodeTransformer = new NodeTransformer(
-    canvas,
+    canvas as unknown as IElementNode<BaseNodeInfo>,
     rootElement,
-    interactionStateMachine
+    interactionStateMachine as unknown as InteractionStateMachine<BaseNodeInfo>
   );
 
   const compositons = new Compositions<T>();
@@ -1107,7 +1109,9 @@ export const createCanvasApp = <T>(
         containerNode:
           nodeComponent.containerNode as unknown as IRectNodeComponent<unknown>,
       });
-      nodeTransformer.attachNode(nodeComponent);
+      nodeTransformer.attachNode(
+        nodeComponent as unknown as IRectNodeComponent<BaseNodeInfo>
+      );
     },
     deselectNode: () => {
       setSelectNode(undefined);
@@ -1136,7 +1140,7 @@ export const createCanvasApp = <T>(
       const rectInstance = new Rect<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
-        nodeTransformer as unknown as NodeTransformer<T>,
+        nodeTransformer as unknown as NodeTransformer<BaseNodeInfo>,
         pathHiddenElement,
         elements,
         x,
@@ -1192,7 +1196,7 @@ export const createCanvasApp = <T>(
       const rectInstance = new RectThumb<T>(
         canvas as unknown as INodeComponent<T>,
         interactionStateMachine,
-        nodeTransformer as unknown as NodeTransformer<T>,
+        nodeTransformer as unknown as NodeTransformer<BaseNodeInfo>,
         pathHiddenElement,
         elements,
         x,

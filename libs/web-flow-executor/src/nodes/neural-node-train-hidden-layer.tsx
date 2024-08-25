@@ -93,12 +93,6 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
             ) {
               hiddenOrInputLayer =
                 connection.startNode as unknown as IRectNodeComponent<NodeInfo>;
-              // inputLayerNodeCount =
-              //   parseInt(
-              //     connection.startNode.nodeInfo.formValues[
-              //       'neural-layer-node-count'
-              //     ]
-              //   ) ?? 0;
 
               hiddenOrInputLayerName =
                 connection.startNode.nodeInfo.formValues['neural-layer-name'];
@@ -124,42 +118,23 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
           const weights = nodeLayer?.nodeInfo?.formValues?.['weights'] ?? [];
           const orgWeights = weights.map((row: number[]) => [...row]);
 
-          // let hiddenOrOutputLayerNodeCount = 0;
-          // neuralLayer.connections?.forEach((connection) => {
-          //   if (
-          //     connection.startNode?.id === neuralLayer.id &&
-          //     (connection.endNode?.nodeInfo?.type ===
-          //       'neural-node-hidden-layer' ||
-          //       connection.endNode?.nodeInfo?.type ===
-          //         'neural-node-output-layer') &&
-          //     connection.endNode?.nodeInfo?.formValues
-          //   ) {
-          //     hiddenOrOutputLayerNodeCount =
-          //       parseInt(
-          //         connection.endNode.nodeInfo.formValues[
-          //           'neural-layer-node-count'
-          //         ]
-          //       ) ?? 0;
-          //   }
-          // });
-
           const hiddenToOutputWeights =
             layerInput.orgWeightsHiddenToOutput ?? [];
           const outputDeltas = layerInput.outputDeltas ?? [];
-          const hiddenErrors = [];
+          const hiddenLayerOutputFactors = [];
           for (let i = 0; i < currentLayerNodeCount; i++) {
-            let error = 0;
+            let factorSum = 0;
             for (let j = 0; j < outputDeltas.length; j++) {
-              error += hiddenToOutputWeights[j][i] * outputDeltas[j];
+              factorSum += hiddenToOutputWeights[j][i] * outputDeltas[j];
             }
-            hiddenErrors.push(error);
+            hiddenLayerOutputFactors.push(factorSum);
           }
 
           const hiddenOutputs = layerInput.hiddenLayers[currentLayerName];
-          const hiddenDeltas = [];
+          const weightChangeFactors = [];
           for (let i = 0; i < currentLayerNodeCount; i++) {
-            hiddenDeltas.push(
-              hiddenErrors[i] *
+            weightChangeFactors.push(
+              hiddenLayerOutputFactors[i] *
                 deriviateActivationFunction(
                   activationFunction as ActivationFunctionType,
                   hiddenOutputs[i]
@@ -168,13 +143,11 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
           }
 
           const inputs = layerInput.hiddenLayerInputs[currentLayerName];
-          // TODO: inputs kan hier een 2d-array zijn... afhankelijk of de input node een hidden layer was
-          //   of een input layer
           for (let i = 0; i < currentLayerNodeCount; i++) {
             let hiddenInputs = Array.isArray(inputs[0]) ? inputs[i] : inputs;
             for (let j = 0; j < hiddenInputs.length; j++) {
               const deltaWeight =
-                learningRate * hiddenDeltas[i] * hiddenInputs[j];
+                learningRate * weightChangeFactors[i] * hiddenInputs[j];
 
               if (
                 (hiddenOrInputLayer as IRectNodeComponent<NodeInfo>)?.nodeInfo
@@ -185,7 +158,7 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
                 nodeLayer!.nodeInfo!.formValues['weights'][i][j] -= deltaWeight;
               }
             }
-            const deltaBias = learningRate * hiddenDeltas[i]; //hiddenErrors[i] * hiddenOutputs[i];
+            const deltaBias = learningRate * weightChangeFactors[i]; //hiddenErrors[i] * hiddenOutputs[i];
 
             if (
               neuralLayer?.nodeInfo?.formValues?.['bias']?.[i] !== undefined
@@ -201,7 +174,7 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
             trainingIndex: layerInput.trainingIndex,
             trainingEpochs: layerInput.trainingEpochs,
             trainingBatchSize: layerInput.trainingBatchSize,
-            outputDeltas: hiddenDeltas,
+            outputDeltas: weightChangeFactors,
             orgWeightsHiddenToOutput: orgWeights,
             connectionHistory: layerInput.connectionHistory,
           };
