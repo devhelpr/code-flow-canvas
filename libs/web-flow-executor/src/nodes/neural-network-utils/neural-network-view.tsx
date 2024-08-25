@@ -77,137 +77,185 @@ export const showNeuralNetworkView = (
     const nodeRadius = 10;
     const nodeSpace = 50;
     const spaceBetweenLayers = 600;
-    let loop = 0;
-    while (loop < currentLayerNodeCount) {
-      renderElement(
-        <circle
-          r={nodeRadius}
-          cx={nodeSpace + nodeRadius}
-          cy={nodeRadius + loop * (nodeRadius * 2 + nodeSpace)}
-        ></circle>,
-        svgElement
-      );
-      height += nodeRadius * 2 + nodeSpace;
-      loop++;
-    }
+
+    const layersInfo: {
+      nodeCount: number;
+      clampedNodeCount: number;
+      dots: number;
+    }[] = [];
+    layersInfo.push({
+      nodeCount: currentLayerNodeCount,
+      clampedNodeCount: Math.min(currentLayerNodeCount, 10),
+      dots: 0,
+    });
+    layerCounts.forEach((nodeCount) => {
+      layersInfo.push({
+        nodeCount,
+        clampedNodeCount: Math.min(nodeCount, 10),
+        dots: 0,
+      });
+    });
+
+    const sortedLayersInfo: number[] = [];
+    layersInfo.forEach((layerInfo) => {
+      if (
+        layerInfo.nodeCount > 10 &&
+        !sortedLayersInfo.includes(layerInfo.nodeCount)
+      ) {
+        sortedLayersInfo.push(layerInfo.nodeCount);
+      }
+    });
+    sortedLayersInfo.sort((a, b) => a - b);
+
+    let maxHeight = -1;
+    let maxIndex = -1;
+    layersInfo.forEach((layerInfo, index) => {
+      if (layerInfo.nodeCount > 10) {
+        layerInfo.dots = sortedLayersInfo.indexOf(layerInfo.nodeCount) + 1;
+      }
+      if (layerInfo.clampedNodeCount > maxHeight) {
+        maxHeight = layerInfo.clampedNodeCount;
+        maxIndex = index;
+      }
+    });
+
+    const dotRadius = 2;
+    height =
+      maxHeight * (nodeRadius * 2 + nodeSpace) +
+      layersInfo[maxIndex].dots * (dotRadius * 2 + nodeSpace);
 
     let loopLayers = 0;
-    while (loopLayers < layerCounts.length) {
-      const currentLayerNodeCount = layerCounts[loopLayers];
-      const layerHeight = currentLayerNodeCount * (nodeRadius * 2 + nodeSpace);
-      loop = 0;
+    while (loopLayers < layersInfo.length) {
+      const currentLayerNodeCount = layersInfo[loopLayers].clampedNodeCount;
+      const layerHeight =
+        currentLayerNodeCount * (nodeRadius * 2 + nodeSpace) +
+        layersInfo[loopLayers].dots * (dotRadius * 2 + nodeSpace);
+
+      const halfNodeCount = Math.ceil(currentLayerNodeCount / 2);
+      let y = nodeRadius;
+      let loop = 0;
+      while (loop < halfNodeCount) {
+        renderElement(
+          <circle
+            r={nodeRadius}
+            cx={
+              spaceBetweenLayers * loopLayers +
+              nodeSpace +
+              nodeRadius +
+              (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
+            }
+            cy={height / 2 - layerHeight / 2 + y}
+          ></circle>,
+          svgElement
+        );
+        y += nodeRadius * 2 + nodeSpace;
+        loop++;
+      }
+
+      if (layersInfo[loopLayers].dots > 0) {
+        let loopDots = 0;
+        while (loopDots < layersInfo[loopLayers].dots) {
+          renderElement(
+            <circle
+              r={dotRadius}
+              cx={
+                spaceBetweenLayers * loopLayers +
+                nodeSpace +
+                nodeRadius +
+                (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
+              }
+              cy={height / 2 - layerHeight / 2 + y}
+            ></circle>,
+            svgElement
+          );
+          y += dotRadius * 2 + nodeSpace;
+          loopDots++;
+        }
+      }
+
       while (loop < currentLayerNodeCount) {
         renderElement(
           <circle
             r={nodeRadius}
             cx={
-              spaceBetweenLayers * (loopLayers + 1) +
+              spaceBetweenLayers * loopLayers +
               nodeSpace +
               nodeRadius +
               (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
             }
-            cy={
-              height / 2 -
-              layerHeight / 2 +
-              nodeRadius +
-              loop * (nodeRadius * 2 + nodeSpace)
-            }
+            cy={height / 2 - layerHeight / 2 + y}
           ></circle>,
           svgElement
         );
+        y += nodeRadius * 2 + nodeSpace;
         loop++;
       }
-      loopLayers++;
-    }
 
-    const inputLayerCount = currentLayerNodeCount;
-    loopLayers = 0;
-    while (loopLayers < layerCounts.length) {
-      const currentLayerNodeCount = layerCounts[loopLayers];
-      const layerHeight = currentLayerNodeCount * (nodeRadius * 2 + nodeSpace);
-      loop = 0;
-      while (loop < currentLayerNodeCount) {
-        // create a line from each node in the previous layer to each node in the current layer
-        if (loopLayers === 0) {
+      // draw lines
+      if (loopLayers > 0) {
+        const previousLayerNodeCount =
+          layersInfo[loopLayers - 1].clampedNodeCount;
+        const currentLayerNodeCount = layersInfo[loopLayers].clampedNodeCount;
+        const previousLayerHeight =
+          previousLayerNodeCount * (nodeRadius * 2 + nodeSpace) +
+          layersInfo[loopLayers - 1].dots * (dotRadius * 2 + nodeSpace);
+
+        const currentLayerHeight =
+          currentLayerNodeCount * (nodeRadius * 2 + nodeSpace) +
+          layersInfo[loopLayers].dots * (dotRadius * 2 + nodeSpace);
+
+        let loopLines = 0;
+        while (loopLines < previousLayerNodeCount) {
           let loopCurrent = 0;
-          while (loopCurrent < inputLayerCount) {
+          while (loopCurrent < currentLayerNodeCount) {
+            const x1 =
+              spaceBetweenLayers * (loopLayers - 1) +
+              nodeSpace +
+              nodeRadius * 2 +
+              loopLayers * (nodeRadius * 2 + nodeSpace);
+            const x2 =
+              spaceBetweenLayers * loopLayers +
+              nodeSpace +
+              (loopLayers + 1) * (nodeRadius * 2 + nodeSpace);
+            let y1 =
+              height / 2 -
+              previousLayerHeight / 2 +
+              loopLines * (nodeRadius * 2 + nodeSpace) +
+              nodeRadius;
+            if (loopLines >= halfNodeCount) {
+              y1 +=
+                layersInfo[loopLayers - 1].dots * (dotRadius * 2 + nodeSpace);
+            }
+            let y2 =
+              height / 2 -
+              currentLayerHeight / 2 +
+              loopCurrent * (nodeRadius * 2 + nodeSpace) +
+              nodeRadius;
+            if (loopCurrent >= halfNodeCount) {
+              y2 += layersInfo[loopLayers].dots * (dotRadius * 2 + nodeSpace);
+            }
+
             renderElement(
               <line
-                x1={nodeRadius + nodeSpace + nodeRadius * 2}
-                y1={nodeRadius + loopCurrent * (nodeRadius * 2 + nodeSpace)}
-                x2={
-                  spaceBetweenLayers +
-                  nodeRadius +
-                  nodeSpace +
-                  nodeRadius * 2 +
-                  nodeSpace -
-                  nodeRadius
-                }
-                y2={
-                  height / 2 -
-                  layerHeight / 2 +
-                  nodeRadius +
-                  loop * (nodeRadius * 2 + nodeSpace)
-                }
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
                 style="stroke:black;stroke-width:1"
               ></line>,
               svgElement
             );
             loopCurrent++;
           }
-        } else {
-          let loopCurrent = 0;
-          const previousLayerNodeCount = layerCounts[loopLayers - 1];
-          const previousLayerHeight =
-            previousLayerNodeCount * (nodeRadius * 2 + nodeSpace);
-          while (loopCurrent < previousLayerNodeCount) {
-            renderElement(
-              <line
-                x1={
-                  nodeRadius +
-                  nodeSpace +
-                  nodeRadius * 2 +
-                  spaceBetweenLayers +
-                  nodeSpace +
-                  nodeRadius +
-                  (loopLayers - 1) *
-                    (nodeRadius * 2 + nodeSpace + spaceBetweenLayers)
-                }
-                y1={
-                  height / 2 -
-                  previousLayerHeight / 2 +
-                  nodeRadius +
-                  loopCurrent * (nodeRadius * 2 + nodeSpace)
-                }
-                x2={
-                  spaceBetweenLayers +
-                  nodeRadius +
-                  nodeSpace +
-                  nodeRadius * 2 +
-                  nodeSpace -
-                  nodeRadius +
-                  loopLayers * (nodeRadius * 2 + nodeSpace + spaceBetweenLayers)
-                }
-                y2={
-                  height / 2 -
-                  layerHeight / 2 +
-                  nodeRadius +
-                  loop * (nodeRadius * 2 + nodeSpace)
-                }
-                style="stroke:black;stroke-width:1"
-              ></line>,
-              svgElement
-            );
-            loopCurrent++;
-          }
+          loopLines++;
         }
-
-        loop++;
       }
+
       loopLayers++;
     }
+
     const width =
-      (layerCounts.length + 1) * (nodeRadius * 2 + nodeSpace) +
+      (layersInfo.length + 1) * (nodeRadius * 2 + nodeSpace) +
       nodeSpace +
       spaceBetweenLayers * layerCounts.length;
     svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
