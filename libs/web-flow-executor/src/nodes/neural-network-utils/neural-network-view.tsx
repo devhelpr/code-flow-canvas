@@ -179,6 +179,7 @@ export const showNeuralNetworkView = (
       }
 
       if (layersInfo[loopLayers].dots > 0) {
+        y -= nodeRadius * 2 - dotRadius;
         let loopDots = 0;
         while (loopDots < layersInfo[loopLayers].dots) {
           renderElement(
