@@ -126,6 +126,7 @@ export const showNeuralNetworkView = (
 
     let loopLayers = 0;
     while (loopLayers < layersInfo.length) {
+      const actualNodeCount = layersInfo[loopLayers].nodeCount;
       const currentLayerNodeCount = layersInfo[loopLayers].clampedNodeCount;
       const layerHeight =
         currentLayerNodeCount * (nodeRadius * 2 + nodeSpace) +
@@ -144,6 +145,23 @@ export const showNeuralNetworkView = (
             }
             cy={height / 2 - layerHeight / 2 + y}
           ></circle>,
+          svgElement
+        );
+
+        renderElement(
+          <text
+            text-anchor="middle"
+            x={
+              spaceBetweenLayers * loopLayers +
+              (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
+            }
+            y={height / 2 - layerHeight / 2 + y}
+            stroke="white"
+            dy=".3em"
+            font-size="10px"
+          >
+            {loop + 1}
+          </text>,
           svgElement
         );
         y += nodeRadius * 2 + nodeSpace;
@@ -179,6 +197,22 @@ export const showNeuralNetworkView = (
             }
             cy={height / 2 - layerHeight / 2 + y}
           ></circle>,
+          svgElement
+        );
+        renderElement(
+          <text
+            text-anchor="middle"
+            x={
+              spaceBetweenLayers * loopLayers +
+              (loopLayers + 1) * (nodeRadius * 2 + nodeSpace)
+            }
+            y={height / 2 - layerHeight / 2 + y}
+            stroke="white"
+            dy=".3em"
+            font-size="10px"
+          >
+            {actualNodeCount - currentLayerNodeCount + loop + 1}
+          </text>,
           svgElement
         );
         y += nodeRadius * 2 + nodeSpace;

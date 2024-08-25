@@ -14,6 +14,7 @@ export const createJSXElement = (
     tag === 'path' ||
     tag === 'circle' ||
     tag === 'rect' ||
+    tag === 'text' ||
     tag === 'line'
       ? ((
           createNSElement(
