@@ -240,6 +240,9 @@ export const showNeuralNetworkView = (
           previousLayerNodeCount * (nodeRadius * 2 + nodeSpace) +
           layersInfo[loopLayers - 1].dots * (dotRadius * 2 + nodeSpace);
 
+        const previousDotCount = layersInfo[loopLayers - 1].dots;
+        const currentDotCount = layersInfo[loopLayers].dots;
+
         const currentLayerHeight =
           currentLayerNodeCount * (nodeRadius * 2 + nodeSpace) +
           layersInfo[loopLayers].dots * (dotRadius * 2 + nodeSpace);
@@ -261,7 +264,8 @@ export const showNeuralNetworkView = (
               previousLayerHeight / 2 +
               loopLines * (nodeRadius * 2 + nodeSpace) +
               nodeRadius;
-            if (loopLines >= halfNodeCount) {
+            if (loopLines >= halfNodeCount && previousDotCount > 0) {
+              y1 -= nodeRadius * 2 - dotRadius;
               y1 +=
                 layersInfo[loopLayers - 1].dots * (dotRadius * 2 + nodeSpace);
             }
@@ -270,7 +274,8 @@ export const showNeuralNetworkView = (
               currentLayerHeight / 2 +
               loopCurrent * (nodeRadius * 2 + nodeSpace) +
               nodeRadius;
-            if (loopCurrent >= halfNodeCount) {
+            if (loopCurrent >= halfNodeCount && currentDotCount > 0) {
+              y2 -= nodeRadius * 2 - dotRadius;
               y2 += layersInfo[loopLayers].dots * (dotRadius * 2 + nodeSpace);
             }
 
