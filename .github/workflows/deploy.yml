@@ -29,6 +29,9 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: copy cloudflare functions
+        run: cp -r functions dist/apps/vps-web
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
