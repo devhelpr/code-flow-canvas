@@ -6,6 +6,7 @@ on:
       - demo-deploy
 env:
   NX_NON_NATIVE_HASHER: true
+  VITE_API_URL: /
 
 jobs:
   publish:
