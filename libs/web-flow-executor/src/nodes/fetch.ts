@@ -212,8 +212,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             color: 'white',
-            label: '{}',
-            thumbConstraint: 'object',
+            label: '',
             name: 'output',
           },
           {
