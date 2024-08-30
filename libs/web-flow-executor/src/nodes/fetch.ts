@@ -15,6 +15,7 @@ import { RunCounter } from '../follow-path/run-counter';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 // @ts-ignore
 const API_URL_ROOT = import.meta.env.VITE_API_URL;
+// @ts-ignore
 console.log('env', import.meta.env);
 export const getFetch: NodeTaskFactory<NodeInfo> = (
   updated: () => void
