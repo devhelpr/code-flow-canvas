@@ -1,7 +1,6 @@
 import {
   CanvasAppInstance,
   createElement,
-  FormComponent,
   FormFieldType,
   InitialValues,
   INodeComponent,
@@ -12,76 +11,136 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { RunCounter } from '../follow-path/run-counter';
+import { runNodeFromThumb } from '../flow-engine/flow-engine';
 
 export const getFetch: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
-
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
-  const computeAsync = (input: string, _loopIndex?: number) => {
-    return new Promise((resolve, _reject) => {
+  const computeAsync = (
+    input: string,
+    loopIndex?: number,
+    _payload?: any,
+    _thumbName?: string,
+    scopeId?: string,
+    runCounter?: RunCounter
+  ) => {
+    function sendFetchResult(result: any) {
+      runNodeFromThumb(
+        node.thumbConnectors![0],
+        canvasAppInstance!,
+        (inputFromLoadingRun: string | any[]) => {
+          console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
+          //
+        },
+        result,
+        node,
+        loopIndex,
+        scopeId,
+        runCounter
+      );
+    }
+    function sendFetchState(state: string) {
+      runNodeFromThumb(
+        node.thumbConnectors![2],
+        canvasAppInstance!,
+        (inputFromLoadingRun: string | any[]) => {
+          console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
+          //
+        },
+        state,
+        node,
+        loopIndex,
+        scopeId,
+        runCounter
+      );
+    }
+    function sendError(error: string) {
+      runNodeFromThumb(
+        node.thumbConnectors![1],
+        canvasAppInstance!,
+        (inputFromErrorgRun: string | any[]) => {
+          console.log('Fetch inputFromErrorgRun', inputFromErrorgRun);
+          //
+        },
+        error,
+        node,
+        loopIndex,
+        scopeId,
+        runCounter
+      );
+    }
+    return new Promise((resolve, reject) => {
       (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
       let result: any = false;
+      if (!node || !canvasAppInstance) {
+        reject();
+        return;
+      }
+
+      resolve({
+        result,
+        followPath: undefined,
+        stop: true,
+        isDummyEndpoint: true,
+      });
       try {
+        sendFetchState('fetching');
+
         const url = node?.nodeInfo?.formValues?.['url'] ?? '';
+        const responseType =
+          node?.nodeInfo?.formValues?.['response-type'] ?? 'json';
+        const httpMethod =
+          node?.nodeInfo?.formValues?.['http-method'] ?? 'post';
         fetch(url, {
-          method: 'POST',
+          method: httpMethod,
           body: JSON.stringify(input),
         })
           .then((response) => {
-            console.log('response', response);
-            response.json().then((json) => {
-              console.log('json', json);
-              result = json;
-              resolve({
-                result: result,
-                output: result,
-                followPath: undefined,
+            if (responseType === 'json') {
+              response.json().then((json) => {
+                sendFetchState('ready');
+                result = json;
+                sendFetchResult(result);
               });
-            });
+            } else {
+              response.text().then((text) => {
+                sendFetchState('ready');
+                result = text;
+                sendFetchResult(result);
+              });
+            }
           })
           .catch((error) => {
             console.log('error', error);
+            sendFetchState('error');
             result = undefined;
             (errorNode.domElement as unknown as HTMLElement).classList.remove(
               'hidden'
             );
             (errorNode.domElement as unknown as HTMLElement).textContent =
               error?.toString() ?? 'Error';
-            console.log('expression error', error);
-            resolve({
-              result,
-              followPath: undefined,
-              stop: true,
-            });
+
+            sendError(error?.toString() ?? 'Error');
           });
 
         //
       } catch (error) {
         result = undefined;
+        sendFetchState('ready');
         (errorNode.domElement as unknown as HTMLElement).classList.remove(
           'hidden'
         );
         (errorNode.domElement as unknown as HTMLElement).textContent =
           error?.toString() ?? 'Error';
-        console.log('expression error', error);
-        resolve({
-          result,
-          followPath: undefined,
-          stop: true,
-        });
+        sendError(error?.toString() ?? 'Error');
       }
-      // if (result) {
-      //   currentValue = result;
-      // }
-      // resolve({
-      //   result,
-      //   followPath: undefined,
-      // });
     });
   };
 
@@ -100,7 +159,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       const url = initalValues?.['url'] ?? '';
       console.log('createVisualNode createNamedSignal', url, id);
       //createNamedSignal(id + '_' + 'Expression', expression ?? '');
-
+      canvasAppInstance = canvasApp;
       const formElements = [
         {
           fieldType: FormFieldType.Text,
@@ -125,21 +184,21 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded`,
+          class: `inner-node bg-slate-500 p-4 rounded text-white flex flex-col items-center justify-center`,
         },
         undefined,
-        undefined
+        'Fetch'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      FormComponent({
-        rootElement: jsxComponentWrapper.domElement as HTMLElement,
-        id: id ?? '',
-        formElements,
-        hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
-        },
-      }) as unknown as HTMLElement;
+      // FormComponent({
+      //   rootElement: jsxComponentWrapper.domElement as HTMLElement,
+      //   id: id ?? '',
+      //   formElements,
+      //   hasSubmitButton: false,
+      //   onSave: (formValues) => {
+      //     console.log('onSave', formValues);
+      //   },
+      // }) as unknown as HTMLElement;
 
       const rect = canvasApp.createRect(
         x,
@@ -149,12 +208,29 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorCenter,
+            thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             color: 'white',
             label: '{}',
             thumbConstraint: 'object',
+            name: 'output',
+          },
+          {
+            thumbType: ThumbType.StartConnectorRight,
+            thumbIndex: 1,
+            connectionType: ThumbConnectionType.start,
+            color: 'white',
+            label: '',
+            name: 'error',
+          },
+          {
+            thumbType: ThumbType.StartConnectorRight,
+            thumbIndex: 2,
+            connectionType: ThumbConnectionType.start,
+            color: 'white',
+            label: '',
+            name: 'state',
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
@@ -176,6 +252,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         {
           type: 'fetch',
           formValues: {
+            ...initalValues,
             url: url ?? '',
           },
         },
@@ -205,9 +282,60 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
       if (node.nodeInfo) {
-        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.formElements = [
+          ...formElements,
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'http-method',
+            label: 'HTTP Method',
+            value: initalValues?.['http-method'] ?? 'get',
+            options: [
+              { label: 'get', value: 'get' },
+              { label: 'post', value: 'post' },
+              { label: 'put', value: 'put' },
+              { label: 'delete', value: 'delete' },
+              { label: 'patch', value: 'patch' },
+            ],
+            onChange: (value: string) => {
+              if (!node || !node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['http-method']: value,
+              };
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'response-type',
+            label: 'Response type',
+            value: initalValues?.['response-type'] ?? 'json',
+            options: [
+              { label: 'JSON', value: 'json' },
+              { label: 'text', value: 'Text' },
+              { label: 'binary', value: 'Binary' },
+            ],
+            onChange: (value: string) => {
+              if (!node || !node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['response-type']: value,
+              };
+              if (updated) {
+                updated();
+              }
+            },
+          },
+        ];
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.isSettingsPopup = true;
       }
       return node;
     },
