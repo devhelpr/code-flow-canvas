@@ -19,6 +19,8 @@ if (url.pathname === '/run-flow') {
 } else if (url.pathname === '/python') {
   pythonPage();
 } else {
+  const API_URL_ROOT = import.meta.env.VITE_API_URL;
+
   import('./app/flow-app.element').then(async (module) => {
     new module.FlowAppElement(
       '#app-root',
@@ -29,7 +31,10 @@ if (url.pathname === '/run-flow') {
       undefined,
       (_registerNodeFactory: RegisterNodeFactoryFunction) => {
         //registerNodeFactory('test-external-node', getExternalTestNode(pyodide));
-      }
+      },
+      undefined,
+      undefined,
+      API_URL_ROOT
     ); //, 100, 32);
   });
 }

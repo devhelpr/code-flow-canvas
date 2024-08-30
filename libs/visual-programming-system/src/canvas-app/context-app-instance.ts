@@ -567,5 +567,11 @@ export const createContextInstanceApp = <T>(
     resetNodeSelector: () => {
       //
     },
+    setApiUrlRoot: (_apiUrlRoot: string) => {
+      //
+    },
+    getApiUrlRoot: () => {
+      return '';
+    },
   };
 };

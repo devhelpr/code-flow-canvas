@@ -13,10 +13,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
-// @ts-ignore
-const API_URL_ROOT = import.meta.env.VITE_API_URL;
-// @ts-ignore
-console.log('env', import.meta.env);
+
 export const getFetch: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -98,7 +95,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
 
         let url = node?.nodeInfo?.formValues?.['url'] ?? '';
         if (url.startsWith('/')) {
-          url = API_URL_ROOT + url.substring(1);
+          url = canvasAppInstance?.getApiUrlRoot() + url.substring(1);
         }
         const responseType =
           node?.nodeInfo?.formValues?.['response-type'] ?? 'json';

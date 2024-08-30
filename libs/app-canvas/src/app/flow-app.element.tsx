@@ -213,7 +213,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       registerNodeFactory: RegisterNodeFactoryFunction
     ) => void,
     flowId?: string,
-    clearPresetRegistry?: boolean
+    clearPresetRegistry?: boolean,
+    apiUrlRoot?: string
   ) {
     super(
       appRootSelector,
@@ -235,6 +236,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     }
 
     this.onStoreFlow = onStoreFlow;
+    this.canvasApp.setApiUrlRoot(apiUrlRoot ?? '');
     this.canvasApp.setCanvasAction((action, payload?: any) => {
       this.canvasAction = action;
       this.canvasActionPayload = payload;

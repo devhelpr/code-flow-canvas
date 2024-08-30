@@ -855,6 +855,7 @@ export const createCanvasApp = <T>(
     listener: (key: string, value: any) => void;
   }[] = [];
   let isCameraFollowingPaused = false;
+  let apiUrl = '';
   return {
     elements,
     canvas,
@@ -1932,6 +1933,12 @@ export const createCanvasApp = <T>(
       listeners = listeners.filter(
         (l) => l.key !== key && l.listener !== listener
       );
+    },
+    setApiUrlRoot: (apiUrlRoot: string) => {
+      apiUrl = apiUrlRoot;
+    },
+    getApiUrlRoot: () => {
+      return apiUrl;
     },
   };
 };

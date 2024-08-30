@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "jsx": "react",
     "jsxFactory": "createJSXElement",
-    "jsxFragmentFactory": "Fragment",
+    "jsxFragmentFactory": "Fragment"
   },
   "files": [],
   "include": [],
