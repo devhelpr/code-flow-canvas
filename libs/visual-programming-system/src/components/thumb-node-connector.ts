@@ -126,10 +126,12 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     this.circleElement = createElement(
       'div',
       {
-        class: `inline-flex items-center ${
-          disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
+        class: `${this.cssClasses.nodePortClasses} ${
+          disableInteraction
+            ? this.cssClasses.noPointerEvents
+            : this.cssClasses.autoPointerEvents
         }        
-        origin-center`,
+        `,
         style: {
           width: `${radius ?? thumbRadius * 2}px`,
           height: `${(radius ?? thumbRadius) * 2}px`,
@@ -173,7 +175,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       createElement(
         'div',
         {
-          class: `relative text-white -left-[10px] thumb-prefix-icon ${thumb.prefixIcon}`,
+          class: `${this.cssClasses.prefixIconClasses} ${thumb.prefixIcon}`,
         },
         this.circleElement.domElement
       );
@@ -182,10 +184,10 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       createElement(
         'div',
         {
-          class: `thumb-prefix-label whitespace-nowrap relative text-white pointer-events-none select-none ${
+          class: `${this.cssClasses.prefixLabelClasses} ${
             thumb.connectionType === ThumbConnectionType.end
-              ? '-right-[30px] block'
-              : 'origin-right -translate-x-[100%] text-right flex justify-end '
+              ? this.cssClasses.prefixLabelEndClasses
+              : this.cssClasses.prefixLabelStartClasses
           }`,
         },
         this.circleElement.domElement,
@@ -194,40 +196,30 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     }
     let additionalInnerCirlceClasses = '';
     if (connectionType === ThumbConnectionType.end) {
-      additionalInnerCirlceClasses = `flex items-center justify-center`;
+      additionalInnerCirlceClasses = this.cssClasses.innerCircleClasses;
     }
 
     if (disableInteraction) {
-      additionalInnerCirlceClasses += ' pointer-events-none';
+      additionalInnerCirlceClasses += ` ${this.cssClasses.autoPointerEvents}`;
     }
 
     (
       this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
-    ).classList.add('node-connector');
+    ).classList.add(this.cssClasses.nodePort);
 
-    const clipShapeNodeThumb = 'none'; //,'circle(50%)';
+    const clipShapeNodeThumb = 'none';
 
     isTransparent = false;
-    // if (connectionType === ThumbConnectionType.start) {
-    //   clipShapeNodeThumb =
-    //     'polygon(100% 0%, 75% 50%, 100% 100%, 25% 100%, 50% 50%, 25% 0%)';
-    // } else {
-    //   clipShapeNodeThumb =
-    //     'polygon(75% 0%, 100% 50%, 75% 100%, 0% 100%, 25% 50%, 0% 0%)';
-    // }
-
-    // if (this.containerNode) {
-    //   isTransparent = true;
-    // }
 
     const leftPosition =
       connectionType === ThumbConnectionType.start
-        ? 'left-[9px]'
-        : 'left-[9px]';
+        ? this.cssClasses.circlePositionConnectionTypeStart
+        : this.cssClasses.circlePositionConnectionTypeEnd;
+
     const innerCircle = createElement(
       'div',
       {
-        class: `absolute rounded top-[3px] outline outline-[2px] outline-slate-800 outline-solid ${leftPosition} ${additionalInnerCirlceClasses}`, //top-[3px] left-[3px
+        class: `${this.cssClasses.innerCircleDefaultClasses} ${leftPosition} ${additionalInnerCirlceClasses}`,
         style: {
           width: `${(radius ?? thumbRadius) - 3}px`, // -6
           height: `${(radius ?? thumbRadius) * 2 - 6}px`, // -6
@@ -252,7 +244,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         const iconWrapper = createElement(
           'div',
           {
-            class: 'pointer-events-none relative',
+            class: this.cssClasses.iconWrapperClasses,
           },
           innerCircle.domElement
         );
@@ -260,10 +252,10 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         createElement(
           'div',
           {
-            class: `pointer-events-none absolute ${
+            class: `${this.cssClasses.iconClasses} ${
               thumb.connectionType === ThumbConnectionType.start
-                ? 'top-[2px] -left-[4px]'
-                : '-top-[10px] -left-[10px]'
+                ? this.cssClasses.iconPositionConnectionTypeStart
+                : this.cssClasses.iconPositionConnectionTypeEnd
             }`,
           },
           iconWrapper.domElement,
@@ -272,21 +264,19 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       }
     } else if (label) {
       let clipPath = '';
-      let innerLabelClasses = `pointer-events-none absolute ${thumbFontSizeClass} flex items-center justify-center
-        ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}
-        text-center
-        top-[-1px] text-black `;
+      let innerLabelClasses = `${this.cssClasses.innerLabelClasses} 
+        ${thumbFontSizeClass} 
+        ${thumbInnerCircleSizeClasses} ${thumbTextBaseSizeClass}        
+        `;
 
       if (
         (connectionType === ThumbConnectionType.end && !this.containerNode) ||
         (this.containerNode && connectionType === ThumbConnectionType.start)
       ) {
-        innerLabelClasses = `pointer-events-none relative text-[8px] flex items-center justify-center
-         ${thumbTextBaseSizeClass}
-        text-center
-        text-black h-[20px] w-[12px] pb-[1.5px] ${
-          this.containerNode ? 'top-[2px]' : ''
-        }`;
+        innerLabelClasses = `${
+          this.cssClasses.innerLabelAltClasses
+        }              
+         ${thumbTextBaseSizeClass} ${this.containerNode ? 'top-[2px]' : ''}`;
         clipPath = 'none';
       }
 
@@ -336,11 +326,11 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       if (visible && !disableInteraction) {
         const circleDomElement = this.circleElement
           ?.domElement as unknown as SVGElement;
-        circleDomElement.classList.remove('pointer-events-none');
-        circleDomElement.classList.add('pointer-events-auto');
+        circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+        circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
       } else {
-        circleDomElement.classList.remove('pointer-events-auto');
-        circleDomElement.classList.add('pointer-events-none');
+        circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
+        circleDomElement.classList.add(this.cssClasses.noPointerEvents);
       }
     };
 
@@ -407,7 +397,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
               if (connections.length >= maxConnections) {
                 (
                   this.nodeComponent.domElement as unknown as SVGElement
-                ).classList.remove('cursor-pointer');
+                ).classList.remove(this.cssClasses.onPointerOverCursor);
                 console.log('start thumb has max connections reached');
                 return;
               }
@@ -428,7 +418,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
               if (connections.length >= maxConnections) {
                 (
                   this.nodeComponent.domElement as unknown as SVGElement
-                ).classList.remove('cursor-pointer');
+                ).classList.remove(this.cssClasses.onPointerOverCursor);
                 console.log('end thumb has max connections reached');
                 return;
               }
@@ -439,16 +429,16 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     }
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-pointer'
+      this.cssClasses.onPointerOverCursor
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      'cursor-pointer'
+      this.cssClasses.onPointerOverCursor
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      'hover'
+      this.cssClasses.hover
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-not-allowed'
+      this.cssClasses.cursorNotAllowed
     );
     if (this.nodeComponent.isConnectPoint) {
       let canReceiveDrop = false;
@@ -468,13 +458,13 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
 
             (
               this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.remove('cursor-pointer');
+            ).classList.remove(this.cssClasses.onPointerOverCursor);
             (
               this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.add('cursor-not-allowed');
+            ).classList.add(this.cssClasses.cursorNotAllowed);
             (
               this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.remove('hover');
+            ).classList.remove(this.cssClasses.hover);
 
             console.log(
               'svg cant register drop target for current dragging element'
@@ -483,7 +473,7 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           } else {
             (
               this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.add('hover');
+            ).classList.add(this.cssClasses.hover);
             // (
             //   this.nodeComponent.domElement as unknown as SVGElement
             // ).style.filter = 'invert(1)';
@@ -512,21 +502,21 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         'none';
 
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        'cursor-not-allowed'
+        this.cssClasses.cursorNotAllowed
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        'cursor-pointer'
+        this.cssClasses.onPointerOverCursor
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        'hover'
+        this.cssClasses.hover
       );
     }
     if (this.nodeComponent && this.nodeComponent.getThumbCircleElement) {
       console.log('RESET THUMB CIRCLE ELEMENT on pointer leave');
       const circleDomElement = this.nodeComponent.getThumbCircleElement();
 
-      circleDomElement.classList.add('pointer-events-auto');
-      circleDomElement.classList.remove('pointer-events-none');
+      circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+      circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
     }
   };
 
@@ -616,8 +606,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
     if (connectionThumb.getThumbCircleElement) {
       const circleDomElement = connectionThumb.getThumbCircleElement();
 
-      circleDomElement.classList.remove('pointer-events-auto');
-      circleDomElement.classList.add('pointer-events-none');
+      circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
+      circleDomElement.classList.add(this.cssClasses.noPointerEvents);
     }
   };
 
@@ -752,14 +742,18 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           const circleDomElement =
             curve.nodeComponent?.connectionEndNodeThumb.getThumbCircleElement?.();
           if (circleDomElement) {
-            circleDomElement.classList.remove('pointer-events-auto');
-            circleDomElement.classList.add('pointer-events-none');
+            circleDomElement.classList.remove(
+              this.cssClasses.autoPointerEvents
+            );
+            circleDomElement.classList.add(this.cssClasses.noPointerEvents);
           }
           const domEndNodeThumbElement = curve.nodeComponent
             .connectionEndNodeThumb.domElement as HTMLElement;
-          domEndNodeThumbElement.classList.remove('pointer-events-auto');
-          domEndNodeThumbElement.classList.add('pointer-events-none');
-          domEndNodeThumbElement.classList.add('dragging');
+          domEndNodeThumbElement.classList.remove(
+            this.cssClasses.autoPointerEvents
+          );
+          domEndNodeThumbElement.classList.add(this.cssClasses.noPointerEvents);
+          domEndNodeThumbElement.classList.add(this.cssClasses.dragging);
         }
         // new QuadraticBezierConnection<T>(
         //     this.canvas as unknown as INodeComponent<T>,
@@ -901,8 +895,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         const circleDomElement = this.circleElement?.domElement as unknown as
           | HTMLElement
           | SVGElement;
-        circleDomElement.classList.remove('pointer-events-auto');
-        circleDomElement.classList.add('pointer-events-none');
+        circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
+        circleDomElement.classList.add(this.cssClasses.noPointerEvents);
       }
     }
   };
@@ -952,8 +946,8 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         'THUMB onPointerUp circleDomElement (BEFORE remove pointer-events-none)',
         circleDomElement
       );
-      circleDomElement.classList.add('pointer-events-auto');
-      circleDomElement.classList.remove('pointer-events-none');
+      circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+      circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
     }
   };
 
@@ -1010,75 +1004,12 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
   };
 
   onPointerThumbUp = () => {
-    console.log('thumb onPointerThumbUp', this.nodeComponent?.id);
-
-    if (this.disableInteraction) {
-      return;
-    }
-
-    if (!this.nodeComponent) {
-      return;
-    }
-
-    // TODO : figure out why below the end connection is removed...
-    // ... this causes problems when the connection was just connected to a rect-thumb...
-    // ... rect-thumbs handle this themselves...
-
-    // TODO : check if droptarget is the correct type BEFOFE casting
-    // const dropTarget =
-    //   this.interactionStateMachine.getCurrentDropTarget() as unknown as IThumbNodeComponent<T>;
-    // const state = this.interactionStateMachine.getCurrentInteractionState();
-    // if (dropTarget && state) {
-    //   console.log(
-    //     'DROPPED ON TARGET',
-    //     dropTarget.id,
-    //     this.nodeComponent.id,
-    //     this.nodeComponent.connectionControllerType,
-    //     this.nodeComponent.onReceiveDraggedConnection
-    //   );
-
-    //   if (dropTarget.nodeType === NodeType.Shape) {
-    //     const rectNode = dropTarget as unknown as IRectNodeComponent<T>;
-    //     const connection = this.nodeComponent
-    //       .parent as unknown as IConnectionNodeComponent<T>;
-    //     if (connection) {
-    //       if (rectNode.thumbConnectors?.[0].thumbType === ThumbType.Center) {
-    //         connection.endNode = rectNode;
-    //         connection.endNodeThumb = rectNode.thumbConnectors?.[0];
-
-    //         rectNode.connections?.push(connection);
-
-    //         connection.update?.(
-    //           connection,
-    //           connection.endNode?.x ?? 0,
-    //           connection.endNode?.y ?? 0,
-    //           rectNode
-    //         );
-    //       }
-    //     }
-    //   } else if (
-    //     dropTarget.onReceiveDraggedConnection &&
-    //     dropTarget.id !== this.nodeComponent.id
-    //   ) {
-    //     dropTarget.onReceiveDraggedConnection(dropTarget, this.nodeComponent);
-    //   }
+    // console.log('thumb onPointerThumbUp', this.nodeComponent?.id);
+    // if (this.disableInteraction) {
+    //   return;
     // }
-
-    // console.log(
-    //   'THUMB svg pointerup nodecomponent (BEFORE remove pointer-events-none)',
-    //   this.nodeComponent.id,
-    //   this.nodeComponent,
-    //   dropTarget
-    // );
-    // this.interactionStateMachine.clearDropTarget(this.nodeComponent);
-
-    // // TODO : DO THIS ONLY IF NOT CONNECTED TO A RECT THUMB !?
-    // //  ... looks like this happens AFTER the fix and not BEFORE !??
-
-    // const circleDomElement = this.circleElement?.domElement as unknown as
-    //   | HTMLElement
-    //   | SVGElement;
-    // circleDomElement.classList.add('pointer-events-auto');
-    // circleDomElement.classList.remove('pointer-events-none');
+    // if (!this.nodeComponent) {
+    //   return;
+    //}
   };
 }

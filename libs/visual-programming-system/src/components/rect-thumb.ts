@@ -18,6 +18,7 @@ import { ConnectionControllerType, NodeType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils/create-element';
 import { getPointerPos } from '../utils/pointer-pos';
+import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
 import { pointerDown } from './events/pointer-events';
 import { LineConnection } from './line-connection';
 import { NodeTransformer } from './node-transformer';
@@ -79,7 +80,7 @@ export class RectThumb<T> extends Rect<T> {
       id,
       containerNode,
       isStaticPosition,
-      'rect-thumb-node',
+      getRectNodeCssClasses().defaultRectThumbClasses,
       setCanvasAction,
       rootElement
     );
@@ -93,8 +94,7 @@ export class RectThumb<T> extends Rect<T> {
     this.toolTipUseShiftToDragConnection = createElement(
       'div',
       {
-        class:
-          'rect-thumb-tooltip pointer-events-node z-0 absolute hidden -top-[20px] translate-x-[calc(-50%+25px)] p-0.5 left-0 whitespace-nowrap text-[8px]',
+        class: this.cssClasses.rectThumbTooltipClasses,
       },
       this.nodeComponent.domElement,
       'Hold shift to drag connections'
@@ -411,14 +411,14 @@ export class RectThumb<T> extends Rect<T> {
     if (connectionThumb.getThumbCircleElement) {
       const circleDomElement = connectionThumb.getThumbCircleElement();
 
-      circleDomElement.classList.remove('pointer-events-auto');
-      circleDomElement.classList.add('pointer-events-none');
+      circleDomElement.classList.remove(this.cssClasses.draggingPointerAuto);
+      circleDomElement.classList.add(this.cssClasses.draggingNoPointer);
 
       const domNodeElement =
         connectionThumb?.domElement as unknown as HTMLElement;
-      domNodeElement.classList.remove('pointer-events-auto');
-      domNodeElement.classList.add('pointer-events-none');
-      domNodeElement.classList.add('dragging');
+      domNodeElement.classList.remove(this.cssClasses.draggingPointerAuto);
+      domNodeElement.classList.add(this.cssClasses.draggingNoPointer);
+      domNodeElement.classList.add(this.cssClasses.dragging);
     }
   };
 
@@ -432,13 +432,13 @@ export class RectThumb<T> extends Rect<T> {
     //   this.nodeComponent
     // );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-pointer'
+      this.cssClasses.droppingCursorPointer
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      'cursor-pointer'
+      this.cssClasses.droppingCursorPointer
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-not-allowed'
+      this.cssClasses.droppingNotAllowed
     );
 
     let canReceiveDrop = false;
@@ -533,14 +533,14 @@ export class RectThumb<T> extends Rect<T> {
           // ).style.filter = 'none';
           (
             this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.remove('dropping');
+          ).classList.remove(this.cssClasses.dropping);
 
           (
             this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.remove('cursor-pointer');
+          ).classList.remove(this.cssClasses.droppingCursorPointer);
           (
             this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.add('cursor-not-allowed');
+          ).classList.add(this.cssClasses.droppingNotAllowed);
           console.log(
             'RECT-THUMB svg cant register drop target for current dragging element'
           );
@@ -552,7 +552,7 @@ export class RectThumb<T> extends Rect<T> {
 
           (
             this.nodeComponent.domElement as unknown as SVGElement
-          ).classList.add('dropping');
+          ).classList.add(this.cssClasses.dropping);
 
           console.log(
             'RECT-THUMB svg register drop target',
@@ -612,17 +612,17 @@ export class RectThumb<T> extends Rect<T> {
     this.interactionStateMachine.clearDropTarget(this.nodeComponent);
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'dropping'
+      this.cssClasses.dropping
     );
 
     (this.nodeComponent.domElement as unknown as SVGElement).style.filter =
       'none';
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-not-allowed'
+      this.cssClasses.droppingNotAllowed
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      'cursor-pointer'
+      this.cssClasses.droppingCursorPointer
     );
   };
 

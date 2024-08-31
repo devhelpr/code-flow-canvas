@@ -21,6 +21,7 @@ import { ThumbNode } from './thumb';
 export class ThumbConnectionController<T> extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
   connectionInstance: Connection<T> | undefined = undefined;
+
   constructor(
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
@@ -84,10 +85,10 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       canvasUpdated,
       containerNode
     );
-
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
     }
+
     this.connectionInstance = connectionInstance;
 
     this.rootElement = rootElement;
@@ -97,7 +98,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       );
     }
     (this.nodeComponent.domElement as HTMLElement).classList.remove(
-      'pointer-events-none'
+      this.cssClasses.noPointerEvents
     );
     this.nodeComponent.thumbName = thumbName;
     this.nodeComponent.x = 0;
@@ -108,12 +109,12 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
 
     (
       this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
-    ).style.clipPath = 'circle(25%)';
+    ).style.clipPath = this.cssClasses.clipPathStyle;
     (
       this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
-    ).classList.add('connection-controller');
+    ).classList.add(this.cssClasses.connectionController);
 
-    const clipPathMainElement = 'circle(25%)';
+    const clipPathMainElement = this.cssClasses.clipPathStyle;
     const size = (radius ?? thumbRadius) * 2;
     const tx = -(radius ?? thumbRadius) + (width ?? thumbWidth) / 2;
     const ty = -(radius ?? thumbRadius) + (height ?? thumbHeight) / 2;
@@ -130,9 +131,11 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       'div',
       {
         class: `${
-          disableInteraction ? 'pointer-events-none' : 'pointer-events-auto'
+          disableInteraction
+            ? this.cssClasses.noPointerEvents
+            : this.cssClasses.autoPointerEvents
         }        
-        origin-center relative`,
+        ${this.cssClasses.circleClasses}`,
         style: {
           width: `${size}px`,
           height: `${size}px`,
@@ -144,12 +147,6 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
             ? borderColor
             : 'black',
         },
-
-        // pointerover: this.onPointerOver,
-        // pointerleave: this.onPointerLeave,
-        // pointerdown: this.onPointerDown,
-        // pointermove: this.onPointerMove,
-        // pointerup: this.onPointerUp,
       },
       this.nodeComponent.domElement
     );
@@ -159,12 +156,11 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     domElement.addEventListener('pointerdown', this.onPointerDown);
     domElement.addEventListener('pointermove', this.onPointerMove);
     domElement.addEventListener('pointerup', this.onPointerUp);
-    domElement.classList.remove('pointer-events-none');
-    domElement.classList.add('pointer-events-auto');
+    domElement.classList.remove(this.cssClasses.noPointerEvents);
+    domElement.classList.add(this.cssClasses.autoPointerEvents);
     if (!this.circleElement) throw new Error('circleElement is undefined');
 
     elements.set(this.nodeComponent.id, this.nodeComponent);
-    //this.nodeComponent.elements.set(this.circleElement.id, this.circleElement);
     this.nodeComponent.connectionControllerType = connectionControllerType;
     this.nodeComponent.x = xInitial ? parseInt(xInitial.toString()) : 0;
     this.nodeComponent.y = yInitial ? parseInt(yInitial.toString()) : 0;
@@ -186,16 +182,10 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
       ).style.display = `${visible ? 'block' : 'none'}`;
 
       if (visible && !disableInteraction) {
-        // console.log(
-        //   'THUMB SET VISIBILITY  (BEFORE remove pointer-events-none)'
-        // );
         const circleDomElement = this.circleElement
           ?.domElement as unknown as SVGElement;
-        circleDomElement.classList.remove('pointer-events-none');
-        circleDomElement.classList.add('pointer-events-auto');
-      } else {
-        // circleDomElement.classList.remove('pointer-events-auto');
-        // circleDomElement.classList.add('pointer-events-none');
+        circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+        circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
       }
     };
 
@@ -238,7 +228,7 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     );
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      'cursor-pointer'
+      this.cssClasses.onPointerOverCursor
     );
   };
 
@@ -266,19 +256,12 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         'none';
 
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        'cursor-not-allowed'
+        this.cssClasses.cursorNotAllowed
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        'cursor-pointer'
+        this.cssClasses.onPointerOverCursor
       );
     }
-    // if (this.nodeComponent && this.nodeComponent.getThumbCircleElement) {
-    //   console.log('RESET THUMB CIRCLE ELEMENT on pointer leave');
-    //   const circleDomElement = this.nodeComponent.getThumbCircleElement();
-
-    //   circleDomElement.classList.add('pointer-events-auto');
-    //   circleDomElement.classList.remove('pointer-events-none');
-    // }
   };
 
   initiateDraggingConnection = (
@@ -363,28 +346,19 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     if (connectionThumb.getThumbCircleElement) {
       const circleDomElement = connectionThumb.getThumbCircleElement();
 
-      circleDomElement.classList.remove('pointer-events-auto');
-      circleDomElement.classList.add('pointer-events-none');
+      circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
+      circleDomElement.classList.add(this.cssClasses.noPointerEvents);
 
       const domNodeElement = this.nodeComponent
         ?.domElement as unknown as HTMLElement;
-      domNodeElement.classList.remove('pointer-events-auto');
-      domNodeElement.classList.add('pointer-events-none');
-      domNodeElement.classList.add('dragging');
+      domNodeElement.classList.remove(this.cssClasses.autoPointerEvents);
+      domNodeElement.classList.add(this.cssClasses.noPointerEvents);
+      domNodeElement.classList.add(this.cssClasses.dragging);
     }
   };
   previousStartNode: IRectNodeComponent<T> | undefined = undefined;
   previousEndNode: IRectNodeComponent<T> | undefined = undefined;
   onPointerDown = (e: PointerEvent) => {
-    // console.log(
-    //   'connection-controller onPointerDown',
-    //   // this.disableInteraction,
-    //   // this.nodeComponent?.connectionControllerType,
-    //   e.target,
-    //   // this.nodeComponent?.id,
-    //   // this.nodeComponent?.parent &&
-    //   //   this.nodeComponent?.parent.nodeType === NodeType.Connection
-    // );
     if (this.disableInteraction) {
       return;
     }
@@ -617,15 +591,15 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         const circleDomElement = this.circleElement?.domElement as unknown as
           | HTMLElement
           | SVGElement;
-        circleDomElement.classList.remove('pointer-events-auto');
-        circleDomElement.classList.add('pointer-events-none');
+        circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
+        circleDomElement.classList.add(this.cssClasses.noPointerEvents);
 
         const domNodeElement = this.nodeComponent
           ?.domElement as unknown as HTMLElement;
-        domNodeElement.classList.remove('pointer-events-auto');
-        domNodeElement.classList.add('pointer-events-none');
+        domNodeElement.classList.remove(this.cssClasses.autoPointerEvents);
+        domNodeElement.classList.add(this.cssClasses.noPointerEvents);
 
-        domNodeElement.classList.add('dragging');
+        domNodeElement.classList.add(this.cssClasses.dragging);
       }
     }
   };
@@ -759,13 +733,13 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
         'connection-controller onPointerUp circleDomElement (BEFORE remove pointer-events-none)',
         circleDomElement
       );
-      circleDomElement.classList.add('pointer-events-auto');
-      circleDomElement.classList.remove('pointer-events-none');
+      circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+      circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
 
       const domNodeElement = this.nodeComponent
         ?.domElement as unknown as HTMLElement;
-      domNodeElement.classList.remove('pointer-events-none');
-      domNodeElement.classList.add('pointer-events-auto');
+      domNodeElement.classList.remove(this.cssClasses.noPointerEvents);
+      domNodeElement.classList.add(this.cssClasses.autoPointerEvents);
     }
   };
 
@@ -963,14 +937,14 @@ export class ThumbConnectionController<T> extends ThumbNode<T> {
     const circleDomElement = this.circleElement?.domElement as unknown as
       | HTMLElement
       | SVGElement;
-    circleDomElement.classList.add('pointer-events-auto');
-    circleDomElement.classList.remove('pointer-events-none');
+    circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+    circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
 
     const domNodeElement = this.nodeComponent
       ?.domElement as unknown as HTMLElement;
-    domNodeElement.classList.remove('pointer-events-none');
-    domNodeElement.classList.add('pointer-events-auto');
-    domNodeElement.classList.remove('dragging');
+    domNodeElement.classList.remove(this.cssClasses.noPointerEvents);
+    domNodeElement.classList.add(this.cssClasses.autoPointerEvents);
+    domNodeElement.classList.remove(this.cssClasses.dragging);
 
     if (
       this.nodeComponent.parent &&

@@ -27,6 +27,7 @@ import {
 } from './utils/calculate-cubic-control-points';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { FlowChangeType } from '../interfaces';
+import { getConnectionCssClasses } from './css-classes/connection-css-classes';
 
 const standardControlPointDistance = 150;
 
@@ -77,7 +78,7 @@ export class Connection<T> {
   textElement: IDOMElement | undefined = undefined;
 
   connectionUpdateState: ConnectionUpdateState | undefined = undefined;
-
+  protected cssClasses: ReturnType<typeof getConnectionCssClasses>;
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -113,6 +114,8 @@ export class Connection<T> {
       - set transform of svg to the bbox x and y
       - set the width and height of the svg to the bbox width and height   
     */
+
+    this.cssClasses = getConnectionCssClasses();
     this.onCalculateControlPoints = onCalculateControlPoints;
     this.pathHiddenElement = pathHiddenElement;
     this.canvas = canvas;
@@ -139,7 +142,7 @@ export class Connection<T> {
       {
         width: 0,
         height: 0,
-        class: `connection absolute top-0 left-0 pointer-events-none`, //pointer-events-bounding-box',
+        class: this.cssClasses.containerCssClasses,
       },
       this.canvasElement
     );
@@ -226,8 +229,7 @@ export class Connection<T> {
     this.pathTransparentElement = createNSElement(
       'path',
       {
-        class:
-          'connection-background-path pointer-events-stroke cursor-pointer opacity-75',
+        class: this.cssClasses.pathTransparentCssClasses,
         d: path,
         stroke: containerNode
           ? '#94a3b8'
@@ -242,7 +244,7 @@ export class Connection<T> {
     this.pathElement = createNSElement(
       'path',
       {
-        class: 'connection-path pointer-events-none',
+        class: this.cssClasses.pathCssClasses,
         d: path,
         stroke: 'currentColor',
         //'marker-start': 'url(#arrowbegin)',
@@ -449,7 +451,7 @@ export class Connection<T> {
       this.textElement = createElement(
         'div',
         {
-          class: `connection-value-label absolute top-0 left-0 cursor-pointer pointer-events-none text-white bg-black px-1 z-[5] text-xs`,
+          class: this.cssClasses.textCssClasses,
           style: {
             transform: `translate(${
               (this.points.beginX + this.points.endX) / 2
@@ -469,12 +471,12 @@ export class Connection<T> {
       const layer = this.nodeComponent.layer ?? 1;
       const parentDomElement = this.svgParent?.domElement as SVGElement;
       if (layer > 1) {
-        if (!parentDomElement.classList.contains('layer-2')) {
-          parentDomElement.classList.add('layer-2');
+        if (!parentDomElement.classList.contains(this.cssClasses.layer2)) {
+          parentDomElement.classList.add(this.cssClasses.layer2);
         }
       } else {
-        if (parentDomElement.classList.contains('layer-2')) {
-          parentDomElement.classList.remove('layer-2');
+        if (parentDomElement.classList.contains(this.cssClasses.layer2)) {
+          parentDomElement.classList.remove(this.cssClasses.layer2);
         }
       }
     }
@@ -690,10 +692,10 @@ export class Connection<T> {
         const circle =
           this.nodeComponent.connectionStartNodeThumb?.getThumbCircleElement?.();
         (circle as unknown as HTMLElement)?.classList?.remove?.(
-          'pointer-events-auto'
+          this.cssClasses.draggingPointerAuto
         );
         (circle as unknown as HTMLElement)?.classList?.remove?.(
-          'pointer-events-none'
+          this.cssClasses.draggingPointerNone
         );
       }
 
@@ -701,10 +703,10 @@ export class Connection<T> {
         const circle =
           this.nodeComponent.connectionEndNodeThumb?.getThumbCircleElement?.();
         (circle as unknown as HTMLElement)?.classList?.remove?.(
-          'pointer-events-auto'
+          this.cssClasses.draggingPointerAuto
         );
         (circle as unknown as HTMLElement)?.classList?.remove?.(
-          'pointer-events-none'
+          this.cssClasses.draggingPointerNone
         );
       }
       if (this.nodeComponent?.controlPoints?.length) {
@@ -1008,7 +1010,7 @@ export class Connection<T> {
       'marker',
       {
         id: `${id}_arrow`,
-        class: 'arrow-marker',
+        class: this.cssClasses.arrowMarker,
         refX: '1.5',
         refY: '2',
         markerUnits: 'strokeWidth',
@@ -1022,7 +1024,7 @@ export class Connection<T> {
       'path',
       {
         d: 'M0,0 V4 L2,2 Z',
-        class: 'arrow-marker',
+        class: this.cssClasses.arrowMarker,
         fill: 'white',
       },
       marker.domElement
@@ -1032,7 +1034,7 @@ export class Connection<T> {
       'marker',
       {
         id: `${id}_arrowbegin`,
-        class: 'arrow-marker',
+        class: this.cssClasses.arrowMarker,
         refX: '2',
         refY: '2',
         markerUnits: 'strokeWidth',
@@ -1048,7 +1050,7 @@ export class Connection<T> {
         d: 'M2,2 L2,2 L0,2 Z', // 'M2,0 L2,4 L0,2 Z',
         stroke: 'white',
         fill: 'white',
-        class: 'arrow-marker',
+        class: this.cssClasses.arrowMarker,
       },
       markerBegin.domElement
     );

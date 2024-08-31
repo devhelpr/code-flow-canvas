@@ -1,0 +1,31 @@
+export const getThumbCssClasses = () => {
+  return {
+    defaultThumbClasses: `thumb absolute transition-none pointer-events-none`,
+    noPointerEvents: 'pointer-events-none',
+    autoPointerEvents: 'pointer-events-auto',
+    connectionController: 'connection-controller',
+    nodePort: 'node-connector',
+    clipPathStyle: 'circle(25%)',
+    circleClasses: 'origin-center relative',
+    onPointerOverCursor: 'cursor-pointer',
+    hover: 'hover',
+    cursorNotAllowed: 'cursor-not-allowed',
+    dragging: 'dragging',
+    nodePortClasses: `inline-flex items-center origin-center`,
+    prefixIconClasses: `relative text-white -left-[10px] thumb-prefix-icon`,
+    prefixLabelClasses: `thumb-prefix-label whitespace-nowrap relative text-white pointer-events-none select-none `,
+    prefixLabelEndClasses: `-right-[30px] block`,
+    prefixLabelStartClasses: `origin-right -translate-x-[100%] text-right flex justify-end`,
+    innerCircleDefaultClasses: `absolute rounded top-[3px] outline outline-[2px] outline-slate-800 outline-solid`,
+    innerCircleClasses: `flex items-center justify-center`,
+    iconWrapperClasses: `pointer-events-none relative`,
+    iconClasses: `pointer-events-none absolute`,
+    iconPositionConnectionTypeStart: `top-[2px] -left-[4px]`,
+    iconPositionConnectionTypeEnd: `-top-[10px] -left-[10px]`,
+    circlePositionConnectionTypeStart: 'left-[9px]',
+    circlePositionConnectionTypeEnd: 'left-[9px]',
+    innerLabelClasses: `pointer-events-none absolute flex items-center justify-center text-center top-[-1px] text-black`,
+    innerLabelAltClasses:
+      'pointer-events-none relative text-[8px] flex items-center justify-center text-center  text-black h-[20px] w-[12px] pb-[1.5px]',
+  };
+};

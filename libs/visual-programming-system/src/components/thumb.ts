@@ -19,6 +19,7 @@ import { IPointerDownResult } from '../interfaces/pointers';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createNodeElement } from '../utils/create-element';
+import { getThumbCssClasses } from './css-classes/thumb-css-classes';
 
 export class ThumbNode<T> {
   nodeComponent?: IThumbNodeComponent<T>;
@@ -34,7 +35,7 @@ export class ThumbNode<T> {
   circleElement: IDOMElement | undefined;
   interactionInfo: IPointerDownResult;
   containerNode?: IRectNodeComponent<T>;
-
+  protected cssClasses: ReturnType<typeof getThumbCssClasses>;
   constructor(
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
@@ -68,6 +69,7 @@ export class ThumbNode<T> {
     _thumbIdentifierWithinNode?: string,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void
   ) {
+    this.cssClasses = getThumbCssClasses();
     this.interactionStateMachine = interactionStateMachine;
     this.disableInteraction = disableInteraction ?? false;
     this.canvas = canvas;
@@ -93,7 +95,7 @@ export class ThumbNode<T> {
       'div',
       {
         // will-change-transform
-        class: `thumb absolute transition-none pointer-events-none ${
+        class: `${this.cssClasses.defaultThumbClasses} ${
           additionalClasses || ''
         }`,
         style: {
@@ -129,8 +131,8 @@ export class ThumbNode<T> {
       this.disableInteraction = true;
       const circleDomElement = this.circleElement
         ?.domElement as unknown as SVGElement;
-      circleDomElement.classList.remove('pointer-events-auto');
-      circleDomElement.classList.add('pointer-events-none');
+      circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+      circleDomElement.classList.add(this.cssClasses.noPointerEvents);
     }
   };
 
@@ -139,8 +141,8 @@ export class ThumbNode<T> {
       this.disableInteraction = false;
       const circleDomElement = this.circleElement
         ?.domElement as unknown as SVGElement;
-      circleDomElement.classList.remove('pointer-events-none');
-      circleDomElement.classList.add('pointer-events-auto');
+      circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+      circleDomElement.classList.add(this.cssClasses.noPointerEvents);
     }
   };
 }

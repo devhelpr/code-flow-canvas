@@ -31,6 +31,7 @@ import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
 import { FlowChangeType } from '../interfaces';
 import { BaseNodeInfo } from '../types/base-node-info';
+import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
 
 export class Rect<T> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -71,6 +72,8 @@ export class Rect<T> {
     height: 0,
   };
 
+  protected cssClasses: ReturnType<typeof getRectNodeCssClasses>;
+
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -102,6 +105,7 @@ export class Rect<T> {
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement
   ) {
+    this.cssClasses = getRectNodeCssClasses();
     this.canvas = canvas;
     this.canvasElements = elements;
     this.canvasUpdated = canvasUpdated;
@@ -140,7 +144,7 @@ export class Rect<T> {
       disableInteraction,
       canvasUpdated,
       id,
-      parentNodeClassName ?? 'rect-node'
+      parentNodeClassName ?? this.cssClasses.defaultRectClasses
     );
     this.nodeComponent = this.rectInfo.nodeComponent;
     this.nodeComponent.setSize = this.setSize;
@@ -219,8 +223,8 @@ export class Rect<T> {
           y,
           undefined,
           NodeType.Connector,
-          `top-0 left-0 origin-center z-[1150]  ${thumb.class ?? ''} ${
-            thumb.hidden ? 'invisible pointer-events-none' : ''
+          `${this.cssClasses.thumbClasses}  ${thumb.class ?? ''} ${
+            thumb.hidden ? this.cssClasses.thumbInvisible : ''
           }`,
           undefined,
           undefined,
@@ -912,9 +916,9 @@ export class Rect<T> {
     const rectContainerElement = createNodeElement(
       'div',
       {
-        class: `${
-          parentNodeClassName ?? 'rect-node'
-        } absolute top-0 left-0 select-none `, //will-change-transform,
+        class: `${parentNodeClassName ?? this.cssClasses.defaultRectClasses} ${
+          this.cssClasses.rectClasses
+        } `,
         ['data-node-id']: id ?? '',
       },
       canvasElement,
@@ -939,7 +943,9 @@ export class Rect<T> {
 
     if (markup !== undefined && typeof markup === 'string') {
       const compiledMarkup = compileMarkup(
-        `<div class="${layoutProperties?.classNames ?? ''} overflow-hidden">
+        `<div class="${layoutProperties?.classNames ?? ''} ${
+          this.cssClasses.rectCompiledMarkupClasses
+        }">
           ${markup ?? ''}
         </div>`
       );
