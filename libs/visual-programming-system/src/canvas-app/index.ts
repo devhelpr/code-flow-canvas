@@ -47,6 +47,7 @@ import { MediaLibrary } from '@devhelpr/media-library';
 import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
 import { BaseNodeInfo } from '../types/base-node-info';
+import { getCanvasAppCssClasses } from './css-classes/canvasapp-css-classes';
 
 export const createCanvasApp = <T>(
   rootElement: HTMLElement,
@@ -63,6 +64,7 @@ export const createCanvasApp = <T>(
   widthSpaceForSideToobars?: number
 ) => {
   const theme = customTheme ?? standardTheme;
+  const cssClasses = getCanvasAppCssClasses();
   const interactionStateMachine =
     interactionStateMachineInstance ?? createInteractionStateMachine<T>();
   const elements = createElementMap<T>();
@@ -134,9 +136,9 @@ export const createCanvasApp = <T>(
     'div',
     {
       id: canvasId ?? 'canvas',
-      class: `w-full h-full origin-top-left ${
-        backgroundColor ?? theme.background ?? 'bg-slate-800'
-      } flex-auto relative z-10 transition-none transform-gpu`,
+      class: `${cssClasses.canvasAppClasses} ${
+        backgroundColor ?? theme.background ?? cssClasses.defaultBackgroundColor
+      } `,
     },
     rootElement
   );
@@ -827,7 +829,7 @@ export const createCanvasApp = <T>(
   const pathHiddenElement = createNSElement<T>(
     'path',
     {
-      class: 'pointer-events-auto',
+      class: cssClasses.autoPointerEvents,
     },
     hiddenSVG.domElement
   );
@@ -1546,7 +1548,7 @@ export const createCanvasApp = <T>(
         y,
         undefined,
         NodeType.Connector,
-        `top-0 left-0 origin-center z-[1150]  ${thumb.class ?? ''} ${
+        `${cssClasses.defaultNodePortClasses} ${thumb.class ?? ''} ${
           thumb.hidden ? 'invisible pointer-events-none' : ''
         }`,
         undefined,
