@@ -13,14 +13,8 @@ import {
 import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils';
 import { getPointerPos } from '../utils/pointer-pos';
+import { getNodeTransformerCssClasses } from './css-classes/node-transformer-css-classes';
 import { showMetaViewDialog } from './meta-view-dialog/meta-view-dialog';
-
-const pointerCursor = 'pointer-events-auto';
-const resizeThumbSize = 'w-[8px] h-[8px]';
-const transformPosTL = '-translate-x-[50%] -translate-y-[50%]';
-const transformPosTR = 'translate-x-[50%] -translate-y-[50%]';
-const transformPosBL = '-translate-x-[50%] translate-y-[50%]';
-const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
 
 /*
     Class that:
@@ -38,11 +32,13 @@ const transformNodeList: NodeTransformer<BaseNodeInfo>[] = [];
 export class NodeTransformer<T extends BaseNodeInfo> {
   private canvas: IElementNode<T> | undefined;
   private rootElement: HTMLElement;
+  protected cssClasses: ReturnType<typeof getNodeTransformerCssClasses>;
   constructor(
     canvas: IElementNode<T>,
     rootElement: HTMLElement,
     interactionStateMachine: InteractionStateMachine<T>
   ) {
+    this.cssClasses = getNodeTransformerCssClasses();
     this.id = crypto.randomUUID();
     transformNodeList.push(this as unknown as NodeTransformer<BaseNodeInfo>);
     this.rootElement = rootElement;
@@ -52,8 +48,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       'div',
       {
         id: 'node-transformer',
-        class:
-          'hidden absolute top-0 left-0 z-[2000] border-white border-2 pointer-events-none rounded',
+        class: this.cssClasses.nodeTransformerClasses,
       },
       canvas.domElement
     );
@@ -70,7 +65,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.leftTop = createElement(
       'div',
       {
-        class: `absolute ${pointerCursor} cursor-nwse-resize  top-0 left-0 origin-top-left ${resizeThumbSize} bg-white ${transformPosTL}`,
+        class: `${this.cssClasses.leftTopClasses} ${this.cssClasses.pointerEventsAuto} ${this.cssClasses.resizeThumbSize} ${this.cssClasses.transformPosTL}`,
         ['data-ResizeMode']: 'left-top',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -84,7 +79,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.rightTop = createElement(
       'div',
       {
-        class: `absolute ${pointerCursor} cursor-nesw-resize top-0 right-0  origin-top-right ${resizeThumbSize} bg-white ${transformPosTR}`,
+        class: `${this.cssClasses.rightTopClasses} ${this.cssClasses.pointerEventsAuto} ${this.cssClasses.resizeThumbSize} ${this.cssClasses.transformPosTR}`,
         ['data-ResizeMode']: 'right-top',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -98,7 +93,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.leftBottom = createElement(
       'div',
       {
-        class: `absolute ${pointerCursor} cursor-nesw-resize bottom-0 left-0 origin-bottom-left ${resizeThumbSize} bg-white ${transformPosBL}`,
+        class: `${this.cssClasses.leftBottomClasses} ${this.cssClasses.pointerEventsAuto} ${this.cssClasses.resizeThumbSize} ${this.cssClasses.transformPosBL}`,
         ['data-ResizeMode']: 'left-bottom',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -112,7 +107,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.rightBottom = createElement(
       'div',
       {
-        class: `absolute ${pointerCursor} cursor-nwse-resize bottom-0 right-0 origin-bottom-right ${resizeThumbSize} bg-white ${transformPosBR}`,
+        class: `${this.cssClasses.rightBottomClasses} ${this.cssClasses.pointerEventsAuto} ${this.cssClasses.resizeThumbSize} ${this.cssClasses.transformPosBR}`,
         ['data-ResizeMode']: 'right-bottom',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -126,11 +121,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.moveNodesPanel = createElement(
       'div',
       {
-        class: `absolute -bottom-[48px] left-[50%] flex justify-center items-center        
-       
-        origin-bottom-center
-        w-[96px] h-[32px] 
-        -translate-x-[50%] gap-[8px] flex-grow flex-shrink-0`,
+        class: this.cssClasses.moveNodesPanelClasses,
       },
       this.nodeTransformElement?.domElement
     );
@@ -138,11 +129,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.downstreamNodesMover = createElement(
       'div',
       {
-        class: `w-0 h-0  ${pointerCursor}
-        border-t-[12px] border-t-transparent
-        border-r-[18px] border-r-white
-        border-b-[12px] border-b-transparent
-        cursor-pointer`,
+        class: `${this.cssClasses.downstreamNodesMoverClasses} ${this.cssClasses.pointerEventsAuto}`,
         ['data-ResizeMode']: 'move-downstream-nodes',
         pointerdown: this.onPointerDown,
       },
@@ -152,12 +139,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     this.metaInfoInspector = createElement(
       'div',
       {
-        class: `${pointerCursor}
-        w-[32px] h-[32px] text-white
-        hidden
-        text-[32px]
-        icon icon-info_outline
-        cursor-pointer`,
+        class: `${this.cssClasses.pointerEventsAuto} ${this.cssClasses.metaInfoInspectorClasses}`,
         click: () => {
           if (this.attachedNode) {
             showMetaViewDialog(
@@ -165,30 +147,14 @@ export class NodeTransformer<T extends BaseNodeInfo> {
             );
           }
         },
-
-        //pointerdown: this.onPointerDown,
       },
       this.moveNodesPanel.domElement
     );
 
-    // this.inividualNodeMover = createElement(
-    //   'div',
-    //   {
-    //     class: `w-[18px] h-[18px]  ${pointerCursor}
-    //      bg-white rounded-[50%]`,
-    //   },
-    //   this.moveNodesPanel.domElement
-    // );
-
     this.upstreamNodesMover = createElement(
       'div',
       {
-        class: `w-0 h-0  ${pointerCursor}
-        border-t-[12px] border-t-transparent
-        border-l-[18px] border-l-white
-        border-b-[12px] border-b-transparent
-        cursor-pointer`,
-
+        class: `${this.cssClasses.pointerEventsAuto} ${this.cssClasses.upstreamNodesMoverClasses}`,
         ['data-ResizeMode']: 'move-upstream-nodes',
         pointerdown: this.onPointerDown,
       },
@@ -230,11 +196,11 @@ export class NodeTransformer<T extends BaseNodeInfo> {
 
     if (node.nodeInfo?.meta && node.nodeInfo?.meta.length > 0) {
       (this.metaInfoInspector?.domElement as HTMLElement).classList.remove(
-        'hidden'
+        this.cssClasses.hidden
       );
     } else {
       (this.metaInfoInspector?.domElement as HTMLElement).classList.add(
-        'hidden'
+        this.cssClasses.hidden
       );
     }
     this.detachRegisteredNodes();
@@ -249,7 +215,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       node.y - 1
     }px)`;
 
-    transformerDomElement.classList.remove('hidden');
+    transformerDomElement.classList.remove(this.cssClasses.hidden);
   }
 
   updateCamera() {
@@ -261,9 +227,11 @@ export class NodeTransformer<T extends BaseNodeInfo> {
   detachNode(isVisited = false) {
     this.previouslyAttachedNode = this.attachedNode;
     this.attachedNode = undefined;
-    (this.metaInfoInspector?.domElement as HTMLElement).classList.add('hidden');
+    (this.metaInfoInspector?.domElement as HTMLElement).classList.add(
+      this.cssClasses.hidden
+    );
     (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
-      'hidden'
+      this.cssClasses.hidden
     );
     if (isVisited) {
       return;
@@ -323,10 +291,10 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       );
       this.resizeSameWidthAndHeight = event.shiftKey;
       (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
-        'pointer-events-auto'
+        this.cssClasses.pointerEventsAuto
       );
       (this.nodeTransformElement?.domElement as HTMLElement).classList.remove(
-        'pointer-events-none'
+        this.cssClasses.noPointerEvents
       );
       const { x, y } = transformCameraSpaceToWorldSpace(
         pointerXPos,
@@ -509,10 +477,10 @@ export class NodeTransformer<T extends BaseNodeInfo> {
   ) => {
     this.attachedNode?.updateEnd?.();
     (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
-      'pointer-events-none'
+      this.cssClasses.noPointerEvents
     );
     (this.nodeTransformElement?.domElement as HTMLElement).classList.remove(
-      'pointer-events-auto'
+      this.cssClasses.pointerEventsAuto
     );
     interactionStateMachine.reset();
   };
