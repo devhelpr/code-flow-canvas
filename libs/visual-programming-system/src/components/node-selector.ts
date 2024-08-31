@@ -24,6 +24,7 @@ import {
   mapConnectionToFlowNode,
   mapShapeNodeToFlowNode,
 } from '../utils/serialize';
+import { getNodeSelectorCssClasses } from './css-classes/node-selector-css-classes';
 
 const pointerCursor = 'pointer-events-auto';
 const resizeThumbSize = 'w-[8px] h-[8px]';
@@ -55,7 +56,7 @@ export class NodeSelector<T> {
   elements: ElementNodeMap<T> = new Map();
   orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
   compositions: Compositions<T>;
-
+  protected cssClasses: ReturnType<typeof getNodeSelectorCssClasses>;
   onAddComposition?: (
     composition: Composition<T>,
     connections: {
@@ -76,6 +77,7 @@ export class NodeSelector<T> {
     onEditCompositionName: () => Promise<string | false>,
     isInContainer = false
   ) {
+    this.cssClasses = getNodeSelectorCssClasses();
     this.rootElement = rootElement;
     this.canvas = canvas;
     this.interactionStateMachine = interactionStateMachine;
@@ -89,8 +91,7 @@ export class NodeSelector<T> {
       'div',
       {
         id: 'node-selector',
-        class:
-          'hidden absolute top-0 left-0 z-[1000] border-white border-2 pointer-events-auto',
+        class: this.cssClasses.nodeSelectorClasses,
         pointerdown: this.onPointerDownSelector,
         pointermove: this.onPointerMove,
       },
@@ -100,7 +101,7 @@ export class NodeSelector<T> {
     this.leftTop = createElement(
       'div',
       {
-        class: `hidden absolute ${pointerCursor} cursor-nwse-resize  top-0 left-0 origin-top-left ${resizeThumbSize} bg-white ${transformPosTL}`,
+        class: `${this.cssClasses.leftTopClasses} ${pointerCursor} ${resizeThumbSize} ${transformPosTL}`,
         ['data-ResizeMode']: 'left-top',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -114,7 +115,7 @@ export class NodeSelector<T> {
     this.rightTop = createElement(
       'div',
       {
-        class: `hidden absolute ${pointerCursor} cursor-nesw-resize top-0 right-0  origin-top-right ${resizeThumbSize} bg-white ${transformPosTR}`,
+        class: `${this.cssClasses.rightTopClasses} ${pointerCursor} ${resizeThumbSize} ${transformPosTR}`,
         ['data-ResizeMode']: 'right-top',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -128,7 +129,7 @@ export class NodeSelector<T> {
     this.leftBottom = createElement(
       'div',
       {
-        class: `hidden absolute ${pointerCursor} cursor-nesw-resize bottom-0 left-0 origin-bottom-left ${resizeThumbSize} bg-white ${transformPosBL}`,
+        class: `${this.cssClasses.leftBottomClasses} ${pointerCursor} ${resizeThumbSize} ${transformPosBL}`,
         ['data-ResizeMode']: 'left-bottom',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -142,7 +143,7 @@ export class NodeSelector<T> {
     this.rightBottom = createElement(
       'div',
       {
-        class: `absolute ${pointerCursor} cursor-nwse-resize bottom-0 right-0 origin-bottom-right ${resizeThumbSize} bg-white ${transformPosBR}`,
+        class: `${this.cssClasses.rightBottomClasses} ${pointerCursor} ${resizeThumbSize} ${transformPosBR}`,
         ['data-ResizeMode']: 'right-bottom',
         pointerover: this.onPointerOver,
         pointerleave: this.onPointerLeave,
@@ -157,11 +158,7 @@ export class NodeSelector<T> {
       this.toolsNodesPanel = createElement(
         'div',
         {
-          class: `absolute -bottom-[48px] left-[50%] flex justify-center items-center        
-       
-        origin-bottom-center
-        w-[96px] h-[32px] 
-        -translate-x-[50%] gap-[8px] flex-grow flex-shrink-0`,
+          class: this.cssClasses.toolsPanelClasses,
         },
         this.nodeSelectorElement?.domElement
       );
@@ -169,8 +166,7 @@ export class NodeSelector<T> {
       this.createCompositionButtons = createElement(
         'div',
         {
-          class: `rounded-md bg-transparant border border-white border-solid text-white p-2 m-2 hover:bg-white hover:text-slate-600 select-none whitespace-nowrap 
-          disabled:border-slate-700 disabled:hover:border-slate-700 disabled:text-border-slate-700`,
+          class: this.cssClasses.createCompositionButtonClasses,
           click: this.onCreateComposition,
         },
         this.toolsNodesPanel.domElement,
@@ -473,15 +469,6 @@ export class NodeSelector<T> {
     (this.nodeSelectorElement?.domElement as HTMLElement).classList.remove(
       removeClass
     );
-
-    // (this.leftTop?.domElement as HTMLElement).classList.add(addClass);
-    // (this.leftTop?.domElement as HTMLElement).classList.remove(removeClass);
-
-    // (this.rightTop?.domElement as HTMLElement).classList.add(addClass);
-    // (this.rightTop?.domElement as HTMLElement).classList.remove(removeClass);
-
-    // (this.leftBottom?.domElement as HTMLElement).classList.add(addClass);
-    // (this.leftBottom?.domElement as HTMLElement).classList.remove(removeClass);
 
     (this.rightBottom?.domElement as HTMLElement).classList.add(addClass);
     (this.rightBottom?.domElement as HTMLElement).classList.remove(removeClass);
