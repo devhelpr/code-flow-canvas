@@ -10,8 +10,8 @@
           "id": "e25f2b6a-fc6e-4539-b1fb-55ffaf65a50a",
           "x": 291.19234420117937,
           "y": -165.795597268076,
-          "width": 120.00005857744404,
-          "height": 111.99999261748165,
+          "width": 119.99989880785859,
+          "height": 107.9999558371241,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -29,8 +29,8 @@
           "id": "1ba28fb2-463c-4bcf-ae6a-29c25ae9d2b3",
           "x": 117.90397278164556,
           "y": -164.97994896373183,
-          "width": 120.00005857744404,
-          "height": 111.99999261748165,
+          "width": 120.00001608298705,
+          "height": 107.9999558371241,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -48,8 +48,8 @@
           "id": "2c6435b0-977f-4206-b9bf-9addb1d700aa",
           "x": -71.24471502057321,
           "y": -175.36931726569108,
-          "width": 120.00000040106956,
-          "height": 111.99999261748165,
+          "width": 119.99995744542281,
+          "height": 108.00007311225258,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -67,8 +67,8 @@
           "id": "859cd4d5-ec1d-4db9-8c63-2d4ba0fe925a",
           "x": 315.4967111910729,
           "y": 8.996742837984918,
-          "width": 119.9999640997175,
-          "height": 111.99997906380578,
+          "width": 120.00001608298705,
+          "height": 107.9999558371241,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -86,8 +86,8 @@
           "id": "c45edd31-da61-4c6b-bd3f-6afacebb310b",
           "x": 125.88525047391889,
           "y": 10.591357461889842,
-          "width": 119.9999640997175,
-          "height": 111.99997906380578,
+          "width": 120.00001608298705,
+          "height": 107.9999558371241,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -105,8 +105,8 @@
           "id": "af326c3a-b2d5-41e9-89fe-add571886aa0",
           "x": -58.75004580265895,
           "y": 18.02682954497677,
-          "width": 119.99994222469508,
-          "height": 111.9998762647327,
+          "width": 120.00001608298705,
+          "height": 107.9999558371241,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -125,7 +125,7 @@
           "x": 3895.3768015055643,
           "y": 579.8723249183403,
           "width": 200,
-          "height": 180,
+          "height": 196,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
@@ -137,6 +137,7 @@
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
             "canBeStartedByTrigger": true,
+            "isUINode": true,
             "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
@@ -253,8 +254,8 @@
           "id": "14a68397-09be-4f5b-a7e5-35e784797207",
           "x": 1957.6179727091044,
           "y": 688.9133571262282,
-          "width": 119.99986981919665,
-          "height": 55.99998953190289,
+          "width": 120.00013335811552,
+          "height": 56.00004659710345,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -269,8 +270,8 @@
           "id": "f147b482-094e-4726-ab76-054fbe85c921",
           "x": 577.0429643486272,
           "y": 14.531887727851128,
-          "width": 120.00005838023834,
-          "height": 111.99997906380578,
+          "width": 119.99989880785859,
+          "height": 107.9999558371241,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -350,8 +351,8 @@
           "id": "2f5df833-7491-45a6-898c-d2cd32188811",
           "x": 2887.3421623809672,
           "y": 743.5229539605905,
-          "width": 120.00024694128005,
-          "height": 56.000178092944594,
+          "width": 119.99966425760164,
+          "height": 55.9998120468465,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-value",
@@ -364,17 +365,18 @@
         },
         {
           "id": "575e355e-e7d0-45e9-8298-929f742528f6",
-          "x": 3152.449956443267,
-          "y": 576.9740232420243,
+          "x": 3152.449628764201,
+          "y": 578.3696290096495,
           "width": 490.9681896605357,
           "height": 397.757826311184,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n<style>\n.wrapper {\n  display:flex;\n  flex-direction:row;\n  gap: 4px;\n  height: 100vh;\n  align-items: flex-end;\n  justify-content:center;\n  padding: 4px;\n}\n.bar {\n  /*transition: height 50ms ease-in-out;*/\n  height: 0%;\n  width:5%;\n  border-top-left-radius: 2px;\n  border-top-right-radius: 2px;\n  background: rgb(180,58,95);\n  background: linear-gradient(180deg, \n    rgba(180,58,95,1) 0%, rgba(253,29,29,1) 50%, \n    rgba(252,176,69,1) 100%);\n}\n</style>\n</head>\n<body class=\"bg-white\">\n\n<div class=\"min-h-screen flex wrapper\" id=\"inner\">\n    \n</div>\n\n<script>\n    // Initialize the global variable \"input\"\n    window.input = window.input ;\n    let inputstream = [];\n    let initialized = false;\n    // Function to rerender the UI\n    function rerenderUI() {\n       if (!initialized && window[\"createElement\"]) {\n          initialized = true;\n         let loop = 0;\n         while (loop < 30) {\n           createElement?.(\"div\",{\n                        class: \"bar\",\n                         id: `bar-${loop}`,\n                         style: `--bar-height:${0}%;`\n                      },\n                      document.getElementById(\"inner\"),\n                      )\n              loop++;\n          }\n        }\n        if (window.input !== undefined) {\n            inputstream.push(window.input);\n            inputstream = inputstream.slice(-30);\n             inputstream.forEach((item,index) => {\n                    const percentage = 100 *(Math.min(200,parseFloat(item))/200);\n\n            const element = document.getElementById(`bar-${index}`);\n               element?.style.setProperty('height', `${percentage}%`);\n                 })\n            }\n    }\n\n    // Attach the rerenderUI function to the global onExecute method\n    window.onExecute = rerenderUI;\n\n    \n    rerenderUI();\n</script>\n\n</body>\n</html>",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: flex-end;\n        justify-content: center;\n        padding: 4px;\n      }\n      .bar {\n        /*transition: scale 50ms ease-in-out;*/\n        height: 0%;\n        width: 5%;\n        transform-origin: bottom;\n        border-top-left-radius: 2px;\n        border-top-right-radius: 2px;\n        background: rgb(180, 58, 95);\n        background: linear-gradient(\n          180deg,\n          rgba(180, 58, 95, 1) 0%,\n          rgba(253, 29, 29, 1) 50%,\n          rgba(252, 176, 69, 1) 100%\n        );\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\"></div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n          let loop = 0;\n          while (loop < 30) {\n            elements.push(\n              createElement?.(\n                'div',\n                {\n                  class: 'bar',\n                  id: `bar-${loop}`,\n                  style: `--bar-height:${0}%;height:100%;`,\n                },\n                document.getElementById('inner')\n              ).domElement\n            );\n            loop++;\n          }\n        }\n        if (window.input !== undefined) {\n          inputstream.push(window.input);\n          inputstream = inputstream.slice(-30);\n          inputstream.forEach((item, index) => {\n            const percentage = 100 * (Math.min(200, parseFloat(item)) / 200); //\n\n            //const element = document.getElementById(`bar-${index}`);\n\n            const element = elements[index];\n            //element?.style.setProperty('height', `${percentage}%`);\n            element?.style.setProperty('scale', `1 ${percentage}%`);\n          });\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
-            }
+            },
+            "showFormOnlyInPopup": true
           }
         },
         {
@@ -382,7 +384,7 @@
           "x": -199.0074207861212,
           "y": -529.0671579128524,
           "width": 200,
-          "height": 180,
+          "height": 196,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
@@ -394,6 +396,7 @@
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
             "canBeStartedByTrigger": true,
+            "isUINode": true,
             "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
@@ -419,7 +422,7 @@
           "x": 428.80316226031545,
           "y": -537.6941244374884,
           "width": 200,
-          "height": 180,
+          "height": 196,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
@@ -431,6 +434,7 @@
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
             "canBeStartedByTrigger": true,
+            "isUINode": true,
             "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
@@ -440,7 +444,7 @@
           "x": 1052.19457228735,
           "y": -513.999613828717,
           "width": 200,
-          "height": 180,
+          "height": 196,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
@@ -452,6 +456,7 @@
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
             "canBeStartedByTrigger": true,
+            "isUINode": true,
             "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
@@ -544,21 +549,22 @@
         },
         {
           "id": "ba6a1368-949d-4320-bde4-d1f9eba7a6ea",
-          "x": 3155.160529343512,
-          "y": 1027.3213269141263,
+          "x": 3156.555868719938,
+          "y": 1027.0490460798594,
           "width": 200,
-          "height": 180,
+          "height": 196,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
             "formValues": {
-              "value": "121",
+              "value": "125",
               "valueSliderSettings": "{\"min\":50,\"max\":150,\"step\":1}",
               "label": "Current"
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
             "canBeStartedByTrigger": true,
+            "isUINode": true,
             "readPropertyFromNodeInfoForInitialTrigger": "value",
             "isSettingsPopup": true
           }
@@ -664,7 +670,7 @@
         {
           "id": "9cc44420-7c00-4b84-8d36-f430425cb75b",
           "x": 4095.3768015055643,
-          "y": 669.8723249183403,
+          "y": 677.8723249183403,
           "endX": 4273.959526405653,
           "endY": 672.1786377997438,
           "startNodeId": "2cec11c4-67cc-4003-ac73-ad40b3cde53b",
@@ -738,7 +744,7 @@
         },
         {
           "id": "bcc5b3c7-06ea-4feb-9f8b-ba9cc82896aa",
-          "x": 2077.617842528301,
+          "x": 2077.6181060672197,
           "y": 718.9133571262282,
           "endX": 2179.4148737059695,
           "endY": 729.7374051189843,
@@ -768,10 +774,10 @@
         },
         {
           "id": "ad18c35b-e1cd-4e33-b27f-1aed8b2ff231",
-          "x": 3007.3424093222475,
+          "x": 3007.341826638569,
           "y": 773.5229539605905,
-          "endX": 3152.449956443267,
-          "endY": 775.8529363976163,
+          "endX": 3152.449628764201,
+          "endY": 777.2485421652416,
           "startNodeId": "2f5df833-7491-45a6-898c-d2cd32188811",
           "endNodeId": "575e355e-e7d0-45e9-8298-929f742528f6",
           "startThumbName": "output",
@@ -784,7 +790,7 @@
         {
           "id": "d34aa986-1f05-4162-a105-fb023212890e",
           "x": 0.9925792138787983,
-          "y": -439.0671579128524,
+          "y": -431.0671579128524,
           "endX": 119.95225490078967,
           "endY": -435.94562533407066,
           "startNodeId": "acdfc0af-68ab-476f-a8fc-d932a1be6524",
@@ -799,7 +805,7 @@
         {
           "id": "c4eea3c7-e863-4008-bddd-ad743e3a492b",
           "x": 628.8031622603155,
-          "y": -447.6941244374884,
+          "y": -439.6941244374884,
           "endX": 720.8220287416549,
           "endY": -448.050512470214,
           "startNodeId": "0e91b5a0-0f2d-4c52-88d5-1efe5d0b50fb",
@@ -814,7 +820,7 @@
         {
           "id": "4332e92e-70b8-4f1a-9acb-6a3f793b50e9",
           "x": 1252.19457228735,
-          "y": -423.999613828717,
+          "y": -415.999613828717,
           "endX": 1369.0427164677208,
           "endY": -421.8036176314403,
           "startNodeId": "33b0fd40-36c7-4adf-9536-0ac8eebdc06d",
@@ -828,8 +834,8 @@
         },
         {
           "id": "7508268a-83f6-4576-ae1e-491885c19126",
-          "x": 3355.160529343512,
-          "y": 1117.3213269141263,
+          "x": 3356.555868719938,
+          "y": 1125.0490460798594,
           "endX": 3485.523608657453,
           "endY": 1116.8634605182704,
           "startNodeId": "ba6a1368-949d-4320-bde4-d1f9eba7a6ea",

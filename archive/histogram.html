@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        height: 100vh;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 4px;
+      }
+      .bar {
+        /*transition: scale 50ms ease-in-out;*/
+        height: 0%;
+        width: 5%;
+        transform-origin: bottom;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+        background: rgb(180, 58, 95);
+        background: linear-gradient(
+          180deg,
+          rgba(180, 58, 95, 1) 0%,
+          rgba(253, 29, 29, 1) 50%,
+          rgba(252, 176, 69, 1) 100%
+        );
+      }
+    </style>
+  </head>
+  <body class="bg-white">
+    <div class="min-h-screen flex wrapper" id="inner"></div>
+
+    <script>
+      // Initialize the global variable "input"
+      window.input = window.input;
+      let inputstream = [];
+      let initialized = false;
+      let elements = [];
+      // Function to rerender the UI
+      function rerenderUI() {
+        if (!initialized && window['createElement']) {
+          initialized = true;
+          let loop = 0;
+          while (loop < 30) {
+            elements.push(
+              createElement?.(
+                'div',
+                {
+                  class: 'bar',
+                  id: `bar-${loop}`,
+                  style: `--bar-height:${0}%;height:100%;`,
+                },
+                document.getElementById('inner')
+              ).domElement
+            );
+            loop++;
+          }
+        }
+        if (window.input !== undefined) {
+          inputstream.push(window.input);
+          inputstream = inputstream.slice(-30);
+          inputstream.forEach((item, index) => {
+            const percentage = 100 * (Math.min(200, parseFloat(item)) / 200); //
+
+            //const element = document.getElementById(`bar-${index}`);
+
+            const element = elements[index];
+            //element?.style.setProperty('height', `${percentage}%`);
+            element?.style.setProperty('scale', `1 ${percentage}%`);
+          });
+        }
+      }
+
+      // Attach the rerenderUI function to the global onExecute method
+      window.onExecute = rerenderUI;
+
+      rerenderUI();
+    </script>
+  </body>
+</html>
