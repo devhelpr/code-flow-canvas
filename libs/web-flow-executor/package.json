@@ -1,8 +1,8 @@
 {
   "name": "@devhelpr/web-flow-executor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {
-    "@devhelpr/visual-programming-system": "^0.0.10"
+    "@devhelpr/visual-programming-system": "^0.0.11"
   },
   "main": "./index.js",
   "module": "./index.mjs",
