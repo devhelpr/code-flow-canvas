@@ -187,7 +187,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded text-white flex flex-col items-center justify-center`,
+          class: `inner-node bg-slate-500 p-4 rounded text-white flex flex-col items-center justify-start`,
         },
         undefined,
         'Fetch'
@@ -225,6 +225,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             label: '',
             name: 'error',
+            prefixLabel: 'error',
           },
           {
             thumbType: ThumbType.StartConnectorRight,
@@ -233,6 +234,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             label: '',
             name: 'state',
+            prefixLabel: 'state',
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
