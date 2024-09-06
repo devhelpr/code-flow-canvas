@@ -959,8 +959,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         }
       });
       if (hasUIElements) {
-        (this.runButton?.domElement as HTMLButtonElement).click();
-        (this.runButton?.domElement as HTMLButtonElement).disabled = true;
+        this.runFlow();
       }
     };
 
@@ -980,7 +979,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       );
     };
 
-    const runCounterElement = createElement(
+    this.runCounterElement = createElement(
       'div',
       {
         class:
@@ -997,38 +996,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         name: 'run-flow',
         click: (event) => {
           event.preventDefault();
-          (this.runButton?.domElement as HTMLButtonElement).disabled = true;
-          //this.clearPathExecution();
-          setRunCounterUpdateElement(
-            runCounterElement.domElement as HTMLElement
-          );
-          this.removeFormElement();
-          //resetRunCounter();
-          if (this.canvasApp?.elements) {
-            this.canvasApp?.elements.forEach((node: IElementNode<NodeInfo>) => {
-              if (
-                node &&
-                node.nodeInfo &&
-                node.nodeInfo.initializeOnStartFlow
-              ) {
-                node.nodeInfo?.initializeCompute?.();
-              }
-            });
-            (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
-            const runCounter = this.createRunCounterContext(true, false);
-            run(
-              this.canvasApp?.elements,
-              this.canvasApp,
-              (input) => {
-                console.log('run finished', input);
-              },
-              undefined,
-              undefined,
-              undefined,
-              runCounter,
-              false
-            );
-          }
+          this.runFlow();
           return false;
         },
       },
@@ -1849,7 +1817,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   };
 
   run = () => {
-    (this.runButton?.domElement as HTMLElement).click();
+    this.runFlow();
   };
 
   getSelectTaskElement = () => {
@@ -2062,5 +2030,40 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     });
     return runCounter;
+  };
+
+  runCounterElement: IDOMElement | null = null;
+  runFlow = () => {
+    if (!this.runCounterElement) {
+      return;
+    }
+    (this.runButton?.domElement as HTMLButtonElement).disabled = true;
+    //this.clearPathExecution();
+    setRunCounterUpdateElement(
+      this.runCounterElement.domElement as HTMLElement
+    );
+    this.removeFormElement();
+    //resetRunCounter();
+    if (this.canvasApp?.elements) {
+      this.canvasApp?.elements.forEach((node: IElementNode<NodeInfo>) => {
+        if (node && node.nodeInfo && node.nodeInfo.initializeOnStartFlow) {
+          node.nodeInfo?.initializeCompute?.();
+        }
+      });
+      (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
+      const runCounter = this.createRunCounterContext(true, false);
+      run(
+        this.canvasApp?.elements,
+        this.canvasApp,
+        (input) => {
+          console.log('run finished', input);
+        },
+        undefined,
+        undefined,
+        undefined,
+        runCounter,
+        false
+      );
+    }
   };
 }
