@@ -33,7 +33,7 @@ export const showMetaViewDialog = (
   let divElement: any = undefined;
   renderElement(
     <dialog
-      class={'max-h-[100vh] overflow-auto'}
+      class={'max-h-[100vh] overflow-auto p-4'}
       getElement={(element: HTMLDialogElement) =>
         (dialogElement = element as HTMLDialogElement)
       }
@@ -140,7 +140,9 @@ export const showMetaViewDialog = (
         }
       } else if (isArrayMetaField(meta) && meta.propertyName) {
         renderElement(<h1>{meta.displayName}</h1>, divElement);
-        const array = nodeComponent.nodeInfo?.formValues?.[meta.propertyName];
+        const array = meta.getData
+          ? meta.getData()
+          : nodeComponent.nodeInfo?.formValues?.[meta.propertyName];
         if (array) {
           const columnCount = meta.getCount ? meta.getCount() : 0;
 

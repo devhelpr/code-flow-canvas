@@ -41,8 +41,11 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
   let nodeComponent: IRectNodeComponent<NodeInfo>;
   let neuralNodeCountElement: HTMLDivElement | undefined = undefined;
   const initializeCompute = () => {
+    lastOutput = [];
     return;
   };
+
+  let lastOutput: any[] = [];
 
   const compute = (
     input: string,
@@ -164,6 +167,7 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
         totalError,
         connectionHistory: layerInput.connectionHistory,
       };
+      lastOutput = [...outputs];
       //console.log('neural-node-output-layer', outputData);
       return {
         result: outputData,
@@ -408,6 +412,17 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
                   ]
                 ) ?? 0
               );
+            },
+          },
+          {
+            propertyName: 'outputs',
+            displayName: 'Last outputs',
+            type: 'array',
+            getCount: () => {
+              return lastOutput.length;
+            },
+            getData: () => {
+              return lastOutput;
             },
           },
         ];

@@ -15,6 +15,7 @@ export interface IMatrixMetaField extends IMetaField {
 export interface IArrayMetaField extends IMetaField {
   type: 'array';
   getCount: () => number;
+  getData?: () => any[];
 }
 
 export interface IOtherMetaField extends IMetaField {
