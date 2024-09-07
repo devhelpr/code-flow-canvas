@@ -12,6 +12,7 @@ import {
   ThumbConnectionType,
   ThumbType,
   createJSXElement,
+  FlowChangeType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
@@ -24,7 +25,11 @@ export interface ConvolutionImageData {
 }
 
 export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: HTMLElement | undefined = undefined;
@@ -135,6 +140,52 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
     return outputImageData;
   }
 
+  function getKernel() {
+    const preset = node.nodeInfo?.formValues?.preset;
+    if (preset === 'sharpen') {
+      return [
+        // sharpen
+        [0, -1, 0],
+        [-1, 5, -1],
+        [0, -1, 0],
+      ];
+    } else if (preset === 'emboss') {
+      return [
+        // emboss
+        [-2, -1, 0],
+        [-1, 1, 1],
+        [0, 1, 2],
+      ];
+    } else if (preset === 'outline') {
+      return [
+        // outline (laplacian)
+        [0, 1, 0],
+        [1, -4, 1],
+        [0, 1, 0],
+      ];
+    } else if (preset === 'blur') {
+      return [
+        // blur (gaussian)
+        [1 / 16, 2 / 16, 1 / 16],
+        [2 / 16, 4 / 16, 2 / 16],
+        [1 / 16, 2 / 16, 1 / 16],
+      ];
+    } else if (preset === 'mean-blur') {
+      return [
+        // mean blur
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9],
+      ];
+    }
+    // identity
+    return [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0],
+    ];
+  }
+
   const initializeCompute = () => {
     hasInitialValue = true;
     lastImageData = undefined;
@@ -170,28 +221,7 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
             (imageData instanceof ImageData ||
               imageData.type === 'ConvolutionImageData')
           ) {
-            // const kernel = [
-            //   [1, 0, 0, 0, 0],
-            //   [0, 3, 0, 0, 0],
-            //   [0, 0, -1, 0, 0],
-            //   [0, 0, 0, 3, 0],
-            //   [0, 0, 0, 0, 1],
-            // ];
-
-            // const kernel = [
-            //   // emboss
-            //   [-2, -1, 0],
-            //   [-1, 1, 1],
-            //   [0, 1, 2],
-            // ];
-
-            const kernel = [
-              // sharpen
-              [0, -1, 0],
-              [-1, 5, -1],
-              [0, -1, 0],
-            ];
-            lastImageData = imagedataToImage(imageData, kernel, mode);
+            lastImageData = imagedataToImage(imageData, getKernel(), mode);
             inputObject.data.imageData = 'ConvolutionImageData';
             inputObject.connectionHistory = true;
             resolve({
@@ -326,7 +356,38 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
                 modeElement.textContent = value;
               }
               if (updated) {
-                updated();
+                updated(undefined, undefined, FlowChangeType.UpdateNode);
+              }
+            },
+          },
+
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'preset',
+            label: 'Preset',
+
+            value: initalValues?.['preset'] ?? 'sharpen',
+            options: [
+              { value: 'sharpen', label: 'Sharpen' },
+              { value: 'emboss', label: 'Emboss' },
+              { value: 'outline', label: 'Outline' },
+              { value: 'blur', label: 'Blur' },
+              { value: 'mean-blur', label: 'Mean Blur' },
+              { value: 'identity', label: 'Identity' },
+            ],
+            onChange: (value: string) => {
+              if (!node || !node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['preset']: value,
+              };
+              if (modeElement) {
+                modeElement.textContent = value;
+              }
+              if (updated) {
+                updated(undefined, undefined, FlowChangeType.UpdateNode);
               }
             },
           },
@@ -336,6 +397,7 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
           mode: initalValues?.['mode'] ?? 'kernel',
+          preset: initalValues?.['preset'] ?? 'sharpen',
         };
         node.nodeInfo.isSettingsPopup = true;
         (node.nodeInfo as any).getImageData = () => lastImageData;

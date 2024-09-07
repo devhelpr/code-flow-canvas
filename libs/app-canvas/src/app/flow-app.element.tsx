@@ -1724,6 +1724,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     selectedNodeInfo: SelectedNodeInfo,
     formElements?: any[]
   ) => {
+    if (this.formElement) {
+      this.formElement.domElement.remove();
+    }
     const formElementInstance = createElement(
       'div',
       {},
