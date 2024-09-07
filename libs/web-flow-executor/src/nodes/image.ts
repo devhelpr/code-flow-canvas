@@ -60,9 +60,9 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
       for (let x = 0; x < imagedata.width; x++) {
         const index = y * imagedata.width * 4 + x * 4;
         const r = Math.min(255, Math.max(0, imagedata.data[index]));
-        const g = Math.min(Math.max(imagedata.data[index + 1]));
-        const b = Math.min(Math.max(imagedata.data[index + 2]));
-        const a = Math.min(Math.max(imagedata.data[index + 3]));
+        const g = Math.min(255, Math.max(0, imagedata.data[index + 1]));
+        const b = Math.min(255, Math.max(0, imagedata.data[index + 2]));
+        const a = 1; //Math.min(Math.max(imagedata.data[index + 3]));
         context!.fillStyle = `rgba(${r},${g},${b},${a})`;
         context!.fillRect(x, y, 1, 1);
       }

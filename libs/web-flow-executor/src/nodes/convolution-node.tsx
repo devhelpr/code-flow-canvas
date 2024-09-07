@@ -42,7 +42,6 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
   ): ConvolutionImageData {
     const rows = matrix.length;
     const cols = matrix[0].length;
-    const totalCells = rows * cols;
     let maxPoolingStride = 2;
 
     let maxWidth = imagedata.width;
@@ -72,15 +71,11 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
 
     for (let y = 0; y < maxHeight; y += maxPoolingStride) {
       for (let x = 0; x < maxWidth; x += maxPoolingStride) {
-        let sumr = 0;
-        let sumg = 0;
-        let sumb = 0;
-        let suma = 0;
         if (mode === 'relu') {
-          let r = imagedata.data[4 * (y * imagedata.width + x)];
-          let g = imagedata.data[4 * (y * imagedata.width + x) + 1];
-          let b = imagedata.data[4 * (y * imagedata.width + x) + 2];
-          let a = imagedata.data[4 * (y * imagedata.width + x) + 3];
+          const index = 4 * (y * imagedata.width + x);
+          let r = imagedata.data[index];
+          let g = imagedata.data[index + 1];
+          let b = imagedata.data[index + 2];
           if (r < 0) {
             r = 0;
           }
@@ -90,25 +85,23 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
           if (b < 0) {
             b = 0;
           }
-          if (a < 0) {
-            a = 0;
-          }
-          outputImageData.data[4 * (y * outputImageData.width + x)] = r;
-          outputImageData.data[4 * (y * outputImageData.width + x) + 1] = g;
-          outputImageData.data[4 * (y * outputImageData.width + x) + 2] = b;
-          outputImageData.data[4 * (y * outputImageData.width + x) + 3] = a;
+          const outputIndex = 4 * (y * outputImageData.width + x);
+          outputImageData.data[outputIndex] = r;
+          outputImageData.data[outputIndex + 1] = g;
+          outputImageData.data[outputIndex + 2] = b;
+          outputImageData.data[outputIndex + 3] = 1;
         } else if (mode === 'max-pooling') {
           let maxr = 0;
           let maxg = 0;
           let maxb = 0;
-          let maxa = 0;
           for (let i = 0; i < maxPoolingStride; i++) {
             for (let j = 0; j < maxPoolingStride; j++) {
-              const index = 4 * ((y + i) * imagedata.width) + 4 * (x + j);
-              maxr = Math.max(imagedata.data[index], maxr);
-              maxg = Math.max(imagedata.data[index + 1], maxg);
-              maxb = Math.max(imagedata.data[index + 2], maxb);
-              maxa = Math.max(imagedata.data[index + 3], maxa);
+              if (y + i < imagedata.height && x + j < imagedata.width) {
+                const index = 4 * ((y + i) * imagedata.width) + 4 * (x + j);
+                maxr = Math.max(imagedata.data[index], maxr);
+                maxg = Math.max(imagedata.data[index + 1], maxg);
+                maxb = Math.max(imagedata.data[index + 2], maxb);
+              }
             }
           }
 
@@ -118,27 +111,24 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
           outputImageData.data[index] = maxr;
           outputImageData.data[index + 1] = maxg;
           outputImageData.data[index + 2] = maxb;
-          outputImageData.data[index + 3] = maxa;
+          outputImageData.data[index + 3] = 1;
         } else {
+          let sumr = 0;
+          let sumg = 0;
+          let sumb = 0;
           for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
               const index = 4 * ((y + i) * imagedata.width) + 4 * (x + j);
               sumr += imagedata.data[index] * matrix[i][j];
               sumg += imagedata.data[index + 1] * matrix[i][j];
               sumb += imagedata.data[index + 2] * matrix[i][j];
-              suma += imagedata.data[index + 3] * matrix[i][j];
             }
           }
-          sumr = sumr / totalCells;
-          sumg = sumg / totalCells;
-          sumb = sumb / totalCells;
-          suma = suma / totalCells;
-
           const index = 4 * y * outputImageData.width + x * 4;
           outputImageData.data[index] = sumr;
           outputImageData.data[index + 1] = sumg;
           outputImageData.data[index + 2] = sumb;
-          outputImageData.data[index + 3] = suma;
+          outputImageData.data[index + 3] = 1;
         }
       }
     }
@@ -188,10 +178,18 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
             //   [0, 0, 0, 0, 1],
             // ];
 
+            // const kernel = [
+            //   // emboss
+            //   [-2, -1, 0],
+            //   [-1, 1, 1],
+            //   [0, 1, 2],
+            // ];
+
             const kernel = [
-              [8, 0, 0],
+              // sharpen
               [0, -1, 0],
-              [0, 0, 8],
+              [-1, 5, -1],
+              [0, -1, 0],
             ];
             lastImageData = imagedataToImage(imageData, kernel, mode);
             inputObject.data.imageData = 'ConvolutionImageData';
