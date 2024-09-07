@@ -290,7 +290,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         'img',
         {
           class:
-            'w-full h-full block min-h-[32px] pointer-events-none object-covwr overflow-hidden',
+            'w-full h-full object-cover block min-h-[32px] pointer-events-none object-covwr overflow-hidden',
           src: emptyImage,
         },
         undefined

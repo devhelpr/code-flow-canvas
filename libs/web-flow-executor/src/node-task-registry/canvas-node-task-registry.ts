@@ -196,6 +196,8 @@ import {
   neuralTestTrainingDataName,
   getNeuralTestTrainingNode,
 } from '../nodes/neural-test-training';
+import { getImage } from '../nodes/image';
+import { getConvolutionNode } from '../nodes/convolution-node';
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
@@ -251,6 +253,7 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory('show-input', getShowInput);
     registerNodeFactory('show-value', getShowValue);
     registerNodeFactory('show-image', getShowImage);
+
     registerNodeFactory('sum', getSum);
     registerNodeFactory('state', getState);
     registerNodeFactory('state-transition', getStateTransition);
@@ -410,6 +413,9 @@ export const setupCanvasNodeTaskRegistry = (
     );
 
     registerNodeFactory(neuralTestTrainingDataName, getNeuralTestTrainingNode);
+
+    registerNodeFactory('image', getImage);
+    registerNodeFactory('convolution-node', getConvolutionNode);
   }
 
   registerExternalNodes?.(registerNodeFactory);

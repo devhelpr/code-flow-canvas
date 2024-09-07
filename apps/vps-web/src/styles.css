@@ -468,6 +468,9 @@ dialog[open]::backdrop {
   @apply bg-slate-300;
 }
 
+#textAreaContainer {
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.25);
+}
 #textAreaContainer form input,
 #textAreaContainer form textarea,
 #textAreaContainer form select,
