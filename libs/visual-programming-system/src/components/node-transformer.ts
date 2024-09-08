@@ -1,4 +1,4 @@
-import { transformCameraSpaceToWorldSpace } from '../camera';
+import { getCamera, transformCameraSpaceToWorldSpace } from '../camera';
 import {
   InteractionEvent,
   InteractionStateMachine,
@@ -221,6 +221,47 @@ export class NodeTransformer<T extends BaseNodeInfo> {
   updateCamera() {
     if (this.attachedNode) {
       this.attachNode(this.attachedNode);
+      const camera = getCamera();
+      const reversScale = 1 / Math.sqrt(camera.scale);
+
+      const transformerDomElement = this.nodeTransformElement
+        ?.domElement as HTMLElement;
+      const fullWidth = transformerDomElement.clientWidth;
+      console.log('fullWidth', fullWidth);
+      if (this.rightBottom?.domElement) {
+        const domElement = this.rightBottom?.domElement as HTMLElement;
+        domElement.style.scale = `${reversScale}`;
+      }
+      if (this.leftTop?.domElement) {
+        const domElement = this.leftTop?.domElement as HTMLElement;
+        domElement.style.scale = `${reversScale}`;
+      }
+      if (this.leftBottom?.domElement) {
+        const domElement = this.leftBottom?.domElement as HTMLElement;
+        domElement.style.scale = `${reversScale}`;
+      }
+      if (this.rightTop?.domElement) {
+        const domElement = this.rightTop?.domElement as HTMLElement;
+        domElement.style.scale = `${reversScale}`;
+      }
+      if (this.moveNodesPanel?.domElement) {
+        const domElement = this.moveNodesPanel?.domElement as HTMLElement;
+        const width = domElement.clientWidth;
+        const halfWidth = width / 2;
+        domElement.style.transformOrigin = '0px 0px';
+        domElement.style.scale = `${reversScale}`;
+        domElement.style.transform = `translateX(${-halfWidth}px)`;
+        domElement.style.left = `calc(${fullWidth / 2}px`;
+        domElement.style.bottom = `calc(-${48}px)`;
+      }
+
+      (
+        this.nodeTransformElement?.domElement as HTMLElement
+      ).style.borderWidth = `${reversScale}px`;
+
+      // (
+      //   this.nodeTransformElement?.domElement as HTMLElement
+      // ).style.borderRadius = `${reversScale * 10}px`;
     }
   }
 

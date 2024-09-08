@@ -421,40 +421,40 @@ export class NodeSelector<T> {
       return;
     }
     const camera = getCamera();
-
+    const reversScale = 1 / Math.sqrt(camera.scale);
     // TODO: also update padding and margin depending on the camera scale
-    (this.nodeSelectorElement.domElement as HTMLElement).style.borderWidth = `${
-      1 / camera.scale
-    }px`;
+    (
+      this.nodeSelectorElement.domElement as HTMLElement
+    ).style.borderWidth = `${reversScale}px`;
 
     if (this.rightBottom?.domElement) {
       const domElement = this.rightBottom?.domElement as HTMLElement;
-      domElement.style.width = `${8 / camera.scale}px`;
-      domElement.style.height = `${8 / camera.scale}px`;
+      domElement.style.width = `${8 * reversScale}px`;
+      domElement.style.height = `${8 * reversScale}px`;
     }
     if (this.createCompositionButtons) {
       (
         this.createCompositionButtons.domElement as HTMLElement
-      ).style.fontSize = `${12 / camera.scale}px`;
+      ).style.fontSize = `${12 * reversScale}px`;
       (
         this.createCompositionButtons.domElement as HTMLElement
-      ).style.padding = `${0.5 / camera.scale}rem`;
+      ).style.padding = `${0.5 * reversScale}rem`;
       (
         this.createCompositionButtons.domElement as HTMLElement
-      ).style.margin = `${0.5 / camera.scale}rem`;
+      ).style.margin = `${0.5 * reversScale}rem`;
       (
         this.createCompositionButtons.domElement as HTMLElement
-      ).style.borderRadius = `${0.15 / camera.scale}rem`;
+      ).style.borderRadius = `${0.15 * reversScale}rem`;
       (
         this.createCompositionButtons.domElement as HTMLElement
-      ).style.borderWidth = `${1 / camera.scale}px`;
+      ).style.borderWidth = `${reversScale}px`;
     }
     if (this.toolsNodesPanel) {
       (this.toolsNodesPanel.domElement as HTMLElement).style.bottom = `-${
-        48 / camera.scale
+        48 * reversScale
       }px`;
       (this.toolsNodesPanel.domElement as HTMLElement).style.height = `${
-        48 / camera.scale
+        48 * reversScale
       }px`;
     }
   }
