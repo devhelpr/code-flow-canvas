@@ -4,12 +4,14 @@ import { IConnectionNodeComponent } from '../interfaces';
 export interface IMetaField {
   propertyName?: string;
   displayName?: string;
+  getVisibility?: () => boolean;
 }
 
 export interface IMatrixMetaField extends IMetaField {
   type: 'matrix';
   getRowCount: () => number;
   getColumnCount: () => number;
+  getData?: () => any[][];
 }
 
 export interface IArrayMetaField extends IMetaField {

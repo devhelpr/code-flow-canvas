@@ -66,6 +66,9 @@ export const showMetaViewDialog = (
     });
 
     nodeComponent.nodeInfo?.meta?.forEach((meta) => {
+      if (meta.getVisibility && !meta.getVisibility()) {
+        return;
+      }
       if (isInfoMetaField(meta)) {
         const description = meta.getDescription
           ? meta.getDescription()
@@ -73,7 +76,9 @@ export const showMetaViewDialog = (
         renderElement(<p>{description}</p>, divElement);
       } else if (isMatrixMetaField(meta) && meta.propertyName) {
         renderElement(<h1>{meta.displayName}</h1>, divElement);
-        const matrix = nodeComponent.nodeInfo?.formValues?.[meta.propertyName];
+        const matrix = meta.getData
+          ? meta.getData()
+          : nodeComponent.nodeInfo?.formValues?.[meta.propertyName];
         if (matrix) {
           const rowCount = meta.getRowCount ? meta.getRowCount() : 0;
           const columnCount = meta.getColumnCount ? meta.getColumnCount() : 0;

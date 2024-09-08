@@ -278,7 +278,7 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
         >
           Convolution Node
           <br />
-          <div getelement={(element: HTMLElement) => (modeElement = element)}>
+          <div getElement={(element: HTMLElement) => (modeElement = element)}>
             {initalValues?.['mode']}
           </div>
         </div>,
@@ -383,9 +383,9 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
                 ...node.nodeInfo.formValues,
                 ['preset']: value,
               };
-              if (modeElement) {
-                modeElement.textContent = value;
-              }
+              // if (modeElement) {
+              //   modeElement.textContent = value;
+              // }
               if (updated) {
                 updated(undefined, undefined, FlowChangeType.UpdateNode);
               }
@@ -401,6 +401,38 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
         };
         node.nodeInfo.isSettingsPopup = true;
         (node.nodeInfo as any).getImageData = () => lastImageData;
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'title',
+            description: 'Convolution Node',
+            type: 'info',
+          },
+          {
+            propertyName: 'title',
+            getDescription: () => {
+              return `Mode: ${node.nodeInfo?.formValues?.mode}`;
+            },
+            type: 'info',
+          },
+          {
+            propertyName: 'filter-kernel',
+            displayName: 'Filter kernel Matrix',
+            type: 'matrix',
+            getColumnCount: () => {
+              return getKernel()?.[0].length ?? 0;
+            },
+
+            getRowCount: () => {
+              return getKernel()?.length ?? 0;
+            },
+            getData: () => {
+              return getKernel();
+            },
+            getVisibility: () => {
+              return node.nodeInfo?.formValues?.mode === 'kernel';
+            },
+          },
+        ];
       }
       return node;
     },
