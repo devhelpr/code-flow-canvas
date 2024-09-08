@@ -22,6 +22,7 @@ import { getValue } from '../nodes/value';
 import { getSplitByCase } from '../nodes/split-by-case';
 import { getGate } from '../nodes/gate';
 import { setVariable } from '../nodes/set-variable';
+import { resetVariable } from '../nodes/reset-variable';
 import { getNodeTrigger } from '../nodes/node-trigger';
 import { getNodeTriggerTarget } from '../nodes/node-trigger-target';
 import { getHtmlNode } from '../nodes/html-node';
@@ -269,6 +270,7 @@ export const setupCanvasNodeTaskRegistry = (
     );
     registerNodeFactory('variable', getVariable);
     registerNodeFactory('set-variable', setVariable);
+    registerNodeFactory('reset-variable', resetVariable);
     registerNodeFactory(
       'set-flow-variable',
       setFlowVariable,

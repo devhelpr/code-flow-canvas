@@ -809,7 +809,7 @@ export const getScopedVariable =
           'div',
           {
             class:
-              'absolute top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1',
+              'absolute top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1 whitespace-nowrap',
           },
           rect.nodeComponent.domElement as unknown as HTMLElement,
           variableName
