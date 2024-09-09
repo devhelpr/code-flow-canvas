@@ -497,7 +497,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       animatedNodes.node3 = undefined;
     }
 
-    const domCircle = testCircle.domElement as HTMLElement;
+    const domCircle = testCircle!.domElement as HTMLElement;
 
     const domMessage = message?.domElement as HTMLElement;
     if (!animatedNodes?.node1) {
@@ -543,7 +543,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       domCircle,
       domMessage,
       color,
-      testCircle,
+      testCircle: testCircle!,
       message: message,
       messageText: messageText,
       singleStep,

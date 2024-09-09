@@ -196,20 +196,10 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
             ' p-3 pl-10 flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
           style: {
             'clip-path': 'polygon(0 50%, 100% 0, 100% 100%)',
-            // 'shape-inside:': 'polygon(0 50%, 100% 0, 100% 100%)', // no-browser-support yet...
-            // 'shape-padding': '10px',
           },
         },
-        parentElement.domElement,
+        parentElement?.domElement,
         initialExpressionValue ?? 'expression'
-        // FormComponent({
-        //   id: 'test',
-        //   formElements: [],
-        //   hasSubmitButton: false,
-        //   onSave: (formValues) => {
-        //     //
-        //   },
-        //}) as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       console.log('trackNamedSignal register gate', id);

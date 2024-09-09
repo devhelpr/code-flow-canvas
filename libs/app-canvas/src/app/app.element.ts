@@ -185,7 +185,7 @@ export class AppElement<T extends BaseNodeInfo> {
         'stroke-width': '3px',
         fill: 'transparent',
       },
-      this.editPopupLineContainer.domElement
+      this.editPopupLineContainer?.domElement
     );
     this.editPopupLineEndPath = createNSElement(
       'path',
@@ -195,7 +195,7 @@ export class AppElement<T extends BaseNodeInfo> {
         'stroke-width': '2px',
         fill: 'transparent',
       },
-      this.editPopupLineContainer.domElement
+      this.editPopupLineContainer?.domElement
     );
 
     this.editPopupEditingNodeIndicator = createElement(

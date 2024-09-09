@@ -11,7 +11,7 @@ export const createNodeComponent = <T>(
   parent?: DOMElementNode,
   content?: string,
   id?: string
-): INodeComponent<T> => {
+): INodeComponent<T> | undefined => {
   const element = createNodeElement<T>(
     elementName,
     attributes,
@@ -19,6 +19,9 @@ export const createNodeComponent = <T>(
     content,
     id
   );
+  if (!element) {
+    return;
+  }
   return {
     ...element,
     x: 0,
@@ -37,7 +40,7 @@ export const createSVGNodeComponent = <T>(
     y?: number
   ) => boolean,
   id?: string
-): INodeComponent<T> => {
+): INodeComponent<T> | undefined => {
   const element = createNSElement<T>(
     elementName,
     attributes,
@@ -45,6 +48,9 @@ export const createSVGNodeComponent = <T>(
     content,
     id
   );
+  if (!element) {
+    return;
+  }
   return {
     ...element,
     x: 0,

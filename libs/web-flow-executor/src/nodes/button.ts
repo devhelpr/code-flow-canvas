@@ -24,7 +24,7 @@ export const getButton =
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
-    let button: IDOMElement;
+    let button: IDOMElement | undefined = undefined;
     let currentValue = 0;
     let triggerButton = false;
     let runCounter: RunCounter | undefined = undefined;
@@ -84,7 +84,7 @@ export const getButton =
             fieldName: 'caption',
             value: initialValue,
             onChange: (value: string) => {
-              if (!node.nodeInfo) {
+              if (!node.nodeInfo || !button) {
                 return;
               }
               node.nodeInfo.formValues = {
@@ -149,7 +149,9 @@ export const getButton =
           },
           componentWrapper.domElement
         );
-        button.domElement.textContent = initialValue ?? 'Button';
+        if (button) {
+          button.domElement.textContent = initialValue ?? 'Button';
+        }
         const rect = canvasApp.createRect(
           x,
           y,

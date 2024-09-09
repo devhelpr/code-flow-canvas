@@ -70,7 +70,7 @@ export const getNodeTreeVisualizer = (
             }`,
           },
           undefined,
-          contentDataElement.domElement as unknown as HTMLElement
+          contentDataElement?.domElement as unknown as HTMLElement
         );
 
         createElement(
@@ -78,7 +78,7 @@ export const getNodeTreeVisualizer = (
           {
             class: `node-tree__value-helper`,
           },
-          contentDataElement.domElement
+          contentDataElement?.domElement
         );
 
         const element = createElement(
@@ -89,7 +89,7 @@ export const getNodeTreeVisualizer = (
             //id: `${node.id}-${payload?.childTreeNode || 'node'}`,
           },
           undefined,
-          contentElement.domElement as unknown as HTMLElement
+          contentElement?.domElement as unknown as HTMLElement
         );
 
         // wrapperElement
@@ -100,7 +100,7 @@ export const getNodeTreeVisualizer = (
               'node-tree__wrapper  grid justify-items-center justify-content-center row-1 items-start grid-3-columns gap-2 mx-2',
             id: `${node.id}-${payload?.childTreeNode || 'node'}`,
           },
-          element.domElement,
+          element?.domElement,
           undefined
         );
 
@@ -123,11 +123,11 @@ export const getNodeTreeVisualizer = (
           (
             htmlNode.domElement as unknown as HTMLElement
           ).firstChild?.appendChild(
-            treeNode.domElement as unknown as HTMLElement
+            treeNode?.domElement as unknown as HTMLElement
           );
-          nodeElement = treeNode.domElement as unknown as HTMLElement;
+          nodeElement = treeNode?.domElement as unknown as HTMLElement;
         }
-        nodeElement.appendChild(element.domElement as unknown as HTMLElement);
+        nodeElement.appendChild(element?.domElement as unknown as HTMLElement);
         if (rootNode) {
           const boundingBox = (
             rootNode.domElement as HTMLElement
@@ -301,6 +301,9 @@ export const getNodeTreeVisualizer = (
         '-'
       );
 
+      if (!htmlNode) {
+        throw new Error('htmlNode is undefined');
+      }
       componentWrapper = createNodeElement(
         'div',
         {

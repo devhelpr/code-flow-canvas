@@ -64,9 +64,14 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
         document.body,
         formElement
       );
+      if (!dialogFormNode) {
+        reject();
+        return;
+      }
       const form = (dialogFormNode.domElement as HTMLElement).querySelector(
         'form'
       );
+
       (dialogFormNode.domElement as HTMLDialogElement).showModal();
       form?.addEventListener('submit', (event) => {
         event.preventDefault();

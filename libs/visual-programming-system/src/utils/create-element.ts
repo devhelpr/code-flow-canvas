@@ -23,7 +23,10 @@ export const createElement = (
   parent?: DOMElementNode,
   content?: string | HTMLElement | JSX.Element,
   id?: string
-): IDOMElement => {
+): IDOMElement | undefined => {
+  if (typeof document === undefined) {
+    return undefined;
+  }
   const nodeId = id ?? crypto.randomUUID();
   let domElement: HTMLElement | Text | undefined = undefined;
   let isTextNode = false;
@@ -86,7 +89,10 @@ export const createNodeElement = <T>(
   parent?: DOMElementNode,
   content?: string | HTMLElement | JSX.Element,
   id?: string
-): IElementNode<T> => {
+): IElementNode<T> | undefined => {
+  if (typeof document === undefined) {
+    return undefined;
+  }
   const nodeId = id ?? crypto.randomUUID();
   let domElement: HTMLElement | Text | undefined = undefined;
   let isTextNode = false;
@@ -150,7 +156,10 @@ export const createNSElement = <T>(
   parent?: DOMElementNode,
   content?: string,
   id?: string
-): IElementNode<T> => {
+): IElementNode<T> | undefined => {
+  if (typeof document === undefined) {
+    return undefined;
+  }
   const nodeId = id ?? crypto.randomUUID();
   const domElement = document.createElementNS(
     'http://www.w3.org/2000/svg',

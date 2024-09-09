@@ -9,6 +9,7 @@ import {
   FormFieldType,
   InitialValues,
   NodeTask,
+  IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
@@ -204,7 +205,8 @@ export const createStateMachineNode = (
     _payload?: any,
     _thumbName?: string,
     scopeId?: string,
-    runCounter?: RunCounter
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
   ) => {
     return new Promise((resolve, _reject) => {
       let flow1Ran = false;
@@ -212,6 +214,19 @@ export const createStateMachineNode = (
       let runFlows = false;
       if (!stateMachine && canvasAppInstance) {
         stateMachine = createStateMachine(canvasAppInstance);
+      }
+      if (connection?.startNode?.nodeInfo?.type === 'start-node') {
+        // Is this enough !??? should runNode be called?
+        console.log(
+          'statemachine started by start-node',
+          stateMachine?.currentState
+        );
+        resolve({
+          result: stateMachine?.currentState?.name,
+          output: stateMachine?.currentState?.name,
+          followPath: undefined,
+        });
+        return;
       }
       if (stateMachine && rootCanvasApp) {
         const stateEvent =

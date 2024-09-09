@@ -17,7 +17,7 @@ export const getNodeTriggerTarget = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let divElement: IDOMElement;
+  let divElement: IDOMElement | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -60,7 +60,7 @@ export const getNodeTriggerTarget = (
           fieldName: 'node',
           value: initialValue,
           onChange: (value: string) => {
-            if (!node.nodeInfo) {
+            if (!node.nodeInfo || !divElement) {
               return;
             }
             node.nodeInfo.formValues = {
@@ -92,8 +92,9 @@ export const getNodeTriggerTarget = (
         },
         componentWrapper.domElement
       );
-
-      divElement.domElement.textContent = initialValue || '';
+      if (divElement) {
+        divElement.domElement.textContent = initialValue || '';
+      }
 
       const rect = canvasApp.createRect(
         x,

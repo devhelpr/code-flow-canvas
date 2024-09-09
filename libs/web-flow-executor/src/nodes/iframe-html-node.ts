@@ -50,7 +50,7 @@ function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
 export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let currentInput = '';
   let node: IRectNodeComponent<NodeInfo>;
-  let divNode: IDOMElement;
+  let divNode: IDOMElement | undefined = undefined;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
@@ -80,6 +80,9 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       if (oldHtml === '' || oldHtml !== htmlString) {
         oldHtml = htmlString;
         //console.log('htmlString', htmlString);
+        if (!divNode) {
+          return;
+        }
         if (isEmpty || !hasHTMLDoctype) {
           (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
         } else {

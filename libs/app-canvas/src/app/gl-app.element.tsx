@@ -800,7 +800,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       {
         class: menubarContainerClasses,
       },
-      this.menubarContainerElement.domElement
+      this.menubarContainerElement?.domElement
     );
 
     renderElement(
@@ -861,7 +861,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           }
         },
       },
-      bgRange.domElement,
+      bgRange?.domElement,
       ''
     );
 
@@ -869,13 +869,14 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       'label',
       {
         class: ' whitespace-nowrap text-black p-2',
-        for: this.pathRange.id,
+        for: this.pathRange?.id ?? '',
       },
-      bgRange.domElement,
+      bgRange?.domElement,
       'History'
     );
-    this.pathRange.domElement.before(labelPathRange.domElement);
-
+    if (this.pathRange && labelPathRange) {
+      this.pathRange.domElement.before(labelPathRange.domElement);
+    }
     const initializeNodes = () => {
       if (!this.rootElement) {
         return;
@@ -922,7 +923,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           },
           selectElement
         );
-        category = optgroup.domElement as HTMLElement;
+        category = optgroup?.domElement as HTMLElement;
       }
       const option = createElement(
         'option',
@@ -945,7 +946,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           //
         },
       },
-      this.menubarElement.domElement,
+      this.menubarElement?.domElement,
       ''
     );
 
@@ -1142,7 +1143,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         this.formElement = formElementInstance;
 
         FormComponent({
-          rootElement: this.formElement.domElement as HTMLElement,
+          rootElement: this.formElement?.domElement as HTMLElement,
           id: selectedNodeInfo.id,
           hasSubmitButton: false,
           onSave: (values: any) => {

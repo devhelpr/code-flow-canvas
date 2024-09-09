@@ -79,7 +79,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
   nodeInfo?: T,
   getNodeTaskFactory?: (name: string) => any,
   useInCompositionOnly = false
-): CreateNodeInfo<T> => {
+): CreateNodeInfo<T> | undefined => {
   const showTitlebar = settings ? settings?.hasTitlebar : true;
   let hasBeforeDecorator = false;
   let hasAfterDecorator = false;
@@ -227,6 +227,10 @@ export const createRectNode = <T extends BaseNodeInfo>(
     hasCenteredLabel && !settings?.hideTitle ? nodeTitle : undefined
   );
 
+  if (!formWrapper?.domElement) {
+    return;
+  }
+
   if (formElements.length > 0 && !settings?.hasFormInPopup) {
     FormComponent({
       rootElement: formWrapper.domElement as HTMLElement,
@@ -256,6 +260,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
       canvasUpdated: canvasApp.getOnCanvasUpdated(),
     }) as unknown as HTMLElement;
   }
+
   if (childNode) {
     createElement(
       'div',
@@ -543,7 +548,10 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
         isAsyncCompute,
         nodeInfo as unknown as T,
         getNodeTaskFactory
-      );
+      ) as CreateNodeInfo<T>;
+      // if (!nodeInstance) {
+      //   return;
+      // }
       onCreatedNode(nodeInstance, containerNode);
       nodeInstance.node.label = nodeTitle;
       if (nodeInstance?.rect?.resize) {

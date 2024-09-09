@@ -15,7 +15,7 @@ import { NodeInfo } from '../types/node-info';
 
 export const getStyledNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let divNode: IDOMElement;
+  let divNode: IDOMElement | undefined = undefined;
 
   const defaultStyling = `{
       display:"block"
@@ -24,6 +24,9 @@ export const getStyledNode = (updated: () => void): NodeTask<NodeInfo> => {
   //let stylingCache = '';
 
   const setStyling = (value: string) => {
+    if (!divNode) {
+      return;
+    }
     try {
       let stylingString =
         node?.nodeInfo?.formValues['styling'] || defaultStyling;
@@ -120,7 +123,7 @@ export const getStyledNode = (updated: () => void): NodeTask<NodeInfo> => {
         {
           //class: `bg-sky-600 hover:bg-sky-500 w-full p-2 text-center block text-white font-bold rounded`,
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       );
       //button.domElement.textContent = initialValue ?? 'Button';
       const rect = canvasApp.createRect(

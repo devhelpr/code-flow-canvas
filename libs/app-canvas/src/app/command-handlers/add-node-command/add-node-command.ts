@@ -217,11 +217,11 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
       contentElement
     );
 
-    const form = (dialogElement.domElement as HTMLElement).querySelector(
+    const form = (dialogElement?.domElement as HTMLElement).querySelector(
       'form'
     );
     const selectNodeTypeElement = (
-      dialogElement.domElement as HTMLElement
+      dialogElement?.domElement as HTMLElement
     ).querySelector('#add-node-select-node-type') as HTMLSelectElement;
     if (!selectNodeTypeElement) {
       return;
@@ -236,7 +236,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
         this.getThumbNodes(
           nodeType,
           attachToNode,
-          dialogElement.domElement as HTMLElement
+          dialogElement?.domElement as HTMLElement
         )
       ) {
         okButton?.classList.remove('disabled');
@@ -244,20 +244,20 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
         okButton?.setAttribute('disabled', 'disabled');
       }
     });
-    (dialogElement.domElement as HTMLDialogElement).showModal();
+    (dialogElement?.domElement as HTMLDialogElement).showModal();
     const okButton = form?.querySelector('.form-ok');
     okButton?.addEventListener('click', (event) => {
       event.preventDefault();
       const nodeType = selectNodeTypeElement.value;
 
       const thumbSelect = (
-        dialogElement.domElement as HTMLDialogElement
+        dialogElement?.domElement as HTMLDialogElement
       ).querySelector('.thumb-selector-container select') as HTMLSelectElement;
       const thumbId = thumbSelect?.value ?? '';
       console.log('thumbId', thumbId);
 
       const inputSelectNodeTypeElement = (
-        dialogElement.domElement as HTMLDialogElement
+        dialogElement?.domElement as HTMLDialogElement
       ).querySelector(
         '.thumb-input-selector-container select'
       ) as HTMLSelectElement;
@@ -281,7 +281,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
       this.getThumbNodes(
         nodeType,
         attachToNode,
-        dialogElement.domElement as HTMLElement
+        dialogElement?.domElement as HTMLElement
       )
     ) {
       okButton?.classList.remove('disabled');

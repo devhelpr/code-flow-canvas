@@ -159,6 +159,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       },
       this.nodeComponent.domElement
     );
+    if (!this.circleElement) {
+      throw new Error('circleElement is undefined');
+    }
     (this.circleElement.domElement as HTMLElement).setAttribute(
       'data-nodecomponent',
       'true'
@@ -234,6 +237,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
       },
       this.circleElement.domElement
     );
+    if (!innerCircle) {
+      throw new Error('iconWrapper is undefined');
+    }
     if (thumb.thumbConstraint === 'vec3' || thumb.thumbConstraint === 'vec2') {
       const icon =
         thumb.thumbConstraint === 'vec3' ? thumbThreeDots() : thumbTwoDots();
@@ -248,6 +254,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
           },
           innerCircle.domElement
         );
+        if (!iconWrapper) {
+          throw new Error('iconWrapper is undefined');
+        }
 
         createElement(
           'div',

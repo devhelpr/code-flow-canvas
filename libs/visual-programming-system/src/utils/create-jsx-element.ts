@@ -5,7 +5,10 @@ export const createJSXElement = (
   tag: any,
   properties: any,
   ...children: any[]
-): HTMLElement => {
+): HTMLElement | undefined => {
+  if (typeof document === undefined) {
+    return undefined;
+  }
   if (typeof tag === 'function') {
     return tag(properties ?? {}, children) as HTMLElement;
   }
@@ -25,7 +28,7 @@ export const createJSXElement = (
           ) as unknown as IDOMElement
         ).domElement as unknown as HTMLElement)
       : (createElement(tag, properties, undefined, undefined)
-          .domElement as unknown as HTMLElement);
+          ?.domElement as unknown as HTMLElement);
 
   if (properties) {
     Object.entries(properties).forEach(([key, val]) => {

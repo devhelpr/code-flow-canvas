@@ -48,7 +48,7 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
     };
   };
 
-  return visualNodeFactory(
+  const result = visualNodeFactory(
     nodeName,
     labelName,
     familyName,
@@ -150,5 +150,7 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
     undefined,
     undefined,
     true
-  );
+  ) as unknown as NodeTask<NodeInfo>;
+
+  return result;
 };

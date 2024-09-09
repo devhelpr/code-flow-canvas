@@ -87,7 +87,7 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           class: `bg-slate-600 rounded opacity-90 relative z-[1151]`,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<GLNodeInfo>;
 
       // createNodeElement(
@@ -144,7 +144,7 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
         rect.nodeComponent?.thumbConnectors?.[0].domElement as HTMLElement
       )?.classList.add('z-[1200]');
 
-      if (htmlNode.domElement) {
+      if (htmlNode && htmlNode.domElement) {
         canvasAppInstance = createCanvasApp<GLNodeInfo>(
           htmlNode.domElement as HTMLElement,
           false,

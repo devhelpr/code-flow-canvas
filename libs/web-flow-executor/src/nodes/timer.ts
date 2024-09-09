@@ -16,7 +16,7 @@ import { runNode } from '../flow-engine/flow-engine';
 
 export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let divElement: IDOMElement;
+  let divElement: IDOMElement | undefined = undefined;
   let interval: any = undefined;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   const initialTimer = 1000;
@@ -27,10 +27,12 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
     }
     interval = undefined;
     timerIsBusy = false;
-    (divElement.domElement as HTMLElement).classList.remove('loader');
+    if (!divElement) {
+      return;
+    }
+    (divElement?.domElement as HTMLElement).classList.remove('loader');
     divElement.domElement.textContent =
       node?.nodeInfo?.formValues['timer'] || initialTimer.toString();
-    return;
   };
 
   let initTimer: undefined | (() => void) = undefined;
@@ -81,17 +83,18 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
     }
 
     initTimer = () => {
-      divElement.domElement.textContent = '';
-      (divElement.domElement as HTMLElement).style.setProperty(
-        '--timer',
-        `${
-          parseInt(
-            node?.nodeInfo?.formValues['timer'] || initialTimer.toString()
-          ) / 50
-        }s`
-      );
-      (divElement.domElement as HTMLElement).classList.add('loader');
-
+      if (divElement) {
+        divElement.domElement.textContent = '';
+        (divElement.domElement as HTMLElement).style.setProperty(
+          '--timer',
+          `${
+            parseInt(
+              node?.nodeInfo?.formValues['timer'] || initialTimer.toString()
+            ) / 50
+          }s`
+        );
+        (divElement.domElement as HTMLElement).classList.add('loader');
+      }
       interval = setInterval(
         timer,
         parseInt(node?.nodeInfo?.formValues['timer'] || initialTimer.toString())
@@ -128,7 +131,7 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
           fieldName: 'timer',
           value: initialValue,
           onChange: (value: string) => {
-            if (!node.nodeInfo) {
+            if (!node.nodeInfo || !divElement) {
               return;
             }
             if (interval) {
@@ -171,8 +174,9 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
       );
 
       const timerInSeconds = initialValue || initialTimer.toString();
-      divElement.domElement.textContent = timerInSeconds;
-
+      if (divElement) {
+        divElement.domElement.textContent = timerInSeconds;
+      }
       const rect = canvasApp.createRect(
         x,
         y,

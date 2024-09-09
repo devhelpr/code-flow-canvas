@@ -18,7 +18,9 @@ export const createOption = (
       },
       selectElement
     );
-    category = optgroup.domElement as HTMLElement;
+    if (optgroup) {
+      category = optgroup.domElement as HTMLElement;
+    }
   }
   const option = createElement(
     'option',

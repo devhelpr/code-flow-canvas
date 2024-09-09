@@ -36,6 +36,10 @@ export const createInputDialog = (
       rootElement,
       formElement
     );
+    if (!dialogElement) {
+      reject('dialog element not created');
+      return;
+    }
     const inputElement = (
       dialogElement.domElement as HTMLElement
     ).querySelector(`[id="${nameId}__input"]`) as HTMLSelectElement;

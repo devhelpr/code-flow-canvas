@@ -146,6 +146,9 @@ export class Connection<T> {
       },
       this.canvasElement
     );
+    if (!this.svgParent) {
+      throw new Error('svgParent is undefined');
+    }
     (this.canvasElement as unknown as HTMLElement).prepend(
       this.svgParent.domElement
     );
@@ -1004,7 +1007,9 @@ export class Connection<T> {
       return;
     }
     const defs = createNSElement('defs', {}, this.svgParent.domElement);
-
+    if (!defs) {
+      return;
+    }
     // marked id's reference the whole document, so we need to make them unique
     const marker = createNSElement(
       'marker',
@@ -1020,6 +1025,9 @@ export class Connection<T> {
       },
       defs.domElement
     );
+    if (!marker) {
+      return;
+    }
     createNSElement(
       'path',
       {
@@ -1044,6 +1052,9 @@ export class Connection<T> {
       },
       defs.domElement
     );
+    if (!markerBegin) {
+      return;
+    }
     createNSElement(
       'path',
       {

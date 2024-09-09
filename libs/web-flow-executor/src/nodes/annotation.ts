@@ -44,7 +44,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
           fieldName: 'annotation',
           value: initalValues?.['annotation'] ?? '',
           onChange: (value: string) => {
-            if (!node?.nodeInfo) {
+            if (!node?.nodeInfo || !textArea) {
               return;
             }
             node.nodeInfo.formValues['annotation'] = value;
@@ -59,7 +59,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
           label: 'Font Size',
           value: initalValues?.['fontSize'] ?? '',
           onChange: (value: string) => {
-            if (!node?.nodeInfo) {
+            if (!node?.nodeInfo || !textArea) {
               return;
             }
             node.nodeInfo.formValues['fontSize'] = value;
@@ -75,7 +75,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
           label: 'Bold',
           value: initalValues?.['fontWeight'] ?? '',
           onChange: (value: string) => {
-            if (!node?.nodeInfo) {
+            if (!node?.nodeInfo || !textArea) {
               return;
             }
             node.nodeInfo.formValues['fontWeight'] = value;
@@ -104,9 +104,10 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
         },
         componentWrapper.domElement
       );
-      textArea.domElement.textContent =
-        initalValues?.['annotation'] || 'Annotation';
-
+      if (textArea) {
+        textArea.domElement.textContent =
+          initalValues?.['annotation'] || 'Annotation';
+      }
       const rect = canvasApp.createRect(
         x,
         y,
@@ -136,13 +137,15 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
 
-      (textArea.domElement as HTMLElement).style.fontSize = `${
-        initalValues?.['fontSize'] || '16'
-      }px`;
+      if (textArea) {
+        (textArea.domElement as HTMLElement).style.fontSize = `${
+          initalValues?.['fontSize'] || '16'
+        }px`;
 
-      (textArea.domElement as HTMLElement).style.fontWeight = `${
-        initalValues?.['fontWeight'] ? '700' : '400'
-      }`;
+        (textArea.domElement as HTMLElement).style.fontWeight = `${
+          initalValues?.['fontWeight'] ? '700' : '400'
+        }`;
+      }
       node = rect.nodeComponent;
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;

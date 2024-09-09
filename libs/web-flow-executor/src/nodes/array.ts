@@ -143,7 +143,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           value.toString()
         );
 
-        if (htmlNode) {
+        if (htmlNode && inputElement) {
           htmlNode.domElement.appendChild(
             inputElement.domElement as unknown as HTMLElement
           );
@@ -437,7 +437,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           class: `bg-slate-500 p-4 rounded max-w-[240px] min-h-[110px]`,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as IRectNodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(

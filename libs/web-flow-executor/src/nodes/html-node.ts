@@ -29,7 +29,7 @@ style="background:{{input}}"
 
 export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let divNode: IElementNode<NodeInfo>;
+  let divNode: IElementNode<NodeInfo> | undefined = undefined;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
@@ -98,7 +98,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           ...(value as any),
         };
       }
-      if (!astElement) {
+      if (!astElement && divNode) {
         const htmlString = node?.nodeInfo?.formValues['html'] || defaultHTML;
         structuredMarkup = createStructuredExpressionsMarkup(htmlString);
         const compiledMarkup = compileMarkup(structuredMarkup.markup);

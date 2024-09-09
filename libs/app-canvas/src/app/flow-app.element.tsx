@@ -499,7 +499,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             canvasUpdated: canvasUpdated,
             getCanvasApp: () => this.currentCanvasApp,
             removeElement: this.removeElement,
-            rootElement: menubarElement.domElement as HTMLElement,
+            rootElement: menubarElement!.domElement as HTMLElement,
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             showPopup: this.positionPopup,
@@ -557,7 +557,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   return false;
                 },
               },
-              menubarElement.domElement,
+              menubarElement!.domElement,
               'Reset state'
             );
 
@@ -576,7 +576,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   return false;
                 },
               },
-              menubarElement.domElement,
+              menubarElement!.domElement,
               'Clear canvas'
             );
 
@@ -591,7 +591,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   return false;
                 },
               },
-              menubarElement.domElement,
+              menubarElement!.domElement,
               'Edit composition'
             );
 
@@ -606,7 +606,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   return false;
                 },
               },
-              menubarElement.domElement,
+              menubarElement!.domElement,
               'Edit composition name'
             );
 
@@ -621,7 +621,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   return false;
                 },
               },
-              menubarElement.domElement,
+              menubarElement!.domElement,
               'Create composition'
             );
 
@@ -646,7 +646,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
                 ></span>
               </button>,
-              menubarElement.domElement as HTMLElement
+              menubarElement!.domElement as HTMLElement
             );
 
             renderElement(
@@ -680,14 +680,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   class={`${navBarIconButtonInnerElement} icon-file_upload`}
                 ></span>
               </button>,
-              menubarElement.domElement as HTMLElement
+              menubarElement!.domElement as HTMLElement
             );
             this.compositionEditExitButton = createElement(
               'button',
               {
                 class: `${navBarButton} ml-auto hidden`,
               },
-              menubarElement.domElement,
+              menubarElement!.domElement,
               'Exit Edit composition'
             );
           }
@@ -697,7 +697,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               id: 'selectedNode',
               class: 'text-white',
             },
-            menubarElement.domElement
+            menubarElement!.domElement
           );
 
           if (!isReadOnly) {
@@ -925,7 +925,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       {
         class: menubarContainerClasses,
       },
-      this.menubarContainerElement.domElement
+      this.menubarContainerElement!.domElement
     );
 
     const initializeNodes = () => {
@@ -987,7 +987,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       },
       this.rootElement,
       ''
-    );
+    ) as unknown as IDOMElement;
     this.runButton = createElement(
       'button',
       {
@@ -1000,7 +1000,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           return false;
         },
       },
-      menubarElement.domElement
+      menubarElement?.domElement
     );
     createElement(
       'span',
@@ -1048,12 +1048,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         },
       },
-      menubarElement.domElement,
+      menubarElement?.domElement,
       ''
     );
 
     speedMeter = parseInt(
-      (this.speedMeterElement.domElement as HTMLInputElement).value
+      (this.speedMeterElement!.domElement as HTMLInputElement).value
     );
     setSpeedMeter(speedMeter);
 
@@ -1102,7 +1102,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             //
           },
         },
-        menubarElement.domElement,
+        menubarElement?.domElement,
         ''
       );
     }
@@ -1169,7 +1169,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       {
         class: `truncate-message min-w-0 overflow-hidden w-[80px] mt-[-30px]`,
       },
-      this.message.domElement,
+      this.message?.domElement,
       ''
     );
 
@@ -1405,23 +1405,23 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           }
         },
       },
-      bgRange.domElement,
+      bgRange?.domElement,
       ''
     );
-    (this.pathRange.domElement as HTMLElement).setAttribute(
+    (this.pathRange?.domElement as HTMLElement).setAttribute(
       'id',
-      this.pathRange.id
+      this.pathRange!.id
     );
     const labelPathRange = createElement(
       'label',
       {
         class: ' whitespace-nowrap text-black p-2',
-        for: this.pathRange.id,
+        for: this.pathRange!.id,
       },
-      bgRange.domElement,
+      bgRange?.domElement,
       'Timeline'
     );
-    this.pathRange.domElement.before(labelPathRange.domElement);
+    this.pathRange?.domElement.before(labelPathRange!.domElement);
 
     AppComponents({
       rootElement: this.rootElement,
@@ -1738,7 +1738,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const currentFocusNode = this.focusedNode;
     this.popupNode = currentFocusNode;
     FormComponent({
-      rootElement: this.formElement.domElement as HTMLElement,
+      rootElement: this.formElement!.domElement as HTMLElement,
       id: selectedNodeInfo.id,
       hasSubmitButton: false,
       onSave: (values: any) => {

@@ -125,6 +125,9 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       },
       this.nodeTransformElement?.domElement
     );
+    if (!this.moveNodesPanel) {
+      return;
+    }
 
     this.downstreamNodesMover = createElement(
       'div',

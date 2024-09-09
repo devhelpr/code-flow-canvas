@@ -108,6 +108,6 @@ export const getRotateNode: NodeTaskFactory<GLNodeInfo> = (
       additionalClassNames: 'flex-wrap flex-col',
       childNodeWrapperClass: 'w-full block text-center',
     },
-    element.domElement as HTMLElement
+    element!.domElement as HTMLElement
   );
 };

@@ -24,7 +24,7 @@ export const createMarkupElement = <T>(
     ).style.transform = `translate(${x}px, ${y}px)`;
   }
 
-  const nodeComponent: INodeComponent<T> = createNodeComponent(
+  const nodeComponent = createNodeComponent<T>(
     compiledMarkup.body.tagName || 'div',
     {
       class:

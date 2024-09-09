@@ -141,7 +141,7 @@ export const createCanvasApp = <T>(
       } `,
     },
     rootElement
-  );
+  ) as unknown as IElementNode<T>;
 
   const nodeTransformer = new NodeTransformer(
     canvas as unknown as IElementNode<BaseNodeInfo>,
@@ -824,7 +824,7 @@ export const createCanvasApp = <T>(
       },
     },
     canvas.domElement
-  );
+  ) as unknown as IElementNode<T>;
 
   const pathHiddenElement = createNSElement<T>(
     'path',
@@ -832,7 +832,7 @@ export const createCanvasApp = <T>(
       class: cssClasses.autoPointerEvents,
     },
     hiddenSVG.domElement
-  );
+  ) as unknown as IElementNode<T>;
 
   const removeEvents = () => {
     rootElement.removeEventListener('wheel', wheelEvent);

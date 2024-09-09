@@ -20,8 +20,8 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let componentWrapper: INodeComponent<NodeInfo> | undefined;
-  let divElement: IDOMElement;
-  let parametersContainer: IDOMElement;
+  let divElement: IDOMElement | undefined;
+  let parametersContainer: IDOMElement | undefined;
   const initializeCompute = () => {
     return;
   };
@@ -90,6 +90,9 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
   };
 
   const showParameters = () => {
+    if (!parametersContainer) {
+      return;
+    }
     (parametersContainer.domElement as HTMLElement).innerHTML = '';
 
     const parameters: string[] = (
@@ -140,7 +143,7 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
           fieldName: 'node',
           value: initialValue,
           onChange: (value: string) => {
-            if (!node.nodeInfo) {
+            if (!node.nodeInfo || !divElement) {
               return;
             }
             node.nodeInfo.formValues = {
@@ -192,10 +195,11 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
         },
         componentWrapper.domElement
       );
-
-      divElement.domElement.textContent = `${initialValue || ''} ${
-        initialValue ? '(' : ''
-      }function${initialValue ? ')' : ''}`;
+      if (divElement) {
+        divElement.domElement.textContent = `${initialValue || ''} ${
+          initialValue ? '(' : ''
+        }function${initialValue ? ')' : ''}`;
+      }
       parametersContainer = createElement(
         'div',
         {

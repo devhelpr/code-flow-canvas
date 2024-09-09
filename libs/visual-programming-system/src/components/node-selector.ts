@@ -163,6 +163,10 @@ export class NodeSelector<T> {
         this.nodeSelectorElement?.domElement
       );
 
+      if (!this.toolsNodesPanel) {
+        return;
+      }
+
       this.createCompositionButtons = createElement(
         'div',
         {

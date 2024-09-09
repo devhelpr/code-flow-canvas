@@ -95,7 +95,7 @@ export const getCanvasNode = (updated: () => void): NodeTask<NodeInfo> => {
           class: `bg-slate-400 rounded opacity-90 relative z-[1151]`,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(
@@ -147,7 +147,7 @@ export const getCanvasNode = (updated: () => void): NodeTask<NodeInfo> => {
         throw new Error('rect.nodeComponent is undefined');
       }
 
-      if (htmlNode.domElement) {
+      if (htmlNode?.domElement) {
         canvasAppInstance = createCanvasApp<NodeInfo>(
           htmlNode.domElement as HTMLElement,
           false,

@@ -42,7 +42,7 @@ export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
           fieldName: 'annotation',
           value: initalValues?.['annotation'] ?? '',
           onChange: (value: string) => {
-            if (!node?.nodeInfo) {
+            if (!node?.nodeInfo || !textArea) {
               return;
             }
             node.nodeInfo.formValues['annotation'] = value;
@@ -57,7 +57,7 @@ export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
           label: 'Font Size',
           value: initalValues?.['fontSize'] ?? '',
           onChange: (value: string) => {
-            if (!node?.nodeInfo) {
+            if (!node?.nodeInfo || !textArea) {
               return;
             }
             node.nodeInfo.formValues['fontSize'] = value;
@@ -72,7 +72,7 @@ export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
           label: 'Bold',
           value: initalValues?.['fontWeight'] ?? '',
           onChange: (value: string) => {
-            if (!node?.nodeInfo) {
+            if (!node?.nodeInfo || !textArea) {
               return;
             }
             node.nodeInfo.formValues['fontWeight'] = value;
@@ -101,9 +101,10 @@ export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
         },
         componentWrapper.domElement
       );
-      textArea.domElement.textContent =
-        initalValues?.['annotation'] || 'Annotation';
-
+      if (textArea) {
+        textArea.domElement.textContent =
+          initalValues?.['annotation'] || 'Annotation';
+      }
       const rect = canvasApp.createRect(
         x,
         y,
@@ -132,7 +133,9 @@ export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-
+      if (!textArea) {
+        throw new Error('textArea is undefined');
+      }
       (textArea.domElement as HTMLElement).style.fontSize = `${
         initalValues?.['fontSize'] || '16'
       }px`;

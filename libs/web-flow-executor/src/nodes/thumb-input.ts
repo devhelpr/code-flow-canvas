@@ -146,5 +146,5 @@ export const getThumbInputNode: NodeTaskFactory<NodeInfo> = (
     undefined,
     undefined,
     true
-  );
+  ) as unknown as NodeTask<NodeInfo>;
 };
