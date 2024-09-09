@@ -286,16 +286,16 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
-      const componentWrapper = createNodeElement(
+      const componentWrapper = createNodeElement<NodeInfo>(
         'div',
         {
           class: `inner-node bg-slate-500 p-4 rounded`,
         },
         undefined
-      ) as unknown as INodeComponent<NodeInfo>;
+      );
 
       nodeFormComponent = FormComponent({
-        rootElement: componentWrapper.domElement as HTMLElement,
+        rootElement: componentWrapper?.domElement as HTMLElement,
         id: id ?? '',
         formElements,
         hasSubmitButton: false,
@@ -311,7 +311,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         100,
         undefined,
         thumbs,
-        componentWrapper,
+        componentWrapper as INodeComponent<NodeInfo>,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
@@ -344,7 +344,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
             after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
           `,
         },
-        rect.nodeComponent.domElement,
+        rect.nodeComponent?.domElement,
         'error'
       );
 
