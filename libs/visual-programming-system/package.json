@@ -1,14 +1,14 @@
 {
   "name": "@devhelpr/visual-programming-system",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "type": "commonjs",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
     "@devhelpr/dom-components": "^0.0.6",
-    "@devhelpr/media-library": "^0.0.7",
-    "@devhelpr/markup-compiler": "^0.0.16"
+    "@devhelpr/markup-compiler": "^0.0.16",
+    "@devhelpr/media-library": "^0.0.7"
   },
   "gitHead": "a3a00c7b0d745f8fac7770325d945630eb84b7f9",
   "repository": {
