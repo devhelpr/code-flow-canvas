@@ -52,7 +52,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = input;
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       if (hasInitialValue) {
         hasInitialValue = false;
       }
@@ -99,7 +99,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
   };
 
   const updateVisual = (data: any) => {
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       if (data && typeof data === 'object') {
         htmlNode.domElement.textContent = JSON.stringify(data, null, 2);
       } else if (data && Array.isArray(data)) {
@@ -149,7 +149,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
           class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[120px] max-h-[500px] text-white`,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(
