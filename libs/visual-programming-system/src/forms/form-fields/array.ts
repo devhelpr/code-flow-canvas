@@ -21,7 +21,10 @@ export interface ArrayFieldProps extends BaseFormFieldProps {
     formElements: FormField[],
     values?: unknown
   ) => Promise<unknown>;
-  createDataReadElement: (formElement: FormField, data: unknown) => HTMLElement;
+  createDataReadElement: (
+    formElement: FormField,
+    data: unknown
+  ) => HTMLElement | undefined;
   onChange?: (value: unknown[]) => void;
 }
 
@@ -93,17 +96,19 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
             formElement.isImage
           ) {
             const element = this.props.createDataReadElement(formElement, data);
-
-            cell.appendChild(element);
-            arrayItem.appendChild(cell);
+            if (element) {
+              cell.appendChild(element);
+              arrayItem.appendChild(cell);
+            }
           } else {
             const element = this.props.createDataReadElement(
               formElement,
               formElement.fieldType !== FormFieldType.File ? data : 'File'
             );
-
-            cell.appendChild(element);
-            arrayItem.appendChild(cell);
+            if (element) {
+              cell.appendChild(element);
+              arrayItem.appendChild(cell);
+            }
           }
         }
       });

@@ -17,7 +17,7 @@ export class Component<T> extends BaseComponent {
       }
     });
     this.parent = parent;
-    if (parent) {
+    if (parent && parent.element) {
       parent.components.push(this);
       this.rootElement = parent.element;
     }

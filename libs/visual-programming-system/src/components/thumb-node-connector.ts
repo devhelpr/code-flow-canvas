@@ -245,7 +245,9 @@ export class ThumbNodeConnector<T> extends ThumbNode<T> {
         thumb.thumbConstraint === 'vec3' ? thumbThreeDots() : thumbTwoDots();
       if (icon) {
         const element = createElementFromTemplate(createTemplate(icon));
-        element.remove();
+        if (element) {
+          element.remove();
+        }
 
         const iconWrapper = createElement(
           'div',

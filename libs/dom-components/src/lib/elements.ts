@@ -3,7 +3,10 @@ export const createElement = (
   className?: string,
   id?: string,
   text?: string
-): HTMLElement => {
+): HTMLElement | undefined => {
+  if (typeof document === 'undefined') {
+    return;
+  }
   const element = document.createElement(tag);
   if (id) {
     element.id = id;
@@ -47,15 +50,23 @@ export const addElementToParent = (
   parent.appendChild(element);
 };
 
-export const createTemplate = (template: string): HTMLTemplateElement => {
+export const createTemplate = (
+  template: string
+): HTMLTemplateElement | undefined => {
+  if (typeof document === 'undefined') {
+    return;
+  }
   const templateElement = document.createElement('template');
   templateElement.innerHTML = template.replace(/\n[ \t]+/g, '');
   return templateElement;
 };
 
 export const createElementFromTemplate = (
-  template: HTMLTemplateElement
-): HTMLElement => {
+  template: HTMLTemplateElement | undefined
+): HTMLElement | undefined => {
+  if (typeof document === 'undefined' || !template?.content) {
+    return;
+  }
   // the element is a document fragment here
   const element = template.content.cloneNode(true) as HTMLElement;
 

@@ -319,7 +319,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     );
     const thumbSelectElemetContainer = createElementFromTemplate(template);
     const thumbSelect =
-      thumbSelectElemetContainer.querySelector<HTMLSelectElement>('select');
+      thumbSelectElemetContainer?.querySelector<HTMLSelectElement>('select');
 
     attachToNode.thumbConnectors?.forEach((thumb) => {
       if (thumb.thumbConnectionType === ThumbConnectionType.start) {
@@ -339,7 +339,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
       dialogElement.querySelector<HTMLSelectElement>(
         '.add-node-select-node-type-container'
       );
-    if (!selectNodeTypeElement) {
+    if (!selectNodeTypeElement || !thumbSelectElemetContainer) {
       return false;
     }
     selectNodeTypeElement.after(thumbSelectElemetContainer);
@@ -358,7 +358,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
           </div>`
         );
         const thumbSelectElemetContainer = createElementFromTemplate(template);
-        const thumbSelect = thumbSelectElemetContainer.querySelector(
+        const thumbSelect = thumbSelectElemetContainer?.querySelector(
           'select'
         ) as HTMLSelectElement;
         let hasInputThumbs = false;
@@ -381,7 +381,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
         const selectNodeTypeElement = dialogElement.querySelector(
           '.thumb-selector-container'
         ) as HTMLSelectElement;
-        if (!selectNodeTypeElement) {
+        if (!selectNodeTypeElement || !thumbSelectElemetContainer) {
           return false;
         }
         selectNodeTypeElement.after(thumbSelectElemetContainer);

@@ -24,7 +24,7 @@ import { CheckboxFieldChildComponent } from './form-fields/checkbox';
 import { createFormDialog } from '../utils/create-form-dialog';
 
 export interface FormComponentProps {
-  rootElement: HTMLElement;
+  rootElement: HTMLElement | undefined;
   onSave: (values: any) => void;
   onCancel?: () => void;
   formElements: FormField[];
@@ -45,7 +45,7 @@ export type FormValues = {
 };
 
 export interface Props {
-  rootElement: HTMLElement;
+  rootElement: HTMLElement | undefined;
   onSave: (values: any) => void;
   onCancel?: () => void;
   formElements: FormField[];
@@ -466,7 +466,7 @@ export class FormsComponent
                 undefined,
                 undefined
               );
-              element.classList.add(
+              element?.classList.add(
                 'w-[48px]',
                 'h-[48px]',
                 'max-w-[48px]',
@@ -491,10 +491,12 @@ export class FormsComponent
                 undefined,
                 undefined
               );
-              element.style.backgroundColor =
-                data?.toString() ??
-                (this.values[formElement.fieldName] as string) ??
-                '';
+              if (element) {
+                element.style.backgroundColor =
+                  data?.toString() ??
+                  (this.values[formElement.fieldName] as string) ??
+                  '';
+              }
               return element;
             }
             const element = createElement(
@@ -553,7 +555,10 @@ export class FormsComponent
       formElements: [...this.props.formElements],
     };
 
-    const oldActiveElement = document.activeElement as HTMLElement;
+    const oldActiveElement =
+      typeof document !== 'undefined'
+        ? (document.activeElement as HTMLElement)
+        : null;
     // Make this smarter .. do only when needed!!?
     // an approach: only perform when doRenderChildren changes or has its initial value set
     // .. however.. the children's render method isn't called when no change is detected.. but is this a problem?

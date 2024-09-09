@@ -1,8 +1,8 @@
 export class BaseComponent {
-  element: HTMLElement | null = null;
-  rootElement: HTMLElement | null = null;
-  childContainerElement: HTMLElement | null = null;
-  template: HTMLTemplateElement | null = null;
+  element: HTMLElement | undefined = undefined;
+  rootElement: HTMLElement | undefined = undefined;
+  childContainerElement: HTMLElement | undefined = undefined;
+  template: HTMLTemplateElement | undefined = undefined;
   isMounted = false;
   doRender = true;
   parent: BaseComponent | null = null;
