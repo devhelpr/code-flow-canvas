@@ -24,7 +24,7 @@ export const createElement = (
   content?: string | HTMLElement | JSX.Element,
   id?: string
 ): IDOMElement | undefined => {
-  if (typeof document === undefined) {
+  if (typeof document === 'undefined') {
     return undefined;
   }
   const nodeId = id ?? crypto.randomUUID();
@@ -90,7 +90,7 @@ export const createNodeElement = <T>(
   content?: string | HTMLElement | JSX.Element,
   id?: string
 ): IElementNode<T> | undefined => {
-  if (typeof document === undefined) {
+  if (typeof document === 'undefined') {
     return undefined;
   }
   const nodeId = id ?? crypto.randomUUID();
@@ -157,7 +157,7 @@ export const createNSElement = <T>(
   content?: string,
   id?: string
 ): IElementNode<T> | undefined => {
-  if (typeof document === undefined) {
+  if (typeof document === 'undefined') {
     return undefined;
   }
   const nodeId = id ?? crypto.randomUUID();
