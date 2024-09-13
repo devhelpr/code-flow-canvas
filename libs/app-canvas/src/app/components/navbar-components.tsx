@@ -69,8 +69,7 @@ export class NavbarComponent extends Component<
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <div></div>
-        <button class="${navBarButton}">Load</button>        
-        <select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
+        <button class="${navBarButton}">Load</button><select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
           <option value="basic-condition.json">Basic condition</option>
@@ -399,7 +398,12 @@ export class NavbarComponent extends Component<
     );
     if (exportAsTypescript) {
       downloadJSON(
-        exportFlowToTypescript<NodeInfo>('1234', data, compositions),
+        exportFlowToTypescript<NodeInfo>(
+          '1234',
+          data,
+          compositions,
+          canvasApp.elements
+        ),
         'vps-flow.ts'
       );
       return;

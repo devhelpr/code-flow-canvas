@@ -68,9 +68,9 @@ export const getUserInput =
             inputElement.value = currentValue.toFixed(decimalCount);
           }
 
-          if (node.nodeInfo?.formValues['label']) {
+          if (node.nodeInfo?.formValues['name']) {
             canvasAppInstance?.sendMessageFromNode(
-              node.nodeInfo?.formValues['label'],
+              node.nodeInfo?.formValues['name'],
               currentValue.toFixed(decimalCount)
             );
           }
@@ -102,6 +102,7 @@ export const getUserInput =
         canvasAppInstance = canvasApp;
         const initialValue = initalValues?.['label'] ?? '';
         const decimalsInitialValue = initalValues?.['decimals'] ?? '0';
+        const externalNameInitialValue = initalValues?.['name'] ?? '';
         decimalCount = parseInt(decimalsInitialValue) || 0;
         //let isResettingInput = false;
         const formElements = [
@@ -195,18 +196,20 @@ export const getUserInput =
               'border-color': theme?.backgroundAsHexColor ?? '#000000',
             },
           },
-          componentWrapper.domElement
+          componentWrapper?.domElement
         ) as unknown as INodeComponent<NodeInfo>;
 
-        form = FormComponent({
-          rootElement: formWrapper.domElement as HTMLElement,
-          id: id ?? '',
-          formElements,
-          hasSubmitButton: false,
-          onSave: (formValues) => {
-            console.log('onSave', formValues);
-          },
-        });
+        form = formWrapper?.domElement
+          ? FormComponent({
+              rootElement: formWrapper?.domElement as HTMLElement,
+              id: id ?? '',
+              formElements,
+              hasSubmitButton: false,
+              onSave: (formValues) => {
+                console.log('onSave', formValues);
+              },
+            })
+          : undefined;
 
         if (form && form.element) {
           inputElement = form.element.querySelector(
@@ -259,6 +262,7 @@ export const getUserInput =
               label: initialValue ?? '',
               value: '',
               decimals: decimalsInitialValue ?? '0',
+              name: externalNameInitialValue ?? '',
             },
           },
           containerNode
@@ -279,20 +283,11 @@ export const getUserInput =
                 if (!node.nodeInfo) {
                   return;
                 }
-                if (node.nodeInfo.formValues['label']) {
-                  canvasApp.removeNodeKeyListener(
-                    node.nodeInfo.formValues['label'],
-                    listener
-                  );
-                }
+
                 node.nodeInfo.formValues = {
                   ...node.nodeInfo.formValues,
                   label: value,
                 };
-                canvasApp.registerNodeKeyListener(
-                  node.nodeInfo.formValues['label'],
-                  listener
-                );
 
                 if (labelElement) {
                   labelElement.textContent = value;
@@ -320,6 +315,33 @@ export const getUserInput =
                     inputElement.value = currentValue.toFixed(decimalCount);
                   }
                 }
+              },
+            },
+            {
+              fieldType: FormFieldType.Text,
+              fieldName: 'name',
+              label: 'External name',
+              value: externalNameInitialValue ?? '',
+              onChange: (value: string) => {
+                if (!node.nodeInfo) {
+                  return;
+                }
+                if (node.nodeInfo.formValues['name']) {
+                  canvasApp.removeNodeKeyListener(
+                    node.nodeInfo.formValues['name'],
+                    listener
+                  );
+                }
+                node.nodeInfo.formValues = {
+                  ...node.nodeInfo.formValues,
+                  name: value,
+                };
+                canvasApp.registerNodeKeyListener(
+                  node.nodeInfo.formValues['name'],
+                  listener
+                );
+
+                updated();
               },
             },
           ];
@@ -388,16 +410,17 @@ export const getUserInput =
               );
             }, 150);
           };
-          if (node.nodeInfo.formValues['label']) {
+
+          if (node.nodeInfo.formValues['name']) {
             canvasApp.registerNodeKeyListener(
-              node.nodeInfo.formValues['label'],
+              node.nodeInfo.formValues['name'],
               listener
             );
 
             node.nodeInfo.delete = () => {
-              if (node.nodeInfo?.formValues['label']) {
+              if (node.nodeInfo?.formValues['name']) {
                 canvasApp.removeNodeKeyListener(
-                  node.nodeInfo.formValues['label'],
+                  node.nodeInfo.formValues['name'],
                   listener
                 );
               }

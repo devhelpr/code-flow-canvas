@@ -18,7 +18,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  //let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let htmlElement: HTMLElement | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
@@ -39,6 +39,21 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = input;
+    if (typeof input !== 'number') {
+      return {
+        result: undefined,
+        output: undefined,
+        followPath: undefined,
+        stop: true,
+      };
+    }
+    if (node.nodeInfo?.formValues['name']) {
+      canvasAppInstance?.sendMessageFromNode(
+        node.nodeInfo?.formValues['name'],
+        getFormattedValue(input, decimalCount, append)
+      );
+    }
+
     if (htmlElement) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -86,8 +101,12 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       id?: string,
       initalValues?: InitialValues
     ) => {
+      canvasAppInstance = canvasApp;
+
       const decimalsInitialValue = initalValues?.['decimals'] ?? '0';
       const appendInitialValue = initalValues?.['append'] ?? '';
+      const externalNameInitialValue = initalValues?.['name'] ?? '';
+
       decimalCount = parseInt(decimalsInitialValue) || 0;
       append = appendInitialValue;
 
@@ -104,8 +123,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
         HTMLNode()
       ) as unknown as INodeComponent<NodeInfo>;
 
-      htmlElement = (wrapper.domElement as HTMLElement)
-        .firstChild as HTMLElement;
+      htmlElement = (wrapper?.domElement as HTMLElement)
+        ?.firstChild as HTMLElement;
 
       rect = canvasApp.createRect(
         x,
@@ -127,8 +146,8 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.EndConnectorLeft,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            label: '#',
-            thumbConstraint: 'value',
+            label: ' ',
+            //thumbConstraint: 'value',
             name: 'input',
             color: 'white',
           },
@@ -147,6 +166,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
           formValues: {
             append: append ?? '',
             decimals: decimalsInitialValue ?? '0',
+            name: externalNameInitialValue ?? '',
           },
         }
       );
@@ -225,6 +245,24 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
                   }
                 }
               }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'name',
+            label: 'External name',
+            value: externalNameInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                name: value,
+              };
+
+              updated();
             },
           },
         ];

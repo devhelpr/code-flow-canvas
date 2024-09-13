@@ -1,6 +1,8 @@
 import {
   CanvasAppInstance,
   createElement,
+  FormFieldType,
+  InitialValues,
   INodeComponent,
   IRectNodeComponent,
   NodeTask,
@@ -30,9 +32,10 @@ const thumbs = [
   },
 ];
 export const getShowInput: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  updated: () => void
 ): NodeTask<NodeInfo> => {
   let inputValues: any;
+  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -52,6 +55,16 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = input;
+
+    if (node.nodeInfo?.formValues['name']) {
+      canvasAppInstance?.sendMessageFromNode(
+        node.nodeInfo?.formValues['name'],
+        typeof input === 'number'
+          ? (input as number).toFixed(2)
+          : input.toString()
+      );
+    }
+
     if (htmlNode && htmlNode.domElement) {
       if (hasInitialValue) {
         hasInitialValue = false;
@@ -126,8 +139,10 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       canvasApp: CanvasAppInstance<NodeInfo>,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValues?: InitialValues
     ) => {
+      canvasAppInstance = canvasApp;
       htmlNode = createElement(
         'div',
         {
@@ -152,6 +167,8 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
+      const externalNameInitialValue = initalValues?.['name'] ?? '';
+
       rect = canvasApp.createRect(
         x,
         y,
@@ -170,6 +187,9 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         {
           type: 'show-input',
           formElements: [],
+          formValues: {
+            name: externalNameInitialValue ?? '',
+          },
         }
       );
 
@@ -181,6 +201,26 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'name',
+            label: 'External name',
+            value: externalNameInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                name: value,
+              };
+
+              updated();
+            },
+          },
+        ];
 
         node.nodeInfo.updateVisual = updateVisual;
 

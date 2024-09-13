@@ -6,6 +6,8 @@ import {
   NodeType,
   Composition,
   cleanupNodeInfoForSerializing,
+  IRectNodeComponent,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 
@@ -89,10 +91,20 @@ export const exportFlowToJson = <T>(
   return JSON.stringify(flow, null, 2);
 };
 
+const getJSONASTypescript = (json: any) => {
+  let flowString = JSON.stringify(json, null, 2);
+  flowString.replace(/\\"/g, '\uFFFF'); // U+ FFFF
+  flowString = flowString
+    .replace(/"([^"]+)":/g, '$1:')
+    .replace(/\uFFFF/g, '\\"');
+  return flowString;
+};
+
 export const exportFlowToTypescript = <T>(
   id: string,
   nodesList: ReturnType<typeof serializeElementsMap>,
-  compositions: Record<string, Composition<T>>
+  compositions: Record<string, Composition<T>>,
+  nodes: ElementNodeMap<T>
 ) => {
   const flow: Flow<T> = {
     schemaType: 'flow',
@@ -106,16 +118,63 @@ export const exportFlowToTypescript = <T>(
     },
     compositions: compositions,
   };
-  let flowString = JSON.stringify(flow, null, 2);
-  flowString.replace(/\\"/g, '\uFFFF'); // U+ FFFF
-  flowString = flowString
-    .replace(/"([^"]+)":/g, '$1:')
-    .replace(/\uFFFF/g, '\\"');
+
+  let upstreamNodes: IRectNodeComponent<T>[] = [];
+  const getUpstreamNodes = (node: IRectNodeComponent<T>) => {
+    if (node.connections.length > 0) {
+      node.connections.forEach((connection) => {
+        if (connection.startNode?.id === node.id) {
+          if (
+            connection.endNode &&
+            connection.startNode.x < connection.endNode.x &&
+            !upstreamNodes.find((node) => node.id === connection.endNode?.id)
+          ) {
+            upstreamNodes.push(connection.endNode);
+            getUpstreamNodes(connection.endNode);
+          }
+        }
+      });
+    }
+  };
+
+  const endpoints: Record<string, any> = {};
+  nodesList.forEach((node) => {
+    if (
+      node.nodeType !== NodeType.Connection &&
+      node.nodeInfo.type === 'user-input' &&
+      node.nodeInfo.formValues['name']
+    ) {
+      upstreamNodes = [];
+      const orgNode = nodes.get(node.id);
+      getUpstreamNodes(orgNode as IRectNodeComponent<T>);
+      endpoints[node.nodeInfo.formValues['name']] = {
+        id: node.id,
+        type: node.nodeInfo.type,
+        name: node.nodeInfo.formValues['name'],
+        outputs: upstreamNodes
+          .filter(
+            (node) =>
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-value' ||
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-input'
+          )
+          .map((node) => {
+            const helperNode =
+              node as unknown as IRectNodeComponent<BaseNodeInfo>;
+            return {
+              id: node.id,
+              name: helperNode.nodeInfo!.formValues['name'],
+              type: helperNode.nodeInfo!.type,
+            };
+          }),
+      };
+    }
+  });
+  let flowString = getJSONASTypescript(flow);
+  let endpointsAsString = getJSONASTypescript(endpoints);
   return `import { Flow } from "@devhelpr/visual-programming-system";
 import { NodeInfo } from "@devhelpr/web-flow-executor";
   
-export const endpoints = {
-};
+export const endpoints = ${endpointsAsString};
 
 export const flow: Flow<NodeInfo> = ${flowString};`;
 };
