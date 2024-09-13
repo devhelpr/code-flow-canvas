@@ -178,27 +178,31 @@ export const createRectNode = <T extends BaseNodeInfo>(
   }
 
   if (showTitlebar) {
-    createElement(
-      'div',
-      {
-        class: `flex items-center 
+    if (componentWrapper?.domElement) {
+      createElement(
+        'div',
+        {
+          class: `flex items-center 
           ${canvasApp.theme.nodeTitleBarBackground} border-slate-500 
           ${canvasApp.theme.nodeTitleBarText} p-1 px-3 rounded-t pointer-events-none`,
-      },
-      componentWrapper.domElement,
-      settings?.hideTitle ? '' : nodeTitle
-    ) as unknown as INodeComponent<T>;
+        },
+        componentWrapper?.domElement,
+        settings?.hideTitle ? '' : nodeTitle
+      ) as unknown as INodeComponent<T>;
+    }
   } else {
-    createElement(
-      'div',
-      {
-        class: `flex items-center ${
-          !hasBeforeDecorator ? 'rounded-t' : ''
-        } pointer-events-none`,
-      },
-      componentWrapper.domElement,
-      undefined
-    ) as unknown as INodeComponent<T>;
+    if (componentWrapper?.domElement) {
+      createElement(
+        'div',
+        {
+          class: `flex items-center ${
+            !hasBeforeDecorator ? 'rounded-t' : ''
+          } pointer-events-none`,
+        },
+        componentWrapper?.domElement,
+        undefined
+      ) as unknown as INodeComponent<T>;
+    }
   }
 
   const hasCenteredLabel =
@@ -227,11 +231,11 @@ export const createRectNode = <T extends BaseNodeInfo>(
     hasCenteredLabel && !settings?.hideTitle ? nodeTitle : undefined
   );
 
-  if (!formWrapper?.domElement) {
-    return;
-  }
-
-  if (formElements.length > 0 && !settings?.hasFormInPopup) {
+  if (
+    formWrapper?.domElement &&
+    formElements.length > 0 &&
+    !settings?.hasFormInPopup
+  ) {
     FormComponent({
       rootElement: formWrapper.domElement as HTMLElement,
       id: id ?? '',
@@ -261,11 +265,11 @@ export const createRectNode = <T extends BaseNodeInfo>(
     }) as unknown as HTMLElement;
   }
 
-  if (childNode) {
+  if (formWrapper?.domElement && childNode) {
     createElement(
       'div',
       { class: `${settings?.childNodeWrapperClass ?? ''}` },
-      formWrapper.domElement,
+      formWrapper?.domElement,
       childNode
     );
   }
@@ -308,8 +312,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
       undefined,
       nodeTitle.replace('^2', '²')
     ) as unknown as INodeComponent<T>;
-    (componentWrapper.domElement as HTMLElement).prepend(
-      topLabel.domElement as HTMLElement
+    (componentWrapper?.domElement as HTMLElement).prepend(
+      topLabel?.domElement as HTMLElement
     );
   }
   const rect = settings?.isRectThumb
