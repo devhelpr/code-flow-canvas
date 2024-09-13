@@ -89,6 +89,37 @@ export const exportFlowToJson = <T>(
   return JSON.stringify(flow, null, 2);
 };
 
+export const exportFlowToTypescript = <T>(
+  id: string,
+  nodesList: ReturnType<typeof serializeElementsMap>,
+  compositions: Record<string, Composition<T>>
+) => {
+  const flow: Flow<T> = {
+    schemaType: 'flow',
+    schemaVersion: '0.0.1',
+    id: id,
+    flows: {
+      flow: {
+        flowType: 'flow',
+        nodes: nodesList,
+      },
+    },
+    compositions: compositions,
+  };
+  let flowString = JSON.stringify(flow, null, 2);
+  flowString.replace(/\\"/g, '\uFFFF'); // U+ FFFF
+  flowString = flowString
+    .replace(/"([^"]+)":/g, '$1:')
+    .replace(/\uFFFF/g, '\\"');
+  return `import { Flow } from "@devhelpr/visual-programming-system";
+import { NodeInfo } from "@devhelpr/web-flow-executor";
+  
+export const endpoints = {
+};
+
+export const flow: Flow<NodeInfo> = ${flowString};`;
+};
+
 export const serializeCompositions = <T>(
   compositions: Record<string, Composition<T>>
 ) => {

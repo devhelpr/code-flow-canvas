@@ -1,7 +1,9 @@
 import {
   INodeComponent,
   IRectNodeComponent,
+  createJSXElement,
   getSelectedNode,
+  renderElement,
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
 import {
@@ -10,6 +12,7 @@ import {
   navBarIconButtonInnerElement,
   navBarPrimaryIconButton,
 } from '../consts/classes';
+import { DropdownButton } from './dropdown-button';
 
 import {
   BaseComponent,
@@ -21,6 +24,7 @@ import {
   serializeElementsMap,
   exportFlowToJson,
   serializeCompositions,
+  exportFlowToTypescript,
 } from '../storage/serialize-canvas';
 import { downloadJSON } from '../utils/create-download-link';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
@@ -64,8 +68,8 @@ export class NavbarComponent extends Component<
         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
-        <button class="${navBarButton}">Save</button>
-        <button class="${navBarButton}">Load</button>
+        <div></div>
+        <button class="${navBarButton}">Load</button>        
         <select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
@@ -111,11 +115,32 @@ export class NavbarComponent extends Component<
         this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
-        this.exportButton.addEventListener('click', this.onClickExport);
+        //this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
         this.selectExampleFlow.addEventListener(
           'change',
           this.onClickImportExample
+        );
+        renderElement(
+          <DropdownButton
+            class=""
+            mainBgColorClass="bg-blue-500"
+            bgColorClasses="bg-blue-500 hover:bg-blue-600 "
+            textColorClasses="text-white"
+            caption="Save"
+            onClick={() => {
+              this.export();
+            }}
+            dropdownItems={[
+              {
+                caption: 'Save as typescript',
+                onClick: () => {
+                  this.export(true);
+                },
+              },
+            ]}
+          />,
+          this.exportButton
         );
 
         // this.importScriptButton.addEventListener(
@@ -363,8 +388,7 @@ export class NavbarComponent extends Component<
     return false;
   };
 
-  onClickExport = (event: Event) => {
-    event.preventDefault();
+  export = (exportAsTypescript = false) => {
     const canvasApp = this.props.getCanvasApp();
     if (!canvasApp) {
       return;
@@ -373,15 +397,17 @@ export class NavbarComponent extends Component<
     const compositions = serializeCompositions<NodeInfo>(
       canvasApp.compositons.getAllCompositions()
     );
-    console.log(
-      'EXPORT DATA',
-      exportFlowToJson<NodeInfo>('1234', data, compositions)
-    );
+    if (exportAsTypescript) {
+      downloadJSON(
+        exportFlowToTypescript<NodeInfo>('1234', data, compositions),
+        'vps-flow.ts'
+      );
+      return;
+    }
     downloadJSON(
       exportFlowToJson<NodeInfo>('1234', data, compositions),
       'vps-flow.json'
     );
-    return false;
   };
 
   onClickImport = (event: Event) => {

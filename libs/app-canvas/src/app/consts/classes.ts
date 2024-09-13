@@ -22,6 +22,15 @@ export const navBarPrimaryIconButton = `inline-flex items-center justify-center 
   disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white
   `;
 
+export const navBarDropdownButton = `inline-flex items-center justify-center min-h-[40px]
+  rounded-tl-md rounded-bl-md text-white p-2 m-2 mr-0  select-none whitespace-nowrap
+  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white
+  `;
+export const navBarDropdownIconButton = `inline-flex items-center justify-center min-h-[40px]
+  rounded-tr-md rounded-br-md bg-blue-500 text-white p-2 m-2 ml-0 hover:bg-blue-600 select-none whitespace-nowrap 
+  disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:text-white
+  `;
+
 export const navBarIconButtonInnerElement = `icon text-[22px]`;
 
 export const navBarButtonNomargin = `rounded-md bg-slate-500 text-white p-2 hover:bg-slate-600 select-none whitespace-nowrap
