@@ -227,7 +227,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
       ${settings?.additionalClassNames ?? ''} 
       `,
     },
-    componentWrapper.domElement,
+    componentWrapper?.domElement,
     hasCenteredLabel && !settings?.hideTitle ? nodeTitle : undefined
   );
 
