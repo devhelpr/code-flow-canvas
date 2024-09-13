@@ -50,7 +50,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
     if (node.nodeInfo?.formValues['name']) {
       canvasAppInstance?.sendMessageFromNode(
         node.nodeInfo?.formValues['name'],
-        getFormattedValue(input, decimalCount, append)
+        input
       );
     }
 
