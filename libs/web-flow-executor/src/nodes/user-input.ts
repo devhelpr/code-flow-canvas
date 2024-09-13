@@ -83,7 +83,7 @@ export const getUserInput =
       }
       return {
         result: false,
-        stop,
+        stop: true,
       };
     };
     let changeTimeout: any = null;
