@@ -317,10 +317,10 @@ export const getScopedVariable =
       if (fieldType === 'value') {
         if (isNaN(currentValue)) {
           currentValue = 0;
-          if (htmlNode) {
+          if (htmlNode && htmlNode?.domElement) {
             (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
           }
-        } else if (htmlNode) {
+        } else if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).innerHTML =
             getLabelAsHtml(currentValue.toString());
         }
@@ -332,29 +332,29 @@ export const getScopedVariable =
           true
         );
       } else if (fieldType === 'dictionary') {
-        if (htmlNode) {
+        if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
             getLabel('dictionary');
         }
       } else if (fieldType === 'array') {
-        if (htmlNode) {
+        if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
             getLabel('array');
         }
       } else if (fieldType === 'grid') {
-        if (htmlNode) {
+        if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
             getLabel('grid');
         }
       } else {
-        if (htmlNode) {
+        if (htmlNode && htmlNode?.domElement) {
           (
             htmlNode.domElement as unknown as HTMLElement
           ).textContent = `${fieldType} is not supported yet`;
         }
       }
 
-      if (rect) {
+      if (rect && rect.resize) {
         rect.resize(120);
       }
 
@@ -365,11 +365,11 @@ export const getScopedVariable =
         }
 
         (
-          componentWrapper.domElement as unknown as HTMLElement
-        ).classList.remove('border-white');
-        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
-          'border-transparent'
-        );
+          componentWrapper?.domElement as unknown as HTMLElement
+        )?.classList?.remove('border-white');
+        (
+          componentWrapper?.domElement as unknown as HTMLElement
+        )?.classList?.add('border-transparent');
       }
 
       return;
@@ -405,21 +405,21 @@ export const getScopedVariable =
           clearTimeout(timeout);
           timeout = undefined;
         }
-        (componentWrapper.domElement as unknown as HTMLElement).classList.add(
-          'border-white'
-        );
         (
-          componentWrapper.domElement as unknown as HTMLElement
-        ).classList.remove('border-transparent');
+          componentWrapper?.domElement as unknown as HTMLElement
+        )?.classList?.add('border-white');
+        (
+          componentWrapper?.domElement as unknown as HTMLElement
+        )?.classList?.remove('border-transparent');
 
         timeout = setTimeout(() => {
           (
             componentWrapper?.domElement as unknown as HTMLElement
-          ).classList.remove('border-white');
+          )?.classList?.remove('border-white');
 
-          (componentWrapper.domElement as unknown as HTMLElement).classList.add(
-            'border-transparent'
-          );
+          (
+            componentWrapper.domElement as unknown as HTMLElement
+          )?.classList?.add('border-transparent');
         }, 250);
       }
     };
@@ -430,10 +430,11 @@ export const getScopedVariable =
       }
       if (htmlNode) {
         if (fieldType === 'value') {
-          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
-            getLabelAsHtml(getFormattedValue(lastStoredDataState, 2, ''));
-
-          if (rect) {
+          if (htmlNode?.domElement) {
+            (htmlNode?.domElement as unknown as HTMLElement).innerHTML =
+              getLabelAsHtml(getFormattedValue(lastStoredDataState, 2, ''));
+          }
+          if (rect && rect.resize) {
             rect.resize(120);
           }
         } else {
@@ -441,14 +442,14 @@ export const getScopedVariable =
           if (fieldType === 'dictionary') {
             if (dataToVisualize) {
               showDictionaryData(dataToVisualize || {}, htmlNode, isGlobal);
-              if (rect) {
+              if (rect && rect.resize) {
                 rect.resize(240);
               }
             }
           } else if (fieldType === 'array') {
             if (Array.isArray(dataToVisualize ?? [])) {
               showArrayData(dataToVisualize || [], htmlNode, isGlobal);
-              if (rect) {
+              if (rect && rect.resize) {
                 rect.resize(240);
               }
             }
@@ -467,13 +468,15 @@ export const getScopedVariable =
                 htmlNode,
                 isGlobal
               );
-              if (rect) {
+              if (rect && rect.resize) {
                 rect.resize(dataToVisualize.data[0].length * 32);
               }
             } else {
-              (htmlNode.domElement as unknown as HTMLElement).textContent =
-                'empty grid';
-              if (rect) {
+              if (htmlNode?.domElement) {
+                (htmlNode.domElement as unknown as HTMLElement).textContent =
+                  'empty grid';
+              }
+              if (rect && rect.resize) {
                 rect.resize(120);
               }
             }
@@ -547,13 +550,15 @@ export const getScopedVariable =
                   htmlNode,
                   isGlobal
                 );
-                if (rect) {
+                if (rect && rect.resize) {
                   rect.resize(grid.data[0].length * 32);
                 }
               } else {
-                (htmlNode.domElement as unknown as HTMLElement).textContent =
-                  'empty grid';
-                if (rect) {
+                if (htmlNode?.domElement) {
+                  (htmlNode?.domElement as unknown as HTMLElement).textContent =
+                    'empty grid';
+                }
+                if (rect && rect.resize) {
                   rect.resize(120);
                 }
               }
@@ -772,7 +777,7 @@ export const getScopedVariable =
             class: `border-[2px] border-solid transition duration-500 ease-in-out inner-node bg-blue-600 text-white p-4 rounded text-center`,
           },
           undefined,
-          htmlNode.domElement as unknown as HTMLElement
+          htmlNode?.domElement as unknown as HTMLElement
         ) as unknown as IRectNodeComponent<NodeInfo>;
 
         rect = canvasApp.createRect(
@@ -811,7 +816,7 @@ export const getScopedVariable =
             class:
               'absolute top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1 whitespace-nowrap',
           },
-          rect.nodeComponent.domElement as unknown as HTMLElement,
+          rect.nodeComponent?.domElement as unknown as HTMLElement,
           variableName
         ) as unknown as INodeComponent<NodeInfo>;
 
@@ -832,10 +837,10 @@ export const getScopedVariable =
 
             (
               componentWrapper?.domElement as unknown as HTMLElement
-            ).classList.remove('border-white');
+            )?.classList?.remove('border-white');
             (
               componentWrapper?.domElement as unknown as HTMLElement
-            ).classList.add('border-transparent');
+            )?.classList?.add('border-transparent');
 
             if (timeout) {
               clearTimeout(timeout);
