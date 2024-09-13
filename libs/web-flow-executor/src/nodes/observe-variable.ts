@@ -30,7 +30,7 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
       canvasAppInstance.removeObserveVariable(node.id, variableName);
       setupObserveVariable();
     }
-    if (componentWrapper) {
+    if (componentWrapper && componentWrapper?.domElement) {
       (componentWrapper.domElement as HTMLElement).classList.add(
         'border-transparent'
       );
@@ -83,18 +83,18 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
             clearTimeout(timeout);
             timeout = undefined;
           }
-          if (componentWrapper) {
+          if (componentWrapper && componentWrapper?.domElement) {
             (componentWrapper.domElement as HTMLElement).classList.remove(
               'border-transparent'
             );
           }
-          if (componentWrapper) {
+          if (componentWrapper && componentWrapper?.domElement) {
             (componentWrapper.domElement as HTMLElement).classList.add(
               'border-white'
             );
           }
           timeout = setTimeout(() => {
-            if (componentWrapper) {
+            if (componentWrapper && componentWrapper?.domElement) {
               (componentWrapper.domElement as HTMLElement).classList.remove(
                 'border-white'
               );
@@ -187,20 +187,20 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
         {
           class: `flex items-center bg-blue-600 text-white p-1 px-3 rounded-t pointer-events-none`,
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       createElement(
         'span',
         {},
-        titleWrapper.domElement,
+        titleWrapper?.domElement,
         'Observe variable'
       ) as unknown as INodeComponent<NodeInfo>;
 
       createElement(
         'span',
         { class: 'icon-bolt' },
-        titleWrapper.domElement
+        titleWrapper?.domElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       const formWrapper = createElement(
@@ -208,18 +208,19 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
         {
           class: `inner-node bg-blue-500 p-4 pt-4 rounded-b`,
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       ) as unknown as INodeComponent<NodeInfo>;
-
-      FormComponent({
-        rootElement: formWrapper.domElement as HTMLElement,
-        id: id ?? '',
-        formElements,
-        hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
-        },
-      }) as unknown as HTMLElement;
+      if (formWrapper?.domElement) {
+        FormComponent({
+          rootElement: formWrapper?.domElement as HTMLElement,
+          id: id ?? '',
+          formElements,
+          hasSubmitButton: false,
+          onSave: (formValues) => {
+            console.log('onSave', formValues);
+          },
+        }) as unknown as HTMLElement;
+      }
 
       const rect = canvasApp.createRect(
         x,
