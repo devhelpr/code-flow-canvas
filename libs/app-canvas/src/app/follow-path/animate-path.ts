@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   IConnectionNodeComponent,
   IDOMElement,
@@ -86,7 +86,7 @@ export const setStopAnimations = () => {
 };
 
 let lastTime: number | undefined = undefined;
-export function setCameraAnimation<T>(canvasApp: FlowCanvasInstance<T>) {
+export function setCameraAnimation<T>(canvasApp: FlowCanvas<T>) {
   let quit = false;
   const animateCamera = (time: number) => {
     if (quit) {
@@ -333,7 +333,7 @@ export function setCameraAnimation<T>(canvasApp: FlowCanvasInstance<T>) {
 }
 
 export const animatePathForNodeConnectionPairs = <T>(
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   nodeConnectionPairs:
     | false
     | {
@@ -556,7 +556,7 @@ export const animatePathForNodeConnectionPairs = <T>(
 };
 
 export const animatePath = <T>(
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,
@@ -605,7 +605,7 @@ export const animatePath = <T>(
 };
 
 export const animatePathFromThumb = <T>(
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,

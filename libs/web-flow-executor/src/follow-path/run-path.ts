@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   IConnectionNodeComponent,
   IDOMElement,
   IRectNodeComponent,
@@ -11,7 +11,7 @@ import {
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 
 export const runPathForNodeConnectionPairs = <T>(
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   nodeConnectionPairs:
     | false
     | {
@@ -140,7 +140,7 @@ export const runPathForNodeConnectionPairs = <T>(
 };
 
 export const runPathFromThumb = <T>(
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,
@@ -183,7 +183,7 @@ export const runPathFromThumb = <T>(
 };
 
 export const runPath = <T>(
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,

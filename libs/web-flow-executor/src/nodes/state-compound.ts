@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   INodeComponent,
   ThumbConnectionType,
@@ -18,9 +18,9 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
 
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
 
@@ -46,7 +46,7 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
       return { inputs: [], outputs: [] };
     },
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

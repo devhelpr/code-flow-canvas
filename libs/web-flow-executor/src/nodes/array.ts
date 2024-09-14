@@ -1,6 +1,6 @@
 /* eslint-disable prefer-rest-params */
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -21,7 +21,7 @@ import {
 export const getArray: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo>;
+  let canvasAppInstance: FlowCanvas<NodeInfo>;
   let tagNode: IDOMElement | undefined = undefined;
   let wrapper: IRectNodeComponent<NodeInfo>;
   let variableName = '';
@@ -29,7 +29,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: IDOMElement | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
     undefined;
 
   // TODO : refactor this ...
@@ -377,7 +377,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'variables-array',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
@@ -25,7 +25,7 @@ export class ReplaceNodeCommand<
     this.removeElement = commandContext.removeElement;
   }
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvasInstance<T> | undefined;
+  getCanvasApp: () => FlowCanvas<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;

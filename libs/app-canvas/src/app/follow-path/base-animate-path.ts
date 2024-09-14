@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   IConnectionNodeComponent,
   IElementNode,
   IRectNodeComponent,
@@ -21,7 +21,7 @@ export abstract class BaseAnimatePath<T> {
         followPathByName?: string;
       }>;
   abstract onStopped?: (input: string | any[], scopeId?: string) => void;
-  abstract canvasApp: FlowCanvasInstance<T>;
+  abstract canvasApp: FlowCanvas<T>;
   abstract node: IRectNodeComponent<T>;
   abstract animatedNodes?: {
     [key: string]: IElementNode<unknown>;

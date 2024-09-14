@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   InitialValues,
   INodeComponent,
@@ -54,7 +54,7 @@ export const getSplitVector2dNode = (
     isContainer: false,
     getCompute: () => compute,
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<GLNodeInfo>,
+      canvasApp: FlowCanvas<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   InitialValues,
   NodeTask,
   NodeTaskFactory,
@@ -47,7 +47,7 @@ const thumbs = [
 export const getCreateEventStateValueNode: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<any> => {
-  let contextInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let contextInstance: FlowCanvas<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values = { global: { stateEvent: undefined, value: undefined } };
     return;

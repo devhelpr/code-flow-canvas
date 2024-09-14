@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   createNodeElement,
   InitialValues,
@@ -44,7 +44,7 @@ export const getCheckbox = (_updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'UI',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

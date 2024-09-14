@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   InitialValues,
   INodeComponent,
@@ -32,7 +32,7 @@ export const getEnd: NodeTaskFactory<NodeInfo> = (
     name: 'end-node',
     family: 'flow-canvas',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

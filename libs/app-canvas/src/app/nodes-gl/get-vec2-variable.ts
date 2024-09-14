@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   FormComponent,
   FormFieldType,
@@ -56,7 +56,7 @@ export const getGetVectorVariableNode = (
     thumbs,
     getCompute: () => compute,
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<GLNodeInfo>,
+      canvasApp: FlowCanvas<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

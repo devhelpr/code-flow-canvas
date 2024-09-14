@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -18,7 +18,7 @@ export const nodeTreeVisualizerNodeName = 'node-tree-visualizer';
 export const getNodeTreeVisualizer = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
     undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let componentWrapper: INodeComponent<NodeInfo> | undefined = undefined;
@@ -243,7 +243,7 @@ export const getNodeTreeVisualizer = (
     isContainer: false,
     category: 'visualization',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

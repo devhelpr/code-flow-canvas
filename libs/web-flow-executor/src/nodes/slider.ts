@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   FormFieldType,
   IComputeResult,
   IRectNodeComponent,
@@ -23,7 +23,7 @@ export const getSlider =
   (
     updated: (shouldClearExecutionHistory?: boolean) => void
   ): NodeTask<NodeInfo> => {
-    let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+    let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let currentValue = 0;
     let triggerButton = false;

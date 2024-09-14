@@ -1,4 +1,4 @@
-import { FlowCanvasInstance } from '../canvas-app/flow-canvas-instance';
+import { FlowCanvas } from '../canvas-app/flow-canvas';
 import { Rect } from '../components/rect';
 import { INodeComponent, IThumb, IRectNodeComponent } from '../interfaces';
 import { BaseNodeInfo } from '../types/base-node-info';
@@ -17,7 +17,7 @@ export interface CreateNodeInfo<T extends BaseNodeInfo> {
   node: INodeComponent<T>;
   rect?: Rect<T>;
   componentWrapper?: INodeComponent<T>;
-  contextInstance: FlowCanvasInstance<T>;
+  contextInstance: FlowCanvas<T>;
   isDecoratorNode: boolean;
 }
 
@@ -52,7 +52,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
   ) => IComputeResult | Promise<IComputeResult>,
   initializeCompute: () => void,
   thumbs: IThumb[],
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   id?: string,
   containerNode?: IRectNodeComponent<T>,
   initialValues?: InitialValues,
@@ -451,18 +451,18 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
   isAsyncCompute = false,
   canBeUsedAsDecorator = false,
   useInCompositionOnly = false,
-  onSetCanvasApp?: (canvasApp: FlowCanvasInstance<T>) => void
+  onSetCanvasApp?: (canvasApp: FlowCanvas<T>) => void
 ) => {
   let createDecoratorNode:
     | undefined
     | ((
-        canvasApp: FlowCanvasInstance<T>,
+        canvasApp: FlowCanvas<T>,
         initalValues?: InitialValues,
         rootElement?: HTMLElement
       ) => INodeComponent<T>) = undefined;
   if (canBeUsedAsDecorator) {
     createDecoratorNode = (
-      canvasApp: FlowCanvasInstance<T>,
+      canvasApp: FlowCanvas<T>,
       initalValues?: InitialValues,
       rootElement?: HTMLElement
     ) => {
@@ -504,7 +504,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     hideFromNodeTypeSelector: settings?.hideFromNodeTypeSelector ?? false,
     useInCompositionOnly: useInCompositionOnly,
     thumbs,
-    setCanvasApp: (canvasApp: FlowCanvasInstance<T>) => {
+    setCanvasApp: (canvasApp: FlowCanvas<T>) => {
       if (onSetCanvasApp) {
         onSetCanvasApp(canvasApp);
       }
@@ -518,7 +518,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
         thumbIdentifierWithinNode?: string
       ) => { result: string | undefined },
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<T>,
+      canvasApp: FlowCanvas<T>,
       x: number,
       y: number,
       id?: string,

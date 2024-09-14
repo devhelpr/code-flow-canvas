@@ -1,4 +1,4 @@
-import { FlowCanvasInstance } from '../canvas-app/flow-canvas-instance';
+import { FlowCanvas } from '../canvas-app/flow-canvas';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
@@ -76,7 +76,7 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
   isStaticPosition?: boolean;
   isCircle?: boolean;
   isThumb?: boolean;
-  canvasAppInstance?: FlowCanvasInstance<T>;
+  canvasAppInstance?: FlowCanvas<T>;
   canBeResized?: boolean;
   thumbs: IThumb[];
   setSize: (width: number, height: number) => void;

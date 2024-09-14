@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   FormFieldType,
   InitialValues,
@@ -46,9 +46,9 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
 
   let imageData = '';
 
@@ -224,7 +224,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'UI',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

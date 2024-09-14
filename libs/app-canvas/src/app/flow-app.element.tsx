@@ -11,7 +11,7 @@ import {
   getSelectedNode,
   setSelectNode,
   setActionNode,
-  FlowCanvasInstance,
+  FlowCanvas,
   IRectNodeComponent,
   IThumbNodeComponent,
   Flow,
@@ -132,7 +132,7 @@ export class CodeFlowWebAppCanvas {
   clearPresetRegistry?: boolean;
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
-    canvasApp: FlowCanvasInstance<BaseNodeInfo>
+    canvasApp: FlowCanvas<BaseNodeInfo>
   ) => void;
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction
@@ -196,7 +196,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
-    canvasApp: FlowCanvasInstance<BaseNodeInfo>
+    canvasApp: FlowCanvas<BaseNodeInfo>
   ) => void;
 
   constructor(
@@ -207,7 +207,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     widthSpaceForSideToobars?: number,
     onStoreFlow?: (
       flow: Flow<NodeInfo>,
-      canvasApp: FlowCanvasInstance<BaseNodeInfo>
+      canvasApp: FlowCanvas<BaseNodeInfo>
     ) => void,
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction
@@ -516,7 +516,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               ),
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
-              canvasApp: FlowCanvasInstance<NodeInfo>,
+              canvasApp: FlowCanvas<NodeInfo>,
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<NodeInfo>,
               nestedLevel?: number,
@@ -760,7 +760,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               },
               importToCanvas: (
                 nodesList: FlowNode<NodeInfo>[],
-                canvasApp: FlowCanvasInstance<NodeInfo>,
+                canvasApp: FlowCanvas<NodeInfo>,
                 canvasUpdated: () => void,
                 containerNode?: IRectNodeComponent<NodeInfo>,
                 nestedLevel?: number,

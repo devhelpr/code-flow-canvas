@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   FormFieldType,
   IRectNodeComponent,
   IThumb,
@@ -49,7 +49,7 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<any> => {
   //let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values = { global: { value1: undefined, value2: undefined } };
     return;
@@ -158,7 +158,7 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

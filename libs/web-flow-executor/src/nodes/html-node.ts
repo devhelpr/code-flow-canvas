@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createASTNodeElement,
   createElement,
   createNodeElement,
@@ -30,7 +30,7 @@ style="background:{{input}}"
 export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let divNode: IElementNode<NodeInfo> | undefined = undefined;
-  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
   let astElement: IElementNode<NodeInfo> | undefined = undefined;
@@ -218,7 +218,7 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'html',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

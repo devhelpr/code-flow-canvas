@@ -1,4 +1,4 @@
-import { FlowCanvasInstance } from '../canvas-app/flow-canvas-instance';
+import { FlowCanvas } from '../canvas-app/flow-canvas';
 import { IConnectionNodeComponent } from '../interfaces';
 
 export interface IMetaField {
@@ -68,7 +68,7 @@ export interface BaseNodeInfo {
     form?: any[];
     onChanged?: (connection: IConnectionNodeComponent<BaseNodeInfo>) => void;
   };
-  canvasAppInstance?: FlowCanvasInstance<BaseNodeInfo>;
+  canvasAppInstance?: FlowCanvas<BaseNodeInfo>;
 
   initializeCompute?: () => void;
   showFormOnlyInPopup?: boolean;

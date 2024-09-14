@@ -4,8 +4,8 @@ import {
   IDOMElement,
   IRunCounter,
   IRectNodeComponent,
-  createRuntimeContextInstanceApp,
-  FlowCanvasInstance,
+  createRuntimeFlowContext,
+  FlowCanvas,
   INodeComponent,
   NodeType,
   FlowNode,
@@ -24,9 +24,9 @@ import {
 } from '@devhelpr/web-flow-executor';
 
 export class FlowEngine {
-  public canvasApp: FlowCanvasInstance<NodeInfo>;
+  public canvasApp: FlowCanvas<NodeInfo>;
   constructor() {
-    this.canvasApp = createRuntimeContextInstanceApp<NodeInfo>();
+    this.canvasApp = createRuntimeFlowContext<NodeInfo>();
   }
   initiliaze(flow: FlowNode<NodeInfo>[]) {
     if (!this.canvasApp) {

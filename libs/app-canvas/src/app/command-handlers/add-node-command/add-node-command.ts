@@ -1,6 +1,6 @@
 import {
   BaseNodeInfo,
-  FlowCanvasInstance,
+  FlowCanvas,
   FlowChangeType,
   IRectNodeComponent,
   NodeTaskFactory,
@@ -29,7 +29,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     this.setupTasksInDropdown = commandContext.setupTasksInDropdown;
   }
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvasInstance<T> | undefined;
+  getCanvasApp: () => FlowCanvas<T> | undefined;
   canvasUpdated: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,

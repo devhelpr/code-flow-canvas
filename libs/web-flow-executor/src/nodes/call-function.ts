@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   FormFieldType,
   IComputeResult,
   INodeComponent,
@@ -30,7 +30,7 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let componentWrapper: INodeComponent<NodeInfo> | undefined;
 
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo>;
+  let canvasAppInstance: FlowCanvas<NodeInfo>;
   let args: string | undefined = undefined;
   let commandName: string | undefined = undefined;
   let parameterCommands: ReturnType<typeof compileExpressionAsInfo>[] = [];

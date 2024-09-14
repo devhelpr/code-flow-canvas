@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createNodeElement,
   FormFieldType,
   InitialValues,
@@ -42,7 +42,7 @@ const thumbs = [
 
 export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;
@@ -163,7 +163,7 @@ export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

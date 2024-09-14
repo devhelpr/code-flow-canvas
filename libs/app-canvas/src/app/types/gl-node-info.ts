@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   IThumb,
   BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
@@ -16,7 +16,7 @@ export interface GLNodeInfo extends BaseNodeInfo {
     result: string | undefined;
   };
 
-  canvasAppInstance?: FlowCanvasInstance<GLNodeInfo>;
+  canvasAppInstance?: FlowCanvas<GLNodeInfo>;
 
   thumbs?: IThumb[];
   initializeOnCompile?: boolean;

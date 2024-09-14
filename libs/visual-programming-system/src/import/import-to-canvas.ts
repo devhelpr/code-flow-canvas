@@ -1,4 +1,4 @@
-import { FlowCanvasInstance } from '../canvas-app/flow-canvas-instance';
+import { FlowCanvas } from '../canvas-app/flow-canvas';
 import {
   FlowNode,
   IRectNodeComponent,
@@ -16,7 +16,7 @@ import {
 
 export const importToCanvas = <T extends BaseNodeInfo>(
   nodesList: FlowNode<T>[],
-  canvasApp: FlowCanvasInstance<T>,
+  canvasApp: FlowCanvas<T>,
   canvasUpdated: () => void,
   containerNode?: IRectNodeComponent<T>,
   nestedLevel?: number,
@@ -67,7 +67,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
 
                     const child = childNodeTask.createVisualNode(
                       canvasVisualNode.nodeInfo
-                        .canvasAppInstance as unknown as FlowCanvasInstance<T>,
+                        .canvasAppInstance as unknown as FlowCanvas<T>,
                       element.x,
                       element.y,
                       element.id,
@@ -156,7 +156,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                     node.lineType === LineType.BezierCubic
                       ? (
                           canvasVisualNode?.nodeInfo
-                            ?.canvasAppInstance as unknown as FlowCanvasInstance<T>
+                            ?.canvasAppInstance as unknown as FlowCanvas<T>
                         )?.createCubicBezier(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
@@ -173,7 +173,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                         )
                       : (
                           canvasVisualNode?.nodeInfo
-                            ?.canvasAppInstance as unknown as FlowCanvasInstance<T>
+                            ?.canvasAppInstance as unknown as FlowCanvas<T>
                         )?.createQuadraticBezier(
                           start?.x ?? node.x ?? 0,
                           start?.y ?? node.y ?? 0,
@@ -450,7 +450,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
 
 export const importCompositions = <T>(
   compositions: Record<string, Composition<T>>,
-  canvasApp: FlowCanvasInstance<T>
+  canvasApp: FlowCanvas<T>
 ) => {
   canvasApp.compositons.clearCompositions();
   Object.entries(compositions).forEach(([_id, composition]) => {

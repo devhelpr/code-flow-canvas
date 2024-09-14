@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   INodeComponent,
   createFlowCanvas,
@@ -24,10 +24,9 @@ export interface ComputeResult {
 export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
   let htmlNode: IDOMElement | undefined = undefined;
-  let rect:
-    | ReturnType<FlowCanvasInstance<GLNodeInfo>['createRect']>
-    | undefined = undefined;
-  let canvasAppInstance: FlowCanvasInstance<GLNodeInfo> | undefined = undefined;
+  let rect: ReturnType<FlowCanvas<GLNodeInfo>['createRect']> | undefined =
+    undefined;
+  let canvasAppInstance: FlowCanvas<GLNodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
 
@@ -63,7 +62,7 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<GLNodeInfo>,
+      canvasApp: FlowCanvas<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

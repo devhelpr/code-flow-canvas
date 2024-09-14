@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   FormFieldType,
   IComputeResult,
   IRectNodeComponent,
@@ -24,7 +24,7 @@ export const dialogFormNodeName = 'dialog-form-node';
 
 export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;

@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -18,7 +18,7 @@ const activeFunctionColor = 'bg-orange-400';
 
 export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
   let componentWrapper: INodeComponent<NodeInfo> | undefined;
   let divElement: IDOMElement | undefined;
   let parametersContainer: IDOMElement | undefined;
@@ -125,7 +125,7 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'functions',
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,

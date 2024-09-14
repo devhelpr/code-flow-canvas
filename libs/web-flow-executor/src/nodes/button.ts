@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -69,7 +69,7 @@ export const getButton =
       isContainer: false,
       category: 'UI',
       createVisualNode: (
-        canvasApp: FlowCanvasInstance<NodeInfo>,
+        canvasApp: FlowCanvas<NodeInfo>,
         x: number,
         y: number,
         id?: string,

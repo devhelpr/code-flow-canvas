@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   FormFieldType,
   IRectNodeComponent,
   InitialValues,
@@ -20,7 +20,7 @@ export const popArrayValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let contextInstance: FlowCanvas<NodeInfo> | undefined = undefined;
   let popMode = 'end';
   const initializeCompute = () => {
     popMode = node?.nodeInfo?.formValues?.['popMode'] ?? 'end';

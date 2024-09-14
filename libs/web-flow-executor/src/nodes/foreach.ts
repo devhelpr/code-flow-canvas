@@ -1,5 +1,5 @@
 import {
-  FlowCanvasInstance,
+  FlowCanvas,
   createNodeElement,
   InitialValues,
   INodeComponent,
@@ -80,7 +80,7 @@ const isInputOfRangeValueType = (input: RangeValueType) => {
 export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
-  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
   const title = 'foreach';
   const initializeCompute = () => {
     if (foreachComponent && foreachComponent.domElement) {
@@ -218,7 +218,7 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
     category: 'iterators',
     thumbs,
     createVisualNode: (
-      canvasApp: FlowCanvasInstance<NodeInfo>,
+      canvasApp: FlowCanvas<NodeInfo>,
       x: number,
       y: number,
       id?: string,
