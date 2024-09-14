@@ -49,6 +49,16 @@ import { getPointerPos } from '../utils/pointer-pos';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { getCanvasAppCssClasses } from './css-classes/canvasapp-css-classes';
 
+/*
+  TODO:
+  - createFlowCanvas should have return type interface IFlowCanvasBase<T>
+  - create class FlowCanvas which extends FlowCore and implements IFlowCanvasBase<T>
+  - createFlowCanvas creates instance of FlowCanvas and returns it
+  - change file flow-canvas.ts to flow-canvas-base.ts
+  - everywhere in the codebase where currently FlowCanvas<T> is used... change to IFlowCanvasBase<T>
+  - do the same for runtime-flow-context
+*/
+
 export const createFlowCanvas = <T>(
   rootElement: HTMLElement,
   disableInteraction?: boolean,
