@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   FormField,
   FormFieldType,
   IRectNodeComponent,
@@ -36,7 +36,7 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
   theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasApp: FlowCanvas<NodeInfo>;
+  let canvasApp: IFlowCanvasBase<NodeInfo>;
   const initializeCompute = () => {
     return;
   };

@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   InitialValues,
   NodeTask,
   NodeTaskFactory,
@@ -47,7 +47,7 @@ const thumbs = [
 export const getMergeNode: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<any> => {
-  let contextInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let contextInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values = { global: { value1: undefined, value2: undefined } };
     return;

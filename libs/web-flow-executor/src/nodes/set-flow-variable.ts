@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   FormFieldType,
   IRectNodeComponent,
   InitialValues,
@@ -21,7 +21,7 @@ export const setFlowVariable: NodeTaskFactory<NodeInfo> = (
   theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let contextInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };

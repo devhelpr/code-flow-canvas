@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   InitialValues,
   INodeComponent,
@@ -37,7 +37,7 @@ export const getSummingJunction: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

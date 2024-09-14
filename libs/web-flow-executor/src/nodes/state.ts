@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormFieldType,
   InitialValues,
@@ -32,7 +32,7 @@ export const getState: NodeTaskFactory<NodeInfo> = (
     category: 'state-machine',
     isContained: true,
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

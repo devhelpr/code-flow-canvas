@@ -12,7 +12,7 @@ import {
   setActionNode,
   setSelectNode,
   BaseNodeInfo,
-  FlowCanvas,
+  IFlowCanvasBase,
   CanvasAction,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
@@ -67,7 +67,7 @@ export function Toolbar<T>(props: {
     nodeId: string,
     containerNode?: IRectNodeComponent<T> | undefined
   ) => { node: INodeComponent<T> | undefined };
-  canvasAppInstance: FlowCanvas<T>;
+  canvasAppInstance: IFlowCanvasBase<T>;
   getCanvasAction: () => CanvasAction;
 }) {
   let toggle = false;

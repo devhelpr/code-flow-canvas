@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -21,8 +21,8 @@ type FieldTypes = 'value' | 'dictionary' | 'array' | 'grid';
 export const getScopedVariable =
   (isGlobal = false) =>
   (updated: () => void): NodeTask<NodeInfo> => {
-    let canvasAppInstance: FlowCanvas<NodeInfo>;
-    let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
+    let canvasAppInstance: IFlowCanvasBase<NodeInfo>;
+    let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
       undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let componentWrapper: IRectNodeComponent<NodeInfo>;
@@ -584,7 +584,7 @@ export const getScopedVariable =
       category: 'variables',
       nodeCannotBeReplaced: true,
       createVisualNode: (
-        canvasApp: FlowCanvas<NodeInfo>,
+        canvasApp: IFlowCanvasBase<NodeInfo>,
         x: number,
         y: number,
         id?: string,

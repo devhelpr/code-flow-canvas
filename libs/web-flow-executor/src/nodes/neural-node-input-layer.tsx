@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   FormFieldType,
   IRectNodeComponent,
   InitialValues,
@@ -159,7 +159,7 @@ export const getNeuralNodeInputLayerNode: NodeTaskFactory<NodeInfo> = (
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

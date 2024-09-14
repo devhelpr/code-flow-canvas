@@ -11,7 +11,6 @@ import {
   setSelectNode,
   createElementMap,
   createFlowCanvas,
-  FlowCanvas,
   IRectNodeComponent,
   createNSElement,
   Camera,
@@ -35,6 +34,7 @@ import {
   RegisterComposition,
   NodeTaskFactory,
   importToCanvas,
+  IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -60,8 +60,8 @@ export class AppElement<T extends BaseNodeInfo> {
   isStoring = false;
 
   canvas?: IElementNode<T> = undefined;
-  canvasApp?: FlowCanvas<T> = undefined;
-  currentCanvasApp?: FlowCanvas<T> = undefined;
+  canvasApp?: IFlowCanvasBase<T> = undefined;
+  currentCanvasApp?: IFlowCanvasBase<T> = undefined;
   storageProvider: StorageProvider<T> | undefined = undefined;
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
@@ -1005,7 +1005,7 @@ export class AppElement<T extends BaseNodeInfo> {
   compositionUnderEdit: Composition<T> | undefined = undefined;
 
   addThumbToComposition = (
-    canvasApp: FlowCanvas<T>,
+    canvasApp: IFlowCanvasBase<T>,
     compositionId: string,
     thumb: IThumb
   ) => {
@@ -1029,7 +1029,7 @@ export class AppElement<T extends BaseNodeInfo> {
   };
 
   deleteThumbFromComposition = (
-    canvasApp: FlowCanvas<T>,
+    canvasApp: IFlowCanvasBase<T>,
     compositionId: string,
     thumb: IThumb
   ) => {
@@ -1053,7 +1053,7 @@ export class AppElement<T extends BaseNodeInfo> {
   };
 
   editThumbFromComposition = (
-    canvasApp: FlowCanvas<T>,
+    canvasApp: IFlowCanvasBase<T>,
     compositionId: string,
     thumb: IThumb
   ) => {
@@ -1149,7 +1149,7 @@ export class AppElement<T extends BaseNodeInfo> {
       this.currentCanvasApp = canvasApp;
       importToCanvas(
         composition.nodes as FlowNode<BaseNodeInfo>[],
-        canvasApp as unknown as FlowCanvas<BaseNodeInfo>,
+        canvasApp as unknown as IFlowCanvasBase<BaseNodeInfo>,
         () => {
           //
         },
@@ -1771,11 +1771,11 @@ export class AppElement<T extends BaseNodeInfo> {
               if (this.currentCanvasApp?.compositons) {
                 (
                   (node.nodeInfo as any)
-                    .canvasAppInstance as unknown as FlowCanvas<T>
+                    .canvasAppInstance as unknown as IFlowCanvasBase<T>
                 ).compositons = this.currentCanvasApp?.compositons;
               }
               initializeCompute(
-                ((node.nodeInfo as any).canvasAppInstance as FlowCanvas<T>)
+                ((node.nodeInfo as any).canvasAppInstance as IFlowCanvasBase<T>)
                   .elements
               );
             }

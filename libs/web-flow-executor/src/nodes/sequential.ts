@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createNodeElement,
   InitialValues,
   INodeComponent,
@@ -14,7 +14,7 @@ import { RunCounter } from '../follow-path/run-counter';
 
 export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;
@@ -82,7 +82,7 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

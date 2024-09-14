@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   INodeComponent,
   ThumbConnectionType,
@@ -28,7 +28,7 @@ import {
 // TODO : make example with state-compound and check if correct nodes are updated (classlist)
 
 export const createStateMachine = (
-  canvasAppInstance: FlowCanvas<NodeInfo>,
+  canvasAppInstance: IFlowCanvasBase<NodeInfo>,
   isCompound = false
 ): StateMachine<NodeInfo> => {
   let initialState: State<NodeInfo> | undefined = undefined;
@@ -175,14 +175,14 @@ export const createStateMachineNode = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let stateMachine: StateMachine<NodeInfo> | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
-  let rootCanvasApp: FlowCanvas<NodeInfo> | undefined = undefined;
+  let rootCanvasApp: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     stateMachine = undefined;
@@ -501,7 +501,7 @@ export const createStateMachineNode = (
       return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

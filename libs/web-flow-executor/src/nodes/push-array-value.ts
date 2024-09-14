@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   FormFieldType,
   IRectNodeComponent,
   InitialValues,
@@ -19,7 +19,7 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let contextInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;

@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
@@ -14,7 +14,7 @@ export abstract class BaseNode<T, X> {
   };
   abstract initializeCompute: () => void;
   abstract createVisualNode: (
-    canvasApp: FlowCanvas<NodeInfo>,
+    canvasApp: IFlowCanvasBase<NodeInfo>,
     x: number,
     y: number,
     id?: string,

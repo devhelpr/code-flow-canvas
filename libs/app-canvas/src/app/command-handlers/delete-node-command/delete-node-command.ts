@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
@@ -24,7 +24,7 @@ export class DeleteNodeCommand<
     this.removeElement = commandContext.removeElement;
   }
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvas<T> | undefined;
+  getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,

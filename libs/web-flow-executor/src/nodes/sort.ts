@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   InitialValues,
   INodeComponent,
@@ -20,7 +20,7 @@ const title = 'sort';
 export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     if (foreachComponent && foreachComponent.domElement) {
@@ -155,7 +155,7 @@ export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'iterators',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

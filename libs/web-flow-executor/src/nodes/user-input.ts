@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormComponent,
   FormFieldType,
@@ -28,7 +28,7 @@ export const getUserInput =
     ) => RunCounter
   ) =>
   (updated: () => void, theme?: Theme): NodeTask<NodeInfo> => {
-    let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+    let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
     let form: FormsComponent | undefined = undefined;
     let inputElement: HTMLInputElement | undefined = undefined;
@@ -92,7 +92,7 @@ export const getUserInput =
       family: 'flow-canvas',
       isContainer: false,
       createVisualNode: (
-        canvasApp: FlowCanvas<NodeInfo>,
+        canvasApp: IFlowCanvasBase<NodeInfo>,
         x: number,
         y: number,
         id?: string,

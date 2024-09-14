@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   FormFieldType,
   IRectNodeComponent,
   InitialValues,
@@ -19,7 +19,7 @@ export const getArrayValueByIndex: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let contextInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let contextInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;
@@ -40,7 +40,7 @@ export const getArrayValueByIndex: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-    let data = '';
+    let data: any = '';
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       if (variableName) {

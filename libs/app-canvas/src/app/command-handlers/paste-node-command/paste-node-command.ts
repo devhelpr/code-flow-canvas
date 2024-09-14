@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   ICommandHandler,
   BaseNodeInfo,
   NodeTaskFactory,
@@ -22,7 +22,7 @@ export class PasteNodeCommand<
   }
   commandRegistry: Map<string, ICommandHandler>;
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvas<T> | undefined;
+  getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;

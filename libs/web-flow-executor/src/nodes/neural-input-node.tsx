@@ -8,7 +8,7 @@ import {
   FormFieldType,
   IFormsComponent,
   createJSXElement,
-  FlowCanvas,
+  IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { IRectNodeComponent } from '../../../visual-programming-system/src';
@@ -39,7 +39,7 @@ export const getNeuralInputNode =
   ) =>
   (updated: () => void): NodeTask<any> => {
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
-    let canvasApp: FlowCanvas<NodeInfo> | undefined = undefined;
+    let canvasApp: IFlowCanvasBase<NodeInfo> | undefined = undefined;
     let currentRunCounter: RunCounter | undefined;
     const initializeCompute = () => {
       //

@@ -1,4 +1,4 @@
-import { FlowCanvas } from '../canvas-app/flow-canvas';
+import { IFlowCanvasBase } from '../canvas-app/flow-canvas';
 import {
   IConnectionNodeComponent,
   IDOMElement,
@@ -15,7 +15,7 @@ export interface AnimatePathFunctions<T> {
 }
 
 export type AnimatePathFromConnectionPairFunction<T> = (
-  canvasApp: FlowCanvas<T>,
+  canvasApp: IFlowCanvasBase<T>,
   nodeConnectionPairs:
     | false
     | {
@@ -86,7 +86,7 @@ export type AnimatePathFromThumbFunction<T> = (
 ) => void;
 
 export type FollowPathFunction<T> = (
-  canvasApp: FlowCanvas<T>,
+  canvasApp: IFlowCanvasBase<T>,
   node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,

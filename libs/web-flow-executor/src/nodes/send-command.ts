@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormComponent,
   FormFieldType,
@@ -21,7 +21,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvas<NodeInfo>;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo>;
 
   const runCommandParameterExpression = (
     expression: string,
@@ -110,7 +110,7 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
     category: 'deprecated',
     isContainer: false,
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

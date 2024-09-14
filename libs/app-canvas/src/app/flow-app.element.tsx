@@ -11,7 +11,6 @@ import {
   getSelectedNode,
   setSelectNode,
   setActionNode,
-  FlowCanvas,
   IRectNodeComponent,
   IThumbNodeComponent,
   Flow,
@@ -34,6 +33,7 @@ import {
   BaseNodeInfo,
   IFormsComponent,
   FlowChangeType,
+  IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -132,7 +132,7 @@ export class CodeFlowWebAppCanvas {
   clearPresetRegistry?: boolean;
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
-    canvasApp: FlowCanvas<BaseNodeInfo>
+    canvasApp: IFlowCanvasBase<BaseNodeInfo>
   ) => void;
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction
@@ -196,7 +196,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
-    canvasApp: FlowCanvas<BaseNodeInfo>
+    canvasApp: IFlowCanvasBase<BaseNodeInfo>
   ) => void;
 
   constructor(
@@ -207,7 +207,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     widthSpaceForSideToobars?: number,
     onStoreFlow?: (
       flow: Flow<NodeInfo>,
-      canvasApp: FlowCanvas<BaseNodeInfo>
+      canvasApp: IFlowCanvasBase<BaseNodeInfo>
     ) => void,
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction
@@ -516,7 +516,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               ),
             importToCanvas: (
               nodesList: FlowNode<NodeInfo>[],
-              canvasApp: FlowCanvas<NodeInfo>,
+              canvasApp: IFlowCanvasBase<NodeInfo>,
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<NodeInfo>,
               nestedLevel?: number,
@@ -760,7 +760,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               },
               importToCanvas: (
                 nodesList: FlowNode<NodeInfo>[],
-                canvasApp: FlowCanvas<NodeInfo>,
+                canvasApp: IFlowCanvasBase<NodeInfo>,
                 canvasUpdated: () => void,
                 containerNode?: IRectNodeComponent<NodeInfo>,
                 nestedLevel?: number,

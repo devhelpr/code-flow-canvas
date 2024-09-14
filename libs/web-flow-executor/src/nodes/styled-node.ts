@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormFieldType,
   IDOMElement,
@@ -79,7 +79,7 @@ export const getStyledNode = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'html',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

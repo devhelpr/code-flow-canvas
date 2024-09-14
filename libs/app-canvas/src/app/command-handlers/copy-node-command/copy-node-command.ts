@@ -1,6 +1,6 @@
 import {
   BaseNodeInfo,
-  FlowCanvas,
+  IFlowCanvasBase,
   IRectNodeComponent,
   NodeTaskFactory,
   NodeType,
@@ -19,7 +19,7 @@ export class CopyNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     this.node = undefined;
   }
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvas<T> | undefined;
+  getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;

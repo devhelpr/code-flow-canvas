@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   Composition,
   FlowNode,
   IThumb,
@@ -26,7 +26,7 @@ export const getCreateCompositionNode =
     const fieldName = 'composition';
     const labelName = `${name ?? 'Composition'}`;
     const nodeName = `composition-${compositionId}`;
-    let canvasApp: FlowCanvas<GLNodeInfo> | undefined = undefined;
+    let canvasApp: IFlowCanvasBase<GLNodeInfo> | undefined = undefined;
     let nodes: FlowNode<GLNodeInfo>[] = [];
     let compositionThumbs: IThumb[] = [];
     let composition: Composition<GLNodeInfo> | undefined = undefined;
@@ -277,7 +277,7 @@ export const getCreateCompositionNode =
       undefined,
       undefined,
       undefined,
-      (canvasAppInstance: FlowCanvas<GLNodeInfo>) => {
+      (canvasAppInstance: IFlowCanvasBase<GLNodeInfo>) => {
         canvasApp = canvasAppInstance;
       }
     );

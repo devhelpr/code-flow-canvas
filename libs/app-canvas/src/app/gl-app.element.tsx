@@ -9,7 +9,6 @@ import {
   createEffect,
   getSelectedNode,
   setSelectNode,
-  FlowCanvas,
   IRectNodeComponent,
   Flow,
   updateNamedSignal,
@@ -29,6 +28,7 @@ import {
   FormComponent,
   importCompositions,
   importToCanvas,
+  IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -492,7 +492,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               ),
             importToCanvas: (
               nodesList: FlowNode<GLNodeInfo>[],
-              canvasApp: FlowCanvas<GLNodeInfo>,
+              canvasApp: IFlowCanvasBase<GLNodeInfo>,
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<GLNodeInfo>,
               nestedLevel?: number,
@@ -1839,7 +1839,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             ) {
               if (
                 node.nodeInfo
-                  ?.canvasAppInstance as unknown as FlowCanvas<GLNodeInfo>
+                  ?.canvasAppInstance as unknown as IFlowCanvasBase<GLNodeInfo>
               ) {
                 const containerNodeVisited: string[] = [];
                 const containerGslFunctions = getGLSLFunctions();
@@ -1862,7 +1862,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 this.parseFLow(
                   (
                     node.nodeInfo
-                      ?.canvasAppInstance as unknown as FlowCanvas<GLNodeInfo>
+                      ?.canvasAppInstance as unknown as IFlowCanvasBase<GLNodeInfo>
                   ).elements,
                   containerNodeVisited,
                   containerGslFunctions
@@ -2069,7 +2069,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   };
   rafId = -1;
 
-  historyCanvasApp: FlowCanvas<GLNodeInfo> | undefined;
+  historyCanvasApp: IFlowCanvasBase<GLNodeInfo> | undefined;
   currentShaderIndex = -1;
   showShaderHistoryItem = (historyIndex: number) => {
     console.log('showShaderHistoryItem', historyIndex);
@@ -2253,7 +2253,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.historyCanvasApp.elements.clear();
     importToCanvas(
       historyItem.nodes ?? [],
-      this.historyCanvasApp as unknown as FlowCanvas<GLNodeInfo>,
+      this.historyCanvasApp as unknown as IFlowCanvasBase<GLNodeInfo>,
       () => {
         //
       },

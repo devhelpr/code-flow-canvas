@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   INodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
@@ -7,7 +7,7 @@ import { NodeInfo } from '../../types/node-info';
 
 export const getNodeByNeuralLayerName = (
   name: string,
-  canvasAppInstance: FlowCanvas<NodeInfo>
+  canvasAppInstance: IFlowCanvasBase<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
   let node: INodeComponent<NodeInfo> | undefined = undefined;
   Array.from(canvasAppInstance.elements).every((itemPair) => {
@@ -32,7 +32,7 @@ export const getNodeByNeuralLayerName = (
 
 export const getNodesByNeuralLayerType = (
   nodeType: string,
-  canvasAppInstance: FlowCanvas<NodeInfo>
+  canvasAppInstance: IFlowCanvasBase<NodeInfo>
 ): IRectNodeComponent<NodeInfo>[] => {
   const nodes: IRectNodeComponent<NodeInfo>[] = [];
   Array.from(canvasAppInstance.elements).every((itemPair: any) => {

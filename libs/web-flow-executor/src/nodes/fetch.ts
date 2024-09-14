@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormFieldType,
   InitialValues,
@@ -19,7 +19,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -152,7 +152,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'connectivity',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

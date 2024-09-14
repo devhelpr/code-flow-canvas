@@ -5,11 +5,11 @@ import {
   IRunCounter,
   IRectNodeComponent,
   createRuntimeFlowContext,
-  FlowCanvas,
   INodeComponent,
   NodeType,
   FlowNode,
   importToCanvas,
+  IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
 import {
   setupCanvasNodeTaskRegistry,
@@ -24,7 +24,7 @@ import {
 } from '@devhelpr/web-flow-executor';
 
 export class FlowEngine {
-  public canvasApp: FlowCanvas<NodeInfo>;
+  public canvasApp: IFlowCanvasBase<NodeInfo>;
   constructor() {
     this.canvasApp = createRuntimeFlowContext<NodeInfo>();
   }

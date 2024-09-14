@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormComponent,
   FormFieldType,
@@ -18,7 +18,7 @@ import { runNodeFromThumb } from '../flow-engine/flow-engine';
 
 export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;
@@ -106,7 +106,7 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

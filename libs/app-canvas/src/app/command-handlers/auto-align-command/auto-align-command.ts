@@ -1,6 +1,6 @@
 import {
   BaseNodeInfo,
-  FlowCanvas,
+  IFlowCanvasBase,
   ICommandHandler,
   IConnectionNodeComponent,
   INodeComponent,
@@ -59,7 +59,7 @@ export class AutoAlignCommand<
   }
   commandRegistry: Map<string, ICommandHandler>;
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvas<T> | undefined;
+  getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;

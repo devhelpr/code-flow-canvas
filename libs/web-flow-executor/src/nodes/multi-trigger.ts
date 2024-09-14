@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   InitialValues,
   INodeComponent,
@@ -19,7 +19,7 @@ import { runNodeFromThumb } from '../flow-engine/flow-engine';
 export const getMultiTrigger = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let rect: Rect<NodeInfo> | undefined = undefined;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     return;
@@ -72,7 +72,7 @@ export const getMultiTrigger = (_updated: () => void): NodeTask<NodeInfo> => {
     family: 'flow-canvas',
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

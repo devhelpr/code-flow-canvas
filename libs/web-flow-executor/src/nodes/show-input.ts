@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   createElement,
   FormFieldType,
   InitialValues,
@@ -35,11 +35,11 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let inputValues: any;
-  let canvasAppInstance: FlowCanvas<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<FlowCanvas<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
@@ -136,7 +136,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
     category: 'debug',
     thumbs,
     createVisualNode: (
-      canvasApp: FlowCanvas<NodeInfo>,
+      canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
       id?: string,

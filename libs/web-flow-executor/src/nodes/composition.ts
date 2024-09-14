@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   Composition,
   IComputeResult,
   IDOMElement,
@@ -37,11 +37,11 @@ export const getCreateCompositionNode =
     const fieldName = 'composition';
     const labelName = `${name ?? 'Composition'}`;
     const nodeName = `composition-${compositionId}`;
-    let canvasApp: FlowCanvas<NodeInfo> | undefined = undefined;
+    let canvasApp: IFlowCanvasBase<NodeInfo> | undefined = undefined;
     // let nodes: FlowNode<NodeInfo>[] = [];
     // let compositionThumbs: IThumb[] = [];
     let composition: Composition<NodeInfo> | undefined = undefined;
-    let contextCanvasApp: FlowCanvas<NodeInfo> =
+    let contextCanvasApp: IFlowCanvasBase<NodeInfo> =
       createRuntimeFlowContext<NodeInfo>();
 
     const runFlowPath = (

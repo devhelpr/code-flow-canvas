@@ -1,5 +1,5 @@
 import {
-  FlowCanvas,
+  IFlowCanvasBase,
   IElementNode,
   ICommandHandler,
   NodeTaskFactory,
@@ -8,7 +8,7 @@ import {
 
 export interface ICommandContext<T> {
   rootElement: HTMLElement;
-  getCanvasApp: () => FlowCanvas<T> | undefined;
+  getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,
