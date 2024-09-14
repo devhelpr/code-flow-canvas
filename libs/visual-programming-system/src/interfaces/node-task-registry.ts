@@ -1,5 +1,5 @@
 import { IThumb, IRectNodeComponent, INodeComponent, FlowChangeType } from '.';
-import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
+import { FlowCanvasInstance } from '../canvas-app/flow-canvas-instance';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { InitialValues } from '../types/values';
 import { Composition } from './composition';
@@ -36,9 +36,9 @@ export type NodeTask<T> = {
     thumbIdentifierWithinNode?: string,
     isInComposition?: boolean
   ) => { result: string | undefined };
-  setCanvasApp?: (canvasApp: CanvasAppInstance<T>) => void;
+  setCanvasApp?: (canvasApp: FlowCanvasInstance<T>) => void;
   createVisualNode: (
-    canvasApp: CanvasAppInstance<T>,
+    canvasApp: FlowCanvasInstance<T>,
     x: number,
     y: number,
     id?: string,
@@ -55,7 +55,7 @@ export type NodeTask<T> = {
     outputs: IRectNodeComponent<T>[];
   };
   createDecoratorNode?: (
-    canvasApp: CanvasAppInstance<T>,
+    canvasApp: FlowCanvasInstance<T>,
     initalValues?: InitialValues
   ) => INodeComponent<T>;
   setTitle?: (newTitle: string) => void;

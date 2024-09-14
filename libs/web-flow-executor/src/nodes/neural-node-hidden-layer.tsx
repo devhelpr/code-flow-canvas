@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   FormFieldType,
   IRectNodeComponent,
   InitialValues,
@@ -224,7 +224,7 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

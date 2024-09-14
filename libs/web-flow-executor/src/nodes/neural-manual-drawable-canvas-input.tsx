@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   IRectNodeComponent,
   InitialValues,
   NodeTask,
@@ -136,7 +136,7 @@ export const getNeuralManualDrawableCanvasNode: NodeTaskFactory<NodeInfo> = (
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

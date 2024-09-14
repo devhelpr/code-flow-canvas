@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   INodeComponent,
   IRectNodeComponent,
@@ -17,7 +17,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
@@ -84,7 +84,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'debug',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string

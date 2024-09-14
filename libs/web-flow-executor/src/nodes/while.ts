@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   InitialValues,
   INodeComponent,
@@ -58,7 +58,7 @@ const whileTitle = 'while';
 export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let whileComponent: INodeComponent<NodeInfo> | undefined = undefined;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   const title = whileTitle;
   const initializeCompute = () => {
     if (whileComponent && whileComponent.domElement) {
@@ -214,7 +214,7 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
     category: 'iterators',
     thumbs,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

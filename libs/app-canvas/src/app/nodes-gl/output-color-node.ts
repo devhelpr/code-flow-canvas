@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   InitialValues,
   INodeComponent,
@@ -121,7 +121,7 @@ export const getOutputColorNode = (
     category: 'output',
     thumbs,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<GLNodeInfo>,
+      canvasApp: FlowCanvasInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

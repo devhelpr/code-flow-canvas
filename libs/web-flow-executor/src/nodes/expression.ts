@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   createNodeElement,
   FlowChangeType,
@@ -66,7 +66,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: IDOMElement | undefined = undefined;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   let nodeFormComponent: FormsComponent | undefined = undefined;
 
   let currentValue = 0;
@@ -244,7 +244,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     thumbs,
     canBeUsedAsDecorator: true,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,
@@ -409,7 +409,7 @@ ${compiledExpressionInfo.script};\
       return node;
     },
     createDecoratorNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       initalValues?: InitialValues,
       rootElement?: HTMLElement
     ) => {

@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   InitialValues,
   INodeComponent,
@@ -18,7 +18,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let currentSum = 0;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
@@ -74,7 +74,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'variables-array',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

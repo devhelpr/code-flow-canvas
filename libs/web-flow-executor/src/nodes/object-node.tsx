@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   FormFieldType,
   IRectNodeComponent,
   IThumb,
@@ -30,7 +30,7 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<any> => {
   //let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values = { global: {} };
     return;
@@ -127,7 +127,7 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -1,10 +1,10 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
-  createCanvasApp,
+  createFlowCanvas,
   IRectNodeComponent,
   FormFieldType,
   InitialValues,
@@ -28,7 +28,7 @@ import {
 // TODO : make example with state-compound and check if correct nodes are updated (classlist)
 
 export const createStateMachine = (
-  canvasAppInstance: CanvasAppInstance<NodeInfo>,
+  canvasAppInstance: FlowCanvasInstance<NodeInfo>,
   isCompound = false
 ): StateMachine<NodeInfo> => {
   let initialState: State<NodeInfo> | undefined = undefined;
@@ -175,14 +175,14 @@ export const createStateMachineNode = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let stateMachine: StateMachine<NodeInfo> | undefined = undefined;
   let captionNodeComponent: INodeComponent<NodeInfo> | undefined = undefined;
-  let rootCanvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let rootCanvasApp: FlowCanvasInstance<NodeInfo> | undefined = undefined;
 
   const initializeCompute = () => {
     stateMachine = undefined;
@@ -501,7 +501,7 @@ export const createStateMachineNode = (
       return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,
@@ -647,7 +647,7 @@ export const createStateMachineNode = (
         // TODO : fix why this inner cointainer canvas sends
         // double mouse events to the parent canvas/outer rect and causes
         // bad coordinate transform on mouseup
-        canvasAppInstance = createCanvasApp<NodeInfo>(
+        canvasAppInstance = createFlowCanvas<NodeInfo>(
           htmlNode.domElement as HTMLElement,
           false, //disableInteraction
           true,

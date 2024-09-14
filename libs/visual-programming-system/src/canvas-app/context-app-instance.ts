@@ -19,7 +19,7 @@ import {
   GetNodeStatedHandler,
 } from '../interfaces/node-state-handlers';
 import { Composition } from '../interfaces/composition';
-import { CanvasAppInstance } from './CanvasAppInstance';
+import { FlowCanvasInstance } from './flow-canvas-instance';
 import { Compositions } from '../compositions/compositions';
 import { NodeTransformer } from '../components/node-transformer';
 import { ContextRect } from '../context-components/context-rect';
@@ -29,9 +29,9 @@ import { MediaLibrary } from '@devhelpr/media-library';
 import { CanvasAction } from '../enums/canvas-action';
 import { BaseNodeInfo } from '../types/base-node-info';
 
-export const createContextInstanceApp = <T>(
+export const createRuntimeContextInstanceApp = <T>(
   _canvasId?: string
-): CanvasAppInstance<T> => {
+): FlowCanvasInstance<T> => {
   const compositons = new Compositions<T>();
   let variables: Record<
     string,

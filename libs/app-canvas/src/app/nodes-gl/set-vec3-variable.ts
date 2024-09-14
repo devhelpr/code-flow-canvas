@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   FormComponent,
   FormFieldType,
@@ -56,7 +56,7 @@ export const getSetColorVariableNode = (
     thumbs,
     getCompute: () => compute,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<GLNodeInfo>,
+      canvasApp: FlowCanvasInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

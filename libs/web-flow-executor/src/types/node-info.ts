@@ -1,6 +1,6 @@
 import {
   BaseNodeInfo,
-  CanvasAppInstance,
+  FlowCanvasInstance,
   IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { RunCounter } from '../follow-path/run-counter';
@@ -25,7 +25,7 @@ export interface NodeInfo extends BaseNodeInfo {
     runCounter?: RunCounter,
     connection?: IConnectionNodeComponent<NodeInfo>
   ) => Promise<any>;
-  canvasAppInstance?: CanvasAppInstance<NodeInfo>;
+  canvasAppInstance?: FlowCanvasInstance<NodeInfo>;
   setValue?: ((values: any[]) => void) | ((values: string) => void);
   stateMachine?: StateMachine<NodeInfo>;
   isVariable?: boolean;

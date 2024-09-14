@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   FormFieldType,
   InitialValues,
@@ -54,7 +54,7 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let lines: string[] = [];
   const initializeCompute = () => {
@@ -80,7 +80,7 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
     family: 'flow-canvas',
     category: 'data',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   FormComponent,
   FormFieldType,
@@ -18,7 +18,7 @@ import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let variableName = '';
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   let timeout: any = undefined;
   let componentWrapper: INodeComponent<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
@@ -132,7 +132,7 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
     category: 'variables',
     isContainer: false,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

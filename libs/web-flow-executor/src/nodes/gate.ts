@@ -3,7 +3,7 @@ import {
   runExpression,
 } from '@devhelpr/expression-compiler';
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   FormFieldType,
   InitialValues,
@@ -21,7 +21,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   let currentValue = 0;
   const initializeCompute = () => {
     currentValue = 0;
@@ -129,7 +129,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -45,7 +45,7 @@ export const getNodeTriggerTarget = (
     isContainer: false,
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -10,8 +10,8 @@ import {
   getSelectedNode,
   setSelectNode,
   createElementMap,
-  createCanvasApp,
-  CanvasAppInstance,
+  createFlowCanvas,
+  FlowCanvasInstance,
   IRectNodeComponent,
   createNSElement,
   Camera,
@@ -60,8 +60,8 @@ export class AppElement<T extends BaseNodeInfo> {
   isStoring = false;
 
   canvas?: IElementNode<T> = undefined;
-  canvasApp?: CanvasAppInstance<T> = undefined;
-  currentCanvasApp?: CanvasAppInstance<T> = undefined;
+  canvasApp?: FlowCanvasInstance<T> = undefined;
+  currentCanvasApp?: FlowCanvasInstance<T> = undefined;
   storageProvider: StorageProvider<T> | undefined = undefined;
 
   scopeNodeDomElement: HTMLElement | undefined = undefined;
@@ -130,7 +130,7 @@ export class AppElement<T extends BaseNodeInfo> {
       return;
     }
 
-    const canvasApp = createCanvasApp<T>(
+    const canvasApp = createFlowCanvas<T>(
       this.rootElement,
       undefined,
       undefined,
@@ -1005,7 +1005,7 @@ export class AppElement<T extends BaseNodeInfo> {
   compositionUnderEdit: Composition<T> | undefined = undefined;
 
   addThumbToComposition = (
-    canvasApp: CanvasAppInstance<T>,
+    canvasApp: FlowCanvasInstance<T>,
     compositionId: string,
     thumb: IThumb
   ) => {
@@ -1029,7 +1029,7 @@ export class AppElement<T extends BaseNodeInfo> {
   };
 
   deleteThumbFromComposition = (
-    canvasApp: CanvasAppInstance<T>,
+    canvasApp: FlowCanvasInstance<T>,
     compositionId: string,
     thumb: IThumb
   ) => {
@@ -1053,7 +1053,7 @@ export class AppElement<T extends BaseNodeInfo> {
   };
 
   editThumbFromComposition = (
-    canvasApp: CanvasAppInstance<T>,
+    canvasApp: FlowCanvasInstance<T>,
     compositionId: string,
     thumb: IThumb
   ) => {
@@ -1132,7 +1132,7 @@ export class AppElement<T extends BaseNodeInfo> {
       this.compositionUnderEdit = composition;
       this.currentCanvasApp?.setIsCameraFollowingPaused(true);
 
-      const canvasApp = createCanvasApp<T>(
+      const canvasApp = createFlowCanvas<T>(
         this.rootElement,
         undefined,
         undefined,
@@ -1149,7 +1149,7 @@ export class AppElement<T extends BaseNodeInfo> {
       this.currentCanvasApp = canvasApp;
       importToCanvas(
         composition.nodes as FlowNode<BaseNodeInfo>[],
-        canvasApp as unknown as CanvasAppInstance<BaseNodeInfo>,
+        canvasApp as unknown as FlowCanvasInstance<BaseNodeInfo>,
         () => {
           //
         },
@@ -1771,13 +1771,13 @@ export class AppElement<T extends BaseNodeInfo> {
               if (this.currentCanvasApp?.compositons) {
                 (
                   (node.nodeInfo as any)
-                    .canvasAppInstance as unknown as CanvasAppInstance<T>
+                    .canvasAppInstance as unknown as FlowCanvasInstance<T>
                 ).compositons = this.currentCanvasApp?.compositons;
               }
               initializeCompute(
                 (
                   (node.nodeInfo as any)
-                    .canvasAppInstance as CanvasAppInstance<T>
+                    .canvasAppInstance as FlowCanvasInstance<T>
                 ).elements
               );
             }

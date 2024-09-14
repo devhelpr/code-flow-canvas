@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   FormFieldType,
   IDOMElement,
@@ -17,7 +17,7 @@ import { runNode } from '../flow-engine/flow-engine';
 export const getNodeTrigger = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let divElement: IDOMElement | undefined = undefined;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -65,7 +65,7 @@ export const getNodeTrigger = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'flow-control',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

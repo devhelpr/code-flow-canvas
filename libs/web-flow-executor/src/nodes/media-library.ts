@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   FormField,
   FormFieldType,
   IRectNodeComponent,
@@ -21,7 +21,7 @@ const thumbs: IThumb[] = [];
 export const getMediaLibraryNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
-  let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let contextInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let rect: Rect<NodeInfo> | undefined;
   let mediaFiles: any[] = [];

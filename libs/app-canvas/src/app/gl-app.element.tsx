@@ -9,7 +9,7 @@ import {
   createEffect,
   getSelectedNode,
   setSelectNode,
-  CanvasAppInstance,
+  FlowCanvasInstance,
   IRectNodeComponent,
   Flow,
   updateNamedSignal,
@@ -21,7 +21,7 @@ import {
   IConnectionNodeComponent,
   standardTheme,
   ElementNodeMap,
-  createCanvasApp,
+  createFlowCanvas,
   renderElement,
   createJSXElement,
   CanvasAction,
@@ -492,7 +492,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               ),
             importToCanvas: (
               nodesList: FlowNode<GLNodeInfo>[],
-              canvasApp: CanvasAppInstance<GLNodeInfo>,
+              canvasApp: FlowCanvasInstance<GLNodeInfo>,
               canvasUpdated: () => void,
               containerNode?: IRectNodeComponent<GLNodeInfo>,
               nestedLevel?: number,
@@ -1839,7 +1839,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             ) {
               if (
                 node.nodeInfo
-                  ?.canvasAppInstance as unknown as CanvasAppInstance<GLNodeInfo>
+                  ?.canvasAppInstance as unknown as FlowCanvasInstance<GLNodeInfo>
               ) {
                 const containerNodeVisited: string[] = [];
                 const containerGslFunctions = getGLSLFunctions();
@@ -1862,7 +1862,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 this.parseFLow(
                   (
                     node.nodeInfo
-                      ?.canvasAppInstance as unknown as CanvasAppInstance<GLNodeInfo>
+                      ?.canvasAppInstance as unknown as FlowCanvasInstance<GLNodeInfo>
                   ).elements,
                   containerNodeVisited,
                   containerGslFunctions
@@ -2069,7 +2069,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   };
   rafId = -1;
 
-  historyCanvasApp: CanvasAppInstance<GLNodeInfo> | undefined;
+  historyCanvasApp: FlowCanvasInstance<GLNodeInfo> | undefined;
   currentShaderIndex = -1;
   showShaderHistoryItem = (historyIndex: number) => {
     console.log('showShaderHistoryItem', historyIndex);
@@ -2226,7 +2226,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       );
       this.currentCanvasApp?.setIsCameraFollowingPaused(true);
 
-      this.historyCanvasApp = createCanvasApp<GLNodeInfo>(
+      this.historyCanvasApp = createFlowCanvas<GLNodeInfo>(
         this.rootElement,
         undefined,
         undefined,
@@ -2253,7 +2253,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     this.historyCanvasApp.elements.clear();
     importToCanvas(
       historyItem.nodes ?? [],
-      this.historyCanvasApp as unknown as CanvasAppInstance<GLNodeInfo>,
+      this.historyCanvasApp as unknown as FlowCanvasInstance<GLNodeInfo>,
       () => {
         //
       },

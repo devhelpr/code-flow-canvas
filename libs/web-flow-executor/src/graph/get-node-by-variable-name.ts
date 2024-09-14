@@ -1,12 +1,12 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   INodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
 export const getNodeByVariableName = (
   variableName: string,
-  canvasAppInstance: CanvasAppInstance<NodeInfo>
+  canvasAppInstance: FlowCanvasInstance<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
   let node: INodeComponent<NodeInfo> | undefined = undefined;
   Array.from(canvasAppInstance.elements).every((itemPair) => {
@@ -22,7 +22,7 @@ export const getNodeByVariableName = (
 
 export const getNodeByFunctionName = (
   functionName: string,
-  canvasAppInstance: CanvasAppInstance<NodeInfo>
+  canvasAppInstance: FlowCanvasInstance<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
   let node: INodeComponent<NodeInfo> | undefined = undefined;
   Array.from(canvasAppInstance.elements).every((itemPair) => {
@@ -38,7 +38,7 @@ export const getNodeByFunctionName = (
 
 export const getNodesByNodeType = (
   taskType: string,
-  canvasAppInstance: CanvasAppInstance<NodeInfo>
+  canvasAppInstance: FlowCanvasInstance<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
   let node: INodeComponent<NodeInfo> | undefined = undefined;
   Array.from(canvasAppInstance.elements).every((itemPair) => {

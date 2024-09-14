@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -51,7 +51,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   let currentInput = '';
   let node: IRectNodeComponent<NodeInfo>;
   let divNode: IDOMElement | undefined = undefined;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
   let variables: Record<string, string> = {};
   let oldHtml = '';
@@ -192,7 +192,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     isContainer: false,
     category: 'html',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

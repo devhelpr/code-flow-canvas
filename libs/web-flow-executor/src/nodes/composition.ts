@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   Composition,
   IComputeResult,
   IDOMElement,
@@ -11,7 +11,7 @@ import {
   NodeTask,
   NodeTaskFactory,
   OnNextNodeFunction,
-  createContextInstanceApp,
+  createRuntimeContextInstanceApp,
   importToCanvas,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
@@ -37,12 +37,12 @@ export const getCreateCompositionNode =
     const fieldName = 'composition';
     const labelName = `${name ?? 'Composition'}`;
     const nodeName = `composition-${compositionId}`;
-    let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
+    let canvasApp: FlowCanvasInstance<NodeInfo> | undefined = undefined;
     // let nodes: FlowNode<NodeInfo>[] = [];
     // let compositionThumbs: IThumb[] = [];
     let composition: Composition<NodeInfo> | undefined = undefined;
-    let contextCanvasApp: CanvasAppInstance<NodeInfo> =
-      createContextInstanceApp<NodeInfo>();
+    let contextCanvasApp: FlowCanvasInstance<NodeInfo> =
+      createRuntimeContextInstanceApp<NodeInfo>();
 
     const runFlowPath = (
       node: IRectNodeComponent<NodeInfo>,
@@ -124,7 +124,7 @@ export const getCreateCompositionNode =
       composition = undefined;
 
       // TODO : properly destroy current contextCanvasApp before creating a new one
-      contextCanvasApp = createContextInstanceApp<NodeInfo>();
+      contextCanvasApp = createRuntimeContextInstanceApp<NodeInfo>();
 
       contextCanvasApp.setAnimationFunctions({
         animatePathFunction: runFlowPath,

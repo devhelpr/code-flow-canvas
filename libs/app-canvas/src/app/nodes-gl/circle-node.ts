@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   InitialValues,
   INodeComponent,
@@ -46,7 +46,7 @@ export const getCircleNode = (_updated: () => void): NodeTask<GLNodeInfo> => {
     isContainer: false,
     getCompute: () => compute,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<GLNodeInfo>,
+      canvasApp: FlowCanvasInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

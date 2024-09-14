@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   createNodeElement,
   FormFieldType,
@@ -29,7 +29,7 @@ export const getGLAnnotation: NodeTaskFactory<GLNodeInfo> = (
     family: 'flow-canvas',
     isContainer: false,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<GLNodeInfo>,
+      canvasApp: FlowCanvasInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,

@@ -5,7 +5,7 @@ import {
   IConnectionNodeComponent,
   FormFieldType,
   createJSXElement,
-  CanvasAppInstance,
+  FlowCanvasInstance,
   BaseNodeInfo,
   ThumbConnectionType,
   ThumbType,
@@ -39,7 +39,7 @@ export const getNeuralTrainTestNode =
   ) =>
   (updated: () => void): NodeTask<any> => {
     let nodeComponent: IRectNodeComponent<NodeInfo> | undefined = undefined;
-    let canvasApp: CanvasAppInstance<NodeInfo> | undefined = undefined;
+    let canvasApp: FlowCanvasInstance<NodeInfo> | undefined = undefined;
     const initializeCompute = () => {
       //
     };

@@ -1,8 +1,8 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   INodeComponent,
-  createCanvasApp,
+  createFlowCanvas,
   IRectNodeComponent,
   createNodeElement,
   IDOMElement,
@@ -25,9 +25,9 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
   let node: IRectNodeComponent<GLNodeInfo>;
   let htmlNode: IDOMElement | undefined = undefined;
   let rect:
-    | ReturnType<CanvasAppInstance<GLNodeInfo>['createRect']>
+    | ReturnType<FlowCanvasInstance<GLNodeInfo>['createRect']>
     | undefined = undefined;
-  let canvasAppInstance: CanvasAppInstance<GLNodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<GLNodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<GLNodeInfo> | undefined = undefined;
 
@@ -63,7 +63,7 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
-      canvasApp: CanvasAppInstance<GLNodeInfo>,
+      canvasApp: FlowCanvasInstance<GLNodeInfo>,
       x: number,
       y: number,
       id?: string,
@@ -145,7 +145,7 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
       )?.classList.add('z-[1200]');
 
       if (htmlNode && htmlNode.domElement) {
-        canvasAppInstance = createCanvasApp<GLNodeInfo>(
+        canvasAppInstance = createFlowCanvas<GLNodeInfo>(
           htmlNode.domElement as HTMLElement,
           false,
           true,

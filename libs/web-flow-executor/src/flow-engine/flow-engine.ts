@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   ElementNodeMap,
   IConnectionNodeComponent,
   INodeComponent,
@@ -69,7 +69,7 @@ const handleDecoratrs = (
 
 const getVariablePayload = (
   _node: IRectNodeComponent<NodeInfo>,
-  _canvasApp: CanvasAppInstance<NodeInfo>,
+  _canvasApp: FlowCanvasInstance<NodeInfo>,
   scopeId?: string
 ) => {
   // const dataNodesConnectionPairs =
@@ -116,7 +116,7 @@ export const setFlowVariableByScope = (
 
 const triggerExecution = (
   node: IRectNodeComponent<NodeInfo>,
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  canvasApp: FlowCanvasInstance<NodeInfo>,
   result: any,
 
   onStopped: undefined | ((input: string | any[], scopeId?: string) => void),
@@ -387,7 +387,7 @@ export const getRunIndex = () => {
 
 export const runNode = (
   node: IRectNodeComponent<NodeInfo>,
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  canvasApp: FlowCanvasInstance<NodeInfo>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: string,
   offsetX?: number,
@@ -584,7 +584,7 @@ export const getStartNodes = (
 
 export const run = (
   nodes: ElementNodeMap<NodeInfo>,
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  canvasApp: FlowCanvasInstance<NodeInfo>,
   onFinishRun?: (input: string | any[]) => void,
   input?: string,
   offsetX?: number,
@@ -662,7 +662,7 @@ export const run = (
 
 export const runNodeFromThumb = (
   nodeThumb: IThumbNodeComponent<NodeInfo>,
-  canvasApp: CanvasAppInstance<NodeInfo>,
+  canvasApp: FlowCanvasInstance<NodeInfo>,
   onStopped?: (input: string | any[], scopeId?: string) => void,
   input?: any,
   _scopeNode?: IRectNodeComponent<NodeInfo>,

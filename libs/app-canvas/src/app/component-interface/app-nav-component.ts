@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   IElementNode,
   FlowNode,
   IRectNodeComponent,
@@ -21,12 +21,12 @@ export interface AppNavComponentsProps<T extends BaseNodeInfo> {
   animatePath: AnimatePathFunction<T>;
   animatePathFromThumb: AnimatePathFromThumbFunction<T>;
   canvasUpdated: () => void;
-  getCanvasApp: () => CanvasAppInstance<T> | undefined;
+  getCanvasApp: () => FlowCanvasInstance<T> | undefined;
   removeElement: (element: IElementNode<NodeInfo>) => void;
   setIsStoring: (isStoring: boolean) => void;
   importToCanvas: (
     nodesList: FlowNode<NodeInfo>[],
-    canvasApp: CanvasAppInstance<NodeInfo>,
+    canvasApp: FlowCanvasInstance<NodeInfo>,
     canvasUpdated: () => void,
     containerNode?: IRectNodeComponent<NodeInfo>,
     nestedLevel?: number,
@@ -50,12 +50,12 @@ export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {
   initializeNodes: () => void;
   clearCanvas: () => void;
   canvasUpdated: () => void;
-  getCanvasApp: () => CanvasAppInstance<T> | undefined;
+  getCanvasApp: () => FlowCanvasInstance<T> | undefined;
   removeElement: (element: IElementNode<T>) => void;
   setIsStoring: (isStoring: boolean) => void;
   importToCanvas: (
     nodesList: FlowNode<T>[],
-    canvasApp: CanvasAppInstance<T>,
+    canvasApp: FlowCanvasInstance<T>,
     canvasUpdated: () => void,
     containerNode?: IRectNodeComponent<T>,
     nestedLevel?: number,

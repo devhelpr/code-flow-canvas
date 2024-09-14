@@ -34,7 +34,7 @@ export * from './utils/thumbs';
 export { getLinePoints } from './components/line-connection';
 export { Rect } from './components/rect';
 export { RectThumb } from './components/rect-thumb';
-export * from './canvas-app/CanvasAppInstance';
+export * from './canvas-app/flow-canvas-instance';
 export * from './components/utils/calculate-connector-thumbs';
 export * from './interfaces/composition';
 export * from './canvas-app/context-app-instance';

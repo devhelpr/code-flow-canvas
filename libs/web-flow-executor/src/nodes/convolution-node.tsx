@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   FormFieldType,
   IConnectionNodeComponent,
@@ -35,7 +35,7 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
   let htmlNode: HTMLElement | undefined = undefined;
   let modeElement: HTMLElement | undefined = undefined;
   let hasInitialValue = true;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
 
   let lastImageData: ConvolutionImageData | undefined = undefined;
@@ -253,7 +253,7 @@ export const getConvolutionNode: NodeTaskFactory<NodeInfo> = (
     family: 'flow-canvas',
     category: 'UI',
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

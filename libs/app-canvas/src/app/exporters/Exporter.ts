@@ -1,9 +1,9 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
 export interface Exporter {
-  canvasApp: CanvasAppInstance<BaseNodeInfo>;
+  canvasApp: FlowCanvasInstance<BaseNodeInfo>;
   downloadFile: (data: any, name: string, dataType: string) => void;
 }

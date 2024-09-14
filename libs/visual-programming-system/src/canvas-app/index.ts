@@ -49,7 +49,7 @@ import { getPointerPos } from '../utils/pointer-pos';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { getCanvasAppCssClasses } from './css-classes/canvasapp-css-classes';
 
-export const createCanvasApp = <T>(
+export const createFlowCanvas = <T>(
   rootElement: HTMLElement,
   disableInteraction?: boolean,
   disableZoom?: boolean,

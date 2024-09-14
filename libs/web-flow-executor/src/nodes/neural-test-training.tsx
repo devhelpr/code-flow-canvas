@@ -1,5 +1,5 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   IRectNodeComponent,
   InitialValues,
   NodeTask,
@@ -55,7 +55,7 @@ export const getNeuralTestTrainingNode: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<any> => {
   let nodeComponent: IRectNodeComponent<NodeInfo>;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -273,7 +273,7 @@ export const getNeuralTestTrainingNode: NodeTaskFactory<NodeInfo> = (
     isContainer: false,
     thumbs,
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,

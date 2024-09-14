@@ -1,10 +1,10 @@
 import {
-  CanvasAppInstance,
+  FlowCanvasInstance,
   createElement,
   INodeComponent,
   ThumbConnectionType,
   ThumbType,
-  createCanvasApp,
+  createFlowCanvas,
   IRectNodeComponent,
   ElementNodeMap,
   createNodeElement,
@@ -24,9 +24,9 @@ export interface ComputeResult {
 export const getCanvasNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: IDOMElement | undefined = undefined;
-  let rect: ReturnType<CanvasAppInstance<NodeInfo>['createRect']> | undefined =
+  let rect: ReturnType<FlowCanvasInstance<NodeInfo>['createRect']> | undefined =
     undefined;
-  let canvasAppInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
+  let canvasAppInstance: FlowCanvasInstance<NodeInfo> | undefined = undefined;
   let input: IRectNodeComponent<NodeInfo> | undefined = undefined;
   let output: IRectNodeComponent<NodeInfo> | undefined = undefined;
 
@@ -71,7 +71,7 @@ export const getCanvasNode = (updated: () => void): NodeTask<NodeInfo> => {
       return { inputs: [input], outputs: [output] };
     },
     createVisualNode: (
-      canvasApp: CanvasAppInstance<NodeInfo>,
+      canvasApp: FlowCanvasInstance<NodeInfo>,
       x: number,
       y: number,
       id?: string,
@@ -148,7 +148,7 @@ export const getCanvasNode = (updated: () => void): NodeTask<NodeInfo> => {
       }
 
       if (htmlNode?.domElement) {
-        canvasAppInstance = createCanvasApp<NodeInfo>(
+        canvasAppInstance = createFlowCanvas<NodeInfo>(
           htmlNode.domElement as HTMLElement,
           false,
           true,

@@ -1,4 +1,4 @@
-import { CanvasAppInstance } from '../canvas-app/CanvasAppInstance';
+import { FlowCanvasInstance } from '../canvas-app/flow-canvas-instance';
 import {
   IRectNodeComponent,
   IConnectionNodeComponent,
@@ -6,7 +6,7 @@ import {
 } from '../interfaces';
 
 export const getNodeConnectionPairById = <T>(
-  _canvasApp: CanvasAppInstance<T>,
+  _canvasApp: FlowCanvasInstance<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean,
@@ -106,7 +106,7 @@ export const getNodeConnectionPairById = <T>(
 };
 
 export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
-  canvasApp: CanvasAppInstance<T>,
+  canvasApp: FlowCanvasInstance<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
   followPathToEndThumb?: boolean,
@@ -197,7 +197,7 @@ export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
 };
 
 export const getNodeConnectionPairsFromThumb = <T>(
-  canvasApp: CanvasAppInstance<T>,
+  canvasApp: FlowCanvasInstance<T>,
   nodeThumb: IThumbNodeComponent<T>,
   onlyDataConnections?: boolean
 ) => {
