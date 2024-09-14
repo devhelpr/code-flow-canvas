@@ -1,11 +1,9 @@
 import {
-  FlowNode,
   createJSXElement,
   renderElement,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
-import celsiusFahrenheitFlow from '../example-data/celsius-fahrenheit-converter.json';
 import { FlowEngine } from './flow-engine/flow-engine';
+import { flow } from './test-flows/celsius-fahrenheit';
 
 function clearBody() {
   document.body
@@ -18,9 +16,7 @@ function clearBody() {
 export const runFlow = () => {
   clearBody();
   const flowEngine = new FlowEngine();
-  flowEngine.initiliaze(
-    celsiusFahrenheitFlow.flows.flow.nodes as FlowNode<NodeInfo>[]
-  );
+  flowEngine.initiliaze(flow.flows.flow.nodes);
 
   const rootElement = document.getElementById('run-flow-container')!;
   let resultElement: HTMLDivElement | undefined = undefined;
