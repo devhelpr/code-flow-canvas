@@ -90,10 +90,31 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       }
     }
   };
+  const thumbs = [
+    {
+      thumbType: ThumbType.StartConnectorRight,
+      thumbIndex: 0,
+      connectionType: ThumbConnectionType.start,
+      label: '#',
+      thumbConstraint: 'value',
+      name: 'output',
+      color: 'white',
+    },
+    {
+      thumbType: ThumbType.EndConnectorLeft,
+      thumbIndex: 0,
+      connectionType: ThumbConnectionType.end,
+      label: ' ',
+      //thumbConstraint: 'value',
+      name: 'input',
+      color: 'white',
+    },
+  ];
   return {
     name: 'show-value',
     family: 'flow-canvas',
     category: 'debug',
+    thumbs: thumbs,
     createVisualNode: (
       canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
@@ -132,26 +153,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
         120,
         100,
         undefined,
-        [
-          {
-            thumbType: ThumbType.StartConnectorRight,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            label: '#',
-            thumbConstraint: 'value',
-            name: 'output',
-            color: 'white',
-          },
-          {
-            thumbType: ThumbType.EndConnectorLeft,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            label: ' ',
-            //thumbConstraint: 'value',
-            name: 'input',
-            color: 'white',
-          },
-        ],
+        thumbs,
         wrapper,
         {
           classNames: `p-4 rounded`,
