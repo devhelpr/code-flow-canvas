@@ -26,7 +26,7 @@ import {
   serializeCompositions,
   exportFlowToTypescript,
 } from '../storage/serialize-canvas';
-import { downloadJSON } from '../utils/create-download-link';
+import { saveFile } from '../utils/create-download-link';
 import { convertExpressionScriptToFlow } from '../script-to-flow/script-to-flow';
 import { AppNavComponentsProps } from '../component-interface/app-nav-component';
 import { isNodeTaskComposition } from '../node-task-registry/composition-utils';
@@ -69,7 +69,7 @@ export class NavbarComponent extends Component<
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <div></div>
-        <button class="${navBarButton}">Load</button><select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
+        <button class="${navBarButton}">Import</button><select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
           <option value="basic-condition.json">Basic condition</option>
@@ -126,13 +126,13 @@ export class NavbarComponent extends Component<
             mainBgColorClass="bg-blue-500"
             bgColorClasses="bg-blue-500 hover:bg-blue-600 "
             textColorClasses="text-white"
-            caption="Save"
+            caption="Export"
             onClick={() => {
               this.export();
             }}
             dropdownItems={[
               {
-                caption: 'Save as typescript',
+                caption: 'Export as typescript',
                 onClick: () => {
                   this.export(true);
                 },
@@ -397,20 +397,26 @@ export class NavbarComponent extends Component<
       canvasApp.compositons.getAllCompositions()
     );
     if (exportAsTypescript) {
-      downloadJSON(
+      saveFile(
         exportFlowToTypescript<NodeInfo>(
           '1234',
           data,
           compositions,
           canvasApp.elements
         ),
-        'vps-flow.ts'
+        'vps-flow',
+        'text/x.typescript',
+        '.ts',
+        'vps-flow'
       );
       return;
     }
-    downloadJSON(
+    saveFile(
       exportFlowToJson<NodeInfo>('1234', data, compositions),
-      'vps-flow.json'
+      'vps-flow',
+      'application/json',
+      '.json',
+      'vps-flow'
     );
   };
 
