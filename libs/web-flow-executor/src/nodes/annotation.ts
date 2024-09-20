@@ -102,9 +102,9 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
           type: 'annotation',
           class: `relative block text-white bg-transparent h-auto whitespace-pre-wrap`,
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       );
-      if (textArea) {
+      if (textArea && textArea.domElement) {
         textArea.domElement.textContent =
           initalValues?.['annotation'] || 'Annotation';
       }
@@ -137,7 +137,7 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
         throw new Error('rect.nodeComponent is undefined');
       }
 
-      if (textArea) {
+      if (textArea && textArea.domElement) {
         (textArea.domElement as HTMLElement).style.fontSize = `${
           initalValues?.['fontSize'] || '16'
         }px`;
@@ -155,7 +155,9 @@ export const getAnnotation: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.nodeCannotBeReplaced = true;
         node.nodeInfo.isAnnotation = true;
       }
-      rect.resize();
+      if (rect && rect.resize) {
+        rect.resize();
+      }
       return node;
     },
   };

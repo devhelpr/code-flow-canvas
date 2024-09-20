@@ -61,7 +61,7 @@ export const createFlowCanvas = <T>(
   heightSpaceForHeaderFooterToolbars?: number,
   widthSpaceForSideToobars?: number
 ): IFlowCanvasBase<T> => {
-  return new WiPFlowCanvas(
+  return new FlowCanvas(
     rootElement,
     disableInteraction,
     disableZoom,
@@ -77,7 +77,7 @@ export const createFlowCanvas = <T>(
   );
 };
 
-export class WiPFlowCanvas<T> extends FlowCore implements IFlowCanvasBase<T> {
+export class FlowCanvas<T> extends FlowCore implements IFlowCanvasBase<T> {
   public theme: Theme;
   private cssClasses = getCanvasAppCssClasses();
   public interactionStateMachine: InteractionStateMachine<T>;
