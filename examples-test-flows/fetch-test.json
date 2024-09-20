@@ -1,0 +1,58 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "ab9148dd-b8ba-4131-9620-f03ebe0dc4b4",
+          "x": 618.5488312568176,
+          "y": 335.67662031327546,
+          "width": 200,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "fetch",
+            "formValues": {
+              "url": "/helloworld",
+              "response-type": "Text"
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "8d5b4290-f502-4893-bf57-5070bf87fd8d",
+          "x": 1121.6107638220105,
+          "y": 344.0895203524665,
+          "width": 120.0000226279138,
+          "height": 79.99999641716698,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": ""
+            }
+          }
+        },
+        {
+          "id": "a31d0c87-dba1-4ca3-85b9-92b11e7cc653",
+          "x": 818.5488312568176,
+          "y": 365.67662031327546,
+          "endX": 1121.6107638220105,
+          "endY": 374.0895203524665,
+          "startNodeId": "ab9148dd-b8ba-4131-9620-f03ebe0dc4b4",
+          "endNodeId": "8d5b4290-f502-4893-bf57-5070bf87fd8d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
