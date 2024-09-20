@@ -90,6 +90,10 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
         {
           type: 'start-node',
           formElements: [],
+          formValues: {
+            name: externalNameInitialValue ?? '',
+            group: groupInitialValue ?? '',
+          },
         },
         containerNode,
         undefined,
