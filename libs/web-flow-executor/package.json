@@ -2,7 +2,7 @@
   "name": "@devhelpr/web-flow-executor",
   "version": "0.0.19",
   "dependencies": {
-    "@devhelpr/expression-compiler": "^0.0.37",
+    "@devhelpr/expression-compiler": "^0.0.38",
     "@devhelpr/markup-compiler": "^0.0.16",
     "@devhelpr/visual-programming-system": "^0.0.20"
   },

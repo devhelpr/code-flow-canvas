@@ -10,7 +10,7 @@
   "license": "see license in license.md",
   "dependencies": {
     "@devhelpr/dom-components": "^0.0.7",
-    "@devhelpr/expression-compiler": "^0.0.37",
+    "@devhelpr/expression-compiler": "^0.0.38",
     "@devhelpr/markup-compiler": "^0.0.16",
     "@devhelpr/media-library": "^0.0.7",
     "@devhelpr/visual-programming-system": "^0.0.20",

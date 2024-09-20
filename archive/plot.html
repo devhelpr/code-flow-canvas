@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plot visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+      }
+    </style>
+  </head>
+  <body class="bg-white">
+    <div class="min-h-screen flex wrapper" id="inner">
+      <canvas id="canvas" width="200" height="200"></canvas>
+    </div>
+
+    <script>
+      // Initialize the global variable "input"
+      window.input = window.input;
+      let inputstream = [];
+      let initialized = false;
+      let elements = [];
+      let canvas = document.getElementById('canvas');
+      // Function to rerender the UI
+      function rerenderUI() {
+        if (!initialized && window['createElement']) {
+          initialized = true;
+        }
+        // clear canvas
+        let ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (window.input !== undefined) {
+          if (Array.isArray(window.input)) {
+            window.input.forEach((element, index) => {
+              if (Array.isArray(element) && element.length === 2) {
+                // create a small circle on canvas on position element[0] and element[1]
+                ctx.beginPath();
+                ctx.arc(element[0] + 50, element[1] + 50, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                ctx.stroke();
+              }
+            });
+          }
+        }
+      }
+
+      // Attach the rerenderUI function to the global onExecute method
+      window.onExecute = rerenderUI;
+
+      rerenderUI();
+    </script>
+  </body>
+</html>
