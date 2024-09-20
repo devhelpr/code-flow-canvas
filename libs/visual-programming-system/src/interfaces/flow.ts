@@ -1,6 +1,23 @@
 import { LineType } from '../types';
 import { Composition } from './composition';
 
+export interface FlowEndpoint {
+  id: string;
+  name: string;
+  type: string;
+  outputs: FlowEndpointOutput[];
+}
+
+export interface FlowEndpointOutput {
+  id: string;
+  name: string;
+  type: string;
+}
+
+export interface FlowMeta {
+  title: string;
+}
+
 export interface Flow<T> {
   schemaType: string;
   schemaVersion: string;

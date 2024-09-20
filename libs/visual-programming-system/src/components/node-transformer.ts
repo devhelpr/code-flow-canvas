@@ -230,7 +230,6 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       const transformerDomElement = this.nodeTransformElement
         ?.domElement as HTMLElement;
       const fullWidth = transformerDomElement.clientWidth;
-      console.log('fullWidth', fullWidth);
       if (this.rightBottom?.domElement) {
         const domElement = this.rightBottom?.domElement as HTMLElement;
         domElement.style.scale = `${reversScale}`;

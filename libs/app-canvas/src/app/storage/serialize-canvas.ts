@@ -9,7 +9,7 @@ import {
   IRectNodeComponent,
   BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { NodeInfo, getStartNodes } from '@devhelpr/web-flow-executor';
 
 export type SerializedFlow = ReturnType<typeof serializeElementsMap>;
 
@@ -138,8 +138,16 @@ export const exportFlowToTypescript = <T>(
   };
 
   const endpoints: Record<string, any> = {};
+  let title: string | undefined = undefined;
   nodesList.forEach((node) => {
     if (
+      node.nodeType !== NodeType.Connection &&
+      node.nodeInfo.type === 'annotation' &&
+      node.nodeInfo.formValues['annotation'] &&
+      !title
+    ) {
+      title = node.nodeInfo.formValues['annotation'];
+    } else if (
       node.nodeType !== NodeType.Connection &&
       node.nodeInfo.type === 'user-input' &&
       node.nodeInfo.formValues['name']
@@ -169,12 +177,62 @@ export const exportFlowToTypescript = <T>(
       };
     }
   });
+  if (Object.entries(endpoints).length === 0) {
+    // get start nodes
+    endpoints['default'] = {
+      id: 'default',
+      type: 'default',
+      name: 'default',
+      outputs: [],
+    };
+    let endpointerCounter = 0;
+    getStartNodes(nodes as ElementNodeMap<NodeInfo>).forEach((node) => {
+      upstreamNodes = [];
+      const orgNode = nodes.get(
+        node.id
+      ) as unknown as INodeComponent<BaseNodeInfo>;
+      if (orgNode?.nodeInfo?.type === 'annotation') {
+        return;
+      }
+      let endpointPostFix = '';
+      if (endpointerCounter > 0) {
+        endpointPostFix = `_${endpointerCounter.toString()}`;
+        endpoints[`default${endpointPostFix}`] = {
+          id: `default${endpointPostFix}`,
+          type: `default${endpointPostFix}`,
+          name: `default${endpointPostFix}`,
+          outputs: [],
+        };
+      }
+      endpointerCounter++;
+
+      getUpstreamNodes(orgNode as IRectNodeComponent<T>);
+      endpoints[`default${endpointPostFix}`].outputs = upstreamNodes
+        .filter(
+          (node) =>
+            ((node.nodeInfo as BaseNodeInfo)?.type === 'show-value' ||
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-input') &&
+            (node.nodeInfo as BaseNodeInfo)?.formValues['name']
+        )
+        .map((node) => {
+          const helperNode =
+            node as unknown as IRectNodeComponent<BaseNodeInfo>;
+          return {
+            id: node.id,
+            name: helperNode.nodeInfo!.formValues['name'],
+            type: helperNode.nodeInfo!.type,
+          };
+        });
+    });
+  }
   let flowString = getJSONASTypescript(flow);
   let endpointsAsString = getJSONASTypescript(endpoints);
-  return `import { Flow } from "@devhelpr/visual-programming-system";
+  return `import { Flow, FlowEndpoint,FlowMeta } from "@devhelpr/visual-programming-system";
 import { NodeInfo } from "@devhelpr/web-flow-executor";
-  
-export const endpoints = ${endpointsAsString};
+export const metaData : FlowMeta = {
+  title: "${title || 'Flow'}"
+};  
+export const endpoints : Record<string,FlowEndpoint> = ${endpointsAsString};
 
 export const flow: Flow<NodeInfo> = ${flowString};`;
 };

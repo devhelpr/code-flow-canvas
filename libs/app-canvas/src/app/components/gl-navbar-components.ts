@@ -23,7 +23,7 @@ import {
   exportFlowToJson,
   serializeCompositions,
 } from '../storage/serialize-canvas';
-import { downloadJSON } from '../utils/create-download-link';
+import { saveFile } from '../utils/create-download-link';
 import { GenericAppNavComponentsProps } from '../component-interface/app-nav-component';
 import { getGLNodeTaskFactory } from '../node-task-registry/gl-node-task-registry';
 import { GLNodeInfo } from '../types/gl-node-info';
@@ -62,8 +62,8 @@ export class GLNavbarComponent extends Component<
         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
-        <button class="${navBarButton}">Save</button>
-        <button class="${navBarButton}">Load</button>
+        <button class="${navBarButton}">Export</button>
+        <button class="${navBarButton}">Import</button>
         <select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="hello-world-gl-flow.json">Hello gl</option>
@@ -371,9 +371,12 @@ export class GLNavbarComponent extends Component<
       'EXPORT DATA',
       exportFlowToJson<GLNodeInfo>('1234', data, compositions)
     );
-    downloadJSON(
+    saveFile(
       exportFlowToJson<GLNodeInfo>('1234', data, compositions),
-      'vps-flow.json'
+      'vps-flow',
+      'application/json',
+      '.json',
+      'vps-flow'
     );
     return false;
   };
