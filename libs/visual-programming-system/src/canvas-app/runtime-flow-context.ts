@@ -204,7 +204,7 @@ export class RuntimeFlowContext<T>
     _width: number,
     _height: number,
     _text?: string,
-    _thumbs?: IThumb[],
+    thumbs?: IThumb[],
     _markup?: string | INodeComponent<T>,
     _layoutProperties?: {
       classNames?: string;
@@ -212,14 +212,24 @@ export class RuntimeFlowContext<T>
     _hasStaticWidthHeight?: boolean,
     _disableInteraction?: boolean,
     _disableManualResize?: boolean,
-    _id?: string,
-    _nodeInfo?: T,
-    _containerNode?: IRectNodeComponent<T>,
+    id?: string,
+    nodeInfo?: T,
+    containerNode?: IRectNodeComponent<T>,
     _isStaticPosition?: boolean,
     _isCircle?: boolean,
     _createStraightLineConnection?: boolean
   ) => {
-    return undefined as unknown as RectThumb<T>;
+    const instance = new ContextRect<T>(
+      this.elements,
+      thumbs,
+      id,
+      containerNode
+    );
+    if (!instance || !instance.nodeComponent) {
+      throw new Error('rectThumbInstance is undefined');
+    }
+    instance.nodeComponent.nodeInfo = nodeInfo;
+    return instance as unknown as RectThumb<T>;
   };
 
   createCubicBezier = (
