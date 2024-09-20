@@ -46,7 +46,7 @@ export class RuntimeFlowContext<T>
   public nodeTransformer: NodeTransformer<BaseNodeInfo>;
   public compositons: Compositions<T>;
   public nodeSelector: NodeSelector<T>;
-  public isContextOnly = false;
+  public isContextOnly = true;
   public isComposition = false;
 
   private animationFunctions: undefined | AnimatePathFunctions<T>;

@@ -417,7 +417,7 @@ export const getScopedVariable =
           )?.classList?.remove('border-white');
 
           (
-            componentWrapper.domElement as unknown as HTMLElement
+            componentWrapper?.domElement as unknown as HTMLElement
           )?.classList?.add('border-transparent');
         }, 250);
       }
