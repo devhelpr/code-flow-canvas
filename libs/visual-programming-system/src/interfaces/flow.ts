@@ -5,6 +5,7 @@ export interface FlowEndpoint {
   id: string;
   name: string;
   type: string;
+  group: string;
   outputs: FlowEndpointOutput[];
 }
 

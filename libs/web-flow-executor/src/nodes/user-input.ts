@@ -103,6 +103,8 @@ export const getUserInput =
         const initialValue = initalValues?.['label'] ?? '';
         const decimalsInitialValue = initalValues?.['decimals'] ?? '0';
         const externalNameInitialValue = initalValues?.['name'] ?? '';
+        const groupInitialValue = initalValues?.['group'] ?? '';
+
         decimalCount = parseInt(decimalsInitialValue) || 0;
         //let isResettingInput = false;
         const formElements = [
@@ -263,6 +265,7 @@ export const getUserInput =
               value: '',
               decimals: decimalsInitialValue ?? '0',
               name: externalNameInitialValue ?? '',
+              group: groupInitialValue ?? '',
             },
           },
           containerNode
@@ -340,6 +343,24 @@ export const getUserInput =
                   node.nodeInfo.formValues['name'],
                   listener
                 );
+
+                updated();
+              },
+            },
+            {
+              fieldType: FormFieldType.Text,
+              fieldName: 'group',
+              label: 'Group',
+              value: groupInitialValue ?? '',
+              onChange: (value: string) => {
+                if (!node.nodeInfo) {
+                  return;
+                }
+
+                node.nodeInfo.formValues = {
+                  ...node.nodeInfo.formValues,
+                  group: value,
+                };
 
                 updated();
               },

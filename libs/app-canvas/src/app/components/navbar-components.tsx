@@ -407,7 +407,7 @@ export class NavbarComponent extends Component<
         'vps-flow',
         'text/x.typescript',
         '.ts',
-        'vps-flow'
+        'vps-flow-typescript'
       );
       return;
     }
@@ -416,7 +416,7 @@ export class NavbarComponent extends Component<
       'vps-flow',
       'application/json',
       '.json',
-      'vps-flow'
+      'vps-flow-json'
     );
   };
 

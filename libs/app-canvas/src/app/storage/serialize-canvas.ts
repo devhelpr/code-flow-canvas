@@ -149,7 +149,8 @@ export const exportFlowToTypescript = <T>(
       title = node.nodeInfo.formValues['annotation'];
     } else if (
       node.nodeType !== NodeType.Connection &&
-      node.nodeInfo.type === 'user-input' &&
+      (node.nodeInfo.type === 'user-input' ||
+        node.nodeInfo.type === 'start-node') &&
       node.nodeInfo.formValues['name']
     ) {
       upstreamNodes = [];
@@ -159,6 +160,7 @@ export const exportFlowToTypescript = <T>(
         id: node.id,
         type: node.nodeInfo.type,
         name: node.nodeInfo.formValues['name'],
+        group: node.nodeInfo.formValues['group'] || 'endpoints',
         outputs: upstreamNodes
           .filter(
             (node) =>
@@ -183,6 +185,7 @@ export const exportFlowToTypescript = <T>(
       id: 'default',
       type: 'default',
       name: 'default',
+      group: 'endpoints',
       outputs: [],
     };
     let endpointerCounter = 0;
@@ -198,9 +201,10 @@ export const exportFlowToTypescript = <T>(
       if (endpointerCounter > 0) {
         endpointPostFix = `_${endpointerCounter.toString()}`;
         endpoints[`default${endpointPostFix}`] = {
-          id: `default${endpointPostFix}`,
-          type: `default${endpointPostFix}`,
+          id: node.id,
+          type: orgNode?.nodeInfo?.type,
           name: `default${endpointPostFix}`,
+          group: 'endpoints',
           outputs: [],
         };
       }

@@ -24,8 +24,8 @@ export async function saveFile(
   if ((window as any).showSaveFilePicker) {
     const handle = await (window as any).showSaveFilePicker({
       excludeAcceptAllOption: true,
-      suggestedName: id,
-      id: name,
+      suggestedName: name,
+      id: id,
       types: [
         {
           description: 'File',

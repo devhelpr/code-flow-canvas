@@ -9,11 +9,12 @@ import {
   Rect,
   ThumbConnectionType,
   ThumbType,
+  FormFieldType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
 export const getStart: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -36,9 +37,11 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       x: number,
       y: number,
       id?: string,
-      _initalValues?: InitialValues,
+      initalValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
+      const externalNameInitialValue = initalValues?.['name'] ?? '';
+      const groupInitialValue = initalValues?.['group'] ?? '';
       htmlNode = createElement(
         'div',
         {
@@ -57,7 +60,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
           },
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       rect = canvasApp.createRectThumb(
@@ -102,6 +105,45 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'name',
+            label: 'External name',
+            value: externalNameInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                name: value,
+              };
+
+              updated();
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'group',
+            label: 'Group',
+            value: groupInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                group: value,
+              };
+
+              updated();
+            },
+          },
+        ];
       }
       return node;
     },
