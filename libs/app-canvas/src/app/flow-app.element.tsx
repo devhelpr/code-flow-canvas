@@ -1705,6 +1705,28 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       return typeof a === 'string' && a !== '' && a !== undefined && a !== null;
     });
 
+    registerCustomFunction('distance', [], (a, b) => {
+      if (
+        Array.isArray(a) &&
+        Array.isArray(b) &&
+        a.length === 2 &&
+        b.length === 2
+      ) {
+        return Math.sqrt(Math.pow(b[0] - a[0], 2) + Math.pow(b[1] - a[1], 2));
+      }
+      return 0;
+    });
+
+    registerCustomFunction('normalize', [], (a) => {
+      if (Array.isArray(a) && a.length > 0) {
+        const vectorLength = Math.sqrt(
+          a.reduce((acc, value) => acc + Math.pow(value, 2), 0)
+        );
+        return a.map((value) => value / vectorLength);
+      }
+      throw new Error('Invalid vector');
+    });
+
     this.canvasApp?.setOnWheelEvent((x, y, scale) => {
       setPositionTargetCameraAnimation(x, y, scale);
     });

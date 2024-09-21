@@ -199,6 +199,12 @@ import {
 } from '../nodes/neural-test-training';
 import { getImage } from '../nodes/image';
 import { getConvolutionNode } from '../nodes/convolution-node';
+
+import {
+  registerExpressionFunctionNodeName,
+  getRegisterExpressionFunctionNode,
+} from '../nodes/register-expression-function';
+
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
@@ -418,6 +424,11 @@ export const setupCanvasNodeTaskRegistry = (
 
     registerNodeFactory('image', getImage);
     registerNodeFactory('convolution-node', getConvolutionNode);
+
+    registerNodeFactory(
+      registerExpressionFunctionNodeName,
+      getRegisterExpressionFunctionNode
+    );
   }
 
   registerExternalNodes?.(registerNodeFactory);

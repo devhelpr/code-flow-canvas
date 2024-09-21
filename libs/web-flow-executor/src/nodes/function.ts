@@ -253,8 +253,10 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
         (node.nodeInfo as any).onFunctionFinished = () => {
           const componentDomElement =
             componentWrapper?.domElement as HTMLElement;
-          componentDomElement.classList.add(defaultFunctionColor);
-          componentDomElement.classList.remove(activeFunctionColor);
+          if (componentDomElement) {
+            componentDomElement.classList.add(defaultFunctionColor);
+            componentDomElement.classList.remove(activeFunctionColor);
+          }
         };
       }
       showParameters();

@@ -29,6 +29,7 @@ export interface NodeInfo extends BaseNodeInfo {
   setValue?: ((values: any[]) => void) | ((values: string) => void);
   stateMachine?: StateMachine<NodeInfo>;
   isVariable?: boolean;
+  isRunOnStart?: boolean;
   getData?: (parameter?: any, scope?: string) => any;
   getDependencies?: () => { startNodeId: string; endNodeId: string }[];
   supportsDecorators?: boolean;

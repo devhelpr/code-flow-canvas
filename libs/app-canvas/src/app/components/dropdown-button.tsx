@@ -73,7 +73,7 @@ export const DropdownButton = (props: DropdownButtonProps) => {
         getElement={(element: HTMLUListElement) => {
           ulElement = element;
         }}
-        class={`fixed hidden group-[.open]:flex ${props.mainBgColorClass} p-4 rounded-md flex-col gap-2`}
+        class={`fixed hidden group-[.open]:flex ${props.bgColorClasses} p-4 rounded-md flex-col gap-2`}
       >
         {props.dropdownItems.map((item) => (
           <li class={`text-white ${props.textColorClasses}`}>

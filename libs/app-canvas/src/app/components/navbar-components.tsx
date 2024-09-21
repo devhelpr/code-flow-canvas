@@ -123,8 +123,8 @@ export class NavbarComponent extends Component<
         renderElement(
           <DropdownButton
             class=""
-            mainBgColorClass="bg-blue-500"
-            bgColorClasses="bg-blue-500 hover:bg-blue-600 "
+            mainBgColorClass="bg-slate-500"
+            bgColorClasses="bg-slate-500 hover:bg-slate-600 "
             textColorClasses="text-white"
             caption="Export"
             onClick={() => {

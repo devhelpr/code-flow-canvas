@@ -546,6 +546,17 @@ export const runNode = (
   }
 };
 
+export const getRunOnStartNodes = (nodes: ElementNodeMap<NodeInfo>) => {
+  const startNodes: IRectNodeComponent<NodeInfo>[] = [];
+  nodes.forEach((node) => {
+    const nodeComponent = node as unknown as IRectNodeComponent<NodeInfo>;
+    if (nodeComponent.nodeInfo?.isRunOnStart) {
+      startNodes.push(nodeComponent);
+    }
+  });
+  return startNodes;
+};
+
 export const getStartNodes = (
   nodes: ElementNodeMap<NodeInfo>,
   includeFunctionNodes = false
@@ -569,6 +580,7 @@ export const getStartNodes = (
     const nodeInfo = nodeComponent.nodeInfo as any;
     if (
       !(nodeComponent.nodeInfo as any)?.isVariable &&
+      !(nodeComponent.nodeInfo as any)?.isRunOnStart &&
       nodeComponent.nodeType !== NodeType.Connection &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
       ((!includeFunctionNodes &&
@@ -609,7 +621,27 @@ export const run = (
   }
 
   let isRunning = false;
+  const runOnStartNodes: IRectNodeComponent<NodeInfo>[] =
+    getRunOnStartNodes(nodes);
   const executeNodes: IRectNodeComponent<NodeInfo>[] = getStartNodes(nodes);
+
+  runOnStartNodes.forEach((nodeComponent) => {
+    isRunning = true;
+    runNode(
+      nodeComponent,
+      canvasApp,
+      (_input: string | any[]) => {
+        //
+      },
+      input,
+      offsetX,
+      offsetY,
+      undefined,
+      undefined,
+      undefined,
+      runCounter
+    );
+  });
 
   executeNodes.forEach((nodeComponent) => {
     isRunning = true;
