@@ -82,6 +82,7 @@ export class NavbarComponent extends Component<
           <option value="pid-controller-flow.json">PID controller</option>
           <option value="simple-neural-network.json">Simple neural network</option>
           <option value="neural-mnist-training.json">Neural network MNIST training & testing</option>
+          <option value="kmeans.json">K-Means clustering</option>
         </select>
         <children></children>
       </div>`

@@ -37,18 +37,40 @@
         // clear canvas
         let ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (window.input !== undefined) {
-          if (Array.isArray(window.input)) {
-            window.input.forEach((element, index) => {
-              if (Array.isArray(element) && element.length === 2) {
-                // create a small circle on canvas on position element[0] and element[1]
-                ctx.beginPath();
-                ctx.arc(element[0] + 50, element[1] + 50, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = 'red';
-                ctx.fill();
-                ctx.stroke();
+        if (window.input !== undefined && window.input.clusters) {
+          if (Array.isArray(window.input.clusters)) {
+            window.input.clusters.forEach((element, index) => {
+              if (Array.isArray(element)) {
+                element.forEach((point, i) => {
+                  if (Array.isArray(point)) {
+                    // create a small circle on canvas on position element[0] and element[1]
+                    ctx.beginPath();
+                    ctx.arc(point[0] + 50, point[1] + 50, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle =
+                      index === 0 ? 'red' : index === 1 ? 'blue' : 'green';
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                });
               }
             });
+            if (window.input.centroids) {
+              window.input.centroids.forEach((element, index) => {
+                if (Array.isArray(element)) {
+                  // create a small circle on canvas on position element[0] and element[1]
+                  ctx.beginPath();
+                  ctx.arc(element[0] + 50, element[1] + 50, 10, 0, 2 * Math.PI);
+                  ctx.fillStyle =
+                    index === 0
+                      ? '#800000'
+                      : index === 1
+                      ? '#000080'
+                      : '#008000';
+                  ctx.fill();
+                  ctx.stroke();
+                }
+              });
+            }
           }
         }
       }

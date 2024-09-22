@@ -13,7 +13,15 @@ function createArrayView(
       if (index >= pageIndex * pageSize && index < (pageIndex + 1) * pageSize) {
         return `
 		  <div class="flex flex-row justify-start text-left">
-			<div class="flex-grow">${data}</div>
+			<div class="flex-grow">${
+        typeof data === 'number'
+          ? data.toFixed(2)
+          : Array.isArray(data)
+          ? data.map((item) => {
+              return typeof item === 'number' ? item.toFixed(2) : item;
+            })
+          : data
+      }</div>
 		  </div>`;
       }
       return '';
