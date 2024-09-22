@@ -10,8 +10,8 @@
           "id": "f030a86e-2280-4b12-8615-4644f98cb625",
           "x": 3218.510068723205,
           "y": 1079.3107144634794,
-          "width": 239.99984460371996,
-          "height": 215.99997937837753,
+          "width": 239.99989390901138,
+          "height": 215.9999469898787,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -29,8 +29,8 @@
           "id": "693410e0-2810-4237-b888-07ea51248a6e",
           "x": 3605.68753580387,
           "y": 1102.179755079369,
-          "width": 239.9999076170073,
-          "height": 96.00000013241471,
+          "width": 239.99989390901138,
+          "height": 96.000000035373,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -48,8 +48,8 @@
           "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
           "x": 3901.659453834542,
           "y": 1076.8259188667582,
-          "width": 239.9995367608893,
-          "height": 167.9998611606815,
+          "width": 239.99989390901138,
+          "height": 167.9999469721922,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -152,8 +152,8 @@
           "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424",
           "x": 2948.004092654863,
           "y": 1090.2413318270437,
-          "width": 119.99987737416983,
-          "height": 83.99997131437911,
+          "width": 120.00009899574934,
+          "height": 83.99999084712849,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -255,15 +255,15 @@
         },
         {
           "id": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
-          "x": 6867.385676533459,
-          "y": 810.500146957939,
-          "width": 400,
-          "height": 400,
+          "x": 7102.727211611676,
+          "y": 837.2118227910565,
+          "width": 541.607184260587,
+          "height": 520.5699638027584,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <canvas id=\"canvas\" width=\"200\" height=\"200\"></canvas>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let canvas = document.getElementById('canvas');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let ctx = canvas.getContext('2d');\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        if (window.input !== undefined && window.input.clusters) {\n          if (Array.isArray(window.input.clusters)) {\n            window.input.clusters.forEach((element, index) => {\n              if (Array.isArray(element)) {\n                element.forEach((point, i) => {\n                  if (Array.isArray(point)) {\n                    // create a small circle on canvas on position element[0] and element[1]\n                    ctx.beginPath();\n                    ctx.arc(point[0] + 50, point[1] + 50, 5, 0, 2 * Math.PI);\n                    ctx.fillStyle =\n                      index === 0 ? 'red' : index === 1 ? 'blue' : 'green';\n                    ctx.fill();\n                    ctx.stroke();\n                  }\n                });\n              }\n            });\n            if (window.input.centroids) {\n              window.input.centroids.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  // create a small circle on canvas on position element[0] and element[1]\n                  ctx.beginPath();\n                  ctx.arc(element[0] + 50, element[1] + 50, 10, 0, 2 * Math.PI);\n                  ctx.fillStyle =\n                    index === 0\n                      ? '#800000'\n                      : index === 1\n                      ? '#000080'\n                      : '#008000';\n                  ctx.fill();\n                  ctx.stroke();\n                }\n              });\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <canvas\n        id=\"canvas\"\n        class=\"object-cover h-full w-full\"\n        width=\"1200\"\n        height=\"1200\"\n      ></canvas>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let canvas = document.getElementById('canvas');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let ctx = canvas.getContext('2d');\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        if (window.input !== undefined && window.input.clusters) {\n          if (Array.isArray(window.input.clusters)) {\n            window.input.clusters.forEach((element, index) => {\n              if (Array.isArray(element)) {\n                element.forEach((point, i) => {\n                  if (Array.isArray(point)) {\n                    // create a small circle on canvas on position element[0] and element[1]\n                    ctx.beginPath();\n                    ctx.arc(\n                      point[0] * 10 + 100,\n                      point[1] * 10 + 100,\n                      25,\n                      0,\n                      2 * Math.PI\n                    );\n                    ctx.fillStyle =\n                      index === 0 ? 'red' : index === 1 ? 'blue' : 'green';\n                    ctx.fill();\n                    ctx.stroke();\n                  }\n                });\n              }\n            });\n            if (window.input.centroids) {\n              window.input.centroids.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  // create a small circle on canvas on position element[0] and element[1]\n                  ctx.beginPath();\n                  ctx.arc(\n                    element[0] * 10 + 100,\n                    element[1] * 10 + 100,\n                    50,\n                    0,\n                    2 * Math.PI\n                  );\n                  ctx.fillStyle =\n                    index === 0\n                      ? '#800000'\n                      : index === 1\n                      ? '#000080'\n                      : '#008000';\n                  ctx.fill();\n                  ctx.stroke();\n                }\n              });\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
             },
             "showFormOnlyInPopup": true
@@ -350,8 +350,8 @@
           "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "x": 6664.371128996572,
           "y": 1646.343398824531,
-          "width": 119.99976838044465,
-          "height": 271.9999694704985,
+          "width": 120.00015931334798,
+          "height": 272.0000354933639,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -398,8 +398,8 @@
           "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
           "x": 7252.989666456307,
           "y": 2212.9819491263297,
-          "width": 119.99939752432665,
-          "height": 271.9999694704985,
+          "width": 119.99973459566341,
+          "height": 271.99982313452165,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -494,6 +494,63 @@
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "summing-junction"
+          }
+        },
+        {
+          "id": "5f45e8e4-4b24-4dd9-83c1-d5653e824e6b",
+          "x": 3162.3195440635673,
+          "y": 1987.199802915747,
+          "width": 551.806618101888,
+          "height": 207.00590773277645,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "Initialisation : create 100 random points and fill centroids with random points",
+              "fontSize": "37.6",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "a3a7e41f-f95a-485f-85cf-de31e0a20f39",
+          "x": 5706.822475894513,
+          "y": 2027.125213921281,
+          "width": 763.6226240361739,
+          "height": 432.08465912690735,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "k-means algorithm : \n- Assign each point to the \"closest\" centroid \n- Calculate new centroids\n- Check if new centroids equal the previous\n- If yes: then stop",
+              "fontSize": "37.6",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "b460f627-e6c1-4236-832f-789da2a7ab9a",
+          "x": 1793.9819309360241,
+          "y": 1144.4336574607428,
+          "width": 497.3528357296998,
+          "height": 216.81059916859294,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "Escape hatches for assigning points to closest centroids , calculating new centroids and checking if old centroids equal the new centroids",
+              "fontSize": "24.1",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
           }
         },
         {
@@ -723,10 +780,10 @@
         },
         {
           "id": "e05858fb-5e14-444e-8685-b44cdd5129f9",
-          "x": 6784.370897377017,
+          "x": 6784.371288309921,
           "y": 1676.343398824531,
-          "endX": 6867.385676533459,
-          "endY": 1010.500146957939,
+          "endX": 7102.727211611676,
+          "endY": 1097.4968046924357,
           "startNodeId": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "endNodeId": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
           "startThumbName": "output",
@@ -783,7 +840,7 @@
         },
         {
           "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
-          "x": 7372.989063980634,
+          "x": 7372.98940105197,
           "y": 2242.9819491263297,
           "endX": 7764.795617711819,
           "endY": 2308.2504659531282,
@@ -885,66 +942,6 @@
           "nodeType": "Connection",
           "layer": 1,
           "nodeInfo": {}
-        },
-        {
-          "id": "5f45e8e4-4b24-4dd9-83c1-d5653e824e6b",
-          "x": 3162.3195440635673,
-          "y": 1987.199802915747,
-          "width": 551.806618101888,
-          "height": 207.00590773277645,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "annotation",
-            "formValues": {
-              "annotation": "Initialisation : create 100 random points and fill centroids with random points",
-              "fontSize": "37.6",
-              "fontWeight": "false"
-            },
-            "isSettingsPopup": true,
-            "nodeCannotBeReplaced": true,
-            "isAnnotation": true,
-            "taskType": "annotation"
-          }
-        },
-        {
-          "id": "a3a7e41f-f95a-485f-85cf-de31e0a20f39",
-          "x": 5706.822475894513,
-          "y": 2027.125213921281,
-          "width": 763.6226240361739,
-          "height": 432.08465912690735,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "annotation",
-            "formValues": {
-              "annotation": "k-means algorithm : \n- Assign each point to the \"closest\" centroid \n- Calculate new centroids\n- Check if new centroids equal the previous\n- If yes: then stop",
-              "fontSize": "37.6",
-              "fontWeight": "false"
-            },
-            "isSettingsPopup": true,
-            "nodeCannotBeReplaced": true,
-            "isAnnotation": true,
-            "taskType": "annotation"
-          }
-        },
-        {
-          "id": "b460f627-e6c1-4236-832f-789da2a7ab9a",
-          "x": 1793.9819309360241,
-          "y": 1144.4336574607428,
-          "width": 497.3528357296998,
-          "height": 216.81059916859294,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "annotation",
-            "formValues": {
-              "annotation": "Escape hatches for assigning points to closest centroids , calculating new centroids and checking if old centroids equal the new centroids",
-              "fontSize": "24.1",
-              "fontWeight": "false"
-            },
-            "isSettingsPopup": true,
-            "nodeCannotBeReplaced": true,
-            "isAnnotation": true,
-            "taskType": "annotation"
-          }
         }
       ]
     }
