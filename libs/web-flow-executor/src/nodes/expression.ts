@@ -57,6 +57,20 @@ export const parseInput = (input: string, inputType: string) => {
   }
 };
 
+export const setClearExpressionCache = () => {
+  expressionCache = {};
+};
+
+let expressionCache: Record<
+  string,
+  | {
+      script: string;
+      bindings: any;
+      payloadProperties: string[];
+    }
+  | undefined
+> = {};
+
 export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: (
     shouldClearExecutionHistory?: boolean,
@@ -70,24 +84,18 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   let nodeFormComponent: FormsComponent | undefined = undefined;
 
   let currentValue = 0;
-  let compiledExpressionInfo:
-    | {
-        script: string;
-        bindings: any;
-        payloadProperties: string[];
-      }
-    | undefined = undefined;
+
   let executionRunCounter = 0;
   const initializeCompute = () => {
     currentValue = 0;
     executionRunCounter = 0;
-    compiledExpressionInfo = undefined;
+    expressionCache[node.id] = undefined;
     return;
   };
 
   const compileExpression = (expression: string) => {
-    if (!compiledExpressionInfo) {
-      compiledExpressionInfo = compileExpressionAsInfo(expression);
+    if (!expressionCache[node.id]) {
+      expressionCache[node.id] = compileExpressionAsInfo(expression);
     }
   };
 
@@ -104,12 +112,13 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     let result: any = false;
     try {
       compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? 'input');
-      if (!compiledExpressionInfo) {
+      if (!expressionCache[node.id]) {
         return {
           result: undefined,
           followPath: undefined,
         };
       }
+      const compiledExpressionInfo = expressionCache[node.id]!;
       const expression = node?.nodeInfo?.formValues?.['expression'] ?? 'input';
       const inputType = node?.nodeInfo?.formValues?.['inputType'] ?? 'number';
       const expressionFunction = (
@@ -213,6 +222,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
     const dependencies: { startNodeId: string; endNodeId: string }[] = [];
     compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
+    const compiledExpressionInfo = expressionCache[node.id];
     if (compiledExpressionInfo?.payloadProperties && canvasAppInstance) {
       const variablesInExpression = [
         ...new Set(compiledExpressionInfo.payloadProperties),
@@ -252,7 +262,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       canvasAppInstance = canvasApp;
-      compiledExpressionInfo = undefined;
+
       const initialValue = initalValues?.['expression'] ?? '';
       const initialInputType = initalValues?.['inputType'] ?? 'number';
       const formElements = [
@@ -270,7 +280,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
               expression: value,
             };
             console.log('onChange', node.nodeInfo);
-            compiledExpressionInfo = undefined;
+
+            expressionCache[node.id] = undefined;
             if (nodeFormComponent) {
               if (
                 nodeFormComponent.formComponentId !==
@@ -350,7 +361,10 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
+
       if (node.nodeInfo) {
+        expressionCache[node.id] = undefined;
+
         node.nodeInfo.formElements = [
           ...formElements,
           {
@@ -373,8 +387,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
                 inputType: value,
               };
               console.log('onChange', node.nodeInfo);
+              expressionCache[node.id] = undefined;
 
-              compiledExpressionInfo = undefined;
               if (updated) {
                 updated();
               }
@@ -388,12 +402,13 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compileInfo = {
           getCode: (input: any) => {
             compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
-            if (!compiledExpressionInfo) {
+
+            if (!node.id || !expressionCache[node.id]) {
               return 'input;';
             }
             return `\
 ((payload) => {\
-${compiledExpressionInfo.script};\
+${expressionCache[node.id]!.script};\
 })({input:${input ? input : '""'}});
 `;
           },
@@ -414,7 +429,7 @@ ${compiledExpressionInfo.script};\
       rootElement?: HTMLElement
     ) => {
       canvasAppInstance = canvasApp;
-      compiledExpressionInfo = undefined;
+      expressionCache[node.id] = undefined;
       const initialValue = initalValues?.['expression'] ?? '';
       const decoratorNode = createNodeElement(
         'div',

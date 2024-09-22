@@ -6,10 +6,12 @@ import {
   NodeTask,
   NodeTaskFactory,
   Rect,
+  createJSXElement,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
+import { setClearExpressionCache } from './expression';
 
 const fieldName = 'testt-input';
 const labelName = 'Register Expression Function';
@@ -23,10 +25,13 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let rect: Rect<NodeInfo> | undefined;
+  let textElement: HTMLElement | undefined;
+
   const initializeCompute = () => {
     return;
   };
-  const compute = (_input: string, _loopIndex?: number, _payload?: any) => {
+
+  const registerFunction = () => {
     const functionName = node.nodeInfo?.formValues?.['functionName'] ?? '';
     const customFunctionCode =
       node.nodeInfo?.formValues?.['customFunctionCode'] ?? '';
@@ -39,13 +44,28 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
         customFunction()
       );
       registerCustomFunction(functionName, [], customFunction() as any);
+      setClearExpressionCache();
     }
+  };
+  const compute = (_input: string, _loopIndex?: number, _payload?: any) => {
+    registerFunction();
     return {
       result: true,
       output: true,
       followPath: undefined,
     };
   };
+
+  const Text = () => (
+    <div
+      class="text-white text-center"
+      getElement={(element: HTMLElement) => {
+        textElement = element;
+      }}
+    >
+      {node?.nodeInfo?.formValues?.['functionName'] ?? ''}
+    </div>
+  );
 
   return visualNodeFactory(
     registerExpressionFunctionNodeName,
@@ -75,10 +95,15 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               ['functionName']: value,
             };
+            if (textElement) {
+              textElement.textContent = value;
+            }
 
             if (updated) {
               updated();
             }
+
+            registerFunction();
           },
         },
         {
@@ -99,6 +124,8 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
             if (updated) {
               updated();
             }
+
+            registerFunction();
           },
         },
       ];
@@ -113,12 +140,18 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
       if (rect && rect.resize) {
         rect?.resize();
       }
+
+      if (textElement) {
+        textElement.textContent =
+          node.nodeInfo?.formValues?.['functionName'] ?? '';
+      }
     },
     {
-      category: familyName,
+      category: 'expression',
       adjustToFormContent: true,
       hasFormInPopup: true,
       hasTitlebar: true,
-    }
+    },
+    <Text />
   );
 };
