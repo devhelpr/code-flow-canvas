@@ -10,8 +10,8 @@
           "id": "f030a86e-2280-4b12-8615-4644f98cb625",
           "x": 3218.510068723205,
           "y": 1079.3107144634794,
-          "width": 240.00021132826285,
-          "height": 216.00004377706392,
+          "width": 240.0002020196611,
+          "height": 216.00008269075394,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -29,8 +29,8 @@
           "id": "693410e0-2810-4237-b888-07ea51248a6e",
           "x": 3605.68753580387,
           "y": 1102.179755079369,
-          "width": 240.00021132826285,
-          "height": 96.0000296244154,
+          "width": 239.99991879982957,
+          "height": 95.9999816809234,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -48,8 +48,8 @@
           "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
           "x": 3901.659453834542,
           "y": 1076.8259188667582,
-          "width": 239.99984528233125,
-          "height": 216.00004377706392,
+          "width": 239.99991879982957,
+          "height": 215.99994108083817,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -350,8 +350,8 @@
           "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "x": 6664.371128996572,
           "y": 1646.343398824531,
-          "width": 120.00010566413142,
-          "height": 272.0001296915851,
+          "width": 120.00024261974632,
+          "height": 271.99986549016546,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -362,8 +362,8 @@
         },
         {
           "id": "0e543618-6d2d-4cef-84f8-62431f40847d",
-          "x": 2420.8356572476464,
-          "y": 1272.5726689840094,
+          "x": 2420.8356684333025,
+          "y": 1273.72664759018,
           "width": 234.0546875,
           "height": 88,
           "nodeType": "Shape",
@@ -371,7 +371,7 @@
             "type": "register-expression-function-node",
             "formValues": {
               "functionName": "calculate_centroids",
-              "customFunctionCode": "(clusters,centroids) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n     centroids.forEach((oldcentroid,index) => {\n        if (oldcentroid[0] === newcentroid[0] && oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)) {\n          centroidsfound.push(index);\n        }\n     });\n  });\n  const converged = centroidsfound.length === newcentroids.length;\n  console.log(\"converged\",centroidsfound, converged,newcentroids ,centroids);\n  return {newcentroids: newcentroids, converged: converged};\n}"
+              "customFunctionCode": "(clusters, centroids) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  const converged = centroidsfound.length === newcentroids.length;\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return { newcentroids: newcentroids, converged: converged };\n};"
             },
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false,
@@ -398,8 +398,8 @@
           "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
           "x": 7252.989666456307,
           "y": 2212.9819491263297,
-          "width": 120.00010566413142,
-          "height": 271.99994666861926,
+          "width": 120.00024261974632,
+          "height": 271.9997946852076,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -780,7 +780,7 @@
         },
         {
           "id": "e05858fb-5e14-444e-8685-b44cdd5129f9",
-          "x": 6784.3712346607035,
+          "x": 6784.371371616318,
           "y": 1676.343398824531,
           "endX": 7101.611130963695,
           "endY": 1097.4967227593268,
@@ -840,7 +840,7 @@
         },
         {
           "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
-          "x": 7372.989772120438,
+          "x": 7372.989909076053,
           "y": 2242.9819491263297,
           "endX": 7764.795617711819,
           "endY": 2308.2504659531282,
