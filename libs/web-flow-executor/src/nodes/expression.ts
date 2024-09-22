@@ -429,7 +429,9 @@ ${expressionCache[node.id]!.script};\
       rootElement?: HTMLElement
     ) => {
       canvasAppInstance = canvasApp;
-      expressionCache[node.id] = undefined;
+      if (node?.id) {
+        expressionCache[node.id] = undefined;
+      }
       const initialValue = initalValues?.['expression'] ?? '';
       const decoratorNode = createNodeElement(
         'div',

@@ -13,7 +13,7 @@ function createArrayView(
       if (index >= pageIndex * pageSize && index < (pageIndex + 1) * pageSize) {
         return `
 		  <div class="flex flex-row justify-start text-left">
-			<div class="flex-grow">${
+			<div class="flex-grow overflow-hidden text-ellipsis">${
         typeof data === 'number'
           ? data.toFixed(2)
           : Array.isArray(data)

@@ -186,6 +186,22 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     };
   };
 
+  const getNodeStatedHandler = () => {
+    return {
+      data: structuredClone(currentInput),
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    setHTML(data);
+  };
+
+  const updateVisual = (data: any) => {
+    console.log('updateVisual', data);
+    setHTML(data);
+  };
+
   return {
     name: 'iframe-html-node',
     family: 'flow-canvas',
@@ -359,6 +375,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.compute = compute;
         node.nodeInfo.showFormOnlyInPopup = true;
+        node.nodeInfo.updateVisual = updateVisual;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
           html: initialValue || defaultHTML,
@@ -366,6 +383,11 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         };
       }
       setHTML(currentInput);
+
+      if (id) {
+        canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+        canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+      }
 
       return node;
     },
