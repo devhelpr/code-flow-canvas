@@ -28,6 +28,36 @@
     </div>
 
     <script>
+      // Define the colors for the clusters .. borrowed the d3-palette colors observable10
+      let colors = [
+        '#4269d0',
+        '#efb118',
+        '#ff725c',
+        '#6cc5b0',
+        '#3ca951',
+        '#ff8ab7',
+        '#a463f2',
+        '#97bbf5',
+        '#9c6b4e',
+        '#9498a0',
+      ];
+      function getColor(index) {
+        return colors[index % colors.length];
+      }
+
+      function getDarkenColor(index) {
+        // darken color with pure javascript
+        let color = colors[index % colors.length];
+        let r = parseInt(color.slice(1, 3), 16);
+        let g = parseInt(color.slice(3, 5), 16);
+        let b = parseInt(color.slice(5, 7), 16);
+
+        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));
+
+        return `#${newColor[0].toString(16)}${newColor[1].toString(
+          16
+        )}${newColor[2].toString(16)}`;
+      }
       // Initialize the global variable "input"
       window.input = window.input;
       let inputstream = [];
@@ -57,8 +87,7 @@
                       0,
                       2 * Math.PI
                     );
-                    ctx.fillStyle =
-                      index === 0 ? 'red' : index === 1 ? 'blue' : 'green';
+                    ctx.fillStyle = getColor(index);
                     ctx.fill();
                     ctx.stroke();
                   }
@@ -77,12 +106,7 @@
                     0,
                     2 * Math.PI
                   );
-                  ctx.fillStyle =
-                    index === 0
-                      ? '#800000'
-                      : index === 1
-                      ? '#000080'
-                      : '#008000';
+                  ctx.fillStyle = getDarkenColor(index);
                   ctx.fill();
                   ctx.stroke();
                 }
