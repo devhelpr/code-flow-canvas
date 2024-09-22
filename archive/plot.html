@@ -28,6 +28,8 @@
     </div>
 
     <script>
+      // TODO : use svg instead of canvas
+
       // Define the colors for the clusters .. borrowed the d3-palette colors observable10
       let colors = [
         '#4269d0',
@@ -89,7 +91,6 @@
                     );
                     ctx.fillStyle = getColor(index);
                     ctx.fill();
-                    ctx.stroke();
                   }
                 });
               }
@@ -108,7 +109,6 @@
                   );
                   ctx.fillStyle = getDarkenColor(index);
                   ctx.fill();
-                  ctx.stroke();
                 }
               });
             }
