@@ -216,8 +216,11 @@ const triggerExecution = (
           return new Promise((resolve, reject) => {
             promise
               .then((computeResult: any) => {
-                if (computeResult.stop && !computeResult.dummyEndpoint) {
-                  if (lastConnectionExecutionHistory) {
+                if (computeResult.stop) {
+                  if (
+                    lastConnectionExecutionHistory &&
+                    !computeResult.dummyEndpoint
+                  ) {
                     lastConnectionExecutionHistory.nextNodeStates =
                       canvasApp.getNodeStates();
                     lastConnectionExecutionHistory = undefined;
@@ -297,7 +300,10 @@ const triggerExecution = (
           followPath = computeResult.followPath;
 
           if (computeResult.stop) {
-            if (lastConnectionExecutionHistory) {
+            if (
+              lastConnectionExecutionHistory &&
+              !computeResult.dummyEndpoint
+            ) {
               lastConnectionExecutionHistory.nextNodeStates =
                 canvasApp.getNodeStates();
               lastConnectionExecutionHistory = undefined;
@@ -798,7 +804,10 @@ export const runNodeFromThumb = (
               result = computeResult.result;
               followPath = computeResult.followPath;
               if (computeResult.stop) {
-                if (lastConnectionExecutionHistory) {
+                if (
+                  lastConnectionExecutionHistory &&
+                  !computeResult.dummyEndpoint
+                ) {
                   lastConnectionExecutionHistory.nextNodeStates =
                     canvasApp.getNodeStates();
                   lastConnectionExecutionHistory = undefined;
@@ -854,7 +863,7 @@ export const runNodeFromThumb = (
 
         //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
-          if (lastConnectionExecutionHistory) {
+          if (lastConnectionExecutionHistory && !computeResult.dummyEndpoint) {
             lastConnectionExecutionHistory.nextNodeStates =
               canvasApp.getNodeStates();
             lastConnectionExecutionHistory = undefined;
