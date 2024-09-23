@@ -10,8 +10,8 @@
           "id": "f030a86e-2280-4b12-8615-4644f98cb625",
           "x": 3218.510068723205,
           "y": 1079.3107144634794,
-          "width": 239.99988419191448,
-          "height": 215.9998643927646,
+          "width": 240.0000571153249,
+          "height": 216.0000041614536,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -29,8 +29,8 @@
           "id": "693410e0-2810-4237-b888-07ea51248a6e",
           "x": 3605.68753580387,
           "y": 1102.179755079369,
-          "width": 239.99988419191448,
-          "height": 95.99992229680737,
+          "width": 239.99982090363093,
+          "height": 216.0000041614536,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -48,8 +48,8 @@
           "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
           "x": 3901.659453834542,
           "y": 1076.8259188667582,
-          "width": 239.99957039233027,
-          "height": 216.0000212925567,
+          "width": 239.99982090363093,
+          "height": 216.0000041614536,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -152,8 +152,8 @@
           "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424",
           "x": 2948.0042317363245,
           "y": 1090.2413609593307,
-          "width": 120.00009899574934,
-          "height": 84.00006929702454,
+          "width": 120.00002855766245,
+          "height": 83.99994912685553,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -314,8 +314,8 @@
         },
         {
           "id": "6373efe5-c0de-4674-8e62-94917080c536",
-          "x": 2417.8252942858167,
-          "y": 1052.0943073223555,
+          "x": 2417.825225870788,
+          "y": 1055.1685004528238,
           "width": 236.6640625,
           "height": 88,
           "nodeType": "Shape",
@@ -323,7 +323,7 @@
             "type": "register-expression-function-node",
             "formValues": {
               "functionName": "distances_to_each_centroid",
-              "customFunctionCode": "(centroids, points, clusters) => {\n  if (\n    Array.isArray(centroids) &&\n    Array.isArray(points) & Array.isArray(clusters)\n  ) {\n    let result = [...clusters];\n\n    points.forEach((point) => {\n      let distances = [];\n      centroids.forEach((vector) => {\n        const distance = Math.sqrt(\n          Math.pow(point[0] - vector[0], 2) + Math.pow(point[1] - vector[1], 2)\n        );\n        distances.push(distance);\n      });\n      let minimum = -1;\n      let minIndex = -1;\n      distances.forEach((distance, index) => {\n        if (minimum == -1 || distance < minimum) {\n          minimum = distance;\n          minIndex = index;\n        }\n      });\n      if (minIndex >= 0 && minIndex < clusters.length) {\n        result[minIndex].push(point);\n      }\n    });\n    return {\n      clusters: result,\n      centroids: centroids\n}\n  }\n  return [];\n};\n"
+              "customFunctionCode": "(centroids, points, clusters) => {\n  if (\n    Array.isArray(centroids) &&\n    Array.isArray(points) & Array.isArray(clusters)\n  ) {\n    let result = [...clusters];\n\n    points.forEach((point) => {\n      let distances = [];\n      centroids.forEach((vector) => {\n        const distance = Math.sqrt(\n          Math.pow(point[0] - vector[0], 2) + Math.pow(point[1] - vector[1], 2)\n        );\n        distances.push(distance);\n      });\n      let minimum = -1;\n      let minIndex = -1;\n      distances.forEach((distance, index) => {\n        if (minimum == -1 || distance < minimum) {\n          minimum = distance;\n          minIndex = index;\n        }\n      });\n      if (minIndex >= 0 && minIndex < clusters.length) {\n        result[minIndex].push(point);\n      }\n    });\n    return {\n      clusters: result,\n      centroids: centroids\n}\n  }\n  return  {\n      clusters: [],\n      centroids: []\n};\n};\n"
             },
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false,
@@ -333,8 +333,8 @@
         },
         {
           "id": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
-          "x": 6234.206902558854,
-          "y": 1602.073556665413,
+          "x": 6234.206975925928,
+          "y": 1602.0736304997386,
           "width": 200,
           "height": 112,
           "nodeType": "Shape",
@@ -350,8 +350,8 @@
           "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "x": 6664.371128996572,
           "y": 1646.343398824531,
-          "width": 120.00009899574934,
-          "height": 271.999910590781,
+          "width": 119.99979234596849,
+          "height": 272.0001277204866,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -362,8 +362,8 @@
         },
         {
           "id": "0e543618-6d2d-4cef-84f8-62431f40847d",
-          "x": 2420.8356684333025,
-          "y": 1273.72664759018,
+          "x": 2424.0292068017543,
+          "y": 1278.3482750895369,
           "width": 234.0546875,
           "height": 88,
           "nodeType": "Shape",
@@ -371,7 +371,7 @@
             "type": "register-expression-function-node",
             "formValues": {
               "functionName": "calculate_centroids",
-              "customFunctionCode": "(clusters, centroids) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  const converged = centroidsfound.length === newcentroids.length;\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return { newcentroids: newcentroids, converged: converged };\n};"
+              "customFunctionCode": "(clusters, centroids, iterationCount) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  const converged = (centroidsfound.length === newcentroids.length) || (iterationCount >= 15);\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return { newcentroids: newcentroids, converged: converged, nextIteration: iterationCount + 1 };\n};"
             },
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false,
@@ -381,15 +381,15 @@
         },
         {
           "id": "0934003b-1022-4bd0-aba9-db1425d64ced",
-          "x": 6740.43045689719,
-          "y": 2143.656941635495,
+          "x": 6732.07193919576,
+          "y": 2145.85678515075,
           "width": 200,
           "height": 112,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "expression",
             "formValues": {
-              "expression": "calculate_centroids(clusters,centroids)",
+              "expression": "calculate_centroids(clusters,centroids,iterationCount)",
               "inputType": "number"
             }
           }
@@ -398,8 +398,8 @@
           "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
           "x": 7252.989666456307,
           "y": 2212.9819491263297,
-          "width": 119.99947139658093,
-          "height": 272.0002243903652,
+          "width": 120.00026476935642,
+          "height": 272.0001277204866,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -410,8 +410,8 @@
         },
         {
           "id": "1b20430f-e529-4493-a163-aa9e999560c7",
-          "x": 2647.078024529522,
-          "y": 1569.3633293951493,
+          "x": 2202.301773797244,
+          "y": 1585.4703729045239,
           "width": 50,
           "height": 50,
           "nodeType": "Shape",
@@ -551,6 +551,72 @@
             "isSettingsPopup": true,
             "nodeCannotBeReplaced": true,
             "isAnnotation": true
+          }
+        },
+        {
+          "id": "be2b1562-842a-4373-ac70-a601789c1725",
+          "x": 4297.9381571714475,
+          "y": 1098.029223960785,
+          "width": 120.00026476935642,
+          "height": 83.99971291516155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "variable",
+            "formValues": {
+              "variableName": "iterationCount",
+              "initialValue": "0",
+              "fieldType": "value",
+              "fieldValueType": "number"
+            },
+            "isVariable": true,
+            "nodeCannotBeReplaced": true
+          }
+        },
+        {
+          "id": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+          "x": 7213.436208589807,
+          "y": 2036.928612380706,
+          "width": 200,
+          "height": 112.0001220703125,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "nextIteration",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "a7fc22c0-1e33-43c0-aa41-dae551926d70",
+          "x": 7544.1909549047305,
+          "y": 2029.2569684396346,
+          "width": 200,
+          "height": 127.9998779296875,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "iterationCount"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+          "x": 2531.2746399032585,
+          "y": 1557.5320104130874,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "reset-variable",
+            "formValues": {
+              "variableName": "iterationCount"
+            },
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
           }
         },
         {
@@ -752,8 +818,8 @@
           "id": "6a09a070-9bd1-4bd5-bbd0-844769d30f62",
           "x": 6125.051508209566,
           "y": 1662.4898975210604,
-          "endX": 6234.206902558854,
-          "endY": 1658.073556665413,
+          "endX": 6234.206975925928,
+          "endY": 1658.0736304997386,
           "startNodeId": "ab054f77-2e88-49ec-afe6-848468c0be3c",
           "endNodeId": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
           "startThumbName": "output",
@@ -765,8 +831,8 @@
         },
         {
           "id": "74dfb159-7b16-4027-b2d0-c3fb755b008a",
-          "x": 6434.206902558854,
-          "y": 1658.073556665413,
+          "x": 6434.206975925928,
+          "y": 1658.0736304997386,
           "endX": 6664.371128996572,
           "endY": 1676.343398824531,
           "startNodeId": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
@@ -780,7 +846,7 @@
         },
         {
           "id": "e05858fb-5e14-444e-8685-b44cdd5129f9",
-          "x": 6784.371227992322,
+          "x": 6784.370921342541,
           "y": 1676.343398824531,
           "endX": 7101.61069174571,
           "endY": 1100.6899465627475,
@@ -795,10 +861,10 @@
         },
         {
           "id": "40767bbd-3b06-4afb-a791-31254aac14cc",
-          "x": 6434.206902558854,
-          "y": 1658.073556665413,
-          "endX": 6740.43045689719,
-          "endY": 2199.656941635495,
+          "x": 6434.206975925928,
+          "y": 1658.0736304997386,
+          "endX": 6732.07193919576,
+          "endY": 2201.85678515075,
           "startNodeId": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
           "endNodeId": "0934003b-1022-4bd0-aba9-db1425d64ced",
           "startThumbName": "output",
@@ -810,8 +876,8 @@
         },
         {
           "id": "71d16b29-ff93-4ef8-a81d-fc4ef10dc69b",
-          "x": 6940.43045689719,
-          "y": 2199.656941635495,
+          "x": 6932.07193919576,
+          "y": 2201.85678515075,
           "endX": 7252.989666456307,
           "endY": 2242.9819491263297,
           "startNodeId": "0934003b-1022-4bd0-aba9-db1425d64ced",
@@ -825,12 +891,12 @@
         },
         {
           "id": "101abac1-2a71-4b84-86bc-05be40561539",
-          "x": 2672.078024529522,
-          "y": 1594.3633293951493,
-          "endX": 2928.9264141208932,
-          "endY": 1600.9889592387547,
+          "x": 2227.301773797244,
+          "y": 1610.4703729045239,
+          "endX": 2531.2746399032585,
+          "endY": 1621.5320104130874,
           "startNodeId": "1b20430f-e529-4493-a163-aa9e999560c7",
-          "endNodeId": "248c7829-295b-44fd-b581-18cafc953842",
+          "endNodeId": "11d8c68e-1bc1-4665-aa22-c205b602d367",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "Straight",
@@ -840,7 +906,7 @@
         },
         {
           "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
-          "x": 7372.989137852887,
+          "x": 7372.989931225663,
           "y": 2242.9819491263297,
           "endX": 7764.795617711819,
           "endY": 2308.2504659531282,
@@ -939,6 +1005,51 @@
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "17606be6-5c55-4abe-94fb-220c188968be",
+          "x": 6932.07193919576,
+          "y": 2201.85678515075,
+          "endX": 7213.436208589807,
+          "endY": 2092.9286734158622,
+          "startNodeId": "0934003b-1022-4bd0-aba9-db1425d64ced",
+          "endNodeId": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "08e6a922-39f9-46a6-a19d-6e49c94b809c",
+          "x": 7413.436208589807,
+          "y": 2092.9286734158622,
+          "endX": 7544.1909549047305,
+          "endY": 2093.2569074044786,
+          "startNodeId": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+          "endNodeId": "a7fc22c0-1e33-43c0-aa41-dae551926d70",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "de81b3b0-5547-4c03-be79-85a269702cd5",
+          "x": 2731.2746399032585,
+          "y": 1621.5320104130874,
+          "endX": 2928.9264141208932,
+          "endY": 1600.9889592387547,
+          "startNodeId": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+          "endNodeId": "248c7829-295b-44fd-b581-18cafc953842",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
           "nodeType": "Connection",
           "layer": 1,
           "nodeInfo": {}
