@@ -24,8 +24,6 @@ function getLoopIncrement() {
 //   return 1.015;
 // }
 
-export const timers: Map<NodeJS.Timer, () => void> = new Map();
-
 export const nodeAnimationMap: Map<
   number,
   NodeAnimatonInfo<BaseNodeInfo>

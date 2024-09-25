@@ -40,7 +40,6 @@ import { registerCustomFunction } from '@devhelpr/expression-compiler';
 
 import {
   setSpeedMeter,
-  timers,
   animatePath as _animatePath,
   animatePathFromThumb as _animatePathFromThumb,
   setCameraAnimation,
@@ -1024,10 +1023,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         change: (event) => {
           speedMeter = parseInt((event.target as HTMLInputElement).value);
           setSpeedMeter(speedMeter);
-          const timerList = Array.from(timers ?? []);
-          timerList.forEach((timer) => {
-            timer[1](); // call timer canceler
-          });
+
           if (!this.canvasApp) {
             return;
           }
