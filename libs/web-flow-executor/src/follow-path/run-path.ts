@@ -107,15 +107,17 @@ export const runPathForNodeConnectionPairs = <T>(
             runCounter
           );
         } else {
-          if (onStopped) {
-            onStopped(result.output ?? input ?? '');
-          }
-          if (
-            runCounter &&
-            runCounter.runCounter <= 0 &&
-            runCounter.runCounterResetHandler
-          ) {
-            runCounter?.runCounterResetHandler();
+          if (!result.isDummyEndpoint) {
+            if (onStopped) {
+              onStopped(result.output ?? input ?? '');
+            }
+            if (
+              runCounter &&
+              runCounter.runCounter <= 0 &&
+              runCounter.runCounterResetHandler
+            ) {
+              runCounter?.runCounterResetHandler();
+            }
           }
         }
       };

@@ -377,6 +377,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.showFormOnlyInPopup = true;
         node.nodeInfo.updateVisual = updateVisual;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.initializeOnStartFlow = true;
         node.nodeInfo.formValues = {
           html: initialValue || defaultHTML,
           aiprompt: aiPrompt,

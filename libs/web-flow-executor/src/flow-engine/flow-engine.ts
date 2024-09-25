@@ -234,6 +234,7 @@ const triggerExecution = (
                   if (computeResult.stop && computeResult.dummyEndpoint) {
                     lastConnectionExecutionHistory = undefined;
                     console.log('dummyEndpoint(2)', computeResult.output);
+
                     if (computeResult.output) {
                       resolve({
                         result: computeResult.output,
