@@ -51,6 +51,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
     registerFunction();
     return {
       result: false,
+      output: false,
       stop: true,
       followPath: undefined,
     };
