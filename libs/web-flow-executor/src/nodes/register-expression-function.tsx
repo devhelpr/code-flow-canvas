@@ -50,8 +50,8 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
   const compute = (_input: string, _loopIndex?: number, _payload?: any) => {
     registerFunction();
     return {
-      result: true,
-      output: true,
+      result: false,
+      stop: true,
       followPath: undefined,
     };
   };
