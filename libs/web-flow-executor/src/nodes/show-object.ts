@@ -23,9 +23,9 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     hasInitialValue = true;
     inputValues = {};
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       htmlNode.domElement.textContent = 'Input';
-      if (rect) {
+      if (rect && rect.resize) {
         rect.resize(240);
       }
     }
@@ -33,10 +33,11 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = typeof input === 'object' ? input : {};
+
+    if (hasInitialValue) {
+      hasInitialValue = false;
+    }
     if (htmlNode) {
-      if (hasInitialValue) {
-        hasInitialValue = false;
-      }
       console.log('visualize object', inputValues);
       updateVisual(inputValues);
       // htmlNode.domElement.textContent = JSON.stringify(
@@ -66,14 +67,14 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   };
 
   const updateVisual = (data: any) => {
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       htmlNode.domElement.textContent = JSON.stringify(
         data,
         null,
         2
       ).toString();
 
-      if (rect) {
+      if (rect && rect.resize) {
         rect.resize(240);
       }
     }
@@ -104,7 +105,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
           class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[240px] text-white`,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
       rect = canvasApp.createRect(

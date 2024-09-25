@@ -77,7 +77,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       );
     }
     return new Promise((resolve, reject) => {
-      (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
+      if (!canvasAppInstance?.isContextOnly) {
+        (errorNode?.domElement as unknown as HTMLElement)?.classList.add(
+          'hidden'
+        );
+      }
       let result: any = false;
       if (!node || !canvasAppInstance) {
         reject();
@@ -124,12 +128,16 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             console.log('error', error);
             sendFetchState('error');
             result = undefined;
-            (errorNode.domElement as unknown as HTMLElement).classList.remove(
-              'hidden'
-            );
-            (errorNode.domElement as unknown as HTMLElement).textContent =
-              error?.toString() ?? 'Error';
-
+            if (
+              (errorNode?.domElement as unknown as HTMLElement) &&
+              !canvasAppInstance?.isContextOnly
+            ) {
+              (
+                errorNode?.domElement as unknown as HTMLElement
+              )?.classList.remove('hidden');
+              (errorNode.domElement as unknown as HTMLElement).textContent =
+                error?.toString() ?? 'Error';
+            }
             sendError(error?.toString() ?? 'Error');
           });
 
@@ -137,11 +145,16 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       } catch (error) {
         result = undefined;
         sendFetchState('ready');
-        (errorNode.domElement as unknown as HTMLElement).classList.remove(
-          'hidden'
-        );
-        (errorNode.domElement as unknown as HTMLElement).textContent =
-          error?.toString() ?? 'Error';
+        if (
+          (errorNode?.domElement as unknown as HTMLElement) &&
+          !canvasAppInstance.isContextOnly
+        ) {
+          (errorNode.domElement as unknown as HTMLElement).classList.remove(
+            'hidden'
+          );
+          (errorNode.domElement as unknown as HTMLElement).textContent =
+            error?.toString() ?? 'Error';
+        }
         sendError(error?.toString() ?? 'Error');
       }
     });
@@ -266,11 +279,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-
-      errorNode = createElement(
-        'div',
-        {
-          class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[100px] w-full hidden
+      if (rect.nodeComponent.domElement && !canvasApp.isContextOnly) {
+        errorNode = createElement(
+          'div',
+          {
+            class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[100px] w-full hidden
             after:content-['']
             after:w-0 after:h-0 
             after:border-l-[10px] after:border-l-transparent
@@ -278,10 +291,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             after:border-r-[10px] after:border-r-transparent
             after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
           `,
-        },
-        rect.nodeComponent.domElement,
-        'error'
-      ) as unknown as INodeComponent<NodeInfo>;
+          },
+          rect.nodeComponent.domElement,
+          'error'
+        ) as unknown as INodeComponent<NodeInfo>;
+      }
 
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
