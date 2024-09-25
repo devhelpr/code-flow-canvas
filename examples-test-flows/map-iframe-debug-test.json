@@ -1,0 +1,230 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "3fab8e77-aab5-44d0-ab94-0c7d0698af90",
+          "x": 5081.459631657767,
+          "y": 2195.9442030639134,
+          "width": 150,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "range",
+            "formValues": {},
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "5e8d1dda-a141-41cb-945d-631369529541",
+          "x": 4692.311524896376,
+          "y": 2272.4515001166073,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "value",
+            "formValues": {
+              "value": "0"
+            }
+          }
+        },
+        {
+          "id": "e5c53862-7b6a-4749-a5e4-7dab0c2f49b7",
+          "x": 4692.311524896376,
+          "y": 2404.451543760183,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "value",
+            "formValues": {
+              "value": "2"
+            }
+          }
+        },
+        {
+          "id": "458be468-1b02-4305-b3d3-0585d278dfcf",
+          "x": 5474.0201498096085,
+          "y": 2218.9276285698343,
+          "width": 110,
+          "height": 110,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "map",
+            "formValues": {}
+          }
+        },
+        {
+          "id": "526a1d4c-35f7-447f-9c6d-ec622fdfe7a1",
+          "x": 5710.115364788912,
+          "y": 2379.0477062208142,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "[random(0),random()]",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "dfbd4bb5-18a8-403b-857f-bb66838ea924",
+          "x": 6522.635731501114,
+          "y": 1788.134185740185,
+          "width": 400,
+          "height": 400,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <canvas\n        id=\"canvas\"\n        class=\"object-cover h-full w-full\"\n        width=\"1200\"\n        height=\"1200\"\n      ></canvas>\n    </div>\n\n    <script>\n      // TODO : use svg instead of canvas\n\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let canvas = document.getElementById('canvas');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let ctx = canvas.getContext('2d');\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            window.input.forEach((point, index) => {\n              if (Array.isArray(point)) {\n                // create a small circle on canvas on position element[0] and element[1]\n                ctx.beginPath();\n                ctx.arc(\n                  point[0] * 10 + 100,\n                  point[1] * 10 + 100,\n                  25,\n                  0,\n                  2 * Math.PI\n                );\n                ctx.fillStyle = getColor(index);\n                ctx.fill();\n              }\n            });\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "aiprompt": ""
+            },
+            "showFormOnlyInPopup": true
+          }
+        },
+        {
+          "id": "50362874-ca72-4dbd-9b9a-8bb79d2b5771",
+          "x": 5844.211011869366,
+          "y": 2047.137516797254,
+          "width": 110,
+          "height": 110,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "map",
+            "formValues": {}
+          }
+        },
+        {
+          "id": "4b7d1577-0058-4bcc-87fd-7e132883d8dd",
+          "x": 6058.333463968278,
+          "y": 2089.287588233962,
+          "width": 200,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "[random(0),random()]",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "7ccdc62c-440c-47c5-b9c7-56efd7507699",
+          "x": 4892.311524896376,
+          "y": 2328.4515001166073,
+          "endX": 5081.459631657767,
+          "endY": 2225.9442030639134,
+          "startNodeId": "5e8d1dda-a141-41cb-945d-631369529541",
+          "endNodeId": "3fab8e77-aab5-44d0-ab94-0c7d0698af90",
+          "startThumbName": "output",
+          "endThumbName": "min",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "cfd1b27d-29bf-4cd9-a9cb-29c3bf35d568",
+          "x": 4892.311524896376,
+          "y": 2460.451543760183,
+          "endX": 5081.459631657767,
+          "endY": 2275.9442030639134,
+          "startNodeId": "e5c53862-7b6a-4749-a5e4-7dab0c2f49b7",
+          "endNodeId": "3fab8e77-aab5-44d0-ab94-0c7d0698af90",
+          "startThumbName": "output",
+          "endThumbName": "max",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "523b7b36-9fdb-4966-804c-ae81d9bcdfc9",
+          "x": 5231.459631657767,
+          "y": 2273.4442030639134,
+          "endX": 5474.0201498096085,
+          "endY": 2273.9276285698343,
+          "startNodeId": "3fab8e77-aab5-44d0-ab94-0c7d0698af90",
+          "endNodeId": "458be468-1b02-4305-b3d3-0585d278dfcf",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "984722fc-d91b-44aa-85f8-61b762940d25",
+          "x": 5584.0201498096085,
+          "y": 2298.9276285698343,
+          "endX": 5710.115364788912,
+          "endY": 2435.0477062208142,
+          "startNodeId": "458be468-1b02-4305-b3d3-0585d278dfcf",
+          "endNodeId": "526a1d4c-35f7-447f-9c6d-ec622fdfe7a1",
+          "startThumbName": "output2",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "d9f3965a-c17b-42f2-8d40-6293bbe58cf4",
+          "x": 5584.0201498096085,
+          "y": 2248.9276285698343,
+          "endX": 5844.211011869366,
+          "endY": 2102.1375167972537,
+          "startNodeId": "458be468-1b02-4305-b3d3-0585d278dfcf",
+          "endNodeId": "50362874-ca72-4dbd-9b9a-8bb79d2b5771",
+          "startThumbName": "output1",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "274b449e-0c22-4b65-8fd7-88a075c7444f",
+          "x": 5954.211011869366,
+          "y": 2127.1375167972537,
+          "endX": 6058.333463968278,
+          "endY": 2145.287588233962,
+          "startNodeId": "50362874-ca72-4dbd-9b9a-8bb79d2b5771",
+          "endNodeId": "4b7d1577-0058-4bcc-87fd-7e132883d8dd",
+          "startThumbName": "output2",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "fd92ebe2-9186-443a-9d70-4c87cf60e806",
+          "x": 5954.211011869366,
+          "y": 2077.1375167972537,
+          "endX": 6522.635731501114,
+          "endY": 1988.134185740185,
+          "startNodeId": "50362874-ca72-4dbd-9b9a-8bb79d2b5771",
+          "endNodeId": "dfbd4bb5-18a8-403b-857f-bb66838ea924",
+          "startThumbName": "output1",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

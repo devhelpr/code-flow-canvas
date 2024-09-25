@@ -216,11 +216,8 @@ const triggerExecution = (
           return new Promise((resolve, reject) => {
             promise
               .then((computeResult: any) => {
-                if (computeResult.stop) {
-                  if (
-                    lastConnectionExecutionHistory &&
-                    !computeResult.dummyEndpoint
-                  ) {
+                if (computeResult.stop && !computeResult.dummyEndpoint) {
+                  if (lastConnectionExecutionHistory) {
                     lastConnectionExecutionHistory.nextNodeStates =
                       canvasApp.getNodeStates();
                     lastConnectionExecutionHistory = undefined;
@@ -300,6 +297,9 @@ const triggerExecution = (
           followPath = computeResult.followPath;
 
           if (computeResult.stop) {
+            if (computeResult.dummyEndpoint) {
+              lastConnectionExecutionHistory = undefined;
+            }
             if (
               lastConnectionExecutionHistory &&
               !computeResult.dummyEndpoint
@@ -804,6 +804,9 @@ export const runNodeFromThumb = (
               result = computeResult.result;
               followPath = computeResult.followPath;
               if (computeResult.stop) {
+                if (computeResult.dummyEndpoint) {
+                  lastConnectionExecutionHistory = undefined;
+                }
                 if (
                   lastConnectionExecutionHistory &&
                   !computeResult.dummyEndpoint
@@ -863,6 +866,10 @@ export const runNodeFromThumb = (
 
         //previousOutput = computeResult.previousOutput;
         if (computeResult.stop) {
+          if (computeResult.dummyEndpoint) {
+            lastConnectionExecutionHistory = undefined;
+          }
+
           if (lastConnectionExecutionHistory && !computeResult.dummyEndpoint) {
             lastConnectionExecutionHistory.nextNodeStates =
               canvasApp.getNodeStates();

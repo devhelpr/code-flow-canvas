@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plot visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+      }
+    </style>
+  </head>
+  <body class="bg-white">
+    <div class="min-h-screen flex wrapper" id="inner">
+      <canvas
+        id="canvas"
+        class="object-cover h-full w-full"
+        width="1200"
+        height="1200"
+      ></canvas>
+    </div>
+
+    <script>
+      // TODO : use svg instead of canvas
+
+      // Define the colors for the clusters .. borrowed the d3-palette colors observable10
+      let colors = [
+        '#4269d0',
+        '#efb118',
+        '#ff725c',
+        '#6cc5b0',
+        '#3ca951',
+        '#ff8ab7',
+        '#a463f2',
+        '#97bbf5',
+        '#9c6b4e',
+        '#9498a0',
+      ];
+      function getColor(index) {
+        return colors[index % colors.length];
+      }
+
+      function getDarkenColor(index) {
+        // darken color with pure javascript
+        let color = colors[index % colors.length];
+        let r = parseInt(color.slice(1, 3), 16);
+        let g = parseInt(color.slice(3, 5), 16);
+        let b = parseInt(color.slice(5, 7), 16);
+
+        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));
+
+        return `#${newColor[0].toString(16)}${newColor[1].toString(
+          16
+        )}${newColor[2].toString(16)}`;
+      }
+      // Initialize the global variable "input"
+      window.input = window.input;
+      let inputstream = [];
+      let initialized = false;
+      let elements = [];
+      let canvas = document.getElementById('canvas');
+      // Function to rerender the UI
+      function rerenderUI() {
+        if (!initialized && window['createElement']) {
+          initialized = true;
+        }
+        // clear canvas
+        let ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (window.input !== undefined) {
+          if (Array.isArray(window.input)) {
+            window.input.forEach((point, index) => {
+              if (Array.isArray(point)) {
+                // create a small circle on canvas on position element[0] and element[1]
+                ctx.beginPath();
+                ctx.arc(
+                  point[0] * 10 + 100,
+                  point[1] * 10 + 100,
+                  25,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fillStyle = getColor(index);
+                ctx.fill();
+              }
+            });
+          }
+        }
+      }
+
+      // Attach the rerenderUI function to the global onExecute method
+      window.onExecute = rerenderUI;
+
+      rerenderUI();
+    </script>
+  </body>
+</html>
