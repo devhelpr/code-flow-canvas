@@ -11,6 +11,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RangeValueType } from '../types/value-type';
+import { RunCounter } from '../follow-path/run-counter';
 
 /*
 
@@ -97,7 +98,8 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     return new Promise((resolve, reject) => {
       if (
@@ -173,7 +175,8 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
             isRange ? mapLoop : values[mapLoop],
             node,
             mapLoop,
-            scopeId
+            scopeId,
+            runCounter
           );
         } else {
           forEachDomElement.classList.add('bg-slate-500');
@@ -196,7 +199,8 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
             isRange ? [] : input,
             node,
             loopIndex,
-            scopeId
+            scopeId,
+            runCounter
           );
         }
       };

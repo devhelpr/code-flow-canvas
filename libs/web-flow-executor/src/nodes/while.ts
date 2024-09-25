@@ -10,6 +10,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
+import { RunCounter } from '../follow-path/run-counter';
 
 const thumbs = [
   {
@@ -75,7 +76,8 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     return new Promise((resolve, reject) => {
       if (
@@ -166,7 +168,8 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
                 input,
                 node,
                 mapLoop,
-                scopeId
+                scopeId,
+                runCounter
               );
             } else {
               // exit while loop and continue with next node
@@ -190,14 +193,16 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
                 input,
                 node,
                 loopIndex,
-                scopeId
+                scopeId,
+                runCounter
               );
             }
           },
           input,
           node,
           mapLoop,
-          scopeId
+          scopeId,
+          runCounter
         );
       };
 
