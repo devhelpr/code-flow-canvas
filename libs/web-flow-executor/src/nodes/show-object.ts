@@ -179,6 +179,8 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
           canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
           canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
         }
+
+        node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.formElements = [
           {
             fieldType: FormFieldType.Text,

@@ -201,6 +201,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.formElements = [
           {
             fieldType: FormFieldType.Text,
