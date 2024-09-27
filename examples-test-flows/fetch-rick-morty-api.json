@@ -1,0 +1,56 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "ab9148dd-b8ba-4131-9620-f03ebe0dc4b4",
+          "x": 617.9957324716553,
+          "y": 335.1234510408053,
+          "width": 200,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "fetch",
+            "formValues": {
+              "url": "https://rickandmortyapi.com/api/character/86",
+              "response-type": "json",
+              "http-method": "get"
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "6c97bdff-7b16-47c5-ab47-1e28dcd27a81",
+          "x": 890.8328637026761,
+          "y": 340.11903729333676,
+          "width": 240.00001210179175,
+          "height": 871.9999731343887,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-object"
+          }
+        },
+        {
+          "id": "55d8ab3b-f4a9-4b26-ac00-4ed5773440e0",
+          "x": 817.9957324716553,
+          "y": 365.1234510408053,
+          "endX": 890.8328637026761,
+          "endY": 370.11903729333676,
+          "startNodeId": "ab9148dd-b8ba-4131-9620-f03ebe0dc4b4",
+          "endNodeId": "6c97bdff-7b16-47c5-ab47-1e28dcd27a81",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

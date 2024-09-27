@@ -105,9 +105,15 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           node?.nodeInfo?.formValues?.['response-type'] ?? 'json';
         const httpMethod =
           node?.nodeInfo?.formValues?.['http-method'] ?? 'post';
+
+        let headers = new Headers();
+        if (responseType === 'json') {
+          headers.append('Content-Type', 'application/json');
+        }
         fetch(url, {
           method: httpMethod,
-          body: JSON.stringify(input),
+          headers,
+          body: httpMethod === 'get' ? undefined : JSON.stringify(input),
         })
           .then((response) => {
             if (responseType === 'json') {
@@ -306,7 +312,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             fieldType: FormFieldType.Select,
             fieldName: 'http-method',
             label: 'HTTP Method',
-            value: initalValues?.['http-method'] ?? 'get',
+            value: initalValues?.['http-method'] ?? 'post',
             options: [
               { label: 'get', value: 'get' },
               { label: 'post', value: 'post' },
