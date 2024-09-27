@@ -7,13 +7,16 @@ import {
   NodeTaskFactory,
   ThumbConnectionType,
   ThumbType,
+  FormFieldType,
+  InitialValues,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
 export const getShowObject: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  updated: () => void
 ): NodeTask<NodeInfo> => {
   let inputValues = {};
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -33,6 +36,13 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = typeof input === 'object' ? input : {};
+
+    if (node.nodeInfo?.formValues['name']) {
+      canvasAppInstance?.sendMessageFromNode(
+        node.nodeInfo?.formValues['name'],
+        inputValues
+      );
+    }
 
     if (hasInitialValue) {
       hasInitialValue = false;
@@ -88,8 +98,10 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
       canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
       y: number,
-      id?: string
+      id?: string,
+      initalValues?: InitialValues
     ) => {
+      canvasAppInstance = canvasApp;
       htmlNode = createElement(
         'div',
         {
@@ -107,6 +119,8 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
         undefined,
         htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
+
+      const externalNameInitialValue = initalValues?.['name'] ?? '';
 
       rect = canvasApp.createRect(
         x,
@@ -145,6 +159,9 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
         {
           type: 'show-object',
           formElements: [],
+          formValues: {
+            name: externalNameInitialValue ?? '',
+          },
         }
       );
 
@@ -162,6 +179,26 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
           canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
           canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
         }
+        node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'name',
+            label: 'External name',
+            value: externalNameInitialValue ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                name: value,
+              };
+
+              updated();
+            },
+          },
+        ];
       }
       return node;
     },
