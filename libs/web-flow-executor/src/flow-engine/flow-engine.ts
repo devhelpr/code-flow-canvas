@@ -26,6 +26,19 @@ export interface ConnectionExecute {
   cursorOnly?: boolean;
   nextNodeStates?: Map<string, any>;
 }
+const incrementHelper = (runCounter?: RunCounter) => {
+  if (runCounter) {
+    runCounter.incrementRunCounter();
+    updateRunCounterElement(runCounter);
+  }
+};
+const decrementHelper = (runCounter?: RunCounter) => {
+  if (runCounter) {
+    runCounter.decrementRunCounter();
+    updateRunCounterElement(runCounter);
+    runCounter.callRunCounterResetHandler();
+  }
+};
 
 export let connectionExecuteHistory: ConnectionExecute[] = [];
 
@@ -185,6 +198,7 @@ const triggerExecution = (
           }
         }
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
+
         if (formInfo && formInfo.computeAsync) {
           if (formInfo.decorators) {
             const decoratorInput = handleDecoratrs(
@@ -202,7 +216,7 @@ const triggerExecution = (
             }
             input = decoratorInput;
           }
-
+          incrementHelper(runCounter);
           const promise = formInfo.computeAsync(
             input,
             runIndex,
@@ -216,6 +230,7 @@ const triggerExecution = (
           return new Promise((resolve, reject) => {
             promise
               .then((computeResult: any) => {
+                decrementHelper(runCounter);
                 if (computeResult.stop && !computeResult.dummyEndpoint) {
                   if (lastConnectionExecutionHistory) {
                     lastConnectionExecutionHistory.nextNodeStates =
@@ -223,11 +238,7 @@ const triggerExecution = (
                     lastConnectionExecutionHistory = undefined;
                   }
                   if (onStopped) {
-                    if (runCounter) {
-                      runCounter.decrementRunCounter();
-                      updateRunCounterElement(runCounter);
-                      runCounter.callRunCounterResetHandler();
-                    }
+                    decrementHelper(runCounter);
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {
@@ -263,6 +274,7 @@ const triggerExecution = (
                 }
               })
               .catch((error: any) => {
+                decrementHelper(runCounter);
                 lastConnectionExecutionHistory = undefined;
                 reject(error);
               });
@@ -451,7 +463,7 @@ export const runNode = (
       }
       input = decoratorInput;
     }
-
+    incrementHelper(runCounter);
     formInfo
       .computeAsync(
         input ?? '',
@@ -463,6 +475,7 @@ export const runNode = (
         connection
       )
       .then((computeResult: any) => {
+        decrementHelper(runCounter);
         result = computeResult.result;
         followPath = computeResult.followPath;
 
@@ -488,6 +501,10 @@ export const runNode = (
           scopeId,
           runCounter
         );
+      })
+      .catch((e: any) => {
+        console.log('runNode error', e);
+        decrementHelper(runCounter);
       });
   } else if (formInfo && formInfo?.compute) {
     if (formInfo.decorators) {
@@ -670,6 +687,11 @@ export const run = (
       }
     }
 
+    // if (runCounter) {
+    //   runCounter.incrementRunCounter();
+    //   updateRunCounterElement(runCounter);
+    // }
+
     runNode(
       nodeComponent,
       canvasApp,
@@ -791,6 +813,7 @@ export const runNodeFromThumb = (
           input = decoratorInput;
         }
         return new Promise((resolve, reject) => {
+          incrementHelper(runCounter);
           formInfo
             .computeAsync(
               input,
@@ -802,6 +825,7 @@ export const runNodeFromThumb = (
               connection
             )
             .then((computeResult: any) => {
+              decrementHelper(runCounter);
               result = computeResult.result;
               followPath = computeResult.followPath;
               if (computeResult.stop) {
@@ -831,6 +855,7 @@ export const runNodeFromThumb = (
               }
             })
             .catch((e: any) => {
+              decrementHelper(runCounter);
               console.log('runNodeFromThumb error', e);
               reject();
             });

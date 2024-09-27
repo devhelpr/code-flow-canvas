@@ -8,6 +8,8 @@ export const setRunCounterUpdateElement = (domElement: HTMLElement) => {
 export const updateRunCounterElement = (runCounter: IRunCounter) => {
   if (runCounterUpdateElement) {
     //runCounterUpdateElement.textContent = `${runCounter.runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
+    //runCounterUpdateElement.textContent = `${runCounter.runCounter.toString()} / ${nodeAnimationMap.size.toString()}`;
+
     runCounterUpdateElement.textContent = `${runCounter.runCounter.toString()}`;
   }
 };

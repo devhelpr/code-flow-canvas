@@ -15,6 +15,7 @@ import {
   createTemplate,
 } from '@devhelpr/dom-components';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
+import { RunCounter } from '../follow-path/run-counter';
 
 export const getMultiTrigger = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -29,7 +30,8 @@ export const getMultiTrigger = (_updated: () => void): NodeTask<NodeInfo> => {
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     if (
       node.thumbConnectors &&
@@ -45,7 +47,8 @@ export const getMultiTrigger = (_updated: () => void): NodeTask<NodeInfo> => {
         input,
         node,
         loopIndex,
-        scopeId
+        scopeId,
+        runCounter
       );
 
       runNodeFromThumb(
@@ -57,7 +60,8 @@ export const getMultiTrigger = (_updated: () => void): NodeTask<NodeInfo> => {
         input,
         node,
         loopIndex,
-        scopeId
+        scopeId,
+        runCounter
       );
     }
 

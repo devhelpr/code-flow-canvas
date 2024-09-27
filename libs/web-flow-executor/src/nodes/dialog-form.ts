@@ -17,6 +17,7 @@ import {
 } from '@devhelpr/dom-components';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { navBarButton } from '../consts/classes';
+import { RunCounter } from '../follow-path/run-counter';
 
 const formControlsfieldName = 'formControls';
 const fieldName = 'message';
@@ -35,7 +36,8 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     return new Promise<IComputeResult>((resolve, reject) => {
       if (!node || !canvasAppInstance) {
@@ -108,7 +110,8 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
           input,
           node,
           loopIndex,
-          scopeId
+          scopeId,
+          runCounter
         );
       });
       const cancelButton = (
@@ -146,7 +149,8 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
           input,
           node,
           loopIndex,
-          scopeId
+          scopeId,
+          runCounter
         );
       });
     });

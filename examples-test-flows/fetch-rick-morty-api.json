@@ -8,9 +8,9 @@
       "nodes": [
         {
           "id": "ab9148dd-b8ba-4131-9620-f03ebe0dc4b4",
-          "x": 617.9957324716553,
-          "y": 335.1234510408053,
-          "width": 200,
+          "x": 507.1974319841055,
+          "y": 334.703625115859,
+          "width": 199.99996948242188,
           "height": 155,
           "nodeType": "Shape",
           "nodeInfo": {
@@ -25,23 +25,59 @@
         },
         {
           "id": "6c97bdff-7b16-47c5-ab47-1e28dcd27a81",
-          "x": 890.8328637026761,
-          "y": 340.11903729333676,
-          "width": 240.00001210179175,
-          "height": 871.9999731343887,
+          "x": 890.832913290285,
+          "y": 340.1190396146811,
+          "width": 239.99999555176478,
+          "height": 872.0000056819167,
           "nodeType": "Shape",
           "nodeInfo": {
-            "type": "show-object"
+            "type": "show-object",
+            "formValues": {
+              "name": "test"
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "2235ba53-17df-4969-b804-6814fccf6501",
+          "x": 1402.353005810084,
+          "y": 341.7544306961405,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
           }
         },
         {
           "id": "55d8ab3b-f4a9-4b26-ac00-4ed5773440e0",
-          "x": 817.9957324716553,
-          "y": 365.1234510408053,
-          "endX": 890.8328637026761,
-          "endY": 370.11903729333676,
+          "x": 707.1974014665274,
+          "y": 364.703625115859,
+          "endX": 890.832913290285,
+          "endY": 370.1190396146811,
           "startNodeId": "ab9148dd-b8ba-4131-9620-f03ebe0dc4b4",
           "endNodeId": "6c97bdff-7b16-47c5-ab47-1e28dcd27a81",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "d410ee54-cb5b-41b9-ba9d-a4cf5020b81a",
+          "x": 1130.8329088420498,
+          "y": 370.1190396146811,
+          "endX": 1402.353005810084,
+          "endY": 391.7544306961405,
+          "startNodeId": "6c97bdff-7b16-47c5-ab47-1e28dcd27a81",
+          "endNodeId": "2235ba53-17df-4969-b804-6814fccf6501",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "BezierCubic",

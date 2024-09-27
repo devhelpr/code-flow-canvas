@@ -10,6 +10,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
+import { RunCounter } from '../follow-path/run-counter';
 
 const activeSortColor = 'bg-blue-300';
 export const mapNodeName = 'map';
@@ -38,7 +39,8 @@ export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
     loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
-    scopeId?: string
+    scopeId?: string,
+    runCounter?: RunCounter
   ) => {
     const forEachDomElement = foreachComponent?.domElement as HTMLElement;
     forEachDomElement.classList.add('bg-slate-500');
@@ -100,7 +102,8 @@ export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
             { ...values[mapLoop] } as unknown as any,
             node,
             mapLoop,
-            scopeId
+            scopeId,
+            runCounter
           );
         } else {
           forEachDomElement.classList.add('bg-slate-500');
@@ -137,7 +140,8 @@ export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
             sortedList,
             node,
             loopIndex,
-            scopeId
+            scopeId,
+            runCounter
           );
         }
       };

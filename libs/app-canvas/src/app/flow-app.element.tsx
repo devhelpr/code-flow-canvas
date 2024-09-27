@@ -50,7 +50,6 @@ import {
   setStopAnimations,
   getIsStopAnimations,
 } from './follow-path/animate-path';
-import { setRunCounterUpdateElement } from './follow-path/updateRunCounterElement';
 import { getFollowNodeExecution } from './follow-path/followNodeExecution';
 import { createIndexedDBStorageProvider } from './storage/indexeddb-storage-provider';
 import { getPointOnConnection } from './follow-path/point-on-connection';
@@ -118,6 +117,7 @@ import {
   runPath,
   runPathForNodeConnectionPairs,
   runPathFromThumb,
+  setRunCounterUpdateElement,
   setupCanvasNodeTaskRegistry,
 } from '@devhelpr/web-flow-executor';
 

@@ -31,52 +31,62 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
     scopeId?: string,
     runCounter?: RunCounter
   ) => {
-    function sendFetchResult(result: any) {
-      runNodeFromThumb(
-        node.thumbConnectors![0],
-        canvasAppInstance!,
-        (inputFromLoadingRun: string | any[]) => {
-          console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
-          //
-        },
-        result,
-        node,
-        loopIndex,
-        scopeId,
-        runCounter
-      );
-    }
-    function sendFetchState(state: string) {
-      runNodeFromThumb(
-        node.thumbConnectors![2],
-        canvasAppInstance!,
-        (inputFromLoadingRun: string | any[]) => {
-          console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
-          //
-        },
-        state,
-        node,
-        loopIndex,
-        scopeId,
-        runCounter
-      );
-    }
-    function sendError(error: string) {
-      runNodeFromThumb(
-        node.thumbConnectors![1],
-        canvasAppInstance!,
-        (inputFromErrorgRun: string | any[]) => {
-          console.log('Fetch inputFromErrorgRun', inputFromErrorgRun);
-          //
-        },
-        error,
-        node,
-        loopIndex,
-        scopeId,
-        runCounter
-      );
-    }
     return new Promise((resolve, reject) => {
+      function sendFetchResult(result: any) {
+        runNodeFromThumb(
+          node.thumbConnectors![0],
+          canvasAppInstance!,
+          (inputFromLoadingRun: string | any[]) => {
+            console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
+            resolve({
+              result: false,
+              followPath: undefined,
+              stop: true,
+              dummyEndpoint: true,
+            });
+          },
+          result,
+          node,
+          loopIndex,
+          scopeId,
+          runCounter
+        );
+      }
+      function sendFetchState(state: string) {
+        runNodeFromThumb(
+          node.thumbConnectors![2],
+          canvasAppInstance!,
+          (inputFromLoadingRun: string | any[]) => {
+            console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
+          },
+          state,
+          node,
+          loopIndex,
+          scopeId,
+          runCounter
+        );
+      }
+      function sendError(error: string) {
+        runNodeFromThumb(
+          node.thumbConnectors![1],
+          canvasAppInstance!,
+          (inputFromErrorgRun: string | any[]) => {
+            console.log('Fetch inputFromErrorgRun', inputFromErrorgRun);
+            resolve({
+              result: false,
+              followPath: undefined,
+              stop: true,
+              dummyEndpoint: true,
+            });
+          },
+          error,
+          node,
+          loopIndex,
+          scopeId,
+          runCounter
+        );
+      }
+
       if (!canvasAppInstance?.isContextOnly) {
         (errorNode?.domElement as unknown as HTMLElement)?.classList.add(
           'hidden'
@@ -88,12 +98,6 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         return;
       }
 
-      resolve({
-        result,
-        followPath: undefined,
-        stop: true,
-        isDummyEndpoint: true,
-      });
       try {
         sendFetchState('fetching');
 

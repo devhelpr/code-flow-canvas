@@ -9,6 +9,7 @@ import {
   getNodeConnectionPairsFromThumb,
 } from '@devhelpr/visual-programming-system';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
+import { updateRunCounterElement } from './updateRunCounterElement';
 
 export const runPathForNodeConnectionPairs = <T>(
   canvasApp: IFlowCanvasBase<T>,
@@ -84,6 +85,9 @@ export const runPathForNodeConnectionPairs = <T>(
       const resolver = (result: any) => {
         console.log('animatePath onNextNode result', input, result);
         runCounter?.decrementRunCounter();
+        if (runCounter) {
+          updateRunCounterElement(runCounter);
+        }
 
         // uncomment the following line during debugging when a breakpoint is above here
         // .. this causes the message-bubble animation to continue after continuing
@@ -129,6 +133,9 @@ export const runPathForNodeConnectionPairs = <T>(
         });
     } else {
       runCounter?.decrementRunCounter();
+      if (runCounter) {
+        updateRunCounterElement(runCounter);
+      }
 
       if (start) {
         onNextNode && onNextNode(start.id, start, input ?? '', connection);

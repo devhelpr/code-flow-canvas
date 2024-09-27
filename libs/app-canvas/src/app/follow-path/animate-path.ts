@@ -15,7 +15,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { getPointOnConnection } from './point-on-connection';
 import { followNodeExecution } from './followNodeExecution';
-import { updateRunCounterElement } from './updateRunCounterElement';
+import { updateRunCounterElement } from '@devhelpr/web-flow-executor';
 
 function getLoopIncrement() {
   return 0.25;
