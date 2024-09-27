@@ -20,6 +20,11 @@ export interface IArrayMetaField extends IMetaField {
   getData?: () => any[];
 }
 
+export interface IJSonMetaField extends IMetaField {
+  type: 'json';
+  getData?: () => any;
+}
+
 export interface IOtherMetaField extends IMetaField {
   type: 'string' | 'info' | 'custom';
   description?: string;
@@ -31,6 +36,7 @@ export type AllMetaFieldTypes =
   | IMetaField
   | IMatrixMetaField
   | IArrayMetaField
+  | IJSonMetaField
   | IOtherMetaField;
 
 export interface INodeDecorator {

@@ -21,7 +21,11 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
+import {
+  getNodeByVariableName,
+  getNodesByNodeType,
+} from '../graph/get-node-by-variable-name';
+import { registerExpressionFunctionNodeName } from './register-expression-function';
 
 const thumbs = [
   {
@@ -221,7 +225,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
     const dependencies: { startNodeId: string; endNodeId: string }[] = [];
-    compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? '');
+    const expression: string = node?.nodeInfo?.formValues?.['expression'] ?? '';
+    compileExpression(expression);
     const compiledExpressionInfo = expressionCache[node.id];
     if (compiledExpressionInfo?.payloadProperties && canvasAppInstance) {
       const variablesInExpression = [
@@ -242,6 +247,23 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           }
         }
       });
+
+      const registeredCustomFunctionNodes = getNodesByNodeType(
+        registerExpressionFunctionNodeName,
+        canvasAppInstance
+      );
+      registeredCustomFunctionNodes?.forEach(
+        (customFunctionNode: INodeComponent<NodeInfo>) => {
+          const functionName =
+            customFunctionNode.nodeInfo?.formValues?.['functionName'];
+          if (functionName && expression.indexOf(functionName) >= 0) {
+            dependencies.push({
+              startNodeId: node.id,
+              endNodeId: customFunctionNode.id,
+            });
+          }
+        }
+      );
     }
     return dependencies;
   };
@@ -259,7 +281,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
       canvasAppInstance = canvasApp;
 
@@ -318,15 +342,15 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       const rect = canvasApp.createRect(
         x,
         y,
-        200,
-        100,
+        width ?? 200,
+        height ?? 100,
         undefined,
         thumbs,
         componentWrapper as INodeComponent<NodeInfo>,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        undefined,
+        true,
         undefined,
         undefined,
         id,
@@ -398,6 +422,8 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.getDependencies = getDependencies;
+        node.nodeInfo.showFormOnlyInPopup = true;
+        node.nodeInfo.isSettingsPopup = true;
 
         node.nodeInfo.compileInfo = {
           getCode: (input: any) => {

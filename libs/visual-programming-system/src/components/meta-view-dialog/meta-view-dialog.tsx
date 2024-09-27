@@ -2,6 +2,7 @@ import { IRectNodeComponent } from '../../interfaces';
 import {
   BaseNodeInfo,
   IArrayMetaField,
+  IJSonMetaField,
   IMatrixMetaField,
   IMetaField,
   IOtherMetaField,
@@ -24,6 +25,12 @@ export const isArrayMetaField = (
   metaField: IMetaField
 ): metaField is IArrayMetaField => {
   return (metaField as unknown as IArrayMetaField).type === 'array';
+};
+
+export const isJsonMetaField = (
+  metaField: IMetaField
+): metaField is IJSonMetaField => {
+  return (metaField as unknown as IJSonMetaField).type === 'json';
 };
 
 export const showMetaViewDialog = (
@@ -142,6 +149,20 @@ export const showMetaViewDialog = (
               columnElement.innerHTML = value;
             }
           }
+        }
+      } else if (isJsonMetaField(meta) && meta.propertyName) {
+        renderElement(<h1>{meta.displayName}</h1>, divElement);
+        const json =
+          meta.getData?.() ??
+          nodeComponent.nodeInfo?.formValues?.[meta.propertyName] ??
+          {};
+        if (json) {
+          renderElement(
+            <pre class="whitespace-pre-wrap">
+              {JSON.stringify(json, null, 2)}
+            </pre>,
+            divElement
+          );
         }
       } else if (isArrayMetaField(meta) && meta.propertyName) {
         renderElement(<h1>{meta.displayName}</h1>, divElement);

@@ -13,7 +13,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { emptyImage } from './emptyImage';
-import { getNodesByNodeType } from '../graph/get-node-by-variable-name';
+import { getFirstNodeByNodeType } from '../graph/get-node-by-variable-name';
 
 const selectImage = () => {
   return new Promise((resolve, _reject) => {
@@ -158,7 +158,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
     const dependencies: { startNodeId: string; endNodeId: string }[] = [];
     if (canvasAppInstance) {
-      const mediaLibrary = getNodesByNodeType(
+      const mediaLibrary = getFirstNodeByNodeType(
         'media-library-node',
         canvasAppInstance
       );

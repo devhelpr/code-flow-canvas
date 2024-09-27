@@ -32,6 +32,13 @@
 .connection-path {
   color: white;
 }
+.line-dependency-connection {
+  color: white;
+}
+
+.line-dependency-connection .connection-path {
+  color: #aaaaaa;
+}
 
 .selected > g > .connection-path {
   @apply text-blue-500;

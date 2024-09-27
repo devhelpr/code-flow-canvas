@@ -382,6 +382,34 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           html: initialValue || defaultHTML,
           aiprompt: aiPrompt,
         };
+
+        node.nodeInfo.meta = [
+          {
+            getDescription: () => {
+              return `Last input data`;
+            },
+
+            type: 'info',
+          },
+
+          {
+            propertyName: 'input',
+            displayName: 'Last input',
+            type: 'json',
+
+            getData: () => {
+              try {
+                return currentInput
+                  ? typeof currentInput === 'string'
+                    ? JSON.parse(currentInput)
+                    : currentInput
+                  : { message: 'No input data available' };
+              } catch (error) {
+                return { error: 'Parsing current input failed' };
+              }
+            },
+          },
+        ];
       }
       setHTML(currentInput);
 

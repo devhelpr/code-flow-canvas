@@ -36,7 +36,7 @@ export const getNodeByFunctionName = (
   return node;
 };
 
-export const getNodesByNodeType = (
+export const getFirstNodeByNodeType = (
   taskType: string,
   canvasAppInstance: IFlowCanvasBase<NodeInfo>
 ): INodeComponent<NodeInfo> | undefined => {
@@ -50,4 +50,18 @@ export const getNodesByNodeType = (
     return true;
   });
   return node;
+};
+
+export const getNodesByNodeType = (
+  taskType: string,
+  canvasAppInstance: IFlowCanvasBase<NodeInfo>
+): INodeComponent<NodeInfo>[] => {
+  let nodes: INodeComponent<NodeInfo>[] = [];
+  Array.from(canvasAppInstance.elements).forEach((itemPair) => {
+    const element = itemPair[1];
+    if (element.nodeInfo?.type === taskType) {
+      nodes.push(element as INodeComponent<NodeInfo>);
+    }
+  });
+  return nodes;
 };

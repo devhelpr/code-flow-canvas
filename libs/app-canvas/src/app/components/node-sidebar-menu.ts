@@ -266,6 +266,9 @@ export class NodeSidebarMenuComponent extends Component<
                   connection.nodeComponent &&
                   connection.nodeComponent.update
                 ) {
+                  (
+                    connection.nodeComponent?.domElement as HTMLElement
+                  )?.classList?.add('line-dependency-connection');
                   connection.nodeComponent.startNode = startNode;
                   connection.nodeComponent.endNode = endNode;
 
@@ -277,7 +280,7 @@ export class NodeSidebarMenuComponent extends Component<
                   }
 
                   connection.nodeComponent.isAnnotationConnection = true;
-                  connection.nodeComponent.layer = 2;
+                  connection.nodeComponent.layer = 1;
                   connection.nodeComponent.update();
                 }
               }

@@ -59,7 +59,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
 
   const Text = () => (
     <div
-      class="text-white text-center"
+      class="text-white text-center font-bold text-4xl p-4"
       getElement={(element: HTMLElement) => {
         textElement = element;
       }}
@@ -72,6 +72,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
     registerExpressionFunctionNodeName,
     labelName,
     familyName,
+
     fieldName,
     compute,
     initializeCompute,
@@ -98,6 +99,10 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
             };
             if (textElement) {
               textElement.textContent = value;
+            }
+
+            if (rect && rect.resize) {
+              rect?.resize();
             }
 
             if (updated) {
