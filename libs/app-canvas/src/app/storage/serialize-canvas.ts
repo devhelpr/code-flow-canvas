@@ -91,13 +91,26 @@ export const exportFlowToJson = <T>(
   return JSON.stringify(flow, null, 2);
 };
 
+function replaceHyphenatedProps(jsonString: string) {
+  // Regular expression to match property names with hyphens
+  // It looks for "property-name": and captures 'property-name'
+  const regex = /"([^"]+-[^"]+)":/g;
+
+  // Replace matched property names with ["property-name"]:
+  const modifiedString = jsonString.replace(regex, (_match, p1) => {
+    return `["${p1}"]:`;
+  });
+
+  return modifiedString;
+}
+
 const getJSONASTypescript = (json: any) => {
   let flowString = JSON.stringify(json, null, 2);
   flowString.replace(/\\"/g, '\uFFFF'); // U+ FFFF
   flowString = flowString
     .replace(/"([^"]+)":/g, '$1:')
     .replace(/\uFFFF/g, '\\"');
-  return flowString;
+  return replaceHyphenatedProps(flowString);
 };
 
 export const exportFlowToTypescript = <T>(
@@ -165,7 +178,8 @@ export const exportFlowToTypescript = <T>(
           .filter(
             (node) =>
               (node.nodeInfo as BaseNodeInfo)?.type === 'show-value' ||
-              (node.nodeInfo as BaseNodeInfo)?.type === 'show-input'
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-input' ||
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-object'
           )
           .map((node) => {
             const helperNode =
@@ -215,7 +229,8 @@ export const exportFlowToTypescript = <T>(
         .filter(
           (node) =>
             ((node.nodeInfo as BaseNodeInfo)?.type === 'show-value' ||
-              (node.nodeInfo as BaseNodeInfo)?.type === 'show-input') &&
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-input' ||
+              (node.nodeInfo as BaseNodeInfo)?.type === 'show-object') &&
             (node.nodeInfo as BaseNodeInfo)?.formValues['name']
         )
         .map((node) => {
