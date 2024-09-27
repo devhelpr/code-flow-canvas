@@ -105,12 +105,12 @@ function replaceHyphenatedProps(jsonString: string) {
 }
 
 const getJSONASTypescript = (json: any) => {
-  let flowString = JSON.stringify(json, null, 2);
+  let flowString = replaceHyphenatedProps(JSON.stringify(json, null, 2));
   flowString.replace(/\\"/g, '\uFFFF'); // U+ FFFF
   flowString = flowString
     .replace(/"([^"]+)":/g, '$1:')
     .replace(/\uFFFF/g, '\\"');
-  return replaceHyphenatedProps(flowString);
+  return flowString;
 };
 
 export const exportFlowToTypescript = <T>(
