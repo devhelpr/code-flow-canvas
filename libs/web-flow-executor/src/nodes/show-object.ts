@@ -36,7 +36,14 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = typeof input === 'object' ? input : {};
-
+    console.log(
+      'show-object',
+      inputValues,
+      node.nodeInfo?.formValues['name'],
+      node.nodeInfo,
+      canvasAppInstance,
+      canvasAppInstance?.sendMessageFromNode
+    );
     if (node.nodeInfo?.formValues['name']) {
       canvasAppInstance?.sendMessageFromNode(
         node.nodeInfo?.formValues['name'],
