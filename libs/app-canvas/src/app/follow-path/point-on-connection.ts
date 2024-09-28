@@ -19,7 +19,7 @@ export const getPointOnConnection = <T>(
   connection: IConnectionNodeComponent<T>,
   start: IRectNodeComponent<T>,
   end: IRectNodeComponent<T>,
-  isPercentage: boolean = false
+  isPercentage = false
 ) => {
   const startNodeThumbType =
     connection.lineType === LineType.Straight
@@ -86,7 +86,7 @@ export const getPointOnConnection = <T>(
       const path = connection.pathElement?.domElement as SVGPathElement;
       const pathLength = path.getTotalLength();
       const point = path.getPointAtLength(
-        isPercentage ? ratio : positionInPixels
+        isPercentage ? ratio * pathLength : positionInPixels
       );
 
       const loopBackXOffset = 0;
@@ -115,7 +115,7 @@ export const getPointOnConnection = <T>(
     const path = connection.pathElement?.domElement as SVGPathElement;
     const pathLength = path.getTotalLength();
     const point = path.getPointAtLength(
-      isPercentage ? ratio : positionInPixels
+      isPercentage ? ratio * pathLength : positionInPixels
     );
 
     const loopBackXOffset = 0;
@@ -143,7 +143,7 @@ export const getPointOnConnection = <T>(
       const path = connection.pathElement?.domElement as SVGPathElement;
       const pathLength = path.getTotalLength();
       const point = path.getPointAtLength(
-        isPercentage ? ratio : positionInPixels
+        isPercentage ? ratio * pathLength : positionInPixels
       );
 
       const loopBackXOffset = isLeftToLeftConnectors ? 20 : 0;
@@ -170,7 +170,7 @@ export const getPointOnConnection = <T>(
       const path = connection.pathElement?.domElement as SVGPathElement;
       const pathLength = path.getTotalLength();
       const point = path.getPointAtLength(
-        isPercentage ? ratio : positionInPixels
+        isPercentage ? ratio * pathLength : positionInPixels
       );
 
       const loopBackXOffset = isLeftToRightConnectors ? 0 : 20;

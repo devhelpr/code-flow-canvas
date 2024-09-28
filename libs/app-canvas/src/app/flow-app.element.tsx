@@ -1330,7 +1330,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               percentage,
               pathStep.connection,
               node,
-              pathStep.connection.endNode
+              pathStep.connection.endNode,
+              true
             );
 
             let parentX = 0;
