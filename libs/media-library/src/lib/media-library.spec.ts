@@ -1,7 +1,8 @@
-import { mediaLibrary } from './media-library';
+import { createMediaLibrary } from './media-library';
 
 describe('mediaLibrary', () => {
-  it('should work', () => {
-    expect(mediaLibrary()).toEqual('media-library');
+  it('should create a defined instance', () => {
+    const mediaLibrary = createMediaLibrary();
+    expect(mediaLibrary).toBeDefined();
   });
 });

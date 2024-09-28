@@ -110,7 +110,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         const httpMethod =
           node?.nodeInfo?.formValues?.['http-method'] ?? 'post';
 
-        let headers = new Headers();
+        const headers = new Headers();
         if (responseType === 'json') {
           headers.append('Content-Type', 'application/json');
         }

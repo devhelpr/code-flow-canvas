@@ -40,7 +40,12 @@ export const runPathForNodeConnectionPairs = <T>(
 ) => {
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (onStopped) {
-      console.log('animatePath onStopped4', input);
+      console.log(
+        'animatePath onStopped4',
+        runCounter?.runCounter,
+        runCounter?.runId,
+        input
+      );
       onStopped(input ?? '', scopeId);
     }
 

@@ -59,7 +59,9 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
     if (node.nodeInfo?.formValues['name']) {
       canvasAppInstance?.sendMessageFromNode(
         node.nodeInfo?.formValues['name'],
-        typeof input === 'number'
+        Array.isArray(input) || typeof input === 'object'
+          ? input
+          : typeof input === 'number'
           ? (input as number).toFixed(2)
           : input.toString()
       );

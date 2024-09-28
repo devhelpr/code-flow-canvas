@@ -197,7 +197,7 @@ export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
 };
 
 export const getNodeConnectionPairsFromThumb = <T>(
-  canvasApp: IFlowCanvasBase<T>,
+  _canvasApp: IFlowCanvasBase<T>,
   nodeThumb: IThumbNodeComponent<T>,
   onlyDataConnections?: boolean
 ) => {
@@ -236,13 +236,7 @@ export const getNodeConnectionPairsFromThumb = <T>(
             end = connection.endNode;
           }
 
-          if (
-            connection &&
-            end &&
-            canvasApp?.canvas
-            // connection.controlPoints &&
-            // connection.controlPoints.length >= 1
-          ) {
+          if (connection && end) {
             if (onlyDataConnections && !connection.isData) {
               return;
             }

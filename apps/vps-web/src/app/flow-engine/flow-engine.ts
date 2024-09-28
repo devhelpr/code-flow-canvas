@@ -28,7 +28,7 @@ export class FlowEngine {
   constructor() {
     this.canvasApp = createRuntimeFlowContext<NodeInfo>();
   }
-  initiliaze(flow: FlowNode<NodeInfo>[]) {
+  initialize(flow: FlowNode<NodeInfo>[]) {
     if (!this.canvasApp) {
       throw new Error('CanvasAppInstance not initialized');
     }
@@ -75,34 +75,39 @@ export class FlowEngine {
       }
     });
   }
-  run() {
-    this.runFlow();
+  run(input?: any) {
+    return this.runFlow(input);
   }
-  private runFlow = () => {
-    const runCounter = new RunCounter();
-    runCounter.setRunCounterResetHandler(() => {
-      if (runCounter.runCounter <= 0) {
-        console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
-        increaseRunIndex();
-      } else {
-        console.log(
-          'setRunCounterResetHandler: runCounter.runCounter > 0',
-          runCounter.runCounter
-        );
-      }
+  private runFlow = (input?: any) => {
+    let output: any;
+    return new Promise<string>((resolve, _reject) => {
+      const runCounter = new RunCounter();
+      runCounter.setRunCounterResetHandler(() => {
+        if (runCounter.runCounter <= 0) {
+          console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
+          increaseRunIndex();
+          resolve(output);
+        } else {
+          console.log(
+            'setRunCounterResetHandler: runCounter.runCounter > 0',
+            runCounter.runCounter
+          );
+        }
+      });
+      run(
+        this.canvasApp?.elements,
+        this.canvasApp,
+        (input) => {
+          output = input;
+          console.log('run finished', input);
+        },
+        input,
+        undefined,
+        undefined,
+        runCounter,
+        false
+      );
     });
-    run(
-      this.canvasApp?.elements,
-      this.canvasApp,
-      (input) => {
-        console.log('run finished', input);
-      },
-      undefined,
-      undefined,
-      undefined,
-      runCounter,
-      false
-    );
   };
   private runPathFromThumbFlow = (
     node: IThumbNodeComponent<NodeInfo>,

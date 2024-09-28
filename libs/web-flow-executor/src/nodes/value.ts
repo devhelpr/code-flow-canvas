@@ -77,16 +77,17 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
-
-      FormComponent({
-        rootElement: componentWrapper.domElement as HTMLElement,
-        id: id ?? '',
-        formElements,
-        hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
-        },
-      }) as unknown as HTMLElement;
+      if (componentWrapper?.domElement) {
+        FormComponent({
+          rootElement: componentWrapper?.domElement as HTMLElement,
+          id: id ?? '',
+          formElements,
+          hasSubmitButton: false,
+          onSave: (formValues) => {
+            console.log('onSave', formValues);
+          },
+        }) as unknown as HTMLElement;
+      }
 
       const rect = canvasApp.createRect(
         x,

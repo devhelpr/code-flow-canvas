@@ -4,7 +4,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FlowEngine } from './flow-engine/flow-engine';
 import { flow } from './test-flows/celsius-fahrenheit';
-
+import { flow as fetchFlow } from '../tests/flows/map-flow';
 function clearBody() {
   document.body
     .querySelectorAll('div:not(.run-flow-container)')
@@ -16,7 +16,7 @@ function clearBody() {
 export const runFlow = () => {
   clearBody();
   const flowEngine = new FlowEngine();
-  flowEngine.initiliaze(flow.flows.flow.nodes);
+  flowEngine.initialize(flow.flows.flow.nodes);
 
   const rootElement = document.getElementById('run-flow-container')!;
   let resultElement: HTMLDivElement | undefined = undefined;
@@ -70,6 +70,25 @@ export const runFlow = () => {
           }}
         />
       </div>
+      <button
+        click={() => {
+          const flowEngine = new FlowEngine();
+          const outputs: Record<string, any> = {};
+          flowEngine.canvasApp.setOnNodeMessage(
+            (key: string, inputValue: string) => {
+              console.log('output', inputValue);
+              outputs[key] = inputValue;
+            }
+          );
+
+          flowEngine.initialize(fetchFlow.flows.flow.nodes);
+          flowEngine.run().then((result) => {
+            console.log('result', result, outputs);
+          });
+        }}
+      >
+        test fetch
+      </button>
     </div>,
     rootElement
   );

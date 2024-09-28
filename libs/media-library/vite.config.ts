@@ -58,5 +58,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/libs/media-library',
       provider: 'v8',
     },
+    passWithNoTests: true,
   },
 });

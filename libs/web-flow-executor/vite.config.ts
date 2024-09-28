@@ -58,5 +58,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/libs/web-flow-executor',
       provider: 'v8',
     },
+    passWithNoTests: true,
   },
 });

@@ -158,7 +158,7 @@ const triggerExecution = (
           const nodeStates = canvasApp.getNodeStates();
           if (!canvasApp.isContextOnly) {
             let inputToHistory: any = input;
-            let inputAsObject: any = input;
+            const inputAsObject: any = input;
             if (
               inputAsObject &&
               typeof inputAsObject === 'object' &&
@@ -750,7 +750,7 @@ export const runNodeFromThumb = (
       const storeNodeStates = () => {
         if (!canvasApp.isContextOnly) {
           let inputToHistory: any = input;
-          let inputAsObject: any = input;
+          const inputAsObject: any = input;
           if (
             inputAsObject &&
             typeof inputAsObject === 'object' &&

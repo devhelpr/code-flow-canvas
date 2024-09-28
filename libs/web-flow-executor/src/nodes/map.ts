@@ -103,9 +103,10 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
     runCounter?: RunCounter
   ) => {
     const forEachDomElement = foreachComponent?.domElement as HTMLElement;
-    forEachDomElement.classList.add('bg-slate-500');
-    forEachDomElement.classList.remove(activeMapColor);
-
+    if (forEachDomElement) {
+      forEachDomElement.classList.add('bg-slate-500');
+      forEachDomElement.classList.remove(activeMapColor);
+    }
     return new Promise((resolve, reject) => {
       if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
         reject();
@@ -173,8 +174,10 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
             runCounter
           );
         } else {
-          forEachDomElement.classList.add('bg-slate-500');
-          forEachDomElement.classList.remove(activeMapColor);
+          if (forEachDomElement) {
+            forEachDomElement.classList.add('bg-slate-500');
+            forEachDomElement.classList.remove(activeMapColor);
+          }
 
           runNodeFromThumb(
             node.thumbConnectors[0],
@@ -197,9 +200,10 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
           );
         }
       };
-
-      forEachDomElement.classList.remove('bg-slate-500');
-      forEachDomElement.classList.add(activeMapColor);
+      if (forEachDomElement) {
+        forEachDomElement.classList.remove('bg-slate-500');
+        forEachDomElement.classList.add(activeMapColor);
+      }
       runNext(startIndex);
     });
   };

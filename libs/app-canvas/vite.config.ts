@@ -58,5 +58,6 @@ export default defineConfig({
       reportsDirectory: '../../coverage/libs/app-canvas',
       provider: 'v8',
     },
+    passWithNoTests: true,
   },
 });
