@@ -165,6 +165,10 @@ export function Toolbar<T>(props: {
         }
       }
       const taskList = getTasksWhichAreInterchangeableWithSelectedNode();
+      if (input) {
+        input.value = '';
+      }
+
       if (taskList.length > 1) {
         fillTaskList(
           taskList,
@@ -184,8 +188,12 @@ export function Toolbar<T>(props: {
           setActionNode(undefined);
         }
       } else {
-        popupTriggeredFromEffect = false;
-        hideUL();
+        if (info.node?.nodeType === NodeType.Shape) {
+          fillTaskList([], 'No replaceable node-types found');
+        } else {
+          popupTriggeredFromEffect = false;
+          hideUL();
+        }
       }
     } else {
       console.log('hide toolbar', skipHide);
@@ -328,7 +336,12 @@ export function Toolbar<T>(props: {
     }
     ul.innerHTML = '';
     if (label) {
-      renderElement(<li class="font-bold px-2">{label}</li>, ul);
+      renderElement(
+        <li title={label} class="font-bold px-2 text-ellipsis overflow-hidden">
+          {label}
+        </li>,
+        ul
+      );
     }
     tasks
       .filter((task) =>
@@ -425,7 +438,25 @@ export function Toolbar<T>(props: {
           .toLocaleLowerCase()
           .includes((input?.value ?? '').toLocaleLowerCase())
     );
-    fillTaskList(tasks);
+
+    let label: string | undefined = undefined;
+    if (isInReplaceeMode && selectedNode?.nodeType === NodeType.Shape) {
+      if (tasks.length === 0) {
+        label = 'No replaceable node-types found';
+      } else {
+        label = 'Replace node with:';
+      }
+    } else if (
+      isInReplaceeMode &&
+      selectedNode?.nodeType === NodeType.Connection
+    ) {
+      if (tasks.length === 0) {
+        label = 'No insertable node-types found';
+      } else {
+        label = 'Insert node in connection:';
+      }
+    }
+    fillTaskList(tasks, label);
   };
   const ToolbarComponent = () => (
     <div
