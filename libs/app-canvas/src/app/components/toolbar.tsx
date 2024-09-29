@@ -24,8 +24,9 @@ function ToolbarItem(props: {
   addNodeType: (nodeType: string) => void;
 }) {
   return (
-    <li class="px-2" data-node-type={props.nodeType}>
+    <li class="px-2 " title={props.label} data-node-type={props.nodeType}>
       <button
+        class="w-full text-ellipsis overflow-hidden text-left"
         click={(event: MouseEvent) => {
           event.preventDefault();
           event.stopPropagation();
