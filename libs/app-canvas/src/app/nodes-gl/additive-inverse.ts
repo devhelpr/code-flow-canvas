@@ -9,7 +9,7 @@ import {
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'additive-inverse';
-const labelName = 'Additive Inverse';
+const labelName = 'Additive inverse (-x)';
 const nodeName = 'additive-inverse-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';

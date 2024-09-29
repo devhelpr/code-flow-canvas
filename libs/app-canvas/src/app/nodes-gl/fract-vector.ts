@@ -9,7 +9,7 @@ import {
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'fract-vector';
-const labelName = 'Fract vectpr';
+const labelName = 'Fract vector';
 const nodeName = 'fract-vector-node';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'vec2';

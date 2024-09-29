@@ -116,7 +116,7 @@ export const setupGLNodeTaskRegistry = (
   registerGLNodeFactory(
     'additive-inverse-node',
     getAdditiveInverseNode,
-    'Additive Inverse'
+    'Additive Inverse (-x)'
   );
   registerGLNodeFactory('sine-node', getSineNode, 'Sine');
   registerGLNodeFactory('cosine-node', getCosineNode, 'Cosine');
