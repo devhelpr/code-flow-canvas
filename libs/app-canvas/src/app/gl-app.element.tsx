@@ -872,7 +872,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         for: this.pathRange?.id ?? '',
       },
       bgRange?.domElement,
-      'History'
+      'Create Flow History'
     );
     if (this.pathRange && labelPathRange) {
       this.pathRange.domElement.before(labelPathRange.domElement);

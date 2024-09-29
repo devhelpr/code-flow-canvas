@@ -184,6 +184,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.initializeOnStartFlow = true;
 
         node.nodeInfo.updateVisual = updateVisual;
 

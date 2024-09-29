@@ -159,7 +159,7 @@ export const getNodeTreeVisualizer = (
         }
       }
     }
-    if (rect) {
+    if (rect && rect.resize) {
       rect.resize();
       //console.log('resize visualization');
     }
@@ -176,8 +176,13 @@ export const getNodeTreeVisualizer = (
       'getNodeStatedHandler',
       (htmlNode.domElement as unknown as HTMLElement).innerHTML
     );
+
     return {
-      data: (htmlNode.domElement as unknown as HTMLElement).innerHTML,
+      data: {
+        width: node.width,
+        height: node.height,
+        data: (htmlNode.domElement as unknown as HTMLElement).innerHTML,
+      },
       id: node.id,
     };
   };
@@ -185,7 +190,12 @@ export const getNodeTreeVisualizer = (
   const setNodeStatedHandler = (_id: string, data: any) => {
     console.log('setNodeStatedHandler', data);
     if (htmlNode) {
-      (htmlNode.domElement as unknown as HTMLElement).innerHTML = data;
+      (htmlNode.domElement as unknown as HTMLElement).innerHTML = data.data;
+      if (node?.width !== undefined && node?.height !== undefined) {
+        if (rect && (data.width > node?.width || data.height > node?.height)) {
+          rect.resize(data.width);
+        }
+      }
     }
   };
 

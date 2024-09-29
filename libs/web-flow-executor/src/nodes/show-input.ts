@@ -88,7 +88,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         htmlNode.domElement.textContent = output;
       } else {
         if (typeof inputValues === 'number') {
-          htmlNode.domElement.textContent = (inputValues ?? '-').toString();
+          htmlNode.domElement.textContent = inputValues.toFixed(2);
         } else {
           htmlNode.domElement.textContent = (inputValues || '-').toString();
         }
@@ -173,7 +173,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       ) as unknown as INodeComponent<NodeInfo>;
 
       const externalNameInitialValue = initalValues?.['name'] ?? '';
-
+      const dataTypeInitialValue = initalValues?.['data-type'] ?? 'default';
       rect = canvasApp.createRect(
         x,
         y,
@@ -194,6 +194,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
           formElements: [],
           formValues: {
             name: externalNameInitialValue ?? '',
+            ['data-type']: dataTypeInitialValue,
           },
         }
       );
@@ -206,6 +207,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.initializeOnStartFlow = true;
         node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.formElements = [
           {
@@ -221,6 +223,32 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 name: value,
+              };
+
+              updated();
+            },
+          },
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'data-type',
+            label: 'Data type',
+            value: dataTypeInitialValue,
+            options: [
+              { label: 'Default', value: 'default' },
+              { label: 'String', value: 'string' },
+              { label: 'Number', value: 'number' },
+              { label: 'Boolean', value: 'boolean' },
+              { label: 'Array', value: 'array' },
+              { label: 'Object', value: 'object' },
+            ],
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['data-type']: value,
               };
 
               updated();

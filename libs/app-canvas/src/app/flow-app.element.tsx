@@ -1009,6 +1009,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.runButton?.domElement
     );
 
+    createElement(
+      'span',
+      {
+        class: `ml-2 text-white`,
+      },
+      menubarElement?.domElement,
+      'Run speed'
+    );
+
     let speedMeter = 375;
     this.speedMeterElement = createElement(
       'input',
