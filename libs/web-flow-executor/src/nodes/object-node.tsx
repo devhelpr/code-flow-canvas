@@ -85,6 +85,17 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
       }
     }
     let loop = 0;
+
+    while (loop < extraInputCount) {
+      if (localValues[`input${loop}`] === undefined) {
+        (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement)
+          ?.querySelector('.inner-thumb')
+          ?.classList?.add('blink-thumb');
+      }
+      loop++;
+    }
+
+    loop = 0;
     while (loop < extraInputCount) {
       if (localValues[`input${loop}`] === undefined) {
         return {
@@ -108,6 +119,10 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
       if (resetOnTrigger) {
         localValues[`input${loop}`] = undefined;
       }
+
+      (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement)
+        ?.querySelector('.inner-thumb')
+        ?.classList?.remove('blink-thumb');
       loop++;
     }
     if (resetOnTrigger) {
