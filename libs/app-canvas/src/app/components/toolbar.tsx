@@ -28,6 +28,7 @@ function ToolbarItem(props: {
       <button
         click={(event: MouseEvent) => {
           event.preventDefault();
+          event.stopPropagation();
           props.hideToolbar();
           props.addNodeType(props.nodeType);
           return false;
@@ -356,6 +357,13 @@ export function Toolbar<T>(props: {
               label={task.label}
               nodeType={task.nodeType}
               hideToolbar={() => {
+                if (
+                  selectedNode !== undefined &&
+                  isInReplaceeMode &&
+                  selectedNode.nodeType === NodeType.Shape
+                ) {
+                  return;
+                }
                 toggle = false;
                 if (ul) {
                   ul.remove();

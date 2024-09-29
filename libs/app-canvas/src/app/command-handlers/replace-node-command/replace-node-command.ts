@@ -160,6 +160,7 @@ export class ReplaceNodeCommand<
         }
 
         this.canvasUpdated();
+        this.getCanvasApp()?.selectNode(node);
       }
     }
   }
