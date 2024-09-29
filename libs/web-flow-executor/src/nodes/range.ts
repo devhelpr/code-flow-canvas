@@ -112,6 +112,16 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
       values.max === undefined ||
       (hasStepConnection && values.step === undefined)
     ) {
+      if (values.min === undefined && values.max) {
+        (node?.thumbConnectors?.[1].domElement as HTMLElement)
+          ?.querySelector('.inner-thumb')
+          ?.classList?.add('blink-thumb');
+      }
+      if (values.max === undefined && values.min) {
+        (node?.thumbConnectors?.[2].domElement as HTMLElement)
+          .querySelector('.inner-thumb')
+          ?.classList?.add('blink-thumb');
+      }
       return {
         result: undefined,
         output: undefined,
@@ -119,6 +129,14 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
+
+    (node?.thumbConnectors?.[1].domElement as HTMLElement)
+      ?.querySelector('.inner-thumb')
+      ?.classList?.remove('blink-thumb');
+    (node?.thumbConnectors?.[2].domElement as HTMLElement)
+      ?.querySelector('.inner-thumb')
+      ?.classList?.remove('blink-thumb');
+
     const min = values.min;
     const max = values.max;
     const step = values.step;
@@ -152,8 +170,8 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
     (_values?: InitialValues) => {
       return [];
     },
-    (_nodeInstance) => {
-      //
+    (nodeInstance) => {
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
     {
       hasTitlebar: false,

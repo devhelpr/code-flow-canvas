@@ -16,7 +16,7 @@ export const getThumbCssClasses = () => {
     prefixLabelClasses: `thumb-prefix-label whitespace-nowrap relative text-white pointer-events-none select-none `,
     prefixLabelEndClasses: `-right-[30px] block`,
     prefixLabelStartClasses: `origin-right -translate-x-[100%] text-right flex justify-end`,
-    innerCircleDefaultClasses: `absolute rounded top-[3px] outline outline-[2px] outline-slate-800 outline-solid`,
+    innerCircleDefaultClasses: `inner-thumb absolute rounded top-[3px] outline outline-[2px] outline-slate-800 outline-solid`,
     innerCircleClasses: `flex items-center justify-center`,
     iconWrapperClasses: `pointer-events-none relative`,
     iconClasses: `pointer-events-none absolute`,
