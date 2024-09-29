@@ -142,6 +142,7 @@ export function Toolbar<T>(props: {
       isInReplaceeMode = true;
       if (actionSelectedNodeInfo && info.node?.nodeType === NodeType.Shape) {
         skipHide = true;
+        popupTriggeredFromEffect = false;
         console.log(
           'skipHide : actionSelectedNodeInfo2',
           actionSelectedNodeInfo
@@ -186,6 +187,7 @@ export function Toolbar<T>(props: {
             actionSelectedNodeInfo
           );
           skipHide = true;
+          popupTriggeredFromEffect = false;
           setActionNode(undefined);
         }
       } else {
@@ -197,7 +199,9 @@ export function Toolbar<T>(props: {
         }
       }
     } else {
-      console.log('hide toolbar', skipHide);
+      console.log('hide toolbar', skipHide, popupTriggeredFromEffect);
+
+      popupTriggeredFromEffect = false;
       if (!skipHide) {
         selectedNode = undefined;
         hideUL();
