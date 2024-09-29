@@ -35,6 +35,10 @@ import {
   removeClassesHTMLElement,
 } from '../utils/add-remove-classes';
 import { NodeInfo, getNodeTaskFactory } from '@devhelpr/web-flow-executor';
+import {
+  getIsStopAnimations,
+  setStopAnimations,
+} from '../follow-path/animate-path';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -444,18 +448,24 @@ export class NavbarComponent extends Component<
           if (event && event.target && event.target.result) {
             const data = JSON.parse(event.target.result.toString());
             console.log('IMPORT DATA', data);
-            this.props.clearCanvas();
-            this.props.importToCanvas(
-              data.flows.flow.nodes,
-              canvasApp,
-              this.props.canvasUpdated,
-              undefined,
-              0,
-              getNodeTaskFactory,
-              data.compositions
-            );
-            this.props.getCanvasApp()?.centerCamera();
-            this.props.initializeNodes();
+            setStopAnimations();
+            const interval = setInterval(() => {
+              if (!getIsStopAnimations()) {
+                clearInterval(interval);
+                this.props.clearCanvas();
+                this.props.importToCanvas(
+                  data.flows.flow.nodes,
+                  canvasApp,
+                  this.props.canvasUpdated,
+                  undefined,
+                  0,
+                  getNodeTaskFactory,
+                  data.compositions
+                );
+                this.props.getCanvasApp()?.centerCamera();
+                this.props.initializeNodes();
+              }
+            }, 0);
           }
         });
         reader.readAsBinaryString(files[0]);
@@ -532,18 +542,24 @@ export class NavbarComponent extends Component<
           if (!canvasApp) {
             return;
           }
-          this.props.clearCanvas();
-          this.props.importToCanvas(
-            data.flows.flow.nodes,
-            canvasApp,
-            this.props.canvasUpdated,
-            undefined,
-            0,
-            getNodeTaskFactory,
-            data.compositions
-          );
-          canvasApp.centerCamera();
-          this.props.initializeNodes();
+          setStopAnimations();
+          const interval = setInterval(() => {
+            if (!getIsStopAnimations()) {
+              clearInterval(interval);
+              this.props.clearCanvas();
+              this.props.importToCanvas(
+                data.flows.flow.nodes,
+                canvasApp,
+                this.props.canvasUpdated,
+                undefined,
+                0,
+                getNodeTaskFactory,
+                data.compositions
+              );
+              canvasApp.centerCamera();
+              this.props.initializeNodes();
+            }
+          }, 0);
         });
     }
     return false;
