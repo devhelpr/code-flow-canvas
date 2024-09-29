@@ -11,6 +11,7 @@ import {
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { getShowNodeFamilyCssClasses } from '../consts/show-node-family-css-classes';
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorRight,
@@ -31,6 +32,7 @@ const thumbs = [
     color: 'white',
   },
 ];
+const cssClasses = getShowNodeFamilyCssClasses();
 export const getShowInput: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -145,6 +147,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       initalValues?: InitialValues
     ) => {
       canvasAppInstance = canvasApp;
+
       htmlNode = createElement(
         'div',
         {
@@ -163,7 +166,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[120px] max-h-[500px] text-white`,
+          class: `${cssClasses.wrapperCssClasses} ${cssClasses.showInputAdditionalWrapperCssClasses}`,
         },
         undefined,
         htmlNode?.domElement as unknown as HTMLElement

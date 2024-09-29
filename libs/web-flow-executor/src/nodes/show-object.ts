@@ -11,6 +11,9 @@ import {
   InitialValues,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { getShowNodeFamilyCssClasses } from '../consts/show-node-family-css-classes';
+
+const cssClasses = getShowNodeFamilyCssClasses();
 
 export const getShowObject: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -121,7 +124,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[240px] text-white`,
+          class: `${cssClasses.wrapperCssClasses} ${cssClasses.showObjectAdditionalWrapperCssClasses}`,
         },
         undefined,
         htmlNode?.domElement as unknown as HTMLElement

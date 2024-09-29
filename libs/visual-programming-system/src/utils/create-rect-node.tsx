@@ -68,7 +68,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
     backgroundColorClassName?: string;
     textColorClassName?: string;
     backgroundThemeProperty?: string;
-    textColorThenmeProperty?: string;
+    textColorThemeProperty?: string;
     adjustToFormContent?: boolean;
     isRectThumb?: boolean;
     isCircleRectThumb?: boolean;
@@ -111,8 +111,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
         settings?.backgroundColorClassName ??
         canvasApp.theme.nodeBackground
       } ${
-              (settings?.textColorThenmeProperty &&
-                (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
+              (settings?.textColorThemeProperty &&
+                (canvasApp.theme as any)[settings.textColorThemeProperty]) ??
               settings?.textColorClassName ??
               canvasApp.theme.nodeText
             }
@@ -134,8 +134,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
               settings?.backgroundColorClassName ??
               canvasApp.theme.nodeBackground
             } ${
-              (settings?.textColorThenmeProperty &&
-                (canvasApp.theme as any)[settings.textColorThenmeProperty]) ??
+              (settings?.textColorThemeProperty &&
+                (canvasApp.theme as any)[settings.textColorThemeProperty]) ??
               settings?.textColorClassName ??
               canvasApp.theme.nodeText
             } rounded ${showTitlebar ? '' : 'py-2'}      
@@ -441,7 +441,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     backgroundColorClassName?: string;
     textColorClassName?: string;
     backgroundThemeProperty?: string;
-    textColorThenmeProperty?: string;
+    textColorThemeProperty?: string;
     adjustToFormContent?: boolean;
     isRectThumb?: boolean;
     isCircleRectThumb?: boolean;

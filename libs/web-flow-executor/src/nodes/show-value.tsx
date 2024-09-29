@@ -13,6 +13,9 @@ import {
   getFormattedValue,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { getShowNodeFamilyCssClasses } from '../consts/show-node-family-css-classes';
+
+const cssClasses = getShowNodeFamilyCssClasses();
 
 export const getShowValue: NodeTaskFactory<NodeInfo> = (
   updated: () => void
@@ -138,7 +141,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-fuchsia-500 p-4 rounded max-w-[120px] text-white`,
+          class: `${cssClasses.wrapperCssClasses} ${cssClasses.showValueAdditionalWrapperCssClasses}`,
         },
         undefined,
         HTMLNode()

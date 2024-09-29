@@ -219,7 +219,7 @@ export const getCreateCompositionNode =
         hideTitle: true,
         category: 'Compositions',
         backgroundThemeProperty: 'compositionBackground',
-        textColorThenmeProperty: 'compositionText',
+        textColorThemeProperty: 'compositionText',
       },
       undefined,
       true

@@ -12,6 +12,7 @@ import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
+import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 
 /*
 
@@ -44,8 +45,7 @@ const thumbs = [
     thumbIndex: 1,
     connectionType: ThumbConnectionType.start,
     color: 'white',
-    label: '#',
-    thumbConstraint: 'value',
+    label: ' ',
     name: 'output2',
     prefixIcon: 'icon icon-refresh',
   },
@@ -60,7 +60,8 @@ const thumbs = [
   },
 ];
 
-const activeForeachColor = 'bg-blue-500';
+const cssClasses = getIteratorNodeFamilyCssClasses();
+
 const isInputOfRangeValueType = (input: RangeValueType) => {
   if (typeof input === 'object' && input) {
     return (
@@ -83,13 +84,38 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
   let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   const title = 'foreach';
+
+  function setNodeActiveColors() {
+    if (foreachComponent && foreachComponent.domElement) {
+      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+      forEachDomElement.classList.remove(cssClasses.nodeActiveColorCssClass);
+      forEachDomElement.classList.remove(cssClasses.backgroundColorCssClass);
+      forEachDomElement.classList.add(cssClasses.nodeActiveColorCssClass);
+
+      forEachDomElement.classList.remove(cssClasses.nodeActiveTextCssClass);
+      forEachDomElement.classList.remove(cssClasses.textCssClass);
+      forEachDomElement.classList.add(cssClasses.nodeActiveTextCssClass);
+    }
+  }
+
+  function setNodeDefaultColors() {
+    if (foreachComponent && foreachComponent.domElement) {
+      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+      forEachDomElement.classList.remove(cssClasses.nodeActiveColorCssClass);
+      forEachDomElement.classList.remove(cssClasses.backgroundColorCssClass);
+      forEachDomElement.classList.add(cssClasses.backgroundColorCssClass);
+
+      forEachDomElement.classList.remove(cssClasses.nodeActiveTextCssClass);
+      forEachDomElement.classList.remove(cssClasses.textCssClass);
+      forEachDomElement.classList.add(cssClasses.textCssClass);
+    }
+  }
+
   const initializeCompute = () => {
     if (foreachComponent && foreachComponent.domElement) {
       foreachComponent.domElement.textContent = `${title}`;
 
-      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
-      forEachDomElement.classList.add('bg-slate-500');
-      forEachDomElement.classList.remove(activeForeachColor);
+      setNodeDefaultColors();
     }
     return;
   };
@@ -111,9 +137,7 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
         return;
       }
 
-      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
-      forEachDomElement.classList.add('bg-slate-500');
-      forEachDomElement.classList.remove(activeForeachColor);
+      setNodeDefaultColors();
 
       let values: any[] = [];
       values = input as unknown as any[];
@@ -179,8 +203,7 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
             runCounter
           );
         } else {
-          forEachDomElement.classList.add('bg-slate-500');
-          forEachDomElement.classList.remove(activeForeachColor);
+          setNodeDefaultColors();
 
           runNodeFromThumb(
             node.thumbConnectors[0],
@@ -205,8 +228,7 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
         }
       };
 
-      forEachDomElement.classList.remove('bg-slate-500');
-      forEachDomElement.classList.add(activeForeachColor);
+      setNodeActiveColors();
       runNext(startIndex);
       // resolve({
       //   result: input,
@@ -233,11 +255,9 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
       foreachComponent = createNodeElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded flex flex-row items-center justify-center text-center
-            transition-colors duration-200`,
+          class: `${cssClasses.mainCssClasses} ${cssClasses.backgroundColorCssClass}`,
           style: {
-            'clip-path':
-              'polygon(20% 0%, 100% 0, 100% 100%, 20% 100%, 0% 80%, 0% 20%)',
+            'clip-path': cssClasses.clipPath,
           },
         },
         undefined,

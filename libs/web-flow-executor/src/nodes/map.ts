@@ -12,6 +12,7 @@ import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
+import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 
 /*
 
@@ -44,8 +45,7 @@ const thumbs = [
     thumbIndex: 1,
     connectionType: ThumbConnectionType.start,
     color: 'white',
-    label: '#',
-    thumbConstraint: 'value',
+    label: ' ',
     name: 'output2',
     prefixIcon: 'icon icon-refresh',
   },
@@ -60,7 +60,6 @@ const thumbs = [
   },
 ];
 
-const activeMapColor = 'bg-blue-400';
 export const mapNodeName = 'map';
 const title = 'map';
 
@@ -81,16 +80,43 @@ const isInputOfRangeValueType = (input: RangeValueType) => {
   return false;
 };
 
+const cssClasses = getIteratorNodeFamilyCssClasses();
+
 export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
+
+  function setNodeActiveColors() {
+    if (foreachComponent && foreachComponent.domElement) {
+      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+      forEachDomElement.classList.remove(cssClasses.nodeActiveColorCssClass);
+      forEachDomElement.classList.remove(cssClasses.backgroundColorCssClass);
+      forEachDomElement.classList.add(cssClasses.nodeActiveColorCssClass);
+
+      forEachDomElement.classList.remove(cssClasses.nodeActiveTextCssClass);
+      forEachDomElement.classList.remove(cssClasses.textCssClass);
+      forEachDomElement.classList.add(cssClasses.nodeActiveTextCssClass);
+    }
+  }
+
+  function setNodeDefaultColors() {
+    if (foreachComponent && foreachComponent.domElement) {
+      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
+      forEachDomElement.classList.remove(cssClasses.nodeActiveColorCssClass);
+      forEachDomElement.classList.remove(cssClasses.backgroundColorCssClass);
+      forEachDomElement.classList.add(cssClasses.backgroundColorCssClass);
+
+      forEachDomElement.classList.remove(cssClasses.nodeActiveTextCssClass);
+      forEachDomElement.classList.remove(cssClasses.textCssClass);
+      forEachDomElement.classList.add(cssClasses.textCssClass);
+    }
+  }
+
   const initializeCompute = () => {
     if (foreachComponent && foreachComponent.domElement) {
       foreachComponent.domElement.textContent = `${title}`;
-      const forEachDomElement = foreachComponent?.domElement as HTMLElement;
-      forEachDomElement.classList.add('bg-slate-500');
-      forEachDomElement.classList.remove(activeMapColor);
+      setNodeDefaultColors();
     }
     return;
   };
@@ -104,8 +130,7 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
   ) => {
     const forEachDomElement = foreachComponent?.domElement as HTMLElement;
     if (forEachDomElement) {
-      forEachDomElement.classList.add('bg-slate-500');
-      forEachDomElement.classList.remove(activeMapColor);
+      setNodeDefaultColors();
     }
     return new Promise((resolve, reject) => {
       if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
@@ -175,8 +200,7 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
           );
         } else {
           if (forEachDomElement) {
-            forEachDomElement.classList.add('bg-slate-500');
-            forEachDomElement.classList.remove(activeMapColor);
+            setNodeDefaultColors();
           }
 
           runNodeFromThumb(
@@ -201,8 +225,7 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
         }
       };
       if (forEachDomElement) {
-        forEachDomElement.classList.remove('bg-slate-500');
-        forEachDomElement.classList.add(activeMapColor);
+        setNodeActiveColors();
       }
       runNext(startIndex);
     });
@@ -226,11 +249,9 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
       foreachComponent = createNodeElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded flex flex-row items-center justify-center text-center
-            transition-colors duration-200`,
+          class: `${cssClasses.mainCssClasses} ${cssClasses.backgroundColorCssClass}`,
           style: {
-            'clip-path':
-              'polygon(20% 0%, 100% 0, 100% 100%, 20% 100%, 0% 80%, 0% 20%)',
+            'clip-path': cssClasses.clipPath,
           },
         },
         undefined,
@@ -246,7 +267,7 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
         thumbs,
         foreachComponent,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: ``,
         },
         true,
         undefined,
