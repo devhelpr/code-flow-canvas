@@ -353,6 +353,7 @@ export class FormsComponent
           min: formControl.min,
           max: formControl.max,
           step: formControl.step,
+          throtleTime: formControl.throtleTime,
           settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),

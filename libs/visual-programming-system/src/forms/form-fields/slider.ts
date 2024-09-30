@@ -16,6 +16,7 @@ export interface SliderFieldProps extends BaseFormFieldProps {
   step?: number;
   isRow?: boolean;
   isLast?: boolean;
+  throtleTime?: number;
 
   onChange?: (value: string) => void;
   onGetSettings: () => {
@@ -47,6 +48,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
   min = 0.1;
   max = 100;
   step = 0.1;
+
   constructor(parent: BaseComponent | null, props: SliderFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
@@ -59,6 +61,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
     this.min = min ?? 0.1;
     this.max = max ?? 100;
     this.step = step ?? 0.1;
+
     this.template = createTemplate(
       `<div class="slider-container w-full ${props.isLast ? '' : 'mb-2'} ${
         props.isRow ? 'flex' : ''
@@ -337,7 +340,7 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         if (this.props.onChange) {
           this.props.onChange(input.value);
         }
-      }, 15);
+      }, this.props.throtleTime ?? 15);
     }
   };
   override render() {

@@ -75,6 +75,7 @@ export const getValueNode =
         },
       ],
       (values?: InitialValues) => {
+        let timeout: any = undefined;
         const formElements = [
           {
             fieldType: FormFieldType.Slider,
@@ -83,6 +84,7 @@ export const getValueNode =
             min: -1.0,
             max: 1.0,
             step: 0.01,
+            throtleTime: 0,
             settings: {
               showLabel: false,
             },
@@ -102,9 +104,14 @@ export const getValueNode =
               // .. although currently there are no uniforms created for nodes
               // in compositions... so the the below code doesn't do anything (uniform can not be found)
               updateUniformValue(node.id, value);
-              if (updated) {
-                updated(undefined, true);
+              if (timeout) {
+                clearTimeout(timeout);
               }
+              timeout = setTimeout(() => {
+                if (updated) {
+                  updated(undefined, true);
+                }
+              }, 500);
             },
           },
         ];

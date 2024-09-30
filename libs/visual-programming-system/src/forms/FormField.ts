@@ -59,6 +59,7 @@ export type FormField = (
       min?: number;
       max?: number;
       step?: number;
+      throtleTime?: number;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
