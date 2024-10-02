@@ -142,6 +142,7 @@ export function Toolbar<T>(props: {
         'Toolbar selectedNodeInfo',
         selectedNodeInfo,
         actionSelectedNodeInfo,
+        skipNextEffect,
         //info,
         getTasksWhichAreInterchangeableWithSelectedNode()
       );
