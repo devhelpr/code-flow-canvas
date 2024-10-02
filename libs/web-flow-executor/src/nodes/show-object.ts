@@ -147,6 +147,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
             thumbConstraint: 'object',
             name: 'output',
             color: 'white',
+            maxConnections: -1,
           },
           {
             thumbType: ThumbType.EndConnectorLeft,

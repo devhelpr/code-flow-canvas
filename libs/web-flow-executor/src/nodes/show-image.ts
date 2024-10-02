@@ -73,7 +73,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
 
   let stylingCache = '';
   const setStyling = (value: string) => {
-    if (!htmlNode) {
+    if (!htmlNode || !htmlNode.domElement) {
       return;
     }
     try {
@@ -130,7 +130,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
     if (typeof input === 'object' && (input as any).value) {
       setStyling((input as any).value);
     }
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       if (hasInitialValue) {
         hasInitialValue = false;
       }
@@ -198,7 +198,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
 
   const updateVisual = (data: any) => {
     console.log('updateVisual', data);
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       if (typeof data === 'object' && (data as any).value) {
         const result = getStyling((data as any).value);
 
@@ -304,7 +304,7 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
           class: `inner-node bg-slate-500 rounded max-w-full `,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
       rect = canvasApp.createRect(
         x,
@@ -346,7 +346,12 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
         }
       );
 
-      if (initalValues && initalValues['image']) {
+      if (
+        initalValues &&
+        initalValues['image'] &&
+        htmlNode &&
+        htmlNode.domElement
+      ) {
         hasInitialValue = false;
         (
           htmlNode.domElement as HTMLImageElement

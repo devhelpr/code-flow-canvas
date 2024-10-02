@@ -240,6 +240,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             label: '',
             name: 'output',
+            maxConnections: -1,
           },
           {
             thumbType: ThumbType.StartConnectorRight,
