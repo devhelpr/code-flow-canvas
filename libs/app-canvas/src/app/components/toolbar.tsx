@@ -102,8 +102,8 @@ export function Toolbar<T>(props: {
     const actionSelectedNodeInfo = getActionNode();
     if (selectedNodeInfo || actionSelectedNodeInfo) {
       const info = props.getNode(
-        (selectedNodeInfo || actionSelectedNodeInfo)!.id,
-        (selectedNodeInfo || actionSelectedNodeInfo)!
+        (actionSelectedNodeInfo || selectedNodeInfo)!.id,
+        (actionSelectedNodeInfo || selectedNodeInfo)!
           .containerNode as IRectNodeComponent<T>
       );
       selectedNode = info.node;
@@ -113,7 +113,17 @@ export function Toolbar<T>(props: {
     return undefined;
   }
 
+  let skipNextEffect = false;
   createEffect(() => {
+    // The below is a hack to prevent the toolbar not showing "create new node" when a mew connection is created
+    // from dragging it from a selected node..
+    // This fixes it the first time, but afterwards the toolbar is not working anymore
+
+    // if (skipNextEffect) {
+    //   skipNextEffect = false;
+    //   return;
+    // }
+
     const selectedNodeInfo = getSelectedNode();
     const actionSelectedNodeInfo = getActionNode();
     if (selectedNodeInfo || actionSelectedNodeInfo) {
@@ -189,6 +199,7 @@ export function Toolbar<T>(props: {
           );
           skipHide = true;
           popupTriggeredFromEffect = false;
+          skipNextEffect = true;
           setActionNode(undefined);
         }
       } else {
