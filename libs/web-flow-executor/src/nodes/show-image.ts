@@ -134,7 +134,9 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-      if (typeof input === 'object' && (input as any).image) {
+      if (typeof input === 'string' && input.startsWith('https://')) {
+        (htmlNode.domElement as HTMLImageElement).src = input;
+      } else if (typeof input === 'object' && (input as any).image) {
         (
           htmlNode.domElement as HTMLImageElement
         ).src = `data:image/png;base64,${(input as any).image}`;
