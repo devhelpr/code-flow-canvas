@@ -10,8 +10,8 @@
           "id": "f030a86e-2280-4b12-8615-4644f98cb625",
           "x": 3218.510068723205,
           "y": 1079.3107144634794,
-          "width": 240.0000520484283,
-          "height": 216.00004684358547,
+          "width": 239.9998497914525,
+          "height": 216.00008633787417,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -29,8 +29,8 @@
           "id": "693410e0-2810-4237-b888-07ea51248a6e",
           "x": 3605.68753580387,
           "y": 1102.179755079369,
-          "width": 240.00014780771554,
-          "height": 95.99990277697013,
+          "width": 240.00016625654808,
+          "height": 216.00008633787417,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -48,8 +48,8 @@
           "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
           "x": 3901.659453834542,
           "y": 1076.8259188667582,
-          "width": 239.99962665399525,
-          "height": 215.9999766808279,
+          "width": 239.9998497914525,
+          "height": 215.99992810532638,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -154,8 +154,8 @@
           "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424",
           "x": 2948.003637678915,
           "y": 1089.637691987569,
-          "width": 120.00013901742757,
-          "height": 83.99997081883991,
+          "width": 120.00008312827404,
+          "height": 83.99996325026315,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -261,8 +261,8 @@
         },
         {
           "id": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
-          "x": 7436.386304018211,
-          "y": 835.4614152707607,
+          "x": 7529.236621478311,
+          "y": 795.1527836634173,
           "width": 541.607184260587,
           "height": 520.5699638027584,
           "nodeType": "Shape",
@@ -361,14 +361,17 @@
           "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "x": 6999.146947914379,
           "y": 1641.3997560382481,
-          "width": 119.99981332699763,
-          "height": 272.00002854108556,
+          "width": 120.00039959336962,
+          "height": 272.000009093867,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
             "formValues": {
-              "name": ""
-            }
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
           }
         },
         {
@@ -411,14 +414,17 @@
           "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
           "x": 7715.462781449716,
           "y": 2210.149928905682,
-          "width": 120.00033448071791,
-          "height": 272.00002854108556,
+          "width": 119.99976666317846,
+          "height": 271.9998508613192,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
             "formValues": {
-              "name": ""
-            }
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
           }
         },
         {
@@ -574,8 +580,8 @@
           "id": "be2b1562-842a-4373-ac70-a601789c1725",
           "x": 4297.9381571714475,
           "y": 1098.029223960785,
-          "width": 119.99981332699763,
-          "height": 84.00007779038646,
+          "width": 120.00008312827404,
+          "height": 83.99996325026315,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -636,6 +642,85 @@
             },
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false
+          }
+        },
+        {
+          "id": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
+          "x": 5852.738726806196,
+          "y": 979.8341248579633,
+          "width": 400,
+          "height": 400,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <canvas\n        id=\"canvas\"\n        class=\"object-cover h-full w-full\"\n        width=\"1200\"\n        height=\"1200\"\n      ></canvas>\n    </div>\n\n    <script>\n      // TODO : use svg instead of canvas\n\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let canvas = document.getElementById('canvas');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let ctx = canvas.getContext('2d');\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            \n            if (true) {\n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  // create a small circle on canvas on position element[0] and element[1]\n                  ctx.beginPath();\n                  ctx.arc(\n                    element[0] * 10 + 100,\n                    element[1] * 10 + 100,\n                    50,\n                    0,\n                    2 * Math.PI\n                  );\n                  ctx.fillStyle = getDarkenColor(index);\n                  ctx.fill();\n                }\n              });\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "aiprompt": ""
+            },
+            "showFormOnlyInPopup": true,
+            "initializeOnStartFlow": true
+          }
+        },
+        {
+          "id": "e370f15f-1236-4ce3-80b1-c03082dc303e",
+          "x": 4962.494498114469,
+          "y": 1128.4118593516014,
+          "width": 200,
+          "height": 116,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "observe-variable",
+            "formValues": {
+              "variableName": "centroids"
+            }
+          }
+        },
+        {
+          "id": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
+          "x": 5851.178135083134,
+          "y": 138.7436684695111,
+          "width": 400,
+          "height": 400,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <canvas\n        id=\"canvas\"\n        class=\"object-cover h-full w-full\"\n        width=\"1200\"\n        height=\"1200\"\n      ></canvas>\n    </div>\n\n    <script>\n      // TODO : use svg instead of canvas\n\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let canvas = document.getElementById('canvas');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let ctx = canvas.getContext('2d');\n        ctx.clearRect(0, 0, canvas.width, canvas.height);\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            window.input.forEach((point, index) => {\n              if (Array.isArray(point)) {\n                if (Array.isArray(point)) {\n                  // create a small circle on canvas on position element[0] and element[1]\n                  ctx.beginPath();\n                  ctx.arc(\n                    point[0] * 10 + 100,\n                    point[1] * 10 + 100,\n                    25,\n                    0,\n                    2 * Math.PI\n                  );\n                  ctx.fillStyle = '#000000';\n                  ctx.fill();\n                }\n              }\n            });\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "aiprompt": ""
+            },
+            "showFormOnlyInPopup": true,
+            "initializeOnStartFlow": true
+          }
+        },
+        {
+          "id": "472fd563-dd51-4ce1-8b2b-756acb532d7d",
+          "x": 5218.9094677879775,
+          "y": 332.1667749113369,
+          "width": 200,
+          "height": 116,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "observe-variable",
+            "formValues": {
+              "variableName": "data"
+            }
+          }
+        },
+        {
+          "id": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+          "x": 5439.479222424322,
+          "y": 1133.631436482648,
+          "width": 119.99976666317846,
+          "height": 271.9998508613192,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
           }
         },
         {
@@ -865,10 +950,10 @@
         },
         {
           "id": "e05858fb-5e14-444e-8685-b44cdd5129f9",
-          "x": 7119.146761241376,
+          "x": 7119.147347507748,
           "y": 1671.3997560382481,
-          "endX": 7436.386304018211,
-          "endY": 1095.74639717214,
+          "endX": 7529.236621478311,
+          "endY": 1055.4377655647963,
           "startNodeId": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "endNodeId": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
           "startThumbName": "output",
@@ -925,7 +1010,7 @@
         },
         {
           "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
-          "x": 7835.4631159304345,
+          "x": 7835.462548112895,
           "y": 2240.149928905682,
           "endX": 8227.26873270523,
           "endY": 2305.4184457324804,
@@ -1066,6 +1151,51 @@
           "endY": 1600.9889592387547,
           "startNodeId": "11d8c68e-1bc1-4665-aa22-c205b602d367",
           "endNodeId": "248c7829-295b-44fd-b581-18cafc953842",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "e877d2e7-6102-443b-a2a9-12003cd3b6a6",
+          "x": 5162.494498114469,
+          "y": 1186.4118593516014,
+          "endX": 5439.479222424322,
+          "endY": 1163.631436482648,
+          "startNodeId": "e370f15f-1236-4ce3-80b1-c03082dc303e",
+          "endNodeId": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "ab9de524-e39d-460d-bc9b-ce78f2346bf7",
+          "x": 5418.9094677879775,
+          "y": 390.1667749113369,
+          "endX": 5851.178135083134,
+          "endY": 338.74366846951114,
+          "startNodeId": "472fd563-dd51-4ce1-8b2b-756acb532d7d",
+          "endNodeId": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "d203878c-8c7e-4e18-96e2-efee31ca152a",
+          "x": 5559.478989087501,
+          "y": 1163.631436482648,
+          "endX": 5852.738726806196,
+          "endY": 1179.8341248579632,
+          "startNodeId": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+          "endNodeId": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "BezierCubic",
