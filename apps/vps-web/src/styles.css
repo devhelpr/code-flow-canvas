@@ -503,9 +503,9 @@ dialog[open]::backdrop {
 .popup-node-editor.fullscreen textarea {
   min-height: calc(100vh - 80px);
 }
-::view-transition-group(*.popup-node-editor-fullscreen) {
-  animation-duration: 500ms;
-  animation-timing-function: cubic-bezier(1, -0.62, 0.61, 1.37);
+::view-transition-group(popup-node-editor-fullscreen) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
 }
 .popup-node-editor.fullscreen + .popup-node-editor-line {
   display: none;
