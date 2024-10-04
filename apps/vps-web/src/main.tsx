@@ -5,6 +5,11 @@ import { runFlow } from './app/run-flow';
 import { ocwgPage } from './app/pages/ocwg';
 import { pythonPage } from './app/pages/python';
 import { examplePage } from './app/pages/example';
+import {
+  setupCustomEditor,
+  IFormsComponent,
+} from '@devhelpr/visual-programming-system';
+import * as monaco from 'monaco-editor';
 
 if (url.pathname === '/run-flow') {
   runFlow();
@@ -20,6 +25,58 @@ if (url.pathname === '/run-flow') {
   pythonPage();
 } else {
   const API_URL_ROOT = import.meta.env.VITE_API_URL;
+
+  setupCustomEditor(() => {
+    let editorInstance: monaco.editor.IStandaloneCodeEditor | null = null;
+    const resizeObserver: ResizeObserver | undefined = undefined;
+    let container: HTMLElement | null = null;
+    return {
+      unmount: () => {
+        if (editorInstance) {
+          editorInstance.dispose();
+        }
+        if (resizeObserver && container) {
+          (resizeObserver as any).unobserve(container);
+        }
+      },
+      onAfterRender: (formComponent, formField, formId) => {
+        setTimeout(() => {
+          try {
+            container = document.getElementById(
+              `${formId}_${formField.fieldName}__html`
+            );
+            if (!container) return;
+
+            const resizeObserver = new ResizeObserver((entries) => {
+              if (editorInstance) {
+                editorInstance.layout();
+              }
+            });
+
+            resizeObserver.observe(container);
+            console.log('monaco.editor.create', container);
+            const editor = monaco.editor.create(container, {
+              fixedOverflowWidgets: true,
+              value: formField.value.toString(), //"function hello() {\n\talert('Hello world!');\n}",
+              language: 'html',
+            });
+            if (editor) {
+              editorInstance = editor;
+              editor.getModel()?.onDidChangeContent((_event) => {
+                console.log('editor onDidChangeContent', editor.getValue());
+
+                if (formField.onChange && formField.fieldType === 'TextArea') {
+                  formField.onChange(editor.getValue(), formComponent);
+                }
+              });
+            }
+          } catch (e) {
+            console.error('monaco.editor.create', e);
+          }
+        }, 0);
+      },
+    };
+  });
 
   import('./app/flow-app.element').then(async (module) => {
     new module.FlowAppElement(

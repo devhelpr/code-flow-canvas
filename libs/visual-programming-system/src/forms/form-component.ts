@@ -592,7 +592,8 @@ export class FormsComponent
           formElement.fieldName
       ) as FormFieldComponent<any> | undefined;
       if (formFieldComponent && formFieldComponent.onAfterRender) {
-        formFieldComponent && formFieldComponent.onAfterRender(this);
+        formFieldComponent &&
+          formFieldComponent.onAfterRender(this, formElement);
       }
     });
   }

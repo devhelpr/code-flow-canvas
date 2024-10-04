@@ -72,24 +72,13 @@
           initialized = true;
         }
         // clear canvas
-        let circles = [];
+        //let circles = [];
         if (window.input !== undefined) {
           if (Array.isArray(window.input)) {
             if (true) {
               let documentFragment = document.createDocumentFragment();
               window.input.forEach((element, index) => {
                 if (Array.isArray(element)) {
-                  // create a small circle on canvas on position element[0] and element[1]
-                  // ctx.beginPath();
-                  // ctx.arc(
-                  //   element[0] * 10 + 100,
-                  //   element[1] * 10 + 100,
-                  //   50,
-                  //   0,
-                  //   2 * Math.PI
-                  // );
-                  // ctx.fillStyle = getDarkenColor(index);
-                  // ctx.fill();
                   let circle = document.createElementNS(
                     'http://www.w3.org/2000/svg',
                     'circle'

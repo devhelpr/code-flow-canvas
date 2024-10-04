@@ -5,6 +5,14 @@ import {
 } from '@devhelpr/dom-components';
 import { BaseFormFieldProps, FormFieldComponent } from './field';
 import { trackNamedSignal } from '../../reactivity';
+import {
+  getCreateCustomEditorInstanceFunc,
+  getCustomEditorTemplate,
+  getIsCustomEditorEnabled,
+  ICustomEditor,
+} from '../custom-code-editor';
+import { IFormsComponent } from '../IFormsComponent';
+import { FormField } from '../FormField';
 //import * as monaco from 'monaco-editor';
 //import { IFormsComponent } from '../IFormsComponent';
 
@@ -24,11 +32,17 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
   label: HTMLLabelElement | null = null;
   doRenderChildren = false;
   initialRender = false;
+  isCustomEditor = false;
+  customEditor: ICustomEditor | undefined = undefined;
   constructor(parent: BaseComponent | null, props: TextAreaFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
 
     // temp disabled code editor
+    this.isCustomEditor = getIsCustomEditorEnabled();
+    if (this.isCustomEditor) {
+      this.customEditor = getCreateCustomEditorInstanceFunc();
+    }
 
     // if (props.isCodeEditor) {
     //   this.template = createTemplate(
@@ -44,7 +58,15 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     //       </div>`
     //   );
     // } else
-    {
+
+    if (this.isCustomEditor) {
+      this.template = getCustomEditorTemplate(
+        props.fieldName,
+        props.formId,
+        props.label,
+        props.settings
+      );
+    } else {
       this.template = createTemplate(
         `<div class="w-full mb-2">
         <label for="${props.formId}_${props.fieldName}" class="block mb-2 ${
@@ -80,7 +102,10 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
         //   this.renderList.push(this.label);
 
         // } else
-        {
+        if (this.isCustomEditor) {
+          this.initialRender = true;
+          this.renderList.push(this.label);
+        } else {
           this.textarea = this.label.nextSibling as HTMLTextAreaElement;
           this.renderList.push(this.label, this.textarea);
           this.textarea.addEventListener('input', this.onInput);
@@ -110,9 +135,13 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
       // remove only removes the connection between parent and node
       this.element.remove();
     }
+    if (this.isCustomEditor && this.customEditor) {
+      this.customEditor.unmount();
+    }
     // if (this.editorInstance) {
     //   this.editorInstance.dispose();
     // }
+
     this.isMounted = false;
   }
 
@@ -135,7 +164,7 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     if (!this.textarea && !this.props.isCodeEditor) return;
 
     // REMOVE THIS when isCodeEditor is working
-    if (!this.textarea) return;
+    //if (!this.textarea) return;
 
     this.oldProps = this.props;
 
@@ -148,11 +177,25 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
       // if (this.props.isCodeEditor) {
       //   this.renderElements([this.label]);
       // } else
-      {
+      if (this.isCustomEditor) {
+        this.renderElements([this.label]);
+      } else {
         this.renderElements([this.textarea]);
       }
     }
   }
+  override onAfterRender = (
+    formComponent: IFormsComponent,
+    formField: FormField
+  ) => {
+    if (this.isCustomEditor && this.customEditor) {
+      this.customEditor.onAfterRender(
+        formComponent,
+        formField,
+        this.props.formId
+      );
+    }
+  };
   // editorInstance: monaco.editor.IStandaloneCodeEditor | null = null;
   // onAfterRender = (_formComponent: IFormsComponent) => {
   //   if (this.props.isCodeEditor) {

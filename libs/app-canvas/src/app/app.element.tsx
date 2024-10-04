@@ -35,6 +35,8 @@ import {
   NodeTaskFactory,
   importToCanvas,
   IFlowCanvasBase,
+  renderElement,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -86,6 +88,8 @@ export class AppElement<T extends BaseNodeInfo> {
 
   appRootElement: Element | null;
   commandRegistry = new Map<string, ICommandHandler>();
+
+  toggleFullscreenPopup = false;
 
   constructor(
     appRootSelector: string,
@@ -155,7 +159,7 @@ export class AppElement<T extends BaseNodeInfo> {
       {
         id: 'textAreaContainer',
         class:
-          'absolute w-[400px] max-h-[380px]  h-[fit-content] z-[20020] p-3 pb-6 bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
+          'popup-node-editor absolute w-[400px] max-h-[380px]  h-[fit-content] z-[20020] p-3 pb-6 bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
         wheel: (event) => {
           event.stopPropagation();
         },
@@ -168,7 +172,7 @@ export class AppElement<T extends BaseNodeInfo> {
         width: 0,
         height: 0,
         class:
-          'absolute top-0 left-0 pointer-events-none z-[1000] hidden opacity-75',
+          'popup-node-editor-line absolute top-0 left-0 pointer-events-none z-[1000] hidden opacity-75',
         style: {
           width: '200px',
           height: '200px',
@@ -177,6 +181,27 @@ export class AppElement<T extends BaseNodeInfo> {
       },
       this.rootElement
     );
+
+    if (this.editPopupContainer?.domElement) {
+      renderElement(
+        <button
+          class="absolute top-[10px] right-[15px] icon icon-fullscreen"
+          click={() => {
+            this.toggleFullscreenPopup = !this.toggleFullscreenPopup;
+            if (this.toggleFullscreenPopup) {
+              (
+                this.editPopupContainer?.domElement as HTMLElement
+              ).classList.add('fullscreen');
+            } else {
+              (
+                this.editPopupContainer?.domElement as HTMLElement
+              ).classList.remove('fullscreen');
+            }
+          }}
+        ></button>,
+        this.editPopupContainer.domElement as HTMLElement
+      );
+    }
     this.editPopupLinePath = createNSElement(
       'path',
       {
@@ -201,7 +226,8 @@ export class AppElement<T extends BaseNodeInfo> {
     this.editPopupEditingNodeIndicator = createElement(
       'div',
       {
-        class: 'absolute z-[1010] pointer-events-none',
+        class:
+          'popup-node-editor-node-indicator absolute z-[1010] pointer-events-none',
         style: {
           filter: 'drop-shadow(rgba(0, 0, 0, 0.4) 3px 1px 2px)',
         },
@@ -660,8 +686,13 @@ export class AppElement<T extends BaseNodeInfo> {
       y = (rootClientRect?.height ?? 0) - maxHeightConstant - 80;
     }
 
-    popupContainer.style.left = `${x}px`;
-    popupContainer.style.top = `${y}px`;
+    if (this.toggleFullscreenPopup) {
+      popupContainer.style.left = `20px`;
+      popupContainer.style.top = `20px`;
+    } else {
+      popupContainer.style.left = `${x}px`;
+      popupContainer.style.top = `${y}px`;
+    }
 
     const popupContainerBounds = popupContainer.getBoundingClientRect();
 

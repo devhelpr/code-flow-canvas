@@ -73,6 +73,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
     isRectThumb?: boolean;
     isCircleRectThumb?: boolean;
     rectThumbWithStraightConnections?: boolean;
+    nodeCannotBeReplaced?: boolean;
   },
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
@@ -377,6 +378,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
 
   const node = rect.nodeComponent;
   if (node.nodeInfo) {
+    node.nodeInfo.nodeCannotBeReplaced =
+      settings?.nodeCannotBeReplaced ?? false;
     const domElement = node.domElement as HTMLElement;
     if (domElement) {
       domElement.setAttribute('data-node-type', nodeTypeName);
@@ -446,6 +449,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     isRectThumb?: boolean;
     isCircleRectThumb?: boolean;
     rectThumbWithStraightConnections?: boolean;
+    nodeCannotBeReplaced?: boolean;
   },
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,

@@ -157,6 +157,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
       adjustToFormContent: true,
       hasFormInPopup: true,
       hasTitlebar: true,
+      nodeCannotBeReplaced: true,
     },
     <Text />
   );

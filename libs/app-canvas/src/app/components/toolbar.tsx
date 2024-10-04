@@ -204,7 +204,10 @@ export function Toolbar<T>(props: {
           setActionNode(undefined);
         }
       } else {
-        if (info.node?.nodeType === NodeType.Shape) {
+        if (
+          info.node?.nodeType === NodeType.Shape &&
+          !(info.node?.nodeInfo as BaseNodeInfo)?.nodeCannotBeReplaced
+        ) {
           fillTaskList([], 'No replaceable node-types found');
         } else {
           popupTriggeredFromEffect = false;
