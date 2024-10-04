@@ -1,13 +1,15 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
 
-import viteTsConfigPaths from 'vite-tsconfig-paths';
+//import viteTsConfigPaths from 'vite-tsconfig-paths';
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
   plugins: [
-    viteTsConfigPaths({
-      root: '../../',
-    }),
+    // viteTsConfigPaths({
+    //   root: '../../',
+    // }),
+    nxViteTsPaths(),
   ],
 
   // Uncomment this if you are using workers.
@@ -21,12 +23,14 @@ export default defineConfig({
 
   test: {
     reporters: ['default'],
-    globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
+    coverage: {
+      reportsDirectory: '../../coverage/apps/vps-web',
+      provider: 'v8',
     },
+    globals: true,
+
     environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['./src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     passWithNoTests: true,
   },
 });
