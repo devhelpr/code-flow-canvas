@@ -49,13 +49,13 @@ describe('Named signals', () => {
         const namedSignal2 = createNamedSignal<string>('test2');
         const namedSignal = createNamedSignal<string>('test');
         trackNamedSignals(['test', 'test2'], (name) => {
-          if (name === 'test') {
-            expect(namedSignal.getValue()).toBe('test value');
-            expect(namedSignal2.getValue()).toBe(undefined);
+          if (name === namedSignal.name) {
+            expect(namedSignal.value).toBe('test value');
+            expect(namedSignal2.value).toBe(undefined);
           } else {
             expect(name).toBe('test2');
-            expect(namedSignal.getValue()).toBe('test value');
-            expect(namedSignal2.getValue()).toBe('test value2');
+            expect(namedSignal.value).toBe('test value');
+            expect(namedSignal2.value).toBe('test value2');
             resolve();
           }
         });
@@ -85,5 +85,7 @@ describe('Named signals', () => {
       expect(value).toBe(2);
     });
     namedSignal.setValue(2);
+    expect(namedSignal.value).toBe(2);
+    expect(namedSignal.getValue()).toBe(2);
   });
 });

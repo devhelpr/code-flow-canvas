@@ -75,26 +75,49 @@ export const createEffect = (fn: () => void) => {
 };
 
 export interface ISignal<T = string> {
-  getValue: () => T;
+  getValue: () => T | undefined;
   setValue: (v: T) => void;
   name: string;
 }
+
+export class Signal<T = string> implements ISignal<T> {
+  private _value: T | undefined;
+  constructor(name: string, value?: T) {
+    this._value = value;
+    this.name = name;
+  }
+  public get value() {
+    return this._value;
+  }
+  name: string;
+  getValue() {
+    return this.value;
+  }
+  setValue(v: T) {
+    this._value = v;
+    updateNamedSignal<T>(this.name, this._value);
+  }
+}
 const namedSubscriptions = new Map<string, NamedSignal[]>();
 const registeredSignals = new Set<string>();
-export const createNamedSignal = <T = string>(name: string): ISignal<T> => {
-  let value: T;
+export const createNamedSignal = <T = string>(
+  name: string,
+  defaultValue?: T
+): Signal<T> => {
   if (registeredSignals.has(name)) {
     throw new Error(`Signal with name ${name} already exists`);
   }
   registeredSignals.add(name);
-  return {
-    getValue: () => value,
-    setValue: (v: T) => {
-      value = v;
-      updateNamedSignal<T>(name, value);
-    },
-    name,
-  };
+  return new Signal<T>(name, defaultValue);
+  // return {
+
+  //   getValue: () => value,
+  //   setValue: (v: T) => {
+  //     value = v;
+  //     updateNamedSignal<T>(name, value);
+  //   },
+  //   name,
+  // };
 };
 
 function subscribeByName<T = string>(
