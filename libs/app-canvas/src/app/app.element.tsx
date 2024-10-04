@@ -188,14 +188,26 @@ export class AppElement<T extends BaseNodeInfo> {
           class="absolute top-[10px] right-[15px] icon icon-fullscreen"
           click={() => {
             this.toggleFullscreenPopup = !this.toggleFullscreenPopup;
-            if (this.toggleFullscreenPopup) {
-              (
-                this.editPopupContainer?.domElement as HTMLElement
-              ).classList.add('fullscreen');
+            const setPopupToFullscreen = () => {
+              if (this.toggleFullscreenPopup) {
+                (
+                  this.editPopupContainer?.domElement as HTMLElement
+                ).classList.add('fullscreen');
+              } else {
+                (
+                  this.editPopupContainer?.domElement as HTMLElement
+                ).classList.remove('fullscreen');
+              }
+            };
+
+            if (!(document as any).startViewTransition) {
+              // Fallback if View Transitions API is not supported.
+              setPopupToFullscreen();
             } else {
-              (
-                this.editPopupContainer?.domElement as HTMLElement
-              ).classList.remove('fullscreen');
+              // Start transition with the View Transitions API.
+              (document as any).startViewTransition(() =>
+                setPopupToFullscreen()
+              );
             }
           }}
         ></button>,
@@ -686,10 +698,7 @@ export class AppElement<T extends BaseNodeInfo> {
       y = (rootClientRect?.height ?? 0) - maxHeightConstant - 80;
     }
 
-    if (this.toggleFullscreenPopup) {
-      popupContainer.style.left = `20px`;
-      popupContainer.style.top = `20px`;
-    } else {
+    if (!this.toggleFullscreenPopup) {
       popupContainer.style.left = `${x}px`;
       popupContainer.style.top = `${y}px`;
     }

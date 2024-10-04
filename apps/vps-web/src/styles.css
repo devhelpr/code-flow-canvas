@@ -489,11 +489,13 @@ dialog[open]::backdrop {
 .inner-node form input {
   @apply text-black;
 }
-
+.popup-node-editor {
+  view-transition-name: popup-node-editor-fullscreen;
+}
 .popup-node-editor.fullscreen {
-  position: fixed;
-  top: 20px;
-  left: 20px;
+  position: abosolute;
+  top: 20px !important;
+  left: 20px !important;
   width: calc(50vw - 40px);
   height: calc(100vh - 40px);
   max-height: calc(100vh - 40px);
@@ -501,7 +503,10 @@ dialog[open]::backdrop {
 .popup-node-editor.fullscreen textarea {
   min-height: calc(100vh - 80px);
 }
-
+::view-transition-group(*.popup-node-editor-fullscreen) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(1, -0.62, 0.61, 1.37);
+}
 .popup-node-editor.fullscreen + .popup-node-editor-line {
   display: none;
 }
