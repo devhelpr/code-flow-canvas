@@ -10,8 +10,8 @@
           "id": "f030a86e-2280-4b12-8615-4644f98cb625",
           "x": 3218.510068723205,
           "y": 1079.3107144634794,
-          "width": 239.99990131733114,
-          "height": 216.0000271068591,
+          "width": 239.9998497914525,
+          "height": 216.00008633787417,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -29,8 +29,8 @@
           "id": "693410e0-2810-4237-b888-07ea51248a6e",
           "x": 3605.68753580387,
           "y": 1102.179755079369,
-          "width": 239.99990131733114,
-          "height": 215.99979526433694,
+          "width": 240.00016625654808,
+          "height": 96.00000320960011,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -48,8 +48,8 @@
           "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
           "x": 3901.659453834542,
           "y": 1076.8259188667582,
-          "width": 239.99966947480897,
-          "height": 216.0000271068591,
+          "width": 239.9998497914525,
+          "height": 215.99992810532638,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -156,8 +156,8 @@
           "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424",
           "x": 2948.003637678915,
           "y": 1089.637691987569,
-          "width": 120.00006657992665,
-          "height": 84.00002342169644,
+          "width": 120.00008312827404,
+          "height": 83.99996325026315,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -328,8 +328,8 @@
         },
         {
           "id": "6373efe5-c0de-4674-8e62-94917080c536",
-          "x": 5752.6055668050585,
-          "y": 2940.290489927103,
+          "x": 5752.605639640134,
+          "y": 2940.2906392971167,
           "width": 542.0078125,
           "height": 136,
           "nodeType": "Shape",
@@ -337,7 +337,7 @@
             "type": "register-expression-function-node",
             "formValues": {
               "functionName": "distances_to_each_centroid",
-              "customFunctionCode": "(centroids, points, clusters) => {\n  if (\n    Array.isArray(centroids) &&\n    Array.isArray(points) & Array.isArray(clusters)\n  ) {\n    let result = [...clusters];\n\n    points.forEach((point) => {\n      let distances = [];\n      centroids.forEach((vector) => {\n        const distance = Math.sqrt(\n          Math.pow(point[0] - vector[0], 2) + Math.pow(point[1] - vector[1], 2)\n        );\n        distances.push(distance);\n      });\n      let minimum = -1;\n      let minIndex = -1;\n      distances.forEach((distance, index) => {\n        if (minimum == -1 || distance < minimum) {\n          minimum = distance;\n          minIndex = index;\n        }\n      });\n      if (minIndex >= 0 && minIndex < clusters.length) {\n        result[minIndex].push(point);\n      }\n    });\n    return {\n      clusters: result,\n      centroids: centroids\n}\n  }\n  return  {\n      clusters: [],\n      centroids: []\n};\n};\n"
+              "customFunctionCode": "(centroids, points, clusters) => {\n  if (\n    Array.isArray(centroids) &&\n    Array.isArray(points) &&\n    Array.isArray(clusters)\n  ) {\n    let result = [...clusters];\n\n    points.forEach((point) => {\n      let distances = [];\n      centroids.forEach((vector) => {\n        const distance = Math.sqrt(\n          Math.pow(point[0] - vector[0], 2) + Math.pow(point[1] - vector[1], 2)\n        );\n        distances.push(distance);\n      });\n      let minimum = -1;\n      let minIndex = -1;\n      distances.forEach((distance, index) => {\n        if (minimum == -1 || distance < minimum) {\n          minimum = distance;\n          minIndex = index;\n        }\n      });\n      if (minIndex >= 0 && minIndex < clusters.length) {\n        result[minIndex].push(point);\n      }\n    });\n    return {\n      clusters: result,\n      centroids: centroids\n    }\n  }\n  return  {\n    clusters: [],\n    centroids: []\n  };\n};\n"
             },
             "nodeCannotBeReplaced": true,
             "showFormOnlyInPopup": true,
@@ -367,8 +367,8 @@
           "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "x": 6999.146947914379,
           "y": 1641.3997560382481,
-          "width": 119.99983473740448,
-          "height": 271.9999654404827,
+          "width": 120.00039959336962,
+          "height": 272.000009093867,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -382,8 +382,8 @@
         },
         {
           "id": "0e543618-6d2d-4cef-84f8-62431f40847d",
-          "x": 6470.189610939921,
-          "y": 2931.129611844783,
+          "x": 6470.189376541238,
+          "y": 2931.129516089316,
           "width": 394.2265625,
           "height": 136,
           "nodeType": "Shape",
@@ -391,7 +391,7 @@
             "type": "register-expression-function-node",
             "formValues": {
               "functionName": "calculate_centroids",
-              "customFunctionCode": "(clusters, centroids, iterationCount) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  \n  const converged = (centroidsfound.length === newcentroids.length) || (iterationCount >= 15);\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return { newcentroids: newcentroids, converged: converged, nextIteration: iterationCount + 1 };\n};"
+              "customFunctionCode": "(clusters, centroids, iterationCount) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  \n  const converged = (centroidsfound.length === newcentroids.length) || (iterationCount >= 15);\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return {\n    newcentroids: newcentroids,\n    converged: converged,\n    nextIteration: iterationCount + 1 \n  };\n};"
             },
             "nodeCannotBeReplaced": true,
             "showFormOnlyInPopup": true,
@@ -421,8 +421,8 @@
           "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
           "x": 7715.462781449716,
           "y": 2210.149928905682,
-          "width": 120.00029842244882,
-          "height": 271.9999654404827,
+          "width": 119.99976666317846,
+          "height": 271.9998508613192,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -588,8 +588,8 @@
           "id": "be2b1562-842a-4373-ac70-a601789c1725",
           "x": 4297.9381571714475,
           "y": 1098.029223960785,
-          "width": 119.99983473740448,
-          "height": 84.00002342169644,
+          "width": 120.00008312827404,
+          "height": 83.99996325026315,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -720,8 +720,8 @@
           "id": "e4771889-b12b-4895-8617-b1559c8a8fdc",
           "x": 5439.479222424322,
           "y": 1133.631436482648,
-          "width": 120.00029842244882,
-          "height": 271.9999654404827,
+          "width": 119.99976666317846,
+          "height": 271.9998508613192,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -960,7 +960,7 @@
         },
         {
           "id": "e05858fb-5e14-444e-8685-b44cdd5129f9",
-          "x": 7119.146782651784,
+          "x": 7119.147347507748,
           "y": 1671.3997560382481,
           "endX": 7529.237438162429,
           "endY": 1064.1344608616164,
@@ -1020,7 +1020,7 @@
         },
         {
           "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
-          "x": 7835.463079872165,
+          "x": 7835.462548112895,
           "y": 2240.149928905682,
           "endX": 8227.26873270523,
           "endY": 2305.4184457324804,
@@ -1200,7 +1200,7 @@
         },
         {
           "id": "d203878c-8c7e-4e18-96e2-efee31ca152a",
-          "x": 5559.47952084677,
+          "x": 5559.478989087501,
           "y": 1163.631436482648,
           "endX": 5852.737736070227,
           "endY": 1182.882548335759,
