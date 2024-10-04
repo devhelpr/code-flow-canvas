@@ -421,6 +421,7 @@ export class FormsComponent
           fieldName: formControl.fieldName,
           label: formControl.label,
           isCodeEditor: formControl.isCodeEditor,
+          editorLanguage: formControl.editorLanguage,
           value:
             (this.values?.[formControl.fieldName] as string) ||
             formControl.value ||

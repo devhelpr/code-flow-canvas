@@ -23,6 +23,7 @@ export interface TextAreaFieldProps extends BaseFormFieldProps {
   label?: string;
   isLast?: boolean;
   isCodeEditor?: boolean;
+  editorLanguage?: string;
   onChange?: (value: string) => void;
 }
 
@@ -192,7 +193,8 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
       this.customEditor.onAfterRender(
         formComponent,
         formField,
-        this.props.formId
+        this.props.formId,
+        this.props.editorLanguage
       );
     }
   };

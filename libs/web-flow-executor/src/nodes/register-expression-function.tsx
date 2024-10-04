@@ -88,6 +88,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
           fieldName: 'functionName',
           label: 'Custom Expression Function',
           value: initialFunctionName,
+
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
@@ -116,6 +117,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
           fieldType: FormFieldType.TextArea,
           fieldName: 'customFunctionCode',
           label: 'Code',
+          editorLanguage: 'javascript',
           value: values?.['customFunctionCode'] ?? '',
           onChange: (value: string) => {
             if (!node.nodeInfo) {

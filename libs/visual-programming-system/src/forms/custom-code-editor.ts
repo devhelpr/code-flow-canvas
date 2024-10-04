@@ -28,7 +28,8 @@ export interface ICustomEditor {
   onAfterRender: (
     formComponent: IFormsComponent,
     formField: FormField,
-    formId: string
+    formId: string,
+    editorLanguage?: string
   ) => void;
 }
 

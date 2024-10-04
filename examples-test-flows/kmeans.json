@@ -10,8 +10,8 @@
           "id": "f030a86e-2280-4b12-8615-4644f98cb625",
           "x": 3218.510068723205,
           "y": 1079.3107144634794,
-          "width": 240.00003418299104,
-          "height": 216.00000611489523,
+          "width": 239.99990131733114,
+          "height": 216.0000271068591,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -29,8 +29,8 @@
           "id": "693410e0-2810-4237-b888-07ea51248a6e",
           "x": 3605.68753580387,
           "y": 1102.179755079369,
-          "width": 240.00003418299104,
-          "height": 216.00000611489523,
+          "width": 239.99990131733114,
+          "height": 215.99979526433694,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -48,8 +48,8 @@
           "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
           "x": 3901.659453834542,
           "y": 1076.8259188667582,
-          "width": 239.99978768502396,
-          "height": 216.00000611489523,
+          "width": 239.99966947480897,
+          "height": 216.0000271068591,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -73,6 +73,7 @@
           "nodeInfo": {
             "type": "range",
             "formValues": {},
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false
           }
@@ -146,6 +147,7 @@
             "formValues": {
               "variableName": "data"
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false
           }
@@ -154,8 +156,8 @@
           "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424",
           "x": 2948.003637678915,
           "y": 1089.637691987569,
-          "width": 119.99989384251198,
-          "height": 83.9999749893518,
+          "width": 120.00006657992665,
+          "height": 84.00002342169644,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -179,6 +181,7 @@
           "nodeInfo": {
             "type": "range",
             "formValues": {},
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false
           }
@@ -241,6 +244,7 @@
             "formValues": {
               "variableName": "centroids"
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false
           }
@@ -261,15 +265,15 @@
         },
         {
           "id": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
-          "x": 7529.237099108259,
-          "y": 795.1527849476947,
+          "x": 7529.237438162429,
+          "y": 803.8494789602373,
           "width": 541.607184260587,
           "height": 520.5699638027584,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // TODO : use svg instead of canvas\n\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        if (window.input !== undefined && window.input.clusters) {\n          if (Array.isArray(window.input.clusters)) {\n            window.input.clusters.forEach((element, index) => {\n              if (Array.isArray(element)) {\n                element.forEach((point, i) => {\n                  if (Array.isArray(point)) {\n                    let circle = document.createElementNS(\n                      'http://www.w3.org/2000/svg',\n                      'circle'\n                    );\n                    circle.setAttribute('cx', point[0] * 10 + 100);\n                    circle.setAttribute('cy', point[1] * 10 + 100);\n                    circle.setAttribute('r', 25);\n                    circle.setAttribute('fill', getColor(index));\n                    documentFragment.appendChild(circle);\n                  }\n                });\n              }\n            });\n            if (window.input.centroids) {\n              window.input.centroids.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 50);\n                  circle.setAttribute('fill-opacity', \"50%\"); \n                  circle.setAttribute('fill', getDarkenColor(index));\n                  documentFragment.appendChild(circle);\n                }\n              });\n            }\n          }\n        }\n        svg.innerHTML = '';\n        svg.appendChild(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        if (window.input !== undefined && window.input.clusters) {\n          if (Array.isArray(window.input.clusters)) {\n            window.input.clusters.forEach((element, index) => {\n              if (Array.isArray(element)) {\n                element.forEach((point, i) => {\n                  if (Array.isArray(point)) {\n                    let circle = document.createElementNS(\n                      'http://www.w3.org/2000/svg',\n                      'circle'\n                    );\n                    circle.setAttribute('cx', point[0] * 10 + 100);\n                    circle.setAttribute('cy', point[1] * 10 + 100);\n                    circle.setAttribute('r', 25);\n                    circle.setAttribute('fill', getColor(index));\n                    documentFragment.appendChild(circle);\n                  }\n                });\n              }\n            });\n            if (window.input.centroids) {\n              window.input.centroids.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 50);\n                  circle.setAttribute('fill-opacity', \"50%\"); \n                  circle.setAttribute('fill', getDarkenColor(index));\n                  documentFragment.appendChild(circle);\n                }\n              });\n            }\n          }\n        }\n        svg.innerHTML = '';\n        svg.appendChild(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
             },
             "showFormOnlyInPopup": true,
@@ -317,14 +321,15 @@
             "formValues": {
               "variableName": "clusters"
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false
           }
         },
         {
           "id": "6373efe5-c0de-4674-8e62-94917080c536",
-          "x": 5752.60537724371,
-          "y": 2940.290169709024,
+          "x": 5752.6055668050585,
+          "y": 2940.290489927103,
           "width": 542.0078125,
           "height": 136,
           "nodeType": "Shape",
@@ -334,6 +339,7 @@
               "functionName": "distances_to_each_centroid",
               "customFunctionCode": "(centroids, points, clusters) => {\n  if (\n    Array.isArray(centroids) &&\n    Array.isArray(points) & Array.isArray(clusters)\n  ) {\n    let result = [...clusters];\n\n    points.forEach((point) => {\n      let distances = [];\n      centroids.forEach((vector) => {\n        const distance = Math.sqrt(\n          Math.pow(point[0] - vector[0], 2) + Math.pow(point[1] - vector[1], 2)\n        );\n        distances.push(distance);\n      });\n      let minimum = -1;\n      let minIndex = -1;\n      distances.forEach((distance, index) => {\n        if (minimum == -1 || distance < minimum) {\n          minimum = distance;\n          minIndex = index;\n        }\n      });\n      if (minIndex >= 0 && minIndex < clusters.length) {\n        result[minIndex].push(point);\n      }\n    });\n    return {\n      clusters: result,\n      centroids: centroids\n}\n  }\n  return  {\n      clusters: [],\n      centroids: []\n};\n};\n"
             },
+            "nodeCannotBeReplaced": true,
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false,
             "isRunOnStart": true,
@@ -342,8 +348,8 @@
         },
         {
           "id": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
-          "x": 6314.426326672436,
-          "y": 1603.2007770028695,
+          "x": 6314.426498783223,
+          "y": 1603.2007610146404,
           "width": 467.59282779498153,
           "height": 131.57610086277032,
           "nodeType": "Shape",
@@ -361,8 +367,8 @@
           "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "x": 6999.146947914379,
           "y": 1641.3997560382481,
-          "width": 120.00014034047908,
-          "height": 272.00015377310785,
+          "width": 119.99983473740448,
+          "height": 271.9999654404827,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -376,8 +382,8 @@
         },
         {
           "id": "0e543618-6d2d-4cef-84f8-62431f40847d",
-          "x": 6470.18998855654,
-          "y": 2931.1296076598587,
+          "x": 6470.189610939921,
+          "y": 2931.129611844783,
           "width": 394.2265625,
           "height": 136,
           "nodeType": "Shape",
@@ -385,8 +391,9 @@
             "type": "register-expression-function-node",
             "formValues": {
               "functionName": "calculate_centroids",
-              "customFunctionCode": "(clusters, centroids, iterationCount) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  const converged = (centroidsfound.length === newcentroids.length) || (iterationCount >= 15);\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return { newcentroids: newcentroids, converged: converged, nextIteration: iterationCount + 1 };\n};"
+              "customFunctionCode": "(clusters, centroids, iterationCount) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  \n  const converged = (centroidsfound.length === newcentroids.length) || (iterationCount >= 15);\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return { newcentroids: newcentroids, converged: converged, nextIteration: iterationCount + 1 };\n};"
             },
+            "nodeCannotBeReplaced": true,
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false,
             "isRunOnStart": true,
@@ -395,8 +402,8 @@
         },
         {
           "id": "0934003b-1022-4bd0-aba9-db1425d64ced",
-          "x": 7004.9655045602485,
-          "y": 2136.306384822873,
+          "x": 7002.481385436919,
+          "y": 2136.3062796165837,
           "width": 462.29624577114646,
           "height": 111.14524633572455,
           "nodeType": "Shape",
@@ -414,8 +421,8 @@
           "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
           "x": 7715.462781449716,
           "y": 2210.149928905682,
-          "width": 120.00014034047908,
-          "height": 272.00015377310785,
+          "width": 120.00029842244882,
+          "height": 271.9999654404827,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -487,6 +494,7 @@
             "formValues": {
               "variableName": "centroids"
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": true,
             "useInCompositionOnly": false
           }
@@ -580,8 +588,8 @@
           "id": "be2b1562-842a-4373-ac70-a601789c1725",
           "x": 4297.9381571714475,
           "y": 1098.029223960785,
-          "width": 120.00014034047908,
-          "height": 84.00009823833535,
+          "width": 119.99983473740448,
+          "height": 84.00002342169644,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "variable",
@@ -624,6 +632,7 @@
             "formValues": {
               "variableName": "iterationCount"
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false
           }
@@ -640,21 +649,22 @@
             "formValues": {
               "variableName": "iterationCount"
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false
           }
         },
         {
           "id": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
-          "x": 5852.738865874626,
-          "y": 982.8826264800065,
+          "x": 5852.737736070227,
+          "y": 982.8825483357592,
           "width": 400,
           "height": 400,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // TODO : use svg instead of canvas\n\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let circles = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            if (true) {\n              let documentFragment = document.createDocumentFragment();\n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  // create a small circle on canvas on position element[0] and element[1]\n                  // ctx.beginPath();\n                  // ctx.arc(\n                  //   element[0] * 10 + 100,\n                  //   element[1] * 10 + 100,\n                  //   50,\n                  //   0,\n                  //   2 * Math.PI\n                  // );\n                  // ctx.fillStyle = getDarkenColor(index);\n                  // ctx.fill();\n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 50);\n                  circle.setAttribute('fill', getColor(index));\n                  documentFragment.appendChild(circle);\n                }\n              });\n              svg.innerHTML = '';\n              svg.appendChild(documentFragment);\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let circles = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            if (true) {\n              let documentFragment = document.createDocumentFragment();\n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  // create a small circle on canvas on position element[0] and element[1]\n                  // ctx.beginPath();\n                  // ctx.arc(\n                  //   element[0] * 10 + 100,\n                  //   element[1] * 10 + 100,\n                  //   50,\n                  //   0,\n                  //   2 * Math.PI\n                  // );\n                  // ctx.fillStyle = getDarkenColor(index);\n                  // ctx.fill();\n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 50);\n                  circle.setAttribute('fill', getColor(index));\n                  documentFragment.appendChild(circle);\n                }\n              });\n              svg.innerHTML = '';\n              svg.appendChild(documentFragment);\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
             },
             "showFormOnlyInPopup": true,
@@ -677,15 +687,15 @@
         },
         {
           "id": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
-          "x": 5851.177984198078,
-          "y": 138.74365291526752,
+          "x": 5851.178307876667,
+          "y": 138.743641127413,
           "width": 400,
           "height": 400,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // TODO : use svg instead of canvas\n\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let circles = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            if (true) {\n              let documentFragment = document.createDocumentFragment();\n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  \n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 25);\n                  circle.setAttribute('fill', \"#000000\");\n                  documentFragment.appendChild(circle);\n                }\n              });\n              svg.innerHTML = '';\n              svg.appendChild(documentFragment);\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        // clear canvas\n        let circles = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            if (true) {\n              let documentFragment = document.createDocumentFragment();\n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  \n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 25);\n                  circle.setAttribute('fill', \"#000000\");\n                  documentFragment.appendChild(circle);\n                }\n              });\n              svg.innerHTML = '';\n              svg.appendChild(documentFragment);\n            }\n          }\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
             },
             "showFormOnlyInPopup": true,
@@ -710,8 +720,8 @@
           "id": "e4771889-b12b-4895-8617-b1559c8a8fdc",
           "x": 5439.479222424322,
           "y": 1133.631436482648,
-          "width": 120.00014034047908,
-          "height": 272.00003052412427,
+          "width": 120.00029842244882,
+          "height": 271.9999654404827,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -922,8 +932,8 @@
           "id": "6a09a070-9bd1-4bd5-bbd0-844769d30f62",
           "x": 6125.051508209566,
           "y": 1662.4898975210604,
-          "endX": 6314.426326672436,
-          "endY": 1668.9888274342547,
+          "endX": 6314.426498783223,
+          "endY": 1668.9888114460255,
           "startNodeId": "ab054f77-2e88-49ec-afe6-848468c0be3c",
           "endNodeId": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
           "startThumbName": "output",
@@ -935,8 +945,8 @@
         },
         {
           "id": "74dfb159-7b16-4027-b2d0-c3fb755b008a",
-          "x": 6782.019154467417,
-          "y": 1668.9888274342547,
+          "x": 6782.0193265782045,
+          "y": 1668.9888114460255,
           "endX": 6999.146947914379,
           "endY": 1671.3997560382481,
           "startNodeId": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
@@ -950,10 +960,10 @@
         },
         {
           "id": "e05858fb-5e14-444e-8685-b44cdd5129f9",
-          "x": 7119.147088254858,
+          "x": 7119.146782651784,
           "y": 1671.3997560382481,
-          "endX": 7529.237099108259,
-          "endY": 1055.4377668490738,
+          "endX": 7529.237438162429,
+          "endY": 1064.1344608616164,
           "startNodeId": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
           "endNodeId": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
           "startThumbName": "output",
@@ -965,10 +975,10 @@
         },
         {
           "id": "40767bbd-3b06-4afb-a791-31254aac14cc",
-          "x": 6782.019154467417,
-          "y": 1668.9888274342547,
-          "endX": 7004.9655045602485,
-          "endY": 2191.8790079907353,
+          "x": 6782.0193265782045,
+          "y": 1668.9888114460255,
+          "endX": 7002.481385436919,
+          "endY": 2191.878902784446,
           "startNodeId": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
           "endNodeId": "0934003b-1022-4bd0-aba9-db1425d64ced",
           "startThumbName": "output",
@@ -980,8 +990,8 @@
         },
         {
           "id": "71d16b29-ff93-4ef8-a81d-fc4ef10dc69b",
-          "x": 7467.261750331395,
-          "y": 2191.8790079907353,
+          "x": 7464.777631208065,
+          "y": 2191.878902784446,
           "endX": 7715.462781449716,
           "endY": 2240.149928905682,
           "startNodeId": "0934003b-1022-4bd0-aba9-db1425d64ced",
@@ -1010,7 +1020,7 @@
         },
         {
           "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
-          "x": 7835.462921790196,
+          "x": 7835.463079872165,
           "y": 2240.149928905682,
           "endX": 8227.26873270523,
           "endY": 2305.4184457324804,
@@ -1115,8 +1125,8 @@
         },
         {
           "id": "17606be6-5c55-4abe-94fb-220c188968be",
-          "x": 7467.261750331395,
-          "y": 2191.8790079907353,
+          "x": 7464.777631208065,
+          "y": 2191.878902784446,
           "endX": 7675.909323583217,
           "endY": 2090.0966531952145,
           "startNodeId": "0934003b-1022-4bd0-aba9-db1425d64ced",
@@ -1177,8 +1187,8 @@
           "id": "ab9de524-e39d-460d-bc9b-ce78f2346bf7",
           "x": 5418.9094677879775,
           "y": 390.1667749113369,
-          "endX": 5851.177984198078,
-          "endY": 338.7436529152675,
+          "endX": 5851.178307876667,
+          "endY": 338.743641127413,
           "startNodeId": "472fd563-dd51-4ce1-8b2b-756acb532d7d",
           "endNodeId": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
           "startThumbName": "output",
@@ -1190,10 +1200,10 @@
         },
         {
           "id": "d203878c-8c7e-4e18-96e2-efee31ca152a",
-          "x": 5559.479362764801,
+          "x": 5559.47952084677,
           "y": 1163.631436482648,
-          "endX": 5852.738865874626,
-          "endY": 1182.8826264800064,
+          "endX": 5852.737736070227,
+          "endY": 1182.882548335759,
           "startNodeId": "e4771889-b12b-4895-8617-b1559c8a8fdc",
           "endNodeId": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
           "startThumbName": "output",

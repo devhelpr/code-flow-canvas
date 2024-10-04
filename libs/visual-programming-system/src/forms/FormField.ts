@@ -51,6 +51,7 @@ export type FormField = (
       fieldType: 'TextArea';
       value: string;
       isCodeEditor?: boolean;
+      editorLanguage?: string;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {

@@ -39,7 +39,12 @@ if (url.pathname === '/run-flow') {
           (resizeObserver as any).unobserve(container);
         }
       },
-      onAfterRender: (formComponent, formField, formId) => {
+      onAfterRender: (
+        formComponent,
+        formField,
+        formId,
+        editorLanguage?: string
+      ) => {
         setTimeout(() => {
           try {
             container = document.getElementById(
@@ -47,7 +52,7 @@ if (url.pathname === '/run-flow') {
             );
             if (!container) return;
 
-            const resizeObserver = new ResizeObserver((entries) => {
+            const resizeObserver = new ResizeObserver((_entries) => {
               if (editorInstance) {
                 editorInstance.layout();
               }
@@ -57,8 +62,12 @@ if (url.pathname === '/run-flow') {
             console.log('monaco.editor.create', container);
             const editor = monaco.editor.create(container, {
               fixedOverflowWidgets: true,
-              value: formField.value.toString(), //"function hello() {\n\talert('Hello world!');\n}",
-              language: 'html',
+              value: formField.value.toString(),
+              language: editorLanguage ?? 'html',
+              scrollBeyondLastLine: false,
+              scrollbar: {
+                alwaysConsumeMouseWheel: false,
+              },
             });
             if (editor) {
               editorInstance = editor;
