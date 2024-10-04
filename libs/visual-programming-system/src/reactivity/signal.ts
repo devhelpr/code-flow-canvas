@@ -1,6 +1,7 @@
 export interface ISignalSubscription<T = string> {
   execute?: () => void;
   executeWithValue?: (value: T, signalName: string) => void;
+  executeWithName?: (signalName: string) => void;
   dependencies?: Set<Set<ISignalSubscription>>;
 }
 
@@ -73,22 +74,32 @@ export const createEffect = (fn: () => void) => {
   execute();
 };
 
+export interface ISignal<T = string> {
+  getValue: () => T;
+  setValue: (v: T) => void;
+  name: string;
+}
 const namedSubscriptions = new Map<string, NamedSignal[]>();
-
-export const createNamedSignal = <T = string>(name: string) => {
+const registeredSignals = new Set<string>();
+export const createNamedSignal = <T = string>(name: string): ISignal<T> => {
   let value: T;
+  if (registeredSignals.has(name)) {
+    throw new Error(`Signal with name ${name} already exists`);
+  }
+  registeredSignals.add(name);
   return {
     getValue: () => value,
     setValue: (v: T) => {
       value = v;
       updateNamedSignal<T>(name, value);
     },
+    name,
   };
 };
 
 function subscribeByName<T = string>(
   name: string,
-  runningEffect: ISignalSubscription<T>
+  subscription: ISignalSubscription<T>
 ) {
   if (!namedSubscriptions.has(name)) {
     namedSubscriptions.set(name, []);
@@ -96,7 +107,7 @@ function subscribeByName<T = string>(
   const namedSubscription = namedSubscriptions.get(name);
   namedSubscription?.push({
     name,
-    subscription: runningEffect as ISignalSubscription<string>,
+    subscription: subscription as ISignalSubscription<string>,
   });
   if (namedSubscription) {
     namedSubscriptions.set(name, namedSubscription);
@@ -114,11 +125,11 @@ export const trackNamedSignal = <T = string>(
 
 export const trackNamedSignals = <T = string>(
   names: string[],
-  tracker: (value: T, signalName: string) => void
+  tracker: (signalName: string) => void
 ) => {
   names.forEach((name) => {
     subscribeByName<T>(name, {
-      executeWithValue: tracker,
+      executeWithName: tracker,
     });
   });
 };
@@ -144,6 +155,7 @@ export const updateNamedSignal = <T = string>(name: string, value: T) => {
   subscribtions?.forEach((s) => {
     if (s.name === name) {
       s.subscription.executeWithValue?.(value, name);
+      s.subscription.executeWithName?.(name);
     }
   });
 };

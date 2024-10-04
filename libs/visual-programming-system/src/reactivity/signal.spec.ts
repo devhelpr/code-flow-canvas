@@ -48,14 +48,13 @@ describe('Named signals', () => {
       return new Promise<void>((resolve) => {
         const namedSignal2 = createNamedSignal<string>('test2');
         const namedSignal = createNamedSignal<string>('test');
-        trackNamedSignals(['test', 'test2'], (value, name) => {
-          if (value === 'test value') {
-            expect(name).toBe('test');
-            expect(value).toBe('test value');
+        trackNamedSignals(['test', 'test2'], (name) => {
+          if (name === 'test') {
+            expect(namedSignal.getValue()).toBe('test value');
             expect(namedSignal2.getValue()).toBe(undefined);
           } else {
             expect(name).toBe('test2');
-            expect(value).toBe('test value2');
+            expect(namedSignal.getValue()).toBe('test value');
             expect(namedSignal2.getValue()).toBe('test value2');
             resolve();
           }
@@ -71,5 +70,20 @@ describe('Named signals', () => {
       });
     }
     await testTrackNamedSignal();
+  });
+
+  test('should creating a signal with the same name should throw an error', () => {
+    createNamedSignal<string>('test');
+    expect(() => createNamedSignal<string>('test')).toThrow(
+      'Signal with name test already exists'
+    );
+  });
+
+  test('should track named number signal', () => {
+    const namedSignal = createNamedSignal<number>('test');
+    trackNamedSignal<number>('test', (value) => {
+      expect(value).toBe(2);
+    });
+    namedSignal.setValue(2);
   });
 });
