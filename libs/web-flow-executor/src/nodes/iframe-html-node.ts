@@ -61,7 +61,9 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
     min-w-full min-h-full">Click to edit HTML</div>`;
 
   const setHTML = (value: string) => {
-    //console.log('setHTML start', value);
+    if (!divNode?.domElement) {
+      return;
+    }
     try {
       const splitted = (value ?? '').toString().split(':');
       if (splitted.length === 2) {
@@ -218,7 +220,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       height?: number
     ) => {
       const initialValue = initalValues?.['html'] || defaultHTML;
-      let aiPrompt = initalValues?.['aiprompt'] || '';
+      const aiPrompt = initalValues?.['aiprompt'] || '';
       //console.log('iframe', width, height);
       const formElements = [
         {
@@ -323,15 +325,15 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
       createElement(
         'div',
         { class: 'flex items-center bg-slate-600 text-white p-1 px-3' },
-        componentWrapper.domElement,
+        componentWrapper?.domElement,
         'HTML Node'
       );
       divNode = createElement(
         'div',
         {
-          class: 'w-full h-[calc(100%-42px)]',
+          class: 'w-full h-[calc(100%-32px)]',
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       );
       rect = canvasApp.createRect(
         x,
