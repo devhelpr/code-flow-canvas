@@ -507,7 +507,15 @@ dialog[open]::backdrop {
   animation-duration: 520ms;
   animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
 }
+/* .popup-node-editor + .popup-node-editor-line {
+  transition: 520ms opacity cubic-bezier(0.6, 0, 0.4, 1);
+  opacity: 1;
+}
 .popup-node-editor.fullscreen + .popup-node-editor-line {
+  opacity: 0;
+} */
+
+.popup-node-editor-line.hidden-in-fullscreen {
   display: none;
 }
 

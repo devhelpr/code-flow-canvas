@@ -203,11 +203,33 @@ export class AppElement<T extends BaseNodeInfo> {
             if (!(document as any).startViewTransition) {
               // Fallback if View Transitions API is not supported.
               setPopupToFullscreen();
+              if (this.toggleFullscreenPopup) {
+                (
+                  this.editPopupLineContainer?.domElement as HTMLElement
+                ).classList.add('hidden-in-fullscreen');
+              } else {
+                (
+                  this.editPopupLineContainer?.domElement as HTMLElement
+                ).classList.remove('hidden-in-fullscreen');
+              }
             } else {
               // Start transition with the View Transitions API.
-              (document as any).startViewTransition(() =>
+              if (this.toggleFullscreenPopup) {
+                (
+                  this.editPopupLineContainer?.domElement as HTMLElement
+                ).classList.add('hidden-in-fullscreen');
+              }
+              const transition = (document as any).startViewTransition(() =>
                 setPopupToFullscreen()
               );
+
+              transition.finished.then(() => {
+                if (!this.toggleFullscreenPopup) {
+                  (
+                    this.editPopupLineContainer?.domElement as HTMLElement
+                  ).classList.remove('hidden-in-fullscreen');
+                }
+              });
             }
           }}
         ></button>,
@@ -632,6 +654,9 @@ export class AppElement<T extends BaseNodeInfo> {
   popupNode: IRectNodeComponent<T> | undefined = undefined;
   positionPopup = (_node: IRectNodeComponent<T>) => {
     if (!this.popupNode) {
+      return;
+    }
+    if (this.toggleFullscreenPopup) {
       return;
     }
     (
