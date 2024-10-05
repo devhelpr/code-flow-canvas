@@ -143,6 +143,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
   shaderCompileHistory: ShaderCompileHistory[] = [];
   addCompiledShaderToHistory = false;
 
+  updateToolbarTaskList: (() => void) | undefined = undefined;
+
   constructor(
     appRootSelector: string,
     storageProvider?: StorageProvider<GLNodeInfo>,
@@ -513,12 +515,14 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 nestedLevel,
                 getGLNodeTaskFactory
               );
+
               this.isStoring = false;
               canvasUpdated();
 
               setupGLTasksInDropdown(
                 this.selectNodeType?.domElement as HTMLSelectElement
               );
+              this.updateToolbarTaskList?.();
 
               (this.pathRange?.domElement as HTMLElement).setAttribute(
                 'value',
@@ -709,6 +713,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             setupGLTasksInDropdown(
               this.selectNodeType?.domElement as HTMLSelectElement
             );
+            this.updateToolbarTaskList?.();
 
             (this.pathRange?.domElement as HTMLElement).setAttribute(
               'value',
@@ -806,6 +811,9 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     renderElement(
       <Toolbar<GLNodeInfo>
         getTaskList={getGLTaskList}
+        getUpdateToolbarTaskList={(updateToolbarTaskList) => {
+          this.updateToolbarTaskList = updateToolbarTaskList;
+        }}
         addNodeType={(nodeType: string) => {
           executeCommand(this.commandRegistry, 'add-node', nodeType);
         }}
@@ -1341,6 +1349,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
     (this.pathRange?.domElement as unknown as HTMLInputElement).value = '0';
     removeAllCompositions();
+    this.updateToolbarTaskList?.();
   };
   onPostclearCanvas = () => {
     setupGLTasksInDropdown(

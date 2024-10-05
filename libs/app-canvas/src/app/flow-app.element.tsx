@@ -190,6 +190,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   canvasAction: CanvasAction = CanvasAction.idle;
   canvasActionPayload: any = undefined;
   cancelCameraAnimation: (() => void) | undefined = undefined;
+  updateToolbarTaskList: (() => void) | undefined = undefined;
 
   flowId = '1234';
 
@@ -541,6 +542,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               setupTasksInDropdown(
                 this.selectNodeType?.domElement as HTMLSelectElement
               );
+              this.updateToolbarTaskList?.();
               canvasUpdated();
             },
           });
@@ -781,6 +783,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   getNodeTaskFactory,
                   this.onImported
                 );
+                this.updateToolbarTaskList?.();
                 this.isStoring = false;
                 canvasUpdated();
               },
@@ -836,6 +839,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             setupTasksInDropdown(
               this.selectNodeType?.domElement as HTMLSelectElement
             );
+            this.updateToolbarTaskList?.();
             if (this.onStoreFlow) {
               this.onStoreFlow(flow, this.canvasApp);
             }
@@ -1066,6 +1070,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       renderElement(
         <Toolbar<NodeInfo>
           getTaskList={getTaskList}
+          getUpdateToolbarTaskList={(updateToolbarTaskList) => {
+            this.updateToolbarTaskList = updateToolbarTaskList;
+          }}
           addNodeType={(nodeType: string) => {
             executeCommand(this.commandRegistry, 'add-node', nodeType);
           }}
@@ -1901,6 +1908,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   onPreclearCanvas = () => {
     this.clearPathExecution();
     removeAllCompositions();
+    this.updateToolbarTaskList?.();
     initFlowVariableScope();
 
     resetRunIndex();

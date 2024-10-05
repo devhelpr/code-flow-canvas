@@ -71,6 +71,7 @@ export function Toolbar<T>(props: {
   ) => { node: INodeComponent<T> | undefined };
   canvasAppInstance: IFlowCanvasBase<T>;
   getCanvasAction: () => CanvasAction;
+  getUpdateToolbarTaskList?: (updateToolbarTaskList: () => void) => void;
 }) {
   let toggle = false;
   let ul: HTMLUListElement | null = null;
@@ -80,6 +81,11 @@ export function Toolbar<T>(props: {
   let selectedNode: INodeComponent<T> | undefined;
   let isInReplaceeMode = false;
   let popupTriggeredFromEffect = false;
+
+  let taskList = props.getTaskList();
+  props.getUpdateToolbarTaskList?.(() => {
+    taskList = props.getTaskList();
+  });
   function showUpIcon() {
     if (icon) {
       icon.classList.remove('icon-arrow_drop_down');
@@ -93,7 +99,6 @@ export function Toolbar<T>(props: {
     }
   }
 
-  const taskList = props.getTaskList();
   let skipHide = false;
 
   function setSelectedNode() {

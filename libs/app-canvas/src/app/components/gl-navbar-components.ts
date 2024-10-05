@@ -415,6 +415,7 @@ export class GLNavbarComponent extends Component<
               getGLNodeTaskFactory,
               data.compositions
             );
+
             canvasApp.centerCamera();
             this.props.initializeNodes();
           }
