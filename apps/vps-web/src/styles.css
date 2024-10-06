@@ -397,6 +397,11 @@ dialog[open]::backdrop {
 	top: -10px;
 } */
 
+.node-tree__wrapper:has(> :last-child:nth-child(1)) {
+  /* 1 element */
+  grid-template-columns: auto;
+}
+
 .node-tree__wrapper:has(> .node-tree__row-wrapper)
   > .node-tree__row-wrapper:first-child:before {
   content: '';
@@ -421,6 +426,24 @@ dialog[open]::backdrop {
   left: 0%;
   /* transform: translateX(-50%); */
   top: -10px;
+}
+
+.node-tree__wrapper:has(> .node-tree__row-wrapper)
+  > .node-tree__row-wrapper:not(
+    :has(+ .node-tree__row-wrapper)
+  ):first-child:before {
+  width: auto;
+  background: white;
+  right: 48%;
+  display: none;
+}
+
+.node-tree__wrapper:has(> .node-tree__row-wrapper)
+  > .node-tree__row-wrapper:not(:has(+ .node-tree__row-wrapper)):nth-child(
+    2
+  ):before {
+  width: calc(50% + 1px);
+  background: white;
 }
 
 .node-tree__wrapper:has(> .node-tree__row-wrapper)

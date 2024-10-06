@@ -167,76 +167,148 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
         label: ' ',
       },
     ],
-    (values?: InitialValues) => {
-      const formElements = [
-        {
-          fieldType: FormFieldType.Text,
-          fieldName: fieldName,
-          value: values?.[fieldName] ?? '',
-          label: 'Command handler',
-          onChange: (value: string) => {
-            if (!node.nodeInfo) {
-              return;
-            }
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              [fieldName]: value,
-            };
-            //console.log('onChange', node.nodeInfo);
-            if (updated) {
-              updated();
-            }
-          },
-        },
-        {
-          fieldType: FormFieldType.Text,
-          fieldName: 'expression',
-          value: values?.['expression'] ?? '',
-
-          onChange: (value: string) => {
-            if (!node.nodeInfo) {
-              return;
-            }
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              expression: value,
-            };
-            //console.log('onChange', node.nodeInfo);
-            if (updated) {
-              updated();
-            }
-          },
-        },
-        {
-          fieldType: FormFieldType.Text,
-          fieldName: 'treeNode',
-          value: values?.['treeNode'] ?? '',
-
-          onChange: (value: string) => {
-            if (!node.nodeInfo) {
-              return;
-            }
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              treeNode: value,
-            };
-            //console.log('onChange', node.nodeInfo);
-            if (updated) {
-              updated();
-            }
-          },
-        },
-      ];
-      return formElements;
+    (_values?: InitialValues) => {
+      return [];
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
       node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
       if (node.nodeInfo) {
+        const formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: fieldName,
+            value: node.nodeInfo.formValues?.[fieldName] ?? '',
+            label: 'Command handler',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                [fieldName]: value,
+              };
+              //console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'expression',
+            value: node.nodeInfo.formValues?.['expression'] ?? '',
+
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                expression: value,
+              };
+              //console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'treeNode',
+            value: node.nodeInfo.formValues?.['treeNode'] ?? '',
+
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                treeNode: value,
+              };
+              //console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'label',
+            value: node.nodeInfo.formValues?.['label'] ?? '',
+
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                label: value,
+              };
+              //console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'addToId',
+            value: node.nodeInfo.formValues?.['addToId'] ?? '',
+
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                addToId: value,
+              };
+              //console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'nodeClass',
+            value: node.nodeInfo.formValues?.['nodeClass'] ?? '',
+
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                nodeClass: value,
+              };
+              //console.log('onChange', node.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+        ];
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.isSettingsPopup = true;
         //node.nodeInfo.canvasAppInstance = nodeInstance.contextInstance;
+
+        const domElement = nodeInstance.node.domElement as HTMLElement;
+        if (domElement) {
+          const textNode = domElement.querySelector(
+            '.inner-node .node-content'
+          );
+          if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+            textNode.innerHTML = `Send '${
+              node.nodeInfo?.formValues?.['expression'] ?? 'node'
+            }' to node tree`;
+          }
+        }
       }
     },
     {
+      additionalClassNames: 'text-center',
       decoratorTitle: `Send to node tree`,
     },
     undefined,
