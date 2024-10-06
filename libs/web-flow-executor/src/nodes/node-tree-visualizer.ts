@@ -38,14 +38,20 @@ export const getNodeTreeVisualizer = (
         ).innerHTML = `<div class="node-tree grid justify-items-center justify-content-center items-start gap-2"></div>`;
       }
     }
-
+    console.log('execute', payload);
     if (htmlNode) {
       let label = '';
       if (payload?.label) {
         label = `${payload?.label?.toString()}: `;
       }
       const nodeClass = payload?.nodeClass ?? '';
-      const data = `${label}${(payload?.data ?? '').toString()}`;
+      let data = `${label}${(payload?.data ?? '-').toString()}`;
+      if (
+        !payload?.data ||
+        (Array.isArray(payload?.data) && !payload?.data.length)
+      ) {
+        data = '-';
+      }
       if (data) {
         const contentDataElement = createElement(
           'div',
@@ -172,10 +178,6 @@ export const getNodeTreeVisualizer = (
         id: node.id,
       };
     }
-    console.log(
-      'getNodeStatedHandler',
-      (htmlNode.domElement as unknown as HTMLElement).innerHTML
-    );
 
     return {
       data: {
