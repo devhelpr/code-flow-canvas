@@ -189,6 +189,28 @@ export const getNodeTreeVisualizer = (
 
   const setNodeStatedHandler = (_id: string, data: any) => {
     console.log('setNodeStatedHandler', data);
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+
+    if (htmlNode) {
+      (htmlNode.domElement as unknown as HTMLElement).innerHTML = data.data;
+      if (node?.width !== undefined && node?.height !== undefined) {
+        if (rect && (data.width > node?.width || data.height > node?.height)) {
+          rect.resize(data.width);
+        }
+      }
+    }
+  };
+
+  const updateVisual = (data: any) => {
+    console.log('updateVisual', data);
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+
     if (htmlNode) {
       (htmlNode.domElement as unknown as HTMLElement).innerHTML = data.data;
       if (node?.width !== undefined && node?.height !== undefined) {
@@ -368,6 +390,7 @@ export const getNodeTreeVisualizer = (
         node.nodeInfo.isVariable = true;
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.updateVisual = updateVisual;
         node.nodeInfo.delete = () => {
           canvasApp.unregisterCommandHandler(commandName);
           (
