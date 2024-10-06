@@ -7,12 +7,39 @@ import {
   NodeTask,
   ThumbConnectionType,
   ThumbType,
+  FormFieldType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RunCounter } from '../follow-path/run-counter';
 
-export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: '1',
+    name: 'output1',
+  },
+  {
+    thumbType: ThumbType.StartConnectorRight,
+    thumbIndex: 1,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: '2',
+    name: 'output2',
+  },
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+  },
+];
+
+export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
 
@@ -27,7 +54,58 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
     scopeId?: string,
     runCounter?: RunCounter
   ) => {
+    const sequentialRunCount =
+      node.nodeInfo?.formValues?.['output-thumbs']?.length ?? 0;
+
+    let sequentialRunIndex = 0;
+
     return new Promise((resolve, reject) => {
+      function runAdditionalOutputThumb(
+        thumbIndex: number,
+        input: string | any[],
+        node: IRectNodeComponent<NodeInfo>,
+        loopIndex?: number,
+        scopeId?: string,
+        runCounter?: RunCounter
+      ) {
+        if (
+          !node.thumbConnectors ||
+          node.thumbConnectors.length < thumbIndex + 1 ||
+          !canvasAppInstance
+        ) {
+          reject();
+          return;
+        }
+        runNodeFromThumb(
+          node.thumbConnectors[thumbIndex + 1],
+          canvasAppInstance,
+          (inputFromRun: string | any[]) => {
+            console.log('Sequential inputFromRun', inputFromRun);
+            sequentialRunIndex++;
+            if (sequentialRunIndex < sequentialRunCount) {
+              runAdditionalOutputThumb(
+                thumbIndex + 1,
+                input,
+                node,
+                loopIndex,
+                scopeId,
+                runCounter
+              );
+            } else {
+              resolve({
+                result: input,
+                output: input,
+                stop: true,
+              });
+            }
+          },
+          input,
+          node,
+          loopIndex,
+          scopeId,
+          runCounter
+        );
+      }
       if (
         !node.thumbConnectors ||
         node.thumbConnectors.length < 2 ||
@@ -53,12 +131,26 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
             node.thumbConnectors[1],
             canvasAppInstance,
             (inputFromSecondRun: string | any[]) => {
-              console.log('Sequential inputFromSecondRun', inputFromSecondRun);
-              resolve({
-                result: input,
-                output: input,
-                stop: true,
-              });
+              if (sequentialRunCount > 0) {
+                runAdditionalOutputThumb(
+                  2,
+                  input,
+                  node,
+                  loopIndex,
+                  scopeId,
+                  runCounter
+                );
+              } else {
+                console.log(
+                  'Sequential inputFromSecondRun',
+                  inputFromSecondRun
+                );
+                resolve({
+                  result: input,
+                  output: input,
+                  stop: true,
+                });
+              }
             },
             input,
             node,
@@ -86,7 +178,7 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
       x: number,
       y: number,
       id?: string,
-      _initalValues?: InitialValues,
+      initialValues?: InitialValues,
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       canvasAppInstance = canvasApp;
@@ -102,58 +194,104 @@ export const getSequential = (_updated: () => void): NodeTask<NodeInfo> => {
         'sequential'
       ) as unknown as INodeComponent<NodeInfo>;
 
+      const nodeThumbs = [...thumbs];
+      const additionalThumbsLength =
+        initialValues?.['output-thumbs']?.length ?? 0;
+
+      for (let i = 0; i < additionalThumbsLength; i++) {
+        nodeThumbs.push({
+          thumbType: ThumbType.StartConnectorRight,
+          thumbIndex: i + 2,
+          connectionType: ThumbConnectionType.start,
+          color: 'white',
+          label: `${i + 3}`,
+          name: `output${i + 3}`,
+        });
+      }
+
       const rect = canvasApp.createRect(
         x,
         y,
         110,
         110,
         undefined,
-        [
-          {
-            thumbType: ThumbType.StartConnectorRight,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.start,
-            color: 'white',
-            label: '1',
-            name: 'output1',
-          },
-          {
-            thumbType: ThumbType.StartConnectorRight,
-            thumbIndex: 1,
-            connectionType: ThumbConnectionType.start,
-            color: 'white',
-            label: '2',
-            name: 'output2',
-          },
-          {
-            thumbType: ThumbType.EndConnectorCenter,
-            thumbIndex: 0,
-            connectionType: ThumbConnectionType.end,
-            color: 'white',
-            label: ' ',
-          },
-        ],
+        nodeThumbs,
         jsxComponentWrapper,
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        true,
+        false,
         undefined,
         undefined,
         id,
         {
           type: 'sequential',
-          formValues: {},
+          formValues: {
+            'output-thumbs': initialValues?.['output-thumbs'] ?? [],
+          },
         },
         containerNode
       );
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
+      rect.resize();
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {
-        node.nodeInfo.formElements = [];
+        node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Array,
+            fieldName: 'output-thumbs',
+            label: 'Output thumbs',
+            value: initialValues?.['output-thumbs'] ?? [],
+            hideDeleteButton: true,
+            formElements: [
+              {
+                fieldName: 'thumbName',
+                fieldType: FormFieldType.Text,
+                value: '',
+              },
+            ],
+            onChange: (values: unknown[]) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              const oldThumbsLength =
+                node.nodeInfo.formValues?.['output-thumbs']?.length ?? 0;
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['output-thumbs']: [...values],
+              };
+              const newThumbLength = values.length - oldThumbsLength;
+              if (newThumbLength > 0) {
+                for (let i = 0; i < newThumbLength; i++) {
+                  if (node) {
+                    canvasAppInstance?.addThumbToNode(
+                      {
+                        thumbType: ThumbType.StartConnectorRight,
+                        thumbIndex: i + oldThumbsLength + 2,
+                        connectionType: ThumbConnectionType.start,
+                        color: 'white',
+                        label: ' ',
+                        name: `output${i + oldThumbsLength + 3}`,
+                      },
+                      node
+                    );
+                  }
+                }
+              }
+              node?.update?.();
+              if (updated) {
+                updated();
+              }
+              if (rect) {
+                rect.resize();
+              }
+            },
+          },
+        ];
+        node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
       }
