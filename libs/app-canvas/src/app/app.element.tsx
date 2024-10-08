@@ -185,7 +185,7 @@ export class AppElement<T extends BaseNodeInfo> {
     if (this.editPopupContainer?.domElement) {
       renderElement(
         <button
-          class="absolute top-[10px] right-[15px] icon icon-fullscreen"
+          class="popup-to-fullscreen-button absolute top-[10px] right-[15px] z-[10000] icon icon-fullscreen"
           click={() => {
             this.toggleFullscreenPopup = !this.toggleFullscreenPopup;
             const setPopupToFullscreen = () => {
@@ -219,9 +219,10 @@ export class AppElement<T extends BaseNodeInfo> {
                   this.editPopupLineContainer?.domElement as HTMLElement
                 ).classList.add('hidden-in-fullscreen');
               }
-              const transition = (document as any).startViewTransition(() =>
-                setPopupToFullscreen()
-              );
+              const transition = (document as any).startViewTransition({
+                update: () => setPopupToFullscreen(),
+                types: [this.toggleFullscreenPopup ? 'fullscreen' : 'normal'],
+              });
 
               transition.finished.then(() => {
                 if (!this.toggleFullscreenPopup) {
@@ -656,16 +657,16 @@ export class AppElement<T extends BaseNodeInfo> {
     if (!this.popupNode) {
       return;
     }
-    if (this.toggleFullscreenPopup) {
-      return;
-    }
+
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
     (
       this.editPopupLineContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
-
+    if (this.toggleFullscreenPopup) {
+      return;
+    }
     const popupContainer = this.editPopupContainer
       ?.domElement as unknown as HTMLElement;
     const nodeComponent = this.popupNode as INodeComponent<T>;

@@ -18,7 +18,7 @@ export const getCustomEditorTemplate = (
           <label for="${formId}_${fieldName}" class="block mb-2 ${
       settings?.textLabelColor ?? 'text-white'
     }">${label || fieldName}</label>
-          <div id="${formId}_${fieldName}__html" class="editor-instance w-full h-64"></div>
+          <div id="${formId}_${fieldName}__html" class="editor-instance w-full"></div>
           </div>`
   );
 };

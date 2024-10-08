@@ -515,8 +515,16 @@ dialog[open]::backdrop {
 .popup-node-editor {
   view-transition-name: popup-node-editor-fullscreen;
 }
+
+.popup-node-editor button.popup-to-fullscreen-button {
+  view-transition-name: popup-node-editor-fullscreen-button;
+}
+.popup-node-editor form {
+  view-transition-name: popup-node-editor-fullscreen-children;
+  width: 100%;
+}
 .popup-node-editor.fullscreen {
-  position: abosolute;
+  position: absolute;
   top: 20px !important;
   left: 20px !important;
   width: calc(50vw - 40px);
@@ -530,13 +538,61 @@ dialog[open]::backdrop {
   animation-duration: 520ms;
   animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
 }
-/* .popup-node-editor + .popup-node-editor-line {
-  transition: 520ms opacity cubic-bezier(0.6, 0, 0.4, 1);
-  opacity: 1;
+
+::view-transition-group(popup-node-editor-fullscreen-children) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
 }
-.popup-node-editor.fullscreen + .popup-node-editor-line {
-  opacity: 0;
-} */
+::view-transition-group(popup-node-editor-fullscreen-button) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
+}
+
+::view-transition-old(popup-node-editor-fullscreen-children),
+::view-transition-new(popup-node-editor-fullscreen-children) {
+  animation: none;
+}
+
+html:active-view-transition-type(fullscreen) {
+  &::view-transition-old(popup-node-editor-fullscreen-children) {
+    display: none;
+  }
+
+  &::view-transition-new(popup-node-editor-fullscreen-children) {
+    object-fit: none;
+    height: calc(100% + 30px);
+    object-position: left top;
+    overflow: clip;
+  }
+}
+
+html:active-view-transition-type(normal) {
+  &::view-transition-old(popup-node-editor-fullscreen-children) {
+    object-fit: none;
+    height: calc(100% + 30px);
+
+    object-position: left top;
+    overflow: clip;
+  }
+
+  &::view-transition-new(popup-node-editor-fullscreen-children) {
+    display: none;
+  }
+}
+
+::view-transition-old(popup-node-editor-fullscreen),
+::view-transition-new(popup-node-editor-fullscreen) {
+  animation: none;
+  overflow: clip;
+}
+
+::view-transition-old(popup-node-editor-fullscreen) {
+  display: none;
+}
+
+::view-transition-new(popup-node-editor-fullscreen) {
+  height: 100%;
+}
 
 .popup-node-editor-line.hidden-in-fullscreen {
   display: none;
@@ -628,10 +684,15 @@ dialog[open]::backdrop {
 
 .code-editor {
   width: 100%;
-  height: 512px;
+  height: 320px;
+  /*height: 100%;*/
 }
 .fullscreen .code-editor {
-  height: calc(100vh - 40px);
+  height: calc(100vh - 110px);
+}
+.code-editor .editor-instance {
+  /* height: 40rem; */
+  height: 100%;
 }
 .fullscreen .code-editor .editor-instance {
   height: 100%;
