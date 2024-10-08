@@ -18,6 +18,7 @@ import {
 } from '@devhelpr/dom-components';
 import { navbarButtonWithoutMargin } from '../../consts/classes';
 import { ICommandContext } from '../command-context';
+import { isNodeTaskComposition } from '../../node-task-registry/composition-utils';
 
 export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
   constructor(commandContext: ICommandContext<T>) {
@@ -74,8 +75,21 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
 
     if (factory) {
       const nodeTask = factory(this.canvasUpdated, canvasApp.theme);
-
-      const node = nodeTask.createVisualNode(canvasApp, startX, startY);
+      const nodeInfo = isNodeTaskComposition(nodeType)
+        ? { isComposition: true }
+        : undefined;
+      const node = nodeTask.createVisualNode(
+        canvasApp,
+        startX,
+        startY,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        nodeInfo
+      );
       if (node && node.nodeInfo) {
         // TODO : IMPROVE THIS
         (node.nodeInfo as any).taskType = nodeType;
