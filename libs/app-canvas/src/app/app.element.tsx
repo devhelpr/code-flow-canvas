@@ -183,6 +183,9 @@ export class AppElement<T extends BaseNodeInfo> {
       this.rootElement
     );
 
+    (
+      this.editPopupContainer?.domElement as unknown as HTMLElement
+    ).style.transition = 'none';
     if (this.editPopupContainer?.domElement) {
       renderElement(
         <button
@@ -200,6 +203,9 @@ export class AppElement<T extends BaseNodeInfo> {
                 ).classList.remove('fullscreen');
               }
             };
+            (
+              this.editPopupContainer?.domElement as unknown as HTMLElement
+            ).style.transition = '';
 
             //!(document as any).startViewTransition) {
             // Fallback if View Transitions API is not supported.
@@ -215,6 +221,10 @@ export class AppElement<T extends BaseNodeInfo> {
                 (
                   this.editPopupLineContainer?.domElement as HTMLElement
                 ).classList.remove('hidden-in-fullscreen');
+
+                (
+                  this.editPopupContainer?.domElement as unknown as HTMLElement
+                ).style.transition = 'none';
               }, 420);
             }
 
@@ -300,9 +310,9 @@ export class AppElement<T extends BaseNodeInfo> {
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.add('hidden');
-    // (
-    //   this.editPopupLineContainer?.domElement as unknown as HTMLElement
-    // ).classList.add('hidden');
+    (
+      this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    ).classList.add('hidden');
 
     (
       this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
@@ -676,9 +686,10 @@ export class AppElement<T extends BaseNodeInfo> {
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
-    // (
-    //   this.editPopupLineContainer?.domElement as unknown as HTMLElement
-    // ).classList.remove('hidden');
+    (
+      this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    ).classList.remove('hidden');
+
     // if (this.toggleFullscreenPopup) {
     //   return;
     // }
