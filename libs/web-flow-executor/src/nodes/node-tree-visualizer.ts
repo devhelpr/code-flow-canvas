@@ -20,6 +20,7 @@ export const getNodeTreeVisualizer = (
 ): NodeTask<NodeInfo> => {
   let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
   let componentWrapper: INodeComponent<NodeInfo> | undefined = undefined;
   let htmlNode: IDOMElement | undefined = undefined;
@@ -30,9 +31,12 @@ export const getNodeTreeVisualizer = (
   let rootNode: IDOMElement | undefined = undefined;
   let initialDistance = 0;
   const execute = (_command: string, payload: any) => {
+    if (canvasAppInstance && canvasAppInstance.isContextOnly) {
+      return;
+    }
     if (isInitialized) {
       isInitialized = false;
-      if (htmlNode) {
+      if (htmlNode && htmlNode.domElement) {
         (
           htmlNode.domElement as unknown as HTMLElement
         ).innerHTML = `<div class="node-tree grid justify-items-center justify-content-center items-start gap-2"></div>`;
@@ -224,18 +228,21 @@ export const getNodeTreeVisualizer = (
   };
 
   const initializeCompute = () => {
-    if (htmlNode) {
+    if (canvasAppInstance && canvasAppInstance.isContextOnly) {
+      return;
+    }
+    if (htmlNode && htmlNode.domElement) {
       (
         htmlNode.domElement as unknown as HTMLElement
       ).innerHTML = `<div>-----</div>`;
     }
     isInitialized = true;
     rootNode = undefined;
-    if (rect) {
+    if (rect && rect.resize) {
       rect.resize(120);
     }
 
-    if (htmlNode) {
+    if (htmlNode && htmlNode.domElement) {
       (node.domElement as HTMLElement).style.left = `0px`;
       (node.domElement as HTMLElement).setAttribute('data-xoffset', '0');
       const boundingBox = (
@@ -255,11 +262,11 @@ export const getNodeTreeVisualizer = (
       clearTimeout(timeout);
       timeout = undefined;
     }
-
-    (componentWrapper?.domElement as unknown as HTMLElement).classList.remove(
-      'border-green-200'
-    );
-
+    if (componentWrapper?.domElement) {
+      (componentWrapper?.domElement as unknown as HTMLElement).classList.remove(
+        'border-green-200'
+      );
+    }
     return;
   };
 
@@ -285,7 +292,7 @@ export const getNodeTreeVisualizer = (
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       commandName = initalValues?.[commandNameFieldName] ?? '';
-
+      canvasAppInstance = canvasApp;
       if (id) {
         canvasApp.registerCommandHandler(commandName, {
           execute,

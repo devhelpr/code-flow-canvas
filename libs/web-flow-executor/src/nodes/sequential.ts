@@ -237,7 +237,9 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.resize();
+      if (rect?.resize) {
+        rect.resize();
+      }
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {
@@ -287,7 +289,7 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
               if (updated) {
                 updated();
               }
-              if (rect) {
+              if (rect && rect.resize) {
                 rect.resize();
               }
             },

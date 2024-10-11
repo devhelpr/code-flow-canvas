@@ -141,9 +141,11 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node .node-content');
-      if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Push to '${node.nodeInfo?.formValues?.[fieldName]}' array`;
+      if (domElement) {
+        const textNode = domElement?.querySelector('.inner-node .node-content');
+        if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+          textNode.innerHTML = `Push to '${node.nodeInfo?.formValues?.[fieldName]}' array`;
+        }
       }
     },
     {

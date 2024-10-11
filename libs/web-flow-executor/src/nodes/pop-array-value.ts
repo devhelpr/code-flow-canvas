@@ -174,11 +174,13 @@ export const popArrayValue: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node .node-content');
-      if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Pop value from ${
-          node.nodeInfo?.formValues?.['popMode'] ?? 'end'
-        }<br />'${node.nodeInfo?.formValues?.[fieldName]}' array`;
+      if (domElement) {
+        const textNode = domElement.querySelector('.inner-node .node-content');
+        if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+          textNode.innerHTML = `Pop value from ${
+            node.nodeInfo?.formValues?.['popMode'] ?? 'end'
+          }<br />'${node.nodeInfo?.formValues?.[fieldName]}' array`;
+        }
       }
     },
     {

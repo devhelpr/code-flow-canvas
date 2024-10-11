@@ -7,14 +7,14 @@ import {
   IRectNodeComponent,
   NodeTask,
   ThumbConnectionType,
-  thumbConstraints,
   ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { RuntimeFlowEngine } from '../flow-engine/runtime-flow-engine';
 
 interface FileInfo {
   fileName: string;
-  lines: string[];
+  flow: any;
 }
 
 const selectFile = () => {
@@ -24,15 +24,21 @@ const selectFile = () => {
     };
 
     input.type = 'file';
-    input.setAttribute('accept', '.txt');
+    input.setAttribute('accept', '.json');
     input.onchange = () => {
       const files = Array.from(input.files);
       if (files && files.length > 0) {
         const reader = new FileReader();
         reader.addEventListener('load', (event) => {
           if (event && event.target && event.target.result) {
-            const lines = (event.target.result as string).split(/\r\n|\n/);
-            resolve({ lines, fileName: files[0].name });
+            try {
+              const json = JSON.parse(event.target.result as string);
+
+              resolve({ flow: json, fileName: files[0].name });
+            } catch (e) {
+              alert('Invalid JSON file');
+              reject();
+            }
           }
           input.remove();
         });
@@ -48,35 +54,61 @@ const selectFile = () => {
   });
 };
 
-export const loadTextFileNodeName = 'load-text-file';
-const fieldName = 'fileName';
-export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
+export const subFlowNodeName = 'sub-flow';
+export const subFlowNode = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
-  let lines: string[] = [];
+
   const initializeCompute = () => {
     hasInitialValue = true;
-    if (htmlNode && htmlNode.domElement) {
-      htmlNode.domElement.textContent = 'Click to load text file';
-    }
+
     return;
   };
-  const compute = () => {
+  const computeAsync = (input: string) => {
     if (htmlNode) {
       if (hasInitialValue) {
         hasInitialValue = false;
       }
     }
-    return {
-      result: lines,
-      followPath: undefined,
-    };
+    const flowEngine = new RuntimeFlowEngine();
+    flowEngine.initialize(
+      structuredClone(
+        node.nodeInfo?.formValues?.['flow']?.flows?.flow?.nodes
+      ) ?? []
+    );
+
+    return new Promise((resolve) => {
+      // resolve({
+      //   result: 'output',
+      //   output: 'output',
+      //   followPath: undefined,
+      // });
+      flowEngine
+        .run(input)
+        .then((output) => {
+          resolve({
+            result: output,
+            output: output,
+            followPath: undefined,
+          });
+        })
+        .catch((_e) => {
+          resolve({
+            result: false,
+            output: false,
+            followPath: undefined,
+          });
+        })
+        .finally(() => {
+          flowEngine.destroy();
+        });
+    });
   };
   return {
-    name: loadTextFileNodeName,
+    name: subFlowNodeName,
     family: 'flow-canvas',
     category: 'data',
     createVisualNode: (
@@ -92,18 +124,24 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
       const formElements = [
         {
           fieldType: FormFieldType.Button,
-          fieldName: fieldName,
-          caption: 'Load text file',
+          fieldName: 'fileName',
+          caption: 'Load flow file',
           onButtonClick: () => {
             return new Promise<void>((resolve, _reject) => {
               selectFile()
                 .then((fileInfo) => {
-                  if (htmlNode && fileInfo && node) {
-                    lines = fileInfo.lines;
-                    (htmlNode.domElement as HTMLImageElement).textContent = `${
-                      fileInfo.fileName
-                    }: ${lines.length.toString()}`;
+                  if (node) {
+                    if (node.nodeInfo) {
+                      node.nodeInfo.formValues.flow = fileInfo.flow;
+                      node.nodeInfo.formValues.fileName = fileInfo.fileName;
+                    }
                   }
+                  if (htmlNode && fileInfo && node) {
+                    (
+                      htmlNode.domElement as HTMLImageElement
+                    ).textContent = `${fileInfo.fileName}`;
+                  }
+                  updated();
                   resolve();
                 })
                 .catch(() => {
@@ -142,7 +180,6 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             label: ' ',
-            thumbConstraint: thumbConstraints.array,
             name: 'input',
             color: 'white',
           },
@@ -151,7 +188,6 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             label: ' ',
-            thumbConstraint: thumbConstraints.array,
             name: 'output',
             color: 'white',
           },
@@ -165,17 +201,21 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
         false,
         id,
         {
-          type: loadTextFileNodeName,
+          type: subFlowNodeName,
           formElements: [],
+          formValues: {
+            fileName: initalValues?.['fileName'] ?? '',
+            flow: initalValues?.['flow'] ?? undefined,
+          },
         }
       );
 
-      if (initalValues && initalValues[fieldName] && htmlNode?.domElement) {
-        hasInitialValue = false;
-        (
-          htmlNode.domElement as HTMLImageElement
-        ).src = `data:image/png;base64,${initalValues[fieldName]}`;
-      }
+      // if (initalValues && initalValues["fileName"] && htmlNode?.domElement) {
+      //   hasInitialValue = false;
+      //   (
+      //     htmlNode.domElement as HTMLImageElement
+      //   ).src = `data:image/png;base64,${initalValues["fileName"]}`;
+      // }
 
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
@@ -185,11 +225,25 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.showFormOnlyInPopup = true;
-        node.nodeInfo.compute = compute;
+        node.nodeInfo.isSettingsPopup = true;
+        node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
-          image: initalValues?.[fieldName] ?? '',
+          fileName: initalValues?.['fileName'] ?? '',
+          flow: initalValues?.['flow'] ?? undefined,
         };
+
+        if (htmlNode) {
+          if (node.nodeInfo.formValues?.fileName && node) {
+            (
+              htmlNode.domElement as HTMLImageElement
+            ).textContent = `${node.nodeInfo.formValues?.fileName}`;
+          } else {
+            if (htmlNode && htmlNode.domElement) {
+              htmlNode.domElement.textContent = 'Click to load flow file';
+            }
+          }
+        }
       }
       return node;
     },

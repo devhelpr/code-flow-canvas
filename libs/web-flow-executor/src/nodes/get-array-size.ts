@@ -140,9 +140,11 @@ export const getArraySize: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node .node-content');
-      if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `'${node.nodeInfo?.formValues?.[fieldName]}' array<br /> size`;
+      if (domElement) {
+        const textNode = domElement.querySelector('.inner-node .node-content');
+        if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+          textNode.innerHTML = `'${node.nodeInfo?.formValues?.[fieldName]}' array<br /> size`;
+        }
       }
     },
     {

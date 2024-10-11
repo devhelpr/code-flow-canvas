@@ -124,9 +124,11 @@ export const initArrayVariable: NodeTaskFactory<NodeInfo> = (
       }
 
       const domElement = nodeInstance.node.domElement as HTMLElement;
-      const textNode = domElement.querySelector('.inner-node .node-content');
-      if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
-        textNode.innerHTML = `Init array<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
+      if (domElement) {
+        const textNode = domElement.querySelector('.inner-node .node-content');
+        if (textNode && node && node.nodeInfo?.formValues?.[fieldName]) {
+          textNode.innerHTML = `Init array<br />'${node.nodeInfo?.formValues?.[fieldName]}'`;
+        }
       }
     },
     {
