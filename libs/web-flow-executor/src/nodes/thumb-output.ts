@@ -67,6 +67,7 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
           fieldName: 'valueType',
           value: initialInputType,
           options: [
+            { value: 'default', label: 'default' },
             { value: 'value', label: 'value' },
             { value: 'array', label: 'array' },
             { value: 'object', label: 'object' },
@@ -86,11 +87,14 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
             };
 
             if (node.thumbConnectors?.[0]) {
-              node.thumbConnectors[0].thumbConstraint = value;
+              node.thumbConnectors[0].thumbConstraint =
+                value === 'default' ? '' : value;
               if (node.connections) {
                 node.connections = node.connections.filter((c) => {
                   if (
-                    c.startNodeThumb?.thumbConstraint !== value &&
+                    (c.startNodeThumb?.thumbConstraint === 'default'
+                      ? ''
+                      : c.startNodeThumb?.thumbConstraint) !== value &&
                     c.startNode
                   ) {
                     c.startNode.connections = c.startNode?.connections?.filter(

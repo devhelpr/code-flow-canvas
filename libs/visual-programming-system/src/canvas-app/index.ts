@@ -1346,6 +1346,9 @@ export class FlowCanvas<T> extends FlowCore implements IFlowCanvasBase<T> {
     if (!rectInstance) {
       return;
     }
+    const getThumbConstraint = (constraint?: string | string[]) => {
+      return constraint === 'default' ? '' : constraint;
+    };
 
     if (rectInstance.nodeComponent?.thumbConnectors) {
       const thumbIndex = rectInstance.nodeComponent.thumbConnectors.findIndex(
@@ -1360,23 +1363,33 @@ export class FlowCanvas<T> extends FlowCore implements IFlowCanvasBase<T> {
         if (thumbNode) {
           rectInstance.nodeComponent.connections.forEach((c) => {
             if (c.startNodeThumb?.id === thumbNode.id) {
-              c.startNodeThumb.thumbConstraint = thumb.thumbConstraint;
+              c.startNodeThumb.thumbConstraint = getThumbConstraint(
+                thumb.thumbConstraint
+              );
               c.startNodeThumb.prefixLabel = thumb.prefixLabel;
 
               updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.startNodeThumb);
 
-              if (c.endNodeThumb?.thumbConstraint !== thumb.thumbConstraint) {
+              if (
+                (c.endNodeThumb?.thumbConstraint ?? '') !==
+                getThumbConstraint(thumb.thumbConstraint)
+              ) {
                 c.startNodeThumb = undefined;
                 c.startNode = undefined;
               }
             }
             if (c.endNodeThumb?.id === thumbNode.id) {
-              c.endNodeThumb.thumbConstraint = thumb.thumbConstraint;
+              c.endNodeThumb.thumbConstraint = getThumbConstraint(
+                thumb.thumbConstraint
+              );
               c.endNodeThumb.prefixLabel = thumb.prefixLabel;
 
               updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.endNodeThumb);
 
-              if (c.startNodeThumb?.thumbConstraint !== thumb.thumbConstraint) {
+              if (
+                (c.startNodeThumb?.thumbConstraint ?? '') !==
+                getThumbConstraint(thumb.thumbConstraint)
+              ) {
                 c.endNodeThumb = undefined;
                 c.endNode = undefined;
               }

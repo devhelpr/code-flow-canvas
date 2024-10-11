@@ -1487,7 +1487,7 @@ export class AppElement<T extends BaseNodeInfo> {
 
       setupTasksInDropdown(selectNodeTypeHTMLElement, true, composition.id);
 
-      const handler = () => {
+      const onExitCompositionMode = () => {
         quitCameraSubscribtion();
 
         showElement(this.canvas);
@@ -1535,6 +1535,10 @@ export class AppElement<T extends BaseNodeInfo> {
               nodeComponent: nodeHelper,
             });
 
+            const getThumbConstraint = (constraint?: string | string[]) => {
+              return constraint === 'default' ? '' : constraint;
+            };
+
             if (nodesIdsToIgnore.indexOf(element.id) < 0) {
               // new thumbs
               nodesIdsToIgnore.push(element.id);
@@ -1558,13 +1562,17 @@ export class AppElement<T extends BaseNodeInfo> {
                     name: connection?.endNodeThumb?.thumbName ?? '',
                     prefixIcon: '',
                     thumbConstraint:
-                      connection?.startNodeThumb?.thumbConstraint ?? 'value',
+                      getThumbConstraint(
+                        connection?.startNodeThumb?.thumbConstraint
+                      ) ?? 'value',
                     color: 'white',
                     prefixLabel:
                       (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
                         ?.thumbName ??
                       connection?.endNode?.label ??
-                      connection?.startNodeThumb?.thumbConstraint?.toString() ??
+                      getThumbConstraint(
+                        connection?.startNodeThumb?.thumbConstraint
+                      )?.toString() ??
                       '',
                     thumbIdentifierWithinNode: crypto.randomUUID(),
                     nodeId: connectedToNode?.id,
@@ -1604,13 +1612,17 @@ export class AppElement<T extends BaseNodeInfo> {
                     name: connection?.startNodeThumb?.thumbName ?? '',
                     prefixIcon: '',
                     thumbConstraint:
-                      connection?.endNodeThumb?.thumbConstraint ?? 'value',
+                      getThumbConstraint(
+                        connection?.endNodeThumb?.thumbConstraint
+                      ) ?? 'value',
                     color: 'white',
                     prefixLabel:
                       (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
                         ?.thumbName ??
                       connection?.startNode?.label ??
-                      connection?.endNodeThumb?.thumbConstraint?.toString() ??
+                      getThumbConstraint(
+                        connection?.endNodeThumb?.thumbConstraint
+                      )?.toString() ??
                       '',
                     thumbIdentifierWithinNode: crypto.randomUUID(),
                     nodeId: connectedToNode?.id,
@@ -1877,7 +1889,7 @@ export class AppElement<T extends BaseNodeInfo> {
 
         (
           this.compositionEditExitButton?.domElement as HTMLElement
-        ).removeEventListener('click', handler);
+        ).removeEventListener('click', onExitCompositionMode);
 
         showElement(this.compositionCreateButton);
         showElement(this.clearCanvasButton);
@@ -1891,7 +1903,7 @@ export class AppElement<T extends BaseNodeInfo> {
       };
       (
         this.compositionEditExitButton?.domElement as HTMLElement
-      ).addEventListener('click', handler);
+      ).addEventListener('click', onExitCompositionMode);
       //
     }
   };

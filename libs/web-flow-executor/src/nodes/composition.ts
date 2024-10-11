@@ -173,8 +173,14 @@ export const getCreateCompositionNode =
           run(
             contextCanvasApp.elements,
             contextCanvasApp,
-            (_input) => {
-              //
+            (input) => {
+              if (runCounter.runCounter <= 0) {
+                resolve({
+                  result: input,
+                  output: input,
+                  followPath: undefined,
+                });
+              }
             },
             input,
             undefined,
