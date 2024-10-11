@@ -113,6 +113,12 @@ export const getUserInput =
             fieldName: 'value',
             label: initialValue ?? 'value',
             value: '',
+            onkeydown: (_event: KeyboardEvent) => {
+              if (changeTimeout) {
+                clearTimeout(changeTimeout);
+                changeTimeout = null;
+              }
+            },
             onChange: (value: string) => {
               // if (isResettingInput) {
               //   isResettingInput = false;
@@ -177,7 +183,7 @@ export const getUserInput =
                     trigger: true,
                   }
                 );
-              }, 150);
+              }, 250);
             },
           },
         ];
@@ -296,6 +302,9 @@ export const getUserInput =
                   labelElement.textContent = value;
                 }
                 updated();
+                if (rect && rect.resize) {
+                  rect.resize();
+                }
               },
             },
             {

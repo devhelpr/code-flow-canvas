@@ -1764,7 +1764,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     }
     const formElementInstance = createElement(
       'div',
-      {},
+      { class: 'max-h-[380px]  h-[fit-content]  p-3 pb-6' },
       this.editPopupContainer?.domElement,
       undefined
     );

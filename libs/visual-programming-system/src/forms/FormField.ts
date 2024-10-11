@@ -24,6 +24,7 @@ export type FormField = (
   | {
       fieldType: 'Text';
       value: string;
+      onKeyDown?: (event: KeyboardEvent) => void;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {

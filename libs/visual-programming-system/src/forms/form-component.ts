@@ -275,6 +275,7 @@ export class FormsComponent
           settings,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
+          onKeyDown: formControl.onKeyDown,
           isLast: index === this.props.formElements.length - 1,
           formsComponent: this,
         });

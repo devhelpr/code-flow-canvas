@@ -155,11 +155,12 @@ export class AppElement<T extends BaseNodeInfo> {
     this.canvasApp.setOnCameraChanged(this.onCameraChanged);
 
     this.editPopupContainer = createElement(
+      // max-h-[380px]  h-[fit-content]  p-3 pb-6
       'div',
       {
         id: 'textAreaContainer',
         class:
-          'popup-node-editor absolute w-[400px] max-h-[380px]  h-[fit-content] z-[20020] p-3 pb-6 bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
+          'popup-node-editor absolute w-[400px] z-[20020] bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
         wheel: (event) => {
           event.stopPropagation();
         },
@@ -200,27 +201,41 @@ export class AppElement<T extends BaseNodeInfo> {
               }
             };
 
-            if (!(document as any).startViewTransition) {
-              // Fallback if View Transitions API is not supported.
-              setPopupToFullscreen();
-              if (this.toggleFullscreenPopup) {
-                (
-                  this.editPopupLineContainer?.domElement as HTMLElement
-                ).classList.add('hidden-in-fullscreen');
-              } else {
+            //!(document as any).startViewTransition) {
+            // Fallback if View Transitions API is not supported.
+
+            if (this.toggleFullscreenPopup) {
+              (
+                this.editPopupLineContainer?.domElement as HTMLElement
+              ).classList.add('hidden-in-fullscreen');
+            }
+            setTimeout(() => setPopupToFullscreen(), 0);
+            if (!this.toggleFullscreenPopup) {
+              setTimeout(() => {
                 (
                   this.editPopupLineContainer?.domElement as HTMLElement
                 ).classList.remove('hidden-in-fullscreen');
-              }
-            } else {
-              // Start transition with the View Transitions API.
+              }, 420);
+            }
+
+            // Start transition with the View Transitions API.
+            /*
+              const root = document.querySelector<HTMLElement>(':root');
+
               if (this.toggleFullscreenPopup) {
                 (
                   this.editPopupLineContainer?.domElement as HTMLElement
                 ).classList.add('hidden-in-fullscreen');
               }
               const transition = (document as any).startViewTransition({
-                update: () => setPopupToFullscreen(),
+                update: () => {
+                  // root?.style?.setProperty('--popup-height1', '100%');
+                  // root?.style?.setProperty(
+                  //   '--popup-height2',
+                  //   `${36}px` // - 24 * 3
+                  // );
+                  setPopupToFullscreen();
+                },
                 types: [this.toggleFullscreenPopup ? 'fullscreen' : 'normal'],
               });
 
@@ -231,7 +246,7 @@ export class AppElement<T extends BaseNodeInfo> {
                   ).classList.remove('hidden-in-fullscreen');
                 }
               });
-            }
+              */
           }}
         ></button>,
         this.editPopupContainer.domElement as HTMLElement
@@ -285,9 +300,9 @@ export class AppElement<T extends BaseNodeInfo> {
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.add('hidden');
-    (
-      this.editPopupLineContainer?.domElement as unknown as HTMLElement
-    ).classList.add('hidden');
+    // (
+    //   this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    // ).classList.add('hidden');
 
     (
       this.editPopupEditingNodeIndicator?.domElement as unknown as HTMLElement
@@ -661,12 +676,12 @@ export class AppElement<T extends BaseNodeInfo> {
     (
       this.editPopupContainer?.domElement as unknown as HTMLElement
     ).classList.remove('hidden');
-    (
-      this.editPopupLineContainer?.domElement as unknown as HTMLElement
-    ).classList.remove('hidden');
-    if (this.toggleFullscreenPopup) {
-      return;
-    }
+    // (
+    //   this.editPopupLineContainer?.domElement as unknown as HTMLElement
+    // ).classList.remove('hidden');
+    // if (this.toggleFullscreenPopup) {
+    //   return;
+    // }
     const popupContainer = this.editPopupContainer
       ?.domElement as unknown as HTMLElement;
     const nodeComponent = this.popupNode as INodeComponent<T>;

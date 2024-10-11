@@ -16,6 +16,7 @@ export interface InputFieldProps extends BaseFormFieldProps {
   isLast?: boolean;
 
   onChange?: (value: string, formComponent: IFormsComponent) => void;
+  onKeyDown?: (event: KeyboardEvent) => void;
 }
 
 export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps> {
@@ -66,6 +67,7 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
 
         this.renderList.push(this.label, this.input);
         this.input.addEventListener('input', this.onInput);
+        this.input.addEventListener('keydown', this.onKeyDown);
 
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
@@ -93,6 +95,10 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
     }
     this.isMounted = false;
   }
+
+  onKeyDown = (event: KeyboardEvent) => {
+    this.props.onKeyDown?.(event);
+  };
 
   onInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
