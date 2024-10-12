@@ -402,6 +402,20 @@ dialog[open]::backdrop {
   grid-template-columns: auto;
 }
 
+.node-tree__wrapper:has(> :last-child:nth-child(2)) {
+  /* 1 element */
+  grid-template-columns: auto auto;
+}
+
+.node-tree__wrapper:has(> :last-child:nth-child(2))
+  .node-tree__row-wrapper:first-child {
+  justify-self: flex-end;
+}
+.node-tree__wrapper:has(> :last-child:nth-child(2))
+  .node-tree__row-wrapper:first-child::before {
+  width: calc(50% + 8px);
+}
+
 .node-tree__wrapper:has(> .node-tree__row-wrapper)
   > .node-tree__row-wrapper:first-child:before {
   content: '';
