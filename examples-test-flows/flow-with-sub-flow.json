@@ -1,0 +1,157 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "554fb383-340e-494f-9c3b-370ff26e9e10",
+          "x": 5360.392610210633,
+          "y": 1869.8064275840952,
+          "width": 200,
+          "height": 55,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "sub-flow",
+            "formValues": {
+              "fileName": "simple-expression.json",
+              "flow": {
+                "schemaType": "flow",
+                "schemaVersion": "0.0.1",
+                "id": "1234",
+                "flows": {
+                  "flow": {
+                    "flowType": "flow",
+                    "nodes": [
+                      {
+                        "id": "782082bb-9598-450e-a4c5-7c535aada8f3",
+                        "x": 5323.469007118697,
+                        "y": 1919.8457925257553,
+                        "width": 200,
+                        "height": 100,
+                        "nodeType": "Shape",
+                        "nodeInfo": {
+                          "type": "expression",
+                          "formValues": {
+                            "expression": "input + 5",
+                            "inputType": "number"
+                          },
+                          "showFormOnlyInPopup": true,
+                          "isSettingsPopup": true,
+                          "taskType": "expression"
+                        }
+                      },
+                      {
+                        "id": "d3bb1cb4-e9ac-4384-bf87-b297b3125740",
+                        "x": 5015.098908913419,
+                        "y": 1915.9716560922689,
+                        "width": 200,
+                        "height": 100,
+                        "nodeType": "Shape",
+                        "nodeInfo": {
+                          "type": "expression",
+                          "formValues": {
+                            "expression": "input * 2",
+                            "inputType": "number"
+                          },
+                          "showFormOnlyInPopup": true,
+                          "isSettingsPopup": true,
+                          "taskType": "expression"
+                        }
+                      },
+                      {
+                        "id": "681c8d00-5e19-4254-a457-0ad56ff9beb0",
+                        "x": 5215.098908913419,
+                        "y": 1965.9716560922689,
+                        "endX": 5323.469007118697,
+                        "endY": 1969.8457925257553,
+                        "startNodeId": "d3bb1cb4-e9ac-4384-bf87-b297b3125740",
+                        "endNodeId": "782082bb-9598-450e-a4c5-7c535aada8f3",
+                        "startThumbName": "output",
+                        "endThumbName": "input",
+                        "lineType": "BezierCubic",
+                        "nodeType": "Connection",
+                        "layer": 1,
+                        "nodeInfo": {}
+                      }
+                    ]
+                  }
+                },
+                "compositions": {}
+              }
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "2cda6c75-bb27-497d-aa2d-0943cfa81983",
+          "x": 5719.2086945043175,
+          "y": 1899.2217164435272,
+          "width": 119.99969086165173,
+          "height": 55.99994586047943,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "bd25c2a0-3974-417b-a562-5b715c770cbd",
+          "x": 5009.773171687116,
+          "y": 1860.1569742430916,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "random",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "d6339c26-1666-4e68-99ec-6f29aeea7fcf",
+          "x": 5560.392610210633,
+          "y": 1899.8064275840952,
+          "endX": 5719.2086945043175,
+          "endY": 1929.2217164435272,
+          "startNodeId": "554fb383-340e-494f-9c3b-370ff26e9e10",
+          "endNodeId": "2cda6c75-bb27-497d-aa2d-0943cfa81983",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "3961faf0-d347-40b5-bc64-ce3277248e42",
+          "x": 5209.773171687116,
+          "y": 1910.1569742430916,
+          "endX": 5360.392610210633,
+          "endY": 1899.8064275840952,
+          "startNodeId": "bd25c2a0-3974-417b-a562-5b715c770cbd",
+          "endNodeId": "554fb383-340e-494f-9c3b-370ff26e9e10",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
