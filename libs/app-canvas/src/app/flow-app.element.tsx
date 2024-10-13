@@ -192,6 +192,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   cancelCameraAnimation: (() => void) | undefined = undefined;
   updateToolbarTaskList: (() => void) | undefined = undefined;
 
+  initializeNodes: (() => void) | undefined = undefined;
   flowId = '1234';
 
   onStoreFlow?: (
@@ -965,6 +966,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.runFlow();
       }
     };
+    this.initializeNodes = initializeNodes;
 
     const serializeFlow = () => {
       if (!this.canvasApp) {
@@ -1991,6 +1993,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     addClassesHTMLElement(this.exportCodeButton, ['hidden']);
   }
+  onEnterEditComposition() {
+    super.onEnterEditComposition();
+
+    this.currentCanvasApp?.elements.forEach((node) => {
+      const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
+      if (nodeComponent.nodeType !== NodeType.Connection) {
+        if (nodeComponent?.nodeInfo?.initializeCompute) {
+          nodeComponent.nodeInfo.initializeCompute();
+        }
+      }
+    });
+  }
 
   onExitEditComposition() {
     super.onExitEditComposition();
@@ -2006,6 +2020,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     removeClasses(this.speedMeterElement, ['hidden']);
 
     removeClassesHTMLElement(this.exportCodeButton, ['hidden']);
+
+    this.initializeNodes?.();
   }
 
   onImported = () => {

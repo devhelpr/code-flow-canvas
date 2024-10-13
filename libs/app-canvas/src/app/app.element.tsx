@@ -1921,7 +1921,8 @@ export class AppElement<T extends BaseNodeInfo> {
       (
         this.compositionEditExitButton?.domElement as HTMLElement
       ).addEventListener('click', onExitCompositionMode);
-      //
+
+      this.onEnterEditComposition();
     }
   };
 
@@ -2006,6 +2007,10 @@ export class AppElement<T extends BaseNodeInfo> {
   }
 
   onEditComposition() {
+    //
+  }
+
+  onEnterEditComposition() {
     //
   }
 
