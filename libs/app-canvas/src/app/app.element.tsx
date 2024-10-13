@@ -1239,6 +1239,12 @@ export class AppElement<T extends BaseNodeInfo> {
       }
       canvasApp?.setCamera(0, 0, 1);
       this.currentCanvasApp = canvasApp;
+
+      canvasApp?.setOnCanvasClick(() => {
+        console.log('OnCanvasClick');
+        setSelectNode(undefined);
+      });
+
       importToCanvas(
         composition.nodes as FlowNode<BaseNodeInfo>[],
         canvasApp as unknown as IFlowCanvasBase<BaseNodeInfo>,
@@ -1500,7 +1506,7 @@ export class AppElement<T extends BaseNodeInfo> {
 
       const onExitCompositionMode = () => {
         quitCameraSubscribtion();
-
+        setSelectNode(undefined);
         showElement(this.canvas);
         this.canvasApp?.centerCamera();
 

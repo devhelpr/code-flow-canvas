@@ -14,6 +14,8 @@ import {
   createRuntimeFlowContext,
   importToCanvas,
   visualNodeFactory,
+  INodeComponent,
+  NodeType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
@@ -168,6 +170,15 @@ export const getCreateCompositionNode =
                 output: input,
                 followPath: undefined,
               });
+            }
+          });
+
+          contextCanvasApp.elements.forEach((node) => {
+            const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
+            if (nodeComponent.nodeType !== NodeType.Connection) {
+              if (nodeComponent?.nodeInfo?.initializeCompute) {
+                nodeComponent.nodeInfo.initializeCompute();
+              }
             }
           });
           run(
