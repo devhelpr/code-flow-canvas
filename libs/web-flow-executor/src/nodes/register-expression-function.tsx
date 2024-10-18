@@ -141,7 +141,6 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
     (nodeInstance) => {
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.isRunOnStart = true;
-        nodeInstance.node.nodeInfo.isSettingsPopup = true;
       }
       rect = nodeInstance.rect;
       node = nodeInstance.node as IRectNodeComponent<NodeInfo>;

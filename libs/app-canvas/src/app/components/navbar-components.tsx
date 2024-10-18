@@ -87,6 +87,7 @@ export class NavbarComponent extends Component<
           <option value="simple-neural-network.json">Simple neural network</option>
           <option value="neural-mnist-training.json">Neural network MNIST training & testing</option>
           <option value="kmeans.json">K-Means clustering</option>
+          <option value="kmeans-csv-file.json">K-Means clustering of a CSV file</option>
         </select>
         <children></children>
       </div>`
