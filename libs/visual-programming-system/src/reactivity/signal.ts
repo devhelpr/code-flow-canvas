@@ -100,6 +100,15 @@ export class Signal<T = string> implements ISignal<T> {
 }
 const namedSubscriptions = new Map<string, NamedSignal[]>();
 const registeredSignals = new Set<string>();
+
+/**
+ * Use with care! this will clear all named signals and their subscriptions.
+ */
+export const clearNamedSignals = () => {
+  namedSubscriptions.clear();
+  registeredSignals.clear();
+};
+
 export const createNamedSignal = <T = string>(
   name: string,
   defaultValue?: T

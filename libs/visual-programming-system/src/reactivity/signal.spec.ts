@@ -4,6 +4,7 @@
 import { expect, test } from 'vitest';
 
 import {
+  clearNamedSignals,
   createNamedSignal,
   createSignal,
   trackNamedSignal,
@@ -20,6 +21,9 @@ describe('Signal', () => {
 });
 
 describe('Named signals', () => {
+  beforeEach(() => {
+    clearNamedSignals();
+  });
   test('should create a named signal', () => {
     const namedSignal = createNamedSignal<string>('test');
     expect(namedSignal.getValue()).toBeUndefined();
@@ -30,11 +34,12 @@ describe('Named signals', () => {
   test('should received update to named signal', async () => {
     function testTrackNamedSignal() {
       return new Promise<void>((resolve) => {
+        const namedSignal = createNamedSignal<string>('test');
         trackNamedSignal('test', (value) => {
           expect(value).toBe('test value');
           resolve();
         });
-        const namedSignal = createNamedSignal<string>('test');
+
         expect(namedSignal.getValue()).toBeUndefined();
         namedSignal.setValue('test value');
         expect(namedSignal.getValue()).toBe('test value');
