@@ -206,6 +206,7 @@ import {
 } from '../nodes/register-expression-function';
 
 import { subFlowNodeName, subFlowNode } from '../nodes/sub-flow';
+import { loadCSVFile, loadCSVFileNodeName } from '../nodes/load-csv-file';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -313,8 +314,11 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory('split-by-case', getSplitByCase);
 
     registerNodeFactory('multiply-node', getMultiplyNode);
+
     registerNodeFactory(loadTextFileNodeName, loadTextFile);
+    registerNodeFactory(loadCSVFileNodeName, loadCSVFile);
     registerNodeFactory(subFlowNodeName, subFlowNode);
+
     registerNodeFactory(runRegexNodeName, runRegularExpression);
     registerNodeFactory(mergeModeName, getMergeNode);
     registerNodeFactory(sumMergeModeName, getMergeSumNode);
