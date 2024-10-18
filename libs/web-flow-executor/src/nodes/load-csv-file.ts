@@ -20,6 +20,30 @@ interface FileInfo {
   lines: string[];
 }
 
+const trySplitWithChar = (line1: string, line2: string, splitChar: string) => {
+  const split1 = line1.split(splitChar);
+  const split2 = line2.split(splitChar);
+  return split1.length === split2.length;
+};
+const determineSplitChar = (lines: string[]) => {
+  const firstLine = lines[0];
+  const secondLine = lines[1];
+  if (firstLine.includes(';') && secondLine.includes(';')) {
+    if (trySplitWithChar(firstLine, secondLine, ';')) {
+      return ';';
+    }
+  } else if (firstLine.includes(',') && secondLine.includes(',')) {
+    if (trySplitWithChar(firstLine, secondLine, ',')) {
+      return ',';
+    }
+  } else if (firstLine.includes('\t') && secondLine.includes('\t')) {
+    if (trySplitWithChar(firstLine, secondLine, '\t')) {
+      return '\t';
+    }
+  }
+  return ',';
+};
+
 const selectFile = () => {
   return new Promise<FileInfo>((resolve, reject) => {
     const input = document.createElement('input') as HTMLInputElement & {
@@ -88,9 +112,12 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
       }
     }
     if (lines.length > 1) {
+      // TODO : find way to detect if csv has header
+
+      const splitChar = determineSplitChar(lines);
       //const header = lines[0].split(',');
       const data = lines.slice(1).map((line) => {
-        const values = line.split(',');
+        const values = line.split(splitChar);
         const obj: any = [];
         values.forEach((value) => {
           const parsedFloat = parseFloat(value);
@@ -188,7 +215,7 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 rounded max-w-full flex items-center justify-center `,
+          class: `inner-node bg-orange-500 text-white font-bold rounded max-w-full flex items-center justify-center `,
         },
         undefined,
         htmlNode?.domElement as unknown as HTMLElement
@@ -212,9 +239,9 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
         ],
         wrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: ``,
         },
-        false,
+        true,
         false,
         false,
         id,
