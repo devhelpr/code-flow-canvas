@@ -738,7 +738,7 @@ export class AppElement<T extends BaseNodeInfo> {
     if (x < 10) {
       x = 10;
     }
-    if (x + 400 - 10 > (rootClientRect?.width ?? 0)) {
+    if (x + 400 + 10 > (rootClientRect?.width ?? 0)) {
       x = (rootClientRect?.width ?? 0) - 400 - 10;
     }
     let y = yCamera + yNode * scaleCamera + 100;
