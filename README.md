@@ -19,6 +19,13 @@ GL flow for building fragment shaders:
 
 http://localhost:4200/gl
 
+## How to run build
+
+- npm run build
+
+## How to run tests
+
+- npm run test
 
 ## How to run playwright tests
 
