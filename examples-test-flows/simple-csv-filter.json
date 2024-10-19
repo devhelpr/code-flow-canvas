@@ -9,7 +9,7 @@
         {
           "id": "63e0dbe9-c83e-4464-9517-1955d8b5a2ca",
           "x": 3865.9965544636398,
-          "y": 1530.0263560334683,
+          "y": 1530.0263185529827,
           "width": 200,
           "height": 63.99572475809191,
           "nodeType": "Shape",
@@ -20,9 +20,72 @@
           }
         },
         {
+          "id": "412c2a09-a26c-42de-adb1-603b0e224084",
+          "x": 4186.666883348205,
+          "y": 1505.6018965845647,
+          "width": 110,
+          "height": 110,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "filter",
+            "formValues": {}
+          }
+        },
+        {
+          "id": "77cc2086-da78-4e94-8e05-4c20df185ff8",
+          "x": 4476.35770249846,
+          "y": 1347.156406894662,
+          "width": 119.99996022413993,
+          "height": 55.99994801031595,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "f6e6fc01-7b63-4fa1-8b05-e5fc67548448",
+          "x": 5086.11430725025,
+          "y": 1628.853971000098,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "input[1] == \"b\"",
+              "inputType": "array"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "c2639476-1625-4949-972b-4a671038c8b8",
+          "x": 4636.709648495618,
+          "y": 1629.4920720859977,
+          "width": 119.99996022413993,
+          "height": 55.99994801031595,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
           "id": "ed0a5c11-bde0-45d4-abe1-1cc9f0e9f102",
           "x": 4065.9965544636398,
-          "y": 1560.0263560334683,
+          "y": 1560.0263185529827,
           "endX": 4186.666883348205,
           "endY": 1560.6018965845647,
           "startNodeId": "63e0dbe9-c83e-4464-9517-1955d8b5a2ca",
@@ -33,19 +96,6 @@
           "nodeType": "Connection",
           "layer": 1,
           "nodeInfo": {}
-        },
-        {
-          "id": "412c2a09-a26c-42de-adb1-603b0e224084",
-          "x": 4186.666883348205,
-          "y": 1505.6018965845647,
-          "width": 110,
-          "height": 110,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "filter",
-            "formValues": {},
-            "taskType": "filter"
-          }
         },
         {
           "id": "98c421f3-025c-42e9-bc2a-a9ca6348fbf4",
@@ -63,24 +113,6 @@
           "nodeInfo": {}
         },
         {
-          "id": "77cc2086-da78-4e94-8e05-4c20df185ff8",
-          "x": 4476.35770249846,
-          "y": 1347.156406894662,
-          "width": 119.99992746877038,
-          "height": 55.99994716339548,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "show-input",
-            "formValues": {
-              "name": "",
-              "data-type": "default"
-            },
-            "initializeOnStartFlow": true,
-            "isSettingsPopup": true,
-            "taskType": "show-input"
-          }
-        },
-        {
           "id": "f693efb5-d8be-4476-9911-603682551e88",
           "x": 4296.666883348205,
           "y": 1585.6018965845647,
@@ -96,47 +128,11 @@
           "nodeInfo": {}
         },
         {
-          "id": "f6e6fc01-7b63-4fa1-8b05-e5fc67548448",
-          "x": 5086.752413643031,
-          "y": 1629.4920720859977,
-          "width": 200,
-          "height": 100,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "expression",
-            "formValues": {
-              "expression": "array[1] == \"b\"",
-              "inputType": "number"
-            },
-            "showFormOnlyInPopup": true,
-            "isSettingsPopup": true,
-            "taskType": "expression"
-          }
-        },
-        {
-          "id": "c2639476-1625-4949-972b-4a671038c8b8",
-          "x": 4636.709648495618,
-          "y": 1629.4920720859977,
-          "width": 120.00002527953777,
-          "height": 56.00002181763674,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "show-input",
-            "formValues": {
-              "name": "",
-              "data-type": "default"
-            },
-            "initializeOnStartFlow": true,
-            "isSettingsPopup": true,
-            "taskType": "show-input"
-          }
-        },
-        {
           "id": "94bf7853-c89b-41a4-bb48-6d0842bfcdec",
-          "x": 4756.709673775156,
+          "x": 4756.709608719758,
           "y": 1659.4920720859977,
-          "endX": 5086.752413643031,
-          "endY": 1679.4920720859977,
+          "endX": 5086.11430725025,
+          "endY": 1678.853971000098,
           "startNodeId": "c2639476-1625-4949-972b-4a671038c8b8",
           "endNodeId": "f6e6fc01-7b63-4fa1-8b05-e5fc67548448",
           "startThumbName": "output",

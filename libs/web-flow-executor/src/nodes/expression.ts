@@ -153,7 +153,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       }
 
       const payloadForExpression = {
-        input: inputAsString,
+        input: Array.isArray(input) ? input : inputAsString,
         currentValue: currentValue,
         value: currentValue,
         array: input,

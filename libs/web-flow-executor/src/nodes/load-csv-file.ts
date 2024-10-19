@@ -77,7 +77,7 @@ const selectFile = () => {
 
 export const loadCSVFileNodeName = 'load-csv-file';
 const fieldName = 'fileName';
-export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
+export const loadCSVFile = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
@@ -115,23 +115,38 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
       // TODO : find way to detect if csv has header
 
       const splitChar = determineSplitChar(lines);
-      //const header = lines[0].split(',');
+      const header = lines[0].split(splitChar);
       const data = lines.slice(1).map((line) => {
         const values = line.split(splitChar);
-        const obj: any = [];
-        values.forEach((value) => {
-          const parsedFloat = parseFloat(value);
-          if (!isNaN(parsedFloat)) {
-            obj.push(parsedFloat);
-          } else {
-            obj.push(value);
-          }
-        });
-        // header.forEach((key, index) => {
-        //   //obj[key] = values[index];
-        //   obj.push(values[index]);
-        // });
-        return obj;
+
+        if (node?.nodeInfo?.formValues['mode'] === 'object') {
+          const obj: any = {};
+
+          header.forEach((key, index) => {
+            if (key && index < values.length) {
+              const value = values[index];
+              const parsedFloat = parseFloat(value);
+              if (!isNaN(parsedFloat)) {
+                obj[key] = parsedFloat;
+              } else {
+                obj[key] = value;
+              }
+            }
+          });
+
+          return obj;
+        } else {
+          const obj: any = [];
+          values.forEach((value) => {
+            const parsedFloat = parseFloat(value);
+            if (!isNaN(parsedFloat)) {
+              obj.push(parsedFloat);
+            } else {
+              obj.push(value);
+            }
+          });
+          return obj;
+        }
       });
       return {
         result: data,
@@ -202,6 +217,28 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
             });
           },
         },
+        {
+          fieldType: FormFieldType.Select,
+          fieldName: 'mode',
+          options: [
+            { value: 'array', label: 'Output rows as array' },
+            { value: 'object', label: 'Output rows as object' },
+          ],
+          value: initalValues?.['mode'] ?? 'array',
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              mode: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+        },
       ];
       htmlNode = createElement(
         'div',
@@ -248,6 +285,9 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
         {
           type: loadCSVFileNodeName,
           formElements: [],
+          formValues: {
+            mode: initalValues?.['mode'] ?? 'array',
+          },
         }
       );
 
@@ -266,7 +306,7 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
-          //
+          mode: initalValues?.['mode'] ?? 'array',
         };
       }
       return node;
