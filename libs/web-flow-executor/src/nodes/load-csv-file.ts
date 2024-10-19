@@ -86,6 +86,49 @@ export const loadCSVFile = (updated: () => void): NodeTask<NodeInfo> => {
   let runCounter: RunCounter | undefined = undefined;
   let triggerButton = false;
   let lines: string[] = [];
+
+  const getOutput = (lines: string[]) => {
+    const splitChar = determineSplitChar(lines);
+    const header = lines[0].split(splitChar);
+    const data = lines.slice(1).map((line) => {
+      const values = line.split(splitChar);
+
+      if (node?.nodeInfo?.formValues['mode'] === 'object') {
+        const obj: any = {};
+
+        header.forEach((key, index) => {
+          if (key && index < values.length) {
+            const value = values[index];
+            const parsedFloat = parseFloat(value);
+            if (!isNaN(parsedFloat)) {
+              obj[key] = parsedFloat;
+            } else {
+              obj[key] = value;
+            }
+          }
+        });
+
+        return obj;
+      } else {
+        const obj: any = [];
+        values.forEach((value) => {
+          const parsedFloat = parseFloat(value);
+          if (!isNaN(parsedFloat)) {
+            obj.push(parsedFloat);
+          } else {
+            obj.push(value);
+          }
+        });
+        return obj;
+      }
+    });
+    return {
+      header,
+      data,
+      splitChar,
+    };
+  };
+
   const initializeCompute = () => {
     hasInitialValue = true;
     if (htmlNode && htmlNode.domElement) {
@@ -113,43 +156,10 @@ export const loadCSVFile = (updated: () => void): NodeTask<NodeInfo> => {
     }
     if (lines.length > 1) {
       // TODO : find way to detect if csv has header
+      const result = getOutput(lines);
 
-      const splitChar = determineSplitChar(lines);
-      const header = lines[0].split(splitChar);
-      const data = lines.slice(1).map((line) => {
-        const values = line.split(splitChar);
-
-        if (node?.nodeInfo?.formValues['mode'] === 'object') {
-          const obj: any = {};
-
-          header.forEach((key, index) => {
-            if (key && index < values.length) {
-              const value = values[index];
-              const parsedFloat = parseFloat(value);
-              if (!isNaN(parsedFloat)) {
-                obj[key] = parsedFloat;
-              } else {
-                obj[key] = value;
-              }
-            }
-          });
-
-          return obj;
-        } else {
-          const obj: any = [];
-          values.forEach((value) => {
-            const parsedFloat = parseFloat(value);
-            if (!isNaN(parsedFloat)) {
-              obj.push(parsedFloat);
-            } else {
-              obj.push(value);
-            }
-          });
-          return obj;
-        }
-      });
       return {
-        result: data,
+        result: result.data,
         followPath: undefined,
       };
     }
@@ -308,6 +318,35 @@ export const loadCSVFile = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formValues = {
           mode: initalValues?.['mode'] ?? 'array',
         };
+
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'csv-header',
+            displayName: 'CSV headers',
+            type: 'json',
+            getData: () => {
+              if (lines.length > 1) {
+                // TODO : find way to detect if csv has header
+                const result = getOutput(lines);
+                return result.header;
+              }
+              return [];
+            },
+          },
+          {
+            propertyName: 'csv',
+            displayName: 'CSV data',
+            type: 'json',
+            getData: () => {
+              if (lines.length > 1) {
+                // TODO : find way to detect if csv has header
+                const result = getOutput(lines);
+                return result.data;
+              }
+              return [];
+            },
+          },
+        ];
       }
       return node;
     },
