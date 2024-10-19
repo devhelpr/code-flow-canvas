@@ -51,7 +51,7 @@ const selectFile = () => {
     };
 
     input.type = 'file';
-    input.setAttribute('accept', '.csv');
+    input.setAttribute('accept', 'text/csv');
     input.onchange = () => {
       const files = Array.from(input.files);
       if (files && files.length > 0) {
