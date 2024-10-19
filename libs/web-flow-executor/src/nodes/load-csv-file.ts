@@ -231,7 +231,7 @@ export const loadCSVFile = (_updated: () => void): NodeTask<NodeInfo> => {
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            label: ' ',
+            label: '[]',
             thumbConstraint: thumbConstraints.array,
             name: 'output',
             color: 'white',
