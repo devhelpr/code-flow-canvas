@@ -94,9 +94,11 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           htmlString = `${htmlString}
             <script>
               window['createElement'] = window.parent['createElement'];
+              window['sendOutput'] = window.parent['sendOutput'];
               window["input"] = window["input"] || [];
               window.addEventListener('message', (event) => {  
                 window['createElement'] = window.parent['createElement'];
+                window['sendOutput'] = window.parent['sendOutput'];
 
                 //console.log('Received message:', event.data, window.parent["createStructuredExpressionsMarkup"]);
                 const html = document.body.innerHTML;
@@ -149,6 +151,16 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         (window as any)['traverseDOMTree'] = traverseDOMTree;
         (window as any)['compileExpressionAsInfo'] = compileExpressionAsInfo;
         (window as any)['createElement'] = createElement;
+        (window as any)['sendOutput'] = (value: any) => {
+          window.parent.postMessage(
+            {
+              type: 'output',
+              iframeNodeId: node.id,
+              message: value,
+            },
+            '*'
+          );
+        };
 
         // can't send structured data which contains code...
         const data = JSON.stringify(value);
@@ -372,6 +384,18 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         throw new Error('rect.nodeComponent is undefined');
       }
 
+      const messageHandler = function (event: MessageEvent) {
+        if (
+          event.data &&
+          event.data.type === 'output' &&
+          event.data.iframeNodeId === node.id
+        ) {
+          console.log('Message received from iframe: ', event.data.message); // Message received from child
+        }
+      };
+
+      window.addEventListener('message', messageHandler);
+
       node = rect.nodeComponent;
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;
@@ -380,6 +404,10 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.updateVisual = updateVisual;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.initializeOnStartFlow = true;
+        node.nodeInfo.delete = () => {
+          window.removeEventListener('message', messageHandler);
+        };
+
         node.nodeInfo.formValues = {
           html: initialValue || defaultHTML,
           aiprompt: aiPrompt,
