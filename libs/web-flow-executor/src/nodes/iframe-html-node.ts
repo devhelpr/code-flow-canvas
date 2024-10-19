@@ -394,7 +394,9 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         }
       };
 
-      window.addEventListener('message', messageHandler);
+      if (typeof window !== 'undefined') {
+        window.addEventListener('message', messageHandler);
+      }
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {
@@ -405,7 +407,9 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.initializeOnStartFlow = true;
         node.nodeInfo.delete = () => {
-          window.removeEventListener('message', messageHandler);
+          if (typeof window !== 'undefined') {
+            window.removeEventListener('message', messageHandler);
+          }
         };
 
         node.nodeInfo.formValues = {
