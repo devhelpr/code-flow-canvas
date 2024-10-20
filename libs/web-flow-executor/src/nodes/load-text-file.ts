@@ -24,7 +24,7 @@ const selectFile = () => {
     };
 
     input.type = 'file';
-    input.setAttribute('accept', '.txt');
+    input.setAttribute('accept', 'text/plain');
     input.onchange = () => {
       const files = Array.from(input.files);
       if (files && files.length > 0) {

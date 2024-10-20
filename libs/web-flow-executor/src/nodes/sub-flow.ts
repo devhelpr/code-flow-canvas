@@ -24,7 +24,7 @@ const selectFile = () => {
     };
 
     input.type = 'file';
-    input.setAttribute('accept', '.json');
+    input.setAttribute('accept', 'application/json');
     input.onchange = () => {
       const files = Array.from(input.files);
       if (files && files.length > 0) {
@@ -225,7 +225,6 @@ export const subFlowNode = (updated: () => void): NodeTask<NodeInfo> => {
       if (node.nodeInfo) {
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.showFormOnlyInPopup = true;
-        node.nodeInfo.isSettingsPopup = true;
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {

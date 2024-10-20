@@ -23,7 +23,7 @@ const selectImage = () => {
     };
 
     input.type = 'file';
-    input.setAttribute('accept', '.png,.jpg,.jpeg,.webp');
+    input.setAttribute('accept', 'image/png,image/jpeg,image/webp');
     input.onchange = () => {
       const files = Array.from(input.files);
       if (files && files.length > 0) {
@@ -51,10 +51,10 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
     undefined;
 
   function convolutionImagedataToImage(imagedata: ConvolutionImageData) {
-    var canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     canvas.width = imagedata.width;
     canvas.height = imagedata.height;
-    var context = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
     context!.imageSmoothingEnabled = false;
     for (let y = 0; y < imagedata.height; y++) {
       for (let x = 0; x < imagedata.width; x++) {
@@ -88,10 +88,10 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
   }
 
   function imagedataToImage(imagedata: ImageData) {
-    var canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     canvas.width = imagedata.width;
     canvas.height = imagedata.height;
-    var context = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
     context!.imageSmoothingEnabled = false;
     console.log('imagedataToImage', imagedata.width, imagedata.height);
 
@@ -318,7 +318,6 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
           image: initalValues?.['image'] ?? '',
         };
 
-        node.nodeInfo.isSettingsPopup = true;
         (node.nodeInfo as any).getImageData = () => lastImageData;
       }
       return node;
