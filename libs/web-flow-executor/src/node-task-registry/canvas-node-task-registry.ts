@@ -208,6 +208,7 @@ import {
 import { subFlowNodeName, subFlowNode } from '../nodes/sub-flow';
 import { loadCSVFile, loadCSVFileNodeName } from '../nodes/load-csv-file';
 import { filterNodeName, getFilter } from '../nodes/filter';
+import { loadJSONFile, loadJSONFileNodeName } from '../nodes/load-json-file';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -317,6 +318,7 @@ export const setupCanvasNodeTaskRegistry = (
 
     registerNodeFactory('multiply-node', getMultiplyNode);
 
+    registerNodeFactory(loadJSONFileNodeName, loadJSONFile);
     registerNodeFactory(loadTextFileNodeName, loadTextFile);
     registerNodeFactory(loadCSVFileNodeName, loadCSVFile);
     registerNodeFactory(subFlowNodeName, subFlowNode);
