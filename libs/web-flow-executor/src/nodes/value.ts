@@ -11,11 +11,16 @@ import {
   replaceValues,
   ThumbConnectionType,
   ThumbType,
+  FlowChangeType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
 export const getValue: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
 
@@ -64,7 +69,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
             };
             console.log('onChange', node.nodeInfo);
             if (updated) {
-              updated();
+              updated(undefined, undefined, FlowChangeType.UpdateNode);
             }
           },
         },
