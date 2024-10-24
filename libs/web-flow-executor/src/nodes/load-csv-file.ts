@@ -275,7 +275,7 @@ export const loadCSVFile = (updated: () => void): NodeTask<NodeInfo> => {
         undefined,
         [
           {
-            thumbType: ThumbType.StartConnectorRight,
+            thumbType: ThumbType.StartConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
             label: '[]',
