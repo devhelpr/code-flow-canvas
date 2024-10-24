@@ -8,9 +8,6 @@ import {
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
-import { PyodideInterface } from 'pyodide';
-
-// type PyodideAPI = ReturnType<typeof loadPyodide>;
 
 const fieldName = 'test-external-input';
 const nodeTitle = 'Test external input';
@@ -41,7 +38,7 @@ const thumbs = [
 ];
 
 export const getExternalTestNode =
-  (pyodide: PyodideInterface) =>
+  () =>
   // (): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     //let node: IRectNodeComponent<NodeInfo>;
@@ -50,29 +47,17 @@ export const getExternalTestNode =
       return;
     };
     const computeAsync = (
-      _input: string,
+      input: string,
       _loopIndex?: number,
       _payload?: any
     ) => {
       //const result = input;
       return new Promise<IComputeResult>((resolve) => {
-        const my_namespace = pyodide.toPy({ x: 2, y: [1, 2, 3] });
-        pyodide
-          .runPythonAsync(
-            `
-              import numpy as np
-              z = np.sum(np.array(y))+x`,
-            { globals: my_namespace }
-          )
-          .then((_result) => {
-            const test = my_namespace.get('z').toString();
-            console.log('python result', test);
-            resolve({
-              result: test,
-              output: test,
-              followPath: undefined,
-            });
-          });
+        resolve({
+          result: input,
+          output: input,
+          followPath: undefined,
+        });
       });
     };
 

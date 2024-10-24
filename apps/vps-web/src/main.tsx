@@ -5,10 +5,7 @@ import { runFlow } from './app/run-flow';
 import { ocwgPage } from './app/pages/ocwg';
 import { pythonPage } from './app/pages/python';
 import { examplePage } from './app/pages/example';
-import {
-  setupCustomEditor,
-  IFormsComponent,
-} from '@devhelpr/visual-programming-system';
+import { setupCustomEditor } from '@devhelpr/visual-programming-system';
 import * as monaco from 'monaco-editor';
 
 if (url.pathname === '/run-flow') {
@@ -96,7 +93,7 @@ if (url.pathname === '/run-flow') {
       32,
       undefined,
       (_registerNodeFactory: RegisterNodeFactoryFunction) => {
-        //registerNodeFactory('test-external-node', getExternalTestNode(pyodide));
+        //registerNodeFactory('test-external-node', getExternalTestNode());
       },
       undefined,
       undefined,
