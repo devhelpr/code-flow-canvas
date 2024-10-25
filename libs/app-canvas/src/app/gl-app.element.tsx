@@ -1055,7 +1055,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           selectedNodeInfo?.containerNode
             ? (selectedNodeInfo?.containerNode?.nodeInfo as any)
                 ?.canvasAppInstance?.elements
-            : this.canvasApp?.elements
+            : this.currentCanvasApp?.elements
         )?.get(selectedNodeInfo.id);
 
         if (!node) {

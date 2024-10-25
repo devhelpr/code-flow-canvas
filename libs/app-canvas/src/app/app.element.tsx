@@ -1167,7 +1167,7 @@ export class AppElement<T extends BaseNodeInfo> {
       }
     });
   };
-
+  breadcrumbsList: Composition<T>[] = [];
   editComposition = (
     getNodeTaskFactory: GetNodeTaskFactory<T>,
     canvasUpdated: () => void,
@@ -1215,11 +1215,27 @@ export class AppElement<T extends BaseNodeInfo> {
       (this.canvas?.domElement as HTMLElement).classList.add(
         'pointer-events-none'
       );
-      const composition = this.currentCanvasApp?.compositons?.getComposition(
+      const composition = this.canvasApp?.compositons?.getComposition(
         node.nodeInfo.compositionId
       );
       if (!composition) {
         return;
+      }
+
+      // TODO : if already in composition .. clear the current canvas
+      //   and put composition on breadcrumbsList
+      if (this.currentCanvasApp?.isComposition) {
+        this.breadcrumbsList.push(this.compositionUnderEdit as Composition<T>);
+
+        this.currentCanvasApp?.elements.forEach((element) => {
+          element.domElement.remove();
+          this.removeElement(element);
+        });
+        this.currentCanvasApp?.elements.clear();
+        this.currentCanvasApp?.setDisableInteraction(true);
+        this.currentCanvasApp.removeEvents();
+        this.currentCanvasApp.canvas?.domElement.remove();
+        this.currentCanvasApp?.destoyCanvasApp();
       }
       this.compositionUnderEdit = composition;
       this.currentCanvasApp?.setIsCameraFollowingPaused(true);
@@ -1505,6 +1521,12 @@ export class AppElement<T extends BaseNodeInfo> {
       setupTasksInDropdown(selectNodeTypeHTMLElement, true, composition.id);
 
       const onExitCompositionMode = () => {
+        if (composition.id !== this.compositionUnderEdit?.id) {
+          (
+            this.compositionEditExitButton?.domElement as HTMLElement
+          ).removeEventListener('click', onExitCompositionMode);
+          return;
+        }
         quitCameraSubscribtion();
         setSelectNode(undefined);
         showElement(this.canvas);
