@@ -1,23 +1,24 @@
 import {
-  renderElement,
-  createJSXElement,
-  createEffect,
-  getSelectedNode,
-  INodeComponent,
   IRectNodeComponent,
-  NodeType,
-  IConnectionNodeComponent,
-  ThumbConnectionType,
-  getActionNode,
-  setActionNode,
-  setSelectNode,
-  BaseNodeInfo,
+  INodeComponent,
   IFlowCanvasBase,
   CanvasAction,
+  getSelectedNode,
+  getActionNode,
+  createEffect,
+  NodeType,
+  setActionNode,
+  IConnectionNodeComponent,
+  BaseNodeInfo,
+  ThumbConnectionType,
+  renderElement,
+  setSelectNode,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import { ITasklistItem } from '../interfaces/TaskListItem';
+import { areThumbconstraintsCompatible } from '../utils/thumb-constraints';
 
-function ToolbarItem(props: {
+export function ToolbarItem(props: {
   label: string;
   nodeType: string;
   hideToolbar: () => void;
@@ -39,26 +40,6 @@ function ToolbarItem(props: {
       </button>
     </li>
   );
-}
-
-function compare(value1?: string | string[], value2?: string | string[]) {
-  if (typeof value1 === 'string' && typeof value2 === 'string') {
-    return value1 === value2;
-  }
-  if (
-    Array.isArray(value1) &&
-    Array.isArray(value2) &&
-    value1.length === value2.length
-  ) {
-    let isEqual = true;
-    value1.forEach((value) => {
-      if (value2.indexOf(value) < 0) {
-        isEqual = false;
-      }
-    });
-    return isEqual;
-  }
-  return false;
 }
 
 export function Toolbar<T>(props: {
@@ -123,12 +104,10 @@ export function Toolbar<T>(props: {
     // The below is a hack to prevent the toolbar not showing "create new node" when a mew connection is created
     // from dragging it from a selected node..
     // This fixes it the first time, but afterwards the toolbar is not working anymore
-
     // if (skipNextEffect) {
     //   skipNextEffect = false;
     //   return;
     // }
-
     const selectedNodeInfo = getSelectedNode();
     const actionSelectedNodeInfo = getActionNode();
     if (selectedNodeInfo || actionSelectedNodeInfo) {
@@ -252,8 +231,10 @@ export function Toolbar<T>(props: {
             task.thumbs.forEach((thumb) => {
               if (
                 thumb.connectionType === ThumbConnectionType.end &&
-                thumb.thumbConstraint ===
+                areThumbconstraintsCompatible(
+                  thumb.thumbConstraint,
                   connection.startNodeThumb?.thumbConstraint
+                )
               ) {
                 insertableStartThumbFound = true;
                 insertableEndThumbFound = true;
@@ -278,8 +259,10 @@ export function Toolbar<T>(props: {
             task.thumbs.forEach((thumb) => {
               if (
                 thumb.connectionType === ThumbConnectionType.start &&
-                thumb.thumbConstraint ===
+                areThumbconstraintsCompatible(
+                  thumb.thumbConstraint,
                   connection.startNodeThumb?.thumbConstraint
+                )
               ) {
                 insertableStartThumbFound = true;
               }
@@ -287,8 +270,10 @@ export function Toolbar<T>(props: {
                 thumb.connectionType === ThumbConnectionType.end &&
                 //thumb.thumbType === connection.endNodeThumb?.thumbType &&
                 //thumb.thumbIndex === connection.endNodeThumb?.thumbIndex &&
-                thumb.thumbConstraint ===
+                areThumbconstraintsCompatible(
+                  thumb.thumbConstraint,
                   connection.endNodeThumb?.thumbConstraint
+                )
                 //thumb.maxConnections === connection.endNodeThumb?.maxConnections
               ) {
                 insertableEndThumbFound = true;
@@ -316,13 +301,13 @@ export function Toolbar<T>(props: {
         task.thumbs.length === rectNode.thumbs.length
       ) {
         /*
-			compare thumbs:
-			- foreach task.thumb see if there's a thumb in rectNode.thumbs that has the same 
-				thumbType/connectionType/index/constraint/maxConnections
-
-			- TODO look to other properties as well ... like form-fields
-			
-		*/
+            compare thumbs:
+            - foreach task.thumb see if there's a thumb in rectNode.thumbs that has the same
+                thumbType/connectionType/index/constraint/maxConnections
+ 
+            - TODO look to other properties as well ... like form-fields
+            
+        */
         const thumbsIndexesMatched: number[] = [];
         task.thumbs.forEach((thumb, _eventindex) => {
           rectNode.thumbs.forEach((rectThumb, rectIndex) => {
@@ -330,7 +315,10 @@ export function Toolbar<T>(props: {
               rectThumb.thumbType === thumb.thumbType &&
               rectThumb.connectionType === thumb.connectionType &&
               rectThumb.thumbIndex === thumb.thumbIndex &&
-              compare(rectThumb.thumbConstraint, thumb.thumbConstraint) &&
+              areThumbconstraintsCompatible(
+                rectThumb.thumbConstraint,
+                thumb.thumbConstraint
+              ) &&
               rectThumb.maxConnections === thumb.maxConnections &&
               !thumbsIndexesMatched.includes(rectIndex)
             ) {

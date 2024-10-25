@@ -11,6 +11,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { CommandHandler } from '../command-handler/command-handler';
 import { ICommandContext } from '../command-context';
+import { areThumbconstraintsCompatible } from '../../utils/thumb-constraints';
 
 export class ReplaceNodeCommand<
   T extends BaseNodeInfo
@@ -102,8 +103,10 @@ export class ReplaceNodeCommand<
                       connection.startNodeThumb?.thumbConnectionType &&
                     t.thumbIndex === connection.startNodeThumb?.thumbIndex &&
                     t.thumbType === connection.startNodeThumb?.thumbType &&
-                    t.thumbConstraint ===
-                      connection.startNodeThumb?.thumbConstraint &&
+                    areThumbconstraintsCompatible(
+                      t.thumbConstraint,
+                      connection.startNodeThumb?.thumbConstraint
+                    ) &&
                     t.maxConnections ===
                       connection.startNodeThumb?.maxConnections
                     //t.thumbName === connection.startNodeThumb?.thumbName
@@ -130,8 +133,10 @@ export class ReplaceNodeCommand<
                       connection.endNodeThumb?.thumbConnectionType &&
                     t.thumbIndex === connection.endNodeThumb?.thumbIndex &&
                     t.thumbType === connection.endNodeThumb?.thumbType &&
-                    t.thumbConstraint ===
-                      connection.endNodeThumb?.thumbConstraint &&
+                    areThumbconstraintsCompatible(
+                      t.thumbConstraint,
+                      connection.endNodeThumb?.thumbConstraint
+                    ) &&
                     t.maxConnections === connection.endNodeThumb?.maxConnections
                     //t.thumbName === connection.endNodeThumb?.thumbName
                   );
@@ -240,8 +245,10 @@ export class ReplaceNodeCommand<
               node.thumbConnectors?.find((t) => {
                 return (
                   t.thumbConnectionType === ThumbConnectionType.start &&
-                  t.thumbConstraint ===
+                  areThumbconstraintsCompatible(
+                    t.thumbConstraint,
                     connection.startNodeThumb?.thumbConstraint
+                  )
                 );
               });
             newConnection.nodeComponent.endNodeThumb = endNodeThumb;
@@ -257,14 +264,20 @@ export class ReplaceNodeCommand<
           connection.endNodeThumb = node.thumbConnectors?.find((t) => {
             return (
               t.thumbConnectionType === ThumbConnectionType.end &&
-              t.thumbConstraint === endNodeThumb?.thumbConstraint //&&
+              areThumbconstraintsCompatible(
+                t.thumbConstraint,
+                endNodeThumb?.thumbConstraint
+              )
             );
           });
         } else {
           connection.endNodeThumb = node.thumbConnectors?.find((t) => {
             return (
               t.thumbConnectionType === ThumbConnectionType.end &&
-              t.thumbConstraint === connection?.startNodeThumb?.thumbConstraint //&&
+              areThumbconstraintsCompatible(
+                t.thumbConstraint,
+                connection?.startNodeThumb?.thumbConstraint
+              )
             );
           });
         }
