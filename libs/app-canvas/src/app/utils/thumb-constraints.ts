@@ -2,6 +2,9 @@ export function areThumbconstraintsCompatible(
   taskThumbConstraint: string | string[] | undefined,
   nodeThumbConstraint: string | string[] | undefined
 ) {
+  if (taskThumbConstraint === undefined) {
+    return true;
+  }
   if (
     typeof taskThumbConstraint === 'string' &&
     typeof nodeThumbConstraint === 'string'
@@ -10,16 +13,15 @@ export function areThumbconstraintsCompatible(
   }
   if (
     Array.isArray(taskThumbConstraint) &&
-    Array.isArray(nodeThumbConstraint) &&
-    taskThumbConstraint.length === nodeThumbConstraint.length
+    Array.isArray(nodeThumbConstraint)
   ) {
-    let isEqual = true;
-    taskThumbConstraint.forEach((value) => {
-      if (nodeThumbConstraint.indexOf(value) < 0) {
-        isEqual = false;
+    let hasCompatibleNodeType = false;
+    nodeThumbConstraint.forEach((value) => {
+      if (taskThumbConstraint.indexOf(value) >= 0) {
+        hasCompatibleNodeType = true;
       }
     });
-    return isEqual;
+    return hasCompatibleNodeType;
   }
   if (taskThumbConstraint === undefined && nodeThumbConstraint === undefined) {
     return true;
@@ -30,5 +32,6 @@ export function areThumbconstraintsCompatible(
   ) {
     return taskThumbConstraint.includes(nodeThumbConstraint);
   }
+
   return false;
 }
