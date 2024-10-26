@@ -49,7 +49,12 @@ import { StorageProvider } from './storage/StorageProvider';
 import { executeCommand } from './command-handlers/register-commands';
 import { getSortedNodes } from './utils/sort-nodes';
 import { getStartNodes } from './utils/start-nodes';
-import { hideElement, showElement } from './utils/show-hide-element';
+import {
+  hideElement,
+  hideHTMLElement,
+  showElement,
+  showHTMLElement,
+} from './utils/show-hide-element';
 import { createInputDialog } from './utils/create-input-dialog';
 
 export class AppElement<T extends BaseNodeInfo> {
@@ -85,6 +90,7 @@ export class AppElement<T extends BaseNodeInfo> {
   compositionEditExitButton: IDOMElement | undefined = undefined;
   compositionCreateButton: IDOMElement | undefined = undefined;
   compositionNameButton: IDOMElement | undefined = undefined;
+  breadcrumbsElement: HTMLElement | undefined = undefined;
 
   appRootElement: Element | null;
   commandRegistry = new Map<string, ICommandHandler>();
@@ -292,6 +298,19 @@ export class AppElement<T extends BaseNodeInfo> {
           filter: 'drop-shadow(rgba(0, 0, 0, 0.4) 3px 1px 2px)',
         },
       },
+      this.rootElement
+    );
+
+    renderElement(
+      <div
+        id="breadcrumbs"
+        getElement={(element: HTMLElement) => {
+          this.breadcrumbsElement = element;
+        }}
+        class="hidden absolute top-[58px] left-0 h-[58px] w-full z-[1050] bg-sky-600 text-white flex-row items-center px-2"
+      >
+        <div>Breadcrumbs</div>
+      </div>,
       this.rootElement
     );
   }
@@ -1225,8 +1244,18 @@ export class AppElement<T extends BaseNodeInfo> {
       // TODO : if already in composition .. clear the current canvas
       //   and put composition on breadcrumbsList
       if (this.currentCanvasApp?.isComposition) {
+        showHTMLElement(this.breadcrumbsElement, 'flex');
         this.breadcrumbsList.push(this.compositionUnderEdit as Composition<T>);
 
+        const breadCrumbsAsString = this.breadcrumbsList
+          .map((breadCrumb) => {
+            return breadCrumb.name;
+          })
+          .join(' > ');
+
+        if (this.breadcrumbsElement) {
+          this.breadcrumbsElement.textContent = `${breadCrumbsAsString} > ${composition.name}`;
+        }
         this.currentCanvasApp?.elements.forEach((element) => {
           element.domElement.remove();
           this.removeElement(element);
@@ -1527,6 +1556,7 @@ export class AppElement<T extends BaseNodeInfo> {
           ).removeEventListener('click', onExitCompositionMode);
           return;
         }
+        hideHTMLElement(this.breadcrumbsElement, 'flex');
         quitCameraSubscribtion();
         setSelectNode(undefined);
         showElement(this.canvas);

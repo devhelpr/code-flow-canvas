@@ -17,14 +17,22 @@ export const showElement = (element?: IDOMElement) => {
   }
 };
 
-export const hideHTMLElement = (element?: HTMLElement) => {
+export const hideHTMLElement = (element?: HTMLElement, blockClass?: string) => {
   if (element) {
     element.classList.add('hidden');
+
+    if (blockClass) {
+      element.classList.remove(blockClass);
+    }
   }
 };
 
-export const showHTMLElement = (element?: HTMLElement) => {
+export const showHTMLElement = (element?: HTMLElement, blockClass?: string) => {
   if (element && element) {
     element.classList.remove('hidden');
+
+    if (blockClass) {
+      element.classList.add(blockClass);
+    }
   }
 };
