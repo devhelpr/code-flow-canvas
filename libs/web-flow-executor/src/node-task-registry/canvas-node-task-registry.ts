@@ -209,6 +209,7 @@ import { subFlowNodeName, subFlowNode } from '../nodes/sub-flow';
 import { loadCSVFile, loadCSVFileNodeName } from '../nodes/load-csv-file';
 import { filterNodeName, getFilter } from '../nodes/filter';
 import { loadJSONFile, loadJSONFileNodeName } from '../nodes/load-json-file';
+import { getReduce, reduceNodeName } from '../nodes/reduce';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -249,6 +250,7 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory('foreach', getForEach);
     registerNodeFactory(mapNodeName, getMap);
     registerNodeFactory(filterNodeName, getFilter);
+    registerNodeFactory(reduceNodeName, getReduce);
     registerNodeFactory(sortNodeName, getSort);
     registerNodeFactory(whileNodeName, getWhile);
 

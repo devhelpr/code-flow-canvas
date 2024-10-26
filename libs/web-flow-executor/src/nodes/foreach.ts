@@ -179,11 +179,13 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
           reject();
           return;
         }
-        if (foreachComponent && foreachComponent.domElement) {
-          foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
-        }
+
         if (mapLoop < forEachLength) {
-          //console.log('runNext', mapLoop, values[mapLoop]);
+          if (foreachComponent && foreachComponent.domElement) {
+            (
+              foreachComponent.domElement as HTMLElement
+            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${mapLoop} < ${forEachLength}</span></div>`;
+          }
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,

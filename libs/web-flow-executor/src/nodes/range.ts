@@ -1,4 +1,5 @@
 import {
+  IFlowCanvasBase,
   IRectNodeComponent,
   InitialValues,
   NodeTask,
@@ -64,6 +65,7 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<any> => {
   let node: IRectNodeComponent<NodeInfo>;
+  let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   const initializeCompute = () => {
     values.min = undefined;
     values.max = undefined;
@@ -112,15 +114,17 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
       values.max === undefined ||
       (hasStepConnection && values.step === undefined)
     ) {
-      if (values.min === undefined && values.max) {
-        (node?.thumbConnectors?.[1].domElement as HTMLElement)
-          ?.querySelector('.inner-thumb')
-          ?.classList?.add('blink-thumb');
-      }
-      if (values.max === undefined && values.min) {
-        (node?.thumbConnectors?.[2].domElement as HTMLElement)
-          .querySelector('.inner-thumb')
-          ?.classList?.add('blink-thumb');
+      if (!canvasAppInstance?.isContextOnly) {
+        if (values.min === undefined && values.max) {
+          (node?.thumbConnectors?.[1].domElement as HTMLElement)
+            ?.querySelector('.inner-thumb')
+            ?.classList?.add('blink-thumb');
+        }
+        if (values.max === undefined && values.min) {
+          (node?.thumbConnectors?.[2].domElement as HTMLElement)
+            .querySelector('.inner-thumb')
+            ?.classList?.add('blink-thumb');
+        }
       }
       return {
         result: undefined,
@@ -129,14 +133,14 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-
-    (node?.thumbConnectors?.[1].domElement as HTMLElement)
-      ?.querySelector('.inner-thumb')
-      ?.classList?.remove('blink-thumb');
-    (node?.thumbConnectors?.[2].domElement as HTMLElement)
-      ?.querySelector('.inner-thumb')
-      ?.classList?.remove('blink-thumb');
-
+    if (!canvasAppInstance?.isContextOnly) {
+      (node?.thumbConnectors?.[1].domElement as HTMLElement)
+        ?.querySelector('.inner-thumb')
+        ?.classList?.remove('blink-thumb');
+      (node?.thumbConnectors?.[2].domElement as HTMLElement)
+        ?.querySelector('.inner-thumb')
+        ?.classList?.remove('blink-thumb');
+    }
     const min = values.min;
     const max = values.max;
     const step = values.step;
@@ -171,6 +175,7 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
       return [];
     },
     (nodeInstance) => {
+      canvasAppInstance = nodeInstance.contextInstance;
       node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
     {

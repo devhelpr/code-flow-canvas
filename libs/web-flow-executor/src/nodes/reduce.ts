@@ -14,30 +14,13 @@ import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 
-/*
-
-needed when we want to implement a base-iterator from which foreach/map/filter/sort can be derived
-
-  export const SubOutputActionType = {
-  pushToResult: 'pushToResult',
-  filterFromResult: 'filterFromResult',
-  keepInput: 'keepInput',
-} as const;
-
-export type SubOutputActionType =
-  (typeof SubOutputActionType)[keyof typeof SubOutputActionType];
-
-
-*/
-
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorRight,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.start,
     color: 'white',
-    label: '[]',
-    thumbConstraint: 'array',
+    label: ' ',
     name: 'output1',
   },
   {
@@ -60,8 +43,8 @@ const thumbs = [
   },
 ];
 
-export const filterNodeName = 'filter';
-const title = 'filter';
+export const reduceNodeName = 'reduce';
+const title = 'reduce';
 
 const isInputOfRangeValueType = (input: RangeValueType) => {
   if (typeof input === 'object' && input) {
@@ -82,7 +65,7 @@ const isInputOfRangeValueType = (input: RangeValueType) => {
 
 const cssClasses = getIteratorNodeFamilyCssClasses();
 
-export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
+export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
@@ -164,7 +147,12 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
       if (foreachComponent && foreachComponent.domElement) {
         foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
       }
-      const output: any[] = [];
+      let accumulator: any = undefined;
+      if (isRange) {
+        accumulator = 0;
+      } else {
+        accumulator = typeof values[0] === 'number' ? 0 : '';
+      }
 
       const runNext = (filterLoop: number) => {
         if (
@@ -175,13 +163,13 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
           reject();
           return;
         }
+
         if (filterLoop < forEachLength) {
           if (foreachComponent && foreachComponent.domElement) {
             (
               foreachComponent.domElement as HTMLElement
             ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${filterLoop} < ${forEachLength}</span></div>`;
           }
-
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
@@ -191,7 +179,8 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
                 return;
               }
               if (outputFromMap) {
-                output.push(isRange ? filterLoop : values[filterLoop]);
+                //output.push(isRange ? filterLoop : values[filterLoop]);
+                accumulator = outputFromMap;
               }
               console.log(
                 'filter runNext onstopped',
@@ -201,7 +190,12 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
 
               runNext(filterLoop + step);
             },
-            isRange ? filterLoop : values[filterLoop],
+            {
+              value: isRange ? filterLoop : values[filterLoop],
+              index: filterLoop,
+              accumulator: accumulator,
+            },
+
             node,
             filterLoop,
             scopeId,
@@ -225,7 +219,7 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
                 dummyEndpoint: true,
               });
             },
-            output,
+            accumulator,
             node,
             loopIndex,
             scopeId,
@@ -241,7 +235,7 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
   };
 
   return {
-    name: filterNodeName,
+    name: reduceNodeName,
     family: 'flow-canvas',
     isContainer: false,
     category: 'iterators',
@@ -264,7 +258,7 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
           },
         },
         undefined,
-        'filter'
+        reduceNodeName
       ) as unknown as INodeComponent<NodeInfo>;
 
       const rect = canvasApp.createRect(
@@ -283,7 +277,7 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
         undefined,
         id,
         {
-          type: filterNodeName,
+          type: reduceNodeName,
           formValues: {},
         },
         containerNode

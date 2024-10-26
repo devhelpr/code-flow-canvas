@@ -161,9 +161,7 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
         }
         forEachLength = values.length;
       }
-      if (foreachComponent && foreachComponent.domElement) {
-        foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
-      }
+
       const output: any[] = [];
 
       const runNext = (mapLoop: number) => {
@@ -175,10 +173,13 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
           reject();
           return;
         }
-        if (foreachComponent && foreachComponent.domElement) {
-          foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
-        }
+
         if (mapLoop < forEachLength) {
+          if (foreachComponent && foreachComponent.domElement) {
+            (
+              foreachComponent.domElement as HTMLElement
+            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${mapLoop} < ${forEachLength}</span></div>`;
+          }
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
