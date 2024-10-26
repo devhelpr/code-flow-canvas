@@ -67,6 +67,7 @@ export interface BaseNodeInfo {
   isAnnotation?: boolean;
   canBeStartedByTrigger?: boolean;
   readPropertyFromNodeInfoForInitialTrigger?: string;
+  keepPopupOpenAfterUpdate?: boolean;
 
   outputConnectionInfo?: {
     text: string;

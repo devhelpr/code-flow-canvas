@@ -74,6 +74,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
     isCircleRectThumb?: boolean;
     rectThumbWithStraightConnections?: boolean;
     nodeCannotBeReplaced?: boolean;
+    keepPopupOpenAfterUpdate?: boolean;
   },
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
@@ -399,6 +400,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
     node.nodeInfo.initializeCompute = initializeCompute;
     node.nodeInfo.showFormOnlyInPopup = settings?.hasFormInPopup ?? false;
     node.nodeInfo.useInCompositionOnly = useInCompositionOnly;
+    node.nodeInfo.keepPopupOpenAfterUpdate =
+      settings?.keepPopupOpenAfterUpdate ?? false;
   }
   return {
     node,
@@ -450,6 +453,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     isCircleRectThumb?: boolean;
     rectThumbWithStraightConnections?: boolean;
     nodeCannotBeReplaced?: boolean;
+    keepPopupOpenAfterUpdate?: boolean;
   },
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,

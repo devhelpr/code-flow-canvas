@@ -2097,7 +2097,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     setRunCounterUpdateElement(
       this.runCounterElement.domElement as HTMLElement
     );
-    this.removeFormElement();
+    let keepPopupOpenAfterUpdate = false;
+
+    const selectedNode = getSelectedNode();
+    if (selectedNode) {
+      const node = this.canvasApp?.elements.get(selectedNode.id);
+      if (node && node.nodeInfo?.keepPopupOpenAfterUpdate) {
+        keepPopupOpenAfterUpdate = true;
+      }
+    }
+    if (!keepPopupOpenAfterUpdate) {
+      this.removeFormElement();
+    }
     //resetRunCounter();
     if (this.canvasApp?.elements) {
       this.canvasApp?.elements.forEach((node: IElementNode<NodeInfo>) => {

@@ -1,4 +1,5 @@
 import {
+  FlowChangeType,
   FormField,
   FormFieldType,
   IRectNodeComponent,
@@ -21,7 +22,11 @@ const familyName = 'flow-canvas';
 const thumbs: any[] = [];
 
 export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: (
+    shouldClearExecutionHistory?: boolean,
+    isStoreOnly?: boolean,
+    flowChangeType?: FlowChangeType
+  ) => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let rect: Rect<NodeInfo> | undefined;
@@ -107,7 +112,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
             }
 
             if (updated) {
-              updated();
+              updated(undefined, undefined, FlowChangeType.UpdateNode);
             }
 
             registerFunction();
@@ -130,7 +135,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
             };
 
             if (updated) {
-              updated();
+              updated(undefined, undefined, FlowChangeType.UpdateNode);
             }
 
             registerFunction();
@@ -159,6 +164,7 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
       hasFormInPopup: true,
       hasTitlebar: true,
       nodeCannotBeReplaced: true,
+      keepPopupOpenAfterUpdate: true,
     },
     <Text />
   );
