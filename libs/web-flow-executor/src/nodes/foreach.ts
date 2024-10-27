@@ -14,6 +14,7 @@ import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 import { isInputOfRangeValueType } from '../utils/is-range';
+import { setIteratorLabel } from './iterator-utils/set-iterator-label';
 
 /*
 
@@ -95,7 +96,18 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
     }
   }
 
+  let currentState = {
+    startIndex: 0,
+    iteratorLength: 0,
+    loop: 0,
+  };
+
   const initializeCompute = () => {
+    currentState = {
+      startIndex: 0,
+      iteratorLength: 0,
+      loop: 0,
+    };
     if (foreachComponent && foreachComponent.domElement) {
       foreachComponent.domElement.textContent = `${title}`;
 
@@ -150,9 +162,7 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
         }
         forEachLength = values.length;
       }
-      if (foreachComponent && foreachComponent.domElement) {
-        foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
-      }
+
       const runNext = (mapLoop: number) => {
         if (
           !node.thumbConnectors ||
@@ -163,12 +173,20 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
           return;
         }
 
+        currentState = {
+          startIndex,
+          iteratorLength: forEachLength,
+          loop: mapLoop,
+        };
+
         if (mapLoop < forEachLength) {
-          if (foreachComponent && foreachComponent.domElement) {
-            (
-              foreachComponent.domElement as HTMLElement
-            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${mapLoop} < ${forEachLength}</span></div>`;
-          }
+          setIteratorLabel(
+            foreachComponent,
+            title,
+            startIndex,
+            mapLoop,
+            forEachLength
+          );
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
@@ -220,6 +238,24 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
       //   stop: true,
       // });
     });
+  };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: { ...currentState },
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    currentState = { ...data };
+    setIteratorLabel(
+      foreachComponent,
+      title,
+      currentState.startIndex,
+      currentState.loop,
+      currentState.iteratorLength
+    );
   };
 
   return {
@@ -279,6 +315,22 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formElements = [];
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
+
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'state',
+            displayName: 'Iterate state',
+            type: 'json',
+            getData: () => {
+              return currentState;
+            },
+          },
+        ];
       }
       return node;
     },

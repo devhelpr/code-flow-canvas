@@ -1168,7 +1168,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.message = createElement(
       'div',
       {
-        class: `flex text-center truncate-message min-w-0 overflow-hidden z-[1010] pointer-events-auto origin-center px-1 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
+        class: `flex text-center truncate-message min-w-0 overflow-hidden z-[1200] pointer-events-auto origin-center px-1 bg-blue-500 text-black absolute top-[-100px] z-[1000] left-[-60px] items-center justify-center w-[80px] h-[100px] overflow-hidden hidden`,
         style: {
           'clip-path':
             'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',

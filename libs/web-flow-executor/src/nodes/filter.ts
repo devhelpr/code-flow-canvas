@@ -14,6 +14,7 @@ import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 import { isInputOfRangeValueType } from '../utils/is-range';
+import { setIteratorLabel } from './iterator-utils/set-iterator-label';
 
 /*
 
@@ -97,7 +98,18 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
     }
   }
 
+  let currentState = {
+    startIndex: 0,
+    iteratorLength: 0,
+    loop: 0,
+  };
+
   const initializeCompute = () => {
+    currentState = {
+      startIndex: 0,
+      iteratorLength: 0,
+      loop: 0,
+    };
     if (foreachComponent && foreachComponent.domElement) {
       foreachComponent.domElement.textContent = `${title}`;
       setNodeDefaultColors();
@@ -144,9 +156,7 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
         }
         forEachLength = values.length;
       }
-      if (foreachComponent && foreachComponent.domElement) {
-        foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
-      }
+
       const output: any[] = [];
 
       const runNext = (filterLoop: number) => {
@@ -158,12 +168,20 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
           reject();
           return;
         }
+        currentState = {
+          startIndex,
+          iteratorLength: forEachLength,
+          loop: filterLoop,
+        };
+
         if (filterLoop < forEachLength) {
-          if (foreachComponent && foreachComponent.domElement) {
-            (
-              foreachComponent.domElement as HTMLElement
-            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${filterLoop} < ${forEachLength}</span></div>`;
-          }
+          setIteratorLabel(
+            foreachComponent,
+            title,
+            startIndex,
+            filterLoop,
+            forEachLength
+          );
 
           runNodeFromThumb(
             node.thumbConnectors[1],
@@ -223,6 +241,24 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
     });
   };
 
+  const getNodeStatedHandler = () => {
+    return {
+      data: { ...currentState },
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    currentState = { ...data };
+    setIteratorLabel(
+      foreachComponent,
+      title,
+      currentState.startIndex,
+      currentState.loop,
+      currentState.iteratorLength
+    );
+  };
+
   return {
     name: filterNodeName,
     family: 'flow-canvas',
@@ -280,6 +316,22 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formElements = [];
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
+
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'state',
+            displayName: 'Iterate state',
+            type: 'json',
+            getData: () => {
+              return currentState;
+            },
+          },
+        ];
       }
       return node;
     },

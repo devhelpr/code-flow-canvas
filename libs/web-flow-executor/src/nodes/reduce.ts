@@ -14,6 +14,8 @@ import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 import { isInputOfRangeValueType } from '../utils/is-range';
+import { toDecimalWithoutFloatErrors } from '../utils/decimal-without-float-errors';
+import { setIteratorLabel } from './iterator-utils/set-iterator-label';
 
 const thumbs = [
   {
@@ -47,19 +49,6 @@ const thumbs = [
 export const reduceNodeName = 'reduce';
 const title = 'reduce';
 
-// function getFractionalLength(value: number) {
-//   const roundedNumStr = value.toFixed(15); // Round to 15 decimal places to mitigate floating-point artifacts
-//   if (roundedNumStr.includes('.')) {
-//     const [, fractionalPart] = roundedNumStr.split('.');
-//     return fractionalPart.replace(/0+$/, '').length; // Remove trailing zeroes before counting
-//   }
-//   return 0;
-// }
-
-function getCleanFloatValue(value: number) {
-  return parseFloat(value.toFixed(15));
-}
-
 const cssClasses = getIteratorNodeFamilyCssClasses();
 
 export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
@@ -92,8 +81,19 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
       forEachDomElement.classList.add(cssClasses.textCssClass);
     }
   }
-
+  let currentState = {
+    startIndex: 0,
+    iteratorLength: 0,
+    loop: 0,
+    accumulator: undefined,
+  };
   const initializeCompute = () => {
+    currentState = {
+      startIndex: 0,
+      iteratorLength: 0,
+      loop: 0,
+      accumulator: undefined,
+    };
     if (foreachComponent && foreachComponent.domElement) {
       foreachComponent.domElement.textContent = `${title}`;
       setNodeDefaultColors();
@@ -157,15 +157,21 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
           reject();
           return;
         }
+        currentState = {
+          startIndex,
+          iteratorLength: forEachLength,
+          loop: filterLoop,
+          accumulator: accumulator,
+        };
 
         if (filterLoop < forEachLength) {
-          if (foreachComponent && foreachComponent.domElement) {
-            (
-              foreachComponent.domElement as HTMLElement
-            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${getCleanFloatValue(
-              filterLoop
-            )} < ${forEachLength}</span></div>`;
-          }
+          setIteratorLabel(
+            foreachComponent,
+            title,
+            startIndex,
+            filterLoop,
+            forEachLength
+          );
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
@@ -184,7 +190,7 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
                 outputFromMap
               );
 
-              runNext(getCleanFloatValue(filterLoop + step));
+              runNext(toDecimalWithoutFloatErrors(filterLoop + step));
             },
             {
               value: isRange ? filterLoop : values[filterLoop],
@@ -228,6 +234,24 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
       }
       runNext(startIndex);
     });
+  };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: { ...currentState },
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    currentState = { ...data };
+    setIteratorLabel(
+      foreachComponent,
+      title,
+      currentState.startIndex,
+      currentState.loop,
+      currentState.iteratorLength
+    );
   };
 
   return {
@@ -287,6 +311,22 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formElements = [];
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
+
+        if (id) {
+          canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
+          canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
+        }
+
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'state',
+            displayName: 'Iterate state',
+            type: 'json',
+            getData: () => {
+              return currentState;
+            },
+          },
+        ];
       }
       return node;
     },
