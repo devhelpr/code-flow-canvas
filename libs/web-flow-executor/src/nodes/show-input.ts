@@ -255,6 +255,16 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
             },
           },
         ];
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'json',
+            displayName: 'raw input value',
+            type: 'json',
+            getData: () => {
+              return { value: inputValues };
+            },
+          },
+        ];
 
         node.nodeInfo.updateVisual = updateVisual;
 

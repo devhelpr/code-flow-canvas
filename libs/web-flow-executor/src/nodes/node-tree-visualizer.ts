@@ -342,19 +342,17 @@ export const getNodeTreeVisualizer = (
         '-'
       );
 
-      if (!htmlNode) {
-        throw new Error('htmlNode is undefined');
-      }
-      componentWrapper = createNodeElement(
-        'div',
-        {
-          class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node 
+      if (htmlNode) {
+        componentWrapper = createNodeElement(
+          'div',
+          {
+            class: `border-[4px] border-solid border-transparent transition duration-500 ease-in-out inner-node 
           bg-fuchsia-600 text-white p-4 rounded text-center`,
-        },
-        undefined,
-        htmlNode.domElement as unknown as HTMLElement
-      ) as unknown as INodeComponent<NodeInfo>;
-
+          },
+          undefined,
+          htmlNode.domElement as unknown as HTMLElement
+        ) as unknown as INodeComponent<NodeInfo>;
+      }
       rect = canvasApp.createRect(
         x,
         y,

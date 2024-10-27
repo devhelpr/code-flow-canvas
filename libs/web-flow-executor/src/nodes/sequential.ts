@@ -93,8 +93,8 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
               );
             } else {
               resolve({
-                result: input,
-                output: input,
+                result: inputFromRun,
+                output: inputFromRun,
                 stop: true,
                 dummyEndpoint: true,
               });
@@ -147,8 +147,8 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
                   inputFromSecondRun
                 );
                 resolve({
-                  result: input,
-                  output: input,
+                  result: inputFromSecondRun,
+                  output: inputFromSecondRun,
                   stop: true,
                   dummyEndpoint: true,
                 });

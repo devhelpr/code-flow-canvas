@@ -417,7 +417,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     });
 
     const canvasUpdated = (
-      shouldClearExecutionHistory = true,
+      shouldClearExecutionHistory = false,
       _isStoreOnly?: boolean,
       flowChangeType: FlowChangeType = FlowChangeType.Unknown
     ) => {
@@ -431,9 +431,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       if (this.isStoring) {
         return;
       }
-
-      this.resetConnectionSlider(shouldClearExecutionHistory);
-
+      if (shouldClearExecutionHistory) {
+        this.resetConnectionSlider(shouldClearExecutionHistory);
+      }
       if (
         flowChangeType === FlowChangeType.AddNode ||
         flowChangeType === FlowChangeType.UpdateNode ||

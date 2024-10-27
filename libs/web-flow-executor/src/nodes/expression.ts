@@ -459,14 +459,17 @@ ${expressionCache[node.id]!.script};\
         expressionCache[node.id] = undefined;
       }
       const initialValue = initalValues?.['expression'] ?? '';
-      const decoratorNode = createNodeElement(
+      const decoratorNode = (createNodeElement(
         'div',
         {
           class: `decorator-node text-white p-2 inline-block rounded text-center border-2 border-slate-200 border-solid`,
         },
         rootElement,
         initialValue
-      ) as unknown as INodeComponent<NodeInfo>;
+      ) as unknown as INodeComponent<NodeInfo>) ?? {
+        domElement: undefined,
+        id: crypto.randomUUID(),
+      };
 
       decoratorNode.nodeInfo = {
         compute,

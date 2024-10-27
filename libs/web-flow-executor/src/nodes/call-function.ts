@@ -163,8 +163,10 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
     runCounter?: RunCounter
   ) => {
     const componentDomElement = componentWrapper?.domElement as HTMLElement;
-    componentDomElement.classList.remove(activeFunctionColor);
-    componentDomElement.classList.add(defaultFunctionColor);
+    if (componentDomElement) {
+      componentDomElement.classList.remove(activeFunctionColor);
+      componentDomElement.classList.add(defaultFunctionColor);
+    }
     return new Promise<IComputeResult>((resolve) => {
       if (args === undefined || !commandName) {
         prepareFunctionCallParameters();
@@ -199,10 +201,10 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
                   }
                 });
               isFunctionFound = true;
-
-              componentDomElement.classList.add(activeFunctionColor);
-              componentDomElement.classList.remove(defaultFunctionColor);
-
+              if (componentDomElement) {
+                componentDomElement.classList.add(activeFunctionColor);
+                componentDomElement.classList.remove(defaultFunctionColor);
+              }
               console.log(
                 'callFunction START:',
                 commandName,
@@ -217,9 +219,10 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
                 (inputFunction) => {
                   console.log('scope removed', scopeGuid);
                   canvasAppInstance?.removeScope(scopeGuid);
-
-                  componentDomElement.classList.remove(activeFunctionColor);
-                  componentDomElement.classList.add(defaultFunctionColor);
+                  if (componentDomElement) {
+                    componentDomElement.classList.remove(activeFunctionColor);
+                    componentDomElement.classList.add(defaultFunctionColor);
+                  }
                   console.log(
                     'callFunction END:',
                     commandName,

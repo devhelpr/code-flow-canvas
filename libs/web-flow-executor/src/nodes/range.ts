@@ -69,7 +69,7 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     values.min = undefined;
     values.max = undefined;
-    values.step = 1;
+    values.step = undefined;
     return;
   };
 
@@ -177,6 +177,9 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
     (nodeInstance) => {
       canvasAppInstance = nodeInstance.contextInstance;
       node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+      if (node?.nodeInfo) {
+        node.nodeInfo.initializeOnStartFlow = true;
+      }
     },
     {
       hasTitlebar: false,

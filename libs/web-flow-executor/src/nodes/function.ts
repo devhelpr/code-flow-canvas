@@ -39,9 +39,10 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
       };
     }
     const componentDomElement = componentWrapper?.domElement as HTMLElement;
-    componentDomElement.classList.add(defaultFunctionColor);
-    componentDomElement.classList.remove(activeFunctionColor);
-
+    if (componentDomElement) {
+      componentDomElement.classList.add(defaultFunctionColor);
+      componentDomElement.classList.remove(activeFunctionColor);
+    }
     const parameters: string = node?.nodeInfo?.formValues?.['parameters'] ?? '';
     const parametersArray = (parameters ? parameters.split(',') : []).map(
       (parameter) => parameter.trim()
@@ -50,10 +51,10 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
     let isError = false;
     if (inputObject && inputObject.trigger === 'TRIGGER') {
       const payload: Record<string, any> = {};
-
-      componentDomElement.classList.remove(defaultFunctionColor);
-      componentDomElement.classList.add(activeFunctionColor);
-
+      if (componentDomElement) {
+        componentDomElement.classList.remove(defaultFunctionColor);
+        componentDomElement.classList.add(activeFunctionColor);
+      }
       parametersArray.forEach((parameter) => {
         if (!inputObject[parameter]) {
           isError = true;
@@ -111,7 +112,7 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
         parameter.toString()
       ) as unknown as INodeComponent<NodeInfo>;
 
-      if (parametersContainer) {
+      if (parametersContainer && parametersContainer.domElement) {
         parametersContainer.domElement.appendChild(
           parameterElement.domElement as unknown as HTMLElement
         );
@@ -193,7 +194,7 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
         {
           class: `text-center block text-black font-bold`,
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       );
       if (divElement) {
         divElement.domElement.textContent = `${initialValue || ''} ${
@@ -205,7 +206,7 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
         {
           class: `absolute -top-3 left-0`,
         },
-        componentWrapper.domElement
+        componentWrapper?.domElement
       );
 
       const rect = canvasApp.createRect(

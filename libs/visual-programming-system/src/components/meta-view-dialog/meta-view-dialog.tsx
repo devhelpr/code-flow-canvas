@@ -61,8 +61,8 @@ export const showMetaViewDialog = (
     divElement instanceof HTMLDivElement
   ) {
     dialogElement.addEventListener('click', function (event) {
-      var rect = dialogElement.getBoundingClientRect();
-      var isInDialog =
+      const rect = dialogElement.getBoundingClientRect();
+      const isInDialog =
         rect.top <= event.clientY &&
         event.clientY <= rect.top + rect.height &&
         rect.left <= event.clientX &&

@@ -1,6 +1,7 @@
 import {
   IFlowCanvasBase,
   InitialValues,
+  INodeComponent,
   NodeTask,
   NodeTaskFactory,
   ThumbConnectionType,
@@ -48,10 +49,13 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<any> => {
   let contextInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
+  let node: INodeComponent<NodeInfo>;
   const initializeCompute = () => {
     values = { global: { value1: undefined, value2: undefined } };
+    currentValues = {};
     return;
   };
+  let currentValues: any = {};
 
   let values = {
     global: {
@@ -80,6 +84,7 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
       };
     }
     const localValues = values[scopeId ?? 'global'];
+
     if (thumbName === 'a') {
       localValues.value1 = input;
     } else {
@@ -87,6 +92,7 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
         localValues.value2 = input;
       }
     }
+    currentValues = structuredClone(localValues);
     if (localValues.value1 === undefined || localValues.value2 === undefined) {
       return {
         result: undefined,
@@ -120,6 +126,17 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
     };
   };
 
+  const getNodeStatedHandler = () => {
+    return {
+      data: currentValues,
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    currentValues = data;
+  };
+
   return visualNodeFactory(
     mergeModeName,
     labelName,
@@ -136,6 +153,27 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
     },
     (nodeInstance) => {
       contextInstance = nodeInstance.contextInstance;
+      node = nodeInstance.node;
+      nodeInstance.node.nodeInfo.meta = [
+        {
+          propertyName: 'values',
+          type: 'json',
+          getData: () => {
+            return currentValues;
+          },
+        },
+      ];
+
+      if (nodeInstance.node.id) {
+        contextInstance.registeGetNodeStateHandler(
+          nodeInstance.node.id,
+          getNodeStatedHandler
+        );
+        contextInstance.registeSetNodeStateHandler(
+          nodeInstance.node.id,
+          setNodeStatedHandler
+        );
+      }
     },
     {
       hasTitlebar: false,

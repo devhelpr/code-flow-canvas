@@ -281,6 +281,19 @@ return ${input ? input : '""'};})(${input ? input : '""'});\
 `;
           },
         };
+
+        // TODO : introduce new meta type "value" or something like that to show a single value
+        // ... should be supplied as string.
+        node.nodeInfo.meta = [
+          {
+            propertyName: 'json',
+            displayName: 'raw input value',
+            type: 'json',
+            getData: () => {
+              return { value: inputValues };
+            },
+          },
+        ];
       }
       return node;
     },

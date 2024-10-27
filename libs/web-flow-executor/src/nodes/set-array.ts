@@ -13,23 +13,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
 import { RangeValueType } from '../types/value-type';
-
-const isInputOfRangeValueType = (input: RangeValueType) => {
-  if (typeof input === 'object' && input) {
-    return (
-      input.min !== undefined &&
-      input.max !== undefined &&
-      input.step !== undefined &&
-      typeof input.min === 'number' &&
-      typeof input.max === 'number' &&
-      typeof input.step === 'number' &&
-      !isNaN(input.min) &&
-      !isNaN(input.max) &&
-      !isNaN(input.step)
-    );
-  }
-  return false;
-};
+import { isInputOfRangeValueType } from '../utils/is-range';
 
 const fieldName = 'variableName';
 export const setArrayNodeName = 'set-array-variable';
@@ -78,7 +62,7 @@ export const setArrayVariable: NodeTaskFactory<NodeInfo> = (
           rangeInput.step !== undefined
         ) {
           startIndex = rangeInput.min;
-          step = rangeInput.step;
+          step = rangeInput.step ?? 1;
           forEachLength = rangeInput.max;
 
           const rangeArray: number[] = [];

@@ -163,13 +163,13 @@ export const createRectNode = <T extends BaseNodeInfo>(
                   firstBeforeDecorator ? 'rounded-t' : ''
                 }`,
               },
-              componentWrapper.domElement as HTMLElement
+              componentWrapper?.domElement as HTMLElement
             ) as unknown as INodeComponent<T>;
             firstBeforeDecorator = false;
             decorator.decoratorNode = nodeTask.createDecoratorNode(
               canvasApp,
               decorator.formValues,
-              decoratorWrapper.domElement as HTMLElement
+              decoratorWrapper?.domElement as HTMLElement
             );
           }
         }
@@ -292,13 +292,13 @@ export const createRectNode = <T extends BaseNodeInfo>(
                   firstAfterDecorator ? 'rounded-b' : ''
                 }`,
               },
-              componentWrapper.domElement as HTMLElement
+              componentWrapper?.domElement as HTMLElement
             ) as unknown as INodeComponent<T>;
             firstAfterDecorator = false;
             decorator.decoratorNode = nodeTask.createDecoratorNode(
               canvasApp,
               decorator.formValues,
-              decoratorWrapper.domElement as HTMLElement
+              decoratorWrapper?.domElement as HTMLElement
             );
           }
         }
@@ -476,14 +476,17 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     ) => {
       const initialValue = initalValues?.[defaultValueFieldName] ?? '';
       const caption = initalValues?.['caption'];
-      const decoratorNode = createNodeElement(
+      const decoratorNode = (createNodeElement(
         'div',
         {
           class: `decorator-node p-2 inline-block ${canvasApp.theme.nodeText} rounded text-center border-2 border-slate-200 border-solid`,
         },
         rootElement,
         caption ?? settings?.decoratorTitle ?? initialValue
-      ) as unknown as INodeComponent<T>;
+      ) as unknown as INodeComponent<T>) ?? {
+        domElement: undefined,
+        id: crypto.randomUUID(),
+      };
 
       decoratorNode.nodeInfo = {
         compute,

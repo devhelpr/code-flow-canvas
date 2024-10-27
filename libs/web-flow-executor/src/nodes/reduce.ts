@@ -13,6 +13,7 @@ import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
+import { isInputOfRangeValueType } from '../utils/is-range';
 
 const thumbs = [
   {
@@ -46,22 +47,18 @@ const thumbs = [
 export const reduceNodeName = 'reduce';
 const title = 'reduce';
 
-const isInputOfRangeValueType = (input: RangeValueType) => {
-  if (typeof input === 'object' && input) {
-    return (
-      input.min !== undefined &&
-      input.max !== undefined &&
-      input.step !== undefined &&
-      typeof input.min === 'number' &&
-      typeof input.max === 'number' &&
-      typeof input.step === 'number' &&
-      !isNaN(input.min) &&
-      !isNaN(input.max) &&
-      !isNaN(input.step)
-    );
-  }
-  return false;
-};
+// function getFractionalLength(value: number) {
+//   const roundedNumStr = value.toFixed(15); // Round to 15 decimal places to mitigate floating-point artifacts
+//   if (roundedNumStr.includes('.')) {
+//     const [, fractionalPart] = roundedNumStr.split('.');
+//     return fractionalPart.replace(/0+$/, '').length; // Remove trailing zeroes before counting
+//   }
+//   return 0;
+// }
+
+function getCleanFloatValue(value: number) {
+  return parseFloat(value.toFixed(15));
+}
 
 const cssClasses = getIteratorNodeFamilyCssClasses();
 
@@ -131,12 +128,11 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
       if (
         isInputOfRangeValueType(rangeInput) &&
         rangeInput.max !== undefined &&
-        rangeInput.min !== undefined &&
-        rangeInput.step !== undefined
+        rangeInput.min !== undefined
       ) {
         isRange = true;
         startIndex = rangeInput.min;
-        step = rangeInput.step;
+        step = rangeInput.step ?? 1;
         forEachLength = rangeInput.max;
       } else {
         if (!Array.isArray(input)) {
@@ -144,9 +140,7 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
         }
         forEachLength = values.length;
       }
-      if (foreachComponent && foreachComponent.domElement) {
-        foreachComponent.domElement.textContent = `${title} 1/${values.length}`;
-      }
+
       let accumulator: any = undefined;
       if (isRange) {
         accumulator = 0;
@@ -168,7 +162,9 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
           if (foreachComponent && foreachComponent.domElement) {
             (
               foreachComponent.domElement as HTMLElement
-            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${filterLoop} < ${forEachLength}</span></div>`;
+            ).innerHTML = `<div class="flex flex-col"><span class="block text-nowrap">${title}</span><span class="block text-nowrap">${startIndex} <= ${getCleanFloatValue(
+              filterLoop
+            )} < ${forEachLength}</span></div>`;
           }
           runNodeFromThumb(
             node.thumbConnectors[1],
@@ -188,7 +184,7 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
                 outputFromMap
               );
 
-              runNext(filterLoop + step);
+              runNext(getCleanFloatValue(filterLoop + step));
             },
             {
               value: isRange ? filterLoop : values[filterLoop],

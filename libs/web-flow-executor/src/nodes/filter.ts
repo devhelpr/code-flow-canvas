@@ -13,6 +13,7 @@ import { runNodeFromThumb } from '../flow-engine/flow-engine';
 import { RangeValueType } from '../types/value-type';
 import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
+import { isInputOfRangeValueType } from '../utils/is-range';
 
 /*
 
@@ -62,23 +63,6 @@ const thumbs = [
 
 export const filterNodeName = 'filter';
 const title = 'filter';
-
-const isInputOfRangeValueType = (input: RangeValueType) => {
-  if (typeof input === 'object' && input) {
-    return (
-      input.min !== undefined &&
-      input.max !== undefined &&
-      input.step !== undefined &&
-      typeof input.min === 'number' &&
-      typeof input.max === 'number' &&
-      typeof input.step === 'number' &&
-      !isNaN(input.min) &&
-      !isNaN(input.max) &&
-      !isNaN(input.step)
-    );
-  }
-  return false;
-};
 
 const cssClasses = getIteratorNodeFamilyCssClasses();
 
@@ -148,12 +132,11 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
       if (
         isInputOfRangeValueType(rangeInput) &&
         rangeInput.max !== undefined &&
-        rangeInput.min !== undefined &&
-        rangeInput.step !== undefined
+        rangeInput.min !== undefined
       ) {
         isRange = true;
         startIndex = rangeInput.min;
-        step = rangeInput.step;
+        step = rangeInput.step ?? 1;
         forEachLength = rangeInput.max;
       } else {
         if (!Array.isArray(input)) {
