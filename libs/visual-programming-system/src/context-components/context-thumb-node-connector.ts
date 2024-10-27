@@ -6,10 +6,11 @@ import {
   ThumbConnectionType,
 } from '../interfaces/element';
 import { ConnectionControllerType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { NodeType } from '../types/node-type';
 import { createElementMap } from '../utils';
 
-export class ContextThumbNodeConnector<T> {
+export class ContextThumbNodeConnector<T extends BaseNodeInfo> {
   nodeComponent: IThumbNodeComponent<T>;
   constructor(
     thumb: IThumb,

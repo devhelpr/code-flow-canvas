@@ -3,9 +3,10 @@ import {
   IConnectionNodeComponent,
   IElementNode,
   IRectNodeComponent,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
-export abstract class BaseAnimatePath<T> {
+export abstract class BaseAnimatePath<T extends BaseNodeInfo> {
   abstract start: (input?: string | any[], followPathByName?: string) => void;
   abstract onNextNode: (
     nodeId: string,
@@ -24,7 +25,7 @@ export abstract class BaseAnimatePath<T> {
   abstract canvasApp: IFlowCanvasBase<T>;
   abstract node: IRectNodeComponent<T>;
   abstract animatedNodes?: {
-    [key: string]: IElementNode<unknown>;
+    [key: string]: IElementNode<T>;
   };
   abstract offsetX?: number;
   abstract offsetY?: number;

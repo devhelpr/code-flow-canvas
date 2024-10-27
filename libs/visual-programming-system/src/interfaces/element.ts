@@ -1,5 +1,6 @@
 import { IFlowCanvasBase } from '../canvas-app/flow-canvas';
 import { ConnectionControllerType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
 
@@ -8,7 +9,7 @@ export interface IDOMElement {
   domElement: DOMElementNode;
 }
 
-export interface IElementNode<T> {
+export interface IElementNode<T extends BaseNodeInfo> {
   id: string;
   domElement: DOMElementNode;
   elements: ElementNodeMap<T>;
@@ -16,9 +17,13 @@ export interface IElementNode<T> {
 }
 
 export type DOMElementNode = HTMLElement | SVGElement | Text;
-export type ElementNodeMap<T> = Map<string, IElementNode<T>>;
+export type ElementNodeMap<T extends BaseNodeInfo> = Map<
+  string,
+  IElementNode<T>
+>;
 
-export interface INodeComponent<T> extends IElementNode<T> {
+export interface INodeComponent<T extends BaseNodeInfo>
+  extends IElementNode<T> {
   parent?: INodeComponent<T>;
   x: number;
   y: number;
@@ -71,7 +76,8 @@ export interface INodeComponent<T> extends IElementNode<T> {
   getThumbCircleElement?: () => HTMLElement | SVGElement;
 }
 
-export interface IRectNodeComponent<T> extends INodeComponent<T> {
+export interface IRectNodeComponent<T extends BaseNodeInfo>
+  extends INodeComponent<T> {
   connections: IConnectionNodeComponent<T>[];
   isStaticPosition?: boolean;
   isCircle?: boolean;
@@ -82,7 +88,8 @@ export interface IRectNodeComponent<T> extends INodeComponent<T> {
   setSize: (width: number, height: number) => void;
 }
 
-export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
+export interface IConnectionNodeComponent<T extends BaseNodeInfo>
+  extends INodeComponent<T> {
   endX: number;
   endY: number;
   lineType?: LineType;
@@ -114,7 +121,8 @@ export interface IConnectionNodeComponent<T> extends INodeComponent<T> {
   ) => IControlAndEndPoint;
 }
 
-export interface IThumbNodeComponent<T> extends INodeComponent<T> {
+export interface IThumbNodeComponent<T extends BaseNodeInfo>
+  extends INodeComponent<T> {
   thumbIndex?: number;
   thumbType?: ThumbType;
   thumbName: string;

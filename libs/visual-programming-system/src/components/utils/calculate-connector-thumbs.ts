@@ -5,6 +5,7 @@ import {
   thumbRadius,
 } from '../../constants/measures';
 import { INodeComponent, IThumbNodeComponent } from '../../interfaces/element';
+import { BaseNodeInfo } from '../../types/base-node-info';
 import { ThumbType } from '../../types/thumb-type';
 
 export const calculateConnectorX = (thumbType: ThumbType, width: number) => {
@@ -53,7 +54,7 @@ export const calculateConnectorX = (thumbType: ThumbType, width: number) => {
   return 0;
 };
 
-export const calculateConnectorY = <T>(
+export const calculateConnectorY = <T extends BaseNodeInfo>(
   thumbType: ThumbType,
   _width: number,
   height: number,
@@ -128,7 +129,7 @@ export const calculateConnectorY = <T>(
   return 0;
 };
 
-export const thumbPosition = <T>(
+export const thumbPosition = <T extends BaseNodeInfo>(
   rectNode: INodeComponent<T>,
   thumbType: ThumbType,
   index?: number,

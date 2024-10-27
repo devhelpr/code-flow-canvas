@@ -17,11 +17,12 @@ import {
 } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
 import { ConnectionControllerType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { NodeType } from '../types/node-type';
 import { createNodeElement } from '../utils/create-element';
 import { getThumbCssClasses } from './css-classes/thumb-css-classes';
 
-export class ThumbNode<T> {
+export class ThumbNode<T extends BaseNodeInfo> {
   nodeComponent?: IThumbNodeComponent<T>;
   interactionStateMachine: InteractionStateMachine<T>;
   disableInteraction = false;

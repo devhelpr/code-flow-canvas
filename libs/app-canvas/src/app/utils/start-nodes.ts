@@ -4,9 +4,10 @@ import {
   INodeComponent,
   NodeType,
   IConnectionNodeComponent,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
-export const getStartNodes = <T>(
+export const getStartNodes = <T extends BaseNodeInfo>(
   nodes: ElementNodeMap<T>,
   includeFunctionNodes = true
 ) => {

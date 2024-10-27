@@ -895,7 +895,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   ).id,
                   containerNode: (
                     this.canvasActionPayload
-                      .nodeComponent as unknown as INodeComponent<unknown>
+                      .nodeComponent as unknown as INodeComponent<BaseNodeInfo>
                   ).containerNode,
                 });
               }

@@ -9,6 +9,7 @@ import {
   IElementNode,
 } from '../interfaces/element';
 import { createNodeElement } from './create-element';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 /**
  * This function, `createASTNodeElement`, creates an AST node element from a given AST node,
@@ -46,7 +47,7 @@ import { createNodeElement } from './create-element';
  * @param {string} [scopeId] - The scope ID.
  * @returns {IElementNode<T>} - The created element.
  */
-export const createASTNodeElement = <T>(
+export const createASTNodeElement = <T extends BaseNodeInfo>(
   astNode: IASTTreeNode,
   parentElement: DOMElementNode,
   elements: ElementNodeMap<T>,

@@ -4,8 +4,9 @@ import {
   IConnectionNodeComponent,
   IThumbNodeComponent,
 } from '../interfaces';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const getNodeConnectionPairById = <T>(
+export const getNodeConnectionPairById = <T extends BaseNodeInfo>(
   _canvasApp: IFlowCanvasBase<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
@@ -105,7 +106,9 @@ export const getNodeConnectionPairById = <T>(
   return false;
 };
 
-export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
+export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <
+  T extends BaseNodeInfo
+>(
   canvasApp: IFlowCanvasBase<T>,
   node: IRectNodeComponent<T>,
   followPathByName?: string,
@@ -196,7 +199,7 @@ export const getNodeConnectionPairByIdWhereNodeIsEndpoint = <T>(
   return false;
 };
 
-export const getNodeConnectionPairsFromThumb = <T>(
+export const getNodeConnectionPairsFromThumb = <T extends BaseNodeInfo>(
   _canvasApp: IFlowCanvasBase<T>,
   nodeThumb: IThumbNodeComponent<T>,
   onlyDataConnections?: boolean

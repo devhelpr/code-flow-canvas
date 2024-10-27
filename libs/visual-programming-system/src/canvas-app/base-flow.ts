@@ -22,7 +22,7 @@ import { Composition } from '../interfaces/composition';
 import { Theme } from '../interfaces/theme';
 import { BaseNodeInfo } from '../types/base-node-info';
 
-export interface IBaseFlow<T> {
+export interface IBaseFlow<T extends BaseNodeInfo> {
   elements: ElementNodeMap<T>;
   canvas: IElementNode<T>;
   rootElement: HTMLElement;

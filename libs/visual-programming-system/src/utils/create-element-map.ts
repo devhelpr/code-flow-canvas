@@ -1,5 +1,6 @@
-import { ElementNodeMap } from "../interfaces/element";
+import { ElementNodeMap } from '../interfaces/element';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const createElementMap = <T>() => {
-	return new Map() as ElementNodeMap<T> ;
-}
+export const createElementMap = <T extends BaseNodeInfo>() => {
+  return new Map() as ElementNodeMap<T>;
+};

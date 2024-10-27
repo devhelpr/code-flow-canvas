@@ -42,13 +42,13 @@ export function ToolbarItem(props: {
   );
 }
 
-export function Toolbar<T>(props: {
+export function Toolbar<T extends BaseNodeInfo>(props: {
   getTaskList: () => ITasklistItem[];
   addNodeType: (nodeType: string) => void;
   replaceNode: (nodeType: string, node: IRectNodeComponent<T>) => void;
   getNode: (
     nodeId: string,
-    containerNode?: IRectNodeComponent<T> | undefined
+    containerNode?: IRectNodeComponent<BaseNodeInfo> | undefined
   ) => { node: INodeComponent<T> | undefined };
   canvasAppInstance: IFlowCanvasBase<T>;
   getCanvasAction: () => CanvasAction;
@@ -90,7 +90,7 @@ export function Toolbar<T>(props: {
       const info = props.getNode(
         (actionSelectedNodeInfo || selectedNodeInfo)!.id,
         (actionSelectedNodeInfo || selectedNodeInfo)!
-          .containerNode as IRectNodeComponent<T>
+          .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>
       );
       selectedNode = info.node;
       return info;

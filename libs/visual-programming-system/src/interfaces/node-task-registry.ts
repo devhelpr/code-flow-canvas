@@ -5,7 +5,7 @@ import { InitialValues } from '../types/values';
 import { Composition } from './composition';
 import { Theme } from './theme';
 
-export type NodeTaskFactory<T> = (
+export type NodeTaskFactory<T extends BaseNodeInfo> = (
   onUpdatedCanvas: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,
@@ -13,9 +13,11 @@ export type NodeTaskFactory<T> = (
   ) => void,
   theme?: Theme
 ) => NodeTask<T>;
-export type GetNodeTaskFactory<T> = (name: string) => NodeTaskFactory<T>;
+export type GetNodeTaskFactory<T extends BaseNodeInfo> = (
+  name: string
+) => NodeTaskFactory<T>;
 
-export type NodeTask<T> = {
+export type NodeTask<T extends BaseNodeInfo> = {
   name: string;
   family: string;
   category?: string;
@@ -61,5 +63,10 @@ export type NodeTask<T> = {
   setTitle?: (newTitle: string) => void;
 };
 
-export type NodeTypeRegistry<T> = Record<string, NodeTaskFactory<T>>;
-export type RegisterComposition<T> = (composition: Composition<T>) => void;
+export type NodeTypeRegistry<T extends BaseNodeInfo> = Record<
+  string,
+  NodeTaskFactory<T>
+>;
+export type RegisterComposition<T extends BaseNodeInfo> = (
+  composition: Composition<T>
+) => void;

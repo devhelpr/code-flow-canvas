@@ -3,8 +3,11 @@ import {
   IConnectionNodeComponent,
   IRectNodeComponent,
 } from '../interfaces';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const cleanupNodeInfoForSerializing = <T>(nodeInfo: T | undefined) => {
+export const cleanupNodeInfoForSerializing = <T extends BaseNodeInfo>(
+  nodeInfo: T | undefined
+) => {
   const nodeInfoCopy: any = {};
   if (nodeInfo) {
     for (const key in nodeInfo) {
@@ -36,7 +39,7 @@ export const cleanupNodeInfoForSerializing = <T>(nodeInfo: T | undefined) => {
   return nodeInfoCopy;
 };
 
-export const mapConnectionToFlowNode = <T>(
+export const mapConnectionToFlowNode = <T extends BaseNodeInfo>(
   connection: IConnectionNodeComponent<T>
 ): FlowNode<T> => {
   return {
@@ -60,7 +63,7 @@ export const mapConnectionToFlowNode = <T>(
   };
 };
 
-export const mapShapeNodeToFlowNode = <T>(
+export const mapShapeNodeToFlowNode = <T extends BaseNodeInfo>(
   node: IRectNodeComponent<T>
 ): FlowNode<T> => {
   return {

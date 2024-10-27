@@ -1,0 +1,101 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "bfc1f21e-5554-46b8-95be-32a8e4ecd3d4",
+          "x": 3242.3943267614295,
+          "y": 1329.909051146397,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "input * 2",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true,
+            "taskType": "expression"
+          }
+        },
+        {
+          "id": "986e849d-3a81-4ab6-a56c-183524d6d270",
+          "x": 3442.3943267614295,
+          "y": 1379.909051146397,
+          "endX": 3614.8220523981977,
+          "endY": 1409.9090753896921,
+          "startNodeId": "bfc1f21e-5554-46b8-95be-32a8e4ecd3d4",
+          "endNodeId": "c649b99d-1e1e-4dc8-92db-b6c9624392fe",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "c649b99d-1e1e-4dc8-92db-b6c9624392fe",
+          "x": 3614.8220523981977,
+          "y": 1379.9090753896921,
+          "width": 119.99978198769784,
+          "height": 56.00005356426208,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-value",
+            "formValues": {
+              "append": "",
+              "decimals": "0",
+              "name": ""
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true,
+            "taskType": "show-value"
+          }
+        },
+        {
+          "id": "7472c6bf-6fec-493b-9a69-07cc1b6bd145",
+          "x": 2815.576740104485,
+          "y": 1334.6610486961342,
+          "width": 245.0001688838781,
+          "height": 124.00002793299834,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "user-input",
+            "formValues": {
+              "label": "test",
+              "value": "",
+              "decimals": "2",
+              "name": "",
+              "group": ""
+            },
+            "isSettingsPopup": true,
+            "isUINode": true,
+            "taskType": "user-input"
+          }
+        },
+        {
+          "id": "f7a22e9f-6342-4531-9a0f-e71df997d8d7",
+          "x": 3060.576908988363,
+          "y": 1364.6610486961342,
+          "endX": 3242.3943267614295,
+          "endY": 1379.909051146397,
+          "startNodeId": "7472c6bf-6fec-493b-9a69-07cc1b6bd145",
+          "endNodeId": "bfc1f21e-5554-46b8-95be-32a8e4ecd3d4",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

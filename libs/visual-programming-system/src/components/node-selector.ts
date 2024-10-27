@@ -18,6 +18,7 @@ import {
 } from '../interfaces';
 import { Composition } from '../interfaces/composition';
 import { NodeType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils';
 import { getPointerPos } from '../utils/pointer-pos';
 import {
@@ -33,7 +34,7 @@ const transformPosTR = 'translate-x-[50%] -translate-y-[50%]';
 const transformPosBL = '-translate-x-[50%] translate-y-[50%]';
 const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
 
-export class NodeSelector<T> {
+export class NodeSelector<T extends BaseNodeInfo> {
   private canvas: IElementNode<T> | undefined;
   private rootElement: HTMLElement;
 

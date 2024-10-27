@@ -113,7 +113,7 @@ const getJSONASTypescript = (json: any) => {
   return flowString;
 };
 
-export const exportFlowToTypescript = <T>(
+export const exportFlowToTypescript = <T extends BaseNodeInfo>(
   id: string,
   nodesList: ReturnType<typeof serializeElementsMap>,
   compositions: Record<string, Composition<T>>,
@@ -244,8 +244,8 @@ export const exportFlowToTypescript = <T>(
         });
     });
   }
-  let flowString = getJSONASTypescript(flow);
-  let endpointsAsString = getJSONASTypescript(endpoints);
+  const flowString = getJSONASTypescript(flow);
+  const endpointsAsString = getJSONASTypescript(endpoints);
   return `import { Flow, FlowEndpoint,FlowMeta } from "@devhelpr/visual-programming-system";
 import { NodeInfo } from "@devhelpr/web-flow-executor";
 export const metaData : FlowMeta = {

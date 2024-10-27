@@ -84,7 +84,9 @@ export const setStopAnimations = () => {
 };
 
 let lastTime: number | undefined = undefined;
-export function setCameraAnimation<T>(canvasApp: IFlowCanvasBase<T>) {
+export function setCameraAnimation<T extends BaseNodeInfo>(
+  canvasApp: IFlowCanvasBase<T>
+) {
   let quit = false;
   const animateCamera = (time: number) => {
     if (quit) {
@@ -330,7 +332,7 @@ export function setCameraAnimation<T>(canvasApp: IFlowCanvasBase<T>) {
   };
 }
 
-export const animatePathForNodeConnectionPairs = <T>(
+export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
   canvasApp: IFlowCanvasBase<T>,
   nodeConnectionPairs:
     | false
@@ -553,7 +555,7 @@ export const animatePathForNodeConnectionPairs = <T>(
   });
 };
 
-export const animatePath = <T>(
+export const animatePath = <T extends BaseNodeInfo>(
   canvasApp: IFlowCanvasBase<T>,
   node: IRectNodeComponent<T>,
   color: string,
@@ -602,7 +604,7 @@ export const animatePath = <T>(
   );
 };
 
-export const animatePathFromThumb = <T>(
+export const animatePathFromThumb = <T extends BaseNodeInfo>(
   canvasApp: IFlowCanvasBase<T>,
   node: IThumbNodeComponent<T>,
   color: string,

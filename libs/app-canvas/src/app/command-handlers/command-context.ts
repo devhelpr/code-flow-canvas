@@ -4,9 +4,10 @@ import {
   ICommandHandler,
   NodeTaskFactory,
   FlowChangeType,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
-export interface ICommandContext<T> {
+export interface ICommandContext<T extends BaseNodeInfo> {
   rootElement: HTMLElement;
   getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: (

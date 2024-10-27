@@ -28,13 +28,13 @@ import { createElementMap } from '../utils';
 import { IFlowCanvasBase } from './flow-canvas';
 import { FlowCore } from './flow-core';
 
-export const createRuntimeFlowContext = <T>(
+export const createRuntimeFlowContext = <T extends BaseNodeInfo>(
   _canvasId?: string
 ): IFlowCanvasBase<T> => {
   return new RuntimeFlowContext<T>();
 };
 
-export class RuntimeFlowContext<T>
+export class RuntimeFlowContext<T extends BaseNodeInfo>
   extends FlowCore
   implements IFlowCanvasBase<T>
 {

@@ -13,6 +13,7 @@ import {
 import { Theme } from '../interfaces/theme';
 import { createEffect, getVisbility, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
 import { ThumbConnectionController } from './thumb-connection-controller';
@@ -20,7 +21,7 @@ import { onQuadraticCalculateControlPoints } from './utils/calculate-quadratic-c
 import { pointOnRect } from './utils/intersect-line';
 import { intersectionCircleLine } from './utils/vector-math';
 
-export class LineConnection<T> extends Connection<T> {
+export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
   endPointElement: IThumbNodeComponent<T> | undefined;
 
@@ -80,7 +81,7 @@ export class LineConnection<T> extends Connection<T> {
         setSelectNode({
           id: this.nodeComponent.id,
           containerNode: this.nodeComponent
-            .containerNode as IRectNodeComponent<unknown>,
+            .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
         });
       }
     };
@@ -379,7 +380,7 @@ export class LineConnection<T> extends Connection<T> {
   }
 }
 
-export const getLinePoints = <T>(
+export const getLinePoints = <T extends BaseNodeInfo>(
   nodeComponent: IConnectionNodeComponent<T>,
   bbox: { x: number; y: number },
   startOffsetX: number,

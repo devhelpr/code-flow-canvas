@@ -1,10 +1,11 @@
 import {
+  BaseNodeInfo,
   IFlowCanvasBase,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
-export abstract class BaseNode<T, X> {
+export abstract class BaseNode<T extends BaseNodeInfo, X> {
   abstract compute: (
     input: string | X[],
     loopIndex?: number

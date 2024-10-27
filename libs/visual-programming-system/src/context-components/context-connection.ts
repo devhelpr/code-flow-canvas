@@ -4,10 +4,11 @@ import {
   INodeComponent,
   IRectNodeComponent,
 } from '../interfaces/element';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { NodeType } from '../types/node-type';
 import { createElementMap } from '../utils';
 
-export class ContextConnection<T> {
+export class ContextConnection<T extends BaseNodeInfo> {
   nodeComponent?: IConnectionNodeComponent<T>;
   containerNode?: INodeComponent<T>;
 

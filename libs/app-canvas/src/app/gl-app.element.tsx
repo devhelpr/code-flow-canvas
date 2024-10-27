@@ -29,6 +29,7 @@ import {
   importCompositions,
   importToCanvas,
   IFlowCanvasBase,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
@@ -772,7 +773,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 ).id,
                 containerNode: (
                   this.canvasActionPayload
-                    .nodeComponent as unknown as INodeComponent<unknown>
+                    .nodeComponent as unknown as INodeComponent<BaseNodeInfo>
                 ).containerNode,
               });
             }

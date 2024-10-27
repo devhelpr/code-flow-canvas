@@ -1,9 +1,10 @@
 import { IRectNodeComponent } from '../interfaces';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { createSignal } from './signal';
 
 export interface SelectedNodeInfo {
   id: string;
-  containerNode?: IRectNodeComponent<unknown>;
+  containerNode?: IRectNodeComponent<BaseNodeInfo>;
 }
 const [getSelectedNodeSignal, setSelectNodeSignal] = createSignal<
   SelectedNodeInfo | undefined

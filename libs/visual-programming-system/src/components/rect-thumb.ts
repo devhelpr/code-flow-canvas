@@ -28,7 +28,7 @@ import { Rect } from './rect';
 // Should this component be called "RectConnectPoint"? Because it's not a thumb, it's a connect point.
 // .. thumbs can be connect points or resize/move points.
 
-export class RectThumb<T> extends Rect<T> {
+export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
   createStraightLineConnection = false;
   toolTipUseShiftToDragConnection: IDOMElement | undefined = undefined;
   constructor(

@@ -429,7 +429,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     }
   };
 
-  onPointerMoveHelper = <T>(
+  onPointerMoveHelper = <T extends BaseNodeInfo>(
     x: number,
     y: number,
     _element: INodeComponent<T>,
@@ -510,7 +510,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       );
     }
   };
-  onPointerUpHelper = <T>(
+  onPointerUpHelper = <T extends BaseNodeInfo>(
     _x: number,
     _y: number,
     _element: INodeComponent<T>,

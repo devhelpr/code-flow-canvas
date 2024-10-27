@@ -3,6 +3,7 @@ import {
   IDOMElement,
   IElementNode,
 } from '../interfaces/element';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { createElementMap } from './create-element-map';
 
 export type EventHandler = (event: Event) => void | boolean;
@@ -83,7 +84,7 @@ export const createElement = (
   };
 };
 
-export const createNodeElement = <T>(
+export const createNodeElement = <T extends BaseNodeInfo>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
@@ -150,7 +151,7 @@ export const createNodeElement = <T>(
   };
 };
 
-export const createNSElement = <T>(
+export const createNSElement = <T extends BaseNodeInfo>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,

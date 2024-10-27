@@ -38,7 +38,7 @@ export enum ConnectionUpdateState {
   ConnectConnection = 'ConnectConnection',
 }
 
-export class Connection<T> {
+export class Connection<T extends BaseNodeInfo> {
   nodeComponent?: IConnectionNodeComponent<T>;
   points = {
     beginX: 0,
@@ -329,7 +329,7 @@ export class Connection<T> {
       setSelectNode({
         id: this.nodeComponent.id,
         containerNode: this.nodeComponent
-          .containerNode as unknown as IRectNodeComponent<unknown>,
+          .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
       });
 
       this.orgPoints = { ...this.points };

@@ -1,6 +1,7 @@
 import { INodeComponent, IRectNodeComponent } from '../../interfaces';
+import { BaseNodeInfo } from '../../types/base-node-info';
 
-export function setPosition<T>(
+export function setPosition<T extends BaseNodeInfo>(
   element: INodeComponent<T>,
   x: number,
   y: number,

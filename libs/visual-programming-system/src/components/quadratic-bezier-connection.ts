@@ -12,6 +12,7 @@ import {
 import { Theme } from '../interfaces/theme';
 import { createEffect, getVisbility, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
 import { ThumbConnectionController } from './thumb-connection-controller';
@@ -28,7 +29,9 @@ import {
   perpendicularVector,
 } from './utils/vector-math';
 
-export class QuadraticBezierConnection<T> extends Connection<T> {
+export class QuadraticBezierConnection<
+  T extends BaseNodeInfo
+> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
   endPointElement: IThumbNodeComponent<T> | undefined;
 
@@ -91,7 +94,7 @@ export class QuadraticBezierConnection<T> extends Connection<T> {
       setSelectNode({
         id: this.nodeComponent.id,
         containerNode: this.nodeComponent
-          .containerNode as unknown as IRectNodeComponent<unknown>,
+          .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
       });
     };
 

@@ -3,9 +3,10 @@
 // TODO : what parameters put together in "options" parameter?
 // TODO : build different variations of this function for the different use-cases
 
+import { BaseNodeInfo } from '../types/base-node-info';
 import { IConnectionNodeComponent, IRectNodeComponent } from './element';
 
-export type OnNextNodeFunction<T> = (
+export type OnNextNodeFunction<T extends BaseNodeInfo> = (
   nodeId: string,
   node: IRectNodeComponent<T>,
   input: string | any[],

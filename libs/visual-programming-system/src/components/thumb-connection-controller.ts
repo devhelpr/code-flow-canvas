@@ -11,6 +11,7 @@ import {
   ThumbConnectionType,
 } from '../interfaces/element';
 import { ConnectionControllerType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { NodeType } from '../types/node-type';
 import { createElement } from '../utils';
 import { getPointerPos } from '../utils/pointer-pos';
@@ -18,7 +19,9 @@ import { Connection, ConnectionUpdateState } from './connection';
 import { pointerDown, pointerMove, pointerUp } from './events/pointer-events';
 import { ThumbNode } from './thumb';
 
-export class ThumbConnectionController<T> extends ThumbNode<T> {
+export class ThumbConnectionController<
+  T extends BaseNodeInfo
+> extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
   connectionInstance: Connection<T> | undefined = undefined;
 

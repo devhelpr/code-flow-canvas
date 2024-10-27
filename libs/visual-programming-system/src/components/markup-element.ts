@@ -7,8 +7,9 @@ import {
 import { createNodeComponent } from '../utils/create-node-component';
 import { createASTNodeElement } from '../utils/create-ast-markup-node';
 import { InteractionStateMachine } from '../interaction-state-machine';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const createMarkupElement = <T>(
+export const createMarkupElement = <T extends BaseNodeInfo>(
   markup: string,
   canvasElement: IElementNode<T>,
   elements: ElementNodeMap<T>,

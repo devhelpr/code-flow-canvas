@@ -1,4 +1,5 @@
 import { IFlowCanvasBase } from '../canvas-app/flow-canvas';
+import { BaseNodeInfo } from '../types/base-node-info';
 import {
   IConnectionNodeComponent,
   IDOMElement,
@@ -8,13 +9,13 @@ import {
 import { OnNextNodeFunction } from './next-node-function';
 import { IRunCounter } from './run-counter';
 
-export interface AnimatePathFunctions<T> {
+export interface AnimatePathFunctions<T extends BaseNodeInfo> {
   animatePathFunction: AnimatePathFunction<T>;
   animatePathFromThumbFunction: AnimatePathFromThumbFunction<T>;
   animatePathFromConnectionPairFunction: AnimatePathFromConnectionPairFunction<T>;
 }
 
-export type AnimatePathFromConnectionPairFunction<T> = (
+export type AnimatePathFromConnectionPairFunction<T extends BaseNodeInfo> = (
   canvasApp: IFlowCanvasBase<T>,
   nodeConnectionPairs:
     | false
@@ -42,7 +43,7 @@ export type AnimatePathFromConnectionPairFunction<T> = (
   runCounter?: IRunCounter
 ) => void;
 
-export type AnimatePathFunction<T> = (
+export type AnimatePathFunction<T extends BaseNodeInfo> = (
   node: IRectNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,
@@ -64,7 +65,7 @@ export type AnimatePathFunction<T> = (
   runCounter?: IRunCounter
 ) => void;
 
-export type AnimatePathFromThumbFunction<T> = (
+export type AnimatePathFromThumbFunction<T extends BaseNodeInfo> = (
   node: IThumbNodeComponent<T>,
   color: string,
   onNextNode?: OnNextNodeFunction<T>,
@@ -85,7 +86,7 @@ export type AnimatePathFromThumbFunction<T> = (
   runCounter?: IRunCounter
 ) => void;
 
-export type FollowPathFunction<T> = (
+export type FollowPathFunction<T extends BaseNodeInfo> = (
   canvasApp: IFlowCanvasBase<T>,
   node: IRectNodeComponent<T>,
   color: string,
@@ -107,7 +108,7 @@ export type FollowPathFunction<T> = (
   runCounter?: IRunCounter
 ) => void;
 
-export type NodeAnimationNextNode = <T>(
+export type NodeAnimationNextNode = <T extends BaseNodeInfo>(
   nodeId: string,
   node: IRectNodeComponent<T>,
   input: string | any[],
@@ -128,7 +129,7 @@ export type NodeAnimationNextNode = <T>(
       followPath?: string;
     }>;
 
-export interface NodeAnimatonInfo<T> {
+export interface NodeAnimatonInfo<T extends BaseNodeInfo> {
   start: IRectNodeComponent<T>;
   connection: IConnectionNodeComponent<T>;
   end: IRectNodeComponent<T>;

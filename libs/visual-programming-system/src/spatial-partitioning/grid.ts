@@ -1,4 +1,5 @@
 import { INodeComponent } from '../interfaces/element';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export const GridCellNeighbourType = {
   topLeft: 'topLeft',
@@ -14,12 +15,12 @@ export const GridCellNeighbourType = {
 export type GridCellNeighbourType =
   (typeof GridCellNeighbourType)[keyof typeof GridCellNeighbourType];
 
-export type GridCellNeighbour<T> = {
+export type GridCellNeighbour<T extends BaseNodeInfo> = {
   cell: BaseCell<T>;
   type: GridCellNeighbourType;
 };
 
-export abstract class BaseGrid<T> {
+export abstract class BaseGrid<T extends BaseNodeInfo> {
   constructor() {
     //
   }
@@ -34,7 +35,7 @@ export abstract class BaseGrid<T> {
   abstract getCellForPosition(x: number, y: number): BaseCell<T> | undefined;
 }
 
-export abstract class BaseCell<T> {
+export abstract class BaseCell<T extends BaseNodeInfo> {
   abstract neighbours: { cell: BaseCell<T>; type: GridCellNeighbourType }[];
   abstract grid: BaseGrid<T>;
   abstract nodes: INodeComponent<T>[];
@@ -50,7 +51,7 @@ export abstract class BaseCell<T> {
   abstract addNode(node: INodeComponent<T>): void;
 }
 
-export class Grid<T> extends BaseGrid<T> {
+export class Grid<T extends BaseNodeInfo> extends BaseGrid<T> {
   findCellForNode(node: INodeComponent<T>): Cell<T> | undefined {
     return this.cells.find((baseCell) => {
       const cell = baseCell as Cell<T>;
@@ -175,7 +176,7 @@ export class Grid<T> extends BaseGrid<T> {
   cellHeight: number;
 }
 
-export class Cell<T> extends BaseCell<T> {
+export class Cell<T extends BaseNodeInfo> extends BaseCell<T> {
   neighbours: { cell: BaseCell<T>; type: GridCellNeighbourType }[] = [];
   constructor(x: number, y: number, grid: Grid<T>) {
     super();
@@ -236,7 +237,10 @@ export class Cell<T> extends BaseCell<T> {
   nodes: INodeComponent<T>[];
 }
 
-export const createGrid = <T>(cellWidth: number, cellHeight: number) => {
+export const createGrid = <T extends BaseNodeInfo>(
+  cellWidth: number,
+  cellHeight: number
+) => {
   const grid = new Grid<T>(cellWidth, cellHeight);
   return grid;
 };

@@ -1,5 +1,6 @@
 import { IElementNode, INodeComponent } from '../interfaces/element';
 import { IPointerDownResult } from '../interfaces/pointers';
+import { BaseNodeInfo } from '../types/base-node-info';
 
 export enum InteractionState {
   Idle = 0,
@@ -20,7 +21,7 @@ export enum InteractionEvent {
   PointerClick = 5,
 }
 
-export interface InteractionTarget<T> {
+export interface InteractionTarget<T extends BaseNodeInfo> {
   id: string;
   type: string;
   pointerDown?: (
@@ -52,7 +53,7 @@ export interface InteractionTarget<T> {
 //type GenericInteractionTarget = InteractionTarget<T>;
 //type GenericNodeComponent = INodeComponent<T>;
 
-interface InterActionInfo<T> {
+interface InterActionInfo<T extends BaseNodeInfo> {
   state: InteractionState;
   target?: InteractionTarget<T>;
   isNewState: boolean;
@@ -62,7 +63,7 @@ interface InterActionInfo<T> {
   canvasNode?: IElementNode<T>;
 }
 
-export interface InteractionStateMachine<T> {
+export interface InteractionStateMachine<T extends BaseNodeInfo> {
   interactionEventState: (
     event: InteractionEvent,
     target: InteractionTarget<T>,
@@ -83,7 +84,7 @@ export interface InteractionStateMachine<T> {
 }
 
 export const createInteractionStateMachine = <
-  T
+  T extends BaseNodeInfo
 >(): InteractionStateMachine<T> => {
   let interactionState = InteractionState.Idle;
   let interactionTarget: InteractionTarget<T> | undefined = undefined;

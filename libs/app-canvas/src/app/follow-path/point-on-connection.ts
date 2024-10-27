@@ -1,4 +1,5 @@
 import {
+  BaseNodeInfo,
   calculateQuadraticBezierLineIntersections,
   ControlAndEndPointNodeType,
   getLinePoints,
@@ -14,7 +15,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { quadraticBezierLength } from './quadratic-bezier-curve-length';
 
-export const getPointOnConnection = <T>(
+export const getPointOnConnection = <T extends BaseNodeInfo>(
   positionInPixels: number,
   connection: IConnectionNodeComponent<T>,
   start: IRectNodeComponent<T>,

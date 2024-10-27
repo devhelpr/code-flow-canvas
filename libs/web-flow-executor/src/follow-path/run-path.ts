@@ -7,11 +7,12 @@ import {
   IThumbNodeComponent,
   getNodeConnectionPairById,
   getNodeConnectionPairsFromThumb,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 import { updateRunCounterElement } from './updateRunCounterElement';
 
-export const runPathForNodeConnectionPairs = <T>(
+export const runPathForNodeConnectionPairs = <T extends BaseNodeInfo>(
   canvasApp: IFlowCanvasBase<T>,
   nodeConnectionPairs:
     | false
@@ -146,7 +147,7 @@ export const runPathForNodeConnectionPairs = <T>(
   });
 };
 
-export const runPathFromThumb = <T>(
+export const runPathFromThumb = <T extends BaseNodeInfo>(
   canvasApp: IFlowCanvasBase<T>,
   node: IThumbNodeComponent<T>,
   color: string,
@@ -189,7 +190,7 @@ export const runPathFromThumb = <T>(
   );
 };
 
-export const runPath = <T>(
+export const runPath = <T extends BaseNodeInfo>(
   canvasApp: IFlowCanvasBase<T>,
   node: IRectNodeComponent<T>,
   color: string,

@@ -6,8 +6,9 @@ import {
 import { IElementNode, INodeComponent } from '../../interfaces/element';
 import { IPointerDownResult } from '../../interfaces/pointers';
 import { NodeType } from '../../types';
+import { BaseNodeInfo } from '../../types/base-node-info';
 
-export const pointerDown = <T>(
+export const pointerDown = <T extends BaseNodeInfo>(
   x: number,
   y: number,
   element: INodeComponent<T>,
@@ -105,7 +106,7 @@ export const pointerDown = <T>(
   return false;
 };
 
-export const pointerMove = <T>(
+export const pointerMove = <T extends BaseNodeInfo>(
   x: number,
   y: number,
   element: INodeComponent<T>,
@@ -149,7 +150,7 @@ export const pointerMove = <T>(
   return false;
 };
 
-export const pointerUp = <T>(
+export const pointerUp = <T extends BaseNodeInfo>(
   x: number,
   y: number,
   element: INodeComponent<T>,

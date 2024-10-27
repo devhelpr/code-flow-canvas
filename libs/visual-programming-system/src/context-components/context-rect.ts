@@ -9,8 +9,9 @@ import {
 import { createElementMap } from '../utils';
 import { NodeType } from '../types/node-type';
 import { ContextThumbNodeConnector } from './context-thumb-node-connector';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export class ContextRect<T> {
+export class ContextRect<T extends BaseNodeInfo> {
   public nodeComponent?: IRectNodeComponent<T>;
   public isStaticPosition?: boolean;
 

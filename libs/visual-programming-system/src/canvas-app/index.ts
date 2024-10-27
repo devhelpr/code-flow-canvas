@@ -47,7 +47,7 @@ import { getCanvasAppCssClasses } from './css-classes/canvasapp-css-classes';
 import { IFlowCanvasBase } from './flow-canvas';
 import { FlowCore } from './flow-core';
 
-export const createFlowCanvas = <T>(
+export const createFlowCanvas = <T extends BaseNodeInfo>(
   rootElement: HTMLElement,
   disableInteraction?: boolean,
   disableZoom?: boolean,
@@ -77,7 +77,10 @@ export const createFlowCanvas = <T>(
   );
 };
 
-export class FlowCanvas<T> extends FlowCore implements IFlowCanvasBase<T> {
+export class FlowCanvas<T extends BaseNodeInfo>
+  extends FlowCore
+  implements IFlowCanvasBase<T>
+{
   public theme: Theme;
   private cssClasses = getCanvasAppCssClasses();
   public interactionStateMachine: InteractionStateMachine<T>;
@@ -1094,7 +1097,7 @@ export class FlowCanvas<T> extends FlowCore implements IFlowCanvasBase<T> {
     setSelectNode({
       id: nodeComponent.id,
       containerNode:
-        nodeComponent.containerNode as unknown as IRectNodeComponent<unknown>,
+        nodeComponent.containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
     });
     this.nodeTransformer.attachNode(
       nodeComponent as unknown as IRectNodeComponent<BaseNodeInfo>

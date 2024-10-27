@@ -33,7 +33,7 @@ import { FlowChangeType } from '../interfaces';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
 
-export class Rect<T> {
+export class Rect<T extends BaseNodeInfo> {
   public nodeComponent?: IRectNodeComponent<T>;
   public isStaticPosition?: boolean;
 
@@ -309,7 +309,7 @@ export class Rect<T> {
       setSelectNode({
         id: this.nodeComponent.id,
         containerNode: this.nodeComponent
-          .containerNode as unknown as IRectNodeComponent<unknown>,
+          .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
       });
       this.nodeTransformer.attachNode(
         this.nodeComponent as unknown as IRectNodeComponent<BaseNodeInfo>

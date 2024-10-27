@@ -5,6 +5,7 @@ import {
   IThumbNodeComponent,
 } from '../../interfaces';
 import { ThumbType } from '../../types';
+import { BaseNodeInfo } from '../../types/base-node-info';
 import {
   calculateConnectorX,
   calculateConnectorY,
@@ -32,7 +33,7 @@ const getFactor = (x1: number, y1: number, x2: number, y2: number) => {
   return { distance, thumbFactor };
 };
 
-export const onQuadraticCalculateControlPoints = <T>(
+export const onQuadraticCalculateControlPoints = <T extends BaseNodeInfo>(
   rectNode: IRectNodeComponent<T>,
   nodeType: ControlAndEndPointNodeType,
   thumbType: ThumbType,

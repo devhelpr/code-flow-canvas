@@ -448,7 +448,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
   }
 };
 
-export const importCompositions = <T>(
+export const importCompositions = <T extends BaseNodeInfo>(
   compositions: Record<string, Composition<T>>,
   canvasApp: IFlowCanvasBase<T>
 ) => {

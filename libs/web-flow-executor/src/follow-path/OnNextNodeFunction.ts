@@ -1,4 +1,5 @@
 import {
+  BaseNodeInfo,
   IConnectionNodeComponent,
   IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
@@ -8,7 +9,7 @@ import {
 // TODO : what parameters put together in "options" parameter?
 // TODO : build different variations of this function for the different use-cases
 
-export type OnNextNodeFunction<T> = (
+export type OnNextNodeFunction<T extends BaseNodeInfo> = (
   nodeId: string,
   node: IRectNodeComponent<T>,
   input: string | any[],

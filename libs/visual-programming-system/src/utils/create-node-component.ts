@@ -1,11 +1,12 @@
 import { DOMElementNode, INodeComponent } from '../interfaces/element';
+import { BaseNodeInfo } from '../types/base-node-info';
 import {
   createNodeElement,
   createNSElement,
   EventHandler,
 } from './create-element';
 
-export const createNodeComponent = <T>(
+export const createNodeComponent = <T extends BaseNodeInfo>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
@@ -29,7 +30,7 @@ export const createNodeComponent = <T>(
   };
 };
 
-export const createSVGNodeComponent = <T>(
+export const createSVGNodeComponent = <T extends BaseNodeInfo>(
   elementName: string,
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,

@@ -4,8 +4,9 @@ import {
   ThumbConnectionType,
 } from '../interfaces';
 import { ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export const getThumbNodeByName = <T>(
+export const getThumbNodeByName = <T extends BaseNodeInfo>(
   name: string,
   node: INodeComponent<T>,
   takeDefaultThumb = {
@@ -30,7 +31,7 @@ export const getThumbNodeByName = <T>(
   return false;
 };
 
-export const getThumbNodeById = <T>(
+export const getThumbNodeById = <T extends BaseNodeInfo>(
   id: string,
   node: INodeComponent<T>,
   takeDefaultThumb = {
@@ -55,7 +56,7 @@ export const getThumbNodeById = <T>(
   return false;
 };
 
-export const getThumbNodeByIdentifierWithinNode = <T>(
+export const getThumbNodeByIdentifierWithinNode = <T extends BaseNodeInfo>(
   thumbIdentifierWithinNode: string,
   node: INodeComponent<T>,
   takeDefaultThumb = {
@@ -80,7 +81,7 @@ export const getThumbNodeByIdentifierWithinNode = <T>(
   return false;
 };
 
-export const getThumbNode = <T>(
+export const getThumbNode = <T extends BaseNodeInfo>(
   thumbType: ThumbType,
   node: INodeComponent<T>
 ) => {
@@ -93,7 +94,7 @@ export const getThumbNode = <T>(
   return false;
 };
 
-export const updateThumbPrefixLabel = <T>(
+export const updateThumbPrefixLabel = <T extends BaseNodeInfo>(
   prefixLabel: string,
   thumbNode: IThumbNodeComponent<T>
 ) => {

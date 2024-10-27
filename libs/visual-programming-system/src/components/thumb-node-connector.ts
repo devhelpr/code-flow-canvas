@@ -37,8 +37,9 @@ import { ThumbNode } from './thumb';
 import { thumbTwoDots } from './icons/thumb-two-dots';
 import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
+import { BaseNodeInfo } from '../types/base-node-info';
 
-export class ThumbNodeConnector<T> extends ThumbNode<T> {
+export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
   constructor(
     thumb: IThumb,

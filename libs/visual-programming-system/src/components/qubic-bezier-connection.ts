@@ -12,12 +12,15 @@ import {
 import { Theme } from '../interfaces/theme';
 import { createEffect, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
+import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
 import { NodeType } from '../types/node-type';
 import { Connection } from './connection';
 import { ThumbConnectionController } from './thumb-connection-controller';
 
-export class CubicBezierConnection<T> extends Connection<T> {
+export class CubicBezierConnection<
+  T extends BaseNodeInfo
+> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
   endPointElement: IThumbNodeComponent<T> | undefined;
   constructor(
@@ -82,7 +85,7 @@ export class CubicBezierConnection<T> extends Connection<T> {
         setSelectNode({
           id: this.nodeComponent.id,
           containerNode: this.nodeComponent
-            .containerNode as unknown as IRectNodeComponent<unknown>,
+            .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
         });
       }
     };
@@ -693,18 +696,18 @@ export class CubicBezierConnection<T> extends Connection<T> {
       }
 
       `;
-    } else if (
-      false
-      // isRightToLeftConnectors &&
-      // this.points.beginX > this.points.endX &&
-      // !isConnectingToRectThumb
-    ) {
-      path = `M${this.points.beginX - bbox.x - startOffsetX} ${
-        this.points.beginY - bbox.y + startOffsetY
-      }    
-     ${this.points.endX - bbox.x - endOffsetX} ${
-        this.points.endY - bbox.y + endOffsetY
-      }`;
+      // } else if (
+      //   false
+      //   // isRightToLeftConnectors &&
+      //   // this.points.beginX > this.points.endX &&
+      //   // !isConnectingToRectThumb
+      // ) {
+      //   path = `M${this.points.beginX - bbox.x - startOffsetX} ${
+      //     this.points.beginY - bbox.y + startOffsetY
+      //   }
+      //  ${this.points.endX - bbox.x - endOffsetX} ${
+      //     this.points.endY - bbox.y + endOffsetY
+      //   }`;
     } else if (
       !isLeftToRightConnectors &&
       this.points.beginX > this.points.endX &&
