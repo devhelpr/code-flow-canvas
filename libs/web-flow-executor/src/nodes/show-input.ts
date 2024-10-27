@@ -130,7 +130,11 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         });
         htmlNode.domElement.textContent = output;
       } else {
-        htmlNode.domElement.textContent = (data || '-').toString();
+        if (typeof data === 'number') {
+          htmlNode.domElement.textContent = data.toFixed(2);
+        } else {
+          htmlNode.domElement.textContent = (data || '-').toString();
+        }
       }
     }
   };
