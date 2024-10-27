@@ -88,7 +88,6 @@ export const runPathForNodeConnectionPairs = <T>(
         };
 
       const resolver = (result: any) => {
-        console.log('animatePath onNextNode result', input, result);
         runCounter?.decrementRunCounter();
         if (runCounter) {
           updateRunCounterElement(runCounter);
