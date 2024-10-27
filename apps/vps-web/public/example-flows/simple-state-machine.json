@@ -8,9 +8,9 @@
       "nodes": [
         {
           "id": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f",
-          "x": 386.09512296535553,
+          "x": 385.09512296535553,
           "y": -75.05476460682459,
-          "width": 626,
+          "width": 627,
           "height": 400,
           "nodeType": "Shape",
           "elements": [
@@ -25,7 +25,7 @@
             },
             {
               "id": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f_output",
-              "x": 626,
+              "x": 627,
               "y": 0,
               "width": 1,
               "height": 1,
@@ -192,22 +192,11 @@
           }
         },
         {
-          "id": "587fcee1-2c92-4700-96c7-55e7e3ddc66f",
-          "x": 1148.8218295660038,
-          "y": -75.87086846908237,
-          "width": 119.99992239253055,
-          "height": 56.00000084875879,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "show-value"
-          }
-        },
-        {
           "id": "19d7597d-56e4-45fc-b126-7e6845889e76",
           "x": -171.9355895467133,
           "y": 204.70394995565306,
-          "width": 134.03125,
-          "height": 192,
+          "width": 156.984375,
+          "height": 252,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "media-library-node",
@@ -229,8 +218,10 @@
                 }
               ]
             },
+            "nodeCannotBeReplaced": false,
             "showFormOnlyInPopup": false,
             "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false,
             "initializeOnStartFlow": true
           }
         },
@@ -245,7 +236,8 @@
             "type": "show-image",
             "showFormOnlyInPopup": true,
             "formValues": {
-              "image": ""
+              "image": "",
+              "styling": "{\n   \n  }"
             }
           }
         },
@@ -268,7 +260,7 @@
           "id": "5377ac0a-027a-49f5-a5ea-7e33000f55f5",
           "x": 252.7608530325906,
           "y": -46.16828451286051,
-          "endX": 386.09512296535553,
+          "endX": 385.09512296535553,
           "endY": -45.05476460682459,
           "startNodeId": "ed1225d1-74cd-4291-a998-dd7deead0867",
           "endNodeId": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f",
@@ -280,13 +272,13 @@
           "nodeInfo": {}
         },
         {
-          "id": "64e4860d-51ca-4c01-ab95-89ca65f75f77",
+          "id": "8c8a659c-e43f-4556-8ec1-81d8af0dc21a",
           "x": 1012.0951229653556,
           "y": -45.05476460682459,
-          "endX": 1148.8218295660038,
-          "endY": -45.87086846908237,
+          "endX": 1141.4513493140314,
+          "endY": -46.064481950905716,
           "startNodeId": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f",
-          "endNodeId": "587fcee1-2c92-4700-96c7-55e7e3ddc66f",
+          "endNodeId": "75006a2a-4fac-4b4c-afd5-25c41d51c620",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "BezierCubic",
@@ -295,12 +287,30 @@
           "nodeInfo": {}
         },
         {
-          "id": "e739319e-6d9c-4b20-b5a0-a3404fc95d28",
-          "x": 1268.8217519585344,
-          "y": -45.87086846908237,
+          "id": "75006a2a-4fac-4b4c-afd5-25c41d51c620",
+          "x": 1141.4513493140314,
+          "y": -76.06448195090572,
+          "width": 119.999970565137,
+          "height": 55.999986263730605,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true,
+            "taskType": "show-input"
+          }
+        },
+        {
+          "id": "cbc2c2c4-de04-4ee8-a339-da9c0d6c94a4",
+          "x": 1261.4513198791683,
+          "y": -46.064481950905716,
           "endX": 1395.8677441350774,
           "endY": -45.96782360065296,
-          "startNodeId": "587fcee1-2c92-4700-96c7-55e7e3ddc66f",
+          "startNodeId": "75006a2a-4fac-4b4c-afd5-25c41d51c620",
           "endNodeId": "e67c04bf-5e83-45bd-8c5c-aace25b09992",
           "startThumbName": "output",
           "endThumbName": "input",
