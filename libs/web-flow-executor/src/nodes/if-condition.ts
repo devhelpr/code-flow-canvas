@@ -150,13 +150,6 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         if (expression !== '' && (isNaN(result) || result === undefined)) {
           throw new Error("Expression couldn't be run");
         }
-        console.log(
-          'IFCondition result',
-          result,
-          input,
-          expression,
-          payloadForExpression
-        );
       } catch (error) {
         result = undefined;
         // (errorNode.domElement as unknown as HTMLElement).classList.remove(
@@ -197,11 +190,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       canvasAppInstance = canvasApp;
       const initialExpressionValue = initialValues?.['expression'] ?? '';
       const initialInputType = initialValues?.['inputType'] ?? 'number';
-      console.log(
-        'initialExpressionValue',
-        initialExpressionValue,
-        initialValues
-      );
+
       const formElements = [
         {
           fieldType: FormFieldType.Select,

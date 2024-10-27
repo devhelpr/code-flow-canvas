@@ -34,8 +34,6 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     _thumbName?: string,
     scopeId?: string
   ) => {
-    console.log('Gate compute', loopIndex);
-    //if (node.nodeInfo.formValues?.['Mode'] === 'expression') {
     let result: any = false;
     try {
       const expression = node.nodeInfo?.formValues?.['expression'] ?? '';
@@ -85,7 +83,6 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
                 undefined,
                 scopeId
               );
-              console.log('get', variableName, helper);
               return helper;
             },
             set: (value) => {
@@ -105,7 +102,6 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
       if (expression !== '' && (isNaN(result) || result === undefined)) {
         throw new Error("Expression couldn't be run");
       }
-      console.log('Gate result', result, input, expression);
     } catch (error) {
       result = undefined;
       // (errorNode.domElement as unknown as HTMLElement).classList.remove(
@@ -138,11 +134,7 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
     ) => {
       canvasAppInstance = canvasApp;
       const initialExpressionValue = initialValues?.['expression'] ?? '';
-      console.log(
-        'initialExpressionValue',
-        initialExpressionValue,
-        initialValues
-      );
+
       const formElements = [
         {
           fieldType: FormFieldType.Select,

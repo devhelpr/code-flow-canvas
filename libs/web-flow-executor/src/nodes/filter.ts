@@ -194,11 +194,6 @@ export const getFilter = (_updated: () => void): NodeTask<NodeInfo> => {
               if (outputFromMap) {
                 output.push(isRange ? filterLoop : values[filterLoop]);
               }
-              console.log(
-                'filter runNext onstopped',
-                filterLoop,
-                outputFromMap
-              );
 
               runNext(filterLoop + step);
             },

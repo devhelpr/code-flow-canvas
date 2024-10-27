@@ -43,16 +43,6 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
         }
         if (shouldPush) {
           contextInstance.setVariable(variableName, { push: input }, scopeId);
-          console.log(
-            `pushArrayVariable (scopeId: ${scopeId})`,
-            variableName,
-            input
-          );
-        } else {
-          console.log(
-            'pushArrayVariable : INPUT was empty.. no push!!',
-            variableName
-          );
         }
       }
     }

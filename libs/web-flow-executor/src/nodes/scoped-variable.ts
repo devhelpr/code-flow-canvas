@@ -633,7 +633,7 @@ export const getScopedVariable =
                 canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
                 canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
               }
-              console.log('onChange', node.nodeInfo);
+
               if (updated) {
                 updated();
               }

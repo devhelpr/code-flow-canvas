@@ -42,7 +42,6 @@ export const getNodeTreeVisualizer = (
         ).innerHTML = `<div class="node-tree grid justify-items-center justify-content-center items-start gap-2"></div>`;
       }
     }
-    console.log('execute', payload);
     if (htmlNode) {
       let label = '';
       if (payload?.label) {
@@ -194,7 +193,6 @@ export const getNodeTreeVisualizer = (
   };
 
   const setNodeStatedHandler = (_id: string, data: any) => {
-    console.log('setNodeStatedHandler', data);
     if (timeout) {
       clearTimeout(timeout);
       timeout = undefined;
@@ -211,7 +209,6 @@ export const getNodeTreeVisualizer = (
   };
 
   const updateVisual = (data: any) => {
-    console.log('updateVisual', data);
     if (timeout) {
       clearTimeout(timeout);
       timeout = undefined;

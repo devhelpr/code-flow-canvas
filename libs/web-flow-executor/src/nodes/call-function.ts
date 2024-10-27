@@ -59,7 +59,6 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
       Object.defineProperties(payloadForExpression, {
         [variableName]: {
           get: () => {
-            console.log('get', variableName);
             return canvasAppInstance?.getVariable(
               variableName,
               undefined,
@@ -183,7 +182,6 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
         );
 
         const scopeGuid = crypto.randomUUID();
-        console.log('scope created', scopeGuid);
 
         let isFunctionFound = false;
         canvasAppInstance.elements.forEach((element) => {
@@ -205,31 +203,17 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
                 componentDomElement.classList.add(activeFunctionColor);
                 componentDomElement.classList.remove(defaultFunctionColor);
               }
-              console.log(
-                'callFunction START:',
-                commandName,
-                scopeId,
-                parameterCommands,
-                input
-              );
 
               runNode(
                 element as IRectNodeComponent<NodeInfo>,
                 canvasAppInstance,
                 (inputFunction) => {
-                  console.log('scope removed', scopeGuid);
                   canvasAppInstance?.removeScope(scopeGuid);
                   if (componentDomElement) {
                     componentDomElement.classList.remove(activeFunctionColor);
                     componentDomElement.classList.add(defaultFunctionColor);
                   }
-                  console.log(
-                    'callFunction END:',
-                    commandName,
-                    scopeId,
-                    parameterCommands,
-                    inputFunction
-                  );
+
                   if (
                     ((element as IRectNodeComponent<NodeInfo>).nodeInfo as any)
                       .onFunctionFinished

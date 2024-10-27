@@ -40,11 +40,6 @@ export class RuntimeFlowEngine {
         if (runCounter.runCounter <= 0) {
           console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
           increaseRunIndex();
-        } else {
-          console.log(
-            'setRunCounterResetHandler: runCounter.runCounter > 0',
-            runCounter.runCounter
-          );
         }
       });
       return runCounter;
@@ -105,11 +100,6 @@ export class RuntimeFlowEngine {
             );
             increaseRunIndex();
             resolve(output?.toString() ?? '');
-          } else {
-            console.log(
-              'setRunCounterResetHandler: runCounter.runCounter > 0',
-              runCounter.runCounter
-            );
           }
         });
         runNode(
@@ -145,13 +135,6 @@ export class RuntimeFlowEngine {
           console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
           increaseRunIndex();
           resolve(output?.toString() ?? '');
-        } else {
-          console.log(
-            'setRunCounterResetHandler: runCounter.runCounter > 0',
-            runCounter.runCounter
-          );
-
-          console.log('runCounter', runCounter.runCounter);
         }
       });
       run(

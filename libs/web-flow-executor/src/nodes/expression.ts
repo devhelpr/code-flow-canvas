@@ -132,11 +132,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
 
-      console.log(
-        'compiledExpressionInfo.script',
-        compiledExpressionInfo.script
-      );
-
       let inputAsString =
         typeof input === 'object' ? '' : parseInput(input, inputType);
       let inputAsObject = {};
@@ -174,8 +169,6 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
                 undefined,
                 scopeId
               );
-
-              console.log('get', variableName, getResult);
               return getResult;
             },
             set: (value) => {
@@ -191,11 +184,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         false, // when True ... this fails when expression contains array indexes...
         compiledExpressionInfo.payloadProperties
       );
-      console.log(
-        'expression result',
-        result,
-        compiledExpressionInfo.payloadProperties
-      );
+
       // TODO : isNaN is not always correct .. for example when the output is an array
       //if (expression !== '' && (isNaN(result) || result === undefined)) {
       if (expression !== '' && result === undefined) {

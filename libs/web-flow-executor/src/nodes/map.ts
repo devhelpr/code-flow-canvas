@@ -192,7 +192,6 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
                 return;
               }
               output.push(outputFromMap);
-              console.log('map runNext onstopped', mapLoop, outputFromMap);
 
               runNext(mapLoop + step);
             },

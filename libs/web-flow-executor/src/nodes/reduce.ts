@@ -181,14 +181,8 @@ export const getReduce = (_updated: () => void): NodeTask<NodeInfo> => {
                 return;
               }
               if (outputFromMap) {
-                //output.push(isRange ? filterLoop : values[filterLoop]);
                 accumulator = outputFromMap;
               }
-              console.log(
-                'filter runNext onstopped',
-                filterLoop,
-                outputFromMap
-              );
 
               runNext(toDecimalWithoutFloatErrors(filterLoop + step));
             },

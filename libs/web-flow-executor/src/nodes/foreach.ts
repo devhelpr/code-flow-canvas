@@ -190,12 +190,11 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
-            (inputFromFirstRun: string | any[]) => {
+            (_inputFromFirstRun: string | any[]) => {
               if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
                 reject();
                 return;
               }
-              console.log('runNext onstopped', mapLoop, inputFromFirstRun);
 
               runNext(mapLoop + step);
             },

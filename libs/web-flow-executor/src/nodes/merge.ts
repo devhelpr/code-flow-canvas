@@ -110,9 +110,7 @@ export const getMergeNode: NodeTaskFactory<NodeInfo> = (
       contextInstance.registerTempVariable('a', value1, scopeId);
       contextInstance.registerTempVariable('b', value2, scopeId);
     }
-    console.log('merge', scopeId, value1, value2, {
-      ...contextInstance?.getVariables(scopeId),
-    });
+
     return {
       result: {
         a: value1,

@@ -43,11 +43,6 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
     if (functionName && customFunctionCode) {
       const customFunction = new Function(`return ${customFunctionCode}`);
 
-      console.log(
-        'registering custom function',
-        functionName,
-        customFunction()
-      );
       registerCustomFunction(functionName, [], customFunction() as any);
       setClearExpressionCache();
     }

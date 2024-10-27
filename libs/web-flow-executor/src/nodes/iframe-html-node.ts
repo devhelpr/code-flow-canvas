@@ -24,7 +24,6 @@ function traverseDOMTree(node: Node, compileExpressionAsInfoFunction: any) {
       const matches = childNode.textContent.match(/{{[\s\S]+?}}/gm);
       if (matches) {
         matches.forEach((match) => {
-          console.log('expression', match.slice(2, -2));
           const info = compileExpressionAsInfo(match.slice(2, -2));
           const expressionFunction = (
             new Function('payload', `${info.script}`) as unknown as (
@@ -89,8 +88,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           (divNode.domElement as HTMLElement).innerHTML = `${htmlString}`;
         } else {
           (divNode.domElement as HTMLElement).innerHTML = '';
-          const result = createStructuredExpressionsMarkup(htmlString);
-          console.log('createStructuredExpressionsMarkup result', result);
+          createStructuredExpressionsMarkup(htmlString);
           htmlString = `${htmlString}
             <script>
               window['createElement'] = window.parent['createElement'];
@@ -212,7 +210,6 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   };
 
   const updateVisual = (data: any) => {
-    console.log('updateVisual', data);
     setHTML(data);
   };
 

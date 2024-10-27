@@ -65,12 +65,6 @@ const handleDecoratrs = (
       );
       if (decoratorResult && !decoratorResult.stop && decoratorResult.output) {
         decoratorInput = decoratorResult.output;
-        console.log(
-          `decorator output ${decorator.taskType}`,
-          decoratorInput,
-          'input was',
-          input
-        );
       } else {
         // ? error handling decorators ?
         //return false;
@@ -244,7 +238,6 @@ const triggerExecution = (
                 } else {
                   if (computeResult.stop && computeResult.dummyEndpoint) {
                     lastConnectionExecutionHistory = undefined;
-                    console.log('dummyEndpoint(2)', computeResult.output);
 
                     if (computeResult.output) {
                       resolve({
@@ -388,8 +381,6 @@ const triggerExecution = (
       scopeId,
       runCounter
     );
-  } else {
-    //console.log('expression result', result);
   }
 };
 
@@ -442,7 +433,6 @@ export const runNode = (
 
   const payload = inputPayload ?? getVariablePayload(node, canvasApp);
   if (shouldClearExecutionHistory) {
-    console.log('runNode: clearing connectionExecuteHistory');
     connectionExecuteHistory = [];
   }
   const formInfo = node.nodeInfo as unknown as any;
@@ -480,7 +470,6 @@ export const runNode = (
         followPath = computeResult.followPath;
 
         if (computeResult.dummyEndpoint) {
-          console.log('dummyEndpoint', computeResult.output);
           return;
         }
         if (computeResult.stop) {
@@ -641,7 +630,6 @@ export const run = (
   */
   if (!canvasApp.isContextOnly && shouldResetConnectionSlider) {
     connectionExecuteHistory = [];
-    console.log('run: clear connectionExecuteHistory');
   }
 
   let isRunning = false;
@@ -794,7 +782,6 @@ export const runNodeFromThumb = (
       const payload = getVariablePayload(nextNode, canvasApp, scopeId);
       let result: any = false;
       const formInfo = nextNode.nodeInfo as unknown as any;
-      //console.log('runNodeFromThumb', loopIndex, nextNode);
       if (formInfo && formInfo.computeAsync) {
         if (formInfo.decorators) {
           const decoratorInput = handleDecoratrs(
@@ -912,7 +899,6 @@ export const runNodeFromThumb = (
         result = false;
         followPath = undefined;
       }
-      //console.log('expression result', result);
       if (result === undefined) {
         return {
           result: false,

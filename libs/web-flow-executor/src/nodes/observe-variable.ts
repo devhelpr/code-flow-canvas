@@ -104,7 +104,6 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
             }
           }, 250);
 
-          console.log('observeVariable', value, runCounter);
           if (canvasAppInstance) {
             runNode(
               node,
