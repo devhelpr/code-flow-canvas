@@ -425,7 +425,7 @@ export const animatePathForNodeConnectionPairs = <T>(
       createElement(
         'div',
         {
-          class: `connection-cursor__circle absolute top-0 left-0 z-[1000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded`,
+          class: `connection-cursor__circle absolute top-0 left-0 z-[2000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded`,
           style: {
             'background-color': color,
             'clip-path': 'circle(50%)',
@@ -443,7 +443,7 @@ export const animatePathForNodeConnectionPairs = <T>(
           createElement(
             'div',
             {
-              class: `connection-cursor__message flex text-center truncate-message min-w-0 overflow-hidden z-[1200] pointer-events-none origin-center px-1 bg-white text-black absolute top-[-100px] z-[1000] left-[-50px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
+              class: `connection-cursor__message flex text-center truncate-message min-w-0 overflow-hidden z-[2000] pointer-events-none origin-center px-1 bg-white text-black absolute top-[-100px] z-[2000] left-[-50px] items-center justify-center w-[80px] h-[100px] overflow-hidden`,
               style: {
                 'clip-path':
                   'polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)',
