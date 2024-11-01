@@ -3,7 +3,7 @@
  **/
 import { expect, test, vi } from 'vitest';
 import { flow } from './flows/test-fetch-flow';
-import { FlowEngine } from '../app/flow-engine/flow-engine';
+import { RuntimeFlowEngine } from '@devhelpr/web-flow-executor';
 
 const createFetchResponse = (data: any) => {
   return Promise.resolve({
@@ -20,7 +20,7 @@ describe('fetch node-tytpe flow', () => {
       .fn()
       .mockResolvedValue(createFetchResponse(apiResponse));
 
-    const flowEngine = new FlowEngine();
+    const flowEngine = new RuntimeFlowEngine();
     const outputs: Record<string, any> = {};
     flowEngine.canvasApp.setOnNodeMessage((key: string, inputValue: string) => {
       console.log('output', inputValue);

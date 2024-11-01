@@ -90,7 +90,7 @@ export class RuntimeFlowEngine {
       throw new Error(`Node not found ${nodeId}`);
     }
     if (node.nodeType === NodeType.Shape) {
-      return new Promise<string>((resolve) => {
+      return new Promise<any>((resolve) => {
         const runCounter = new RunCounter();
         let output: any;
         runCounter.setRunCounterResetHandler(() => {
@@ -99,7 +99,7 @@ export class RuntimeFlowEngine {
               'setRunCounterResetHandler: runCounter.runCounter <= 0'
             );
             increaseRunIndex();
-            resolve(output?.toString() ?? '');
+            resolve(output);
           }
         });
         runNode(
@@ -126,7 +126,7 @@ export class RuntimeFlowEngine {
     throw new Error(`Invalid node type ${nodeId} - ${node.nodeType}`);
   }
   private runFlow = (input?: any) => {
-    return new Promise<string>((resolve) => {
+    return new Promise<any>((resolve) => {
       const runCounter = new RunCounter();
       let output: any;
 
@@ -134,7 +134,7 @@ export class RuntimeFlowEngine {
         if (runCounter.runCounter <= 0) {
           console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
           increaseRunIndex();
-          resolve(output?.toString() ?? '');
+          resolve(output);
         }
       });
       run(

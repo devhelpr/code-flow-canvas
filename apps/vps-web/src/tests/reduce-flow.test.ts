@@ -3,11 +3,11 @@
  **/
 import { expect, test, vi } from 'vitest';
 import { flow } from './flows/reduce-flow';
-import { FlowEngine } from '../app/flow-engine/flow-engine';
+import { RuntimeFlowEngine } from '@devhelpr/web-flow-executor';
 
 describe('reduce flow', () => {
   test('runs reduce flow', async () => {
-    const flowEngine = new FlowEngine();
+    const flowEngine = new RuntimeFlowEngine();
     flowEngine.initialize(flow.flows.flow.nodes);
     const result = await flowEngine.run();
     expect(Array.isArray(result)).toBe(false);

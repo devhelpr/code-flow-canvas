@@ -3,11 +3,11 @@
  **/
 import { expect, test } from 'vitest';
 import { flow } from './flows/sort-flow-with-input';
-import { FlowEngine } from '../app/flow-engine/flow-engine';
+import { RuntimeFlowEngine } from '@devhelpr/web-flow-executor';
 
 describe('sort flow with input', () => {
   test('runs sort flow with input', async () => {
-    const flowEngine = new FlowEngine();
+    const flowEngine = new RuntimeFlowEngine();
     flowEngine.initialize(flow.flows.flow.nodes);
     const result = await flowEngine.run([5, 4, 3, 2, 1]);
     console.log('result', result);
