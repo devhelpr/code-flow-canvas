@@ -1,6 +1,6 @@
 {
   "name": "@devhelpr/visual-programming-system",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "type": "commonjs",
   "publishConfig": {
     "access": "public"
