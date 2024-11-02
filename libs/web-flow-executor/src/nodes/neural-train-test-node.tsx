@@ -9,9 +9,9 @@ import {
   BaseNodeInfo,
   ThumbConnectionType,
   ThumbType,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { IRectNodeComponent } from '../../../visual-programming-system/src';
 import { RunCounter } from '../follow-path/run-counter';
 
 const fieldName = 'neural-train-test-node';
@@ -148,7 +148,7 @@ export const getNeuralTrainTestNode =
       },
       {
         hasTitlebar: false,
-        category: 'flow-control',
+        category: 'neural networks',
         hideTitle: true,
         isRectThumb: true,
         isCircleRectThumb: true,

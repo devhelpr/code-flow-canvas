@@ -396,7 +396,7 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralMnistTrainingDataName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

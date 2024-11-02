@@ -100,7 +100,7 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
       // - sum all inputs from previous layer
       // - send sun value as ouput from neural network
 
-      let outputs: number[] = [];
+      const outputs: number[] = [];
       let loop = 0;
       while (loop < currentLayerNodeCount) {
         let sum = 0;
@@ -187,7 +187,7 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralNodeOutputLayerName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

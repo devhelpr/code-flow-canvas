@@ -9,9 +9,9 @@ import {
   createJSXElement,
   IFlowCanvasBase,
   BaseNodeInfo,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { IRectNodeComponent } from '../../../visual-programming-system/src';
 import { RunCounter } from '../follow-path/run-counter';
 import { runNode, getRunIndex } from '../flow-engine/flow-engine';
 
@@ -257,7 +257,7 @@ export const getNeuralNode =
       },
       {
         hasTitlebar: false,
-        category: 'flow-control',
+        category: 'neural networks',
         hideTitle: true,
         isRectThumb: true,
         isCircleRectThumb: true,

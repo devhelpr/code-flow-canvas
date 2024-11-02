@@ -144,7 +144,7 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
 
           const inputs = layerInput.hiddenLayerInputs[currentLayerName];
           for (let i = 0; i < currentLayerNodeCount; i++) {
-            let hiddenInputs = Array.isArray(inputs[0]) ? inputs[i] : inputs;
+            const hiddenInputs = Array.isArray(inputs[0]) ? inputs[i] : inputs;
             for (let j = 0; j < hiddenInputs.length; j++) {
               const deltaWeight =
                 learningRate * weightChangeFactors[i] * hiddenInputs[j];
@@ -167,7 +167,7 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
             }
           }
 
-          let output = {
+          const output = {
             ...(input as unknown as any),
             training: layerInput.training,
             trainingEpoch: layerInput.trainingEpoch,
@@ -215,7 +215,7 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralNodeTrainHiddenLayerName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

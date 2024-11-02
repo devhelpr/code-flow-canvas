@@ -8,9 +8,9 @@ import {
   FormFieldType,
   createJSXElement,
   IFlowCanvasBase,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { IRectNodeComponent } from '../../../visual-programming-system/src';
 import { RunCounter } from '../follow-path/run-counter';
 import { getRunIndex, runNode } from '../flow-engine/flow-engine';
 
@@ -126,7 +126,7 @@ export const getNeuralBiasNode =
       },
       {
         hasTitlebar: false,
-        category: 'flow-control',
+        category: 'neural networks',
         hideTitle: true,
         isRectThumb: true,
         isCircleRectThumb: true,

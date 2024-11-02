@@ -75,7 +75,7 @@ export const getNeuralTestTrainingNode: NodeTaskFactory<NodeInfo> = (
         stop: true,
       };
     }
-    let inputPayload: any = input;
+    const inputPayload: any = input;
     if (inputPayload.test) {
       return {
         result: undefined,
@@ -94,7 +94,7 @@ export const getNeuralTestTrainingNode: NodeTaskFactory<NodeInfo> = (
     };
     if (inputPayload.training) {
       updated();
-      let payload = {
+      const payload = {
         training: 0,
         test: 1,
         ...testData,
@@ -253,7 +253,7 @@ export const getNeuralTestTrainingNode: NodeTaskFactory<NodeInfo> = (
         }
       });
     }
-    let payload = {
+    const payload = {
       training: 1,
       test: 0,
       ...testData,
@@ -269,7 +269,7 @@ export const getNeuralTestTrainingNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralTestTrainingDataName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

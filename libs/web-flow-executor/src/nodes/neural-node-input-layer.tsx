@@ -104,7 +104,7 @@ export const getNeuralNodeInputLayerNode: NodeTaskFactory<NodeInfo> = (
           ) ?? 0;
       }
 
-      let outputs: number[][] = [];
+      const outputs: number[][] = [];
       let loopHidden = 0;
       while (loopHidden < hiddenLayerNodeCount) {
         // loop door alle inputs
@@ -155,7 +155,7 @@ export const getNeuralNodeInputLayerNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralNodeInputLayerName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

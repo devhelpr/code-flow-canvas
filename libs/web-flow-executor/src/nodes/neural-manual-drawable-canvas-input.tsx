@@ -131,7 +131,7 @@ export const getNeuralManualDrawableCanvasNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralManualDrawableCanvasInputNodeName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

@@ -171,7 +171,7 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
               neuralLayer.nodeInfo.formValues['bias'][i] -= deltaBias;
             }
           }
-          let output = {
+          const output = {
             ...(input as unknown as any),
             training: layerInput.training,
             trainingEpoch: layerInput.trainingEpoch,
@@ -219,7 +219,7 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralNodeTrainOutputLayerName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (

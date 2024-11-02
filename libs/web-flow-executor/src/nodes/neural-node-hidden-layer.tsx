@@ -220,7 +220,7 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: neuralNodeHiddenLayerName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'neural networks',
     isContainer: false,
     thumbs,
     createVisualNode: (
