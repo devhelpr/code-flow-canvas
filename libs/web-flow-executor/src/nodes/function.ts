@@ -77,9 +77,7 @@ export const getFunction = (updated: () => void): NodeTask<NodeInfo> => {
           stop: true,
         };
       }
-      console.log('function called', node?.nodeInfo?.formValues?.['node'], {
-        ...payload,
-      });
+
       return {
         result: { ...payload },
       };

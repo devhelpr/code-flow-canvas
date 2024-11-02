@@ -56,7 +56,6 @@ if (url.pathname === '/run-flow') {
             });
 
             resizeObserver.observe(container);
-            console.log('monaco.editor.create', container);
             const editor = monaco.editor.create(container, {
               fixedOverflowWidgets: true,
               value: formField.value.toString(),
@@ -69,8 +68,6 @@ if (url.pathname === '/run-flow') {
             if (editor) {
               editorInstance = editor;
               editor.getModel()?.onDidChangeContent((_event) => {
-                console.log('editor onDidChangeContent', editor.getValue());
-
                 if (formField.onChange && formField.fieldType === 'TextArea') {
                   formField.onChange(editor.getValue(), formComponent);
                 }

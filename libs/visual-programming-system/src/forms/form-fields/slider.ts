@@ -292,12 +292,6 @@ export class SliderFieldChildComponent extends FormFieldComponent<SliderFieldPro
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
           (value) => {
-            console.log(
-              'trackNamedSignal',
-              this.props.formId,
-              this.props.fieldName,
-              value
-            );
             if (this.input) {
               this.input.value = value;
             }

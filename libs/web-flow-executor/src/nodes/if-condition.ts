@@ -208,7 +208,6 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               Mode: value,
             };
-            console.log('onChange', node.nodeInfo);
 
             if (updated) {
               updated();
@@ -228,7 +227,6 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               expression: value,
             };
             jsxComponentWrapper.domElement.textContent = value;
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -253,7 +251,6 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               inputType: value,
             };
-            console.log('onChange', node.nodeInfo);
 
             if (updated) {
               updated();
@@ -283,20 +280,16 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         //}) as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
 
-      console.log('trackNamedSignal register if-condition', id);
-
       let currentMode = 'expression';
       let currentValue = initialExpressionValue ?? '';
 
       trackNamedSignal(`${id}_Mode`, (value) => {
-        console.log('trackNamedSignal if-condition', id, value);
         currentMode = value;
         jsxComponentWrapper.domElement.textContent =
           currentMode === 'random' ? 'random' : currentValue ?? 'expression';
       });
 
       trackNamedSignal(`${id}_expression`, (value) => {
-        console.log('trackNamedSignal if-condition', id, value);
         currentValue = value;
         jsxComponentWrapper.domElement.textContent =
           currentMode === 'random' ? 'random' : currentValue ?? 'expression';

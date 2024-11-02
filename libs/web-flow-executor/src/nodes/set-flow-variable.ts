@@ -35,7 +35,6 @@ export const setFlowVariable: NodeTaskFactory<NodeInfo> = (
   ) => {
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setFlowVariable', variableName, input);
       if (variableName) {
         setFlowVariableByScope(variableName, input, scopeId);
       }
@@ -91,7 +90,6 @@ export const setFlowVariable: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

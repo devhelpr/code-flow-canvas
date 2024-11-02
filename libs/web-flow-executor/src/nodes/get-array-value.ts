@@ -129,7 +129,6 @@ export const getArrayValueByIndex: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

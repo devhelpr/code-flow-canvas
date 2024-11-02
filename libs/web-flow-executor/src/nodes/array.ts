@@ -191,7 +191,6 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
           const [index1, index2] = args
             .split(',')
             .map((x) => runCommandParameterExpression(x, loopIndex, scopeId));
-          console.log('swap', index1, index2);
           try {
             const temp = inputValues.at(index1);
             const temp2 = inputValues.at(index2);
@@ -211,11 +210,10 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
             console.log('error swapping indexes', e);
           }
         } else {
-          console.log('unknown command', command, args);
+          //
         }
       }
 
-      console.log('processCommand', input, match);
       resolve(true);
     });
   };
@@ -242,7 +240,6 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
       Object.defineProperties(payloadForExpression, {
         [variableName]: {
           get: () => {
-            console.log('get', variableName);
             return canvasAppInstance?.getVariable(
               variableName,
               undefined,
@@ -307,7 +304,6 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     const previousOutput = [...inputValues];
     if (!isCommmand(input)) {
       pushValueToArray(input);
-      console.log('array', [...inputValues]);
     }
     return new Promise((resolve) => {
       if (isCommmand(input)) {

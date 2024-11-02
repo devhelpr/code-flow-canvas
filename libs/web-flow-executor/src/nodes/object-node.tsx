@@ -109,7 +109,6 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
     }
     const outputObject: any = {};
     const resetOnTrigger = node.nodeInfo?.formValues?.['clearMode'] === true;
-    console.log('resetOnTrigger', resetOnTrigger);
     loop = 0;
     while (loop < extraInputCount) {
       const currentObject = localValues[`input${loop}`];

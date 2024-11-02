@@ -114,12 +114,6 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
           trackNamedSignal(
             `${this.props.formId}_${this.props.fieldName}`,
             (value) => {
-              console.log(
-                'trackNamedSignal',
-                this.props.formId,
-                this.props.fieldName,
-                value
-              );
               if (this.textarea) {
                 this.textarea.value = value;
               }
@@ -147,14 +141,13 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
   }
 
   public override setValue(value: string): void {
-    console.log('setValue textarea', value, this.textarea);
     if (!this.textarea) return;
     this.textarea.value = value;
   }
 
   onInput = (event: Event) => {
     const input = event.target as HTMLInputElement;
-    console.log(input.value);
+
     if (this.props.onChange) {
       this.props.onChange(input.value);
     }

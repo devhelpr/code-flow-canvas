@@ -163,7 +163,6 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
             variableName = value;
             setupObserveVariable();
 
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -215,8 +214,8 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
           id: id ?? '',
           formElements,
           hasSubmitButton: false,
-          onSave: (formValues) => {
-            console.log('onSave', formValues);
+          onSave: (_formValues) => {
+            //
           },
         }) as unknown as HTMLElement;
       }

@@ -80,7 +80,6 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
           node.thumbConnectors[thumbIndex + 1],
           canvasAppInstance,
           (inputFromRun: string | any[]) => {
-            console.log('Sequential inputFromRun', inputFromRun);
             sequentialRunIndex++;
             if (sequentialRunIndex < sequentialRunCount) {
               runAdditionalOutputThumb(
@@ -117,8 +116,7 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
       runNodeFromThumb(
         node.thumbConnectors[0],
         canvasAppInstance,
-        (inputFromFirstRun: string | any[]) => {
-          console.log('Sequential inputFromFirstRun', inputFromFirstRun);
+        (_inputFromFirstRun: string | any[]) => {
           if (
             !node.thumbConnectors ||
             node.thumbConnectors.length < 2 ||
@@ -141,10 +139,6 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
                   runCounter
                 );
               } else {
-                console.log(
-                  'Sequential inputFromSecondRun',
-                  inputFromSecondRun
-                );
                 resolve({
                   result: inputFromSecondRun,
                   output: inputFromSecondRun,

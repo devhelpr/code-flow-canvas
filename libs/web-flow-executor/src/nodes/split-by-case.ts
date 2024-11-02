@@ -47,16 +47,6 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
       const case1 = node?.nodeInfo?.formValues?.['case1'] ?? '';
       const case2 = node?.nodeInfo?.formValues?.['case2'] ?? '';
       const case3 = node?.nodeInfo?.formValues?.['case3'] ?? '';
-      console.log(
-        'input',
-        inputAsString,
-        'case1',
-        case1,
-        'case2',
-        case2,
-        'case3',
-        case3
-      );
 
       let thumbNode: IThumbNodeComponent<NodeInfo> | undefined = undefined;
       if (input !== 'true') {
@@ -190,8 +180,8 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
         id: id ?? '',
         formElements,
         hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
+        onSave: (_formValues) => {
+          //
         },
       }) as unknown as HTMLElement;
       const rect = canvasApp.createRect(

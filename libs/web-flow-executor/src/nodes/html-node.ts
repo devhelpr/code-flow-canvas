@@ -83,7 +83,6 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   //   });
   // };
   const setHTML = (value: string) => {
-    console.log('setHTML', value);
     try {
       const splitted = (value ?? '').toString().split(':');
       if (splitted.length === 2) {
@@ -114,11 +113,6 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
               input: value,
             }
           );
-          console.log(
-            'compiledMarkup',
-            compiledMarkup,
-            structuredMarkup.expressions
-          );
         }
       }
       if (astElement && structuredMarkup) {
@@ -128,7 +122,6 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
         // If the object represents a property, it sets the property on the `domElement` of the `element` object. If the property name is 'class', it assigns the `resultContent` to the `className` of the `domElement`. For other properties, it uses the `setAttribute` method.
         // If the object represents a text node, it sets the `textContent` of the `domElement` to `resultContent`.
         Object.entries(structuredMarkup.expressions).forEach((entry) => {
-          console.log('entry', entry);
           const info = entry[1] as {
             expressionFunction: (payload?: object) => any;
             value: string;
@@ -143,7 +136,6 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             let resultContent = info.value;
             matches.map((match) => {
               const result = info.expressionFunction(variables);
-              console.log('result', result, match);
               if (result !== false && result !== undefined) {
                 //resultContent.replace(match, result);
 
@@ -169,11 +161,6 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
               }
             });
             if (info.isProperty) {
-              console.log(
-                'info.propertyName',
-                info.propertyName,
-                resultContent
-              );
               if (info.propertyName === 'class') {
                 (info.element.domElement as HTMLElement).className =
                   resultContent;
@@ -236,12 +223,10 @@ export const getHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
             if (!node.nodeInfo) {
               return;
             }
-            console.log('html-node onchange', value);
             node.nodeInfo.formValues = {
               ...node.nodeInfo.formValues,
               html: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               astElement = undefined;
               setHTML('');

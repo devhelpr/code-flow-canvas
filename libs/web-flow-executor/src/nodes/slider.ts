@@ -137,16 +137,12 @@ export const getSlider =
                 if (!canvasAppInstance) {
                   return;
                 }
-                console.log('start()');
 
                 runNode(
                   node as unknown as IRectNodeComponent<NodeInfo>,
                   canvasAppInstance,
                   () => {
-                    console.log(
-                      'STOPPED RUN-NODE from slider',
-                      currentRunCounter?.runCounter === 0
-                    );
+                    //
                   },
                   currentValue.toString(),
                   undefined,

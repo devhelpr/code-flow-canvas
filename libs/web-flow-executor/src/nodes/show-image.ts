@@ -94,7 +94,6 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
       // }
       (htmlNode.domElement as HTMLElement).removeAttribute('style');
       Object.assign((htmlNode.domElement as HTMLElement).style, result.styling);
-      console.log('setStyling', result.styling);
       stylingCache = result.styling;
     } catch (error) {
       console.log('Error in setStyling', error);
@@ -197,7 +196,6 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
   };
 
   const updateVisual = (data: any) => {
-    console.log('updateVisual', data);
     if (htmlNode && htmlNode.domElement) {
       if (typeof data === 'object' && (data as any).value) {
         const result = getStyling((data as any).value);
@@ -278,7 +276,6 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               styling: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               setStyling('');
               updated();

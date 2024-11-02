@@ -124,11 +124,6 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
               reject();
               return;
             }
-            console.log(
-              'runNext onstopped resultFromTestRun',
-              mapLoop,
-              resultFromTestRun
-            );
 
             const test =
               (typeof resultFromTestRun === 'boolean' && resultFromTestRun) ||
@@ -149,7 +144,7 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
               runNodeFromThumb(
                 node.thumbConnectors[3],
                 canvasAppInstance,
-                (resultFromLoopBlock: string | any[]) => {
+                (_resultFromLoopBlock: string | any[]) => {
                   if (
                     !node.thumbConnectors ||
                     node.thumbConnectors.length < 2
@@ -157,11 +152,6 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
                     reject();
                     return;
                   }
-                  console.log(
-                    'runNext onstopped resultFromLoopBlock',
-                    mapLoop,
-                    resultFromLoopBlock
-                  );
 
                   runNext(mapLoop + step);
                 },

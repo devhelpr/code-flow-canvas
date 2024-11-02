@@ -37,7 +37,6 @@ export const resetVariable: NodeTaskFactory<NodeInfo> = (
   ) => {
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('resetVariable', variableName, input);
       if (variableName) {
         contextInstance.setVariable(variableName, 0, scopeId, runCounter);
       }
@@ -108,7 +107,6 @@ export const resetVariable: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

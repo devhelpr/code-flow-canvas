@@ -39,14 +39,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
   };
   const compute = (input: string | any[]) => {
     inputValues = typeof input === 'object' ? input : {};
-    // console.log(
-    //   'show-object',
-    //   inputValues,
-    //   node.nodeInfo?.formValues['name'],
-    //   node.nodeInfo,
-    //   canvasAppInstance,
-    //   canvasAppInstance?.sendMessageFromNode
-    // );
+
     if (node.nodeInfo?.formValues['name']) {
       canvasAppInstance?.sendMessageFromNode(
         node.nodeInfo?.formValues['name'],
@@ -58,16 +51,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
       hasInitialValue = false;
     }
     if (htmlNode) {
-      //console.log('visualize object', inputValues);
       updateVisual(inputValues);
-      // htmlNode.domElement.textContent = JSON.stringify(
-      //   inputValues,
-      //   null,
-      //   2
-      // ).toString();
-      // if (rect) {
-      //   rect.resize(240);
-      // }
     }
     return {
       result: { ...inputValues },

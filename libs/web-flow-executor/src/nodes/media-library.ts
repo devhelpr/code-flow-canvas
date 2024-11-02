@@ -31,7 +31,6 @@ export const getMediaLibraryNode: NodeTaskFactory<NodeInfo> = (
       const mediaLibrary = contextInstance.getMediaLibrary();
       if (mediaLibrary) {
         mediaFiles.forEach((value: any) => {
-          console.log('store media', value);
           mediaLibrary.storeFile(value.mediaCodeName, value.mediaFile);
         });
       }
@@ -94,12 +93,10 @@ export const getMediaLibraryNode: NodeTaskFactory<NodeInfo> = (
               const mediaLibrary = contextInstance.getMediaLibrary();
               if (mediaLibrary) {
                 mediaFiles.forEach((mediaFile) => {
-                  console.log('delete media', mediaFile);
                   mediaLibrary.deleteFile(mediaFile.codeFileName);
                 });
 
                 values.forEach((value: any) => {
-                  console.log('store media', value);
                   mediaLibrary.storeFile(value.mediaCodeName, value.mediaFile);
                 });
               }

@@ -62,7 +62,6 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
 
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
         contextInstance.initializeVariableDataStructure(
           variableName,
@@ -157,7 +156,6 @@ export const initializeGridVariable: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

@@ -107,9 +107,7 @@ export const getCreateEventStateValueNode: NodeTaskFactory<NodeInfo> = (
       contextInstance.registerTempVariable('state-value', stateEvent, scopeId);
       contextInstance.registerTempVariable('value', value, scopeId);
     }
-    console.log('state-value', scopeId, stateEvent, value, {
-      ...contextInstance?.getVariables(scopeId),
-    });
+
     return {
       result: {
         stateEvent: stateEvent,

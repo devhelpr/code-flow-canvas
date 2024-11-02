@@ -36,8 +36,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         runNodeFromThumb(
           node.thumbConnectors![0],
           canvasAppInstance!,
-          (inputFromLoadingRun: string | any[]) => {
-            console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
+          (_inputFromLoadingRun: string | any[]) => {
             resolve({
               result: false,
               followPath: undefined,
@@ -56,8 +55,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         runNodeFromThumb(
           node.thumbConnectors![2],
           canvasAppInstance!,
-          (inputFromLoadingRun: string | any[]) => {
-            console.log('Fetch inputFromLoadingRun', inputFromLoadingRun);
+          (_inputFromLoadingRun: string | any[]) => {
+            //
           },
           state,
           node,
@@ -70,8 +69,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         runNodeFromThumb(
           node.thumbConnectors![1],
           canvasAppInstance!,
-          (inputFromErrorgRun: string | any[]) => {
-            console.log('Fetch inputFromErrorgRun', inputFromErrorgRun);
+          (_inputFromErrorgRun: string | any[]) => {
             resolve({
               result: false,
               followPath: undefined,
@@ -183,8 +181,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       const url = initalValues?.['url'] ?? '';
-      console.log('createVisualNode createNamedSignal', url, id);
-      //createNamedSignal(id + '_' + 'Expression', expression ?? '');
+
       canvasAppInstance = canvasApp;
       const formElements = [
         {
@@ -199,7 +196,6 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               url: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

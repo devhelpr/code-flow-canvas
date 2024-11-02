@@ -41,7 +41,7 @@ export const getNeuralManualDrawableCanvasNode: NodeTaskFactory<NodeInfo> = (
   let canvasContext: CanvasRenderingContext2D | null = null;
   let canvasElement: HTMLCanvasElement | null = null;
   let inputElement: HTMLInputElement | null = null;
-  let paint: boolean = false;
+  let paint = false;
   let clickX: number[] = [];
   let clickY: number[] = [];
   let clickDrag: boolean[] = [];
@@ -83,14 +83,13 @@ export const getNeuralManualDrawableCanvasNode: NodeTaskFactory<NodeInfo> = (
     //   total += value;
     // });
     // console.log('total', total, clickX, clickY);
-    let outputImageData: number[] = Array(28 * 28).fill(0);
+    const outputImageData: number[] = Array(28 * 28).fill(0);
     for (let i = 0; i < clickX.length; ++i) {
       const x = clickX[i];
       const y = clickY[i];
       const index = y * 28 + x;
       outputImageData[index] = 1;
     }
-    console.log('outputImageData', outputImageData);
     const label = parseInt(inputElement!.value) ?? 0;
     const expectedOutput = Array(10).fill(0);
     expectedOutput[label] = 1;
@@ -181,15 +180,7 @@ export const getNeuralManualDrawableCanvasNode: NodeTaskFactory<NodeInfo> = (
               mouseY -= bounds.top;
               mouseX /= camera.scale;
               mouseY /= camera.scale;
-              console.log(
-                'mousedown',
-                mouseX,
-                mouseY,
-                canvasElement.clientTop,
-                canvasElement.clientLeft,
-                camera.scale,
-                bounds
-              );
+
               paint = true;
               addClick(mouseX, mouseY, false);
               redraw();

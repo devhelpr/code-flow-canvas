@@ -55,7 +55,6 @@ export const getState: NodeTaskFactory<NodeInfo> = (
             };
             nodeComponent.domElement.textContent =
               node.nodeInfo.formValues['caption'] ?? 'State';
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

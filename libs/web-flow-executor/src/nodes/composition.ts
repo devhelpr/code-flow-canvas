@@ -122,7 +122,6 @@ export const getCreateCompositionNode =
       );
     };
     const initializeCompute = () => {
-      console.log('initializeCompute composition');
       composition = undefined;
 
       // TODO : properly destroy current contextCanvasApp before creating a new one

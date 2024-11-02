@@ -135,8 +135,8 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
       // - send activation value to next layers multiplied by weight per layer
       // - add bias weight
 
-      let hiddenNodeOutputs: number[] = [];
-      let weightedOutputs: number[][] = [];
+      const hiddenNodeOutputs: number[] = [];
+      const weightedOutputs: number[][] = [];
       let loop = 0;
       while (loop < currentLayerNodeCount) {
         // loop door alle nodes in de hidden layer

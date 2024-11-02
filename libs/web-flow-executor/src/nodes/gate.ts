@@ -152,7 +152,6 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
               ...node?.nodeInfo?.formValues,
               Mode: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -170,7 +169,6 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               expression: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -194,20 +192,16 @@ export const getGate: NodeTaskFactory<NodeInfo> = (
         initialExpressionValue ?? 'expression'
       ) as unknown as INodeComponent<NodeInfo>;
 
-      console.log('trackNamedSignal register gate', id);
-
       let currentMode = 'expression';
       let currentValue = initialExpressionValue ?? '';
 
       trackNamedSignal(`${id}_Mode`, (value) => {
-        console.log('trackNamedSignal gate', id, value);
         currentMode = value;
         jsxComponentWrapper.domElement.textContent =
           currentMode === 'random' ? 'random' : currentValue ?? 'expression';
       });
 
       trackNamedSignal(`${id}_expression`, (value) => {
-        console.log('trackNamedSignal gaten', id, value);
         currentValue = value;
         jsxComponentWrapper.domElement.textContent =
           currentMode === 'random' ? 'random' : currentValue ?? 'expression';

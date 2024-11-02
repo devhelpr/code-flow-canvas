@@ -38,7 +38,6 @@ export class RuntimeFlowEngine {
       const runCounter = new RunCounter();
       runCounter.setRunCounterResetHandler(() => {
         if (runCounter.runCounter <= 0) {
-          console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
           increaseRunIndex();
         }
       });
@@ -95,9 +94,6 @@ export class RuntimeFlowEngine {
         let output: any;
         runCounter.setRunCounterResetHandler(() => {
           if (runCounter.runCounter <= 0) {
-            console.log(
-              'setRunCounterResetHandler: runCounter.runCounter <= 0'
-            );
             increaseRunIndex();
             resolve(output);
           }
@@ -106,7 +102,6 @@ export class RuntimeFlowEngine {
           node as IRectNodeComponent<NodeInfo>,
           this.canvasApp,
           (input) => {
-            console.log('run finished', input);
             output = input;
           },
           input,
@@ -132,7 +127,6 @@ export class RuntimeFlowEngine {
 
       runCounter.setRunCounterResetHandler(() => {
         if (runCounter.runCounter <= 0) {
-          console.log('setRunCounterResetHandler: runCounter.runCounter <= 0');
           increaseRunIndex();
           resolve(output);
         }
@@ -141,7 +135,6 @@ export class RuntimeFlowEngine {
         this.canvasApp?.elements,
         this.canvasApp,
         (input) => {
-          console.log('run finished', input);
           output = input;
         },
         input,

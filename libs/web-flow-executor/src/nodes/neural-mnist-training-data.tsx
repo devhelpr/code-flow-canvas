@@ -367,7 +367,6 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
           nodeHTMLElement.innerHTML = 'MNist loaded';
         }
 
-        console.log('mnistDigits', mnist);
         const inputData: any = {
           inputs: mnist.structuredData.shuffledData[0].input,
           expectedOutput: mnist.structuredData.shuffledData[0].expectedOutput,

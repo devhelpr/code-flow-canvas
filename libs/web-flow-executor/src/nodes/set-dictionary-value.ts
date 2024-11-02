@@ -59,7 +59,6 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
 
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
         contextInstance.setVariable(
           variableName,
@@ -153,7 +152,6 @@ export const setDictionaryVariable: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

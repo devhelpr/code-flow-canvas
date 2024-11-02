@@ -27,7 +27,7 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
   };
 
   const compute = (
-    input: string,
+    _input: string,
     _loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
@@ -43,7 +43,6 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
           followPath: undefined,
         };
       }
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
         const data = contextInstance.getVariableInfo(variableName, scopeId);
         if (data && data.data) {
@@ -124,7 +123,6 @@ export const getDictionarySize: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

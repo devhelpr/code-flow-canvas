@@ -73,7 +73,6 @@ export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
         node.thumbConnectors[0],
         canvasAppInstance,
         (inputFromFirstRun: string | any[]) => {
-          console.log('Parallel inputFromFirstRun', inputFromFirstRun);
           if (!node.thumbConnectors || node.thumbConnectors.length < 2) {
             reject();
             return;
@@ -101,7 +100,6 @@ export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
         canvasAppInstance,
         (inputFromSecondRun: string | any[]) => {
           seq2Ran = true;
-          console.log('Parallel inputFromSecondRun', inputFromSecondRun);
 
           if (seq1Ran && parallelRunCount === 0) {
             resolve({
@@ -132,7 +130,6 @@ export const getParallel = (updated: () => void): NodeTask<NodeInfo> => {
             canvasAppInstance,
             (inputFromRun: string | any[]) => {
               parallelRunCount--;
-              console.log('Parallel inputFromRun', inputFromRun);
 
               if (seq1Ran && seq2Ran && parallelRunCount === 0) {
                 resolve({

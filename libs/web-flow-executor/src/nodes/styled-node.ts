@@ -43,7 +43,6 @@ export const getStyledNode = (updated: () => void): NodeTask<NodeInfo> => {
       }
       (divNode.domElement as HTMLElement).removeAttribute('style');
       Object.assign((divNode.domElement as HTMLElement).style, styling);
-      console.log('setStyling', styling);
       //stylingCache = styling;
     } catch (error) {
       console.log('Error in setStyling', error);

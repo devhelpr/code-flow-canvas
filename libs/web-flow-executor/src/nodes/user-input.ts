@@ -137,7 +137,6 @@ export const getUserInput =
               const dot = decimalCount === 0 ? '' : '[.,]?';
               const regex = new RegExp(`^-?(\\d+(?:${dot}\\d{${min},${max}}))`);
               if (!regex.test(value)) {
-                console.log('regex.test(value) failed', value);
                 return;
               } else {
                 const matches = value.match(regex);
@@ -148,10 +147,8 @@ export const getUserInput =
                   inputElement.value = matches[0];
 
                   value = matches[0];
-                  console.log('matches', matches[0], min, max, dot, value);
                 }
               }
-              console.log('onChange user-input', node.nodeInfo);
               const tempValue = parseStringToFloat(value);
               if (isNaN(tempValue)) {
                 return;
@@ -398,13 +395,11 @@ export const getUserInput =
             const dot = decimalCount === 0 ? '' : '[.,]?';
             const regex = new RegExp(`^-?(\\d+(?:${dot}\\d{${min},${max}}))`);
             if (!regex.test(value)) {
-              console.log('regex.test(value) failed', value);
               return;
             } else {
               const matches = value.match(regex);
               if (matches) {
                 value = matches[0];
-                console.log('matches', matches[0], min, max, dot, value);
               }
             }
             const tempValue = parseStringToFloat(value);

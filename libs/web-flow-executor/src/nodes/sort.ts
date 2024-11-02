@@ -82,7 +82,6 @@ export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
           foreachComponent.domElement.textContent = `${title} ${mapLoop}/${forEachLength}`;
         }
         if (mapLoop < forEachLength) {
-          //console.log('runNext', mapLoop, values[mapLoop]);
           runNodeFromThumb(
             node.thumbConnectors[1],
             canvasAppInstance,
@@ -95,7 +94,6 @@ export const getSort = (_updated: () => void): NodeTask<NodeInfo> => {
                 index: mapLoop,
                 sortValue: outputFromMap,
               });
-              console.log('map runNext onstopped', mapLoop, outputFromMap);
 
               runNext(mapLoop + step);
             },

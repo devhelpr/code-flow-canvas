@@ -122,7 +122,6 @@ export const getTimer = (updated: () => void): NodeTask<NodeInfo> => {
       containerNode?: IRectNodeComponent<NodeInfo>
     ) => {
       canvasAppInstance = canvasApp;
-      console.log('initalValues timer', initalValues);
       const initialValue = initalValues?.['timer'] || initialTimer.toString();
 
       const formElements = [

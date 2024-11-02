@@ -74,7 +74,6 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
   function imageDataFromSource(image: HTMLImageElement) {
     //const image = Object.assign(new Image(), { src: source });
     //await new Promise(resolve => image.addEventListener('load', () => resolve()));
-    console.log('imageDataFromSource', image.width, image.height);
     const context = Object.assign(document.createElement('canvas'), {
       width: image.width,
       height: image.height,
@@ -93,7 +92,6 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
     canvas.height = imagedata.height;
     const context = canvas.getContext('2d');
     context!.imageSmoothingEnabled = false;
-    console.log('imagedataToImage', imagedata.width, imagedata.height);
 
     context!.putImageData(imagedata, 0, 0);
 

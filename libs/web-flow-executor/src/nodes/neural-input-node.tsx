@@ -9,9 +9,9 @@ import {
   IFormsComponent,
   createJSXElement,
   IFlowCanvasBase,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-import { IRectNodeComponent } from '../../../visual-programming-system/src';
 import { RunCounter } from '../follow-path/run-counter';
 import { getRunIndex, runNode } from '../flow-engine/flow-engine';
 
@@ -105,7 +105,6 @@ export const getNeuralInputNode =
                 return;
               }
               element.textContent = floatValue.toString();
-              console.log('onChange', nodeComponent.nodeInfo);
 
               // TODO : trigger flow from this node
 
@@ -149,7 +148,6 @@ export const getNeuralInputNode =
                 ...nodeComponent.nodeInfo.formValues,
                 ['neural-node-name']: value,
               };
-              console.log('onChange', nodeComponent.nodeInfo);
               if (updated) {
                 updated();
               }

@@ -47,7 +47,6 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
       Object.defineProperties(payloadForExpression, {
         [variableName]: {
           get: () => {
-            console.log('get', variableName);
             return canvasAppInstance?.getVariable(variableName, scopeId);
           },
           set: (value) => {
@@ -133,7 +132,6 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               command: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }
@@ -154,8 +152,8 @@ export const getSendCommand: NodeTaskFactory<NodeInfo> = (
         id: id ?? '',
         formElements,
         hasSubmitButton: false,
-        onSave: (formValues) => {
-          console.log('onSave', formValues);
+        onSave: (_formValues) => {
+          //
         },
       }) as unknown as HTMLElement;
 

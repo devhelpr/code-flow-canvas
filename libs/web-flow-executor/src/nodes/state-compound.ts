@@ -75,7 +75,6 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
                 node.nodeInfo.formValues['caption'] ?? 'State';
             }
 
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

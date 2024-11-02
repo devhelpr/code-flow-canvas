@@ -56,7 +56,6 @@ export const getStateTransition: NodeTaskFactory<NodeInfo> = (
             };
             nodeComponent.domElement.textContent =
               node.nodeInfo.formValues['caption'] ?? 'Transition';
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

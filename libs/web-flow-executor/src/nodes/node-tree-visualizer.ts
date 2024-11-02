@@ -146,14 +146,7 @@ export const getNodeTreeVisualizer = (
           ).getBoundingClientRect();
           if (boundingBox && node && nodeBoundngBox) {
             const camera = getCamera();
-            // console.log(
-            //   'boundingBox.left',
-            //   // boundingBox.left,
-            //   // nodeBoundngBox.left,
-            //   camera.scale,
-            //   boundingBox.left / camera.scale -
-            //     nodeBoundngBox.left / camera.scale
-            // );
+
             const offsetX =
               boundingBox.left / camera.scale -
               nodeBoundngBox.left / camera.scale +
@@ -170,7 +163,6 @@ export const getNodeTreeVisualizer = (
     }
     if (rect && rect.resize) {
       rect.resize();
-      //console.log('resize visualization');
     }
   };
 
@@ -322,7 +314,7 @@ export const getNodeTreeVisualizer = (
               canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
               canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
             }
-            //console.log('onChange', node.nodeInfo);
+
             if (updated) {
               updated();
             }

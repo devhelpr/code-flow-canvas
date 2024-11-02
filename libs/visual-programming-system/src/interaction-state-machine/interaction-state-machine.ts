@@ -216,7 +216,6 @@ export const createInteractionStateMachine = <
   };
 
   const clearDropTarget = (dropTarget: INodeComponent<T>) => {
-    console.log('clearDropTarget', currentDropTarget?.id, dropTarget.id);
     if (currentDropTarget && currentDropTarget.id === dropTarget.id) {
       currentDropTarget = undefined;
     }

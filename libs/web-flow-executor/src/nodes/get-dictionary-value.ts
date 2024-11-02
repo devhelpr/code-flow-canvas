@@ -43,7 +43,6 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
     let data: any = '';
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      console.log('setDictionaryVariable', variableName, input);
       if (variableName) {
         data = contextInstance.getVariable(variableName, input, scopeId);
       }
@@ -115,7 +114,6 @@ export const getDictionaryVariable: NodeTaskFactory<NodeInfo> = (
               ...node.nodeInfo.formValues,
               [fieldName]: value,
             };
-            console.log('onChange', node.nodeInfo);
             if (updated) {
               updated();
             }

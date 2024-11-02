@@ -276,7 +276,7 @@ export const getShowValue: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.compileInfo = {
           getCode: (input: any) => {
             return `\
-((input) => {console.log(input);\
+((input) => {\
 return ${input ? input : '""'};})(${input ? input : '""'});\
 `;
           },

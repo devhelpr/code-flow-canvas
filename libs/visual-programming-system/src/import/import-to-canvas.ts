@@ -23,7 +23,6 @@ export const importToCanvas = <T extends BaseNodeInfo>(
   getNodeTaskFactory?: (name: string) => NodeTaskFactory<T>,
   onImported?: () => void
 ) => {
-  console.log('importToCanvas', nestedLevel);
   nodesList.forEach((node) => {
     if (getNodeTaskFactory && node.nodeType === NodeType.Shape) {
       const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
@@ -278,11 +277,6 @@ export const importToCanvas = <T extends BaseNodeInfo>(
         });
         if (startElement) {
           start = startElement[1] as unknown as IRectNodeComponent<T>;
-        } else {
-          console.log(
-            'import-to-canvas: create connection : no node.startNodeId found',
-            node.startNodeId
-          );
         }
       }
       if (node.endNodeId) {
@@ -292,11 +286,6 @@ export const importToCanvas = <T extends BaseNodeInfo>(
         });
         if (endElement) {
           end = endElement[1] as unknown as IRectNodeComponent<T>;
-        } else {
-          console.log(
-            'import-to-canvas: create connection : no node.endNodeId found',
-            node.endNodeId
-          );
         }
       }
       let c1x = 0;
@@ -311,13 +300,13 @@ export const importToCanvas = <T extends BaseNodeInfo>(
         c2y = node.controlPoints[1].y ?? 0;
       }
 
-      if (!start) {
-        console.log('import-to-canvas: create connection : no start');
-      }
+      // if (!start) {
+      //   console.log('import-to-canvas: create connection : no start');
+      // }
 
-      if (!end) {
-        console.log('import-to-canvas: create connection : no end');
-      }
+      // if (!end) {
+      //   console.log('import-to-canvas: create connection : no end');
+      // }
       const curve =
         node.lineType === 'Straight'
           ? canvasApp.createLine(
@@ -359,7 +348,6 @@ export const importToCanvas = <T extends BaseNodeInfo>(
             );
 
       if (!curve.nodeComponent) {
-        console.log('import-to-canvas: no curve.nodeComponent');
         return;
       }
       curve.nodeComponent.isControlled = true;
