@@ -209,11 +209,17 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
         maxConnections: 1,
       },
     ],
-    (values?: InitialValues) => {
+    (_idvalues?: InitialValues) => {
+      return [];
+    },
+    (nodeInstance) => {
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+      const values = node?.nodeInfo?.formValues;
       const formElements = [
         {
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
+          label: 'Message test',
           value: values?.[fieldName] ?? '',
           settings: {
             showLabel: true,
@@ -234,12 +240,15 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
         },
         {
           fieldType: FormFieldType.Array,
-          fieldName: fieldName,
-          value: values?.[fieldName] ?? '',
-          values: (values?.[formControlsfieldName] ?? []) as Record<
+          fieldName: formControlsfieldName,
+          value: (values?.[formControlsfieldName] ?? []) as Record<
             string,
             string
           >[],
+          // values: (values?.[formControlsfieldName] ?? []) as Record<
+          //   string,
+          //   string
+          // >[],
           settings: {
             showLabel: true,
           },
@@ -270,11 +279,17 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
           },
         },
       ];
-      return formElements;
-    },
-    (nodeInstance) => {
-      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+
       canvasAppInstance = nodeInstance.contextInstance;
+      if (node.nodeInfo) {
+        node.nodeInfo.formElements = formElements;
+        node.nodeInfo.formValues = {
+          ...node.nodeInfo.formValues,
+          [fieldName]: values?.[fieldName] ?? '',
+          [formControlsfieldName]: values?.[formControlsfieldName] ?? [],
+        };
+        node.nodeInfo.isSettingsPopup = true;
+      }
     },
     {
       hasTitlebar: false,
@@ -282,6 +297,7 @@ export const dialogFormNode = (updated: () => void): NodeTask<NodeInfo> => {
       childNodeWrapperClass: 'flex w-full h-full p-[16px]',
       additionalClassNames: 'text-center',
       hasStaticWidthHeight: true,
+      hasSettingsPopup: true,
     },
     dialogNodeElement,
     true

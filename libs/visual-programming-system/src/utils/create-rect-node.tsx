@@ -439,6 +439,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     additionalClassNames?: string;
     additionalInnerNodeClassNames?: string;
     hasFormInPopup?: boolean;
+    hasSettingsPopup?: boolean;
     hasStaticWidthHeight?: boolean;
     decoratorTitle?: string;
     category?: string;
@@ -545,8 +546,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
       const nodeInstance = createRectNode<T>(
         nodeTypeName,
         title,
-
-        formElements,
+        settings?.hasSettingsPopup ? [] : formElements,
         x,
         y,
         width,

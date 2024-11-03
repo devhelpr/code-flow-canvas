@@ -42,7 +42,7 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
   constructor(parent: BaseComponent | null, props: ArrayFieldProps) {
     super(parent, props);
     this.fieldName = props.fieldName;
-    this.values = props.values.map((value) => {
+    this.values = (props.values ?? []).map((value) => {
       return { id: crypto.randomUUID(), arrayItems: value };
     });
     this.template = createTemplate(
