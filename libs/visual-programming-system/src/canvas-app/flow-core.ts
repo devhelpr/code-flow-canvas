@@ -25,7 +25,7 @@ export interface IFlowCore {
     variable: {
       id: string;
       getData: () => any;
-      setData: (data: any) => void;
+      setData: (data: any) => boolean;
       initializeDataStructure?: (structureInfo: any) => void;
       removeScope: (scopeId: string) => void;
     }
@@ -131,7 +131,7 @@ export class FlowCore implements IFlowCore {
     {
       id: string;
       getData: (parameter?: any, scopeId?: string) => any;
-      setData: (data: any, scopeId?: string) => void;
+      setData: (data: any, scopeId?: string) => boolean;
       initializeDataStructure?: (structureInfo: any, scopeId?: string) => void;
       removeScope: (scopeId: string) => void;
     }
@@ -193,7 +193,7 @@ export class FlowCore implements IFlowCore {
     variable: {
       id: string;
       getData: () => any;
-      setData: (data: any) => void;
+      setData: (data: any) => boolean;
       initializeDataStructure?: (structureInfo: any) => void;
       removeScope: (scopeId: string) => void;
     }
@@ -265,14 +265,18 @@ export class FlowCore implements IFlowCore {
     if (scopeId && this.tempVariables[scopeId][variableName]) {
       this.tempVariables[scopeId][variableName] = data;
     } else if (variableName && this.variables[variableName]) {
-      this.variables[variableName].setData(data, scopeId);
-      if (isInitializing) {
+      const result = this.variables[variableName].setData(data, scopeId);
+      if (isInitializing || !result) {
         return;
       }
+      const dataToObserver = this.variables[variableName].getData(
+        undefined,
+        scopeId
+      );
       const map = this.variableObservers.get(`${variableName}`);
       if (map) {
         map.forEach((observer) => {
-          observer(data, runCounter);
+          observer(dataToObserver, runCounter);
         });
       }
     }

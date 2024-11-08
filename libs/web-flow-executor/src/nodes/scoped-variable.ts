@@ -16,7 +16,7 @@ import { showArrayData } from './data-viewers/array';
 import { showGridData, StructureInfo } from './data-viewers/grid';
 
 export const scopeVariableNodeName = 'scope-variable';
-type FieldTypes = 'value' | 'dictionary' | 'array' | 'grid';
+type FieldTypes = 'value' | 'dictionary' | 'array' | 'grid' | 'enum';
 
 export const getScopedVariable =
   (isGlobal = false) =>
@@ -69,12 +69,30 @@ export const getScopedVariable =
     };
 
     const setDataForFieldType = (data: any, scopeId?: string) => {
+      let result = true;
       if (fieldType === 'value') {
         const value = convertDataToType(data);
         if (scopeId && !isGlobal) {
           scopedData[scopeId] = value;
         } else {
           currentValue = value;
+        }
+      } else if (fieldType === 'enum') {
+        const value = data.toString();
+        const enumValues = node?.nodeInfo?.formValues?.['enumValues'] ?? [];
+        if (enumValues.find((item: any) => item.value === value)) {
+          if (scopeId && !isGlobal) {
+            scopedData[scopeId] = value;
+          } else {
+            currentValue = value;
+          }
+        } else {
+          result = false;
+          if (scopeId && !isGlobal) {
+            scopedData[scopeId] = '';
+          } else {
+            currentValue = '';
+          }
         }
       } else if (fieldType === 'dictionary') {
         if (scopeId && !isGlobal) {
@@ -226,10 +244,16 @@ export const getScopedVariable =
           }
         }
       }
+      return result;
     };
 
     const getDataForFieldType = (parameter?: any, scopeId?: string) => {
       if (fieldType === 'value') {
+        if (scopeId && !isGlobal) {
+          return scopedData[scopeId];
+        }
+        return currentValue;
+      } else if (fieldType === 'enum') {
         if (scopeId && !isGlobal) {
           return scopedData[scopeId];
         }
@@ -303,11 +327,17 @@ export const getScopedVariable =
       fieldType = node?.nodeInfo?.formValues?.['fieldType'] ?? 'value';
       fieldValueType =
         node?.nodeInfo?.formValues?.['fieldValueType'] ?? 'number';
-      setDataForFieldType(
-        fieldType === 'value'
-          ? node?.nodeInfo?.formValues?.['initialValue'] ?? 0
-          : undefined
-      );
+      if (fieldType === 'enum') {
+        setDataForFieldType(
+          node?.nodeInfo?.formValues?.['initialEnumValue'] ?? ''
+        );
+      } else {
+        setDataForFieldType(
+          fieldType === 'value'
+            ? node?.nodeInfo?.formValues?.['initialValue'] ?? 0
+            : undefined
+        );
+      }
 
       if (canvasAppInstance?.isContextOnly) {
         return;
@@ -344,6 +374,11 @@ export const getScopedVariable =
         if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).textContent =
             getLabel('grid');
+        }
+      } else if (fieldType === 'enum') {
+        if (htmlNode && htmlNode?.domElement) {
+          (htmlNode.domElement as unknown as HTMLElement).textContent =
+            getLabel('enum');
         }
       } else {
         if (htmlNode && htmlNode?.domElement) {
@@ -387,7 +422,7 @@ export const getScopedVariable =
     };
 
     const setData = (data: any, scopeId?: string) => {
-      setDataForFieldType(data, scopeId);
+      const result = setDataForFieldType(data, scopeId);
 
       if (fieldType === 'value') {
         const value = fieldType === 'value' ? data : data.value;
@@ -421,6 +456,8 @@ export const getScopedVariable =
           )?.classList?.add('border-transparent');
         }, 250);
       }
+
+      return result;
     };
 
     const visualizeData = (lastStoredDataState: any) => {
@@ -642,6 +679,11 @@ export const getScopedVariable =
           {
             fieldType: FormFieldType.Text,
             fieldName: 'initialValue',
+            conditions: {
+              visibility: (values: any) => {
+                return values?.fieldType !== 'enum';
+              },
+            },
             value: initalValues?.['initialValue'] ?? '',
             onChange: (value: string) => {
               if (!node.nodeInfo) {
@@ -650,6 +692,40 @@ export const getScopedVariable =
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 initialValue: value,
+              };
+              initializeCompute();
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'initialEnumValue',
+            conditions: {
+              visibility: (values: any) => {
+                return values?.fieldType === 'enum';
+              },
+            },
+            getOptions: (_values: any) => {
+              const liveValues = node.nodeInfo?.formValues['enumValues'] ?? [];
+              return (
+                liveValues?.map((item: any) => {
+                  return {
+                    value: item.value,
+                    label: item.label,
+                  };
+                }) ?? []
+              );
+            },
+            value: initalValues?.['initialEnumValue'] ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                initialEnumValue: value,
               };
               initializeCompute();
               if (updated) {
@@ -677,6 +753,11 @@ export const getScopedVariable =
               {
                 value: 'grid' as FieldTypes,
                 label: 'Grid/Matrix',
+              },
+
+              {
+                value: 'enum' as FieldTypes,
+                label: 'Enum',
               },
               // {
               //   value: 'dataTable',
@@ -715,6 +796,7 @@ export const getScopedVariable =
                 value: 'array',
                 label: 'Array',
               },
+
               /*{
               value: 'integer',
               label: 'Integer',
@@ -744,6 +826,11 @@ export const getScopedVariable =
             { value: 'bigint', label: 'Bigint' },
             */
             ],
+            conditions: {
+              visibility: (values: any) => {
+                return values?.fieldType !== 'enum';
+              },
+            },
             onChange: (value: string) => {
               if (!node.nodeInfo) {
                 return;
@@ -757,6 +844,41 @@ export const getScopedVariable =
               if (updated) {
                 updated();
               }
+            },
+          },
+          {
+            fieldType: FormFieldType.Array,
+            fieldName: 'enumValues',
+            value: initalValues?.['enumValues'] ?? [],
+            formElements: [
+              {
+                fieldType: FormFieldType.Text,
+                fieldName: 'label',
+                value: '',
+              },
+              {
+                fieldType: FormFieldType.Text,
+                fieldName: 'value',
+                value: '',
+              },
+            ],
+            onChange: (value: FieldTypes) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                enumValues: value ?? [],
+              };
+              initializeCompute();
+              if (updated) {
+                updated();
+              }
+            },
+            conditions: {
+              visibility: (values: any) => {
+                return values?.fieldType === 'enum';
+              },
             },
           },
         ];
@@ -801,6 +923,8 @@ export const getScopedVariable =
               initialValue: initalValues?.['initialValue'] ?? '',
               fieldType: initalValues?.['fieldType'] ?? 'value',
               fieldValueType: initalValues?.['fieldValueType'] ?? 'number',
+              enumValues: initalValues?.['enumValues'] ?? [],
+              initialEnumValue: initalValues?.['initialEnumValue'] ?? '',
             },
           },
           containerNode

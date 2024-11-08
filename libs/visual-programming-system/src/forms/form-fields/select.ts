@@ -47,7 +47,7 @@ export class SelectFieldChildComponent extends FormFieldComponent<SelectFieldPro
           autocomplete="off"
           id="${props.formId}_${props.fieldName}"
           value="${props.value}"
-          type="text">${props.options.map((option) => {
+          type="text">${props.options?.map((option) => {
             return `<option value="${option.value}"
              ${option.value === props.value ? 'selected' : ''}
             >${option.label}</option>`;

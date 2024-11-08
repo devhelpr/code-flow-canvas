@@ -26,6 +26,7 @@ export interface ArrayFieldProps extends BaseFormFieldProps {
     data: unknown
   ) => HTMLElement | undefined;
   onChange?: (value: unknown[]) => void;
+  renderForm(): void;
 }
 
 export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps> {
@@ -130,10 +131,9 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         editCell.firstChild?.addEventListener('click', (event) => {
           event.preventDefault();
           const values = this.values.find((v) => v.id === value.id);
-          console.log('edit', value, values?.arrayItems, this.values);
           if (values) {
             this.props
-              .createFormDialog(this.props.formElements, values.arrayItems)
+              .createFormDialog([...this.props.formElements], values.arrayItems)
               .then((result) => {
                 values.arrayItems = result;
                 const updatedArrayRow = this.createRenderRow(values, true);
@@ -155,11 +155,12 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
             event.preventDefault();
             this.values = this.values.filter((v) => v.id !== value.id);
 
-            this.render();
+            //this.render();
             this.array
               ?.querySelector(`[data-array-id="${value.id}"]`)
               ?.remove();
             this.props.onChange?.(this.values.map((value) => value.arrayItems));
+            this.props.renderForm();
             return false;
           });
         }
@@ -190,9 +191,8 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
         this.addButton = this.array.nextSibling as HTMLInputElement;
         this.renderList.push(this.label, this.array, this.addButton);
         this.addButton.addEventListener('click', this.onAddButtonClick);
-        console.log('array', this.array, this.values, this.label);
         this.values.forEach((value, _index) => {
-          console.log('array item', value, _index, this.createRenderRow(value));
+          this.createRenderRow(value);
         });
         trackNamedSignal(
           `${this.props.formId}_${this.props.fieldName}`,
@@ -219,12 +219,22 @@ export class ArrayFieldChildComponent extends FormFieldComponent<ArrayFieldProps
   }
 
   onAddButtonClick = (_event: Event) => {
-    this.props.createFormDialog(this.props.formElements, {}).then((result) => {
+    const formElements = this.props.formElements.map((formElement) => {
+      const clonedFormElement = { ...formElement };
+      if (formElement.fieldType === FormFieldType.Text) {
+        clonedFormElement.value = '';
+      }
+      return { ...formElement };
+    });
+
+    this.props.createFormDialog(formElements, {}).then((result) => {
       const valueRow = { arrayItems: result, id: crypto.randomUUID() };
       this.values.push(valueRow);
       this.createRenderRow(valueRow);
       this.render();
+
       this.props.onChange?.(this.values.map((value) => value.arrayItems));
+      this.props.renderForm();
     });
   };
   override render() {

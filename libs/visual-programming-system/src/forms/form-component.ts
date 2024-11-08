@@ -330,7 +330,8 @@ export class FormsComponent
             '',
           isRow: formControl.isRow,
           settings,
-          options: formControl.options,
+          options:
+            formControl.options ?? formControl.getOptions?.(this.values) ?? [],
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           isLast: index === this.props.formElements.length - 1,
@@ -458,6 +459,10 @@ export class FormsComponent
           isLast: index === this.props.formElements.length - 1,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
+          renderForm: () => {
+            this.oldProps = null;
+            this.render();
+          },
           createDataReadElement: (formElement, data) => {
             if (
               formElement.fieldType === FormFieldType.File &&

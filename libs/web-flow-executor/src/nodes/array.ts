@@ -339,6 +339,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
   };
   const setData = (_data: any) => {
     //currentValue = data;
+    return true;
   };
   const removeScope = (_scopeId: string) => {
     //

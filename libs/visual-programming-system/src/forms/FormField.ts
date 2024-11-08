@@ -18,7 +18,8 @@ export type FormField = (
   | {
       fieldType: 'Select';
       value: string;
-      options: { value: string; label: string }[];
+      options?: { value: string; label: string }[];
+      getOptions?: (values: any) => { value: string; label: string }[];
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {

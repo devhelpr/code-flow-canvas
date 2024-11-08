@@ -1,0 +1,136 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "691421ad-a30d-44f2-abd0-072bd8468b89",
+          "x": 422.3632394523364,
+          "y": -43.64197821262764,
+          "width": 119.99997976878514,
+          "height": 108.00000474727274,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "scope-variable",
+            "formValues": {
+              "variableName": "enum",
+              "initialValue": "",
+              "fieldType": "enum",
+              "fieldValueType": "number",
+              "enumValues": [
+                {
+                  "label": "test1",
+                  "value": "test1"
+                },
+                {
+                  "label": "test2",
+                  "value": "test2"
+                }
+              ],
+              "initialEnumValue": "test3"
+            },
+            "isVariable": true,
+            "nodeCannotBeReplaced": true
+          }
+        },
+        {
+          "id": "a21c19c9-7b8d-4a39-9a21-d2ece057e904",
+          "x": 907.0955307570923,
+          "y": 66.03645436235243,
+          "width": 199.99993896484375,
+          "height": 116,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "observe-variable",
+            "formValues": {
+              "variableName": "enum"
+            }
+          }
+        },
+        {
+          "id": "054255b7-f15b-4210-bf4f-2046e4e17515",
+          "x": 524.342257706599,
+          "y": 277.7768752377074,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "set-variable",
+            "formValues": {
+              "variableName": "enum"
+            },
+            "nodeCannotBeReplaced": false,
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false
+          }
+        },
+        {
+          "id": "50393f42-8715-42bb-82f3-66d991345272",
+          "x": 152.4223554852694,
+          "y": 289.44615192434736,
+          "width": 200.00001525878906,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "value",
+            "formValues": {
+              "value": "test2"
+            }
+          }
+        },
+        {
+          "id": "e26bac56-73b4-4d5a-9532-fbeafd131a1c",
+          "x": 1333.6522439657404,
+          "y": 95.33927303098446,
+          "width": 119.99999995410255,
+          "height": 55.9999801828729,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "b49d6ed9-09a3-4daa-b6c4-32f5b05f6d15",
+          "x": 1107.095469721936,
+          "y": 124.03645436235243,
+          "endX": 1333.6522439657404,
+          "endY": 125.33927303098446,
+          "startNodeId": "a21c19c9-7b8d-4a39-9a21-d2ece057e904",
+          "endNodeId": "e26bac56-73b4-4d5a-9532-fbeafd131a1c",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "616577b0-7a83-4e73-a0ff-1d2e752b9029",
+          "x": 352.42237074405847,
+          "y": 345.44615192434736,
+          "endX": 524.342257706599,
+          "endY": 341.7768752377074,
+          "startNodeId": "50393f42-8715-42bb-82f3-66d991345272",
+          "endNodeId": "054255b7-f15b-4210-bf4f-2046e4e17515",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

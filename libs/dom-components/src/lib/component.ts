@@ -5,6 +5,7 @@ export class Component<T> extends BaseComponent {
   props: T;
   constructor(parent: BaseComponent | null, props: T) {
     super();
+    // create a proxy to handle changes to props and rerender the component
     this.props = new Proxy(props, this.propsHandler);
 
     // create proxy for array properties within props
