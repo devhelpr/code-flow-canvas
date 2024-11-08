@@ -258,7 +258,10 @@ export const getScopedVariable =
         if (scopeId && !isGlobal) {
           return scopedData[scopeId];
         }
-        return currentValue;
+        return (
+          (currentValue || node?.nodeInfo?.formValues?.['initialEnumValue']) ??
+          ''
+        );
       } else if (fieldType === 'dictionary') {
         if (scopeId && !isGlobal) {
           if (parameter === undefined) {
