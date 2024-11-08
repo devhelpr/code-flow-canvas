@@ -18,6 +18,7 @@ import { showGridData, StructureInfo } from './data-viewers/grid';
 export const scopeVariableNodeName = 'scope-variable';
 type FieldTypes = 'value' | 'dictionary' | 'array' | 'grid' | 'enum';
 
+const borderErrorColor = 'border-red-500';
 export const getScopedVariable =
   (isGlobal = false) =>
   (updated: () => void): NodeTask<NodeInfo> => {
@@ -439,9 +440,15 @@ export const getScopedVariable =
           clearTimeout(timeout);
           timeout = undefined;
         }
-        (
-          componentWrapper?.domElement as unknown as HTMLElement
-        )?.classList?.add('border-white');
+        if (result) {
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          )?.classList?.add('border-white');
+        } else {
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          )?.classList?.add(borderErrorColor);
+        }
         (
           componentWrapper?.domElement as unknown as HTMLElement
         )?.classList?.remove('border-transparent');
@@ -450,6 +457,10 @@ export const getScopedVariable =
           (
             componentWrapper?.domElement as unknown as HTMLElement
           )?.classList?.remove('border-white');
+
+          (
+            componentWrapper?.domElement as unknown as HTMLElement
+          )?.classList?.remove(borderErrorColor);
 
           (
             componentWrapper?.domElement as unknown as HTMLElement
@@ -963,6 +974,9 @@ export const getScopedVariable =
             (
               componentWrapper?.domElement as unknown as HTMLElement
             )?.classList?.remove('border-white');
+            (
+              componentWrapper?.domElement as unknown as HTMLElement
+            )?.classList?.remove(borderErrorColor);
             (
               componentWrapper?.domElement as unknown as HTMLElement
             )?.classList?.add('border-transparent');

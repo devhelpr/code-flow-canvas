@@ -71,7 +71,7 @@ export interface IFlowCore {
     scopeId?: string,
     runCounter?: any,
     isInitializing?: boolean
-  ) => void;
+  ) => boolean;
 
   getVariables: (scopeId?: string) => Record<string, any>;
 
@@ -266,8 +266,11 @@ export class FlowCore implements IFlowCore {
       this.tempVariables[scopeId][variableName] = data;
     } else if (variableName && this.variables[variableName]) {
       const result = this.variables[variableName].setData(data, scopeId);
-      if (isInitializing || !result) {
-        return;
+      if (!result) {
+        return false;
+      }
+      if (isInitializing) {
+        return true;
       }
       const dataToObserver = this.variables[variableName].getData(
         undefined,
@@ -280,6 +283,7 @@ export class FlowCore implements IFlowCore {
         });
       }
     }
+    return true;
   };
 
   getVariables = (scopeId?: string) => {

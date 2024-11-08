@@ -36,7 +36,16 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     if (contextInstance) {
       const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
       if (variableName) {
-        contextInstance.setVariable(variableName, input, scopeId, runCounter);
+        if (
+          !contextInstance.setVariable(variableName, input, scopeId, runCounter)
+        ) {
+          return {
+            result: input,
+            output: input,
+            followPath: undefined,
+            stop: true,
+          };
+        }
       }
     }
     return {

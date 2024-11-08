@@ -58,7 +58,7 @@ if (url.pathname === '/run-flow') {
             resizeObserver.observe(container);
             const editor = monaco.editor.create(container, {
               fixedOverflowWidgets: true,
-              value: formField.value.toString(),
+              value: (formField.value ?? '').toString(),
               language: editorLanguage ?? 'html',
               scrollBeyondLastLine: false,
               scrollbar: {

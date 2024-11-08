@@ -7,6 +7,8 @@ import {
   NodeTask,
   NodeTaskFactory,
   Rect,
+  ThumbConnectionType,
+  ThumbType,
   createJSXElement,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
@@ -19,7 +21,16 @@ const labelName = 'Register Expression Function';
 export const registerExpressionFunctionNodeName =
   'register-expression-function-node';
 const familyName = 'flow-canvas';
-const thumbs: any[] = [];
+const thumbs = [
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'input',
+  },
+];
 
 export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
   updated: (
@@ -118,7 +129,10 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
           fieldName: 'customFunctionCode',
           label: 'Code',
           editorLanguage: 'javascript',
-          value: values?.['customFunctionCode'] ?? '',
+          value:
+            values?.['customFunctionCode'] ??
+            `() => {
+};`,
           onChange: (value: string) => {
             if (!node.nodeInfo) {
               return;
@@ -147,7 +161,14 @@ export const getRegisterExpressionFunctionNode: NodeTaskFactory<NodeInfo> = (
       if (rect && rect.resize) {
         rect?.resize();
       }
-
+      if (node.nodeInfo && !node.nodeInfo.formValues?.['customFunctionCode']) {
+        node.nodeInfo.formValues = {
+          ...node.nodeInfo.formValues,
+          ['customFunctionCode']: `() => {
+  return 42;
+};`,
+        };
+      }
       if (textElement) {
         textElement.textContent =
           node.nodeInfo?.formValues?.['functionName'] ?? '';
