@@ -679,6 +679,7 @@ export const getScopedVariable =
           {
             fieldType: FormFieldType.Text,
             fieldName: 'initialValue',
+            label: 'Initial value',
             conditions: {
               visibility: (values: any) => {
                 return values?.fieldType !== 'enum';
@@ -702,6 +703,7 @@ export const getScopedVariable =
           {
             fieldType: FormFieldType.Select,
             fieldName: 'initialEnumValue',
+            label: 'Initial value',
             conditions: {
               visibility: (values: any) => {
                 return values?.fieldType === 'enum';
