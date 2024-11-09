@@ -71,7 +71,7 @@ export interface IFlowCore {
     scopeId?: string,
     runCounter?: any,
     isInitializing?: boolean
-  ) => boolean;
+  ) => Promise<boolean>;
 
   getVariables: (scopeId?: string) => Record<string, any>;
 
@@ -88,7 +88,7 @@ export interface IFlowCore {
   observeVariable: (
     nodeId: string,
     variableName: string,
-    updated: (data: any, runCounter?: any) => void
+    updated: (data: any, runCounter?: any) => Promise<void>
   ) => void;
 
   removeObserveVariable: (nodeId: string, variableName: string) => void;
@@ -138,7 +138,7 @@ export class FlowCore implements IFlowCore {
   > = {};
   protected variableObservers: Map<
     string,
-    Map<string, (data: any, runCounter?: any) => void>
+    Map<string, (data: any, runCounter?: any) => Promise<void>>
   > = new Map();
   protected commandHandlers: Record<string, ICommandHandler> = {};
   protected nodeSetStateHandlers: Record<string, SetNodeStatedHandler> = {};
@@ -262,28 +262,40 @@ export class FlowCore implements IFlowCore {
     runCounter?: any,
     isInitializing?: boolean
   ) => {
-    if (scopeId && this.tempVariables[scopeId][variableName]) {
-      this.tempVariables[scopeId][variableName] = data;
-    } else if (variableName && this.variables[variableName]) {
-      const result = this.variables[variableName].setData(data, scopeId);
-      if (!result) {
-        return false;
+    return new Promise<boolean>((resolve) => {
+      if (scopeId && this.tempVariables[scopeId][variableName]) {
+        this.tempVariables[scopeId][variableName] = data;
+      } else if (variableName && this.variables[variableName]) {
+        const result = this.variables[variableName].setData(data, scopeId);
+        if (!result) {
+          resolve(false);
+          return;
+        }
+        if (isInitializing) {
+          resolve(true);
+          return;
+        }
+        const dataToObserver = this.variables[variableName].getData(
+          undefined,
+          scopeId
+        );
+        const map = this.variableObservers.get(`${variableName}`);
+        if (map) {
+          const observePromises: Promise<void>[] = [];
+          map.forEach((observer) => {
+            observePromises.push(
+              observer(dataToObserver, runCounter) as unknown as Promise<void>
+            );
+          });
+          Promise.all(observePromises).then(() => {
+            resolve(true);
+          });
+
+          return;
+        }
       }
-      if (isInitializing) {
-        return true;
-      }
-      const dataToObserver = this.variables[variableName].getData(
-        undefined,
-        scopeId
-      );
-      const map = this.variableObservers.get(`${variableName}`);
-      if (map) {
-        map.forEach((observer) => {
-          observer(dataToObserver, runCounter);
-        });
-      }
-    }
-    return true;
+      resolve(true);
+    });
   };
 
   getVariables = (scopeId?: string) => {
@@ -326,7 +338,7 @@ export class FlowCore implements IFlowCore {
   observeVariable = (
     nodeId: string,
     variableName: string,
-    updated: (data: any, runCounter?: any) => void
+    updated: (data: any, runCounter?: any) => Promise<void>
   ) => {
     let map = this.variableObservers.get(`${variableName}`);
     if (!map) {

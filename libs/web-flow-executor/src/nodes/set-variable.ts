@@ -9,6 +9,7 @@ import {
   ThumbConnectionType,
   ThumbType,
   visualNodeFactory,
+  IComputeResult,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
@@ -25,7 +26,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (
+  const computeAsync = (
     input: string,
     _loopIndex?: number,
     _payload?: any,
@@ -33,26 +34,38 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     scopeId?: string,
     runCounter?: RunCounter
   ) => {
-    if (contextInstance) {
-      const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      if (variableName) {
-        if (
-          !contextInstance.setVariable(variableName, input, scopeId, runCounter)
-        ) {
-          return {
-            result: input,
-            output: input,
-            followPath: undefined,
-            stop: true,
-          };
+    return new Promise<IComputeResult>((resolve) => {
+      if (contextInstance) {
+        const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+        if (variableName) {
+          contextInstance
+            .setVariable(variableName, input, scopeId, runCounter)
+            .then((result) => {
+              if (result) {
+                resolve({
+                  result: input,
+                  output: input,
+                  followPath: undefined,
+                });
+              } else {
+                resolve({
+                  result: input,
+                  output: input,
+                  followPath: undefined,
+                  stop: true,
+                });
+              }
+            });
+
+          return;
         }
       }
-    }
-    return {
-      result: input,
-      output: input,
-      followPath: undefined,
-    };
+      resolve({
+        result: input,
+        output: input,
+        followPath: undefined,
+      });
+    });
   };
 
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
@@ -75,7 +88,7 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
     'Set variable',
     'flow-canvas',
     'variableName',
-    compute,
+    computeAsync,
     initializeCompute,
     false,
     200,
@@ -133,6 +146,8 @@ export const setVariable: NodeTaskFactory<NodeInfo> = (
       category: 'variables',
       backgroundColorClassName:
         theme?.referenceVariableBackgroundColorClassName,
-    }
+    },
+    undefined,
+    true
   );
 };

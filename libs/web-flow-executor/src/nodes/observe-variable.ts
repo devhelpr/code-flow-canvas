@@ -79,47 +79,49 @@ export const observeVariable = (updated: () => void): NodeTask<NodeInfo> => {
         node.id,
         variableName,
         (value, runCounter?: any) => {
-          if (timeout) {
-            clearTimeout(timeout);
-            timeout = undefined;
-          }
-          if (componentWrapper && componentWrapper?.domElement) {
-            (componentWrapper.domElement as HTMLElement).classList.remove(
-              'border-transparent'
-            );
-          }
-          if (componentWrapper && componentWrapper?.domElement) {
-            (componentWrapper.domElement as HTMLElement).classList.add(
-              'border-white'
-            );
-          }
-          timeout = setTimeout(() => {
+          return new Promise<void>((resolve) => {
+            if (timeout) {
+              clearTimeout(timeout);
+              timeout = undefined;
+            }
             if (componentWrapper && componentWrapper?.domElement) {
               (componentWrapper.domElement as HTMLElement).classList.remove(
-                'border-white'
-              );
-              (componentWrapper.domElement as HTMLElement).classList.add(
                 'border-transparent'
               );
             }
-          }, 250);
+            if (componentWrapper && componentWrapper?.domElement) {
+              (componentWrapper.domElement as HTMLElement).classList.add(
+                'border-white'
+              );
+            }
+            timeout = setTimeout(() => {
+              if (componentWrapper && componentWrapper?.domElement) {
+                (componentWrapper.domElement as HTMLElement).classList.remove(
+                  'border-white'
+                );
+                (componentWrapper.domElement as HTMLElement).classList.add(
+                  'border-transparent'
+                );
+              }
+            }, 250);
 
-          if (canvasAppInstance) {
-            runNode(
-              node,
-              canvasAppInstance,
-              (_input) => {
-                //
-              },
-              value,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              runCounter
-            );
-          }
+            if (canvasAppInstance) {
+              runNode(
+                node,
+                canvasAppInstance,
+                (_input) => {
+                  resolve();
+                },
+                value,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                runCounter
+              );
+            }
+          });
         }
       );
     }
