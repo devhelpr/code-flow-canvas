@@ -140,7 +140,7 @@ export const getScopedVariable =
                   scopedData[scopeId][data.index] = value;
                 }
               }
-            } else if (data.push) {
+            } else if (data.push !== undefined && data.push !== null) {
               // data needs to be pushed 'raw' without convertDataToType
               // .. convertDataToType converts to array when fieldValueType is array
               // .. and here you want to push a value to that array
@@ -166,7 +166,7 @@ export const getScopedVariable =
                   currentValue[data.index] = value;
                 }
               }
-            } else if (data.push) {
+            } else if (data.push !== undefined && data.push !== null) {
               // data needs to be pushed 'raw' without convertDataToType
               // .. convertDataToType converts to array when fieldValueType is array
               // .. and here you want to push a value to that array
