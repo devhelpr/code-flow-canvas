@@ -114,6 +114,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
             color: 'white',
             thumbConstraint: 'value',
             name: 'output',
+            maxConnections: -1,
           },
           {
             thumbType: ThumbType.EndConnectorCenter,
