@@ -25,15 +25,15 @@
         },
         {
           "id": "3cf44538-9913-4aa2-aade-a7c619910f45",
-          "x": 2871.977300992098,
-          "y": 1064.5111606731102,
+          "x": 2871.976976984026,
+          "y": 1064.511098659539,
           "width": 161.1015625,
           "height": 136,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "json-node",
             "formValues": {
-              "json": "{\n    \"messages\": [\n      { \n        \"role\": \"user\", \n        \"content\": \"Tell me a joke\" \n        }\n    ],\n    \"temperature\": 0.6,\n    \"model\": \"gpt-4-turbo\",\n    \"max_tokens\": 30\n}"
+              "json": "{\n    \"messages\": [\n      { \n        \"role\": \"user\", \n        \"content\": \"Tell me a joke about visual programming in a way that bret victor approves\" \n        }\n    ],\n    \"temperature\": 0.6,\n    \"model\": \"gpt-4-turbo\",\n    \"max_tokens\": 30\n}"
             },
             "nodeCannotBeReplaced": true,
             "showFormOnlyInPopup": true,
@@ -44,10 +44,10 @@
         },
         {
           "id": "d186a002-218b-47dc-aae8-07522a3da6ed",
-          "x": 3670.3006812979065,
-          "y": 1053.8064850250428,
-          "width": 119.99989187093509,
-          "height": 271.9999386533287,
+          "x": 3668.6864745164658,
+          "y": 1054.341333554232,
+          "width": 120.00010395318927,
+          "height": 272.00006389134717,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -61,8 +61,8 @@
         },
         {
           "id": "1a35b609-3594-4529-bec1-2b50b205aa0d",
-          "x": 3033.078863492098,
-          "y": 1132.5111606731102,
+          "x": 3033.078539484026,
+          "y": 1132.511098659539,
           "endX": 3287.947143039206,
           "endY": 1131.54668496768,
           "startNodeId": "3cf44538-9913-4aa2-aade-a7c619910f45",
@@ -78,8 +78,8 @@
           "id": "a16c5c54-c867-41af-a922-9a014786c513",
           "x": 3487.947143039206,
           "y": 1084.04668496768,
-          "endX": 3670.3006812979065,
-          "endY": 1083.8064850250428,
+          "endX": 3668.6864745164658,
+          "endY": 1084.341333554232,
           "startNodeId": "8f4ac174-5c8e-45da-8ad4-a81a40f4f666",
           "endNodeId": "d186a002-218b-47dc-aae8-07522a3da6ed",
           "startThumbName": "output",
@@ -88,6 +88,72 @@
           "nodeType": "Connection",
           "layer": 1,
           "nodeInfo": {}
+        },
+        {
+          "id": "e6c0d059-e227-4e57-be26-70e786b86d14",
+          "x": 3788.686578469655,
+          "y": 1084.341333554232,
+          "endX": 3910.770036861805,
+          "endY": 1084.3336375828528,
+          "startNodeId": "d186a002-218b-47dc-aae8-07522a3da6ed",
+          "endNodeId": "5faa0fef-08cc-49a7-8b4e-530579b70962",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "5faa0fef-08cc-49a7-8b4e-530579b70962",
+          "x": 3910.770036861805,
+          "y": 1034.3336375828528,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "choices[0].message.content",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true,
+            "taskType": "expression"
+          }
+        },
+        {
+          "id": "8ea45baa-be8f-4cc8-ac51-e2e6f55b372b",
+          "x": 4110.770036861804,
+          "y": 1084.3336375828528,
+          "endX": 4275.575720000675,
+          "endY": 1088.1422046710302,
+          "startNodeId": "5faa0fef-08cc-49a7-8b4e-530579b70962",
+          "endNodeId": "bf4b234a-b696-47dc-bada-133dfcd335c1",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "bf4b234a-b696-47dc-bada-133dfcd335c1",
+          "x": 4275.575720000675,
+          "y": 1058.1422046710302,
+          "width": 120.00010395318927,
+          "height": 271.9999608498181,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true,
+            "taskType": "show-input"
+          }
         }
       ]
     }

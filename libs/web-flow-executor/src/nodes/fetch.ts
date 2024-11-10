@@ -14,6 +14,10 @@ import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
 
+// interface ReadableStream<R = unknown> {
+//   [Symbol.asyncIterator](): AsyncIterableIterator<R>;
+// }
+
 export const getFetch: NodeTaskFactory<NodeInfo> = (
   updated: () => void
 ): NodeTask<NodeInfo> => {
@@ -33,23 +37,20 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
   ) => {
     return new Promise((resolve, reject) => {
       function sendFetchResult(result: any) {
-        runNodeFromThumb(
-          node.thumbConnectors![0],
-          canvasAppInstance!,
-          (_inputFromLoadingRun: string | any[]) => {
-            resolve({
-              result: false,
-              followPath: undefined,
-              stop: true,
-              dummyEndpoint: true,
-            });
-          },
-          result,
-          node,
-          loopIndex,
-          scopeId,
-          runCounter
-        );
+        return new Promise<void>((resolve) => {
+          runNodeFromThumb(
+            node.thumbConnectors![0],
+            canvasAppInstance!,
+            (_inputFromLoadingRun: string | any[]) => {
+              resolve();
+            },
+            result,
+            node,
+            loopIndex,
+            scopeId,
+            runCounter
+          );
+        });
       }
       function sendFetchState(state: string) {
         runNodeFromThumb(
@@ -131,23 +132,99 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           headers,
           body: httpMethod === 'get' ? undefined : JSON.stringify(input),
         })
-          .then((response) => {
-            if (responseType === 'json') {
+          .then(async (response) => {
+            if (
+              response.body instanceof ReadableStream &&
+              responseType !== 'text'
+            ) {
+              const reader = response.body.getReader();
+              let isFullJson = false;
+              const readChunk = () => {
+                // Read a chunk from the reader
+                reader
+                  .read()
+                  .then(({ value, done }) => {
+                    if (done) {
+                      if (!isFullJson) {
+                        resolve({
+                          result: false,
+                          followPath: undefined,
+                          stop: true,
+                          dummyEndpoint: true,
+                        });
+                      }
+
+                      return;
+                    }
+                    // Convert the chunk value to a string
+                    const chunkString = new TextDecoder().decode(value);
+
+                    if (chunkString.endsWith('}\n')) {
+                      try {
+                        const json = JSON.parse(chunkString);
+                        isFullJson = true;
+                        sendFetchResult(json).then(() => {
+                          resolve({
+                            result: false,
+                            followPath: undefined,
+                            stop: true,
+                            dummyEndpoint: true,
+                          });
+                        });
+                      } catch (error) {
+                        isFullJson = false;
+                      }
+                    }
+
+                    if (!isFullJson) {
+                      const lines = chunkString
+                        .split('\n')
+                        .map((line) => line.replace('data: ', ''))
+                        .filter((line) => line.length > 0)
+                        .filter((line) => line !== '[DONE]')
+                        .map((line) => JSON.parse(line));
+                      if (lines.length > 0) {
+                        sendFetchResult(lines).then(() => {
+                          readChunk();
+                        });
+                      }
+                    }
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              };
+
+              readChunk();
+            } else if (responseType === 'json') {
               response.json().then((json) => {
                 sendFetchState('ready');
                 result = json;
-                sendFetchResult(result);
+                sendFetchResult(result).then(() => {
+                  resolve({
+                    result: false,
+                    followPath: undefined,
+                    stop: true,
+                    dummyEndpoint: true,
+                  });
+                });
               });
             } else {
               response.text().then((text) => {
                 sendFetchState('ready');
                 result = text;
-                sendFetchResult(result);
+                sendFetchResult(result).then(() => {
+                  resolve({
+                    result: false,
+                    followPath: undefined,
+                    stop: true,
+                    dummyEndpoint: true,
+                  });
+                });
               });
             }
           })
           .catch((error) => {
-            console.log('error', error);
             sendFetchState('error');
             result = undefined;
             if (
@@ -206,16 +283,6 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         undefined,
         'Fetch'
       ) as unknown as INodeComponent<NodeInfo>;
-
-      // FormComponent({
-      //   rootElement: jsxComponentWrapper.domElement as HTMLElement,
-      //   id: id ?? '',
-      //   formElements,
-      //   hasSubmitButton: false,
-      //   onSave: (formValues) => {
-      //     console.log('onSave', formValues);
-      //   },
-      // }) as unknown as HTMLElement;
 
       const rect = canvasApp.createRect(
         x,
