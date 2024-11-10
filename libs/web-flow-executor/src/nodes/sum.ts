@@ -40,7 +40,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       values = [input];
     }
     const sum = values
-      .map((value) => parseInt(value) ?? 0)
+      .map((value) => parseFloat(value) ?? 0)
       .reduce((a, b) => a + b, 0);
     if (htmlNode) {
       createElement(
@@ -56,7 +56,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       if (hasInitialValue) {
         hasInitialValue = false;
       }
-      htmlNode.domElement.textContent = `Sum: ${sum.toString()}`;
+      htmlNode.domElement.textContent = `Sum: ${sum.toFixed(2)}`;
 
       if (rect) {
         rect.resize(240);
@@ -64,7 +64,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
     }
     currentSum = sum;
     return {
-      result: sum.toString(),
+      result: sum.toFixed(2),
       followPath: undefined,
       previousOutput: (previousOutput ?? '').toString(),
     };
