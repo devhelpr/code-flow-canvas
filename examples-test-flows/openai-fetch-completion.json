@@ -46,8 +46,42 @@
           "id": "d186a002-218b-47dc-aae8-07522a3da6ed",
           "x": 3668.6864745164658,
           "y": 1054.341333554232,
-          "width": 120.00010395318927,
-          "height": 272.00006389134717,
+          "width": 120.00004488310887,
+          "height": 272.00004349886393,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "5faa0fef-08cc-49a7-8b4e-530579b70962",
+          "x": 3910.0820022043868,
+          "y": 1034.3335817955815,
+          "width": 273.6850774416289,
+          "height": 110.34274607488737,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "choices[0].message.content",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "bf4b234a-b696-47dc-bada-133dfcd335c1",
+          "x": 4275.575720000675,
+          "y": 1058.1422046710302,
+          "width": 120.00004488310887,
+          "height": 56.00000302662531,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -91,10 +125,10 @@
         },
         {
           "id": "e6c0d059-e227-4e57-be26-70e786b86d14",
-          "x": 3788.686578469655,
+          "x": 3788.6865193995745,
           "y": 1084.341333554232,
-          "endX": 3910.770036861805,
-          "endY": 1084.3336375828528,
+          "endX": 3910.0820022043868,
+          "endY": 1089.5049548330253,
           "startNodeId": "d186a002-218b-47dc-aae8-07522a3da6ed",
           "endNodeId": "5faa0fef-08cc-49a7-8b4e-530579b70962",
           "startThumbName": "output",
@@ -105,27 +139,9 @@
           "nodeInfo": {}
         },
         {
-          "id": "5faa0fef-08cc-49a7-8b4e-530579b70962",
-          "x": 3910.770036861805,
-          "y": 1034.3336375828528,
-          "width": 200,
-          "height": 100,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "expression",
-            "formValues": {
-              "expression": "choices[0].message.content",
-              "inputType": "number"
-            },
-            "showFormOnlyInPopup": true,
-            "isSettingsPopup": true,
-            "taskType": "expression"
-          }
-        },
-        {
           "id": "8ea45baa-be8f-4cc8-ac51-e2e6f55b372b",
-          "x": 4110.770036861804,
-          "y": 1084.3336375828528,
+          "x": 4183.767079646015,
+          "y": 1089.5049548330253,
           "endX": 4275.575720000675,
           "endY": 1088.1422046710302,
           "startNodeId": "5faa0fef-08cc-49a7-8b4e-530579b70962",
@@ -136,24 +152,6 @@
           "nodeType": "Connection",
           "layer": 1,
           "nodeInfo": {}
-        },
-        {
-          "id": "bf4b234a-b696-47dc-bada-133dfcd335c1",
-          "x": 4275.575720000675,
-          "y": 1058.1422046710302,
-          "width": 120.00010395318927,
-          "height": 271.9999608498181,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "show-input",
-            "formValues": {
-              "name": "",
-              "data-type": "default"
-            },
-            "initializeOnStartFlow": true,
-            "isSettingsPopup": true,
-            "taskType": "show-input"
-          }
         }
       ]
     }
