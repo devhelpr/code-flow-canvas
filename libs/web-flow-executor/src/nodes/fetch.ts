@@ -109,6 +109,20 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           node?.nodeInfo?.formValues?.['http-method'] ?? 'post';
 
         const headers = new Headers();
+        const headersString = node?.nodeInfo?.formValues?.['headers'] ?? '';
+        if (headersString) {
+          const headersArray = headersString.split('\n');
+          const openAIKey = canvasAppInstance?.isContextOnly
+            ? process.env?.['openai_api_key'] ?? ''
+            : canvasAppInstance?.getTempData('openai-key') ?? '';
+          headersArray.forEach((header: string) => {
+            const headerArray = header.split(':');
+            if (headerArray.length === 2) {
+              const value = headerArray[1].replace('[openai-key]', openAIKey);
+              headers.append(headerArray[0], value);
+            }
+          });
+        }
         if (responseType === 'json') {
           headers.append('Content-Type', 'application/json');
         }
@@ -183,25 +197,6 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       const url = initalValues?.['url'] ?? '';
 
       canvasAppInstance = canvasApp;
-      const formElements = [
-        {
-          fieldType: FormFieldType.Text,
-          fieldName: 'url',
-          value: url ?? '',
-          onChange: (value: string) => {
-            if (!node.nodeInfo) {
-              return;
-            }
-            node.nodeInfo.formValues = {
-              ...node.nodeInfo.formValues,
-              url: value,
-            };
-            if (updated) {
-              updated();
-            }
-          },
-        },
-      ];
 
       const jsxComponentWrapper = createElement(
         'div',
@@ -308,7 +303,23 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       node = rect.nodeComponent;
       if (node.nodeInfo) {
         node.nodeInfo.formElements = [
-          ...formElements,
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'url',
+            value: url ?? '',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                url: value,
+              };
+              if (updated) {
+                updated();
+              }
+            },
+          },
           {
             fieldType: FormFieldType.Select,
             fieldName: 'http-method',
@@ -351,6 +362,24 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 ['response-type']: value,
+              };
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.TextArea,
+            fieldName: 'headers',
+            label: 'Headers',
+            value: initalValues?.['headers'] ?? '',
+            onChange: (value: string) => {
+              if (!node || !node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['headers']: value,
               };
               if (updated) {
                 updated();

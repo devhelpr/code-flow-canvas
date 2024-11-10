@@ -7,20 +7,23 @@ export const createInputDialog = (
   rootElement: HTMLElement,
   nameLabel: string,
   defaultValue?: string,
-  onValidate?: (value: string) => { valid: boolean; message?: string }
+  onValidate?: (value: string) => { valid: boolean; message?: string },
+  settings?: {
+    isPassword?: boolean;
+  }
 ) => {
   return new Promise<string | false>((resolve, reject) => {
     //let wasTouched = false;
     let submitWasClicked = false;
     const nameId = crypto.randomUUID();
     const formElement = createElementFromHtml(
-      `<div class="input-dialog-form flex flex-col">
+      `<div class="input-dialog-form flex flex-col p-8">
 			<form cmethod="dialog" class="form row-1">
 				<div class="flex flex-col w-full my-2">
 					<label for="${nameId}__input">${nameLabel} *</label>
-					<input id="${nameId}__input" class="form-input w-full" name="${nameId}" required value="${
-        defaultValue ?? ''
-      }"></input>
+					<input id="${nameId}__input" class="form-input w-full" name="${nameId}" type="${
+        settings?.isPassword ? 'password' : 'text'
+      }" required value="${defaultValue ?? ''}"></input>
           <div class="form-error"></div>
 			  	</div>	
 				<div class="flex w-full flex-row justify-end gap-2">

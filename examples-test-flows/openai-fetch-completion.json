@@ -1,0 +1,96 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "8f4ac174-5c8e-45da-8ad4-a81a40f4f666",
+          "x": 3287.947143039206,
+          "y": 1054.04668496768,
+          "width": 200,
+          "height": 155,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "fetch",
+            "formValues": {
+              "url": "https://api.openai.com/v1/chat/completions",
+              "headers": "Authorization: Bearer [openai-key]",
+              "http-method": "post"
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "3cf44538-9913-4aa2-aade-a7c619910f45",
+          "x": 2871.977300992098,
+          "y": 1064.5111606731102,
+          "width": 161.1015625,
+          "height": 136,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{\n    \"messages\": [\n      { \n        \"role\": \"user\", \n        \"content\": \"Tell me a joke\" \n        }\n    ],\n    \"temperature\": 0.6,\n    \"model\": \"gpt-4-turbo\",\n    \"max_tokens\": 30\n}"
+            },
+            "nodeCannotBeReplaced": true,
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": true,
+            "isRunOnStart": true
+          }
+        },
+        {
+          "id": "d186a002-218b-47dc-aae8-07522a3da6ed",
+          "x": 3670.3006812979065,
+          "y": 1053.8064850250428,
+          "width": 119.99989187093509,
+          "height": 271.9999386533287,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "1a35b609-3594-4529-bec1-2b50b205aa0d",
+          "x": 3033.078863492098,
+          "y": 1132.5111606731102,
+          "endX": 3287.947143039206,
+          "endY": 1131.54668496768,
+          "startNodeId": "3cf44538-9913-4aa2-aade-a7c619910f45",
+          "endNodeId": "8f4ac174-5c8e-45da-8ad4-a81a40f4f666",
+          "startThumbName": "input",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "a16c5c54-c867-41af-a922-9a014786c513",
+          "x": 3487.947143039206,
+          "y": 1084.04668496768,
+          "endX": 3670.3006812979065,
+          "endY": 1083.8064850250428,
+          "startNodeId": "8f4ac174-5c8e-45da-8ad4-a81a40f4f666",
+          "endNodeId": "d186a002-218b-47dc-aae8-07522a3da6ed",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

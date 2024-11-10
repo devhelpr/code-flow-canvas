@@ -210,6 +210,7 @@ import { loadCSVFile, loadCSVFileNodeName } from '../nodes/load-csv-file';
 import { filterNodeName, getFilter } from '../nodes/filter';
 import { loadJSONFile, loadJSONFileNodeName } from '../nodes/load-json-file';
 import { getReduce, reduceNodeName } from '../nodes/reduce';
+import { getRawJsonNode, jsonNodeName } from '../nodes/raw-json';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -442,6 +443,8 @@ export const setupCanvasNodeTaskRegistry = (
       registerExpressionFunctionNodeName,
       getRegisterExpressionFunctionNode
     );
+
+    registerNodeFactory(jsonNodeName, getRawJsonNode);
   }
 
   registerExternalNodes?.(registerNodeFactory);

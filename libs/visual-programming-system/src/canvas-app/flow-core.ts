@@ -123,6 +123,9 @@ export interface IFlowCore {
     commandName: string,
     data: any
   ) => void;
+
+  setTempData: (key: string, value: any) => void;
+  getTempData: (key: string) => any;
 }
 
 export class FlowCore implements IFlowCore {
@@ -144,6 +147,7 @@ export class FlowCore implements IFlowCore {
   protected nodeSetStateHandlers: Record<string, SetNodeStatedHandler> = {};
   protected nodeGetStateHandlers: Record<string, GetNodeStatedHandler> = {};
   protected tempVariables: Record<string, any> = {};
+  protected tempData: Record<string, any> = {};
   protected onNodeMessage: ((keyName: string, value: any) => void) | undefined =
     undefined;
 
@@ -435,5 +439,12 @@ export class FlowCore implements IFlowCore {
     if (this.commandHandlers[name]) {
       this.commandHandlers[name].execute(commandName, data);
     }
+  };
+
+  setTempData = (key: string, value: any) => {
+    this.tempData[key] = value;
+  };
+  getTempData = (key: string) => {
+    return this.tempData[key];
   };
 }

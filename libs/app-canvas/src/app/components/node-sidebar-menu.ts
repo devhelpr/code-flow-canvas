@@ -22,6 +22,7 @@ import {
   setFollowNodeExecution,
 } from '../follow-path/followNodeExecution';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { createInputDialog } from '../utils/create-input-dialog';
 
 export class NodeSidebarMenuComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -39,6 +40,7 @@ export class NodeSidebarMenuComponent extends Component<
   switchLayerButton: HTMLButtonElement | null = null;
   toggleDependencyConnections: HTMLButtonElement | null = null;
   followNodeExecution: HTMLButtonElement | null = null;
+  apikeysButton: HTMLButtonElement | null = null;
   showDependencyConnections = false;
 
   constructor(
@@ -54,6 +56,7 @@ export class NodeSidebarMenuComponent extends Component<
       <button title="Toggle between layer 1 and 2" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-layers text-[22px]"></span></button>
       <button title="Show node dependencies" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-arrow_forward text-[22px]"></span></button>
       <button title="Follow node execution" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] hidden">F</button>
+      <button title="API Keys(just openai for now)" class="${navBarButtonNomargin} flex items-center justify-center w-[32px] h-[32px] mb-1"><span class="icon icon-vpn_key text-[22px]"></span></button>
 
 		  <children></children>
 		</div>`
@@ -85,6 +88,9 @@ export class NodeSidebarMenuComponent extends Component<
         this.followNodeExecution = this.toggleDependencyConnections
           ?.nextSibling as HTMLButtonElement;
 
+        this.apikeysButton = this.followNodeExecution
+          ?.nextSibling as HTMLButtonElement;
+
         this.settingsNodeButton.addEventListener(
           'click',
           this.onClickSettingsNode
@@ -113,13 +119,16 @@ export class NodeSidebarMenuComponent extends Component<
           this.onClickFollowNodeExecution
         );
 
+        this.apikeysButton.addEventListener('click', this.onClickAPIKeys);
+
         this.renderList.push(
           this.settingsNodeButton,
           this.placeOnLayer1Button,
           this.placeOnLayer2Button,
           this.switchLayerButton,
           this.toggleDependencyConnections,
-          this.followNodeExecution
+          this.followNodeExecution,
+          this.apikeysButton
         );
         this.rootElement.append(this.element);
       }
@@ -350,6 +359,42 @@ export class NodeSidebarMenuComponent extends Component<
         navBarButtonNomargin
       );
     }
+    return false;
+  };
+
+  onClickAPIKeys = (event: Event) => {
+    event.preventDefault();
+    if (!this.rootAppElement) {
+      return false;
+    }
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return false;
+    }
+    const openAIKey = canvasApp.getTempData('openai-key') ?? '';
+    createInputDialog(
+      this.rootAppElement,
+      'Openai-key',
+      openAIKey,
+      (_name) => {
+        return {
+          valid: true,
+        };
+      },
+      {
+        isPassword: true,
+      }
+    ).then((value) => {
+      if (value === false) {
+        return;
+      }
+      const canvasApp = this.props.getCanvasApp();
+      if (!canvasApp) {
+        return;
+      }
+      canvasApp.setTempData('openai-key', value);
+      console.log('openai-key value', value);
+    });
     return false;
   };
 
