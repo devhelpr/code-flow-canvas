@@ -265,7 +265,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
             displayName: 'raw input value',
             type: 'json',
             getData: () => {
-              return { value: inputValues };
+              return inputValues;
             },
           },
         ];

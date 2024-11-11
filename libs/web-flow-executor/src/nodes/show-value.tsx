@@ -290,7 +290,7 @@ return ${input ? input : '""'};})(${input ? input : '""'});\
             displayName: 'raw input value',
             type: 'json',
             getData: () => {
-              return { value: inputValues };
+              return inputValues;
             },
           },
         ];
