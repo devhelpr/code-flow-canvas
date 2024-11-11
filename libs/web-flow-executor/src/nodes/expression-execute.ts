@@ -151,7 +151,7 @@ export const getExpressionExecute: NodeTaskFactory<NodeInfo> = (
       errorNode = createElement(
         'div',
         {
-          class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[100px] w-full hidden
+          class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[min-content] w-full hidden
             after:content-['']
             after:w-0 after:h-0 
             after:border-l-[10px] after:border-l-transparent
