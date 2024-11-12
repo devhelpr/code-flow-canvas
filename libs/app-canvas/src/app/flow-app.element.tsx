@@ -440,12 +440,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         flowChangeType === FlowChangeType.AddConnection ||
         flowChangeType === FlowChangeType.UpdateConnection
       ) {
+        let interval: any = undefined;
+        clearTimeout(interval);
         console.log('TRIGGER RUN!', getIsStopAnimations());
         resetRunIndex();
         (this.runButton?.domElement as HTMLButtonElement).disabled = false;
         setStopAnimations();
         // Wait until isStopAnimations is set to false
-        const interval = setInterval(() => {
+        interval = setInterval(() => {
           if (!getIsStopAnimations()) {
             clearInterval(interval);
             this.run();

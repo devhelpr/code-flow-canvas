@@ -1,11 +1,13 @@
 import { IRectNodeComponent } from '../../interfaces';
 import {
   BaseNodeInfo,
+  IAnyMetaField,
   IArrayMetaField,
   IJSonMetaField,
   IMatrixMetaField,
   IMetaField,
   IOtherMetaField,
+  IStringMetaField,
 } from '../../types/base-node-info';
 import { renderElement, createJSXElement } from '../../utils';
 
@@ -31,6 +33,18 @@ export const isJsonMetaField = (
   metaField: IMetaField
 ): metaField is IJSonMetaField => {
   return (metaField as unknown as IJSonMetaField).type === 'json';
+};
+
+export const isStringMetaField = (
+  metaField: IMetaField
+): metaField is IStringMetaField => {
+  return (metaField as unknown as IStringMetaField).type === 'string';
+};
+
+export const isAnyMetaField = (
+  metaField: IMetaField
+): metaField is IAnyMetaField => {
+  return (metaField as unknown as IAnyMetaField).type === 'any';
 };
 
 export const showMetaViewDialog = (
@@ -150,6 +164,14 @@ export const showMetaViewDialog = (
             }
           }
         }
+      } else if (isStringMetaField(meta) && meta.propertyName) {
+        renderElement(<h1>{meta.displayName}</h1>, divElement);
+        const value = meta.getText
+          ? meta.getText()
+          : nodeComponent.nodeInfo?.formValues?.[meta.propertyName];
+        if (value) {
+          renderElement(<p>{value}</p>, divElement);
+        }
       } else if (isJsonMetaField(meta) && meta.propertyName) {
         renderElement(<h1>{meta.displayName}</h1>, divElement);
         const json =
@@ -163,6 +185,24 @@ export const showMetaViewDialog = (
             </pre>,
             divElement
           );
+        }
+      } else if (isAnyMetaField(meta) && meta.propertyName) {
+        renderElement(<h1>{meta.displayName}</h1>, divElement);
+        const data =
+          meta.getData?.() ??
+          nodeComponent.nodeInfo?.formValues?.[meta.propertyName] ??
+          {};
+        if (data) {
+          if (typeof data === 'object' || Array.isArray(data)) {
+            renderElement(
+              <pre class="whitespace-pre-wrap">
+                {JSON.stringify(data, null, 2)}
+              </pre>,
+              divElement
+            );
+          } else {
+            renderElement(<p>{data}</p>, divElement);
+          }
         }
       } else if (isArrayMetaField(meta) && meta.propertyName) {
         renderElement(<h1>{meta.displayName}</h1>, divElement);

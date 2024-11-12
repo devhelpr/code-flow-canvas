@@ -123,7 +123,13 @@ export const getScopedVariable =
             currentValue = [];
           }
         }
-        if (data) {
+        if (data === 0) {
+          if (scopeId && !isGlobal) {
+            scopedData[scopeId] = [];
+          } else {
+            currentValue = [];
+          }
+        } else if (data) {
           if (scopeId && !isGlobal) {
             if (Array.isArray(data)) {
               scopedData[scopeId] = data;

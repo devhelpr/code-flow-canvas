@@ -261,9 +261,9 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         ];
         node.nodeInfo.meta = [
           {
-            propertyName: 'json',
-            displayName: 'raw input value',
-            type: 'json',
+            propertyName: 'input',
+            displayName: 'input',
+            type: 'any',
             getData: () => {
               return inputValues;
             },

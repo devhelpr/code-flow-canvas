@@ -25,8 +25,18 @@ export interface IJSonMetaField extends IMetaField {
   getData?: () => any;
 }
 
+export interface IAnyMetaField extends IMetaField {
+  type: 'any';
+  getData?: () => any;
+}
+
+export interface IStringMetaField extends IMetaField {
+  type: 'string';
+  getText?: () => string;
+}
+
 export interface IOtherMetaField extends IMetaField {
-  type: 'string' | 'info' | 'custom';
+  type: 'info' | 'custom';
   description?: string;
   getDescription?: () => string;
   renderCustom?: () => JSX.Element;
@@ -37,6 +47,8 @@ export type AllMetaFieldTypes =
   | IMatrixMetaField
   | IArrayMetaField
   | IJSonMetaField
+  | IStringMetaField
+  | IAnyMetaField
   | IOtherMetaField;
 
 export interface INodeDecorator {
