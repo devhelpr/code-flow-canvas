@@ -189,6 +189,8 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
         'div',
         {
           class: `${this.cssClasses.prefixLabelClasses} ${
+            thumb.prefixLabelCssClass ?? 'text-white'
+          } ${
             thumb.connectionType === ThumbConnectionType.end
               ? this.cssClasses.prefixLabelEndClasses
               : this.cssClasses.prefixLabelStartClasses

@@ -262,8 +262,12 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
       const jsxComponentWrapper = createNodeElement(
         'div',
         {
-          class:
-            'inner-node flex text-center items-center justify-center w-[150px] h-[150px] overflow-hidden bg-slate-500 rounded',
+          class: `inner-node 
+              flex text-center items-center justify-center 
+              w-[150px] h-[150px] 
+              overflow-hidden
+              bg-slate-500 text-white
+              rounded`,
           style: {
             'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
           },

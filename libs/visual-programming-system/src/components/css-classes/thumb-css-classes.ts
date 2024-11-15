@@ -13,7 +13,7 @@ export const getThumbCssClasses = () => {
     dragging: 'dragging',
     nodePortClasses: `inline-flex items-center origin-center`,
     prefixIconClasses: `relative text-white -left-[10px] thumb-prefix-icon`,
-    prefixLabelClasses: `thumb-prefix-label whitespace-nowrap relative text-white pointer-events-none select-none `,
+    prefixLabelClasses: `thumb-prefix-label whitespace-nowrap relative pointer-events-none select-none `,
     prefixLabelEndClasses: `-right-[30px] block`,
     prefixLabelStartClasses: `origin-right -translate-x-[100%] text-right flex justify-end`,
     innerCircleDefaultClasses: `inner-thumb absolute rounded top-[3px] outline outline-[2px] outline-slate-800 outline-solid`,

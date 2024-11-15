@@ -200,6 +200,7 @@ export type IThumb = {
   formFieldName?: string;
   prefixIcon?: string;
   prefixLabel?: string;
+  prefixLabelCssClass?: string;
   nodeId?: string;
   hint?: string;
 };

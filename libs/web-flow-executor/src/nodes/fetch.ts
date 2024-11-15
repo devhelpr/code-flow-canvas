@@ -287,33 +287,46 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
       const url = initalValues?.['url'] ?? '';
 
       canvasAppInstance = canvasApp;
+      const label = initalValues?.['label'] ?? '';
+      let text = label;
+      if (label) {
+        text = `\n${label}`;
+      }
 
+      const thumbPortColor = 'black';
+      const thumbLabelPortCssClass = 'text-black';
       const jsxComponentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded text-white flex flex-col items-center justify-start`,
+          class: `inner-node rounded p-4
+                  bg-amber-400  text-black 
+                  font-bold
+                  flex flex-row justify-center items-center justify-start`,
         },
         undefined,
-        'Fetch'
+        `Fetch ${text}`.trim()
       ) as unknown as INodeComponent<NodeInfo>;
 
       const rect = canvasApp.createRect(
         x,
         y,
-        200,
-        100,
+        width ?? 200,
+        height ?? 100,
         undefined,
         [
           {
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.start,
-            color: 'white',
+            color: thumbPortColor,
+            prefixLabelCssClass: thumbLabelPortCssClass,
             label: '',
             prefixLabel: 'data',
             name: 'output',
@@ -323,7 +336,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 1,
             connectionType: ThumbConnectionType.start,
-            color: 'white',
+            color: thumbPortColor,
+            prefixLabelCssClass: thumbLabelPortCssClass,
             label: '',
             name: 'error',
             prefixLabel: 'error',
@@ -332,7 +346,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 2,
             connectionType: ThumbConnectionType.start,
-            color: 'white',
+            color: thumbPortColor,
+            prefixLabelCssClass: thumbLabelPortCssClass,
             label: '',
             name: 'state',
             prefixLabel: 'state',
@@ -341,7 +356,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.StartConnectorRight,
             thumbIndex: 3,
             connectionType: ThumbConnectionType.start,
-            color: 'white',
+            color: thumbPortColor,
+            prefixLabelCssClass: thumbLabelPortCssClass,
             label: '',
             name: 'end',
             prefixLabel: 'end stream',
@@ -350,7 +366,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
-            color: 'white',
+            color: thumbPortColor,
+            prefixLabelCssClass: thumbLabelPortCssClass,
             label: '',
             //thumbConstraint: 'value',
           },
@@ -359,7 +376,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        undefined,
+        true,
         undefined,
         undefined,
         id,
@@ -398,6 +415,30 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       node = rect.nodeComponent;
       if (node.nodeInfo) {
         node.nodeInfo.formElements = [
+          {
+            fieldType: FormFieldType.Text,
+            fieldName: 'label',
+            onChange: (value: string) => {
+              if (!node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                label: value,
+              };
+              if (jsxComponentWrapper.domElement) {
+                let text = value;
+                if (value) {
+                  text = `\n${value}`;
+                }
+                jsxComponentWrapper.domElement.textContent =
+                  `Fetch ${text}`.trim();
+              }
+              if (updated) {
+                updated();
+              }
+            },
+          },
           {
             fieldType: FormFieldType.Text,
             fieldName: 'url',
