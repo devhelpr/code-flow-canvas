@@ -727,17 +727,19 @@ html:active-view-transition-type(normal) {
 
 .code-editor {
   width: 100%;
-  height: 320px;
+  height: auto;
   min-height: 320px;
   transition: height var(--popup-fullscreen-duration)
     var(--popup-fullscreen-timing-function);
   /*height: 100%;*/
 
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 320px;
+  grid-template-columns: 100%;
 }
 .fullscreen .code-editor {
   height: calc(100vh - 110px);
+  grid-template-rows: auto 1fr;
 }
 .code-editor .editor-instance {
   /* height: 40rem; */

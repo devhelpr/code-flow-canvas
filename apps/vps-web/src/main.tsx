@@ -47,7 +47,9 @@ if (url.pathname === '/run-flow') {
             container = document.getElementById(
               `${formId}_${formField.fieldName}__html`
             );
-            const popupContainer = document.getElementById('textAreaContainer');
+            const popupContainer = document.querySelector(
+              `[id='${formId}_${formField.fieldName}'].code-editor`
+            );
             if (!container || !popupContainer) return;
 
             // with a node that contains a button below the editor in the node-type, the new grid css setup

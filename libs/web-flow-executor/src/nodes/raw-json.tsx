@@ -52,7 +52,8 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let setErrorMessage: undefined | ((message: string) => void) = undefined;
   let clearErrorMessage: undefined | (() => void) = undefined;
-
+  let currentOutput: any = undefined;
+  let currentSerializedInput: any = undefined;
   const initializeCompute = () => {
     return;
   };
@@ -88,6 +89,8 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
         canvasAppInstance
       );
 
+      currentSerializedInput = payloadForExpression;
+
       const json = JSON.parse(
         node.nodeInfo.formValues['json'].replace('[openai-key]', openAIKey)
       );
@@ -98,6 +101,8 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
         '',
         payloadForExpression
       );
+
+      currentOutput = transformedJson;
 
       console.log('transformedJson', transformedJson);
 
@@ -191,6 +196,26 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
           ['json']: `{
 }`,
         };
+      }
+      if (node.nodeInfo) {
+        node.nodeInfo.meta = [
+          {
+            type: 'json',
+            propertyName: 'input',
+            displayName: 'Input',
+            getData: () => {
+              return currentSerializedInput;
+            },
+          },
+          {
+            type: 'json',
+            propertyName: 'output',
+            displayName: 'Output',
+            getData: () => {
+              return currentOutput;
+            },
+          },
+        ];
       }
     },
     {
