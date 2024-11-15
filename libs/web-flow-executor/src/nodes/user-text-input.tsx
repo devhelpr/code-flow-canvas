@@ -52,7 +52,7 @@ export const getUserTextInput =
           followPath: undefined,
         };
       } else {
-        if (typeof input !== 'string') {
+        if (typeof input === 'string') {
           currentValue = input;
           if (inputElement) {
             inputElement.value = currentValue;

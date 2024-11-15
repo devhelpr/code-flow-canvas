@@ -82,16 +82,23 @@ describe('transformJSON', () => {
           },
         },
       },
+      '@pushTo:messages': {
+        '@comment': 'this pushes a new message to messages',
+        role: 'system',
+        '@set:content': 'input',
+      },
     };
     const result = transformJSON(input, undefined, 'root', {
       ['payload-messages']: [
         { role: 'admin', message: 'hello', a: 5, b: 8 },
         { role: 'user', message: 'world', a: 303, b: 606 },
       ],
+      ['input']: 'hello test',
     });
     expect((result as any)['messages']).toEqual([
       { role: 'admin', content: 'hello', calc: 13 },
       { role: 'user', content: 'world', calc: 909 },
+      { role: 'system', content: 'hello test' },
     ]);
   });
 

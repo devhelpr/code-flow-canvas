@@ -11,6 +11,11 @@
       }
     }
   },
+  "@pushTo:messages": {
+    "@comment": "this pushes a new message to messages",
+    "role": "system",
+    "@set:content": "input"
+  },
   "@comment": "this sets the name property to the value of payload['input-property-name']",
   "@set:name": "input-property-name",
   "@operation:object": {

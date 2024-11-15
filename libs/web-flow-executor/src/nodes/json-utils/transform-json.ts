@@ -11,9 +11,37 @@ const evaluateAtProperty = (
   newJson: any,
   key: string,
   value: any,
-  payload: any
+  payload: any,
+  initialPayload?: any
 ) => {
-  if (key.startsWith('@expression:')) {
+  if (key.startsWith('@pushTo:')) {
+    const setProperty = key.replace('@pushTo:', '');
+    if (!newJson[setProperty]) {
+      newJson[setProperty] = [];
+    }
+    const newItem: any = {};
+    Object.keys(value).forEach((mapKey) => {
+      if (mapKey.startsWith('@') && !mapKey.startsWith('@@')) {
+        const mapValue = value[mapKey];
+        evaluateAtProperty(
+          newItem,
+          mapKey,
+          mapValue,
+          initialPayload,
+          initialPayload
+        );
+      } else {
+        const mapValue = value[mapKey];
+        if (isArrayOrObject(mapValue)) {
+          transformJSON(mapValue, mapKey, '', initialPayload);
+        } else {
+          newItem[mapKey] = mapValue;
+        }
+      }
+    });
+
+    newJson[setProperty].push(newItem);
+  } else if (key.startsWith('@expression:')) {
     const setProperty = key.replace('@expression:', '');
     const compiledExpression = compileExpressionAsInfo(value);
     const expressionFunction = (
@@ -55,7 +83,7 @@ const evaluateAtProperty = (
           const newItem: any = {};
           Object.keys(value.map.properties).forEach((mapKey) => {
             const mapValue = value.map.properties[mapKey];
-            evaluateAtProperty(newItem, mapKey, mapValue, item);
+            evaluateAtProperty(newItem, mapKey, mapValue, item, initialPayload);
           });
           return newItem;
         });
@@ -98,7 +126,7 @@ export const transformJSON = (
       console.log(`${path ? path + '.' : ''}${key}`);
 
       if (key.startsWith('@') && !key.startsWith('@@')) {
-        evaluateAtProperty(newJson, key, value, payload);
+        evaluateAtProperty(newJson, key, value, payload, payload);
       } else if (isArrayOrObject(value)) {
         const result = transformJSON(
           value,
@@ -115,7 +143,7 @@ export const transformJSON = (
     });
     return newJson;
   } else {
-    console.log(path, json);
-    return json;
+    console.error(path, json);
+    throw new Error('Unexpected JSON');
   }
 };

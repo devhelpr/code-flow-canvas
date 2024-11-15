@@ -172,9 +172,9 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       ];
     },
     (nodeInstance) => {
-      if (nodeInstance.node.nodeInfo) {
-        nodeInstance.node.nodeInfo.isRunOnStart = true;
-      }
+      // if (nodeInstance.node.nodeInfo) {
+      //   nodeInstance.node.nodeInfo.isRunOnStart = true;
+      // }
       canvasAppInstance = nodeInstance.contextInstance;
       rect = nodeInstance.rect;
       node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
