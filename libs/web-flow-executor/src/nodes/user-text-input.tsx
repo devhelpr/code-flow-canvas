@@ -16,10 +16,6 @@ import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
 import { runNode, getRunIndex } from '../flow-engine/flow-engine';
 
-function parseStringToFloat(value: string): number {
-  return parseFloat(value.toString().replace(',', '.'));
-}
-
 export const getUserTextInput =
   (
     createRunCounterContext: (
@@ -127,6 +123,7 @@ export const getUserTextInput =
                 );
                 return false;
               }
+              return true;
             },
             onChange: (value: string) => {
               // if (isResettingInput) {

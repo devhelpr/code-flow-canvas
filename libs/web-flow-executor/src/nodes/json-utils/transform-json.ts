@@ -116,5 +116,6 @@ export const transformJSON = (
     return newJson;
   } else {
     console.log(path, json);
+    return json;
   }
 };
