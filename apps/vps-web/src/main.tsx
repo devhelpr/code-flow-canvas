@@ -50,6 +50,8 @@ if (url.pathname === '/run-flow') {
             const popupContainer = document.getElementById('textAreaContainer');
             if (!container || !popupContainer) return;
 
+            // with a node that contains a button below the editor in the node-type, the new grid css setup
+            // ... this works when going to fullscreen but not when going back to normal size
             const resizeObserver = new ResizeObserver((_entries) => {
               console.log('resizeObserver');
               if (editorInstance) {
@@ -78,6 +80,7 @@ if (url.pathname === '/run-flow') {
               scrollbar: {
                 alwaysConsumeMouseWheel: false,
               },
+              //automaticLayout: true, // this doesn't work for this use-case !??
             });
             if (editor) {
               editorInstance = editor;
