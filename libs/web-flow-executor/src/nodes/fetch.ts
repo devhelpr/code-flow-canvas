@@ -52,6 +52,22 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           );
         });
       }
+      function sendEndStream() {
+        return new Promise<void>((resolve) => {
+          runNodeFromThumb(
+            node.thumbConnectors![3],
+            canvasAppInstance!,
+            (_inputFromLoadingRun: string | any[]) => {
+              resolve();
+            },
+            '',
+            node,
+            loopIndex,
+            scopeId,
+            runCounter
+          );
+        });
+      }
       function sendFetchState(state: string) {
         runNodeFromThumb(
           node.thumbConnectors![2],
@@ -146,11 +162,13 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                   .then(({ value, done }) => {
                     if (done) {
                       if (!isFullJson) {
-                        resolve({
-                          result: false,
-                          followPath: undefined,
-                          stop: true,
-                          dummyEndpoint: true,
+                        sendEndStream().then(() => {
+                          resolve({
+                            result: false,
+                            followPath: undefined,
+                            stop: true,
+                            dummyEndpoint: true,
+                          });
                         });
                       }
 
@@ -297,6 +315,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             connectionType: ThumbConnectionType.start,
             color: 'white',
             label: '',
+            prefixLabel: 'data',
             name: 'output',
             maxConnections: -1,
           },
@@ -319,11 +338,20 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
             prefixLabel: 'state',
           },
           {
+            thumbType: ThumbType.StartConnectorRight,
+            thumbIndex: 3,
+            connectionType: ThumbConnectionType.start,
+            color: 'white',
+            label: '',
+            name: 'end',
+            prefixLabel: 'end stream',
+          },
+          {
             thumbType: ThumbType.EndConnectorCenter,
             thumbIndex: 0,
             connectionType: ThumbConnectionType.end,
             color: 'white',
-            label: ' ',
+            label: '',
             //thumbConstraint: 'value',
           },
         ],

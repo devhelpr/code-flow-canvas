@@ -14,6 +14,8 @@ import {
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { transformJSON } from './json-utils/transform-json';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
 
 const fieldName = 'testt-input';
 const labelName = 'JSON';
@@ -21,12 +23,20 @@ export const jsonNodeName = 'json-node';
 const familyName = 'flow-canvas';
 const thumbs = [
   {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'input',
+  },
+  {
     thumbType: ThumbType.StartConnectorCenter,
     thumbIndex: 0,
     connectionType: ThumbConnectionType.start,
     color: 'white',
     label: ' ',
-    name: 'input',
+    name: 'output',
   },
 ];
 
@@ -40,11 +50,21 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let rect: Rect<NodeInfo> | undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
+  let setErrorMessage: undefined | ((message: string) => void) = undefined;
+  let clearErrorMessage: undefined | (() => void) = undefined;
+
   const initializeCompute = () => {
     return;
   };
 
-  const compute = (_input: string, _loopIndex?: number, _payload?: any) => {
+  const compute = (
+    input: string,
+    _loopIndex?: number,
+    payload?: any,
+    _thumbName?: string,
+    scopeId?: string
+  ) => {
+    clearErrorMessage?.();
     if (!node.nodeInfo || !node.nodeInfo.formValues?.['json']) {
       return {
         result: false,
@@ -58,16 +78,36 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
         ? process.env?.['openai_api_key'] ?? ''
         : canvasAppInstance?.getTempData('openai-key') ?? '';
 
+      const payloadForExpression = getVariablePayloadInputUtils(
+        input,
+        payload,
+        'string',
+        -1,
+        -1,
+        scopeId,
+        canvasAppInstance
+      );
+
       const json = JSON.parse(
         node.nodeInfo.formValues['json'].replace('[openai-key]', openAIKey)
       );
 
+      const transformedJson = transformJSON(
+        json,
+        undefined,
+        '',
+        payloadForExpression
+      );
+
+      console.log('transformedJson', transformedJson);
+
       return {
-        result: json,
-        output: json,
+        result: transformedJson,
+        output: transformedJson,
         followPath: undefined,
       };
-    } catch (e) {
+    } catch (e: any) {
+      setErrorMessage?.(e?.message ?? 'Error parsing JSON');
       return {
         result: false,
         output: false,
@@ -78,7 +118,7 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
   };
 
   const Text = () => (
-    <div class="text-white text-center font-bold text-4xl p-4">JSON</div>
+    <div class="text-white text-center text-2xl p-4">JSON Mapper</div>
   );
 
   return visualNodeFactory(
@@ -113,6 +153,17 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
               ['json']: value,
             };
 
+            // if (updated) {
+            //   updated(undefined, undefined, FlowChangeType.UpdateNode);
+            // }
+          },
+        },
+        {
+          fieldType: FormFieldType.Button,
+          fieldName: 'save',
+          caption: 'Save',
+          value: 'Save',
+          onButtonClick: () => {
             if (updated) {
               updated(undefined, undefined, FlowChangeType.UpdateNode);
             }
@@ -127,6 +178,10 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       canvasAppInstance = nodeInstance.contextInstance;
       rect = nodeInstance.rect;
       node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+
+      setErrorMessage = nodeInstance.setError;
+      clearErrorMessage = nodeInstance.clearError;
+
       if (rect && rect.resize) {
         rect?.resize();
       }
@@ -142,7 +197,8 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       category: 'data',
       adjustToFormContent: true,
       hasFormInPopup: true,
-      hasTitlebar: true,
+      hasTitlebar: false,
+      hideTitle: true,
       nodeCannotBeReplaced: true,
       keepPopupOpenAfterUpdate: true,
     },

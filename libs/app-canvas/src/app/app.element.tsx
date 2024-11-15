@@ -450,7 +450,7 @@ export class AppElement<T extends BaseNodeInfo> {
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0;
-    if (key === 'backspace' || key === 'delete') {
+    if (key === 'backspace' || key === 'delete' || key === 'enter') {
       if (inInputControle) {
         return;
       }

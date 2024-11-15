@@ -47,15 +47,29 @@ if (url.pathname === '/run-flow') {
             container = document.getElementById(
               `${formId}_${formField.fieldName}__html`
             );
-            if (!container) return;
+            const popupContainer = document.getElementById('textAreaContainer');
+            if (!container || !popupContainer) return;
 
             const resizeObserver = new ResizeObserver((_entries) => {
+              console.log('resizeObserver');
               if (editorInstance) {
                 editorInstance.layout();
               }
             });
 
-            resizeObserver.observe(container);
+            resizeObserver.observe(popupContainer);
+            console.log('INIT MONACO EDITOR', popupContainer, container);
+            // const containerObserver = new MutationObserver((_entries) => {
+            //   console.log('resizeObserver');
+            //   if (editorInstance) {
+            //     editorInstance.layout();
+            //   }
+            // });
+            // containerObserver.observe(popupContainer, {
+            //   childList: true,
+            //   subtree: true,
+            // });
+
             const editor = monaco.editor.create(container, {
               fixedOverflowWidgets: true,
               value: (formField.value ?? '').toString(),

@@ -1,6 +1,11 @@
 import { IFlowCanvasBase } from '../canvas-app/flow-canvas';
 import { Rect } from '../components/rect';
-import { INodeComponent, IThumb, IRectNodeComponent } from '../interfaces';
+import {
+  INodeComponent,
+  IThumb,
+  IRectNodeComponent,
+  IDOMElement,
+} from '../interfaces';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { createNodeElement, createElement } from './create-element';
 import { InitialValues } from '../types/values';
@@ -19,6 +24,8 @@ export interface CreateNodeInfo<T extends BaseNodeInfo> {
   componentWrapper?: INodeComponent<T>;
   contextInstance: IFlowCanvasBase<T>;
   isDecoratorNode: boolean;
+  setError: (error: string) => void;
+  clearError: () => void;
 }
 
 export abstract class BaseNodeCompute<T> {
@@ -85,6 +92,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
   const showTitlebar = settings ? settings?.hasTitlebar : true;
   let hasBeforeDecorator = false;
   let hasAfterDecorator = false;
+  let errorNode: IDOMElement | undefined = undefined;
 
   if (nodeInfo && nodeInfo.decorators && getNodeTaskFactory) {
     nodeInfo.decorators.forEach((decorator) => {
@@ -409,6 +417,35 @@ export const createRectNode = <T extends BaseNodeInfo>(
     componentWrapper,
     contextInstance: canvasApp,
     isDecoratorNode: false,
+    setError: (error: string) => {
+      if (errorNode) {
+        if (errorNode.domElement) {
+          (errorNode.domElement as HTMLElement).innerHTML = error;
+        }
+      } else {
+        errorNode = createElement(
+          'div',
+          {
+            class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[min-content] w-full
+            after:content-['']
+            after:w-0 after:h-0 
+            after:border-l-[10px] after:border-l-transparent
+            after:border-t-[10px] after:border-t-red-500
+            after:border-r-[10px] after:border-r-transparent
+            after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
+          `,
+          },
+          rect.nodeComponent?.domElement,
+          error
+        );
+      }
+    },
+    clearError: () => {
+      if (errorNode) {
+        errorNode.domElement?.remove();
+        errorNode = undefined;
+      }
+    },
   };
 };
 
@@ -501,6 +538,12 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
           contextInstance: canvasApp,
           node: decoratorNode,
           isDecoratorNode: true,
+          setError: () => {
+            //
+          },
+          clearError: () => {
+            //
+          },
         });
       }
       return decoratorNode;

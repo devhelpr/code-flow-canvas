@@ -142,6 +142,7 @@ import { getMediaLibraryNode } from '../nodes/media-library';
 import { RunCounter } from '../follow-path/run-counter';
 import { getCreateEventStateValueNode } from '../nodes/create-state-value';
 import { getUserInput } from '../nodes/user-input';
+import { getUserTextInput } from '../nodes/user-text-input';
 import { setFlowVariable } from '../nodes/set-flow-variable';
 import { getAnnotation } from '../nodes/annotation';
 import { getMergeSumNode, sumMergeModeName } from '../nodes/merge-sum';
@@ -297,6 +298,12 @@ export const setupCanvasNodeTaskRegistry = (
       'user-input',
       getUserInput(createRunCounterContext),
       'User Input'
+    );
+
+    registerNodeFactory(
+      'user-text-input',
+      getUserTextInput(createRunCounterContext),
+      'User Text Input'
     );
     registerNodeFactory('timer', getTimer);
     registerNodeFactory('slider', getSlider(createRunCounterContext));

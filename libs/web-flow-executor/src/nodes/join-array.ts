@@ -81,9 +81,10 @@ export const joinArray: NodeTaskFactory<NodeInfo> = (
         {
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
+          label: 'Join character',
           value: values?.[fieldName] ?? '',
           settings: {
-            showLabel: false,
+            showLabel: true,
           },
           onChange: (value: string) => {
             if (!node.nodeInfo) {

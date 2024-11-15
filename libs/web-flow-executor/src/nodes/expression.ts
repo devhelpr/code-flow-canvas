@@ -26,6 +26,7 @@ import {
   getNodesByNodeType,
 } from '../graph/get-node-by-variable-name';
 import { registerExpressionFunctionNodeName } from './register-expression-function';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
 
 const thumbs = [
   {
@@ -47,19 +48,19 @@ const thumbs = [
   },
 ];
 
-export const parseInput = (input: string, inputType: string) => {
-  if (inputType === 'number') {
-    return parseFloat(input) || 0;
-  } else if (inputType === 'integer') {
-    return parseInt(input) || 0;
-  } else if (inputType === 'boolean') {
-    return input === 'true' || input === '1' || Boolean(input) ? true : false;
-  } else if (inputType === 'array') {
-    return Array.isArray(input) ? input : [];
-  } else {
-    return (input ?? '').toString();
-  }
-};
+// export const parseInput = (input: string, inputType: string) => {
+//   if (inputType === 'number') {
+//     return parseFloat(input) || 0;
+//   } else if (inputType === 'integer') {
+//     return parseInt(input) || 0;
+//   } else if (inputType === 'boolean') {
+//     return input === 'true' || input === '1' || Boolean(input) ? true : false;
+//   } else if (inputType === 'array') {
+//     return Array.isArray(input) ? input : [];
+//   } else {
+//     return (input ?? '').toString();
+//   }
+// };
 
 export const setClearExpressionCache = () => {
   expressionCache = {};
@@ -132,51 +133,30 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         ) as unknown as (payload?: any) => any
       ).bind(compiledExpressionInfo.bindings);
 
-      let inputAsString =
-        typeof input === 'object' ? '' : parseInput(input, inputType);
-      let inputAsObject = {};
-      if (Array.isArray(input)) {
-        if (inputType === 'array') {
-          inputAsString = input;
-        } else {
-          inputAsString = input.map((item) =>
-            parseInput(item, inputType)
-          ) as unknown as string; // dirty hack
-        }
-      } else if (typeof input === 'object') {
-        inputAsObject = input;
-      }
+      // let inputAsString =
+      //   typeof input === 'object' ? '' : parseInput(input, inputType);
+      // let inputAsObject = {};
+      // if (Array.isArray(input)) {
+      //   if (inputType === 'array') {
+      //     inputAsString = input;
+      //   } else {
+      //     inputAsString = input.map((item) =>
+      //       parseInput(item, inputType)
+      //     ) as unknown as string; // dirty hack
+      //   }
+      // } else if (typeof input === 'object') {
+      //   inputAsObject = input;
+      // }
 
-      const payloadForExpression = {
-        input: Array.isArray(input) ? input : inputAsString,
-        currentValue: currentValue,
-        value: currentValue,
-        array: input,
-        current: currentValue,
-        last: currentValue,
-        index: executionRunCounter ?? 0,
-        runIteration: executionRunCounter ?? 0,
-        random: Math.round(Math.random() * 100),
-        ...payload,
-        ...inputAsObject,
-      };
-      canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
-        Object.defineProperties(payloadForExpression, {
-          [variableName]: {
-            get: () => {
-              const getResult = canvasAppInstance?.getVariable(
-                variableName,
-                undefined,
-                scopeId
-              );
-              return getResult;
-            },
-            set: (value) => {
-              canvasAppInstance?.setVariable(variableName, value, scopeId);
-            },
-          },
-        });
-      });
+      const payloadForExpression = getVariablePayloadInputUtils(
+        input,
+        payload,
+        inputType,
+        currentValue,
+        executionRunCounter,
+        scopeId,
+        canvasAppInstance
+      );
 
       result = runExpression(
         expressionFunction,
