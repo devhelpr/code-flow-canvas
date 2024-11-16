@@ -26,9 +26,9 @@ export const getFormattedVariableValue = (
   if (typeof value === 'number') {
     return `${(value as number).toFixed(decimalCount)}${appendText}`;
   } else if (typeof value === 'string') {
-    return `${value}${appendText}`;
+    return `${value}${appendText}` || '-';
   } else {
-    return `${(value as any).toString()}${appendText}`;
+    return `${(value as any).toString()}${appendText}` || '-';
   }
   return '-';
 };

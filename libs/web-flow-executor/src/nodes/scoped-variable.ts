@@ -936,8 +936,8 @@ export const getScopedVariable =
         rect = canvasApp.createRect(
           x,
           y,
-          100,
-          100,
+          150,
+          200,
           undefined,
           [],
           componentWrapper,
@@ -969,10 +969,19 @@ export const getScopedVariable =
           'div',
           {
             class:
-              'absolute top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1 whitespace-nowrap',
+              'absolute flex flex-row gap-2 items-center top-0 left-0 bg-slate-700 text-white px-1 rounded -translate-y-2/4 translate-x-1 whitespace-nowrap',
           },
           rect.nodeComponent?.domElement as unknown as HTMLElement,
           variableName
+        ) as unknown as INodeComponent<NodeInfo>;
+
+        createElement(
+          'div',
+          {
+            class: 'block order-first text-white icon icon-all_inbox',
+          },
+          tagNode?.domElement as unknown as HTMLElement,
+          undefined
         ) as unknown as INodeComponent<NodeInfo>;
 
         node = rect.nodeComponent;
