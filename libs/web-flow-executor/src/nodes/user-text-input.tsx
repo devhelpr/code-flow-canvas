@@ -30,6 +30,7 @@ export const getUserTextInput =
     let inputElement: HTMLInputElement | undefined = undefined;
     let labelElement: HTMLLabelElement | undefined = undefined;
     let currentValue = '';
+    let runCounter: RunCounter | undefined = undefined;
     const initializeCompute = () => {
       return;
     };
@@ -39,12 +40,15 @@ export const getUserTextInput =
       payload?: any,
       _thumbName?: string,
       _scopeId?: string,
-      _runCounterCompute?: RunCounter
+      runCounterCompute?: RunCounter
     ) => {
       try {
         currentValue = typeof input === 'string' ? input : '';
       } catch {
         currentValue = '';
+      }
+      if (!payload?.['trigger']) {
+        runCounter = runCounterCompute;
       }
       if (payload?.['trigger'] === true && node.nodeInfo) {
         return {
@@ -115,7 +119,7 @@ export const getUserTextInput =
                   getRunIndex(),
                   undefined,
                   undefined,
-                  createRunCounterContext(false, false),
+                  runCounter,
                   false,
                   {
                     trigger: true,

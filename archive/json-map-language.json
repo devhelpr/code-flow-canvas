@@ -1,13 +1,13 @@
 {
   "@map": {
     "@comment": "this maps input.messages to messages",
-    "input": "@input",
+    "input": "chat",
     "property": "messages",
     "map": {
       "type": "object",
       "properties": {
-        "@set:role": "@item.role",
-        "@set:content": "@item.message"
+        "@set:role": "role",
+        "@set:content": "message"
       }
     }
   },
@@ -16,27 +16,8 @@
     "role": "system",
     "@set:content": "input"
   },
-  "@comment": "this sets the name property to the value of payload['input-property-name']",
-  "@set:name": "input-property-name",
-  "@operation:object": {
-    "@comment": "this creates an object testtest with properties abc, list",
-    "input": "@input.test",
-    "property": "testtest",
-    "properties": {
-      "abc": "def",
-      "@set:something": "@item.something",
-      "@operation:map": {
-        "input": "@item",
-        "property": "list",
-        "map": {
-          "type": "object",
-          "properties": {
-            "@set:name": "@item.name",
-            "@set:description": "@item.description",
-            "@set:combined": "@template:@item.name - @item.description"
-          }
-        }
-      }
-    }
-  }
+  "temperature": 0.6,
+  "model": "gpt-4-turbo",
+  "max_tokens": 30,
+  "stream": true
 }

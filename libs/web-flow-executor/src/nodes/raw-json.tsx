@@ -204,7 +204,7 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
             propertyName: 'input',
             displayName: 'Input',
             getData: () => {
-              return currentSerializedInput;
+              return structuredClone(currentSerializedInput);
             },
           },
           {
@@ -212,7 +212,7 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
             propertyName: 'output',
             displayName: 'Output',
             getData: () => {
-              return currentOutput;
+              return structuredClone(currentOutput);
             },
           },
         ];

@@ -56,17 +56,17 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
     _payload?: any,
     thumbName?: string,
     scopeId?: string,
-    runCounter?: RunCounter
+    _runCounter?: RunCounter
   ) => {
     const extraInputCount =
       node.nodeInfo?.formValues?.['input-thumbs']?.length ?? 0;
     if (scopeId && !values[scopeId]) {
       values[scopeId] = {};
     }
-    if (runCounter?.runId && !values[runCounter?.runId]) {
-      values[runCounter?.runId] = {};
-    }
-    const localValues = values[runCounter?.runId ?? scopeId ?? 'global'];
+    // if (runCounter?.runId && !values[runCounter?.runId]) {
+    //   values[runCounter?.runId] = {};
+    // }
+    const localValues = values[scopeId ?? 'global']; //runCounter?.runId ??
     if (node && node.thumbConnectors && thumbName?.startsWith('input')) {
       const thumb = node.thumbConnectors.find(
         (thumb) => thumb.thumbName === thumbName
@@ -125,7 +125,7 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
       loop++;
     }
     if (resetOnTrigger) {
-      values[runCounter?.runId ?? scopeId ?? 'global'] = {};
+      values[scopeId ?? 'global'] = {}; //runCounter?.runId ??
     }
     return {
       result: outputObject,

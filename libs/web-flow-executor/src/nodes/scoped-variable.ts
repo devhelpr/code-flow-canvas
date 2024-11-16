@@ -49,6 +49,8 @@ export const getScopedVariable =
           return 0;
         case 'array':
           return [];
+        case 'object':
+          return {};
         default:
           return '';
       }
@@ -64,6 +66,8 @@ export const getScopedVariable =
           return parseInt(data) || 0;
         case 'array':
           return Array.isArray(data) ? data : [];
+        case 'object':
+          return typeof data === 'object' && !Array.isArray(data) ? data : {};
         default:
           return data.toString();
       }
@@ -817,6 +821,10 @@ export const getScopedVariable =
               {
                 value: 'array',
                 label: 'Array',
+              },
+              {
+                value: 'object',
+                label: 'Object',
               },
 
               /*{
