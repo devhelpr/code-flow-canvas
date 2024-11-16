@@ -95,6 +95,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     currentValue = 0;
     executionRunCounter = 0;
     expressionCache[node.id] = undefined;
+    if (errorNode) {
+      (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
+    }
     return;
   };
 

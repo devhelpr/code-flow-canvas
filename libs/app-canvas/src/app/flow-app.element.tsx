@@ -1631,6 +1631,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         }
 
         if (
+          node.nodeInfo.hasNoFormPopup ||
           getFollowNodeExecution() ||
           (formElements.length <= 1 &&
             !(

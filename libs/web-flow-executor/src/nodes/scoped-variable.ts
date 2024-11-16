@@ -3,12 +3,12 @@ import {
   createElement,
   createNodeElement,
   FormFieldType,
-  getFormattedValue,
   IElementNode,
   InitialValues,
   INodeComponent,
   IRectNodeComponent,
   NodeTask,
+  getFormattedVariableValue,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { showDictionaryData } from './data-viewers/dictionary';
@@ -492,7 +492,9 @@ export const getScopedVariable =
         if (fieldType === 'value') {
           if (htmlNode?.domElement) {
             (htmlNode?.domElement as unknown as HTMLElement).innerHTML =
-              getLabelAsHtml(getFormattedValue(lastStoredDataState, 2, ''));
+              getLabelAsHtml(
+                getFormattedVariableValue(lastStoredDataState, 2, '')
+              );
           }
           if (rect && rect.resize) {
             rect.resize(120);

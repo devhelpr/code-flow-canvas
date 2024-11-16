@@ -15,6 +15,28 @@ import { NodeInfo } from '../types/node-info';
 
 import { RunCounter } from '../follow-path/run-counter';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
+import {
+  compileExpressionAsInfo,
+  runExpression,
+} from '@devhelpr/expression-compiler';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
+
+function handleExpression(expression: string, payload: any) {
+  const compiledExpression = compileExpressionAsInfo(expression);
+  const expressionFunction = (
+    new Function('payload', `${compiledExpression.script}`) as unknown as (
+      payload?: any
+    ) => any
+  ).bind(compiledExpression.bindings);
+
+  const result = runExpression(
+    expressionFunction,
+    payload,
+    false,
+    compiledExpression.payloadProperties
+  );
+  return Boolean(result);
+}
 
 export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
@@ -26,7 +48,7 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
   const computeAsync = (
     input: string,
     loopIndex?: number,
-    _payload?: any,
+    payload?: any,
     _thumbName?: string,
     scopeId?: string,
     runCounterCompute?: RunCounter
@@ -47,10 +69,30 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
       const case1 = node?.nodeInfo?.formValues?.['case1'] ?? '';
       const case2 = node?.nodeInfo?.formValues?.['case2'] ?? '';
       const case3 = node?.nodeInfo?.formValues?.['case3'] ?? '';
+      const useExpression =
+        node?.nodeInfo?.formValues?.['useExpression'] ?? false;
 
       let thumbNode: IThumbNodeComponent<NodeInfo> | undefined = undefined;
       if (input !== 'true') {
-        if (typeof inputAsString === 'string') {
+        if (useExpression) {
+          const payloadForExpression = getVariablePayloadInputUtils(
+            input,
+            payload,
+            'string',
+            -1,
+            -1,
+            scopeId,
+            canvasAppInstance
+          );
+
+          if (handleExpression(case1, payloadForExpression)) {
+            thumbNode = node.thumbConnectors[0];
+          } else if (handleExpression(case2, payloadForExpression)) {
+            thumbNode = node.thumbConnectors[1];
+          } else if (handleExpression(case3, payloadForExpression)) {
+            thumbNode = node.thumbConnectors[2];
+          }
+        } else if (typeof inputAsString === 'string') {
           if (case1 && inputAsString === case1) {
             thumbNode = node.thumbConnectors[0];
           } else if (case2 && inputAsString === case2) {
@@ -101,7 +143,9 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
       y: number,
       id?: string,
       initalValues?: InitialValues,
-      containerNode?: IRectNodeComponent<NodeInfo>
+      containerNode?: IRectNodeComponent<NodeInfo>,
+      width?: number,
+      height?: number
     ) => {
       canvasAppInstance = canvasApp;
       const formElements = [
@@ -165,6 +209,25 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
             }
           },
         },
+        {
+          fieldType: FormFieldType.Checkbox,
+          fieldName: 'useExpression',
+          label: 'Use expressions',
+          value: initalValues?.['useExpression'] ?? 'false',
+          onChange: (value: boolean) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              useExpression: value,
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+        },
       ];
 
       const componentWrapper = createElement(
@@ -187,8 +250,8 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
       const rect = canvasApp.createRect(
         x,
         y,
-        200,
-        110,
+        width ?? 200,
+        height ?? 110,
         undefined,
         [
           {
@@ -233,7 +296,7 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
         {
           classNames: `bg-slate-500 p-4 rounded`,
         },
-        false,
+        true,
         undefined,
         undefined,
         id,
@@ -252,6 +315,9 @@ export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.formElements = formElements;
         node.nodeInfo.computeAsync = computeAsync;
         node.nodeInfo.initializeCompute = initializeCompute;
+        node.nodeInfo.showFormOnlyInPopup = false;
+        node.nodeInfo.hasNoFormPopup = true;
+        node.nodeInfo.isSettingsPopup = false;
       }
       return node;
     },

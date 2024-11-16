@@ -219,7 +219,7 @@ export const getUserTextInput =
           x,
           y,
           width ?? 200,
-          height ?? 100,
+          height ?? 150,
           undefined,
           [
             {
