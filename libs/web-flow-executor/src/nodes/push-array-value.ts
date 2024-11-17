@@ -8,6 +8,7 @@ import {
   ThumbConnectionType,
   ThumbType,
   visualNodeFactory,
+  IComputeResult,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
@@ -25,32 +26,43 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
     return;
   };
 
-  const compute = (
+  const computeAsync = (
     input: string,
     _loopIndex?: number,
     _payload?: any,
     _thumbName?: string,
     scopeId?: string
   ) => {
-    if (contextInstance) {
-      const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      if (variableName) {
-        let shouldPush = false;
-        if (Array.isArray(input)) {
-          shouldPush = input.length > 0;
-        } else {
-          shouldPush = input !== undefined && input !== '' && input !== null;
-        }
-        if (shouldPush) {
-          contextInstance.setVariable(variableName, { push: input }, scopeId);
+    return new Promise<IComputeResult>((resolve) => {
+      if (contextInstance) {
+        const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+        if (variableName) {
+          let shouldPush = false;
+          if (Array.isArray(input)) {
+            shouldPush = input.length > 0;
+          } else {
+            shouldPush = input !== undefined && input !== '' && input !== null;
+          }
+          if (shouldPush) {
+            contextInstance
+              .setVariable(variableName, { push: input }, scopeId)
+              .then((_result) => {
+                resolve({
+                  result: input,
+                  output: input,
+                  followPath: undefined,
+                });
+              });
+            return;
+          }
         }
       }
-    }
-    return {
-      result: input,
-      output: input,
-      followPath: undefined,
-    };
+      resolve({
+        result: input,
+        output: input,
+        followPath: undefined,
+      });
+    });
   };
 
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
@@ -73,7 +85,7 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
     'Push value to array',
     'flow-canvas',
     'variableName',
-    compute,
+    computeAsync,
     initializeCompute,
     false,
     280,
@@ -143,6 +155,8 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
       hasFormInPopup: true,
       additionalClassNames: 'text-center',
       category: 'variables-array',
-    }
+    },
+    undefined,
+    true
   );
 };

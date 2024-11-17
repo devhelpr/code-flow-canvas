@@ -1119,6 +1119,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     markup?: string | INodeComponent<T> | HTMLElement,
     layoutProperties?: {
       classNames?: string;
+      autoSizeToContentIfNodeHasNoThumbs?: boolean;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
@@ -1175,6 +1176,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     markup?: string | INodeComponent<T>,
     layoutProperties?: {
       classNames?: string;
+      autoSizeToContentIfNodeHasNoThumbs?: boolean;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,

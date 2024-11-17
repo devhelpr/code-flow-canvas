@@ -345,6 +345,10 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
     //
   };
 
+  const resetVariable = () => {
+    return true;
+  };
+
   const getNodeStatedHandler = () => {
     //console.log('getNodeStatedHandler array', [...inputValues]);
     return {
@@ -388,6 +392,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
         getData,
         setData,
         removeScope,
+        resetVariable,
       });
       const formElements = [
         {
@@ -410,6 +415,7 @@ export const getArray: NodeTaskFactory<NodeInfo> = (
               getData,
               setData,
               removeScope,
+              resetVariable,
             });
             console.log('onChange', node.nodeInfo);
             if (updated) {

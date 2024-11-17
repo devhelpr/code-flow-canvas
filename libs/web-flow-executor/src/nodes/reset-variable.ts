@@ -9,6 +9,7 @@ import {
   ThumbConnectionType,
   ThumbType,
   visualNodeFactory,
+  IComputeResult,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
@@ -27,7 +28,7 @@ export const resetVariable: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (
+  const computeAsync = (
     input: string,
     _loopIndex?: number,
     _payload?: any,
@@ -35,17 +36,29 @@ export const resetVariable: NodeTaskFactory<NodeInfo> = (
     scopeId?: string,
     runCounter?: RunCounter
   ) => {
-    if (contextInstance) {
-      const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
-      if (variableName) {
-        contextInstance.setVariable(variableName, 0, scopeId, runCounter);
+    return new Promise<IComputeResult>((resolve) => {
+      if (contextInstance) {
+        const variableName = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+        if (variableName) {
+          // TODO : implement resetVariable on the contextInstance
+          contextInstance
+            .resetVariable(variableName, scopeId, runCounter)
+            .then(() => {
+              resolve({
+                result: input,
+                output: input,
+                followPath: undefined,
+              });
+            });
+          return;
+        }
       }
-    }
-    return {
-      result: input,
-      output: input,
-      followPath: undefined,
-    };
+      resolve({
+        result: input,
+        output: input,
+        followPath: undefined,
+      });
+    });
   };
 
   const getDependencies = (): { startNodeId: string; endNodeId: string }[] => {
@@ -68,7 +81,7 @@ export const resetVariable: NodeTaskFactory<NodeInfo> = (
     'Reset variable',
     'flow-canvas',
     'variableName',
-    compute,
+    computeAsync,
     initializeCompute,
     false,
     200,
@@ -126,6 +139,8 @@ export const resetVariable: NodeTaskFactory<NodeInfo> = (
       category: 'variables',
       backgroundColorClassName:
         theme?.referenceVariableBackgroundColorClassName,
-    }
+    },
+    undefined,
+    true
   );
 };

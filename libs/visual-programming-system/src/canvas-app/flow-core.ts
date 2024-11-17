@@ -28,6 +28,7 @@ export interface IFlowCore {
       setData: (data: any) => boolean;
       initializeDataStructure?: (structureInfo: any) => void;
       removeScope: (scopeId: string) => void;
+      resetVariable: () => boolean;
     }
   ) => void;
 
@@ -78,6 +79,12 @@ export interface IFlowCore {
   deleteVariables: () => void;
 
   getVariableNames: (scopeId?: string) => string[];
+
+  resetVariable: (
+    variableName: string,
+    scopeId?: string,
+    runCounter?: any
+  ) => Promise<void>;
 
   initializeVariableDataStructure: (
     variableName: string,
@@ -137,6 +144,7 @@ export class FlowCore implements IFlowCore {
       setData: (data: any, scopeId?: string) => boolean;
       initializeDataStructure?: (structureInfo: any, scopeId?: string) => void;
       removeScope: (scopeId: string) => void;
+      resetVariable: (scopeId?: string) => boolean;
     }
   > = {};
   protected variableObservers: Map<
@@ -200,6 +208,7 @@ export class FlowCore implements IFlowCore {
       setData: (data: any) => boolean;
       initializeDataStructure?: (structureInfo: any) => void;
       removeScope: (scopeId: string) => void;
+      resetVariable: (scopeId?: string) => boolean;
     }
   ) => {
     if (variableName && variable.id) {
@@ -299,6 +308,41 @@ export class FlowCore implements IFlowCore {
         }
       }
       resolve(true);
+    });
+  };
+
+  resetVariable = (
+    variableName: string,
+    scopeId?: string,
+    runCounter?: any
+  ) => {
+    return new Promise<void>((resolve) => {
+      if (variableName && this.variables[variableName]) {
+        const result = this.variables[variableName].resetVariable(scopeId);
+        if (!result) {
+          resolve();
+          return;
+        }
+        const dataToObserver = this.variables[variableName].getData(
+          undefined,
+          scopeId
+        );
+        const map = this.variableObservers.get(`${variableName}`);
+        if (map) {
+          const observePromises: Promise<void>[] = [];
+          map.forEach((observer) => {
+            observePromises.push(
+              observer(dataToObserver, runCounter) as unknown as Promise<void>
+            );
+          });
+          Promise.all(observePromises).then(() => {
+            resolve();
+          });
+
+          return;
+        }
+      }
+      resolve();
     });
   };
 

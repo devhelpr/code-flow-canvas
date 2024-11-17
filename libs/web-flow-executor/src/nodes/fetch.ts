@@ -177,6 +177,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                     // Convert the chunk value to a string
                     const chunkString = new TextDecoder().decode(value);
 
+                    // chunkstring can contain multiple eventstream messages
+                    // .. use for .. of with await (create promises for each chunk part and await them)
+
+                    console.log('chunkString', chunkString.split('\n\n'));
+                    //const chunks = chunkString.split('\n\n');
                     if (chunkString.endsWith('}\n')) {
                       try {
                         const json = JSON.parse(chunkString);
@@ -202,6 +207,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                         .filter((line) => line !== '[DONE]')
                         .map((line) => JSON.parse(line));
                       if (lines.length > 0) {
+                        console.log('lines', lines);
                         sendFetchResult(lines).then(() => {
                           readChunk();
                         });

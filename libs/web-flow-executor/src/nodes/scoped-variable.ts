@@ -39,6 +39,21 @@ export const getScopedVariable =
 
     let lastStoredDataState: any = undefined;
 
+    const getDefaultFieldValue = () => {
+      switch (fieldType) {
+        case 'value':
+          return getDefaultValue();
+        case 'enum':
+          return getDefaultValue();
+        case 'array':
+          return [];
+        case 'grid':
+          return {};
+        default:
+          return '';
+      }
+    };
+
     const getDefaultValue = () => {
       switch (fieldValueType) {
         case 'number':
@@ -358,14 +373,16 @@ export const getScopedVariable =
       }
 
       if (fieldType === 'value') {
-        if (isNaN(currentValue)) {
-          currentValue = 0;
-          if (htmlNode && htmlNode?.domElement) {
-            (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
-          }
-        } else if (htmlNode && htmlNode?.domElement) {
+        // if (isNaN(currentValue)) {
+        //   currentValue = 0;
+        //   if (htmlNode && htmlNode?.domElement) {
+        //     (htmlNode.domElement as unknown as HTMLElement).textContent = '-';
+        //   }
+        // } else
+
+        if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).innerHTML =
-            getLabelAsHtml(currentValue.toString());
+            getLabelAsHtml(getFormattedVariableValue(currentValue, 2, ''));
         }
         canvasAppInstance?.setVariable(
           variableName,
@@ -434,7 +451,9 @@ export const getScopedVariable =
     const getData = (parameter?: any, scopeId?: string) => {
       return getDataForFieldType(parameter, scopeId);
     };
-
+    const resetVariable = (scopeId?: string) => {
+      return setData(getDefaultFieldValue(), scopeId);
+    };
     const setData = (data: any, scopeId?: string) => {
       const result = setDataForFieldType(data, scopeId);
 
@@ -664,6 +683,7 @@ export const getScopedVariable =
             setData,
             initializeDataStructure,
             removeScope,
+            resetVariable,
           });
           canvasApp.registeGetNodeStateHandler(id, getNodeStatedHandler);
           canvasApp.registeSetNodeStateHandler(id, setNodeStatedHandler);
@@ -689,6 +709,7 @@ export const getScopedVariable =
                 getData,
                 setData,
                 removeScope,
+                resetVariable,
               });
               if (id) {
                 canvasApp.unRegisteGetNodeStateHandler(id);
@@ -943,6 +964,7 @@ export const getScopedVariable =
           componentWrapper,
           {
             classNames: `p-4 rounded`,
+            autoSizeToContentIfNodeHasNoThumbs: true,
           },
           undefined,
           undefined,

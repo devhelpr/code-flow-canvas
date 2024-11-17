@@ -176,6 +176,7 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
     _markup?: string | INodeComponent<T> | HTMLElement,
     _layoutProperties?: {
       classNames?: string;
+      autoSizeToContentIfNodeHasNoThumbs?: boolean;
     },
     _hasStaticWidthHeight?: boolean,
     _disableInteraction?: boolean,
@@ -208,6 +209,7 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
     _markup?: string | INodeComponent<T>,
     _layoutProperties?: {
       classNames?: string;
+      autoSizeToContentIfNodeHasNoThumbs?: boolean;
     },
     _hasStaticWidthHeight?: boolean,
     _disableInteraction?: boolean,

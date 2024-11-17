@@ -15,7 +15,7 @@ const evaluateAtProperty = (
   initialPayload?: any
 ) => {
   if (key.startsWith('@pushTo:')) {
-    const setProperty = key.replace('@pushTo:', '');
+    const setProperty = key.replace('@pushTo:', '').split(':')[0];
     if (!newJson[setProperty]) {
       newJson[setProperty] = [];
     }
@@ -88,7 +88,11 @@ const evaluateAtProperty = (
           return newItem;
         });
         console.log('map', toMapValue);
-        newJson[value.property] = mappedValue;
+        if (newJson[value.property]) {
+          newJson[value.property].push(...mappedValue);
+        } else {
+          newJson[value.property] = mappedValue;
+        }
       }
     }
   }

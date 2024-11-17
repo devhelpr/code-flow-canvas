@@ -99,6 +99,7 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     markup?: string | INodeComponent<T> | HTMLElement,
     layoutProperties?: {
       classNames?: string;
+      autoSizeToContentIfNodeHasNoThumbs?: boolean;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
@@ -120,6 +121,7 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     markup?: string | INodeComponent<T> | undefined,
     layoutProperties?: {
       classNames?: string;
+      autoSizeToContentIfNodeHasNoThumbs?: boolean;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
