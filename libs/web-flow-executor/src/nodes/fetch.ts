@@ -9,6 +9,7 @@ import {
   NodeTaskFactory,
   ThumbConnectionType,
   ThumbType,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
@@ -24,6 +25,20 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: INodeComponent<NodeInfo>;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
+  let loader: IDOMElement | undefined = undefined;
+
+  function showLoader() {
+    if (loader && loader.domElement) {
+      (loader.domElement as HTMLElement).classList.remove('hidden');
+    }
+  }
+
+  function hideLoader() {
+    if (loader && loader.domElement) {
+      (loader.domElement as HTMLElement).classList.add('hidden');
+    }
+  }
+
   const initializeCompute = () => {
     return;
   };
@@ -54,6 +69,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       }
       function sendEndStream() {
         return new Promise<void>((resolve) => {
+          hideLoader();
           runNodeFromThumb(
             node.thumbConnectors![3],
             canvasAppInstance!,
@@ -83,6 +99,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         );
       }
       function sendError(error: string) {
+        hideLoader();
         runNodeFromThumb(
           node.thumbConnectors![1],
           canvasAppInstance!,
@@ -143,6 +160,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         if (responseType === 'json') {
           headers.append('Content-Type', 'application/json');
         }
+        showLoader();
         fetch(url, {
           method: httpMethod,
           headers,
@@ -194,6 +212,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                             dummyEndpoint: true,
                           });
                         });
+                        hideLoader();
                       } catch (error) {
                         isFullJson = false;
                       }
@@ -327,12 +346,25 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           class: `inner-node rounded p-4
                   bg-amber-400  text-black 
                   font-bold
-                  flex flex-row justify-center items-center justify-start`,
+                  flex flex-col justify-center items-center justify-start`,
         },
         undefined,
         `Fetch ${text}`.trim()
       ) as unknown as INodeComponent<NodeInfo>;
-
+      const loaderWrapper = createElement(
+        'div',
+        {
+          class: `w-full flex justify-center `,
+        },
+        jsxComponentWrapper.domElement
+      );
+      loader = createElement(
+        'div',
+        {
+          class: `simple-loader hidden text-black mt-2`,
+        },
+        loaderWrapper?.domElement
+      );
       const rect = canvasApp.createRect(
         x,
         y,

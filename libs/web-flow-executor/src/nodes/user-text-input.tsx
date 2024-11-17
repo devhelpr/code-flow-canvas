@@ -20,7 +20,8 @@ export const getUserTextInput =
   (
     createRunCounterContext: (
       isRunViaRunButton: boolean,
-      shouldResetConnectionSlider: boolean
+      shouldResetConnectionSlider: boolean,
+      onFlowFinished?: () => void
     ) => RunCounter
   ) =>
   (updated: () => void, theme?: Theme): NodeTask<NodeInfo> => {
@@ -32,6 +33,14 @@ export const getUserTextInput =
     let currentValue = '';
     //let runCounter: RunCounter | undefined = undefined;
     const initializeCompute = () => {
+      if (node.domElement) {
+        const buttonElement = (node.domElement as HTMLElement).querySelector(
+          'button'
+        );
+        if (buttonElement) {
+          buttonElement.disabled = false;
+        }
+      }
       return;
     };
     const compute = (
@@ -51,6 +60,14 @@ export const getUserTextInput =
       //   runCounter = runCounterCompute;
       // }
       if (payload?.['trigger'] === true && node.nodeInfo) {
+        if (node.domElement) {
+          const buttonElement = (node.domElement as HTMLElement).querySelector(
+            'button'
+          );
+          if (buttonElement) {
+            buttonElement.disabled = true;
+          }
+        }
         return {
           result: currentValue,
           followPath: undefined,
@@ -111,7 +128,7 @@ export const getUserTextInput =
                     ? (containerNode.nodeInfo as any)?.canvasAppInstance
                     : canvasApp,
                   () => {
-                    //
+                    // TODO .. this should be done via createRunCounterContext
                   },
                   currentValue.toString(),
                   undefined,
@@ -119,7 +136,16 @@ export const getUserTextInput =
                   getRunIndex(),
                   undefined,
                   undefined,
-                  createRunCounterContext(false, false), //runCounter,
+                  createRunCounterContext(false, false, () => {
+                    if (node.domElement) {
+                      const buttonElement = (
+                        node.domElement as HTMLElement
+                      ).querySelector('button');
+                      if (buttonElement) {
+                        buttonElement.disabled = false;
+                      }
+                    }
+                  }), //runCounter,
                   false,
                   {
                     trigger: true,
@@ -148,8 +174,9 @@ export const getUserTextInput =
           {
             fieldType: FormFieldType.Button,
             fieldName: 'button',
-            caption: 'OK',
+            caption: 'SEND',
             value: '',
+            customLoader: true,
             onButtonClick: () => {
               runNode(
                 containerNode ?? node,
@@ -165,7 +192,16 @@ export const getUserTextInput =
                 getRunIndex(),
                 undefined,
                 undefined,
-                createRunCounterContext(false, false),
+                createRunCounterContext(false, false, () => {
+                  if (node.domElement) {
+                    const buttonElement = (
+                      node.domElement as HTMLElement
+                    ).querySelector('button');
+                    if (buttonElement) {
+                      buttonElement.disabled = false;
+                    }
+                  }
+                }),
                 false,
                 {
                   trigger: true,

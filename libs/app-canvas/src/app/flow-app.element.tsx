@@ -2056,7 +2056,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   createRunCounterContext = (
     isRunViaRunButton = false,
-    shouldResetConnectionSlider = true
+    shouldResetConnectionSlider = true,
+    onFlowFinished?: () => void
   ) => {
     console.log(
       'createRunCounterContext',
@@ -2080,6 +2081,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           'max',
           (connectionExecuteHistory.length * 1000).toString()
         );
+        if (onFlowFinished) {
+          onFlowFinished();
+        }
       } else {
         console.log(
           'setRunCounterResetHandler: runCounter.runCounter > 0',

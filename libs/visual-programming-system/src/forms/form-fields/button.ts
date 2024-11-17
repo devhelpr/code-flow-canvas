@@ -14,6 +14,7 @@ export interface ButtonFieldProps extends BaseFormFieldProps {
   settings?: {
     showLabel?: boolean;
   };
+  customLoader?: boolean;
   onButtonClick?: (formContext: FormContext) => Promise<void> | void;
 }
 
@@ -74,11 +75,14 @@ export class ButtonFieldChildComponent extends FormFieldComponent<ButtonFieldPro
     this.isMounted = false;
   }
 
-  onButtonClick = async (_event: Event) => {
+  onButtonClick = async (event: Event) => {
     if (this.props.onButtonClick) {
       if (!this.button) return;
-      this.button.disabled = true;
-      this.simpleLoader?.classList.remove('hidden');
+      event?.preventDefault();
+      if (!this.props.customLoader) {
+        this.button.disabled = true;
+        this.simpleLoader?.classList.remove('hidden');
+      }
       try {
         await this.props.onButtonClick({
           setFormFieldValue: this.props.setValue,
@@ -86,8 +90,11 @@ export class ButtonFieldChildComponent extends FormFieldComponent<ButtonFieldPro
       } catch (error) {
         console.error(error);
       }
-      this.simpleLoader?.classList.add('hidden');
-      this.button.disabled = false;
+      if (!this.props.customLoader) {
+        this.simpleLoader?.classList.add('hidden');
+        this.button.disabled = false;
+      }
+      return false;
     }
   };
   override render() {

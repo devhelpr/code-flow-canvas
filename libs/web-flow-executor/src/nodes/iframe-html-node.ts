@@ -187,6 +187,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
   const initializeCompute = () => {
     currentInput = '';
     variables = {};
+    setHTML(currentInput);
   };
 
   const compute = (input: string) => {

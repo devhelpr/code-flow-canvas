@@ -22,20 +22,25 @@ import {
 import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
 
 function handleExpression(expression: string, payload: any) {
-  const compiledExpression = compileExpressionAsInfo(expression);
-  const expressionFunction = (
-    new Function('payload', `${compiledExpression.script}`) as unknown as (
-      payload?: any
-    ) => any
-  ).bind(compiledExpression.bindings);
+  try {
+    const compiledExpression = compileExpressionAsInfo(expression);
+    const expressionFunction = (
+      new Function('payload', `${compiledExpression.script}`) as unknown as (
+        payload?: any
+      ) => any
+    ).bind(compiledExpression.bindings);
 
-  const result = runExpression(
-    expressionFunction,
-    payload,
-    false,
-    compiledExpression.payloadProperties
-  );
-  return Boolean(result);
+    const result = runExpression(
+      expressionFunction,
+      payload,
+      false,
+      compiledExpression.payloadProperties
+    );
+    return Boolean(result);
+  } catch (error) {
+    console.error('Split-by-case: Error in handleExpression', error);
+    return false;
+  }
 }
 
 export const getSplitByCase = (updated: () => void): NodeTask<NodeInfo> => {

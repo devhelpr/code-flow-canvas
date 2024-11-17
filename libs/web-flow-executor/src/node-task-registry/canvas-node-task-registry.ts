@@ -235,7 +235,8 @@ export const getNodeFactoryNames = () => {
 export const setupCanvasNodeTaskRegistry = (
   createRunCounterContext: (
     isRunViaRunButton: boolean,
-    shouldResetConnectionSlider: boolean
+    shouldResetConnectionSlider: boolean,
+    onFlowFinished?: () => void
   ) => RunCounter,
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction

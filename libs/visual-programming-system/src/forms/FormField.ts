@@ -47,6 +47,7 @@ export type FormField = (
       fieldType: 'Button';
       value: string;
       caption: string;
+      customLoader?: boolean;
       onButtonClick?: () => Promise<void> | void;
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }

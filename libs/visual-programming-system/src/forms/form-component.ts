@@ -444,6 +444,7 @@ export class FormsComponent
           settings,
           setValue: this.setValue,
           onButtonClick: formControl.onButtonClick,
+          customLoader: formControl.customLoader,
           isLast: index === this.props.formElements.length - 1,
         });
         this.components.push(formControlComponent);
