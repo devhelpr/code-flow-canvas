@@ -46,8 +46,8 @@
           "id": "d186a002-218b-47dc-aae8-07522a3da6ed",
           "x": 4483.009756940378,
           "y": 1009.3019209291535,
-          "width": 119.99990849367349,
-          "height": 272.0000176044985,
+          "width": 120.00012334690193,
+          "height": 272.0000558397062,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -63,8 +63,8 @@
           "id": "383eb9cf-3b45-489e-8281-720b702b9159",
           "x": 3302.6184447265578,
           "y": 528.2644630083273,
-          "width": 136.67209739727394,
-          "height": 300.00000401229266,
+          "width": 136.67199921373413,
+          "height": 299.99996414170886,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -187,8 +187,8 @@
           "id": "b936e1cd-134c-4476-b412-342c7d89c762",
           "x": 5386.760673284272,
           "y": 1453.0422559463495,
-          "width": 119.99990849367349,
-          "height": 271.99997880814703,
+          "width": 120.00012334690193,
+          "height": 271.99996978331967,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -241,8 +241,8 @@
           "id": "6e164a19-962b-412d-ad81-8505dcc24783",
           "x": 3731.953338189688,
           "y": 523.6128115645795,
-          "width": 136.67178702646203,
-          "height": 419.9999900986691,
+          "width": 136.67199921373413,
+          "height": 371.99998651601817,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -471,8 +471,8 @@
           "id": "597efff5-91e1-40f2-bd4d-993567abb93a",
           "x": 4136.59680841861,
           "y": 526.2205686983754,
-          "width": 120.31233953946541,
-          "height": 107.99998883824934,
+          "width": 120.31239132581437,
+          "height": 107.99999941694148,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -636,8 +636,8 @@
         },
         {
           "id": "deaded83-0638-4fde-b865-171bd0f79e26",
-          "x": 7138.222920196529,
-          "y": 1518.8828241176188,
+          "x": 7142.740778457433,
+          "y": 1527.918438413395,
           "width": 280,
           "height": 40,
           "nodeType": "Shape",
@@ -709,8 +709,8 @@
           "id": "f02b98f8-d7be-40ec-82da-0fcaddda5663",
           "x": 6021.817071637092,
           "y": 2275.116037678438,
-          "width": 119.99990849367349,
-          "height": 271.99997880814703,
+          "width": 119.99977912135599,
+          "height": 272.00014189609266,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -724,15 +724,86 @@
         },
         {
           "id": "2ac953f1-dc37-41c9-a4be-ab85339ad5bc",
-          "x": 6433.094898272377,
-          "y": 2108.0181318174277,
+          "x": 6433.0931872881165,
+          "y": 2110.0356338343695,
           "width": 400,
           "height": 400,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "iframe-html-node",
             "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://unpkg.com/showdown/dist/showdown.min.js\"></script>\n    <style>\n      .wrapper {\n        \n      }\n    </style>\n  </head>\n  <body class=\"bg-white w-full\">\n    <div class=\"min-h-screen w-full flex wrapper\" id=\"inner\">\n      <div\n        id=\"message-container\"\n        class=\"grid w-full p-8\"        \n      ></div>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let messageContainer = document.getElementById('message-container');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        let messages = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            \n              window.input.forEach((message, index) => {\n                \n                  \n                  let divElement = document.createElement(\n                    \n                    'div',\n                    {class:\"\"}\n                  );\n                  \n                  const converter = new showdown.Converter();                  \n                  const html = converter.makeHtml(message.message);\n\n                  divElement.innerHTML = `<div class=\"font-bold border-b-2 border-black py-1 my-2\">${message.role}</div>\n                     <div>${html}\n                     </div>`\n                  \n                  documentFragment.appendChild(divElement);\n                \n              });\n          }\n        }\n        messageContainer.replaceChildren(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://unpkg.com/showdown/dist/showdown.min.js\"></script>\n    <style>\n      .wrapper {\n        \n      }\n    </style>\n  </head>\n  <body class=\"bg-white w-full\">\n    <div class=\"min-h-screen w-full flex wrapper\" id=\"inner\">\n      <div\n        id=\"message-container\"\n        class=\"grid w-full p-8\"        \n      ></div>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let messageContainer = document.getElementById('message-container');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        let messages = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            \n              window.input.forEach((message, index) => {\n                \n                  \n                  let divElement = document.createElement(\n                    \n                    'div',\n                    {class:\"\"}\n                  );\n                  \n                  const converter = new showdown.Converter();                  \n                  const html = converter.makeHtml(message.message);\n\n                  divElement.innerHTML = `<div class=\"font-bold border-b-2 border-black py-1 my-2\">${message.role}</div>\n                     <div>${html}\n                     </div>`\n                  \n                  documentFragment.appendChild(divElement);\n                  \n                \n              });\n          }\n        }\n        messageContainer.replaceChildren(documentFragment);\n        window.scrollTo(0, document.body.scrollHeight);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+              "aiprompt": ""
+            },
+            "showFormOnlyInPopup": true,
+            "initializeOnStartFlow": true
+          }
+        },
+        {
+          "id": "bb043590-a5fc-4f4c-95e9-f89cb73dbeb5",
+          "x": 6764.885773263479,
+          "y": 798.0597305272516,
+          "width": 200,
+          "height": 64,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "get-array",
+            "formValues": {
+              "variableName": "result"
+            },
+            "nodeCannotBeReplaced": false,
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false
+          }
+        },
+        {
+          "id": "65149c21-fa2c-4c60-b3ec-d0c4c8b3485a",
+          "x": 7149.0825680873195,
+          "y": 763.5156525527909,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "join-array",
+            "formValues": {
+              "joinChar": ""
+            },
+            "nodeCannotBeReplaced": false,
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false
+          }
+        },
+        {
+          "id": "bbd6ebe9-c403-4807-aea4-dd0bc2169dbf",
+          "x": 4966.026555483235,
+          "y": 1714.0005949014421,
+          "width": 200,
+          "height": 128,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "join-array",
+            "formValues": {
+              "joinChar": ""
+            },
+            "nodeCannotBeReplaced": false,
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false
+          }
+        },
+        {
+          "id": "c68ce9ef-1673-4edc-8d1c-4ade51e9ddff",
+          "x": 7609.236662441795,
+          "y": 701.5370560517476,
+          "width": 590.4003603474912,
+          "height": 264.55549062774435,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "iframe-html-node",
+            "formValues": {
+              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://unpkg.com/showdown/dist/showdown.min.js\"></script>\n    <style>\n      .wrapper {\n        \n      }\n    </style>\n  </head>\n  <body class=\"bg-white w-full\">\n    <div class=\"min-h-screen w-full flex wrapper\" id=\"inner\">\n      <div\n        id=\"message-container\"\n        class=\"grid w-full p-8\"        \n      ></div>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let messageContainer = document.getElementById('message-container');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        let messages = [];\n        if (window.input !== undefined) {\n          let divElement = document.createElement(\n            \n            'div',\n            {class:\"\"}\n          );\n          \n          const converter = new showdown.Converter();                  \n          const html = converter.makeHtml(window.input);\n\n          divElement.innerHTML = `<div>${html}</div>`;\n          \n          documentFragment.appendChild(divElement);\n        }\n        messageContainer.replaceChildren(documentFragment);\n        window.scrollTo(0, document.body.scrollHeight);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
             },
             "showFormOnlyInPopup": true,
@@ -756,7 +827,7 @@
         },
         {
           "id": "9c9efadf-8473-439f-849b-1fa8cbc09ad5",
-          "x": 4603.009665434051,
+          "x": 4603.00988028728,
           "y": 1039.3019209291535,
           "endX": 4808.82988279589,
           "endY": 1032.15973144007,
@@ -861,7 +932,7 @@
         },
         {
           "id": "7619188f-269f-46a1-b144-d641b411a547",
-          "x": 5506.760581777946,
+          "x": 5506.760796631174,
           "y": 1483.0422559463495,
           "endX": 5725.337982593981,
           "endY": 1685.1782664011737,
@@ -1103,8 +1174,8 @@
           "id": "3241be19-3f51-417b-b11f-b1fbc619575c",
           "x": 6957.954090347076,
           "y": 1536.8649389031089,
-          "endX": 7138.222920196529,
-          "endY": 1538.8828241176188,
+          "endX": 7142.740778457433,
+          "endY": 1547.918438413395,
           "startNodeId": "9a8f4b17-6cd4-4b9f-92f5-d363c59835b0",
           "endNodeId": "deaded83-0638-4fde-b865-171bd0f79e26",
           "startThumbName": "output",
@@ -1161,10 +1232,10 @@
         },
         {
           "id": "aa63fd0c-c4ee-46b8-abd4-d6d2d6c142c2",
-          "x": 6141.816980130766,
+          "x": 6141.816850758449,
           "y": 2305.116037678438,
-          "endX": 6433.094898272377,
-          "endY": 2308.0181318174277,
+          "endX": 6433.0931872881165,
+          "endY": 2310.0356338343695,
           "startNodeId": "f02b98f8-d7be-40ec-82da-0fcaddda5663",
           "endNodeId": "2ac953f1-dc37-41c9-a4be-ab85339ad5bc",
           "startThumbName": "output",
@@ -1175,49 +1246,11 @@
           "nodeInfo": {}
         },
         {
-          "id": "bb043590-a5fc-4f4c-95e9-f89cb73dbeb5",
-          "x": 6764.885773263479,
-          "y": 798.0597305272516,
-          "width": 200.00029088708501,
-          "height": 63.99998485767688,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "get-array",
-            "formValues": {
-              "variableName": "result"
-            },
-            "nodeCannotBeReplaced": false,
-            "showFormOnlyInPopup": true,
-            "useInCompositionOnly": false,
-            "keepPopupOpenAfterUpdate": false,
-            "taskType": "get-array"
-          }
-        },
-        {
-          "id": "65149c21-fa2c-4c60-b3ec-d0c4c8b3485a",
-          "x": 7149.0825680873195,
-          "y": 763.5156525527909,
-          "width": 200.00043905494857,
-          "height": 128.00003359234788,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "join-array",
-            "formValues": {
-              "joinChar": ""
-            },
-            "nodeCannotBeReplaced": false,
-            "showFormOnlyInPopup": false,
-            "useInCompositionOnly": false,
-            "keepPopupOpenAfterUpdate": false,
-            "taskType": "join-array"
-          }
-        },
-        {
           "id": "db7f5391-4ec1-4b12-83cd-8413c081b28e",
           "x": 6597.654836589958,
           "y": 837.4755269345331,
           "endX": 6764.885773263479,
-          "endY": 830.0597229560901,
+          "endY": 830.0597305272516,
           "startNodeId": "4ffd9779-4d78-4122-9619-ee6dcf7ee81d",
           "endNodeId": "bb043590-a5fc-4f4c-95e9-f89cb73dbeb5",
           "startThumbName": "output",
@@ -1229,10 +1262,10 @@
         },
         {
           "id": "d628b79e-f0fc-4dd2-a35b-807277439408",
-          "x": 6964.8860641505635,
-          "y": 830.0597229560901,
+          "x": 6964.885773263479,
+          "y": 830.0597305272516,
           "endX": 7149.0825680873195,
-          "endY": 827.5156693489648,
+          "endY": 827.5156525527909,
           "startNodeId": "bb043590-a5fc-4f4c-95e9-f89cb73dbeb5",
           "endNodeId": "65149c21-fa2c-4c60-b3ec-d0c4c8b3485a",
           "startThumbName": "output",
@@ -1243,48 +1276,11 @@
           "nodeInfo": {}
         },
         {
-          "id": "bbd6ebe9-c403-4807-aea4-dd0bc2169dbf",
-          "x": 4966.026555483235,
-          "y": 1714.0005949014421,
-          "width": 199.99997075821278,
-          "height": 128.0000233726445,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "join-array",
-            "formValues": {
-              "joinChar": ""
-            },
-            "nodeCannotBeReplaced": false,
-            "showFormOnlyInPopup": false,
-            "useInCompositionOnly": false,
-            "keepPopupOpenAfterUpdate": false,
-            "taskType": "join-array"
-          }
-        },
-        {
-          "id": "c68ce9ef-1673-4edc-8d1c-4ade51e9ddff",
-          "x": 7593.264901209055,
-          "y": 629.2702750663578,
-          "width": 400,
-          "height": 400,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "iframe-html-node",
-            "formValues": {
-              "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <script src=\"https://unpkg.com/showdown/dist/showdown.min.js\"></script>\n    <style>\n      .wrapper {\n        \n      }\n    </style>\n  </head>\n  <body class=\"bg-white w-full\">\n    <div class=\"min-h-screen w-full flex wrapper\" id=\"inner\">\n      <div\n        id=\"message-container\"\n        class=\"grid w-full p-8\"        \n      ></div>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let messageContainer = document.getElementById('message-container');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        let messages = [];\n        if (window.input !== undefined) {\n          let divElement = document.createElement(\n            \n            'div',\n            {class:\"\"}\n          );\n          \n          const converter = new showdown.Converter();                  \n          const html = converter.makeHtml(window.input);\n\n          divElement.innerHTML = `<div>${html}</div>`;\n          \n          documentFragment.appendChild(divElement);\n        }\n        messageContainer.replaceChildren(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
-              "aiprompt": ""
-            },
-            "showFormOnlyInPopup": true,
-            "initializeOnStartFlow": true,
-            "taskType": "iframe-html-node"
-          }
-        },
-        {
           "id": "52470d44-2037-44f9-ba81-6cd7014e7567",
-          "x": 7349.083007142268,
-          "y": 827.5156693489648,
-          "endX": 7593.264901209055,
-          "endY": 829.2702750663578,
+          "x": 7349.0825680873195,
+          "y": 827.5156525527909,
+          "endX": 7609.236662441795,
+          "endY": 833.8148013656198,
           "startNodeId": "65149c21-fa2c-4c60-b3ec-d0c4c8b3485a",
           "endNodeId": "c68ce9ef-1673-4edc-8d1c-4ade51e9ddff",
           "startThumbName": "output",
