@@ -96,6 +96,7 @@ export class ButtonFieldChildComponent extends FormFieldComponent<ButtonFieldPro
       }
       return false;
     }
+    return true;
   };
   override render() {
     super.render();

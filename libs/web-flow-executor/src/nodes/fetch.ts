@@ -356,7 +356,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         {
           class: `w-full flex justify-center `,
         },
-        jsxComponentWrapper.domElement
+        jsxComponentWrapper?.domElement
       );
       loader = createElement(
         'div',
