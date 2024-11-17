@@ -9,6 +9,7 @@ import {
   ThumbType,
   visualNodeFactory,
   IComputeResult,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { getNodeByVariableName } from '../graph/get-node-by-variable-name';
@@ -17,7 +18,8 @@ const fieldName = 'variableName';
 export const pushValueToArrayVariableNodeName = 'push-value-to-array-variable';
 
 export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: () => void,
+  theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let contextInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
@@ -155,6 +157,8 @@ export const pushArrayVariable: NodeTaskFactory<NodeInfo> = (
       hasFormInPopup: true,
       additionalClassNames: 'text-center',
       category: 'variables-array',
+      backgroundColorClassName:
+        theme?.referenceVariableBackgroundColorClassName,
     },
     undefined,
     true

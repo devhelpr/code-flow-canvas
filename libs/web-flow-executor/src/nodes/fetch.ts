@@ -338,13 +338,13 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         text = `\n${label}`;
       }
 
-      const thumbPortColor = 'black';
+      const thumbPortColor = 'white';
       const thumbLabelPortCssClass = 'text-black';
       const jsxComponentWrapper = createElement(
         'div',
         {
           class: `inner-node rounded p-4
-                  bg-amber-400  text-black 
+                  bg-green-500  text-black 
                   font-bold
                   flex flex-col justify-center items-center justify-start`,
         },
