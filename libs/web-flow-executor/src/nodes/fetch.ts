@@ -215,7 +215,20 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                     }
                   })
                   .catch((error) => {
+                    // TODO : show this error in the UI
                     console.error(error);
+                    if (
+                      (errorNode?.domElement as unknown as HTMLElement) &&
+                      !canvasAppInstance?.isContextOnly
+                    ) {
+                      (
+                        errorNode?.domElement as unknown as HTMLElement
+                      )?.classList.remove('hidden');
+                      (
+                        errorNode.domElement as unknown as HTMLElement
+                      ).textContent = error?.toString() ?? 'Error';
+                    }
+                    sendError(error?.toString() ?? 'Error');
                   });
               };
 
