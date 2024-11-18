@@ -14,7 +14,7 @@ export interface InputFieldProps extends BaseFormFieldProps {
   label?: string;
   isRow?: boolean;
   isLast?: boolean;
-
+  enableAutoComplete?: boolean;
   onChange?: (value: string, formComponent: IFormsComponent) => void;
   onKeyDown?: (event: KeyboardEvent) => void;
   onKeyUp?: (event: KeyboardEvent) => void;
@@ -41,7 +41,7 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
       }">${props.label ?? props.fieldName}</label>
         <input class="block w-full p-1"
           name="${props.fieldName}"
-          autocomplete="off"
+          ${props.enableAutoComplete ? '' : "autocomplete='off'"}
           id="${props.formId}_${props.fieldName}"
           value="${props.value ?? ''}"
           type="text"></input>

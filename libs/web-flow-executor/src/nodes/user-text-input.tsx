@@ -240,6 +240,7 @@ export const getUserTextInput =
               onSave: (formValues) => {
                 console.log('onSave', formValues);
               },
+              enableAutoComplete: true,
             })
           : undefined;
 

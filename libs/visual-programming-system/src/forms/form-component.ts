@@ -38,6 +38,7 @@ export interface FormComponentProps {
     minWidthContent?: boolean;
     textLabelColor: string;
   };
+  enableAutoComplete?: boolean;
 }
 
 export type FormValues = {
@@ -59,6 +60,7 @@ export interface Props {
     textLabelColor: string;
     minWidthContent?: boolean;
   };
+  enableAutoComplete?: boolean;
 }
 
 export class FormsComponent
@@ -85,7 +87,9 @@ export class FormsComponent
     // offsetTop is used.. and that is relative to the first positioned parent.. which is the node, not the form...
     this.template = createTemplate(
       `<div class="${props.settings?.minWidthContent ? 'w-min' : 'w-full'} p-2">
-        <form autocomplete="off" role="search">
+        <form ${
+          props.enableAutoComplete ? '' : "autocomplete='off'"
+        } role="search">
           <children></children>
           ${
             props.hasSubmitButton === true
@@ -273,6 +277,7 @@ export class FormsComponent
             '',
           isRow: formControl.isRow,
           settings,
+          enableAutoComplete: this.props.enableAutoComplete,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           onKeyDown: formControl.onKeyDown,
@@ -621,6 +626,7 @@ export const FormComponent = (props: FormComponentProps) => {
     setDataOnNode: props.setDataOnNode,
     getDataFromNode: props.getDataFromNode,
     settings: props.settings,
+    enableAutoComplete: props.enableAutoComplete,
   });
   formComponent.render();
   return formComponent;

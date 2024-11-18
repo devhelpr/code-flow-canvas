@@ -5,8 +5,8 @@ function getStringForObject(object: Record<string, any>) {
   let data = '';
   for (const [key, value] of Object.entries(object)) {
     data += `<div class="flex flex-row gap-2">
-      <div class="flex-grow text-left font-bold max-w-[200px] line-clamp-1 overflow-hidden text-ellipsis">${key}</div>
-      <div class="flex-grow text-left max-w-[200px] line-clamp-1 overflow-hidden text-ellipsis">${value}</div>
+      <div class="flex-grow text-left font-bold max-w-[200px] line-clamp-1 overflow-hidden ">${key}</div>
+      <div class="flex-grow text-left max-w-[200px] line-clamp-1 overflow-hidden ">${value}</div>
     </div>`;
   }
   return data;
