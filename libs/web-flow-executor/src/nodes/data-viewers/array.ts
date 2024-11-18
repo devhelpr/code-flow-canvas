@@ -1,6 +1,17 @@
 import { IElementNode } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../../types/node-info';
 
+function getStringForObject(object: Record<string, any>) {
+  let data = '';
+  for (const [key, value] of Object.entries(object)) {
+    data += `<div class="flex flex-row gap-2">
+      <div class="flex-grow text-left font-bold">${key}</div>
+      <div class="flex-grow text-right">${value}</div>
+    </div>`;
+  }
+  return data;
+}
+
 function createArrayView(
   array: any[],
   htmlNode: IElementNode<NodeInfo>,
@@ -13,13 +24,15 @@ function createArrayView(
       if (index >= pageIndex * pageSize && index < (pageIndex + 1) * pageSize) {
         return `
 		  <div class="flex flex-row justify-start text-left">
-			<div class="flex-grow overflow-hidden text-ellipsis">${
+			<div class="flex-row flex flex-grow gap-4 overflow-hidden text-ellipsis">${
         typeof data === 'number'
           ? data.toFixed(2)
           : Array.isArray(data)
           ? data.map((item) => {
               return typeof item === 'number' ? item.toFixed(2) : item;
             })
+          : typeof data === 'object'
+          ? getStringForObject(data)
           : data
       }</div>
 		  </div>`;

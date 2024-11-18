@@ -930,7 +930,7 @@ export class Rect<T extends BaseNodeInfo> {
     };
     let autoSizeClasses = '';
     if (this.autSizeToContentIfNodeHasNoThumbs) {
-      autoSizeClasses = 'w-[min-content] h-[min-content]';
+      autoSizeClasses = 'w-[fit-content] h-[min-content]';
     }
     const rectContainerElement = createNodeElement(
       'div',
