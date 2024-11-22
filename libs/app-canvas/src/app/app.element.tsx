@@ -481,6 +481,9 @@ export class AppElement<T extends BaseNodeInfo> {
       event.key === 'insert' ||
       ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'a')
     ) {
+      if (inInputControle) {
+        return;
+      }
       this.removeFormElement();
       const selectedNodeInfo = getSelectedNode();
       executeCommand(
