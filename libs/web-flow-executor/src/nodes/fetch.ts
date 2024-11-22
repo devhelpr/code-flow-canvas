@@ -168,9 +168,14 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           mode: 'cors',
         })
           .then(async (response) => {
+            const contentType = response.headers.get('content-type');
+
             if (
               response.body instanceof ReadableStream &&
-              responseType !== 'text'
+              responseType !== 'text' &&
+              contentType &&
+              (contentType.includes('application/stream+json') ||
+                contentType.includes('text/event-stream'))
             ) {
               const reader = response.body.getReader();
               let isFullJson = false;
@@ -201,23 +206,23 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
 
                     console.log('chunkString', chunkString.split('\n\n'));
                     //const chunks = chunkString.split('\n\n');
-                    if (chunkString.endsWith('}\n')) {
-                      try {
-                        const json = JSON.parse(chunkString);
-                        isFullJson = true;
-                        sendFetchResult(json).then(() => {
-                          resolve({
-                            result: false,
-                            followPath: undefined,
-                            stop: true,
-                            dummyEndpoint: true,
-                          });
+                    //if (chunkString.endsWith('}\n')) {
+                    try {
+                      const json = JSON.parse(chunkString);
+                      isFullJson = true;
+                      sendFetchResult(json).then(() => {
+                        resolve({
+                          result: false,
+                          followPath: undefined,
+                          stop: true,
+                          dummyEndpoint: true,
                         });
-                        hideLoader();
-                      } catch (error) {
-                        isFullJson = false;
-                      }
+                      });
+                      hideLoader();
+                    } catch (error) {
+                      isFullJson = false;
                     }
+                    //}
 
                     if (!isFullJson) {
                       const lines = chunkString
@@ -253,7 +258,11 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               };
 
               readChunk();
-            } else if (responseType === 'json') {
+            } else if (
+              responseType === 'json' &&
+              contentType &&
+              contentType.includes('application/json')
+            ) {
               response.json().then((json) => {
                 sendFetchState('ready');
                 result = json;
@@ -370,7 +379,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         x,
         y,
         width ?? 200,
-        height ?? 100,
+        height ?? 200,
         undefined,
         [
           {

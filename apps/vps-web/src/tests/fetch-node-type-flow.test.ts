@@ -7,6 +7,7 @@ import { RuntimeFlowEngine } from '@devhelpr/web-flow-executor';
 
 const createFetchResponse = (data: any) => {
   return Promise.resolve({
+    headers: { get: () => 'application/json' },
     json: () => Promise.resolve(data),
   });
 };
