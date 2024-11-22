@@ -40,7 +40,8 @@ export class TextAreaFieldComponent extends FormFieldComponent<TextAreaFieldProp
     this.fieldName = props.fieldName;
 
     // temp disabled code editor
-    this.isCustomEditor = getIsCustomEditorEnabled();
+    this.isCustomEditor =
+      getIsCustomEditorEnabled() && props.editorLanguage !== 'text';
     if (this.isCustomEditor) {
       this.customEditor = getCreateCustomEditorInstanceFunc();
     }

@@ -56,7 +56,14 @@ export type FormField = (
       fieldType: 'TextArea';
       value: string;
       isCodeEditor?: boolean;
-      editorLanguage?: string;
+      editorLanguage?:
+        | 'javascript'
+        | 'json'
+        | 'html'
+        | 'css'
+        | 'typescript'
+        | 'markdown'
+        | 'text';
       onChange?: (value: string, formComponent: IFormsComponent) => void;
     }
   | {
