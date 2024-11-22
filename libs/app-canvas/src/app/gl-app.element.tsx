@@ -1819,7 +1819,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             );
 
             this.shaderStatements +=
-              this.shaderNodePreoutput + result?.result ?? '';
+              this.shaderNodePreoutput + (result?.result ?? '');
 
             sdfIndex++;
           } else if (
@@ -1839,7 +1839,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             );
 
             this.shaderStatements +=
-              this.shaderNodePreoutput + result?.result ?? '';
+              this.shaderNodePreoutput + (result?.result ?? '');
 
             sdfIndex++;
           } else {
