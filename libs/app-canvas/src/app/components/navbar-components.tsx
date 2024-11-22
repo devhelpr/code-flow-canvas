@@ -88,6 +88,7 @@ export class NavbarComponent extends Component<
           <option value="neural-mnist-training.json">Neural network MNIST training & testing</option>
           <option value="kmeans.json">K-Means clustering</option>
           <option value="kmeans-csv-file.json">K-Means clustering of a CSV file</option>
+          <option value="openai-chat.json">Open AI Chat Completion API</option>
         </select>
         <children></children>
       </div>`
