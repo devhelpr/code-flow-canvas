@@ -427,7 +427,7 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
           {
             propertyName: 'input',
             displayName: 'Last input',
-            type: 'json',
+            type: 'any',
 
             getData: () => {
               try {
@@ -436,8 +436,8 @@ export const getIFrameHtmlNode = (updated: () => void): NodeTask<NodeInfo> => {
                     ? JSON.parse(currentInput)
                     : currentInput
                   : { message: 'No input data available' };
-              } catch (error) {
-                return { error: 'Parsing current input failed' };
+              } catch (_error) {
+                return currentInput;
               }
             },
           },
