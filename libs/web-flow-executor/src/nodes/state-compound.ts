@@ -168,7 +168,6 @@ export const createStateCompound: NodeTaskFactory<NodeInfo> = (
           htmlNode.domElement as HTMLElement,
           false,
           true,
-          '',
           canvasApp.interactionStateMachine,
           undefined,
           undefined,

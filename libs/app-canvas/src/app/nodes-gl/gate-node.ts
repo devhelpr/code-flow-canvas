@@ -148,7 +148,6 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           htmlNode.domElement as HTMLElement,
           false,
           true,
-          '',
           canvasApp.interactionStateMachine,
           undefined,
           undefined,

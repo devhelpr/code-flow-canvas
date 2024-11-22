@@ -153,7 +153,6 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           htmlNode.domElement as HTMLElement,
           false,
           true,
-          '',
           canvasApp.interactionStateMachine,
           undefined,
           undefined,

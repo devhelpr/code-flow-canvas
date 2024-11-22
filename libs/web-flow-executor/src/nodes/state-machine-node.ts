@@ -651,7 +651,6 @@ export const createStateMachineNode = (
           htmlNode.domElement as HTMLElement,
           false, //disableInteraction
           true,
-          '',
           canvasApp.interactionStateMachine,
           undefined,
           undefined,

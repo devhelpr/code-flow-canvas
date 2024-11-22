@@ -146,7 +146,6 @@ export class AppElement<T extends BaseNodeInfo> {
       undefined,
       undefined,
       undefined,
-      undefined,
       theme ?? standardTheme,
       this.showEditCompositionNameDialog,
       undefined,
@@ -1271,7 +1270,6 @@ export class AppElement<T extends BaseNodeInfo> {
 
       const canvasApp = createFlowCanvas<T>(
         this.rootElement,
-        undefined,
         undefined,
         undefined,
         undefined,

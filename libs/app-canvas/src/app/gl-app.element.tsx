@@ -2241,7 +2241,6 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         undefined,
         undefined,
         undefined,
-        undefined,
         'history-canvas',
         undefined,
         (): Promise<string | false> => Promise.resolve(false)

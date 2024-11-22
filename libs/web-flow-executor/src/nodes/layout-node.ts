@@ -149,7 +149,6 @@ export const getLayoutNode = (updated: () => void): NodeTask<NodeInfo> => {
           htmlNode.domElement as HTMLElement,
           false,
           true,
-          '',
           canvasApp.interactionStateMachine,
           undefined,
           undefined,
