@@ -213,6 +213,11 @@ import { loadJSONFile, loadJSONFileNodeName } from '../nodes/load-json-file';
 import { getReduce, reduceNodeName } from '../nodes/reduce';
 import { getRawJsonNode, jsonNodeName } from '../nodes/raw-json';
 
+import {
+  getVectorDistanceNode,
+  vectorDistanceNodeName,
+} from '../nodes/vector-distance';
+
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
@@ -453,6 +458,8 @@ export const setupCanvasNodeTaskRegistry = (
     );
 
     registerNodeFactory(jsonNodeName, getRawJsonNode);
+
+    registerNodeFactory(vectorDistanceNodeName, getVectorDistanceNode);
   }
 
   registerExternalNodes?.(registerNodeFactory);
