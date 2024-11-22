@@ -26,7 +26,7 @@ export const registerCommands = <T extends BaseNodeInfo>(
     new CopyNodeCommand<T>(commandContext)
   );
   commandContext.commandRegistry.set(
-    'paste-node',
+    PasteNodeCommand.commandName,
     new PasteNodeCommand<T>(commandContext)
   );
   commandContext.commandRegistry.set(

@@ -19,7 +19,10 @@ export class PasteNodeCommand<
     this.rootElement = commandContext.rootElement;
     this.setupTasksInDropdown = commandContext.setupTasksInDropdown;
     this.commandRegistry = commandContext.commandRegistry;
+    this.commandContext = commandContext;
   }
+  static commandName = 'paste-node';
+  commandContext: ICommandContext<T>;
   commandRegistry: Map<string, ICommandHandler>;
   rootElement: HTMLElement;
   getCanvasApp: () => IFlowCanvasBase<T> | undefined;
@@ -36,6 +39,17 @@ export class PasteNodeCommand<
     if (!canvasApp) {
       return;
     }
+
+    const shouldExecuteCommand =
+      this.commandContext.onBeforeExecuteCommand?.(
+        'paste-node',
+        _parameter1,
+        _parameter2
+      ) ?? true;
+    if (shouldExecuteCommand === false) {
+      return;
+    }
+    console.log('PasteNodeCommand.execute');
     const copyCommand = this.commandRegistry.get(
       'copy-node'
     ) as CopyNodeCommand<T>;

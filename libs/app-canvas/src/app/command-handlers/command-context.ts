@@ -19,4 +19,9 @@ export interface ICommandContext<T extends BaseNodeInfo> {
   getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
   commandRegistry: Map<string, ICommandHandler>;
+  onBeforeExecuteCommand?: (
+    commandName: string,
+    parameter1: any,
+    parameter2: any
+  ) => boolean;
 }

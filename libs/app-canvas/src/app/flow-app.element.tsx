@@ -114,12 +114,14 @@ import {
   removeAllCompositions,
   resetRunIndex,
   run,
+  runNodeFromThumb,
   runPath,
   runPathForNodeConnectionPairs,
   runPathFromThumb,
   setRunCounterUpdateElement,
   setupCanvasNodeTaskRegistry,
 } from '@devhelpr/web-flow-executor';
+import { PasteNodeCommand } from './command-handlers/paste-node-command/paste-node-command';
 
 export class CodeFlowWebAppCanvas {
   appRootSelector?: string;
@@ -800,6 +802,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               getNodeTaskFactory,
               commandRegistry: this.commandRegistry,
               setupTasksInDropdown,
+              onBeforeExecuteCommand: this.onBeforeExecuteCommand,
             });
             this.clearCanvas();
           }
@@ -2138,5 +2141,54 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         false
       );
     }
+  };
+
+  onBeforeExecuteCommand = (
+    command: string,
+    _parameter1: any,
+    _parameter2: any
+  ) => {
+    // parameter1 is the nodeType
+    // parameter2 is the id of a selected node
+    if (command === PasteNodeCommand.commandName) {
+      const selectedNode = getSelectedNode();
+      if (selectedNode) {
+        const node = this.canvasApp?.elements.get(
+          selectedNode.id
+        ) as IConnectionNodeComponent<NodeInfo>;
+        if (
+          node &&
+          node.nodeType === NodeType.Connection &&
+          node.endNode &&
+          node.startNodeThumb &&
+          this.canvasApp
+        ) {
+          // Copy & paste clipboard to connection and trigger connection
+
+          const canvasApp = this.canvasApp;
+          const endNode = node.endNode;
+          const startNodeThumb = node.startNodeThumb;
+          navigator.clipboard.readText().then((text) => {
+            console.log('clipboard', text);
+            if (text) {
+              runNodeFromThumb(
+                startNodeThumb,
+                canvasApp,
+                () => {
+                  //
+                },
+                text,
+                endNode,
+                undefined,
+                undefined,
+                this.createRunCounterContext(true, false)
+              );
+            }
+          });
+          return false;
+        }
+      }
+    }
+    return true;
   };
 }
