@@ -338,10 +338,6 @@ export const getScopedVariable =
         return getDefaultValue();
       }
     };
-    function getLabel(description: string) {
-      const variableScopeType = isGlobal ? 'global' : 'scope dependent';
-      return `${description} (${variableScopeType})`;
-    }
 
     function getLabelAsHtml(description: string) {
       const variableScopeType = isGlobal ? 'global' : 'scope dependent';
