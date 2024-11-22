@@ -165,6 +165,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           method: httpMethod,
           headers,
           body: httpMethod === 'get' ? undefined : JSON.stringify(input),
+          mode: 'cors',
         })
           .then(async (response) => {
             if (
