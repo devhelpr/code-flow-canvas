@@ -194,7 +194,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
         {
           class: `flex items-center 
           ${canvasApp.theme.nodeTitleBarBackground} border-slate-500 
-          ${canvasApp.theme.nodeTitleBarText} p-1 px-3 rounded-t pointer-events-none`,
+          ${canvasApp.theme.nodeTitleBarText} p-1 px-3 rounded-t pointer-events-none w-full min-w-[max-content]`,
         },
         componentWrapper?.domElement,
         settings?.hideTitle ? '' : nodeTitle

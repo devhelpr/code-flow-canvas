@@ -4,9 +4,12 @@ import { NodeInfo } from '../../types/node-info';
 function getStringForObject(object: Record<string, any>) {
   let data = '';
   for (const [key, value] of Object.entries(object)) {
-    data += `<div class="flex flex-row gap-2">
+    data += `<div class="grid grid-cols-subgrid col-span-full flex-row gap-2">
       <div class="flex-grow text-left font-bold max-w-[200px] line-clamp-1 overflow-hidden ">${key}</div>
-      <div class="flex-grow text-left max-w-[200px] line-clamp-1 overflow-hidden ">${value}</div>
+      <div class="flex-grow text-left max-w-[200px] line-clamp-1 overflow-hidden ">${value.slice(
+        0,
+        100
+      )}</div>
     </div>`;
   }
   return data;
@@ -22,19 +25,29 @@ function createArrayView(
   let asHtml = (array ?? [])
     .map((data, index) => {
       if (index >= pageIndex * pageSize && index < (pageIndex + 1) * pageSize) {
+        const isObject =
+          !(
+            Array.isArray(data) ||
+            typeof data === 'number' ||
+            typeof data === 'string'
+          ) && typeof data === 'object';
+
+        const textEllipsis = isObject ? '' : 'text-ellipsis overflow-hidden';
         return `
-		  <div class="flex flex-row justify-start text-left">
-			<div class="flex-row flex flex-grow gap-4 overflow-hidden text-ellipsis">${
-        typeof data === 'number'
-          ? data.toFixed(2)
-          : Array.isArray(data)
-          ? data.map((item) => {
-              return typeof item === 'number' ? item.toFixed(2) : item;
-            })
-          : typeof data === 'object'
-          ? getStringForObject(data)
-          : data
-      }</div>
+		  <div class="flex flex-row justify-start text-left ${index > 0 ? 'mt-2' : ''}">
+			<div class="${
+        isObject ? 'grid grid-cols-[auto_1fr]' : 'flex flex-row gap-4'
+      }  flex-grow  ${textEllipsis}">${
+          typeof data === 'number'
+            ? data.toFixed(2)
+            : Array.isArray(data)
+            ? data.map((item) => {
+                return typeof item === 'number' ? item.toFixed(2) : item;
+              })
+            : typeof data === 'object'
+            ? getStringForObject(data)
+            : data
+        }</div>
 		  </div>`;
       }
       return '';
