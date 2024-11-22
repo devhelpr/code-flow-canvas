@@ -393,23 +393,23 @@ export const getScopedVariable =
         );
       } else if (fieldType === 'dictionary') {
         if (htmlNode && htmlNode?.domElement) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel('dictionary');
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
+            getLabelAsHtml('dictionary');
         }
       } else if (fieldType === 'array') {
         if (htmlNode && htmlNode?.domElement) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel('array');
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
+            getLabelAsHtml('array');
         }
       } else if (fieldType === 'grid') {
         if (htmlNode && htmlNode?.domElement) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel('grid');
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
+            getLabelAsHtml('grid');
         }
       } else if (fieldType === 'enum') {
         if (htmlNode && htmlNode?.domElement) {
-          (htmlNode.domElement as unknown as HTMLElement).textContent =
-            getLabel('enum');
+          (htmlNode.domElement as unknown as HTMLElement).innerHTML =
+            getLabelAsHtml('enum');
         }
       } else {
         if (htmlNode && htmlNode?.domElement) {
@@ -939,7 +939,7 @@ export const getScopedVariable =
         htmlNode = createElement(
           'div',
           {
-            class: '',
+            class: 'flex flex-col',
           },
           undefined,
           '-'
