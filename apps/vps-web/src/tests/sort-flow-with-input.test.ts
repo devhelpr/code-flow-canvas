@@ -9,7 +9,7 @@ describe('sort flow with input', () => {
   test('runs sort flow with input', async () => {
     const flowEngine = new RuntimeFlowEngine();
     flowEngine.initialize(flow.flows.flow.nodes);
-    const result = await flowEngine.run([5, 4, 3, 2, 1, 0]);
+    const result = await flowEngine.run([0, 5, 4, 3, 2, 1, 0]);
     console.log('result', result);
     expect(Array.isArray(result)).toBe(true);
 
@@ -19,6 +19,6 @@ describe('sort flow with input', () => {
       }
     });
 
-    expect(result.length).toBe(6);
+    expect(result.length).toBe(7);
   });
 });

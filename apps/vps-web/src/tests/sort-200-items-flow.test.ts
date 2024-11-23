@@ -2,7 +2,7 @@
  * @vitest-environment node
  **/
 import { expect, test, vi } from 'vitest';
-import { flow } from './flows/sort-100-items-flow';
+import { flow } from './flows/sort-200-items-flow';
 import { RuntimeFlowEngine } from '@devhelpr/web-flow-executor';
 
 describe('sort flow', () => {
@@ -19,6 +19,6 @@ describe('sort flow', () => {
       }
     });
 
-    expect(result.length).toBe(100);
+    expect(result.length).toBe(200);
   });
 });

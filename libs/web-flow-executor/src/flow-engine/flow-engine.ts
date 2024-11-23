@@ -63,7 +63,13 @@ const handleDecoratrs = (
         undefined,
         scopeId
       );
-      if (decoratorResult && !decoratorResult.stop && decoratorResult.output) {
+      if (
+        decoratorResult &&
+        !decoratorResult.stop &&
+        decoratorResult.output !== undefined &&
+        //decoratorResult.output !== false && // ?? is this check needed ?? .. before there was just a check on decoratorResult.output which caused issues in the sort flow .. 0 should also be able to be returned from decorators .. so perhaps false as well
+        decoratorResult.output !== null
+      ) {
         decoratorInput = decoratorResult.output;
       } else {
         // ? error handling decorators ?
