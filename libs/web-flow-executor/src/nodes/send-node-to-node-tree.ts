@@ -92,7 +92,7 @@ export const sendNodeToNodeTree: NodeTaskFactory<NodeInfo> = (
               payloadForExpression,
               false,
               info.payloadProperties
-            ) || '-';
+            ) ?? '-';
         }
       }
       //console.log('commandHandlerName', commandHandlerName, input);

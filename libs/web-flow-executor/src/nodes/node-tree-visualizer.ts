@@ -50,7 +50,8 @@ export const getNodeTreeVisualizer = (
       const nodeClass = payload?.nodeClass ?? '';
       let data = `${label}${(payload?.data ?? '-').toString()}`;
       if (
-        !payload?.data ||
+        payload?.data === undefined ||
+        payload?.data === null ||
         (Array.isArray(payload?.data) && !payload?.data.length)
       ) {
         data = '-';
