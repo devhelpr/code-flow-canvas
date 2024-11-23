@@ -36,7 +36,7 @@ function createArrayView(
         return `
 		  <div class="flex flex-row justify-start text-left ${index > 0 ? 'mt-2' : ''}">
 			<div class="${
-        isObject ? 'grid grid-cols-[auto_1fr]' : 'flex flex-row gap-4'
+        isObject ? 'grid grid-cols-[auto_1fr]' : 'block max-w-[200px]'
       }  flex-grow  ${textEllipsis}">${
           typeof data === 'number'
             ? data.toFixed(2)
