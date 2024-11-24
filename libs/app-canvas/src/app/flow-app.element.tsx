@@ -270,18 +270,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           const endNode = connection.endNode;
           const startNodeThumb = connection.startNodeThumb;
 
-          runNodeFromThumb(
-            startNodeThumb,
-            canvasApp,
-            () => {
-              //
-            },
-            this.transformValueForNodeTrigger(text),
-            endNode,
-            undefined,
-            undefined,
-            this.createRunCounterContext(true, false)
-          );
+          let interval: any = undefined;
+          clearTimeout(interval);
+          console.log('TRIGGER FLOW!', getIsStopAnimations());
+          resetRunIndex();
+          (this.runButton?.domElement as HTMLButtonElement).disabled = false;
+          setStopAnimations();
+          // Wait until isStopAnimations is set to false
+          interval = setInterval(() => {
+            if (!getIsStopAnimations()) {
+              clearInterval(interval);
+              runNodeFromThumb(
+                startNodeThumb,
+                canvasApp,
+                () => {
+                  //
+                },
+                this.transformValueForNodeTrigger(text),
+                endNode,
+                undefined,
+                undefined,
+                this.createRunCounterContext(true, false)
+              );
+            }
+          }, 0);
         }
       }
     });
@@ -2209,21 +2221,35 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           const canvasApp = this.canvasApp;
           const endNode = node.endNode;
           const startNodeThumb = node.startNodeThumb;
+
           navigator.clipboard.readText().then((text) => {
             console.log('clipboard', text);
             if (text) {
-              runNodeFromThumb(
-                startNodeThumb,
-                canvasApp,
-                () => {
-                  //
-                },
-                this.transformValueForNodeTrigger(text),
-                endNode,
-                undefined,
-                undefined,
-                this.createRunCounterContext(true, false)
-              );
+              let interval: any = undefined;
+              clearTimeout(interval);
+              console.log('TRIGGER FLOW!', getIsStopAnimations());
+              resetRunIndex();
+              (this.runButton?.domElement as HTMLButtonElement).disabled =
+                false;
+              setStopAnimations();
+              // Wait until isStopAnimations is set to false
+              interval = setInterval(() => {
+                if (!getIsStopAnimations()) {
+                  clearInterval(interval);
+                  runNodeFromThumb(
+                    startNodeThumb,
+                    canvasApp,
+                    () => {
+                      //
+                    },
+                    this.transformValueForNodeTrigger(text),
+                    endNode,
+                    undefined,
+                    undefined,
+                    this.createRunCounterContext(true, false)
+                  );
+                }
+              }, 0);
             }
           });
           return false;
