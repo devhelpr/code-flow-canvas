@@ -30,9 +30,12 @@ export const getNodeTreeVisualizer = (
   let isInitialized = false;
   let rootNode: IDOMElement | undefined = undefined;
   let initialDistance = 0;
-  const execute = (_command: string, payload: any) => {
+  const execute = (command: string, payload: any) => {
     if (canvasAppInstance && canvasAppInstance.isContextOnly) {
       return;
+    }
+    if (command === 'reset' && htmlNode) {
+      resetNodeTreeVisualizer();
     }
     if (isInitialized) {
       isInitialized = false;
@@ -42,7 +45,7 @@ export const getNodeTreeVisualizer = (
         ).innerHTML = `<div class="node-tree grid justify-items-center justify-content-center items-start gap-2"></div>`;
       }
     }
-    if (htmlNode) {
+    if (htmlNode && command !== 'reset') {
       let label = '';
       if (payload?.label) {
         label = `${payload?.label?.toString()}: `;
@@ -217,10 +220,7 @@ export const getNodeTreeVisualizer = (
     }
   };
 
-  const initializeCompute = () => {
-    if (canvasAppInstance && canvasAppInstance.isContextOnly) {
-      return;
-    }
+  const resetNodeTreeVisualizer = () => {
     if (htmlNode && htmlNode.domElement) {
       (
         htmlNode.domElement as unknown as HTMLElement
@@ -257,6 +257,13 @@ export const getNodeTreeVisualizer = (
         'border-green-200'
       );
     }
+  };
+
+  const initializeCompute = () => {
+    if (canvasAppInstance && canvasAppInstance.isContextOnly) {
+      return;
+    }
+    resetNodeTreeVisualizer();
     return;
   };
 

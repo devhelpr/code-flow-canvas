@@ -125,6 +125,10 @@ import {
   nodeTreeVisualizerNodeName,
 } from '../nodes/node-tree-visualizer';
 import {
+  sendResetToNodeTree,
+  sendResetToNodeTreeNodeName,
+} from '../nodes/send-reset-to-node-tree';
+import {
   sendNodeToNodeTree,
   sendNodeToNodeTreeNodeName,
 } from '../nodes/send-node-to-node-tree';
@@ -392,6 +396,7 @@ export const setupCanvasNodeTaskRegistry = (
 
     registerNodeFactory(nodeTreeVisualizerNodeName, getNodeTreeVisualizer);
     registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);
+    registerNodeFactory(sendResetToNodeTreeNodeName, sendResetToNodeTree);
 
     registerNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
     registerNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
