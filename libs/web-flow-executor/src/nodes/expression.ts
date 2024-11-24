@@ -26,7 +26,7 @@ import {
   getNodesByNodeType,
 } from '../graph/get-node-by-variable-name';
 import { registerExpressionFunctionNodeName } from './register-expression-function';
-import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils/variable-payload-input-utils';
 
 const thumbs = [
   {

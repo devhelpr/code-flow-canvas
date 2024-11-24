@@ -36,7 +36,11 @@ import {
   IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
 
-import { registerCustomFunction } from '@devhelpr/expression-compiler';
+import {
+  compileExpressionAsInfo,
+  registerCustomFunction,
+  runExpression,
+} from '@devhelpr/expression-compiler';
 
 import {
   setSpeedMeter,
@@ -107,6 +111,7 @@ import {
   connectionExecuteHistory,
   getNodeFactoryNames,
   getNodeTaskFactory,
+  getVariablePayloadInputUtils,
   increaseRunIndex,
   initFlowVariableScope,
   registerComposition,
@@ -243,6 +248,42 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     this.canvasApp.setCanvasAction((action, payload?: any) => {
       this.canvasAction = action;
       this.canvasActionPayload = payload;
+    });
+
+    this.canvasApp.setOnDroppedOnNode((node, droppedNode) => {
+      const connection = droppedNode as IConnectionNodeComponent<NodeInfo>;
+      if (connection.startNodeThumb) {
+        const text = node.nodeInfo?.formValues?.annotation;
+        if (
+          text &&
+          node &&
+          node.nodeInfo?.type === 'annotation' &&
+          connection &&
+          connection.nodeType === NodeType.Connection &&
+          connection.endNode &&
+          connection.startNodeThumb &&
+          this.canvasApp
+        ) {
+          // Copy & paste clipboard to connection and trigger connection
+
+          const canvasApp = this.canvasApp;
+          const endNode = connection.endNode;
+          const startNodeThumb = connection.startNodeThumb;
+
+          runNodeFromThumb(
+            startNodeThumb,
+            canvasApp,
+            () => {
+              //
+            },
+            this.transformValueForNodeTrigger(text),
+            endNode,
+            undefined,
+            undefined,
+            this.createRunCounterContext(true, false)
+          );
+        }
+      }
     });
 
     this.canvasApp.setOnAddcomposition(this.onAddFlowComposition);
@@ -2177,7 +2218,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 () => {
                   //
                 },
-                text,
+                this.transformValueForNodeTrigger(text),
                 endNode,
                 undefined,
                 undefined,
@@ -2190,5 +2231,67 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     }
     return true;
+  };
+
+  handleExpression = (expression: string, payload: any) => {
+    try {
+      const compiledExpression = compileExpressionAsInfo(expression);
+      const expressionFunction = (
+        new Function('payload', `${compiledExpression.script}`) as unknown as (
+          payload?: any
+        ) => any
+      ).bind(compiledExpression.bindings);
+
+      const result = runExpression(
+        expressionFunction,
+        payload,
+        false,
+        compiledExpression.payloadProperties
+      );
+      return result;
+    } catch (error) {
+      console.error('Split-by-case: Error in handleExpression', error);
+      return false;
+    }
+  };
+
+  transformValueForNodeTrigger = (value: string) => {
+    if (typeof value === 'string') {
+      let trimmedValue = value.trim();
+      if (
+        (trimmedValue.startsWith('[') && trimmedValue.endsWith(']')) ||
+        trimmedValue.startsWith('=')
+      ) {
+        if (trimmedValue.startsWith('=')) {
+          trimmedValue = trimmedValue.slice(1);
+        }
+        const payloadForExpression = getVariablePayloadInputUtils(
+          '',
+          {},
+          'number',
+          -1,
+          -1,
+          undefined,
+          this.currentCanvasApp
+        );
+        const expressionResult = this.handleExpression(
+          trimmedValue,
+          payloadForExpression
+        );
+        if (expressionResult !== false) {
+          return expressionResult;
+        }
+        return '';
+      }
+      if (trimmedValue.startsWith('{') && trimmedValue.endsWith('}')) {
+        try {
+          return JSON.parse(trimmedValue);
+        } catch (e) {
+          return trimmedValue;
+        }
+      }
+      return value;
+    }
+    return '';
   };
 }

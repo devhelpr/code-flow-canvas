@@ -210,4 +210,11 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
   resetNodeSelector: () => void;
   setApiUrlRoot: (apiUrlRoot: string) => void;
   getApiUrlRoot: () => string;
+
+  setOnDroppedOnNode: (
+    onDroppedOnNode?: (
+      droppedNode: INodeComponent<T>,
+      dropTarget: INodeComponent<T>
+    ) => void
+  ) => void;
 }

@@ -43,16 +43,6 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       .map((value) => parseFloat(value) ?? 0)
       .reduce((a, b) => a + b, 0);
     if (htmlNode) {
-      createElement(
-        'div',
-        {
-          class:
-            'inline-block p-1 m-1 bg-slate-500 border border-slate-600 rounded text-white',
-        },
-        undefined,
-        input.toString()
-      ) as unknown as INodeComponent<NodeInfo>;
-
       if (hasInitialValue) {
         hasInitialValue = false;
       }
@@ -93,7 +83,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded max-w-[240px] text-center`,
+          class: `inner-node bg-white p-4 rounded max-w-[240px] text-center text-black`,
         },
         undefined,
         htmlNode.domElement as unknown as HTMLElement

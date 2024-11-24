@@ -156,7 +156,8 @@ export const pointerUp = <T extends BaseNodeInfo>(
   element: INodeComponent<T>,
   _canvasElement: IElementNode<T>,
   interactionInfo: IPointerDownResult,
-  interactionStateMachine: InteractionStateMachine<T>
+  interactionStateMachine: InteractionStateMachine<T>,
+  resetNodeToOrginalPosition?: boolean
 ) => {
   if (element) {
     const currentInteractionInfo =
@@ -209,8 +210,12 @@ export const pointerUp = <T extends BaseNodeInfo>(
           );
           element.update(
             element,
-            x - interactionInfo.xOffsetWithinElementOnFirstClick,
-            y - interactionInfo.yOffsetWithinElementOnFirstClick,
+            resetNodeToOrginalPosition
+              ? x
+              : x - interactionInfo.xOffsetWithinElementOnFirstClick,
+            resetNodeToOrginalPosition
+              ? y
+              : y - interactionInfo.yOffsetWithinElementOnFirstClick,
             element
           );
         }

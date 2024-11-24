@@ -1,0 +1,255 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "7e166d63-47d1-434c-a2aa-a7c75331ec7e",
+          "x": 9614.665662495308,
+          "y": 2041.8724614975927,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "5",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "978bb5b9-95bd-48db-b5d0-32ee0a19f359",
+          "x": 10155.030522436788,
+          "y": 2025.1435225993878,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "input * 2",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "2c2ab16e-ddc9-46ee-be49-5b510c91e354",
+          "x": 10590.913232625046,
+          "y": 2075.6191535879448,
+          "width": 119.99920876217523,
+          "height": 56.00001459796518,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "f1ad87fc-c673-4dd2-9f9b-a078309f20e2",
+          "x": 9782.221443635435,
+          "y": 1922.6687616066683,
+          "width": 66.14914512743235,
+          "height": 27.486956497437404,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "10",
+              "fontSize": "16",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "5c55d11b-3983-4b13-ac70-166d1899c5cd",
+          "x": 9777.394152186711,
+          "y": 2366.7596505691417,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "[1,2,3]",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "b0174761-22cc-4db6-8e83-27a09ad462c5",
+          "x": 10183.360322930836,
+          "y": 2388.8825245919566,
+          "width": 239.9999549266688,
+          "height": 55.999943143829334,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "sum"
+          }
+        },
+        {
+          "id": "14ec0c88-c5eb-4508-b153-1a5e9d36eb37",
+          "x": 9956.864328701347,
+          "y": 2275.756821883576,
+          "width": 240,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "[4,5,6]",
+              "fontSize": "16",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "61581958-5591-4b51-984d-cd0f2ab47372",
+          "x": 10151.010505581524,
+          "y": 1792.4660031566073,
+          "width": 174.4218324956868,
+          "height": 84.00002331858714,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "scope-variable",
+            "formValues": {
+              "variableName": "test",
+              "initialValue": "303",
+              "fieldType": "value",
+              "fieldValueType": "number",
+              "enumValues": [],
+              "initialEnumValue": ""
+            },
+            "isVariable": true,
+            "nodeCannotBeReplaced": true
+          }
+        },
+        {
+          "id": "92d2514d-6342-43a2-b864-8adc9ec88c8b",
+          "x": 9821.897279533316,
+          "y": 1819.556623295406,
+          "width": 240,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "=test + 5",
+              "fontSize": "16",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true
+          }
+        },
+        {
+          "id": "ce778a45-3fad-4ef5-8864-c4e08ba8a987",
+          "x": 9814.665662495308,
+          "y": 2091.8724614975927,
+          "endX": 10155.030522436788,
+          "endY": 2075.143522599388,
+          "startNodeId": "7e166d63-47d1-434c-a2aa-a7c75331ec7e",
+          "endNodeId": "978bb5b9-95bd-48db-b5d0-32ee0a19f359",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "bdc6c812-445a-4a0b-a39c-fc5cae21e3d7",
+          "x": 10355.030522436788,
+          "y": 2075.143522599388,
+          "endX": 10590.913232625046,
+          "endY": 2105.6191535879448,
+          "startNodeId": "978bb5b9-95bd-48db-b5d0-32ee0a19f359",
+          "endNodeId": "2c2ab16e-ddc9-46ee-be49-5b510c91e354",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "8d4611a0-fd49-476d-be0d-c048c3e733e0",
+          "x": 9977.394152186711,
+          "y": 2416.7596505691417,
+          "endX": 10183.360322930836,
+          "endY": 2416.882496163871,
+          "startNodeId": "5c55d11b-3983-4b13-ac70-166d1899c5cd",
+          "endNodeId": "b0174761-22cc-4db6-8e83-27a09ad462c5",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "acfcfe5c-aec6-4b3d-adc8-483ed18a2258",
+          "x": 9904.898398872987,
+          "y": 1964.8880805353383,
+          "width": 110.6247244815404,
+          "height": 37.74433114564067,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "21.123",
+              "fontSize": "16",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true,
+            "taskType": "annotation"
+          }
+        },
+        {
+          "id": "92a6abc0-21c5-4dba-869f-5658bc4bd22b",
+          "x": 9926.399921662924,
+          "y": 1905.2449817802428,
+          "width": 57.8133295343614,
+          "height": 31.36911666207766,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "annotation",
+            "formValues": {
+              "annotation": "9998",
+              "fontSize": "16",
+              "fontWeight": "false"
+            },
+            "isSettingsPopup": true,
+            "nodeCannotBeReplaced": true,
+            "isAnnotation": true,
+            "taskType": "annotation"
+          }
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

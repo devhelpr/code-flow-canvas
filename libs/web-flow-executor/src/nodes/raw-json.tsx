@@ -15,7 +15,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { transformJSON } from './json-utils/transform-json';
-import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils/variable-payload-input-utils';
 
 const fieldName = 'testt-input';
 const labelName = 'JSON';

@@ -19,7 +19,7 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { getVariablePayloadInputUtils } from './variable-payload-input-utils.ts/variable-payload-input-utils';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils/variable-payload-input-utils';
 
 function handleExpression(expression: string, payload: any) {
   try {

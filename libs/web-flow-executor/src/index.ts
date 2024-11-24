@@ -5,3 +5,4 @@ export * from './node-task-registry/canvas-node-task-registry';
 export * from './follow-path/run-counter';
 export * from './follow-path/run-path';
 export * from './follow-path/updateRunCounterElement';
+export * from './nodes/variable-payload-input-utils/variable-payload-input-utils';

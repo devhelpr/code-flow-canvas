@@ -58,7 +58,11 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
   isNodeContainer?: boolean,
   _appRootElement?: HTMLElement,
   heightSpaceForHeaderFooterToolbars?: number,
-  widthSpaceForSideToobars?: number
+  widthSpaceForSideToobars?: number,
+  onDroppedOnNode?: (
+    droppedNode: INodeComponent<T>,
+    dropTarget: INodeComponent<T>
+  ) => void
 ): IFlowCanvasBase<T> => {
   return new FlowCanvas(
     rootElement,
@@ -71,7 +75,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     isNodeContainer,
     _appRootElement,
     heightSpaceForHeaderFooterToolbars,
-    widthSpaceForSideToobars
+    widthSpaceForSideToobars,
+    onDroppedOnNode
   );
 };
 
@@ -149,7 +154,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
 
   private heightSpaceForHeaderFooterToolbars: number | undefined;
   private widthSpaceForSideToobars: number | undefined;
-
+  private onDroppedOnNode:
+    | ((droppedNode: INodeComponent<T>, dropTarget: INodeComponent<T>) => void)
+    | undefined;
   constructor(
     rootElement: HTMLElement,
     disableInteraction?: boolean,
@@ -161,7 +168,11 @@ export class FlowCanvas<T extends BaseNodeInfo>
     isNodeContainer?: boolean,
     _appRootElement?: HTMLElement,
     heightSpaceForHeaderFooterToolbars?: number,
-    widthSpaceForSideToobars?: number
+    widthSpaceForSideToobars?: number,
+    onDroppedOnNode?: (
+      droppedNode: INodeComponent<T>,
+      dropTarget: INodeComponent<T>
+    ) => void
   ) {
     super();
     this.disableInteraction = disableInteraction ?? false;
@@ -203,6 +214,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       onEditCompositionName ?? (() => Promise.resolve(false)),
       isNodeContainer
     );
+    this.onDroppedOnNode = onDroppedOnNode;
 
     const onContextMenu = (event: Event) => {
       console.log('contextmenu canvas', event.target, this.canvas.domElement);
@@ -210,9 +222,14 @@ export class FlowCanvas<T extends BaseNodeInfo>
     };
     rootElement.addEventListener('contextmenu', onContextMenu, false);
 
+    // let orgPointerX = 0;
+    // let orgPointerY = 0;
     const onPointerDown = (event: PointerEvent) => {
       this.isZoomingViaTouch = false;
       this.skipFirstPointerMoveOnTouch = false;
+      orgNodePositionSet = false;
+
+      currentColldingElement = undefined;
       //console.log('pointerdown canvas', event.target, canvas.domElement);
       if (this.disableInteraction) {
         return;
@@ -330,6 +347,11 @@ export class FlowCanvas<T extends BaseNodeInfo>
       return false;
     };
 
+    let orgNodePositionSet = false;
+    let orgNodePositionX = 0;
+    let orgNodePositionY = 0;
+
+    let currentColldingElement: INodeComponent<T> | undefined = undefined;
     const onPointerMove = (event: PointerEvent) => {
       if (this.disableInteraction) {
         return;
@@ -343,6 +365,15 @@ export class FlowCanvas<T extends BaseNodeInfo>
         rootElement,
         event
       );
+
+      // if (!this.wasMoved) {
+      //   const { x, y } = transformCameraSpaceToWorldSpace(
+      //     pointerXPos,
+      //     pointerYPos
+      //   );
+      //   orgPointerX = x;
+      //   orgPointerY = y;
+      // }
 
       if (
         ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
@@ -438,7 +469,6 @@ export class FlowCanvas<T extends BaseNodeInfo>
               rect?.containerNode?.id === this.canvas.id ||
               rect?.canvasAppInstance?.canvas?.id !== this.canvas.id ||
               !rect?.canvasAppInstance?.canvas?.id
-              //true
             ) {
               event.preventDefault();
               event.stopPropagation();
@@ -454,6 +484,71 @@ export class FlowCanvas<T extends BaseNodeInfo>
 
               if (this.onCameraChanged) {
                 this.onCameraChanged(getCamera());
+              }
+            }
+            if (rect.nodeInfo?.type === 'annotation') {
+              // console.log(
+              //   'DRAGGIGN ANNOTATION',
+              //   (event.target as HTMLElement)?.tagName
+              // );
+              if (!orgNodePositionSet) {
+                orgNodePositionSet = true;
+                orgNodePositionX = rect.x;
+                orgNodePositionY = rect.y;
+              }
+
+              // check if the annotation collides with an element on the canvas
+              const annotationRect = (
+                rect.domElement as HTMLElement
+              ).getBoundingClientRect();
+              const annotationX = annotationRect.x;
+              const annotationY = annotationRect.y;
+              const annotationWidth = annotationRect.width;
+              const annotationHeight = annotationRect.height;
+              let isColliding = false;
+              let collidingElement: INodeComponent<T> | undefined = undefined;
+              this.elements.forEach((element) => {
+                const elementHelper = element as unknown as INodeComponent<T>;
+                if (
+                  elementHelper.id !== rect.id &&
+                  elementHelper.nodeType === NodeType.Connection
+                ) {
+                  const elementRect = (
+                    elementHelper.domElement as HTMLElement
+                  ).getBoundingClientRect();
+                  const elementX = elementRect.x;
+                  const elementY = elementRect.y;
+                  const elementWidth = elementRect.width;
+                  const elementHeight = elementRect.height;
+
+                  if (
+                    annotationX < elementX + elementWidth &&
+                    annotationX + annotationWidth > elementX &&
+                    annotationY < elementY + elementHeight &&
+                    annotationY + annotationHeight > elementY &&
+                    !isColliding
+                  ) {
+                    collidingElement = elementHelper;
+                    isColliding = true;
+                  }
+                }
+              });
+              if (currentColldingElement) {
+                const closestSVGElement = (
+                  currentColldingElement.domElement as HTMLElement
+                ).closest('svg');
+                (closestSVGElement as SVGElement).classList.remove('selected');
+                currentColldingElement = undefined;
+              }
+              if (isColliding) {
+                console.log('COLLIDING WITH ELEMENT', collidingElement);
+                if (collidingElement) {
+                  const closestSVGElement = (
+                    (collidingElement as any).domElement as HTMLElement
+                  ).closest('svg');
+                  (closestSVGElement as SVGElement).classList.add('selected');
+                }
+                currentColldingElement = collidingElement;
               }
             }
           }
@@ -520,15 +615,47 @@ export class FlowCanvas<T extends BaseNodeInfo>
                 pointerYPos
               );
 
-              currentState.target.pointerUp &&
-                currentState.target.pointerUp(
-                  x,
-                  y,
-                  currentState.element,
-                  this.canvas,
-                  currentState.target.interactionInfo,
-                  this.interactionStateMachine
-                );
+              let skipPointerUp = false;
+              if (rect.nodeInfo?.type === 'annotation' && this.wasMoved) {
+                if (currentColldingElement) {
+                  console.log('DROP ON ELEMENT', currentColldingElement);
+                  const closestSVGElement = (
+                    currentColldingElement.domElement as HTMLElement
+                  ).closest('svg');
+                  (closestSVGElement as SVGElement).classList.remove(
+                    'selected'
+                  );
+
+                  if (this.onDroppedOnNode) {
+                    this.onDroppedOnNode(rect, currentColldingElement);
+                  }
+                  currentColldingElement = undefined;
+
+                  currentState.target.pointerUp &&
+                    currentState.target.pointerUp(
+                      orgNodePositionX,
+                      orgNodePositionY,
+                      currentState.element,
+                      this.canvas,
+                      currentState.target.interactionInfo,
+                      this.interactionStateMachine,
+                      true
+                    );
+
+                  skipPointerUp = true;
+                }
+              }
+              if (!skipPointerUp) {
+                currentState.target.pointerUp &&
+                  currentState.target.pointerUp(
+                    x,
+                    y,
+                    currentState.element,
+                    this.canvas,
+                    currentState.target.interactionInfo,
+                    this.interactionStateMachine
+                  );
+              }
             }
           }
         }
@@ -542,10 +669,12 @@ export class FlowCanvas<T extends BaseNodeInfo>
           );
         }
       }
+      orgNodePositionSet = false;
       this.isMoving = false;
       this.isClicking = false;
     };
     const onPointerLeave = (event: PointerEvent) => {
+      orgNodePositionSet = false;
       if (this.disableInteraction) {
         return;
       }
@@ -553,6 +682,16 @@ export class FlowCanvas<T extends BaseNodeInfo>
         console.log('pointerleave isZoomingViaTouch', event);
         return;
       }
+
+      if (currentColldingElement) {
+        const closestSVGElement = (
+          currentColldingElement.domElement as HTMLElement
+        ).closest('svg');
+        (closestSVGElement as SVGElement).classList.remove('selected');
+      }
+
+      currentColldingElement = undefined;
+
       this.isMoving = false;
       this.isClicking = false;
       this.wasMoved = false;
@@ -1696,5 +1835,14 @@ export class FlowCanvas<T extends BaseNodeInfo>
   };
   getApiUrlRoot = () => {
     return this.apiUrl;
+  };
+
+  setOnDroppedOnNode = (
+    onDroppedOnNode?: (
+      droppedNode: INodeComponent<T>,
+      dropTarget: INodeComponent<T>
+    ) => void
+  ) => {
+    this.onDroppedOnNode = onDroppedOnNode;
   };
 }

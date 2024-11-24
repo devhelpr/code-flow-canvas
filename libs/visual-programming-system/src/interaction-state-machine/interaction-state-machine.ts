@@ -45,7 +45,8 @@ export interface InteractionTarget<T extends BaseNodeInfo> {
     element: INodeComponent<T>,
     canvasNode: IElementNode<T>,
     interactionInfo: IPointerDownResult,
-    interactionStateMachine: InteractionStateMachine<T>
+    interactionStateMachine: InteractionStateMachine<T>,
+    resetNodeToOrginalPosition?: boolean
   ) => void;
   interactionInfo: IPointerDownResult;
 }
@@ -111,14 +112,6 @@ export const createInteractionStateMachine = <
     peek = false,
     canvasNode?: IElementNode<T>
   ): false | InterActionInfo<T> => {
-    // console.log(
-    //   'interactionEventState',
-    //   interactionState,
-    //   interactionState === InteractionState.Moving,
-    //   event,
-    //   interactionTarget?.id,
-    //   target.id
-    // );
     if (interactionState === InteractionState.Idle) {
       if (event === InteractionEvent.PointerDown) {
         interactionState = InteractionState.Moving;
