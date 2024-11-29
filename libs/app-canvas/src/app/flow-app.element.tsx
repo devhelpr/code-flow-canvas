@@ -198,7 +198,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   canvasActionPayload: any = undefined;
   cancelCameraAnimation: (() => void) | undefined = undefined;
   updateToolbarTaskList: (() => void) | undefined = undefined;
-
+  hideFlowPresets = false;
   initializeNodes: (() => void) | undefined = undefined;
   flowId = '1234';
 
@@ -222,7 +222,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     ) => void,
     flowId?: string,
     clearPresetRegistry?: boolean,
-    apiUrlRoot?: string
+    apiUrlRoot?: string,
+    hideFlowPresets?: boolean
   ) {
     super(
       appRootSelector,
@@ -242,7 +243,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (flowId) {
       this.flowId = flowId;
     }
-
+    this.hideFlowPresets = hideFlowPresets ?? false;
     this.onStoreFlow = onStoreFlow;
     this.canvasApp.setApiUrlRoot(apiUrlRoot ?? '');
     this.canvasApp.setCanvasAction((action, payload?: any) => {
@@ -561,6 +562,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             rootAppElement: this.rootElement as HTMLElement,
             setIsStoring: setIsStoring,
             showPopup: this.positionPopup,
+            hideFlowPresets: this.hideFlowPresets,
             executeCommand: (
               command: string,
               parameter1: any,

@@ -67,13 +67,19 @@ export class NavbarComponent extends Component<
     if (props.isReadOnly) {
       return;
     }
+
     this.template = createTemplate(
       `<div class="inline-flex items-center content-center">
         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <div></div>
-        <button class="${navBarButton}">Import</button><select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
+        <button class="${navBarButton}">Import</button>
+        ${
+          props.hideFlowPresets
+            ? ''
+            : `
+        <select type="select" name="example-flows" class="p-2 m-2 relative max-w-[220px]">
           <option value="">Select example flow</option>
           <option value="counter-flow.json">Counter</option>
           <option value="basic-condition.json">Basic condition</option>
@@ -89,7 +95,8 @@ export class NavbarComponent extends Component<
           <option value="kmeans.json">K-Means clustering</option>
           <option value="kmeans-csv-file.json">K-Means clustering of a CSV file</option>
           <option value="openai-chat.json">Open AI Chat Completion API</option>
-        </select>
+        </select>`
+        }
         <children></children>
       </div>`
     );
@@ -113,8 +120,10 @@ export class NavbarComponent extends Component<
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
-        this.selectExampleFlow = this.importButton
-          ?.nextSibling as HTMLSelectElement;
+        if (!this.props.hideFlowPresets) {
+          this.selectExampleFlow = this.importButton
+            ?.nextSibling as HTMLSelectElement;
+        }
         // this.importScriptButton = this.importButton
         //   ?.nextSibling as HTMLButtonElement;
 
@@ -123,7 +132,7 @@ export class NavbarComponent extends Component<
         this.deleteButton.addEventListener('click', this.onClickDelete);
         //this.exportButton.addEventListener('click', this.onClickExport);
         this.importButton.addEventListener('click', this.onClickImport);
-        this.selectExampleFlow.addEventListener(
+        this.selectExampleFlow?.addEventListener(
           'change',
           this.onClickImportExample
         );
@@ -159,9 +168,11 @@ export class NavbarComponent extends Component<
           this.centerButton,
           this.deleteButton,
           this.exportButton,
-          this.importButton,
-          this.selectExampleFlow
+          this.importButton
         );
+        if (this.selectExampleFlow) {
+          this.renderList.push(this.selectExampleFlow);
+        }
         // this.childRoot = this.element.firstChild as HTMLElement;
         // this.renderList.push(this.childRoot);
         this.rootElement.append(this.element);
@@ -617,5 +628,6 @@ export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
     showPopup: props.showPopup,
     executeCommand: props.executeCommand,
     isReadOnly: props.isReadOnly,
+    hideFlowPresets: props.hideFlowPresets,
   });
 };

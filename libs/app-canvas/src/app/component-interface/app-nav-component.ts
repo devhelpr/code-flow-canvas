@@ -40,6 +40,7 @@ export interface AppNavComponentsProps<T extends BaseNodeInfo> {
     parameter2?: any
   ) => void;
   isReadOnly?: boolean;
+  hideFlowPresets?: boolean;
 }
 
 export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {
