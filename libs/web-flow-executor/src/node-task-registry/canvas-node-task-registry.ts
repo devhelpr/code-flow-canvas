@@ -221,6 +221,7 @@ import {
   getVectorDistanceNode,
   vectorDistanceNodeName,
 } from '../nodes/vector-distance';
+import { createGuid, createGuidNodeName } from '../nodes/create-guid';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -465,6 +466,8 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory(jsonNodeName, getRawJsonNode);
 
     registerNodeFactory(vectorDistanceNodeName, getVectorDistanceNode);
+
+    registerNodeFactory(createGuidNodeName, createGuid);
   }
 
   registerExternalNodes?.(registerNodeFactory);

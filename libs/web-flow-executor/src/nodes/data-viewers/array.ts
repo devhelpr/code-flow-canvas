@@ -6,10 +6,11 @@ function getStringForObject(object: Record<string, any>) {
   for (const [key, value] of Object.entries(object)) {
     data += `<div class="grid grid-cols-subgrid col-span-full flex-row gap-2">
       <div class="flex-grow text-left font-bold max-w-[200px] line-clamp-1 overflow-hidden ">${key}</div>
-      <div class="flex-grow text-left max-w-[200px] line-clamp-1 overflow-hidden ">${value.slice(
-        0,
-        100
-      )}</div>
+      <div class="flex-grow text-left max-w-[200px] line-clamp-1 overflow-hidden ">${(
+        value ?? ''
+      )
+        .toString()
+        .slice(0, 100)}</div>
     </div>`;
   }
   return data;

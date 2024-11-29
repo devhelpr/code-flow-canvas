@@ -3,6 +3,15 @@ import {
   runExpression,
 } from '@devhelpr/expression-compiler';
 
+/*
+  @if:content: {
+    ..
+  }
+  @if:toolcall: {
+    ..
+  }
+*/
+
 const isArrayOrObject = (json: any) => {
   return Array.isArray(json) || typeof json === 'object';
 };
@@ -14,7 +23,67 @@ const evaluateAtProperty = (
   payload: any,
   initialPayload?: any
 ) => {
-  if (key.startsWith('@pushTo:')) {
+  if (key.startsWith('@serialize')) {
+    const setProperty = key.replace('@serialize:', '');
+
+    const toSerialize: Record<string, any> = {};
+    Object.keys(value).forEach((mapKey) => {
+      const mapValue = value[mapKey];
+      if (mapKey.startsWith('@') && !mapKey.startsWith('@@')) {
+        //console.log('mapKey', mapKey, mapValue, payload, initialPayload);
+        const newValue: Record<string, any> = {};
+        evaluateAtProperty(newValue, mapKey, mapValue, payload, initialPayload);
+
+        const setProperty = mapKey.split(':')[1];
+        const propertyValue = newValue[setProperty];
+        if (typeof propertyValue === 'string') {
+          toSerialize[setProperty] = propertyValue;
+        } else if (isArrayOrObject(propertyValue)) {
+          toSerialize[setProperty] = JSON.stringify(
+            transformJSON(propertyValue, setProperty, '', initialPayload)
+          );
+        } else {
+          toSerialize[setProperty] = propertyValue;
+        }
+        // console.log('result', newValue, JSON.stringify(newValue[setProperty]));
+        // toSerialize[setProperty] = JSON.stringify(newValue[setProperty]);
+      } else {
+        if (isArrayOrObject(mapValue)) {
+          toSerialize[mapKey] = JSON.stringify(
+            transformJSON(mapValue, mapKey, '', initialPayload)
+          );
+        } else {
+          toSerialize[mapKey] = mapValue;
+        }
+      }
+    });
+
+    const serializedValue = JSON.stringify(toSerialize);
+    newJson[setProperty] = serializedValue;
+  } else if (key.startsWith('@if:')) {
+    const ifProperty = key.replace('@if:', '').split(':')[0];
+    //console.log('ifProperty', ifProperty, value);
+    if (payload[ifProperty]) {
+      Object.keys(value).forEach((mapKey) => {
+        const mapValue = value[mapKey];
+        if (mapKey.startsWith('@') && !mapKey.startsWith('@@')) {
+          evaluateAtProperty(
+            newJson,
+            mapKey,
+            mapValue,
+            payload,
+            initialPayload
+          );
+        } else {
+          if (isArrayOrObject(mapValue)) {
+            transformJSON(mapValue, mapKey, '', initialPayload);
+          } else {
+            newJson[mapKey] = mapValue;
+          }
+        }
+      });
+    }
+  } else if (key.startsWith('@pushTo:')) {
     const setProperty = key.replace('@pushTo:', '').split(':')[0];
     if (!newJson[setProperty]) {
       newJson[setProperty] = [];
@@ -59,7 +128,7 @@ const evaluateAtProperty = (
     newJson[setProperty] = result;
   } else if (key.startsWith('@set:')) {
     const newKey = key.replace('@set:', '');
-
+    console.log('set', newKey, value, payload);
     newJson[newKey] = payload?.[value] ?? '';
   } else if (key === '@map') {
     /*
@@ -87,7 +156,7 @@ const evaluateAtProperty = (
           });
           return newItem;
         });
-        console.log('map', toMapValue);
+        //console.log('map', toMapValue);
         if (newJson[value.property]) {
           newJson[value.property].push(...mappedValue);
         } else {
@@ -107,7 +176,7 @@ export const transformJSON = (
   if (Array.isArray(json)) {
     const newJson: any[] = [];
     json.forEach((value, index) => {
-      console.log(path + '[' + index + ']');
+      //console.log(path + '[' + index + ']');
       if (isArrayOrObject(value)) {
         const result = transformJSON(
           value,
@@ -127,7 +196,7 @@ export const transformJSON = (
     const newJson: Record<string, any> = {};
     Object.keys(json).forEach((key) => {
       const value = json[key];
-      console.log(`${path ? path + '.' : ''}${key}`);
+      //console.log(`${path ? path + '.' : ''}${key}`);
 
       if (key.startsWith('@') && !key.startsWith('@@')) {
         evaluateAtProperty(newJson, key, value, payload, payload);

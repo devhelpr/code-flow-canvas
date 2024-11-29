@@ -110,4 +110,67 @@ describe('transformJSON', () => {
     });
     expect((result as any)['test']).toBe(5);
   });
+
+  it('should transform an object with @serialize and payload', () => {
+    const input = {
+      '@serialize:test': {
+        a: 'a',
+        b: 'b',
+        '@expression:calc': 'a + b',
+        '@expression:array': '[a, b]',
+        anobject: {
+          hello: 'world',
+          '@expression:calc': 'a + b',
+        },
+      },
+    };
+    const result = transformJSON(input, undefined, 'root', {
+      a: 2,
+      b: 3,
+    });
+    expect((result as any)['test']).toBe(
+      JSON.stringify({
+        a: 'a',
+        b: 'b',
+        calc: 5,
+        array: '[2,3]',
+        anobject: '{"hello":"world","calc":5}',
+      })
+    );
+  });
+
+  it('should transform a nested object with @serialize and payload', () => {
+    const input = {
+      role: 'assistant',
+      function_call: [
+        {
+          id: 'get_current_weather',
+          type: 'function',
+          function: {
+            name: 'get_current_weather',
+            '@serialize:arguments': {
+              '@set:location': 'tool',
+              unit: 'celsius',
+            },
+          },
+        },
+      ],
+    };
+    const result = transformJSON(input, undefined, 'root', {
+      tool: 'a_function',
+    });
+    expect(result as any).toStrictEqual({
+      function_call: [
+        {
+          function: {
+            name: 'get_current_weather',
+            arguments: '{"location":"a_function","unit":"celsius"}',
+          },
+          id: 'get_current_weather',
+          type: 'function',
+        },
+      ],
+      role: 'assistant',
+    });
+  });
 });
