@@ -222,6 +222,7 @@ import {
   vectorDistanceNodeName,
 } from '../nodes/vector-distance';
 import { createGuid, createGuidNodeName } from '../nodes/create-guid';
+import { getNumberValue } from '../nodes/value-number';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -271,6 +272,7 @@ export const setupCanvasNodeTaskRegistry = (
     // registerNodeFactory('expression-part', getExpressionPart);
     // registerNodeFactory('expression-execute', getExpressionExecute);
     registerNodeFactory('value', getValue);
+    registerNodeFactory('number-value', getNumberValue);
 
     registerNodeFactory('send-command', getSendCommand);
 

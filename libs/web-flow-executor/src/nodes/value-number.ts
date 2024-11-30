@@ -14,7 +14,6 @@ import {
   FlowChangeType,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
-
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorCenter,
@@ -33,8 +32,7 @@ const thumbs = [
     //thumbConstraint: 'value',
   },
 ];
-
-export const getValue: NodeTaskFactory<NodeInfo> = (
+export const getNumberValue: NodeTaskFactory<NodeInfo> = (
   updated: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,
@@ -48,20 +46,30 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string, loopIndex?: number, payload?: any) => {
-    const result = replaceValues(node?.nodeInfo?.formValues?.['value'] ?? '', {
-      value: input,
-      currentValue: input,
-      index: loopIndex ?? 0,
-      payload: payload,
-    });
+    const result = parseFloat(
+      replaceValues(node?.nodeInfo?.formValues?.['value'] ?? '', {
+        value: input,
+        currentValue: input,
+        index: loopIndex ?? 0,
+        payload: payload,
+      })
+    );
+    if (isFinite(result)) {
+      return {
+        result,
+        followPath: undefined,
+      };
+    }
     return {
-      result,
+      result: undefined,
+      output: undefined,
+      stop: true,
       followPath: undefined,
     };
   };
 
   return {
-    name: 'value',
+    name: 'number-value',
     family: 'flow-canvas',
     isContainer: false,
     thumbs,
@@ -79,6 +87,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         {
           fieldType: FormFieldType.Text,
           fieldName: 'value',
+          label: 'Value (number)',
           value: initialValue ?? '',
           onChange: (value: string) => {
             if (!node.nodeInfo) {
@@ -131,7 +140,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         undefined,
         id,
         {
-          type: 'value',
+          type: 'number-value',
           formValues: {
             value: initialValue ?? '',
           },
