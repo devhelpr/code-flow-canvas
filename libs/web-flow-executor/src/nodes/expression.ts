@@ -27,6 +27,8 @@ import {
 } from '../graph/get-node-by-variable-name';
 import { registerExpressionFunctionNodeName } from './register-expression-function';
 import { getVariablePayloadInputUtils } from './variable-payload-input-utils/variable-payload-input-utils';
+import { createPreviewTip } from './node-utils/create-preview-tip';
+import { showPreviewTip } from './node-utils/show-preview-tip';
 
 const thumbs = [
   {
@@ -213,13 +215,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
       currentValue = result;
 
       if (payload?.showPreview) {
-        if (previewNode) {
-          (previewNode.domElement as unknown as HTMLElement).classList.remove(
-            'hidden'
-          );
-          (previewNode.domElement as unknown as HTMLElement).textContent =
-            result;
-        }
+        showPreviewTip(result, previewNode);
       }
     }
     return {
@@ -389,22 +385,9 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         'error'
       );
 
-      previewNode = createElement(
-        'div',
-        {
-          class: `bg-white text-black p-4 rounded absolute bottom-[calc(100%+15px)] h-[min-content] w-full hidden
-            text-center
-            after:content-['']
-            after:w-0 after:h-0 
-            after:border-l-[10px] after:border-l-transparent
-            after:border-t-[10px] after:border-t-white
-            after:border-r-[10px] after:border-r-transparent
-            after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
-          `,
-        },
-        rect.nodeComponent?.domElement,
-        'preview'
-      );
+      if (rect.nodeComponent) {
+        previewNode = createPreviewTip(rect.nodeComponent);
+      }
 
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;

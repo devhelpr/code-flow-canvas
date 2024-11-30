@@ -8,20 +8,25 @@ import {
   NodeTaskFactory,
   ThumbConnectionType,
   ThumbType,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { createPreviewTip } from './node-utils/create-preview-tip';
+import { showPreviewTip } from './node-utils/show-preview-tip';
 
 export const getSum: NodeTaskFactory<NodeInfo> = (
   _updated: () => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
+  let previewNode: IDOMElement | undefined = undefined;
   let hasInitialValue = true;
   let currentSum = 0;
   let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
 
   const initializeCompute = () => {
+    lastInput = undefined;
     hasInitialValue = true;
     currentSum = 0;
     if (htmlNode) {
@@ -30,10 +35,37 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
         rect.resize(240);
       }
     }
+    if (previewNode) {
+      (previewNode.domElement as unknown as HTMLElement).classList.add(
+        'hidden'
+      );
+    }
     return;
   };
-  const compute = (input: string) => {
+  let lastInput: any = undefined;
+  const compute = (
+    input: string,
+    _loopIndexloopIndex?: number,
+    payload?: any
+  ) => {
     const previousOutput = currentSum;
+
+    if (payload && payload.triggerNode) {
+      input = lastInput;
+    } else {
+      if (!payload?.showPreview) {
+        lastInput = input;
+      }
+    }
+
+    if (!payload?.showPreview) {
+      if (previewNode) {
+        (previewNode.domElement as unknown as HTMLElement).classList.add(
+          'hidden'
+        );
+      }
+    }
+
     let values: any[] = [];
     values = input as unknown as any[];
     if (!Array.isArray(input)) {
@@ -53,6 +85,10 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       }
     }
     currentSum = sum;
+
+    if (payload?.showPreview) {
+      showPreviewTip(sum, previewNode);
+    }
     return {
       result: sum.toFixed(2),
       followPath: undefined,
@@ -136,6 +172,11 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       }
 
       node = rect.nodeComponent;
+
+      if (node) {
+        previewNode = createPreviewTip(node);
+      }
+
       if (node.nodeInfo) {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
@@ -146,6 +187,15 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
             if (rect) {
               rect.resize(240);
             }
+          }
+        };
+
+        node.nodeInfo.supportsPreview = true;
+        node.nodeInfo.cancelPreview = () => {
+          if (previewNode) {
+            (previewNode.domElement as unknown as HTMLElement).classList.add(
+              'hidden'
+            );
           }
         };
       }
