@@ -48,7 +48,8 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     | ((
         shouldClearExecutionHistory?: boolean,
         _isStoreOnly?: boolean,
-        _flowChangeType?: FlowChangeType
+        _flowChangeType?: FlowChangeType,
+        _node?: INodeComponent<T> | undefined
       ) => void)
     | undefined;
   setOnCanvasUpdated: (onCanvasUpdatedHandler: () => void) => void;
@@ -215,6 +216,14 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     onDroppedOnNode?: (
       droppedNode: INodeComponent<T>,
       dropTarget: INodeComponent<T>
+    ) => void
+  ) => void;
+
+  setOnDraggingOverNode: (
+    onDraggingOverNode?: (
+      draggingNode: INodeComponent<T>,
+      dragTarget: INodeComponent<T>,
+      isCancelling: boolean
     ) => void
   ) => void;
 }

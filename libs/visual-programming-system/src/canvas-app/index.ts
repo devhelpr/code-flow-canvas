@@ -62,6 +62,11 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
   onDroppedOnNode?: (
     droppedNode: INodeComponent<T>,
     dropTarget: INodeComponent<T>
+  ) => void,
+  onDraggingOverNode?: (
+    draggedNode: INodeComponent<T>,
+    dropTarget: INodeComponent<T>,
+    isCancelling: boolean
   ) => void
 ): IFlowCanvasBase<T> => {
   return new FlowCanvas(
@@ -76,7 +81,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     _appRootElement,
     heightSpaceForHeaderFooterToolbars,
     widthSpaceForSideToobars,
-    onDroppedOnNode
+    onDroppedOnNode,
+    onDraggingOverNode
   );
 };
 
@@ -134,7 +140,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
     | ((
         shouldClearExecutionHistory?: boolean,
         _isStoreOnly?: boolean,
-        _flowChangeType?: FlowChangeType
+        _flowChangeType?: FlowChangeType,
+        _node?: INodeComponent<T> | undefined
       ) => void)
     | undefined = undefined;
 
@@ -157,6 +164,13 @@ export class FlowCanvas<T extends BaseNodeInfo>
   private onDroppedOnNode:
     | ((droppedNode: INodeComponent<T>, dropTarget: INodeComponent<T>) => void)
     | undefined;
+  private onDraggingOverNode:
+    | ((
+        draggedNode: INodeComponent<T>,
+        dropTarget: INodeComponent<T>,
+        isCancelling: boolean
+      ) => void)
+    | undefined;
   constructor(
     rootElement: HTMLElement,
     disableInteraction?: boolean,
@@ -172,6 +186,11 @@ export class FlowCanvas<T extends BaseNodeInfo>
     onDroppedOnNode?: (
       droppedNode: INodeComponent<T>,
       dropTarget: INodeComponent<T>
+    ) => void,
+    onDraggingOverNode?: (
+      draggedNode: INodeComponent<T>,
+      dropTarget: INodeComponent<T>,
+      isCancelling: boolean
     ) => void
   ) {
     super();
@@ -214,7 +233,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
       onEditCompositionName ?? (() => Promise.resolve(false)),
       isNodeContainer
     );
+
     this.onDroppedOnNode = onDroppedOnNode;
+    this.onDraggingOverNode = onDraggingOverNode;
 
     const onContextMenu = (event: Event) => {
       console.log('contextmenu canvas', event.target, this.canvas.domElement);
@@ -526,10 +547,29 @@ export class FlowCanvas<T extends BaseNodeInfo>
                     annotationX + annotationWidth > elementX &&
                     annotationY < elementY + elementHeight &&
                     annotationY + annotationHeight > elementY &&
+                    collidingElement !== elementHelper
+                  ) {
+                    if (this.onDraggingOverNode && collidingElement) {
+                      this.onDraggingOverNode(rect, collidingElement, true);
+                    }
+                  }
+
+                  if (
+                    annotationX < elementX + elementWidth &&
+                    annotationX + annotationWidth > elementX &&
+                    annotationY < elementY + elementHeight &&
+                    annotationY + annotationHeight > elementY &&
                     !isColliding
                   ) {
+                    if (this.onDraggingOverNode && collidingElement) {
+                      this.onDraggingOverNode(rect, collidingElement, true);
+                    }
                     collidingElement = elementHelper;
                     isColliding = true;
+
+                    if (this.onDraggingOverNode) {
+                      this.onDraggingOverNode(rect, collidingElement, false);
+                    }
                   }
                 }
               });
@@ -538,6 +578,12 @@ export class FlowCanvas<T extends BaseNodeInfo>
                   currentColldingElement.domElement as HTMLElement
                 ).closest('svg');
                 (closestSVGElement as SVGElement).classList.remove('selected');
+
+                if (!isColliding) {
+                  if (this.onDraggingOverNode) {
+                    this.onDraggingOverNode(rect, currentColldingElement, true);
+                  }
+                }
                 currentColldingElement = undefined;
               }
               if (isColliding) {
@@ -1844,5 +1890,15 @@ export class FlowCanvas<T extends BaseNodeInfo>
     ) => void
   ) => {
     this.onDroppedOnNode = onDroppedOnNode;
+  };
+
+  setOnDraggingOverNode = (
+    onDraggingOverNode?: (
+      draggedNode: INodeComponent<T>,
+      dropTarget: INodeComponent<T>,
+      isCancelling: boolean
+    ) => void
+  ) => {
+    this.onDraggingOverNode = onDraggingOverNode;
   };
 }

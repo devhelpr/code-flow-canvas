@@ -80,7 +80,8 @@ export interface BaseNodeInfo {
   canBeStartedByTrigger?: boolean;
   readPropertyFromNodeInfoForInitialTrigger?: string;
   keepPopupOpenAfterUpdate?: boolean;
-
+  supportsPreview?: boolean;
+  cancelPreview?: () => void;
   outputConnectionInfo?: {
     text: string;
     fieldName: string;

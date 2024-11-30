@@ -79,4 +79,5 @@ export enum FlowChangeType {
   AddConnection = 'AddConnection',
   DeleteConnection = 'DeleteConnection',
   UpdateConnection = 'UpdateConnection',
+  TriggerNode = 'TriggerNode',
 }

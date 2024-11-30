@@ -119,6 +119,7 @@ import {
   removeAllCompositions,
   resetRunIndex,
   run,
+  runNode,
   runNodeFromThumb,
   runPath,
   runPathForNodeConnectionPairs,
@@ -189,7 +190,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     | ((
         shouldClearExecutionHistory?: boolean,
         isStoreOnly?: boolean,
-        flowChangeType?: FlowChangeType
+        flowChangeType?: FlowChangeType,
+        node?: IRectNodeComponent<NodeInfo>
       ) => void)
     | undefined = undefined;
 
@@ -251,6 +253,81 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.canvasActionPayload = payload;
     });
 
+    let intervalCancel: any = undefined;
+    let intervalPreview: any = undefined;
+    this.canvasApp.setOnDraggingOverNode((node, draggedNode, isCancelling) => {
+      const connection = draggedNode as IConnectionNodeComponent<NodeInfo>;
+      if (connection.startNodeThumb) {
+        console.log('draggedNode', draggedNode, isCancelling);
+        const text = node.nodeInfo?.formValues?.annotation;
+        if (
+          text &&
+          node &&
+          node.nodeInfo?.type === 'annotation' &&
+          connection &&
+          connection.nodeType === NodeType.Connection &&
+          connection.endNode &&
+          connection.startNodeThumb &&
+          this.canvasApp
+        ) {
+          const endNode = connection.endNode;
+
+          if (isCancelling) {
+            clearTimeout(intervalCancel);
+            clearTimeout(intervalPreview);
+            intervalPreview = undefined;
+            console.log('CANCEL Preview!', getIsStopAnimations());
+            resetRunIndex();
+            (this.runButton?.domElement as HTMLButtonElement).disabled = false;
+            setStopAnimations();
+            // Wait until isStopAnimations is set to false
+            intervalCancel = setInterval(() => {
+              if (!getIsStopAnimations()) {
+                clearInterval(intervalCancel);
+                if (
+                  endNode.nodeInfo?.supportsPreview &&
+                  endNode.nodeInfo?.cancelPreview
+                ) {
+                  endNode.nodeInfo?.cancelPreview();
+                }
+              }
+            }, 0);
+          } else if (
+            endNode.nodeInfo?.supportsPreview &&
+            endNode.nodeInfo?.compute
+          ) {
+            clearTimeout(intervalPreview);
+
+            console.log('TRIGGER Preview!', getIsStopAnimations());
+            resetRunIndex();
+            (this.runButton?.domElement as HTMLButtonElement).disabled = false;
+            setStopAnimations();
+            // Wait until isStopAnimations is set to false
+            intervalPreview = setInterval(() => {
+              if (!getIsStopAnimations()) {
+                clearInterval(intervalPreview);
+                if (endNode.nodeInfo?.compute) {
+                  endNode.nodeInfo?.compute(
+                    this.transformValueForNodeTrigger(text),
+                    -1,
+                    {
+                      showPreview: true,
+                    },
+                    undefined,
+                    undefined,
+                    this.createRunCounterContext(false, false),
+                    connection
+                  );
+                }
+              }
+            }, 0);
+          }
+        }
+      }
+
+      return false;
+    });
+
     this.canvasApp.setOnDroppedOnNode((node, droppedNode) => {
       const connection = droppedNode as IConnectionNodeComponent<NodeInfo>;
       if (connection.startNodeThumb) {
@@ -281,6 +358,14 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           interval = setInterval(() => {
             if (!getIsStopAnimations()) {
               clearInterval(interval);
+              clearInterval(intervalPreview);
+              intervalPreview = undefined;
+              if (
+                endNode.nodeInfo?.supportsPreview &&
+                endNode.nodeInfo?.cancelPreview
+              ) {
+                endNode.nodeInfo?.cancelPreview();
+              }
               runNodeFromThumb(
                 startNodeThumb,
                 canvasApp,
@@ -291,7 +376,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 endNode,
                 undefined,
                 undefined,
-                this.createRunCounterContext(true, false)
+                this.createRunCounterContext(false, false)
               );
             }
           }, 0);
@@ -475,7 +560,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     const canvasUpdated = (
       shouldClearExecutionHistory = false,
       _isStoreOnly?: boolean,
-      flowChangeType: FlowChangeType = FlowChangeType.Unknown
+      flowChangeType: FlowChangeType = FlowChangeType.Unknown,
+      node?: INodeComponent<NodeInfo>
     ) => {
       if (
         this.currentCanvasApp?.isContextOnly ||
@@ -494,7 +580,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         flowChangeType === FlowChangeType.AddNode ||
         flowChangeType === FlowChangeType.UpdateNode ||
         flowChangeType === FlowChangeType.AddConnection ||
-        flowChangeType === FlowChangeType.UpdateConnection
+        flowChangeType === FlowChangeType.UpdateConnection ||
+        flowChangeType === FlowChangeType.TriggerNode
       ) {
         let interval: any = undefined;
         clearTimeout(interval);
@@ -506,7 +593,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         interval = setInterval(() => {
           if (!getIsStopAnimations()) {
             clearInterval(interval);
-            this.run();
+            if (flowChangeType === FlowChangeType.TriggerNode) {
+              if (node && this.canvasApp) {
+                runNode(
+                  node as IRectNodeComponent<NodeInfo>,
+                  this.canvasApp,
+                  (_input: string | any[]) => {
+                    //
+                  },
+                  undefined,
+                  0,
+                  0,
+                  undefined,
+                  undefined,
+                  undefined,
+                  this.createRunCounterContext(false, false),
+                  false,
+                  {
+                    triggerNode: true,
+                  }
+                );
+              }
+            } else {
+              this.run();
+            }
           }
         }, 0);
       }
@@ -520,9 +630,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       (
         shouldClearExecutionHistory?: boolean,
         isStoreOnly?: boolean,
-        flowChangeType?: FlowChangeType
+        flowChangeType?: FlowChangeType,
+        node?: INodeComponent<NodeInfo>
       ) => {
-        canvasUpdated(shouldClearExecutionHistory, isStoreOnly, flowChangeType);
+        canvasUpdated(
+          shouldClearExecutionHistory,
+          isStoreOnly,
+          flowChangeType,
+          node
+        );
       }
     );
 
@@ -2248,7 +2364,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                     endNode,
                     undefined,
                     undefined,
-                    this.createRunCounterContext(true, false)
+                    this.createRunCounterContext(false, false)
                   );
                 }
               }, 0);

@@ -80,11 +80,13 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   updated: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,
-    flowChangeType?: FlowChangeType
+    flowChangeType?: FlowChangeType,
+    node?: INodeComponent<NodeInfo>
   ) => void
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let errorNode: IDOMElement | undefined = undefined;
+  let previewNode: IDOMElement | undefined = undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let nodeFormComponent: FormsComponent | undefined = undefined;
 
@@ -92,11 +94,17 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
 
   let executionRunCounter = 0;
   const initializeCompute = () => {
+    lastInput = undefined;
     currentValue = 0;
     executionRunCounter = 0;
     expressionCache[node.id] = undefined;
     if (errorNode) {
       (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
+    }
+    if (previewNode) {
+      (previewNode.domElement as unknown as HTMLElement).classList.add(
+        'hidden'
+      );
     }
     return;
   };
@@ -107,6 +115,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     }
   };
 
+  let lastInput: any = undefined;
   const compute = (
     input: string,
     _loopIndexloopIndex?: number,
@@ -114,6 +123,21 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     _thumbName?: string,
     scopeId?: string
   ) => {
+    if (payload && payload.triggerNode) {
+      input = lastInput;
+    } else {
+      if (!payload?.showPreview) {
+        lastInput = input;
+      }
+    }
+
+    if (!payload?.showPreview) {
+      if (previewNode) {
+        (previewNode.domElement as unknown as HTMLElement).classList.add(
+          'hidden'
+        );
+      }
+    }
     if (errorNode) {
       (errorNode.domElement as unknown as HTMLElement).classList.add('hidden');
     }
@@ -187,6 +211,16 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     }
     if (result !== undefined) {
       currentValue = result;
+
+      if (payload?.showPreview) {
+        if (previewNode) {
+          (previewNode.domElement as unknown as HTMLElement).classList.remove(
+            'hidden'
+          );
+          (previewNode.domElement as unknown as HTMLElement).textContent =
+            result;
+        }
+      }
     }
     return {
       result,
@@ -287,7 +321,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
               }
             }
             if (updated) {
-              updated(undefined, undefined, FlowChangeType.UpdateNode);
+              updated(undefined, undefined, FlowChangeType.TriggerNode, node);
             }
           },
         },
@@ -355,6 +389,23 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         'error'
       );
 
+      previewNode = createElement(
+        'div',
+        {
+          class: `bg-white text-black p-4 rounded absolute bottom-[calc(100%+15px)] h-[min-content] w-full hidden
+            text-center
+            after:content-['']
+            after:w-0 after:h-0 
+            after:border-l-[10px] after:border-l-transparent
+            after:border-t-[10px] after:border-t-white
+            after:border-r-[10px] after:border-r-transparent
+            after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
+          `,
+        },
+        rect.nodeComponent?.domElement,
+        'preview'
+      );
+
       //createNamedSignal(`expression${rect.nodeComponent.id}`, '');
       node = rect.nodeComponent;
 
@@ -396,6 +447,14 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.getDependencies = getDependencies;
         node.nodeInfo.showFormOnlyInPopup = true;
         node.nodeInfo.isSettingsPopup = true;
+        node.nodeInfo.supportsPreview = true;
+        node.nodeInfo.cancelPreview = () => {
+          if (previewNode) {
+            (previewNode.domElement as unknown as HTMLElement).classList.add(
+              'hidden'
+            );
+          }
+        };
 
         node.nodeInfo.compileInfo = {
           getCode: (input: any) => {

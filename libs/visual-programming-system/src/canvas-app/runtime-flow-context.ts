@@ -371,4 +371,14 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
   ) => {
     //
   };
+
+  setOnDraggingOverNode = (
+    _onDraggingOverNode?: (
+      draggingNode: INodeComponent<T>,
+      dragTarget: INodeComponent<T>,
+      isCancelling: boolean
+    ) => void
+  ) => {
+    //
+  };
 }
