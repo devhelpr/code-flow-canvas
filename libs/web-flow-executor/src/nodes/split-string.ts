@@ -21,7 +21,7 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
     return;
   };
   const compute = (input: string, _loopIndex?: number, _payload?: any) => {
-    const splitBy = node?.nodeInfo?.formValues?.[fieldName] ?? '';
+    let splitBy = node?.nodeInfo?.formValues?.[fieldName] ?? '';
     if (!splitBy) {
       const array = Array.from(input);
       return {
@@ -30,7 +30,20 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
-    const splitLines = input.trim().split(splitBy);
+    if (splitBy.toUpperCase() === 'SPACE') {
+      splitBy = ' ';
+    } else if (splitBy.toUpperCase() === 'COMMA') {
+      splitBy = ',';
+    } else if (splitBy.toUpperCase() === 'NEWLINE') {
+      splitBy = '\n';
+    } else if (splitBy.toUpperCase() === 'TAB') {
+      splitBy = '\t';
+    } else if (splitBy.toUpperCase() === 'PIPE') {
+      splitBy = '|';
+    } else if (splitBy.toUpperCase() === 'CRKF') {
+      splitBy = '\r\n';
+    }
+    const splitLines = (input ?? '').toString().trim().split(splitBy);
 
     if (splitLines) {
       return {
@@ -73,7 +86,7 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
         connectionType: ThumbConnectionType.end,
         color: 'white',
         label: ' ',
-        thumbConstraint: thumbConstraints.value,
+        //thumbConstraint: thumbConstraints.value,
       },
     ],
     (values?: InitialValues) => {
@@ -81,9 +94,10 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
         {
           fieldType: FormFieldType.Text,
           fieldName: fieldName,
+          label: 'Split by',
           value: values?.[fieldName] ?? '',
           settings: {
-            showLabel: false,
+            showLabel: true,
           },
           onChange: (value: string) => {
             if (!node.nodeInfo) {
@@ -101,8 +115,8 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
       ];
       return formElements;
     },
-    (_nodeInstance) => {
-      //
+    (nodeInstance) => {
+      node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
     },
     {
       category: 'string',
