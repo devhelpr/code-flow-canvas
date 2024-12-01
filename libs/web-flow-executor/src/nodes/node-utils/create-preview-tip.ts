@@ -17,7 +17,7 @@ export const createPreviewTip = <T extends BaseNodeInfo>(
             after:border-l-[10px] after:border-l-transparent
             after:border-t-[10px] after:border-t-white
             after:border-r-[10px] after:border-r-transparent
-            after:absolute after:bottom-[-10px] after:left-[50%] after:transform after:translate-x-[-50%]
+            after:absolute after:bottom-[-9px] after:left-[50%] after:transform after:translate-x-[-50%]
           `,
     },
     node?.domElement,
