@@ -74,7 +74,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
     const sum = values
       .map((value) => parseFloat(value) ?? 0)
       .reduce((a, b) => a + b, 0);
-    if (htmlNode) {
+    if (htmlNode && !payload?.showPreview) {
       if (hasInitialValue) {
         hasInitialValue = false;
       }
@@ -83,8 +83,8 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
       if (rect) {
         rect.resize(240);
       }
+      currentSum = sum;
     }
-    currentSum = sum;
 
     if (payload?.showPreview) {
       showPreviewTip(sum, previewNode);
