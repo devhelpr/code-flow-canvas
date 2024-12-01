@@ -458,13 +458,13 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         errorNode = createElement(
           'div',
           {
-            class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+15px)] h-[min-content] w-full hidden
+            class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+8px)] h-[min-content] w-full hidden
             after:content-['']
             after:w-0 after:h-0 
             after:border-l-[10px] after:border-l-transparent
             after:border-t-[10px] after:border-t-red-500
             after:border-r-[10px] after:border-r-transparent
-            after:absolute after:bottom-[-9px] after:left-[50%] after:transform after:translate-x-[-50%]
+            after:absolute after:bottom-[-8px] after:left-[50%] after:transform after:translate-x-[-50%]
           `,
           },
           rect.nodeComponent.domElement,
