@@ -36,6 +36,8 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
       splitBy = ',';
     } else if (splitBy.toUpperCase() === 'NEWLINE') {
       splitBy = '\n';
+    } else if (splitBy.toUpperCase() === 'DOUBLENEWLINE') {
+      splitBy = '\n\n';
     } else if (splitBy.toUpperCase() === 'TAB') {
       splitBy = '\t';
     } else if (splitBy.toUpperCase() === 'PIPE') {

@@ -210,6 +210,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                     try {
                       const json = JSON.parse(chunkString);
                       isFullJson = true;
+                      hideLoader();
                       sendFetchResult(json).then(() => {
                         resolve({
                           result: false,
@@ -218,7 +219,6 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                           dummyEndpoint: true,
                         });
                       });
-                      hideLoader();
                     } catch (error) {
                       isFullJson = false;
                     }
@@ -266,6 +266,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               response.json().then((json) => {
                 sendFetchState('ready');
                 result = json;
+                hideLoader();
                 sendFetchResult(result).then(() => {
                   resolve({
                     result: false,
@@ -279,6 +280,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               response.text().then((text) => {
                 sendFetchState('ready');
                 result = text;
+                hideLoader();
                 sendFetchResult(result).then(() => {
                   resolve({
                     result: false,

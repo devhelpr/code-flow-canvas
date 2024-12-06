@@ -58,26 +58,26 @@ const fieldName = 'fileName';
 export const loadTextFile = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
-  let hasInitialValue = true;
   let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
-  let lines: string[] = [];
+  let lines: string[] | undefined = undefined;
   let fileContent = '';
   const initializeCompute = () => {
-    hasInitialValue = true;
     if (htmlNode && htmlNode.domElement) {
       htmlNode.domElement.textContent = 'Click to load text file';
       (htmlNode.domElement as HTMLElement).title = '';
     }
     fileContent = '';
-    lines = [];
+    lines = undefined;
     return;
   };
   const compute = () => {
-    if (htmlNode) {
-      if (hasInitialValue) {
-        hasInitialValue = false;
-      }
+    if (lines === undefined) {
+      return {
+        result: undefined,
+        followPath: undefined,
+        stop: true,
+      };
     }
     if (!node.nodeInfo?.formValues?.parseLines) {
       return {

@@ -210,6 +210,12 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
           error?.toString() ?? 'Error';
       }
       console.log('expression error', error);
+      return {
+        result: undefined,
+        output: undefined,
+        followPath: undefined,
+        stop: true,
+      };
     }
     if (result !== undefined) {
       currentValue = result;
