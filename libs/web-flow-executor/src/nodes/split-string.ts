@@ -40,7 +40,7 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
       splitBy = '\t';
     } else if (splitBy.toUpperCase() === 'PIPE') {
       splitBy = '|';
-    } else if (splitBy.toUpperCase() === 'CRKF') {
+    } else if (splitBy.toUpperCase() === 'CRLF') {
       splitBy = '\r\n';
     }
     const splitLines = (input ?? '').toString().trim().split(splitBy);

@@ -15,6 +15,7 @@ import { NodeInfo } from '../types/node-info';
 interface FileInfo {
   fileName: string;
   lines: string[];
+  fileContent: string;
 }
 
 const selectFile = () => {
@@ -32,7 +33,11 @@ const selectFile = () => {
         reader.addEventListener('load', (event) => {
           if (event && event.target && event.target.result) {
             const lines = (event.target.result as string).split(/\r\n|\n/);
-            resolve({ lines, fileName: files[0].name });
+            resolve({
+              lines,
+              fileContent: event.target.result as string,
+              fileName: files[0].name,
+            });
           }
           input.remove();
         });
@@ -50,18 +55,22 @@ const selectFile = () => {
 
 export const loadTextFileNodeName = 'load-text-file';
 const fieldName = 'fileName';
-export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
+export const loadTextFile = (updated: () => void): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
   let hasInitialValue = true;
   let rect: ReturnType<IFlowCanvasBase<NodeInfo>['createRect']> | undefined =
     undefined;
   let lines: string[] = [];
+  let fileContent = '';
   const initializeCompute = () => {
     hasInitialValue = true;
     if (htmlNode && htmlNode.domElement) {
       htmlNode.domElement.textContent = 'Click to load text file';
+      (htmlNode.domElement as HTMLElement).title = '';
     }
+    fileContent = '';
+    lines = [];
     return;
   };
   const compute = () => {
@@ -69,6 +78,12 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
       if (hasInitialValue) {
         hasInitialValue = false;
       }
+    }
+    if (!node.nodeInfo?.formValues?.parseLines) {
+      return {
+        result: fileContent,
+        followPath: undefined,
+      };
     }
     return {
       result: lines,
@@ -100,9 +115,12 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
                 .then((fileInfo) => {
                   if (htmlNode && fileInfo && node) {
                     lines = fileInfo.lines;
-                    (htmlNode.domElement as HTMLImageElement).textContent = `${
+                    fileContent = fileInfo.fileContent;
+                    const fileName = `${
                       fileInfo.fileName
-                    }: ${lines.length.toString()}`;
+                    }: ${lines.length.toString()} lines`;
+                    (htmlNode.domElement as HTMLElement).textContent = fileName;
+                    (htmlNode.domElement as HTMLElement).title = fileName;
                   }
                   resolve();
                 })
@@ -112,11 +130,30 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
             });
           },
         },
+        {
+          fieldType: FormFieldType.Checkbox,
+          fieldName: 'parseLines',
+          label: 'Parse lines',
+          value: initalValues?.['parseLines'] ?? false,
+          onChange: (value: string) => {
+            if (!node.nodeInfo) {
+              return;
+            }
+            node.nodeInfo.formValues = {
+              ...node.nodeInfo.formValues,
+              parseLines: Boolean(value),
+            };
+
+            if (updated) {
+              updated();
+            }
+          },
+        },
       ];
       htmlNode = createElement(
         'div',
         {
-          class: '',
+          class: 'overflow-hidden whitespace-nowrap text-ellipsis',
         },
         undefined,
         '-'
@@ -170,13 +207,6 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
         }
       );
 
-      if (initalValues && initalValues[fieldName] && htmlNode?.domElement) {
-        hasInitialValue = false;
-        (
-          htmlNode.domElement as HTMLImageElement
-        ).src = `data:image/png;base64,${initalValues[fieldName]}`;
-      }
-
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
@@ -188,7 +218,7 @@ export const loadTextFile = (_updated: () => void): NodeTask<NodeInfo> => {
         node.nodeInfo.compute = compute;
         node.nodeInfo.initializeCompute = initializeCompute;
         node.nodeInfo.formValues = {
-          image: initalValues?.[fieldName] ?? '',
+          parseLines: Boolean(initalValues?.['parseLines']) ?? false,
         };
       }
       return node;
