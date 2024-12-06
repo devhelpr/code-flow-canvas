@@ -44,6 +44,8 @@ export const splitString: NodeTaskFactory<NodeInfo> = (
       splitBy = '|';
     } else if (splitBy.toUpperCase() === 'CRLF') {
       splitBy = '\r\n';
+    } else if (splitBy.toUpperCase() === 'WHITESPACE') {
+      splitBy = /\s+/;
     }
     const splitLines = (input ?? '').toString().trim().split(splitBy);
 

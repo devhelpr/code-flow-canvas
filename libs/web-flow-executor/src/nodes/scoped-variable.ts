@@ -1032,6 +1032,16 @@ export const getScopedVariable =
               timeout = undefined;
             }
           };
+          node.nodeInfo.meta = [
+            {
+              type: 'any',
+              propertyName: 'data',
+              displayName: 'Data',
+              getData: () => {
+                return structuredClone(currentValue);
+              },
+            },
+          ];
           node.nodeInfo.nodeCannotBeReplaced = true;
         }
         return node;
