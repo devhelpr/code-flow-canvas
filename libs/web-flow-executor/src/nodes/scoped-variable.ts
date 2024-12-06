@@ -343,10 +343,33 @@ export const getScopedVariable =
       const variableScopeType = isGlobal ? 'global' : 'scope dependent';
       return `${description}<br />(${variableScopeType})`;
     }
+
+    function resetHtmlNodeStyle() {
+      if (htmlNode && htmlNode?.domElement) {
+        (htmlNode.domElement as unknown as HTMLElement).classList.remove(
+          'text-left'
+        );
+        (htmlNode.domElement as unknown as HTMLElement).classList.remove(
+          'whitespace-pre'
+        );
+      }
+    }
+
+    function formatHtmlNodeAsObject() {
+      if (htmlNode && htmlNode?.domElement) {
+        (htmlNode.domElement as unknown as HTMLElement).classList.add(
+          'text-left'
+        );
+        (htmlNode.domElement as unknown as HTMLElement).classList.add(
+          'whitespace-pre'
+        );
+      }
+    }
     const initializeCompute = () => {
       const variableName = node?.nodeInfo?.formValues?.['variableName'] ?? '';
       lastStoredDataState = undefined;
 
+      resetHtmlNodeStyle();
       scopedData = {};
       currentValue = undefined;
       fieldType = node?.nodeInfo?.formValues?.['fieldType'] ?? 'value';
@@ -368,6 +391,7 @@ export const getScopedVariable =
         return;
       }
 
+      resetHtmlNodeStyle();
       if (fieldType === 'value') {
         // if (isNaN(currentValue)) {
         //   currentValue = 0;
@@ -379,6 +403,10 @@ export const getScopedVariable =
         if (htmlNode && htmlNode?.domElement) {
           (htmlNode.domElement as unknown as HTMLElement).innerHTML =
             getLabelAsHtml(getFormattedVariableValue(currentValue, 2, ''));
+
+          if (typeof currentValue === 'object') {
+            formatHtmlNodeAsObject();
+          }
         }
         canvasAppInstance?.setVariable(
           variableName,
@@ -504,12 +532,17 @@ export const getScopedVariable =
         return;
       }
       if (htmlNode) {
+        resetHtmlNodeStyle();
         if (fieldType === 'value') {
           if (htmlNode?.domElement) {
             (htmlNode?.domElement as unknown as HTMLElement).innerHTML =
               getLabelAsHtml(
                 getFormattedVariableValue(lastStoredDataState, 2, '')
               );
+
+            if (typeof lastStoredDataState === 'object') {
+              formatHtmlNodeAsObject();
+            }
           }
           if (rect && rect.resize) {
             rect.resize(120);

@@ -23,7 +23,10 @@ export const getFormattedVariableValue = (
   append: string
 ) => {
   const appendText = `${append ? ` ${append}` : ''}`;
-  if (typeof value === 'number') {
+
+  if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2);
+  } else if (typeof value === 'number') {
     return `${(value as number).toFixed(decimalCount)}${appendText}`;
   } else if (typeof value === 'string') {
     return `${value}${appendText}` || '-';

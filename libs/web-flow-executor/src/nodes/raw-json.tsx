@@ -89,7 +89,16 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
         canvasAppInstance
       );
 
-      currentSerializedInput = payloadForExpression;
+      currentSerializedInput = structuredClone(payloadForExpression);
+
+      canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
+        const variableValue = canvasAppInstance?.getVariable(
+          variableName,
+          undefined,
+          scopeId
+        );
+        currentSerializedInput[variableName] = variableValue;
+      });
 
       const json = JSON.parse(
         node.nodeInfo.formValues['json'].replace('[openai-key]', openAIKey)
@@ -120,6 +129,21 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
         followPath: undefined,
       };
     }
+  };
+
+  const getNodeStatedHandler = () => {
+    return {
+      data: {
+        input: currentSerializedInput,
+        output: currentOutput,
+      },
+      id: node.id,
+    };
+  };
+
+  const setNodeStatedHandler = (_id: string, data: any) => {
+    currentSerializedInput = data.input;
+    currentOutput = data.output;
   };
 
   const Text = () => (
@@ -216,6 +240,18 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
             },
           },
         ];
+
+        if (nodeInstance.node.id) {
+          const id = nodeInstance.node.id;
+          canvasAppInstance.registeGetNodeStateHandler(
+            id,
+            getNodeStatedHandler
+          );
+          canvasAppInstance.registeSetNodeStateHandler(
+            id,
+            setNodeStatedHandler
+          );
+        }
       }
     },
     {
