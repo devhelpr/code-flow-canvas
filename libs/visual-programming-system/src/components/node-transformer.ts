@@ -13,6 +13,7 @@ import {
 import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils';
 import { getPointerPos } from '../utils/pointer-pos';
+import { hideElement, showElement } from '../utils/show-hide-element';
 import { getNodeTransformerCssClasses } from './css-classes/node-transformer-css-classes';
 import { showMetaViewDialog } from './meta-view-dialog/meta-view-dialog';
 
@@ -205,6 +206,13 @@ export class NodeTransformer<T extends BaseNodeInfo> {
       (this.metaInfoInspector?.domElement as HTMLElement).classList.add(
         this.cssClasses.hidden
       );
+    }
+    if (node.thumbs?.length === 0) {
+      hideElement(this.upstreamNodesMover);
+      hideElement(this.downstreamNodesMover);
+    } else {
+      showElement(this.upstreamNodesMover);
+      showElement(this.downstreamNodesMover);
     }
     this.detachRegisteredNodes();
 
