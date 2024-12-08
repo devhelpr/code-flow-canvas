@@ -2448,4 +2448,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     }
     return '';
   };
+
+  onAfterAddComposition(node: IRectNodeComponent<NodeInfo>) {
+    node?.nodeInfo?.initializeCompute?.();
+  }
 }

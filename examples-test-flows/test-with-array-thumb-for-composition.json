@@ -1,0 +1,99 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "f1defaf9-dc31-4cef-a938-2b0941b5ab93",
+          "x": 4127.058841090634,
+          "y": -732.7360714949607,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "\"test test\"",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true,
+            "supportsPreview": true,
+            "taskType": "expression"
+          }
+        },
+        {
+          "id": "fef3ff1b-1cd8-4462-8095-b8e05865c9b2",
+          "x": 4327.058841090634,
+          "y": -682.7360714949607,
+          "endX": 4445.990938002566,
+          "endY": -683.1035811785644,
+          "startNodeId": "f1defaf9-dc31-4cef-a938-2b0941b5ab93",
+          "endNodeId": "8d7ed6b9-5868-4965-b44a-7ac2fcc8d259",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "8d7ed6b9-5868-4965-b44a-7ac2fcc8d259",
+          "x": 4445.990938002566,
+          "y": -747.1035857841379,
+          "width": 200.00011395493016,
+          "height": 128.00000921114705,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "split-string",
+            "formValues": {
+              "splitBy": "SPACE"
+            },
+            "nodeCannotBeReplaced": false,
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false,
+            "taskType": "split-string"
+          }
+        },
+        {
+          "id": "aac5f128-df0d-461e-b873-42e06b7af7c9",
+          "x": 4645.991051957496,
+          "y": -683.1035811785644,
+          "endX": 4753.1664066661315,
+          "endY": -690.8529070774672,
+          "startNodeId": "8d7ed6b9-5868-4965-b44a-7ac2fcc8d259",
+          "endNodeId": "6ec7b5a1-251e-4f15-94b1-51982c5187e8",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "6ec7b5a1-251e-4f15-94b1-51982c5187e8",
+          "x": 4753.1664066661315,
+          "y": -720.8529070774672,
+          "width": 120.0000683729581,
+          "height": 79.99999248196518,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true,
+            "taskType": "show-input"
+          }
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

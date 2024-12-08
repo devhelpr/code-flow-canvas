@@ -1112,6 +1112,8 @@ export class AppElement<T extends BaseNodeInfo> {
 
       node?.update?.();
       setupTasksInDropdown(selectNodeTypeHTMLElement, true, composition.id);
+
+      this.onAfterAddComposition(node);
     }
   };
 
@@ -1177,7 +1179,7 @@ export class AppElement<T extends BaseNodeInfo> {
         nodeInfo?.isComposition &&
         nodeInfo?.compositionId === compositionId
       ) {
-        ///
+        // here compositions and nodes can get disconnected !!
         canvasApp?.editThumbNode(thumb, node);
       } else if ((node.nodeInfo as any)?.canvasAppInstance) {
         this.editThumbFromComposition(
@@ -1831,6 +1833,8 @@ export class AppElement<T extends BaseNodeInfo> {
                     thumbOnCanvas.nodeInfo.formValues.valueType;
                 }
               });
+
+              // WARNING : here composition and nodes can get disconnected !!!
               this.editThumbFromComposition(
                 this.canvasApp,
                 composition.id,
@@ -2080,6 +2084,10 @@ export class AppElement<T extends BaseNodeInfo> {
   }
 
   onSetupCompositionCanvasEdit(_canvasApp: IFlowCanvasBase<T>) {
+    //
+  }
+
+  onAfterAddComposition(_node: IRectNodeComponent<T>) {
     //
   }
 }

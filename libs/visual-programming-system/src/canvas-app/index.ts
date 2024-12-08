@@ -1562,7 +1562,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
               updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.startNodeThumb);
 
               if (
-                (c.endNodeThumb?.thumbConstraint ?? '') !==
+                (c.startNodeThumb?.thumbConstraint ?? '') !==
                 getThumbConstraint(thumb.thumbConstraint)
               ) {
                 c.startNodeThumb = undefined;
@@ -1578,7 +1578,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
               updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.endNodeThumb);
 
               if (
-                (c.startNodeThumb?.thumbConstraint ?? '') !==
+                (c.endNodeThumb?.thumbConstraint ?? '') !==
                 getThumbConstraint(thumb.thumbConstraint)
               ) {
                 c.endNodeThumb = undefined;
