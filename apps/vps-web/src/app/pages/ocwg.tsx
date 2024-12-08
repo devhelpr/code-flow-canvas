@@ -1,6 +1,7 @@
 import {
   renderElement,
   createJSXElement,
+  standardTheme,
 } from '@devhelpr/visual-programming-system';
 import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
 
@@ -39,6 +40,12 @@ export function ocwgPage() {
     app.appRootSelector = '#app-root';
     app.heightSpaceForHeaderFooterToolbars = 100;
     app.widthSpaceForSideToobars = 32;
+
+    app.theme = { ...standardTheme };
+    app.theme.background = 'bg-[#336699]';
+    app.theme.backgroundAsHexColor = '#336699';
+    app.theme.nodeBackground = 'bg-[#113366]';
+
     app.registerExternalNodes = (
       _registerNodeFactory: RegisterNodeFactoryFunction
     ) => {

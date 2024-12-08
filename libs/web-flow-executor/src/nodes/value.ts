@@ -12,6 +12,7 @@ import {
   ThumbConnectionType,
   ThumbType,
   FlowChangeType,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
@@ -40,7 +41,8 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
     isStoreOnly?: boolean,
     flowChangeType?: FlowChangeType,
     node?: INodeComponent<NodeInfo> | undefined
-  ) => void
+  ) => void,
+  theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
 
@@ -99,7 +101,9 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
       const componentWrapper = createElement(
         'div',
         {
-          class: `inner-node bg-slate-500 p-4 rounded`,
+          class: `inner-node ${
+            theme?.nodeInversedBackground ?? 'bg-slate-500'
+          } p-4 rounded`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
@@ -124,7 +128,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         thumbs,
         componentWrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: `${theme?.nodeBackground ?? 'bg-slate-500'} p-4 rounded`,
         },
         undefined,
         undefined,

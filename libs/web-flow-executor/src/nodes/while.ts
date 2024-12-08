@@ -7,6 +7,7 @@ import {
   NodeTask,
   ThumbConnectionType,
   ThumbType,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
@@ -56,7 +57,10 @@ const activeWhileColor = 'bg-blue-500';
 
 export const whileNodeName = 'while';
 const whileTitle = 'while';
-export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
+export const getWhile = (
+  _updated: () => void,
+  theme?: Theme
+): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let whileComponent: INodeComponent<NodeInfo> | undefined = undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
@@ -66,7 +70,7 @@ export const getWhile = (_updated: () => void): NodeTask<NodeInfo> => {
       whileComponent.domElement.textContent = `${title}`;
 
       const whileDomElement = whileComponent?.domElement as HTMLElement;
-      whileDomElement.classList.add('bg-slate-500');
+      whileDomElement.classList.add(theme?.nodeBackground ?? 'bg-slate-500');
       whileDomElement.classList.remove(activeWhileColor);
     }
     return;

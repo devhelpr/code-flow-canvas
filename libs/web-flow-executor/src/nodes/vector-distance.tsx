@@ -10,6 +10,7 @@ import {
   ThumbType,
   createJSXElement,
   thumbConstraints,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
@@ -48,7 +49,8 @@ const thumbs = [
 ];
 
 export const getVectorDistanceNode: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: () => void,
+  theme?: Theme
 ): NodeTask<any> => {
   //let contextInstance: CanvasAppInstance<NodeInfo> | undefined = undefined;
   let node: IRectNodeComponent<NodeInfo>;
@@ -204,7 +206,7 @@ export const getVectorDistanceNode: NodeTaskFactory<NodeInfo> = (
         nodeThumbs,
         Component() as unknown as HTMLElement,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: `${theme?.nodeBackground ?? 'bg-slate-500'} p-4 rounded`,
         },
         false,
         undefined,

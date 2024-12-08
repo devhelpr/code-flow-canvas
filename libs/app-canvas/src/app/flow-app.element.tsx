@@ -34,6 +34,7 @@ import {
   IFormsComponent,
   FlowChangeType,
   IFlowCanvasBase,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -144,6 +145,7 @@ export class CodeFlowWebAppCanvas {
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction
   ) => void;
+  theme?: Theme;
   render() {
     if (!this.appRootSelector) {
       throw new Error('appRootSelector is required');
@@ -157,7 +159,10 @@ export class CodeFlowWebAppCanvas {
       this.onStoreFlow,
       this.registerExternalNodes,
       this.flowId,
-      this.clearPresetRegistry
+      this.clearPresetRegistry,
+      undefined,
+      undefined,
+      this.theme
     );
   }
 }
@@ -225,12 +230,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     flowId?: string,
     clearPresetRegistry?: boolean,
     apiUrlRoot?: string,
-    hideFlowPresets?: boolean
+    hideFlowPresets?: boolean,
+    theme?: Theme
   ) {
     super(
       appRootSelector,
       undefined,
-      standardTheme,
+      theme ?? standardTheme,
       storageProvider,
       isReadOnly,
       heightSpaceForHeaderFooterToolbars,
@@ -2199,6 +2205,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     removeClassesHTMLElement(this.exportCodeButton, ['hidden']);
 
     this.initializeNodes?.();
+  }
+
+  onSetupCompositionCanvasEdit(canvasApp: IFlowCanvasBase<NodeInfo>) {
+    canvasApp.setOnAddcomposition(this.onAddFlowComposition);
   }
 
   onImported = () => {

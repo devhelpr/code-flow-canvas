@@ -15,6 +15,7 @@ import {
   ThumbConnectionType,
   ThumbType,
   trackNamedSignal,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 
@@ -50,7 +51,8 @@ const thumbs: IThumb[] = [
   },
 ];
 export const getIfCondition: NodeTaskFactory<NodeInfo> = (
-  updated: () => void
+  updated: () => void,
+  theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
@@ -266,7 +268,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
               flex text-center items-center justify-center 
               w-[150px] h-[150px] 
               overflow-hidden
-              bg-slate-500 text-white
+              ${theme?.nodeBackground ?? 'bg-slate-500'} text-white
               rounded`,
           style: {
             'clip-path': 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%',
@@ -308,7 +310,7 @@ export const getIfCondition: NodeTaskFactory<NodeInfo> = (
         thumbs,
         jsxComponentWrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: `${theme?.nodeBackground ?? 'bg-slate-500'} p-4 rounded`,
         },
         undefined,
         undefined,

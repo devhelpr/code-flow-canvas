@@ -196,7 +196,9 @@ export const getUserInput =
         const formWrapper = createElement(
           'div',
           {
-            class: `ui-form-node p-4 border-[2px] border-solid rounded bg-slate-500`,
+            class: `ui-form-node p-4 border-[2px] border-solid rounded ${
+              theme?.nodeBackground ?? 'bg-slate-500'
+            }`,
             style: {
               'border-color': theme?.backgroundAsHexColor ?? '#000000',
             },
@@ -255,7 +257,9 @@ export const getUserInput =
           ],
           componentWrapper,
           {
-            classNames: `bg-slate-500 p-4 rounded`,
+            classNames: `${
+              theme?.nodeBackground ?? 'bg-slate-500'
+            } p-4 rounded`,
           },
           undefined,
           undefined,

@@ -9,13 +9,15 @@ import {
   ThumbConnectionType,
   ThumbType,
   IDOMElement,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { createPreviewTip } from './node-utils/create-preview-tip';
 import { showPreviewTip } from './node-utils/show-preview-tip';
 
 export const getSum: NodeTaskFactory<NodeInfo> = (
-  _updated: () => void
+  _updated: () => void,
+  theme?: Theme
 ): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let htmlNode: INodeComponent<NodeInfo> | undefined = undefined;
@@ -154,7 +156,7 @@ export const getSum: NodeTaskFactory<NodeInfo> = (
         ],
         wrapper,
         {
-          classNames: `bg-slate-500 p-4 rounded`,
+          classNames: `${theme?.nodeBackground ?? 'bg-slate-500'} p-4 rounded`,
         },
         undefined,
         false,

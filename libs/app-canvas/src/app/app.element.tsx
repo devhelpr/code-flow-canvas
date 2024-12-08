@@ -1278,11 +1278,19 @@ export class AppElement<T extends BaseNodeInfo> {
         undefined,
         'composition-canvas-' + node.nodeInfo.compositionId,
         undefined,
-        this.showEditCompositionNameDialog
+        this.showEditCompositionNameDialog,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        this.canvasApp
       );
       if (canvasApp) {
         canvasApp.isComposition = true;
       }
+      this.onSetupCompositionCanvasEdit(canvasApp);
       canvasApp?.setCamera(0, 0, 1);
       this.currentCanvasApp = canvasApp;
 
@@ -2068,6 +2076,10 @@ export class AppElement<T extends BaseNodeInfo> {
   }
 
   onExitEditComposition() {
+    //
+  }
+
+  onSetupCompositionCanvasEdit(_canvasApp: IFlowCanvasBase<T>) {
     //
   }
 }
