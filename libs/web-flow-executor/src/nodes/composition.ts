@@ -16,6 +16,8 @@ import {
   visualNodeFactory,
   INodeComponent,
   NodeType,
+  createCompositionRuntimeFlowContext,
+  FlowCanvas,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
@@ -40,6 +42,7 @@ export const getCreateCompositionNode =
     const labelName = `${name ?? 'Composition'}`;
     const nodeName = `composition-${compositionId}`;
     let canvasApp: IFlowCanvasBase<NodeInfo> | undefined = undefined;
+    let rootCanvasApp: IFlowCanvasBase<NodeInfo> | undefined = undefined;
     // let nodes: FlowNode<NodeInfo>[] = [];
     // let compositionThumbs: IThumb[] = [];
     let composition: Composition<NodeInfo> | undefined = undefined;
@@ -125,13 +128,17 @@ export const getCreateCompositionNode =
       composition = undefined;
 
       // TODO : properly destroy current contextCanvasApp before creating a new one
-      contextCanvasApp = createRuntimeFlowContext<NodeInfo>();
+      if (canvasApp) {
+        contextCanvasApp = createCompositionRuntimeFlowContext<NodeInfo>(
+          rootCanvasApp ?? canvasApp
+        );
 
-      contextCanvasApp.setAnimationFunctions({
-        animatePathFunction: runFlowPath,
-        animatePathFromThumbFunction: runPathFromThumbFlow,
-        animatePathFromConnectionPairFunction: runPathForNodeConnectionPairs,
-      });
+        contextCanvasApp.setAnimationFunctions({
+          animatePathFunction: runFlowPath,
+          animatePathFromThumbFunction: runPathFromThumbFlow,
+          animatePathFromConnectionPairFunction: runPathForNodeConnectionPairs,
+        });
+      }
       return;
     };
     const computeAsync = (
@@ -224,6 +231,14 @@ export const getCreateCompositionNode =
       },
       (nodeInstance) => {
         canvasApp = nodeInstance.contextInstance;
+        if (
+          (nodeInstance.contextInstance as FlowCanvas<NodeInfo>)
+            .getRootFlowCanvas
+        ) {
+          rootCanvasApp = (
+            nodeInstance.contextInstance as FlowCanvas<NodeInfo>
+          ).getRootFlowCanvas();
+        }
         if (nodeInstance.node?.nodeInfo) {
           (nodeInstance.node.nodeInfo as NodeInfo).isComposition = true;
           (nodeInstance.node.nodeInfo as NodeInfo).compositionId =

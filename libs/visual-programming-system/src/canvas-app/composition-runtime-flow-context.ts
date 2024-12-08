@@ -14,6 +14,7 @@ import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   AnimatePathFunctions,
   ElementNodeMap,
+  ICommandHandler,
   IConnectionNodeComponent,
   IElementNode,
   INodeComponent,
@@ -27,15 +28,19 @@ import { BaseNodeInfo } from '../types/base-node-info';
 import { createElementMap } from '../utils';
 import { IFlowCanvasBase } from './flow-canvas';
 import { FlowCore } from './flow-core';
+import {
+  GetNodeStatedHandler,
+  SetNodeStatedHandler,
+} from '../interfaces/node-state-handlers';
 
-export const createRuntimeFlowContext = <T extends BaseNodeInfo>(
-  _canvasId?: string,
-  rootFlowCanvas?: IFlowCanvasBase<T>
+export const createCompositionRuntimeFlowContext = <T extends BaseNodeInfo>(
+  canvasApp: IFlowCanvasBase<T>,
+  _canvasId?: string
 ): IFlowCanvasBase<T> => {
-  return new RuntimeFlowContext<T>(rootFlowCanvas);
+  return new CompositionRuntimeFlowContext<T>(canvasApp);
 };
 
-export class RuntimeFlowContext<T extends BaseNodeInfo>
+export class CompositionRuntimeFlowContext<T extends BaseNodeInfo>
   extends FlowCore
   implements IFlowCanvasBase<T>
 {
@@ -51,12 +56,11 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
   public isComposition = false;
 
   private animationFunctions: undefined | AnimatePathFunctions<T>;
-  private rootFlowCanvas: IFlowCanvasBase<T> | undefined;
-  public getRootFlowCanvas = () => this.rootFlowCanvas;
-  constructor(rootFlowCanvas?: IFlowCanvasBase<T>) {
+  private canvasApp: IFlowCanvasBase<T>;
+  constructor(canvasApp: IFlowCanvasBase<T>) {
     super();
-    this.rootFlowCanvas = rootFlowCanvas;
     this.theme = standardTheme;
+    this.canvasApp = canvasApp;
     this.elements = createElementMap<T>();
     // TODO
     this.interactionStateMachine =
@@ -65,8 +69,7 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
     this.rootElement = undefined as unknown as HTMLElement;
     this.nodeTransformer =
       undefined as unknown as NodeTransformer<BaseNodeInfo>;
-    this.compositons =
-      this.rootFlowCanvas?.compositons ?? new Compositions<T>();
+    this.compositons = this.canvasApp?.compositons ?? new Compositions<T>();
     this.nodeSelector = undefined as unknown as NodeSelector<T>;
     // END TODO
   }
@@ -384,5 +387,193 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
     ) => void
   ) => {
     //
+  };
+
+  override setOnNodeMessage = (
+    event: (keyName: string, value: any) => void
+  ) => {
+    this.canvasApp.setOnNodeMessage(event);
+  };
+
+  override sendMessageFromNode = (key: string, value: any) => {
+    this.canvasApp.sendMessageFromNode(key, value);
+  };
+
+  override sendMessageToNode = (key: string, value: any) => {
+    this.canvasApp.sendMessageToNode(key, value);
+  };
+
+  override registerNodeKeyListener = (
+    key: string,
+    listener: (key: string, value: any) => void
+  ) => {
+    this.canvasApp.registerNodeKeyListener(key, listener);
+  };
+  override removeNodeKeyListener = (
+    key: string,
+    listener: (key: string, value: any) => void
+  ) => {
+    this.canvasApp.removeNodeKeyListener(key, listener);
+  };
+
+  override registerVariable = (
+    variableName: string,
+    variable: {
+      id: string;
+      getData: () => any;
+      setData: (data: any) => boolean;
+      initializeDataStructure?: (structureInfo: any) => void;
+      removeScope: (scopeId: string) => void;
+      resetVariable: () => boolean;
+    }
+  ) => {
+    this.canvasApp.registerVariable(variableName, variable);
+  };
+
+  override registerTempVariable = (
+    variableName: string,
+    data: any,
+    scopeId: string
+  ) => {
+    this.canvasApp.registerTempVariable(variableName, data, scopeId);
+  };
+
+  override unregisterVariable = (variableName: string, id: string) => {
+    this.canvasApp.unregisterVariable(variableName, id);
+  };
+
+  override getVariable = (
+    variableName: string,
+    parameter?: any,
+    scopeId?: string
+  ) => {
+    return this.canvasApp.getVariable(variableName, parameter, scopeId);
+  };
+
+  override getVariableInfo = (variableName: string, scopeId?: string) => {
+    return this.canvasApp.getVariableInfo(variableName, scopeId);
+  };
+
+  override setVariable = (
+    variableName: string,
+    data: any,
+    scopeId?: string,
+    runCounter?: any,
+    isInitializing?: boolean
+  ) => {
+    return this.canvasApp.setVariable(
+      variableName,
+      data,
+      scopeId,
+      runCounter,
+      isInitializing
+    );
+  };
+
+  override getVariables = (scopeId?: string) => {
+    return this.canvasApp.getVariables(scopeId);
+  };
+
+  override deleteVariables = () => {
+    this.canvasApp.deleteVariables();
+  };
+
+  override getVariableNames = (scopeId?: string) => {
+    return this.canvasApp.getVariableNames(scopeId);
+  };
+
+  override resetVariable = (
+    variableName: string,
+    scopeId?: string,
+    runCounter?: any
+  ) => {
+    return this.canvasApp.resetVariable(variableName, scopeId, runCounter);
+  };
+
+  override initializeVariableDataStructure = (
+    variableName: string,
+    structureInfo: any,
+    scopeId?: string
+  ) => {
+    this.canvasApp.initializeVariableDataStructure(
+      variableName,
+      structureInfo,
+      scopeId
+    );
+  };
+
+  override observeVariable = (
+    nodeId: string,
+    variableName: string,
+    updated: (data: any, runCounter?: any) => Promise<void>
+  ) => {
+    this.canvasApp.observeVariable(nodeId, variableName, updated);
+  };
+
+  override removeObserveVariable = (nodeId: string, variableName: string) => {
+    this.canvasApp.removeObserveVariable(nodeId, variableName);
+  };
+  override removeScope = (scopeId: string) => {
+    this.canvasApp.removeScope(scopeId);
+  };
+
+  override registerCommandHandler = (
+    name: string,
+    handler: ICommandHandler
+  ) => {
+    this.canvasApp.registerCommandHandler(name, handler);
+  };
+
+  override unregisterCommandHandler = (name: string) => {
+    this.canvasApp.unregisterCommandHandler(name);
+  };
+
+  override registeGetNodeStateHandler = (
+    name: string,
+    handler: GetNodeStatedHandler
+  ) => {
+    this.canvasApp.registeGetNodeStateHandler(name, handler);
+  };
+
+  override unRegisteGetNodeStateHandler = (name: string) => {
+    this.canvasApp.unRegisteGetNodeStateHandler(name);
+  };
+
+  override registeSetNodeStateHandler = (
+    name: string,
+    handler: SetNodeStatedHandler
+  ) => {
+    this.canvasApp.registeSetNodeStateHandler(name, handler);
+  };
+
+  override unRegisteSetNodeStateHandler = (name: string) => {
+    this.canvasApp.unRegisteSetNodeStateHandler(name);
+  };
+
+  override getNodeStates = () => {
+    return this.canvasApp.getNodeStates();
+  };
+
+  override getNodeState = (id: string) => {
+    return this.canvasApp.getNodeState(id);
+  };
+
+  override setNodeStates = (nodeStates: Map<string, any>) => {
+    this.canvasApp.setNodeStates(nodeStates);
+  };
+
+  override executeCommandOnCommandHandler = (
+    name: string,
+    commandName: string,
+    data: any
+  ) => {
+    this.canvasApp.executeCommandOnCommandHandler(name, commandName, data);
+  };
+
+  override setTempData = (key: string, value: any) => {
+    this.canvasApp.setTempData(key, value);
+  };
+  override getTempData = (key: string) => {
+    return this.canvasApp.getTempData(key);
   };
 }

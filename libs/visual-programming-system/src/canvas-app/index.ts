@@ -67,7 +67,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     draggedNode: INodeComponent<T>,
     dropTarget: INodeComponent<T>,
     isCancelling: boolean
-  ) => void
+  ) => void,
+  rootFlowCanvas?: IFlowCanvasBase<T>
 ): IFlowCanvasBase<T> => {
   return new FlowCanvas(
     rootElement,
@@ -82,7 +83,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     heightSpaceForHeaderFooterToolbars,
     widthSpaceForSideToobars,
     onDroppedOnNode,
-    onDraggingOverNode
+    onDraggingOverNode,
+    rootFlowCanvas
   );
 };
 
@@ -171,6 +173,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
         isCancelling: boolean
       ) => void)
     | undefined;
+
+  private rootFlowCanvas: IFlowCanvasBase<T> | undefined;
+  public getRootFlowCanvas = () => this.rootFlowCanvas;
   constructor(
     rootElement: HTMLElement,
     disableInteraction?: boolean,
@@ -191,9 +196,11 @@ export class FlowCanvas<T extends BaseNodeInfo>
       draggedNode: INodeComponent<T>,
       dropTarget: INodeComponent<T>,
       isCancelling: boolean
-    ) => void
+    ) => void,
+    rootFlowCanvas?: IFlowCanvasBase<T>
   ) {
     super();
+    this.rootFlowCanvas = rootFlowCanvas;
     this.disableInteraction = disableInteraction ?? false;
 
     this.heightSpaceForHeaderFooterToolbars =
@@ -221,7 +228,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this
         .interactionStateMachine as unknown as InteractionStateMachine<BaseNodeInfo>
     );
-    this.compositons = new Compositions<T>();
+    this.compositons =
+      this.rootFlowCanvas?.compositons ?? new Compositions<T>();
 
     this.nodeSelector = new NodeSelector<T>(
       this.canvas,
