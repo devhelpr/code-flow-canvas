@@ -154,17 +154,27 @@ export const getCreateCompositionNode =
             composition = canvasApp.compositons.getComposition(compositionId);
 
             // TODO FIX THIS!!!!!
-
-            importToCanvas(
-              composition?.nodes ?? [],
-              contextCanvasApp,
-              () => {
-                //
-              },
-              undefined,
-              0,
-              getNodeFactory
-            );
+            try {
+              importToCanvas(
+                composition?.nodes ?? [],
+                contextCanvasApp,
+                () => {
+                  //
+                },
+                undefined,
+                0,
+                getNodeFactory
+              );
+            } catch (error) {
+              console.error(error);
+              resolve({
+                stop: true,
+                result: undefined,
+                output: undefined,
+                followPath: undefined,
+              });
+              return;
+            }
           }
         }
         if (composition) {
@@ -190,14 +200,14 @@ export const getCreateCompositionNode =
           run(
             contextCanvasApp.elements,
             contextCanvasApp,
-            (input) => {
-              if (runCounter.runCounter <= 0) {
-                resolve({
-                  result: input,
-                  output: input,
-                  followPath: undefined,
-                });
-              }
+            (_input) => {
+              // if (runCounter.runCounter <= 0) {
+              //   resolve({
+              //     result: input,
+              //     output: input,
+              //     followPath: undefined,
+              //   });
+              // }
             },
             input,
             undefined,

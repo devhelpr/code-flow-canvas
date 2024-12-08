@@ -1,0 +1,413 @@
+import { Flow, FlowEndpoint,FlowMeta } from "@devhelpr/visual-programming-system";
+import { NodeInfo } from "@devhelpr/web-flow-executor";
+export const metaData : FlowMeta = {
+  title: "Flow"
+};  
+export const endpoints : Record<string,FlowEndpoint> = {
+  default: {
+    id: "default",
+    type: "default",
+    name: "default",
+    group: "endpoints",
+    outputs: []
+  }
+};
+
+export const flow: Flow<NodeInfo> = {
+  schemaType: "flow",
+  schemaVersion: "0.0.1",
+  id: "1234",
+  flows: {
+    flow: {
+      flowType: "flow",
+      nodes: [
+        {
+          id: "6be80048-6e33-41b3-9e7e-0a3235e2839a",
+          x: 4612.06856913936,
+          y: -812.6486298792398,
+          width: 200,
+          height: 100,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "expression",
+            formValues: {
+              expression: "input * 2",
+              inputType: "number"
+            },
+            showFormOnlyInPopup: true,
+            isSettingsPopup: true,
+            supportsPreview: true
+          }
+        },
+        {
+          id: "583d4e15-035f-4434-a082-622009b4867c",
+          x: 3775.2050254366177,
+          y: -813.7059690511884,
+          width: 200,
+          height: 100,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "expression",
+            formValues: {
+              expression: "5",
+              inputType: "number"
+            },
+            showFormOnlyInPopup: true,
+            isSettingsPopup: true,
+            supportsPreview: true
+          }
+        },
+        {
+          id: "4eaff148-c558-4164-b9f5-8480145357cd",
+          x: 5797.423308802282,
+          y: -804.0636455698171,
+          width: 120.00001826922905,
+          height: 56.000013492511954,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "show-input",
+            formValues: {
+              name: "",
+              ["data-type"]: "default"
+            },
+            initializeOnStartFlow: true,
+            isSettingsPopup: true
+          }
+        },
+        {
+          id: "9f7b6666-60ee-4bb4-82a9-97980a933b6d",
+          x: 4524.61276449378,
+          y: -1060.9154295620374,
+          width: 174.4217038707111,
+          height: 83.99999256435922,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "scope-variable",
+            formValues: {
+              variableName: "test",
+              initialValue: "",
+              fieldType: "value",
+              fieldValueType: "number",
+              enumValues: [],
+              initialEnumValue: ""
+            },
+            isVariable: true,
+            nodeCannotBeReplaced: true
+          }
+        },
+        {
+          id: "d1982fff-8b06-49ec-9cb6-4b5099eafe79",
+          x: 5400.178299891687,
+          y: -824.714283380306,
+          width: 200,
+          height: 100,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "expression",
+            formValues: {
+              expression: "test",
+              inputType: "number"
+            },
+            showFormOnlyInPopup: true,
+            isSettingsPopup: true,
+            supportsPreview: true
+          }
+        },
+        {
+          id: "17b3cbbc-3776-4838-9276-3f6650998791",
+          x: 4985.348326411627,
+          y: -834.2589520998183,
+          width: 200.00009614746563,
+          height: 113.25002609988877,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "composition-1bc6fa90-be0d-43cd-9a9f-7fba9c5fd0fa",
+            formValues: {},
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            isComposition: true,
+            compositionId: "1bc6fa90-be0d-43cd-9a9f-7fba9c5fd0fa"
+          }
+        },
+        {
+          id: "83bf243d-d7bd-4438-bf5e-f77d90e8defb",
+          x: 4227.680998224009,
+          y: -829.743349708836,
+          width: 200,
+          height: 128,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "reset-variable",
+            formValues: {
+              variableName: "test"
+            },
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false
+          }
+        },
+        {
+          id: "5dee0968-b892-48e8-9410-e23c8e0e6454",
+          x: 3975.2050254366177,
+          y: -763.7059690511884,
+          endX: 4227.680998224009,
+          endY: -765.743349708836,
+          startNodeId: "583d4e15-035f-4434-a082-622009b4867c",
+          endNodeId: "83bf243d-d7bd-4438-bf5e-f77d90e8defb",
+          startThumbName: "output",
+          endThumbName: "input",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        },
+        {
+          id: "bb78eb2a-e697-447e-ae95-a6f717f49317",
+          x: 4812.06856913936,
+          y: -762.6486298792398,
+          endX: 4985.348326411627,
+          endY: -775.0089346369031,
+          startNodeId: "6be80048-6e33-41b3-9e7e-0a3235e2839a",
+          endNodeId: "17b3cbbc-3776-4838-9276-3f6650998791",
+          startThumbName: "output",
+          endThumbName: "input",
+          endThumbIdentifierWithinNode: "5ba72fc6-0f62-4be8-adaf-45f015bace33",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        },
+        {
+          id: "c0e4ecf3-f35a-4931-968a-57e88c8f1a23",
+          x: 5185.348422559092,
+          y: -775.0089346369031,
+          endX: 5400.178299891687,
+          endY: -774.714283380306,
+          startNodeId: "17b3cbbc-3776-4838-9276-3f6650998791",
+          endNodeId: "d1982fff-8b06-49ec-9cb6-4b5099eafe79",
+          startThumbName: "output",
+          endThumbName: "input",
+          startThumbIdentifierWithinNode: "963bb1cf-3c3a-4a48-a421-76487e308cd7",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        },
+        {
+          id: "a28c34e5-e787-4f31-99bd-0a31f8b23ed0",
+          x: 5600.178299891687,
+          y: -774.714283380306,
+          endX: 5797.423308802282,
+          endY: -774.0636455698171,
+          startNodeId: "d1982fff-8b06-49ec-9cb6-4b5099eafe79",
+          endNodeId: "4eaff148-c558-4164-b9f5-8480145357cd",
+          startThumbName: "output",
+          endThumbName: "input",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        },
+        {
+          id: "53259034-9cc8-4b32-9baf-220fcb012f76",
+          x: 4427.680998224009,
+          y: -765.743349708836,
+          endX: 4612.06856913936,
+          endY: -762.6486298792398,
+          startNodeId: "83bf243d-d7bd-4438-bf5e-f77d90e8defb",
+          endNodeId: "6be80048-6e33-41b3-9e7e-0a3235e2839a",
+          startThumbName: "output",
+          endThumbName: "input",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        }
+      ]
+    }
+  },
+  compositions: {
+    ["1bc6fa90-be0d-43cd-9a9f-7fba9c5fd0fa"]: {
+      id: "1bc6fa90-be0d-43cd-9a9f-7fba9c5fd0fa",
+      name: "setvariable",
+      nodes: [
+        {
+          id: "22e361ba-b432-4e11-9eea-2134da92f38f",
+          x: 4821.229486596595,
+          y: -878.4813826909128,
+          width: 200.00022037908352,
+          height: 113.24998881554902,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "composition-33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+            formValues: {},
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            isComposition: true,
+            compositionId: "33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+            taskType: "composition-33008ac0-62fc-4adc-9991-2b8d3dc4cf0f"
+          }
+        }
+      ],
+      thumbs: [
+        {
+          thumbIndex: 0,
+          thumbType: "EndConnectorLeft",
+          connectionType: "end",
+          prefixLabel: "Set variable",
+          name: "input",
+          thumbConstraint: "",
+          color: "white",
+          thumbIdentifierWithinNode: "5ba72fc6-0f62-4be8-adaf-45f015bace33",
+          nodeId: "22e361ba-b432-4e11-9eea-2134da92f38f"
+        },
+        {
+          thumbIndex: 0,
+          thumbType: "StartConnectorRight",
+          connectionType: "start",
+          prefixLabel: "output",
+          name: "output",
+          thumbConstraint: "",
+          color: "white",
+          thumbIdentifierWithinNode: "963bb1cf-3c3a-4a48-a421-76487e308cd7",
+          nodeId: "22e361ba-b432-4e11-9eea-2134da92f38f"
+        }
+      ],
+      inputNodes: [
+        {
+          id: "22e361ba-b432-4e11-9eea-2134da92f38f",
+          x: 4821.229486596595,
+          y: -878.4813826909128,
+          width: 200.00022037908352,
+          height: 113.24998881554902,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "composition-33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+            formValues: {},
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            isComposition: true,
+            compositionId: "33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+            taskType: "composition-33008ac0-62fc-4adc-9991-2b8d3dc4cf0f"
+          }
+        }
+      ],
+      outputNodes: [
+        {
+          id: "22e361ba-b432-4e11-9eea-2134da92f38f",
+          x: 4821.229486596595,
+          y: -878.4813826909128,
+          width: 200.00022037908352,
+          height: 113.24998881554902,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "composition-33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+            formValues: {},
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            isComposition: true,
+            compositionId: "33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+            taskType: "composition-33008ac0-62fc-4adc-9991-2b8d3dc4cf0f"
+          }
+        }
+      ]
+    },
+    ["33008ac0-62fc-4adc-9991-2b8d3dc4cf0f"]: {
+      id: "33008ac0-62fc-4adc-9991-2b8d3dc4cf0f",
+      name: "nested",
+      nodes: [
+        {
+          id: "93706678-32d2-4ec7-bb09-aade911bbe10",
+          x: 4830.90438131351,
+          y: -827.2354757218088,
+          width: 200,
+          height: 128,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "set-variable",
+            formValues: {
+              variableName: "test"
+            },
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false
+          }
+        }
+      ],
+      thumbs: [
+        {
+          thumbIndex: 0,
+          thumbType: "EndConnectorLeft",
+          connectionType: "end",
+          prefixLabel: "Set variable",
+          name: "input",
+          thumbConstraint: "",
+          color: "white",
+          thumbIdentifierWithinNode: "a8c83332-3dae-40fb-9aab-7c31e3bfd554",
+          nodeId: "93706678-32d2-4ec7-bb09-aade911bbe10"
+        },
+        {
+          thumbIndex: 0,
+          thumbType: "StartConnectorRight",
+          connectionType: "start",
+          prefixLabel: "output",
+          name: "output",
+          thumbConstraint: "",
+          color: "white",
+          thumbIdentifierWithinNode: "22536ea6-2af6-4307-9b17-f5157cee9273",
+          nodeId: "93706678-32d2-4ec7-bb09-aade911bbe10"
+        }
+      ],
+      inputNodes: [
+        {
+          id: "93706678-32d2-4ec7-bb09-aade911bbe10",
+          x: 4830.90438131351,
+          y: -827.2354757218088,
+          width: 200,
+          height: 128,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "set-variable",
+            formValues: {
+              variableName: "test"
+            },
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false
+          }
+        }
+      ],
+      outputNodes: [
+        {
+          id: "93706678-32d2-4ec7-bb09-aade911bbe10",
+          x: 4830.90438131351,
+          y: -827.2354757218088,
+          width: 200,
+          height: 128,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "set-variable",
+            formValues: {
+              variableName: "test"
+            },
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false
+          }
+        }
+      ]
+    }
+  }
+};
