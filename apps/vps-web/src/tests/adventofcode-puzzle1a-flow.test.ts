@@ -1,15 +1,15 @@
 /**
  * @vitest-environment node
  **/
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
+import { flow } from './flows/adventofcodepuzzle1a';
 import { RuntimeFlowEngine } from '@devhelpr/web-flow-executor';
-import { flow } from './flows/simple-composition-with-setvariable';
 
-describe('simple composition with setvariable', () => {
-  test('runs simple-composition-with-setvariable flow with input', async () => {
+describe('adventofcodepuzzle1a flow', () => {
+  test('runs adventofcodepuzzle1a flow', async () => {
     const flowEngine = new RuntimeFlowEngine();
     flowEngine.initialize(flow.flows.flow.nodes, flow.compositions);
     const result = await flowEngine.run();
-    expect(result).toBe(10);
+    expect(result).toStrictEqual(11);
   });
 });

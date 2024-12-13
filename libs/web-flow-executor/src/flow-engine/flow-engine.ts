@@ -605,6 +605,7 @@ export const getStartNodes = (
     if (
       !(nodeComponent.nodeInfo as any)?.isVariable &&
       !(nodeComponent.nodeInfo as any)?.isRunOnStart &&
+      !(nodeComponent.nodeInfo as any)?.isAnnotation &&
       nodeComponent.nodeType !== NodeType.Connection &&
       (!connectionsFromEndNode || connectionsFromEndNode.length === 0) &&
       ((!includeFunctionNodes &&
@@ -615,6 +616,7 @@ export const getStartNodes = (
       startNodes.push(nodeComponent);
     }
   });
+
   return startNodes;
 };
 
@@ -647,7 +649,6 @@ export const run = (
   const runOnStartNodes: IRectNodeComponent<NodeInfo>[] =
     getRunOnStartNodes(nodes);
   const executeNodes: IRectNodeComponent<NodeInfo>[] = getStartNodes(nodes);
-
   runOnStartNodes.forEach((nodeComponent) => {
     isRunning = true;
     runNode(

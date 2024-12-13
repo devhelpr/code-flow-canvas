@@ -10,6 +10,8 @@ import {
   FlowNode,
   importToCanvas,
   IFlowCanvasBase,
+  Composition,
+  importCompositions,
 } from '@devhelpr/visual-programming-system';
 import { RunCounter } from '../follow-path/run-counter';
 import {
@@ -20,6 +22,7 @@ import {
 import {
   setupCanvasNodeTaskRegistry,
   getNodeTaskFactory,
+  registerCompositionNodes,
 } from '../node-task-registry/canvas-node-task-registry';
 import { NodeInfo } from '../types/node-info';
 import { increaseRunIndex, runNode, run } from './flow-engine';
@@ -29,7 +32,10 @@ export class RuntimeFlowEngine {
   constructor() {
     this.canvasApp = createRuntimeFlowContext<NodeInfo>();
   }
-  initialize(flow: FlowNode<NodeInfo>[]) {
+  initialize(
+    flow: FlowNode<NodeInfo>[],
+    compositions?: Record<string, Composition<NodeInfo>>
+  ) {
     if (!this.canvasApp) {
       throw new Error('CanvasAppInstance not initialized');
     }
@@ -43,7 +49,10 @@ export class RuntimeFlowEngine {
       });
       return runCounter;
     });
-
+    if (compositions) {
+      importCompositions<NodeInfo>(compositions, this.canvasApp);
+      registerCompositionNodes(this.canvasApp.compositons.getAllCompositions());
+    }
     importToCanvas(
       flow,
       this.canvasApp,
@@ -122,6 +131,11 @@ export class RuntimeFlowEngine {
   }
   private runFlow = (input?: any) => {
     return new Promise<any>((resolve) => {
+      this.canvasApp?.elements.forEach((node) => {
+        if (node && node.nodeInfo && node.nodeInfo.initializeOnStartFlow) {
+          node.nodeInfo?.initializeCompute?.();
+        }
+      });
       const runCounter = new RunCounter();
       let output: any;
 

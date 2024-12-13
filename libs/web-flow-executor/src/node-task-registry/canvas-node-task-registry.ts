@@ -216,6 +216,7 @@ import { filterNodeName, getFilter } from '../nodes/filter';
 import { loadJSONFile, loadJSONFileNodeName } from '../nodes/load-json-file';
 import { getReduce, reduceNodeName } from '../nodes/reduce';
 import { getRawJsonNode, jsonNodeName } from '../nodes/raw-json';
+import { getRawTextNode, textNodeName } from '../nodes/raw-text';
 
 import {
   getVectorDistanceNode,
@@ -466,6 +467,8 @@ export const setupCanvasNodeTaskRegistry = (
     );
 
     registerNodeFactory(jsonNodeName, getRawJsonNode);
+
+    registerNodeFactory(textNodeName, getRawTextNode);
 
     registerNodeFactory(vectorDistanceNodeName, getVectorDistanceNode);
 

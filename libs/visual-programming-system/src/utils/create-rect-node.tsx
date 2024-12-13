@@ -322,9 +322,12 @@ export const createRectNode = <T extends BaseNodeInfo>(
       undefined,
       nodeTitle.replace('^2', '²')
     ) as unknown as INodeComponent<T>;
-    (componentWrapper?.domElement as HTMLElement).prepend(
-      topLabel?.domElement as HTMLElement
-    );
+
+    if (componentWrapper?.domElement as HTMLElement) {
+      (componentWrapper?.domElement as HTMLElement).prepend(
+        topLabel?.domElement as HTMLElement
+      );
+    }
   }
   const rect = settings?.isRectThumb
     ? canvasApp.createRectThumb(
