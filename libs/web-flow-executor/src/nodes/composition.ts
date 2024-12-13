@@ -21,7 +21,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
-import { run } from '../flow-engine/flow-engine';
+import { runNode } from '../flow-engine/flow-engine';
 import {
   runPath,
   runPathForNodeConnectionPairs,
@@ -143,9 +143,9 @@ export const getCreateCompositionNode =
     };
     const computeAsync = (
       input: string,
-      _loopIndex?: number,
+      loopIndex?: number,
       _payload?: any,
-      _thumbName?: string,
+      thumbName?: string,
       _thumbIdentifierWithinNode?: string
     ) => {
       return new Promise<IComputeResult>((resolve) => {
@@ -165,6 +165,16 @@ export const getCreateCompositionNode =
                 0,
                 getNodeFactory
               );
+
+              contextCanvasApp.elements.forEach((node) => {
+                const nodeComponent =
+                  node as unknown as INodeComponent<NodeInfo>;
+                if (nodeComponent.nodeType !== NodeType.Connection) {
+                  if (nodeComponent?.nodeInfo?.initializeCompute) {
+                    nodeComponent.nodeInfo.initializeCompute();
+                  }
+                }
+              });
             } catch (error) {
               console.error(error);
               resolve({
@@ -189,18 +199,32 @@ export const getCreateCompositionNode =
             }
           });
 
-          contextCanvasApp.elements.forEach((node) => {
-            const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
-            if (nodeComponent.nodeType !== NodeType.Connection) {
-              if (nodeComponent?.nodeInfo?.initializeCompute) {
-                nodeComponent.nodeInfo.initializeCompute();
+          let nodeInComposition: IRectNodeComponent<NodeInfo> | undefined;
+          let useThumbName: string | undefined = '';
+          composition.thumbs.forEach((thumb) => {
+            if (thumb.connectionType === 'end') {
+              if (thumb.name === thumbName && thumb.nodeId) {
+                useThumbName = thumb.internalName;
+                nodeInComposition = contextCanvasApp.elements.get(
+                  thumb.nodeId
+                ) as IRectNodeComponent<NodeInfo>;
               }
             }
           });
-          run(
-            contextCanvasApp.elements,
+          if (!nodeInComposition || !useThumbName) {
+            resolve({
+              result: undefined,
+              output: undefined,
+              followPath: undefined,
+              stop: true,
+            });
+            return;
+          }
+          runNode(
+            nodeInComposition,
             contextCanvasApp,
             (_input) => {
+              console.log('runNode done', _input);
               // if (runCounter.runCounter <= 0) {
               //   resolve({
               //     result: input,
@@ -212,7 +236,13 @@ export const getCreateCompositionNode =
             input,
             undefined,
             undefined,
-            runCounter
+            loopIndex,
+            undefined, // connection
+            undefined,
+            runCounter,
+            undefined,
+            undefined,
+            useThumbName
           );
           return;
         }

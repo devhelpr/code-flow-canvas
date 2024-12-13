@@ -1396,7 +1396,11 @@ export class AppElement<T extends BaseNodeInfo> {
                 undefined,
                 undefined
               );
-              if (connection && connection.nodeComponent) {
+              if (
+                connection &&
+                connection.nodeComponent &&
+                thumb.internalName
+              ) {
                 nodesIdsToIgnore.push(connection.nodeComponent.id);
                 connection.nodeComponent.isControlled = true;
                 connection.nodeComponent.nodeInfo = {} as T;
@@ -1412,7 +1416,7 @@ export class AppElement<T extends BaseNodeInfo> {
                 connection.nodeComponent.endNode = node;
 
                 connection.nodeComponent.endNodeThumb =
-                  getThumbNodeByName<T>(thumb.name, node, {
+                  getThumbNodeByName<T>(thumb.internalName, node, {
                     start: false,
                     end: true,
                   }) || undefined;
@@ -1498,7 +1502,11 @@ export class AppElement<T extends BaseNodeInfo> {
                 undefined,
                 undefined
               );
-              if (connection && connection.nodeComponent) {
+              if (
+                connection &&
+                connection.nodeComponent &&
+                thumb.internalName
+              ) {
                 nodesIdsToIgnore.push(connection.nodeComponent.id);
                 connection.nodeComponent.isControlled = true;
                 connection.nodeComponent.nodeInfo = {} as T;
@@ -1507,7 +1515,7 @@ export class AppElement<T extends BaseNodeInfo> {
                 connection.nodeComponent.startNode = node;
 
                 connection.nodeComponent.startNodeThumb =
-                  getThumbNodeByName<T>(thumb.name, node, {
+                  getThumbNodeByName<T>(thumb.internalName, node, {
                     start: true,
                     end: false,
                   }) || undefined;

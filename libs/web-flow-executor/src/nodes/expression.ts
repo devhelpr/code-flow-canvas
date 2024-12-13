@@ -122,7 +122,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
   let lastInput: any = undefined;
   const compute = (
     input: string,
-    _loopIndexloopIndex?: number,
+    loopIndexloopIndex?: number,
     payload?: any,
     _thumbName?: string,
     scopeId?: string
@@ -184,7 +184,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
         payload,
         inputType,
         currentValue,
-        executionRunCounter,
+        loopIndexloopIndex ?? executionRunCounter,
         scopeId,
         canvasAppInstance
       );

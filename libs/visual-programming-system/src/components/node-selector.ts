@@ -550,7 +550,8 @@ export class NodeSelector<T extends BaseNodeInfo> {
                         thumbType: 'StartConnectorRight',
                         connectionType: ThumbConnectionType.start,
                         prefixLabel: outputNodeThumb.prefixLabel,
-                        name: outputNodeThumb.thumbName,
+                        name: `${outputNodeThumb.thumbName}_${outputThumbIndex}`,
+                        internalName: outputNodeThumb.thumbName,
                         prefixIcon: outputNodeThumb.prefixIcon,
                         thumbConstraint: outputNodeThumb.thumbConstraint ?? '',
                         color: 'white',
@@ -607,7 +608,8 @@ export class NodeSelector<T extends BaseNodeInfo> {
                         prefixLabel:
                           inputNodeThumb.prefixLabel ||
                           (connection.endNode.label ?? ''),
-                        name: inputNodeThumb.thumbName,
+                        name: `${inputNodeThumb.thumbName}_${inputThumbIndex}`,
+                        internalName: inputNodeThumb.thumbName,
                         prefixIcon: inputNodeThumb.prefixIcon,
                         thumbConstraint: inputNodeThumb.thumbConstraint ?? '',
                         color: 'white',

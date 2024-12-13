@@ -203,4 +203,5 @@ export type IThumb = {
   prefixLabelCssClass?: string;
   nodeId?: string;
   hint?: string;
+  internalName?: string;
 };

@@ -20,9 +20,9 @@ export class RunCounter implements IRunCounter {
   setRunCounterResetHandler(handler: () => void) {
     this.runCounterResetHandler = handler;
   }
-  callRunCounterResetHandler() {
+  callRunCounterResetHandler(output?: any) {
     if (this.runCounter <= 0 && this.runCounterResetHandler) {
-      this.runCounterResetHandler();
+      this.runCounterResetHandler(output);
     }
   }
 

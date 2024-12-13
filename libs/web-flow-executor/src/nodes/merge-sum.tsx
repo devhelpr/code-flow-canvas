@@ -215,7 +215,9 @@ export const getMergeSumNode: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.resize();
+      if (rect && rect.resize) {
+        rect.resize();
+      }
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {

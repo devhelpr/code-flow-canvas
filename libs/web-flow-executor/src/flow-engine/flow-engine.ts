@@ -32,11 +32,11 @@ const incrementHelper = (runCounter?: RunCounter) => {
     updateRunCounterElement(runCounter);
   }
 };
-const decrementHelper = (runCounter?: RunCounter) => {
+const decrementHelper = (runCounter?: RunCounter, output?: any) => {
   if (runCounter) {
     runCounter.decrementRunCounter();
     updateRunCounterElement(runCounter);
-    runCounter.callRunCounterResetHandler();
+    runCounter.callRunCounterResetHandler(output);
   }
 };
 
@@ -230,7 +230,9 @@ const triggerExecution = (
           return new Promise((resolve, reject) => {
             promise
               .then((computeResult: any) => {
-                decrementHelper(runCounter);
+                let result: any = undefined;
+                result = computeResult.result ?? computeResult.output ?? '';
+                decrementHelper(runCounter, result);
                 if (computeResult.stop && !computeResult.dummyEndpoint) {
                   if (lastConnectionExecutionHistory) {
                     lastConnectionExecutionHistory.nextNodeStates =
@@ -238,7 +240,7 @@ const triggerExecution = (
                     lastConnectionExecutionHistory = undefined;
                   }
                   if (onStopped) {
-                    decrementHelper(runCounter);
+                    decrementHelper(runCounter, result);
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {
@@ -413,15 +415,16 @@ export const runNode = (
   scopeId?: string,
   runCounter?: RunCounter,
   shouldClearExecutionHistory = false,
-  inputPayload?: any
+  inputPayload?: any,
+  useThumbName?: string
 ): void => {
   if (runCounter) {
-    let thumbName = '';
+    let thumbName = useThumbName ?? '';
     const endThumbs =
       node.thumbConnectors?.filter(
         (e) => e.thumbConnectionType === ThumbConnectionType.end
       ) ?? [];
-    if (endThumbs.length === 1) {
+    if (endThumbs.length === 1 && !useThumbName) {
       thumbName = endThumbs[0].thumbName;
     }
 
@@ -465,13 +468,15 @@ export const runNode = (
         input ?? '',
         loopIndex === undefined ? runIndex : loopIndex,
         payload,
-        connection?.endNodeThumb?.thumbName,
+        useThumbName ?? connection?.endNodeThumb?.thumbName,
         scopeId,
         runCounter,
         connection
       )
       .then((computeResult: any) => {
-        decrementHelper(runCounter);
+        let result: any = undefined;
+        result = computeResult.result ?? computeResult.output ?? '';
+        decrementHelper(runCounter, result);
         result = computeResult.result;
         followPath = computeResult.followPath;
 
@@ -519,7 +524,7 @@ export const runNode = (
       input ?? '',
       loopIndex === undefined ? runIndex : loopIndex,
       payload,
-      connection?.endNodeThumb?.thumbName,
+      useThumbName ?? connection?.endNodeThumb?.thumbName,
       scopeId,
       runCounter,
       connection
@@ -818,7 +823,9 @@ export const runNodeFromThumb = (
               connection
             )
             .then((computeResult: any) => {
-              decrementHelper(runCounter);
+              let result: any = undefined;
+              result = computeResult.result ?? computeResult.output ?? '';
+              decrementHelper(runCounter, result);
               result = computeResult.result;
               followPath = computeResult.followPath;
               if (computeResult.stop) {
