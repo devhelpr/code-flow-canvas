@@ -10,13 +10,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "composite": true,
-    "declaration": true,
     "jsx": "react",
     "jsxFactory": "createJSXElement",
     "jsxFragmentFactory": "Fragment"
@@ -29,11 +26,6 @@
     },
     {
       "path": "./tsconfig.spec.json"
-    },
-
-    { "path": "../dom-components" },
-    { "path": "../media-library" },
-    { "path": "../visual-programming-system" },
-    { "path": "../web-flow-executor" }
+    }
   ]
 }

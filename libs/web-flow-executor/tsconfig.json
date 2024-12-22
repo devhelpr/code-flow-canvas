@@ -10,9 +10,7 @@
     "noFallthroughCasesInSwitch": true,
     "jsx": "react",
     "jsxFactory": "createJSXElement",
-    "jsxFragmentFactory": "Fragment",
-    "composite": true,
-    "declaration": true
+    "jsxFragmentFactory": "Fragment"
   },
   "files": [],
   "include": ["src/**/*.ts", "src/**/*.tsx"],
@@ -22,9 +20,6 @@
     },
     {
       "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../visual-programming-system"
     }
   ]
 }

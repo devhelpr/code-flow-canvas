@@ -8,9 +8,7 @@
       "vite/client",
       "node",
       "vitest"
-    ],
-    "declaration": true,
-    "noEmit": false
+    ]
   },
   "include": [
     "vite.config.ts",

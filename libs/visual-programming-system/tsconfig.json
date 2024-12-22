@@ -11,9 +11,7 @@
     "types": ["vitest"],
     "jsx": "react",
     "jsxFactory": "createJSXElement",
-    "jsxFragmentFactory": "Fragment",
-    "composite": true,
-    "declaration": true
+    "jsxFragmentFactory": "Fragment"
   },
   "files": [],
   "include": ["src/**/*.ts", "src/**/*.tsx"],

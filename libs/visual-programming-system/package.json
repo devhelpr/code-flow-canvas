@@ -2,6 +2,9 @@
   "name": "@devhelpr/visual-programming-system",
   "version": "0.0.29",
   "type": "commonjs",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "typings": "./index.d.ts",
   "publishConfig": {
     "access": "public"
   },
