@@ -1,0 +1,163 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
+          "x": 3387.9412992094503,
+          "y": 1553.4911792959083,
+          "width": 111.7109375,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{ \n   \"messages\": [\n    {\"role\": \"developer\", \"content\": \"You are a helpful assistant.\"},\n    {\"role\": \"user\", \"content\": \"create a small random data json object\"}\n  ],\n    \"model\": \"gpt-4o\",\n    \"response_format\" : { \"type\": \"json_object\" }\n}"
+            },
+            "nodeCannotBeReplaced": true,
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": true
+          }
+        },
+        {
+          "id": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "x": 3660.808866007417,
+          "y": 1511.635126116624,
+          "width": 200,
+          "height": 200,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "fetch",
+            "formValues": {
+              "url": " https://api.openai.com/v1/chat/completions",
+              "http-method": "post",
+              "headers": "Authorization: Bearer [openai-key]"
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "6a22f828-b47c-4123-bde9-6ebe2940cc0a",
+          "x": 3499.6522367094503,
+          "y": 1609.4911792959083,
+          "endX": 3660.808866007417,
+          "endY": 1611.635126116624,
+          "startNodeId": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
+          "endNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "41770511-b5bf-4014-9b95-1dee2abd53de",
+          "x": 3860.808866007417,
+          "y": 1541.635126116624,
+          "endX": 4005.067927743835,
+          "endY": 1541.4429875894552,
+          "startNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "endNodeId": "8144d095-7110-43d4-96fb-8683bb78c353",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "8ec776c2-7ae2-4a9c-a135-16023a07a111",
+          "x": 4125.068132304367,
+          "y": 1541.4429875894552,
+          "endX": 4319.978870730338,
+          "endY": 1544.9412339718285,
+          "startNodeId": "8144d095-7110-43d4-96fb-8683bb78c353",
+          "endNodeId": "a627eb08-2bcb-4c12-8deb-e9b8f49adfce",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "a627eb08-2bcb-4c12-8deb-e9b8f49adfce",
+          "x": 4319.978870730338,
+          "y": 1494.9412339718285,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "choices[0].message.content",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true,
+            "supportsPreview": true,
+            "taskType": "expression"
+          }
+        },
+        {
+          "id": "cee5c429-8156-43d5-ab71-c5b05d5f02db",
+          "x": 4519.978870730338,
+          "y": 1544.9412339718285,
+          "endX": 4673.813463706532,
+          "endY": 1544.1356310368978,
+          "startNodeId": "a627eb08-2bcb-4c12-8deb-e9b8f49adfce",
+          "endNodeId": "c3a8bd9e-f4d5-46db-9384-b1de17a33c5f",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "8144d095-7110-43d4-96fb-8683bb78c353",
+          "x": 4005.067927743835,
+          "y": 1511.4429875894552,
+          "width": 120.00020456053235,
+          "height": 272.0000645479279,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true,
+            "taskType": "show-input"
+          }
+        },
+        {
+          "id": "c3a8bd9e-f4d5-46db-9384-b1de17a33c5f",
+          "x": 4673.813463706532,
+          "y": 1514.1356310368978,
+          "width": 119.99965974917303,
+          "height": 271.9999272293602,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true,
+            "taskType": "show-input"
+          }
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
