@@ -24,5 +24,22 @@
       "@devhelpr/web-flow-executor": ["libs/web-flow-executor/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "references": [
+    {
+      "path": "./libs/app-canvas"
+    },
+    {
+      "path": "./libs/dom-components"
+    },
+    {
+      "path": "./libs/media-library"
+    },
+    {
+      "path": "./libs/visual-programming-system"
+    },
+    {
+      "path": "./libs/web-flow-executor"
+    }
+  ]
 }

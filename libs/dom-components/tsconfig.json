@@ -8,7 +8,9 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest"]
+    "types": ["vitest"],
+    "composite": true,
+    "declaration": true
   },
   "files": [],
   "include": [],

@@ -11,15 +11,20 @@
     "jsx": "react",
     "jsxFactory": "createJSXElement",
     "jsxFragmentFactory": "Fragment",
+    "composite": true,
+    "declaration": true
   },
   "files": [],
-  "include": [],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "./tsconfig.lib.json"
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "../visual-programming-system"
     }
   ]
 }

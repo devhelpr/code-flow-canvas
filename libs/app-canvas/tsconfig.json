@@ -15,18 +15,25 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
+    "composite": true,
+    "declaration": true,
     "jsx": "react",
     "jsxFactory": "createJSXElement",
     "jsxFragmentFactory": "Fragment"
   },
   "files": [],
-  "include": [],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "./tsconfig.lib.json"
     },
     {
       "path": "./tsconfig.spec.json"
-    }
+    },
+
+    { "path": "../dom-components" },
+    { "path": "../media-library" },
+    { "path": "../visual-programming-system" },
+    { "path": "../web-flow-executor" }
   ]
 }

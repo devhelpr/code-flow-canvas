@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "files": [],
-  "compilerOptions": {   
+  "compilerOptions": {
     // "jsx": "preserve",
     // "jsxFactory": "createJSXElement",
     // "jsxFragmentFactory": "Fragment",
@@ -22,16 +22,24 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "types": ["vite/client", "vitest"],
-    
+    "types": ["vite/client", "vitest"]
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "./tsconfig.app.json"
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "../../libs/dom-components"
+    },
+    {
+      "path": "../../libs/web-flow-executor"
+    },
+    {
+      "path": "../../libs/visual-programming-system"
     }
   ]
 }
