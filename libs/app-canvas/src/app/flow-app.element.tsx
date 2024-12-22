@@ -138,6 +138,10 @@ export class CodeFlowWebAppCanvas {
   widthSpaceForSideToobars?: number;
   flowId?: string;
   clearPresetRegistry?: boolean;
+  flowApp?: FlowAppElement;
+  updateTheme() {
+    //
+  }
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
     canvasApp: IFlowCanvasBase<BaseNodeInfo>
@@ -150,7 +154,7 @@ export class CodeFlowWebAppCanvas {
     if (!this.appRootSelector) {
       throw new Error('appRootSelector is required');
     }
-    new FlowAppElement(
+    this.flowApp = new FlowAppElement(
       this.appRootSelector,
       this.storageProvider,
       this.isReadOnly,

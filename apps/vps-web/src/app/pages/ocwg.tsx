@@ -5,7 +5,47 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
 
+// Add Shoelace imports at the top
+import '@shoelace-style/shoelace/dist/themes/light.css';
+import '@shoelace-style/shoelace/dist/components/color-picker/color-picker.js';
+
 export function ocwgPage() {
+  // Add color picker popup
+  renderElement(
+    <div
+      id="color-picker-popup"
+      class=" bg-white z-[100000]  fixed w-[300px] h-auto max-w-[calc(100vw-80px)] top-[80px] right-[40px] shadow-lg rounded-lg"
+    >
+      <div class="flex flex-wrap p-4">
+        <h2 class="font-bold text-lg mb-4 w-full">Theme Colors</h2>
+
+        <div class="w-full mb-4">
+          <label class="block text-sm font-medium mb-2">Background Color</label>
+          <sl-color-picker
+            id="background-color"
+            format="hex"
+            size="small"
+            label="Background"
+            value="#336699"
+          ></sl-color-picker>
+        </div>
+
+        <div class="w-full mb-4">
+          <label class="block text-sm font-medium mb-2">Node Background</label>
+          <sl-color-picker
+            id="node-background-color"
+            format="hex"
+            size="small"
+            label="Node Background"
+            value="#113366"
+          ></sl-color-picker>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+
+  // Original OCWG popup
   renderElement(
     <div
       id="ocwg"
@@ -21,7 +61,12 @@ export function ocwgPage() {
         <button
           id="ocwg-fullscreen"
           title="Fullscreen toggle"
-          class="ml-2 mr-3 icon icon-fullscreen"
+          class="ml-2 icon icon-fullscreen"
+        ></button>
+        <button
+          id="theme-settings"
+          title="Theme Settings"
+          class="ml-2 mr-3 icon icon-palette"
         ></button>
       </div>
       <div
@@ -31,10 +76,18 @@ export function ocwgPage() {
     </div>,
     document.body
   );
+
   const ocwgElement = document.getElementById('ocwg')!;
+  const colorPickerPopup = document.getElementById('color-picker-popup')!;
   ocwgElement.classList.remove('hidden');
   ocwgElement.classList.add('flex');
   const ocwgExport = document.getElementById('ocwg-export')!;
+
+  // Show/hide color picker popup
+  document.getElementById('theme-settings')?.addEventListener('click', () => {
+    colorPickerPopup.classList.toggle('hidden');
+  });
+
   import('../flow-app.element').then(async (module) => {
     const app = new module.CodeFlowWebAppCanvas();
     app.appRootSelector = '#app-root';
@@ -46,11 +99,42 @@ export function ocwgPage() {
     app.theme.backgroundAsHexColor = '#336699';
     app.theme.nodeBackground = 'bg-[#113366]';
 
+    // Add color picker change handlers
+    const backgroundPicker = document.getElementById('background-color') as any;
+    const nodeBackgroundPicker = document.getElementById(
+      'node-background-color'
+    ) as any;
+
+    backgroundPicker?.addEventListener('sl-change', (event: any) => {
+      const color = event.target.value;
+      if (app.theme) {
+        app.theme.background = `bg-[${color}]`;
+        app.theme.backgroundAsHexColor = color;
+      }
+      // Trigger re-render if needed
+      if (app.updateTheme) {
+        app.updateTheme();
+      }
+    });
+
+    nodeBackgroundPicker?.addEventListener('sl-change', (event: any) => {
+      const color = event.target.value;
+      if (app.theme) {
+        app.theme.nodeBackground = `bg-[${color}]`;
+      }
+      // Trigger re-render if needed
+      if (app.updateTheme) {
+        app.updateTheme();
+      }
+    });
+
     app.registerExternalNodes = (
       _registerNodeFactory: RegisterNodeFactoryFunction
     ) => {
       //
     };
+
+    // Rest of the existing code...
     let currentOcwgExport = '';
     ocwgElement
       .querySelector('#ocwg-copy-to-clipboard')
@@ -59,6 +143,7 @@ export function ocwgPage() {
           navigator.clipboard.writeText(currentOcwgExport);
         }
       });
+
     let isFullscreen = false;
     ocwgElement
       .querySelector('#ocwg-fullscreen')
@@ -83,6 +168,7 @@ export function ocwgPage() {
           button.classList.add('icon-fullscreen');
         }
       });
+
     app.onStoreFlow = (_flow, canvasApp) => {
       const ocwg = new module.OCWGExporter({
         canvasApp: canvasApp,
@@ -93,7 +179,6 @@ export function ocwgPage() {
       const file = ocwg.convertToExportFile();
       currentOcwgExport = JSON.stringify(file, null, 2);
       ocwgExport.innerHTML = '';
-      //ocwgExport.innerHTML = JSON.stringify(file, null, 2);
       renderElement(
         <div class="border-t border-solid border-slate-200">
           {JSON.stringify(file, null, 2)
