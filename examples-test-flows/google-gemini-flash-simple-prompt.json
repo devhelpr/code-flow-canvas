@@ -1,0 +1,161 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
+          "x": 3387.9412992094503,
+          "y": 1553.4911809888213,
+          "width": 111.7109375,
+          "height": 112,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{\n  \"contents\": [{\n    \"parts\":[{\"text\": \"Explain how AI works\"}]\n    }]\n}"
+            },
+            "nodeCannotBeReplaced": true,
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": true
+          }
+        },
+        {
+          "id": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "x": 3663.063721988264,
+          "y": 1511.6351069890657,
+          "width": 200,
+          "height": 200,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "fetch",
+            "formValues": {
+              "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=[openai-key]",
+              "http-method": "post",
+              "headers": ""
+            },
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "8144d095-7110-43d4-96fb-8683bb78c353",
+          "x": 4003.48228233086,
+          "y": 1511.442820331771,
+          "width": 120.00028243731548,
+          "height": 272.0000021485332,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "c3a8bd9e-f4d5-46db-9384-b1de17a33c5f",
+          "x": 4673.813641176501,
+          "y": 1514.1354499719885,
+          "width": 119.99988179708753,
+          "height": 272.0000883964047,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "initializeOnStartFlow": true,
+            "isSettingsPopup": true
+          }
+        },
+        {
+          "id": "6a22f828-b47c-4123-bde9-6ebe2940cc0a",
+          "x": 3499.6522367094503,
+          "y": 1609.4911809888213,
+          "endX": 3663.063721988264,
+          "endY": 1611.6351069890657,
+          "startNodeId": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
+          "endNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "41770511-b5bf-4014-9b95-1dee2abd53de",
+          "x": 3863.063721988264,
+          "y": 1541.6351069890657,
+          "endX": 4003.48228233086,
+          "endY": 1541.442820331771,
+          "startNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "endNodeId": "8144d095-7110-43d4-96fb-8683bb78c353",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "ea98148d-52be-473c-be87-8f0fbd6e771b",
+          "x": 4123.4825647681755,
+          "y": 1541.442820331771,
+          "endX": 4313.803391261389,
+          "endY": 1544.0914007909573,
+          "startNodeId": "8144d095-7110-43d4-96fb-8683bb78c353",
+          "endNodeId": "c99ece2b-9de3-409d-af22-cb6fa0f677cb",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "c99ece2b-9de3-409d-af22-cb6fa0f677cb",
+          "x": 4313.803391261389,
+          "y": 1494.0914007909573,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "candidates[0].content.parts[0].text",
+              "inputType": "number"
+            },
+            "showFormOnlyInPopup": true,
+            "isSettingsPopup": true,
+            "supportsPreview": true,
+            "taskType": "expression"
+          }
+        },
+        {
+          "id": "3735612d-a425-45c2-ae8f-8a3adfcde306",
+          "x": 4513.803391261389,
+          "y": 1544.0914007909573,
+          "endX": 4673.813641176501,
+          "endY": 1544.1354499719885,
+          "startNodeId": "c99ece2b-9de3-409d-af22-cb6fa0f677cb",
+          "endNodeId": "c3a8bd9e-f4d5-46db-9384-b1de17a33c5f",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

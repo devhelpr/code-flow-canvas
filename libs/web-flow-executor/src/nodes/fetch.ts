@@ -133,10 +133,16 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       try {
         sendFetchState('fetching');
 
+        const openAIKey = canvasAppInstance?.isContextOnly
+          ? process.env?.['openai_api_key'] ?? ''
+          : canvasAppInstance?.getTempData('openai-key') ?? '';
+
         let url = node?.nodeInfo?.formValues?.['url'] ?? '';
         if (url.startsWith('/')) {
           url = canvasAppInstance?.getApiUrlRoot() + url.substring(1);
         }
+        url = url.replace('[openai-key]', openAIKey);
+
         const responseType =
           node?.nodeInfo?.formValues?.['response-type'] ?? 'json';
         const httpMethod =
@@ -146,9 +152,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         const headersString = node?.nodeInfo?.formValues?.['headers'] ?? '';
         if (headersString) {
           const headersArray = headersString.split('\n');
-          const openAIKey = canvasAppInstance?.isContextOnly
-            ? process.env?.['openai_api_key'] ?? ''
-            : canvasAppInstance?.getTempData('openai-key') ?? '';
+
           headersArray.forEach((header: string) => {
             const headerArray = header.split(':');
             if (headerArray.length === 2) {
