@@ -102,10 +102,12 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
   const setImageViaCodeName = (imageCodeName: string) => {
     if (htmlNode && canvasAppInstance && typeof imageCodeName === 'string') {
       const mediaLibrary = canvasAppInstance.getMediaLibrary();
+      let imageSetFromMediaLibrary = false;
       if (mediaLibrary) {
         const file = mediaLibrary.getFile(imageCodeName);
         if (file) {
           try {
+            imageSetFromMediaLibrary = true;
             (
               htmlNode.domElement as HTMLImageElement
             ).src = `data:image/png;base64,${file.data}`;
@@ -113,6 +115,11 @@ export const getShowImage: NodeTaskFactory<NodeInfo> = (
             console.error('Error when assigning file/media to image', e);
           }
         }
+      }
+      if (!imageSetFromMediaLibrary) {
+        (
+          htmlNode.domElement as HTMLImageElement
+        ).src = `data:image/png;base64,${imageCodeName}`;
       }
     }
   };
