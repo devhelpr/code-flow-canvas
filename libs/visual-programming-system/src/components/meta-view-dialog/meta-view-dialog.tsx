@@ -60,7 +60,7 @@ export const showMetaViewDialog = (
       }
     >
       <div
-        class="overflow-visible whitespace-pre flex flex-col gap-4"
+        class="overflow-visible whitespace-pre-wrap flex flex-col gap-4"
         getElement={(element: HTMLDivElement) =>
           (divElement = element as HTMLDivElement)
         }

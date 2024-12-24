@@ -14,6 +14,8 @@ import {
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { getVariablePayloadInputUtils } from './variable-payload-input-utils/variable-payload-input-utils';
+import { replaceVariablesInString } from '../utils/replace-variables-in-string';
 
 const fieldName = 'testt-input';
 const labelName = 'JSON';
@@ -57,11 +59,11 @@ export const getRawTextNode: NodeTaskFactory<NodeInfo> = (
   };
 
   const compute = (
-    _input: string,
-    _loopIndex?: number,
-    _payload?: any,
+    input: string,
+    loopIndex?: number,
+    payload?: any,
     _thumbName?: string,
-    _scopeId?: string
+    scopeId?: string
   ) => {
     clearErrorMessage?.();
     if (!node.nodeInfo || !node.nodeInfo.formValues?.['text']) {
@@ -73,7 +75,21 @@ export const getRawTextNode: NodeTaskFactory<NodeInfo> = (
       };
     }
 
-    const text = node.nodeInfo.formValues['text'] ?? '';
+    const variablePayload = getVariablePayloadInputUtils(
+      input,
+      payload,
+      'string',
+      0,
+      loopIndex ?? 0,
+      scopeId,
+      canvasAppInstance
+    );
+
+    const text = replaceVariablesInString(
+      node.nodeInfo.formValues['text'] ?? '',
+      variablePayload
+    );
+
     currentSerializedInput = text;
     return {
       result: text,
