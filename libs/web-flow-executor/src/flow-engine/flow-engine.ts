@@ -141,7 +141,8 @@ const triggerExecution = (
   offsetX?: number,
   offsetY?: number,
   scopeId?: string,
-  runCounter?: RunCounter
+  runCounter?: RunCounter,
+  loopIndex?: number
 ) => {
   let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
   if (result !== undefined) {
@@ -223,7 +224,7 @@ const triggerExecution = (
           incrementHelper(runCounter);
           const promise = formInfo.computeAsync(
             input,
-            runIndex,
+            loopIndex ?? runIndex,
             payload,
             connection?.endNodeThumb?.thumbName,
             scopeId,
@@ -303,7 +304,7 @@ const triggerExecution = (
           }
           const computeResult = formInfo.compute(
             input,
-            runIndex,
+            loopIndex ?? runIndex,
             payload,
             connection?.endNodeThumb?.thumbName,
             scopeId,
@@ -503,7 +504,8 @@ export const runNode = (
           offsetX,
           offsetY,
           scopeId,
-          runCounter
+          runCounter,
+          loopIndex
         );
       })
       .catch((e: any) => {
@@ -566,7 +568,8 @@ export const runNode = (
       offsetX,
       offsetY,
       scopeId,
-      runCounter
+      runCounter,
+      loopIndex
     );
   } else {
     result = false;

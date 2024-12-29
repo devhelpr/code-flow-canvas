@@ -173,6 +173,8 @@ export const getCreateCompositionNode =
                 getNodeFactory
               );
 
+              // TODO : onFinish event op Thumb-output in nodeInfo
+
               contextCanvasApp.elements.forEach((node) => {
                 const nodeComponent =
                   node as unknown as INodeComponent<NodeInfo>;
@@ -180,6 +182,38 @@ export const getCreateCompositionNode =
                   if (nodeComponent?.nodeInfo?.initializeCompute) {
                     nodeComponent.nodeInfo.initializeCompute();
                   }
+                }
+                if (nodeComponent.nodeInfo?.type === 'thumb-output') {
+                  (nodeComponent.nodeInfo as any).onFinish = (
+                    input: string | any[],
+                    _payload: any,
+                    thumbOutputNode: INodeComponent<NodeInfo>
+                  ) => {
+                    const thumb = getThumbNodeByName(
+                      thumbOutputNode.id,
+                      compositionNode!,
+                      {
+                        start: true,
+                        end: false,
+                      }
+                    );
+
+                    if (!thumb || !canvasApp) {
+                      return;
+                    }
+                    runNodeFromThumb(
+                      thumb,
+                      canvasApp,
+                      (_inputFromRun: string | any[]) => {
+                        //
+                      },
+                      input,
+                      compositionNode as IRectNodeComponent<NodeInfo>,
+                      loopIndex,
+                      scopeId,
+                      rootRunCounter
+                    );
+                  };
                 }
               });
             } catch (error) {
@@ -200,6 +234,25 @@ export const getCreateCompositionNode =
             (input?: string | any[], node?: INodeComponent<NodeInfo>) => {
               if (runCounter.runCounter <= 0) {
                 if (!compositionNode || !node) {
+                  resolve({
+                    result: input,
+                    output: input,
+                    followPath: undefined,
+                    dummyEndpoint: true,
+                    stop: true,
+                  });
+                  return;
+                }
+
+                // TODO : alleen als Node = thumb-output
+                if (node.nodeInfo?.type !== 'thumb-output') {
+                  resolve({
+                    result: input,
+                    output: input,
+                    followPath: undefined,
+                    dummyEndpoint: true,
+                    stop: true,
+                  });
                   return;
                 }
                 const thumb = getThumbNodeByName(node.id, compositionNode!, {
@@ -213,6 +266,13 @@ export const getCreateCompositionNode =
                   thumb
                 );
                 if (!thumb || !canvasApp) {
+                  resolve({
+                    result: input,
+                    output: input,
+                    followPath: undefined,
+                    dummyEndpoint: true,
+                    stop: true,
+                  });
                   return;
                 }
                 runNodeFromThumb(
@@ -271,6 +331,7 @@ export const getCreateCompositionNode =
             });
             return;
           }
+          console.log('composition runNode', loopIndex);
           runNode(
             nodeInComposition,
             contextCanvasApp,

@@ -1373,6 +1373,9 @@ export class AppElement<T extends BaseNodeInfo> {
         showElement(this.canvas);
         this.canvasApp?.centerCamera();
 
+        // TODO : indien nieuwe thumb-input/output nodes, dan toevoegen aan compositon node op canvas
+        // TODO : indien thumb-input/output nodes verwijderd, dan deze verwijderen van composition node op canvas
+
         // Only store the nodes and not the thumbs and connections to the thumbs
         // nodesIdsToIgnore contains the node and connection id's of the thumbs
         // and connections to the thumbs. In below code this list gets updated

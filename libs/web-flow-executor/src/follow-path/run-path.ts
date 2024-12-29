@@ -124,7 +124,10 @@ export const runPathForNodeConnectionPairs = <T extends BaseNodeInfo>(
               runCounter.runCounter <= 0 &&
               runCounter.runCounterResetHandler
             ) {
-              runCounter?.runCounterResetHandler();
+              runCounter?.runCounterResetHandler(
+                result.output ?? input ?? '',
+                end as unknown as INodeComponent<BaseNodeInfo>
+              );
             }
           }
         }
