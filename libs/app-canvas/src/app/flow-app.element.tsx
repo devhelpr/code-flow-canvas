@@ -35,6 +35,7 @@ import {
   FlowChangeType,
   IFlowCanvasBase,
   Theme,
+  IThumb,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -218,6 +219,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     canvasApp: IFlowCanvasBase<BaseNodeInfo>
   ) => void;
 
+  createThumbNode = (_thumb: IThumb): false => {
+    return false;
+  };
+
   constructor(
     appRootSelector: string,
     storageProvider?: StorageProvider<NodeInfo>,
@@ -244,7 +249,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       storageProvider,
       isReadOnly,
       heightSpaceForHeaderFooterToolbars,
-      widthSpaceForSideToobars
+      widthSpaceForSideToobars,
+      getNodeTaskFactory
     );
     if (!this.rootElement) {
       return;

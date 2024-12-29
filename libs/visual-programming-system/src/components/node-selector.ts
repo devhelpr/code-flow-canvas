@@ -17,6 +17,7 @@ import {
   ThumbConnectionType,
 } from '../interfaces';
 import { Composition } from '../interfaces/composition';
+import { GetNodeTaskFactory } from '../interfaces/node-task-registry';
 import { NodeType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { createElement } from '../utils';
@@ -26,6 +27,9 @@ import {
   mapShapeNodeToFlowNode,
 } from '../utils/serialize';
 import { getNodeSelectorCssClasses } from './css-classes/node-selector-css-classes';
+import { standardTheme } from '../themes/standard';
+import { IFlowCanvasBase } from '../canvas-app/flow-canvas';
+import { getThumbNodeByName } from '../utils/thumbs';
 
 const pointerCursor = 'pointer-events-auto';
 const resizeThumbSize = 'w-[8px] h-[8px]';
@@ -67,8 +71,10 @@ export class NodeSelector<T extends BaseNodeInfo> {
   ) => void;
 
   onEditCompositionName: () => Promise<string | false>;
-
+  getNodeTaskFactory: GetNodeTaskFactory<T> | undefined;
+  canvasApp: IFlowCanvasBase<T>;
   constructor(
+    canvasApp: IFlowCanvasBase<T>,
     canvas: IElementNode<T>,
     rootElement: HTMLElement,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -76,8 +82,10 @@ export class NodeSelector<T extends BaseNodeInfo> {
     canCreateComposition: boolean,
     compositions: Compositions<T>,
     onEditCompositionName: () => Promise<string | false>,
-    isInContainer = false
+    isInContainer = false,
+    getNodeTaskFactory?: GetNodeTaskFactory<T>
   ) {
+    this.canvasApp = canvasApp;
     this.cssClasses = getNodeSelectorCssClasses();
     this.rootElement = rootElement;
     this.canvas = canvas;
@@ -87,6 +95,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
     this.canCreateComposition = canCreateComposition;
     this.onEditCompositionName = onEditCompositionName;
     this.isInContainer = isInContainer;
+    this.getNodeTaskFactory = getNodeTaskFactory;
 
     this.nodeSelectorElement = createElement(
       'div',
@@ -505,7 +514,9 @@ export class NodeSelector<T extends BaseNodeInfo> {
     const thumbs: IThumb[] = [];
     let outputThumbIndex = 0;
     let inputThumbIndex = 0;
-
+    if (!this.getNodeTaskFactory) {
+      return;
+    }
     const connectionsToCompositions: {
       thumbIdentifierWithinNode: string;
       connection: IConnectionNodeComponent<T>;
@@ -528,6 +539,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
             (n) => n.id === nodeComponent.id
           );
           if (isNodeSelected) {
+            // search for connections that have the endNode outside the selection of nodes/connections
             nodeComponent.connections.forEach((connection) => {
               if (connection.startNode?.id === nodeComponent.id) {
                 if (connection.endNode) {
@@ -542,10 +554,9 @@ export class NodeSelector<T extends BaseNodeInfo> {
                     //const endNode = connection.endNode;
                     outputNodes.push(mapShapeNodeToFlowNode(nodeComponent));
                     const outputNodeThumb = connection.startNodeThumb;
-                    const thumbIdentifierWithinNode: string =
-                      crypto.randomUUID();
+                    let thumbIdentifierWithinNode: string = crypto.randomUUID();
                     if (outputNodeThumb) {
-                      thumbs.push({
+                      const thumb: IThumb = {
                         thumbIndex: outputThumbIndex,
                         thumbType: 'StartConnectorRight',
                         connectionType: ThumbConnectionType.start,
@@ -558,7 +569,99 @@ export class NodeSelector<T extends BaseNodeInfo> {
                         label: outputNodeThumb.thumbLabel,
                         thumbIdentifierWithinNode: thumbIdentifierWithinNode,
                         nodeId: nodeComponent.id,
-                      });
+                      };
+                      thumbs.push(thumb);
+
+                      if (!this.getNodeTaskFactory) {
+                        return;
+                      }
+
+                      const factory = this.getNodeTaskFactory('thumb-output');
+                      if (factory && thumb.name) {
+                        const nodeTask = factory(() => {
+                          //
+                        }, standardTheme);
+                        nodeTask.setTitle?.(thumb.name);
+                        const thumbOutput = nodeTask.createVisualNode(
+                          this.canvasApp,
+                          0 + 100,
+                          0 + 100 + outputThumbIndex * 200,
+                          undefined,
+                          {
+                            valueType: thumb.thumbConstraint,
+                            thumbName: thumb.prefixLabel,
+                          }
+                        );
+
+                        thumbIdentifierWithinNode = thumbOutput.id;
+
+                        if (thumbOutput.thumbConnectors?.[0]) {
+                          thumbOutput.thumbConnectors[0].thumbConstraint =
+                            thumb.thumbConstraint;
+                        }
+                        nodesInComposition.push(thumbOutput);
+
+                        const thumbConnection =
+                          this.canvasApp.createCubicBezier(
+                            thumbOutput.x,
+                            thumbOutput.y,
+                            thumbOutput.x,
+                            thumbOutput.y,
+                            thumbOutput.x,
+                            thumbOutput.y,
+                            thumbOutput.x,
+                            thumbOutput.y,
+                            false,
+                            undefined,
+                            undefined,
+                            undefined
+                          );
+                        if (
+                          thumbConnection &&
+                          thumbConnection.nodeComponent &&
+                          thumb.internalName
+                        ) {
+                          // nodesIdsToIgnore.push(connection.nodeComponent.id);
+                          thumbConnection.nodeComponent.isControlled = true;
+                          thumbConnection.nodeComponent.nodeInfo = {} as T;
+                          thumbConnection.nodeComponent.layer = 1;
+
+                          thumbConnection.nodeComponent.endNode = thumbOutput;
+                          thumbConnection.nodeComponent.endNodeThumb =
+                            getThumbNodeByName<T>('input', thumbOutput, {
+                              start: false,
+                              end: true,
+                            }) || undefined;
+
+                          thumbConnection.nodeComponent.startNode =
+                            connection.startNode;
+
+                          thumbConnection.nodeComponent.startNodeThumb =
+                            getThumbNodeByName<T>(
+                              thumb.internalName,
+                              connection.startNode,
+                              {
+                                start: true,
+                                end: false,
+                              }
+                            ) || undefined;
+                          console.log(
+                            'thumb-input endThumb',
+                            thumbConnection.nodeComponent.endNodeThumb
+                          );
+
+                          thumbOutput.connections?.push(
+                            thumbConnection.nodeComponent
+                          );
+                          connection.startNode.connections?.push(
+                            thumbConnection.nodeComponent
+                          );
+                          nodesInComposition.push(
+                            thumbConnection.nodeComponent
+                          );
+                        }
+                      }
+
                       outputThumbIndex++;
                     }
 
@@ -585,6 +688,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
                 }
               }
 
+              // search for connections that have the startNode outside the selection of nodes/connections
               if (connection.endNode?.id === nodeComponent.id) {
                 if (connection.startNode) {
                   const isStartNodeSelected =
@@ -598,10 +702,9 @@ export class NodeSelector<T extends BaseNodeInfo> {
                     //const startNode = connection.startNode;
                     inputNodes.push(mapShapeNodeToFlowNode(nodeComponent));
                     const inputNodeThumb = connection.endNodeThumb;
-                    const thumbIdentifierWithinNode: string =
-                      crypto.randomUUID();
+                    let thumbIdentifierWithinNode: string = crypto.randomUUID();
                     if (inputNodeThumb) {
-                      thumbs.push({
+                      const thumb: IThumb = {
                         thumbIndex: inputThumbIndex,
                         thumbType: 'EndConnectorLeft',
                         connectionType: ThumbConnectionType.end,
@@ -616,7 +719,98 @@ export class NodeSelector<T extends BaseNodeInfo> {
                         label: inputNodeThumb.thumbLabel,
                         thumbIdentifierWithinNode: thumbIdentifierWithinNode,
                         nodeId: nodeComponent.id,
-                      });
+                      };
+
+                      thumbs.push(thumb);
+
+                      if (!this.getNodeTaskFactory) {
+                        return;
+                      }
+
+                      const factory = this.getNodeTaskFactory('thumb-input');
+                      if (factory && thumb.name) {
+                        const nodeTask = factory(() => {
+                          //
+                        }, standardTheme);
+                        nodeTask.setTitle?.(thumb.name);
+                        const thumbInput = nodeTask.createVisualNode(
+                          this.canvasApp,
+                          0 - 100,
+                          0 - 100 + inputThumbIndex * 200,
+                          undefined,
+                          {
+                            valueType: thumb.thumbConstraint,
+                            thumbName: thumb.prefixLabel,
+                          }
+                        );
+                        thumbIdentifierWithinNode = thumbInput.id;
+                        if (thumbInput.thumbConnectors?.[0]) {
+                          thumbInput.thumbConnectors[0].thumbConstraint =
+                            thumb.thumbConstraint;
+                        }
+                        nodesInComposition.push(thumbInput);
+
+                        const thumbConnection =
+                          this.canvasApp.createCubicBezier(
+                            thumbInput.x,
+                            thumbInput.y,
+                            thumbInput.x,
+                            thumbInput.y,
+                            thumbInput.x,
+                            thumbInput.y,
+                            thumbInput.x,
+                            thumbInput.y,
+                            false,
+                            undefined,
+                            undefined,
+                            undefined
+                          );
+                        if (
+                          thumbConnection &&
+                          thumbConnection.nodeComponent &&
+                          thumb.internalName
+                        ) {
+                          // nodesIdsToIgnore.push(connection.nodeComponent.id);
+                          thumbConnection.nodeComponent.isControlled = true;
+                          thumbConnection.nodeComponent.nodeInfo = {} as T;
+                          thumbConnection.nodeComponent.layer = 1;
+
+                          thumbConnection.nodeComponent.startNode = thumbInput;
+                          thumbConnection.nodeComponent.startNodeThumb =
+                            getThumbNodeByName<T>('output', thumbInput, {
+                              start: true,
+                              end: false,
+                            }) || undefined;
+
+                          thumbConnection.nodeComponent.endNode =
+                            connection.endNode;
+
+                          thumbConnection.nodeComponent.endNodeThumb =
+                            getThumbNodeByName<T>(
+                              thumb.internalName,
+                              connection.endNode,
+                              {
+                                start: false,
+                                end: true,
+                              }
+                            ) || undefined;
+                          console.log(
+                            'thumb-input endThumb',
+                            thumbConnection.nodeComponent.endNodeThumb
+                          );
+
+                          thumbInput.connections?.push(
+                            thumbConnection.nodeComponent
+                          );
+                          connection.endNode.connections?.push(
+                            thumbConnection.nodeComponent
+                          );
+                          nodesInComposition.push(
+                            thumbConnection.nodeComponent
+                          );
+                        }
+                      }
+
                       inputThumbIndex++;
                     }
 

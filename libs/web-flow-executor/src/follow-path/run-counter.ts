@@ -1,4 +1,8 @@
-import { IRunCounter } from '@devhelpr/visual-programming-system';
+import {
+  INodeComponent,
+  IRunCounter,
+} from '@devhelpr/visual-programming-system';
+import { NodeInfo } from '../types/node-info';
 
 export class RunCounter implements IRunCounter {
   constructor() {
@@ -15,14 +19,16 @@ export class RunCounter implements IRunCounter {
   resetRunCounter() {
     this.runCounter = 0;
   }
-  runCounterResetHandler: undefined | ((input?: string | any[]) => void) =
+  runCounterResetHandler:
+    | undefined
+    | ((input?: string | any[], node?: INodeComponent<NodeInfo>) => void) =
     undefined;
   setRunCounterResetHandler(handler: () => void) {
     this.runCounterResetHandler = handler;
   }
-  callRunCounterResetHandler(output?: any) {
+  callRunCounterResetHandler(output?: any, node?: INodeComponent<NodeInfo>) {
     if (this.runCounter <= 0 && this.runCounterResetHandler) {
-      this.runCounterResetHandler(output);
+      this.runCounterResetHandler(output, node);
     }
   }
 

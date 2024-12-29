@@ -498,7 +498,8 @@ export const registerCompositionNodes = (
       composition.thumbs,
       key,
       composition.name,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      composition
     );
     registerNodeFactory(`composition-${key}`, node, composition.name);
   });
@@ -511,7 +512,8 @@ export const registerComposition: RegisterComposition<NodeInfo> = (
     composition.thumbs,
     composition.id,
     composition.name,
-    getNodeTaskFactory
+    getNodeTaskFactory,
+    composition
   );
   registerNodeFactory(`composition-${composition.id}`, node);
 };

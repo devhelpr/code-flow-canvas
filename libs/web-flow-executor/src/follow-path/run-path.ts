@@ -8,6 +8,7 @@ import {
   getNodeConnectionPairById,
   getNodeConnectionPairsFromThumb,
   BaseNodeInfo,
+  INodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { OnNextNodeFunction } from './OnNextNodeFunction';
 import { updateRunCounterElement } from './updateRunCounterElement';
@@ -37,7 +38,8 @@ export const runPathForNodeConnectionPairs = <T extends BaseNodeInfo>(
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  runCounter?: IRunCounter
+  runCounter?: IRunCounter,
+  node?: INodeComponent<T>
 ) => {
   if (!nodeConnectionPairs || nodeConnectionPairs.length === 0) {
     if (onStopped) {
@@ -50,7 +52,10 @@ export const runPathForNodeConnectionPairs = <T extends BaseNodeInfo>(
       runCounter &&
       runCounter.runCounterResetHandler
     ) {
-      runCounter.runCounterResetHandler(input ?? '');
+      runCounter.runCounterResetHandler(
+        input ?? '',
+        node as unknown as INodeComponent<BaseNodeInfo>
+      );
     }
     return;
   }
@@ -186,7 +191,8 @@ export const runPathFromThumb = <T extends BaseNodeInfo>(
     singleStep,
     scopeId,
     // node?.thumbLinkedToNode
-    runCounter
+    runCounter,
+    node
   );
 };
 
@@ -236,6 +242,7 @@ export const runPath = <T extends BaseNodeInfo>(
     singleStep,
     scopeId,
     //node
-    runCounter
+    runCounter,
+    node
   );
 };

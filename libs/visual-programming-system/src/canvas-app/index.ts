@@ -46,6 +46,7 @@ import { updateThumbPrefixLabel } from '../utils/thumbs';
 import { getCanvasAppCssClasses } from './css-classes/canvasapp-css-classes';
 import { IFlowCanvasBase } from './flow-canvas';
 import { FlowCore } from './flow-core';
+import { GetNodeTaskFactory } from '../interfaces/node-task-registry';
 
 export const createFlowCanvas = <T extends BaseNodeInfo>(
   rootElement: HTMLElement,
@@ -68,7 +69,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     dropTarget: INodeComponent<T>,
     isCancelling: boolean
   ) => void,
-  rootFlowCanvas?: IFlowCanvasBase<T>
+  rootFlowCanvas?: IFlowCanvasBase<T>,
+  getNodeTaskFactory?: GetNodeTaskFactory<T>
 ): IFlowCanvasBase<T> => {
   return new FlowCanvas(
     rootElement,
@@ -84,7 +86,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     widthSpaceForSideToobars,
     onDroppedOnNode,
     onDraggingOverNode,
-    rootFlowCanvas
+    rootFlowCanvas,
+    getNodeTaskFactory
   );
 };
 
@@ -197,7 +200,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       dropTarget: INodeComponent<T>,
       isCancelling: boolean
     ) => void,
-    rootFlowCanvas?: IFlowCanvasBase<T>
+    rootFlowCanvas?: IFlowCanvasBase<T>,
+    getNodeTaskFactory?: GetNodeTaskFactory<T>
   ) {
     super();
     this.rootFlowCanvas = rootFlowCanvas;
@@ -232,6 +236,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.rootFlowCanvas?.compositons ?? new Compositions<T>();
 
     this.nodeSelector = new NodeSelector<T>(
+      this,
       this.canvas,
       rootElement,
       this.interactionStateMachine,
@@ -239,7 +244,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       !isNodeContainer,
       this.compositons,
       onEditCompositionName ?? (() => Promise.resolve(false)),
-      isNodeContainer
+      isNodeContainer,
+      getNodeTaskFactory
     );
 
     this.onDroppedOnNode = onDroppedOnNode;

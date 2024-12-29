@@ -18,8 +18,6 @@ import {
   IDOMElement,
   IConnectionNodeComponent,
   Composition,
-  getThumbNodeByIdentifierWithinNode,
-  ThumbConnectionType,
   getThumbNodeByName,
   NodeType,
   mapConnectionToFlowNode,
@@ -104,7 +102,8 @@ export class AppElement<T extends BaseNodeInfo> {
     storageProvider?: StorageProvider<T>,
     _isReadOnly?: boolean,
     heightSpaceForHeaderFooterToolbars?: number,
-    widthSpaceForSideToobars?: number
+    widthSpaceForSideToobars?: number,
+    getNodeTaskFactory?: GetNodeTaskFactory<T>
   ) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
@@ -151,7 +150,11 @@ export class AppElement<T extends BaseNodeInfo> {
       undefined,
       this.appRootElement as HTMLElement,
       heightSpaceForHeaderFooterToolbars,
-      widthSpaceForSideToobars
+      widthSpaceForSideToobars,
+      undefined,
+      undefined,
+      undefined,
+      getNodeTaskFactory
     );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;
@@ -1081,14 +1084,10 @@ export class AppElement<T extends BaseNodeInfo> {
           connection.connection.startNode = node;
 
           connection.connection.startNodeThumb =
-            getThumbNodeByIdentifierWithinNode<T>(
-              connection.thumbIdentifierWithinNode,
-              node,
-              {
-                start: true,
-                end: false,
-              }
-            ) || undefined;
+            getThumbNodeByName<T>(connection.thumbIdentifierWithinNode, node, {
+              start: true,
+              end: false,
+            }) || undefined;
 
           node.connections.push(connection.connection);
           connection.connection.update?.();
@@ -1097,14 +1096,10 @@ export class AppElement<T extends BaseNodeInfo> {
           connection.connection.endNode = node;
 
           connection.connection.endNodeThumb =
-            getThumbNodeByIdentifierWithinNode<T>(
-              connection.thumbIdentifierWithinNode,
-              node,
-              {
-                start: false,
-                end: true,
-              }
-            ) || undefined;
+            getThumbNodeByName<T>(connection.thumbIdentifierWithinNode, node, {
+              start: false,
+              end: true,
+            }) || undefined;
           node.connections.push(connection.connection);
           connection.connection.update?.();
         }
@@ -1337,221 +1332,18 @@ export class AppElement<T extends BaseNodeInfo> {
       minX -= 300;
       maxX += 300;
 
-      const nodesIdsToIgnore: string[] = [];
+      //const nodesIdsToIgnore: string[] = [];
 
-      let yIndex = 0;
+      // let yIndex = 0;
 
-      const createdThumbsIds: {
-        id: string;
-        thumbIdentifierWithInNode: string;
-        thumb: IThumb;
-      }[] = [];
-      // inputs
-      composition.thumbs?.forEach((thumb, _index) => {
-        if (thumb.connectionType === ThumbConnectionType.end) {
-          const factory = getNodeTaskFactory('thumb-input');
-          let node: IRectNodeComponent<T> | undefined = undefined;
-          if (thumb.nodeId) {
-            node = canvasApp?.elements.get(
-              thumb.nodeId
-            ) as IRectNodeComponent<T>;
-          }
-          if (factory && thumb.name) {
-            const nodeTask = factory(() => {
-              //
-            }, canvasApp.theme);
-            nodeTask.setTitle?.(thumb.name);
-            const thumbInput = nodeTask.createVisualNode(
-              canvasApp,
-              minX - 100,
-              minY - 100 + yIndex * 200,
-              undefined,
-              {
-                valueType: thumb.thumbConstraint,
-                thumbName: thumb.prefixLabel,
-              }
-            );
-            if (thumbInput.thumbConnectors?.[0]) {
-              thumbInput.thumbConnectors[0].thumbConstraint =
-                thumb.thumbConstraint;
-            }
-            nodesIdsToIgnore.push(thumbInput.id);
-            createdThumbsIds.push({
-              id: thumbInput.id,
-              thumbIdentifierWithInNode: thumb.thumbIdentifierWithinNode ?? '',
-              thumb,
-            });
-            if (node) {
-              const connection = canvasApp.createCubicBezier(
-                thumbInput.x,
-                thumbInput.y,
-                thumbInput.x,
-                thumbInput.y,
-                thumbInput.x,
-                thumbInput.y,
-                thumbInput.x,
-                thumbInput.y,
-                false,
-                undefined,
-                undefined,
-                undefined
-              );
-              if (
-                connection &&
-                connection.nodeComponent &&
-                thumb.internalName
-              ) {
-                nodesIdsToIgnore.push(connection.nodeComponent.id);
-                connection.nodeComponent.isControlled = true;
-                connection.nodeComponent.nodeInfo = {} as T;
-                connection.nodeComponent.layer = 1;
+      // const createdThumbsIds: {
+      //   id: string;
+      //   thumbIdentifierWithInNode: string;
+      //   thumb: IThumb;
+      // }[] = [];
 
-                connection.nodeComponent.startNode = thumbInput;
-                connection.nodeComponent.startNodeThumb =
-                  getThumbNodeByName<T>('output', thumbInput, {
-                    start: true,
-                    end: false,
-                  }) || undefined;
-
-                connection.nodeComponent.endNode = node;
-
-                connection.nodeComponent.endNodeThumb =
-                  getThumbNodeByName<T>(thumb.internalName, node, {
-                    start: false,
-                    end: true,
-                  }) || undefined;
-                console.log(
-                  'thumb-input endThumb',
-                  connection.nodeComponent.endNodeThumb
-                );
-
-                thumbInput.connections?.push(connection.nodeComponent);
-                node.connections?.push(connection.nodeComponent);
-
-                if (connection.nodeComponent.update) {
-                  connection.nodeComponent.update();
-                }
-              }
-
-              if (thumbInput.update) {
-                thumbInput.update(
-                  thumbInput,
-                  thumbInput.x,
-                  thumbInput.y,
-                  thumbInput
-                );
-              }
-
-              if (node.update) {
-                node.update(node, node.x, node.y, node);
-              }
-            }
-            yIndex++;
-          }
-        }
-      });
-
-      yIndex = 0;
+      // yIndex = 0;
       // outputs
-      composition.thumbs?.forEach((thumb, _index) => {
-        if (thumb.connectionType === ThumbConnectionType.start) {
-          let node: IRectNodeComponent<T> | undefined = undefined;
-          if (thumb.nodeId) {
-            node = canvasApp?.elements.get(
-              thumb.nodeId
-            ) as IRectNodeComponent<T>;
-          }
-          const factory = getNodeTaskFactory('thumb-output');
-          if (factory && thumb.name) {
-            const nodeTask = factory(() => {
-              //
-            }, canvasApp.theme);
-            const thumbOutput = nodeTask.createVisualNode(
-              canvasApp,
-              maxX + 100,
-              minY - 100 + yIndex * 200,
-              undefined,
-              {
-                valueType: thumb.thumbConstraint,
-                thumbName: thumb.prefixLabel,
-              }
-            );
-            if (thumbOutput.thumbConnectors?.[0]) {
-              thumbOutput.thumbConnectors[0].thumbConstraint =
-                thumb.thumbConstraint;
-            }
-            nodesIdsToIgnore.push(thumbOutput.id);
-            createdThumbsIds.push({
-              id: thumbOutput.id,
-              thumbIdentifierWithInNode: thumb.thumbIdentifierWithinNode ?? '',
-              thumb,
-            });
-
-            if (node) {
-              const connection = canvasApp.createCubicBezier(
-                thumbOutput.x,
-                thumbOutput.y,
-                thumbOutput.x,
-                thumbOutput.y,
-                thumbOutput.x,
-                thumbOutput.y,
-                thumbOutput.x,
-                thumbOutput.y,
-                false,
-                undefined,
-                undefined,
-                undefined
-              );
-              if (
-                connection &&
-                connection.nodeComponent &&
-                thumb.internalName
-              ) {
-                nodesIdsToIgnore.push(connection.nodeComponent.id);
-                connection.nodeComponent.isControlled = true;
-                connection.nodeComponent.nodeInfo = {} as T;
-                connection.nodeComponent.layer = 1;
-
-                connection.nodeComponent.startNode = node;
-
-                connection.nodeComponent.startNodeThumb =
-                  getThumbNodeByName<T>(thumb.internalName, node, {
-                    start: true,
-                    end: false,
-                  }) || undefined;
-
-                connection.nodeComponent.endNode = thumbOutput;
-                connection.nodeComponent.endNodeThumb =
-                  getThumbNodeByName<T>('input', thumbOutput, {
-                    start: true,
-                    end: false,
-                  }) || undefined;
-
-                thumbOutput.connections?.push(connection.nodeComponent);
-                node.connections?.push(connection.nodeComponent);
-
-                if (connection.nodeComponent.update) {
-                  connection.nodeComponent.update();
-                }
-              }
-
-              if (thumbOutput.update) {
-                thumbOutput.update(
-                  thumbOutput,
-                  thumbOutput.x,
-                  thumbOutput.y,
-                  thumbOutput
-                );
-              }
-
-              if (node.update) {
-                node.update(node, node.x, node.y, node);
-              }
-              yIndex++;
-            }
-          }
-        }
-      });
 
       setSelectNode(undefined);
       this.canvasApp?.nodeTransformer.detachNode();
@@ -1586,327 +1378,322 @@ export class AppElement<T extends BaseNodeInfo> {
         // and connections to the thumbs. In below code this list gets updated
         // by looking at all of the changes that have been made
 
-        let thumbInputIndex = -1;
-        let thumbOutputIndex = -1;
-        composition.thumbs.forEach((thumb) => {
-          if (thumb.connectionType === ThumbConnectionType.end) {
-            if (thumb.thumbIndex > thumbInputIndex || thumbInputIndex === -1) {
-              thumbInputIndex = thumb.thumbIndex;
-            }
-          }
-          if (thumb.connectionType === ThumbConnectionType.start) {
-            if (
-              thumb.thumbIndex > thumbOutputIndex ||
-              thumbOutputIndex === -1
-            ) {
-              thumbOutputIndex = thumb.thumbIndex;
-            }
-          }
-        });
-        const thumbsOnCanvas: {
-          nodeInfo: BaseNodeInfo;
-          id: string;
-          isNew: boolean;
-          nodeComponent: IRectNodeComponent<T>;
-        }[] = [];
-        canvasApp?.elements.forEach((element) => {
-          const nodeHelper = element as unknown as IRectNodeComponent<T>;
-          const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
-          if (
-            baseNodeInfo?.type === 'thumb-input' ||
-            baseNodeInfo?.type === 'thumb-output'
-          ) {
-            thumbsOnCanvas.push({
-              id: element.id,
-              nodeInfo: baseNodeInfo,
-              isNew: nodesIdsToIgnore.indexOf(element.id) < 0,
-              nodeComponent: nodeHelper,
-            });
+        // let thumbInputIndex = -1;
+        // let thumbOutputIndex = -1;
+        // composition.thumbs.forEach((thumb) => {
+        //   if (thumb.connectionType === ThumbConnectionType.end) {
+        //     if (thumb.thumbIndex > thumbInputIndex || thumbInputIndex === -1) {
+        //       thumbInputIndex = thumb.thumbIndex;
+        //     }
+        //   }
+        //   if (thumb.connectionType === ThumbConnectionType.start) {
+        //     if (
+        //       thumb.thumbIndex > thumbOutputIndex ||
+        //       thumbOutputIndex === -1
+        //     ) {
+        //       thumbOutputIndex = thumb.thumbIndex;
+        //     }
+        //   }
+        // });
+        // const thumbsOnCanvas: {
+        //   nodeInfo: BaseNodeInfo;
+        //   id: string;
+        //   isNew: boolean;
+        //   nodeComponent: IRectNodeComponent<T>;
+        // }[] = [];
+        //canvasApp?.elements.forEach((_element) => {
+        //const nodeHelper = element as unknown as IRectNodeComponent<T>;
+        //const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
+        // if (
+        //   baseNodeInfo?.type === 'thumb-input' ||
+        //   baseNodeInfo?.type === 'thumb-output'
+        // ) {
+        //   thumbsOnCanvas.push({
+        //     id: element.id,
+        //     nodeInfo: baseNodeInfo,
+        //     isNew: nodesIdsToIgnore.indexOf(element.id) < 0,
+        //     nodeComponent: nodeHelper,
+        //   });
+        //   const getThumbConstraint = (constraint?: string | string[]) => {
+        //     return constraint === 'default' ? '' : constraint;
+        //   };
+        //   if (nodesIdsToIgnore.indexOf(element.id) < 0) {
+        //     // new thumbs
+        //     nodesIdsToIgnore.push(element.id);
+        //     if (baseNodeInfo?.type === 'thumb-input') {
+        //       const connection = nodeHelper.connections?.find(
+        //         (connection) => connection.startNode === nodeHelper
+        //       );
+        //       const connectedToNode = nodeHelper.connections?.find(
+        //         (connection) => connection.startNode === nodeHelper
+        //       )?.endNode;
+        //       if (connection && connectedToNode) {
+        //         nodesIdsToIgnore.push(connection.id);
+        //         thumbInputIndex++;
+        //         const thumb: IThumb = {
+        //           thumbIndex: thumbInputIndex,
+        //           thumbType: 'EndConnectorLeft',
+        //           connectionType: ThumbConnectionType.end,
+        //           label: ' ',
+        //           name: connection?.endNodeThumb?.thumbName ?? '',
+        //           prefixIcon: '',
+        //           thumbConstraint:
+        //             getThumbConstraint(
+        //               connection?.startNodeThumb?.thumbConstraint
+        //             ) ?? 'value',
+        //           color: 'white',
+        //           prefixLabel:
+        //             (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
+        //               ?.thumbName ??
+        //             connection?.endNode?.label ??
+        //             getThumbConstraint(
+        //               connection?.startNodeThumb?.thumbConstraint
+        //             )?.toString() ??
+        //             '',
+        //           thumbIdentifierWithinNode: crypto.randomUUID(),
+        //           nodeId: connectedToNode?.id,
+        //           maxConnections: 1,
+        //         };
+        //         composition.thumbs.push(thumb);
+        //         if (!composition.inputNodes) {
+        //           composition.inputNodes = [];
+        //         }
+        //         composition.inputNodes.push(
+        //           mapShapeNodeToFlowNode(connectedToNode)
+        //         );
+        //         if (this.canvasApp) {
+        //           this.addThumbToComposition(
+        //             this.canvasApp,
+        //             composition.id,
+        //             thumb
+        //           );
+        //         }
+        //       }
+        //     } else if (baseNodeInfo?.type === 'thumb-output') {
+        //       const connection = nodeHelper.connections?.find(
+        //         (connection) => connection.endNode === nodeHelper
+        //       );
+        //       const connectedToNode = nodeHelper.connections?.find(
+        //         (connection) => connection.endNode === nodeHelper
+        //       )?.startNode;
+        //       if (connection && connectedToNode) {
+        //         nodesIdsToIgnore.push(connection.id);
+        //         thumbOutputIndex++;
+        //         const thumb: IThumb = {
+        //           thumbIndex: thumbOutputIndex,
+        //           thumbType: 'StartConnectorRight',
+        //           connectionType: ThumbConnectionType.start,
+        //           label: ' ',
+        //           name: connection?.startNodeThumb?.thumbName ?? '',
+        //           prefixIcon: '',
+        //           thumbConstraint:
+        //             getThumbConstraint(
+        //               connection?.endNodeThumb?.thumbConstraint
+        //             ) ?? 'value',
+        //           color: 'white',
+        //           prefixLabel:
+        //             (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
+        //               ?.thumbName ??
+        //             connection?.startNode?.label ??
+        //             getThumbConstraint(
+        //               connection?.endNodeThumb?.thumbConstraint
+        //             )?.toString() ??
+        //             '',
+        //           thumbIdentifierWithinNode: crypto.randomUUID(),
+        //           nodeId: connectedToNode?.id,
+        //           maxConnections: 1,
+        //         };
+        //         composition.thumbs.push(thumb);
+        //         if (!composition.outputNodes) {
+        //           composition.outputNodes = [];
+        //         }
+        //         composition.outputNodes.push(
+        //           mapShapeNodeToFlowNode(connectedToNode)
+        //         );
+        //         if (this.canvasApp) {
+        //           this.addThumbToComposition(
+        //             this.canvasApp,
+        //             composition.id,
+        //             thumb
+        //           );
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+        //});
 
-            const getThumbConstraint = (constraint?: string | string[]) => {
-              return constraint === 'default' ? '' : constraint;
-            };
+        // createdThumbsIds.forEach((thumbInfo) => {
+        //   const index = thumbsOnCanvas.findIndex(
+        //     (thumb) => thumb.id === thumbInfo.id
+        //   );
+        //   if (
+        //     index >= 0 &&
+        //     this.canvasApp &&
+        //     composition.inputNodes &&
+        //     composition.outputNodes &&
+        //     thumbInfo
+        //   ) {
+        //     const thumbOnCanvas = thumbsOnCanvas[index];
+        //     if (!thumbOnCanvas.isNew) {
+        //       thumbInfo.thumb.prefixLabel =
+        //         (thumbOnCanvas.nodeComponent.nodeInfo as BaseNodeInfo)
+        //           ?.formValues?.thumbName ?? thumbInfo.thumb.prefixLabel;
 
-            if (nodesIdsToIgnore.indexOf(element.id) < 0) {
-              // new thumbs
-              nodesIdsToIgnore.push(element.id);
+        //       // check if thumbconstaint is still the same
 
-              if (baseNodeInfo?.type === 'thumb-input') {
-                const connection = nodeHelper.connections?.find(
-                  (connection) => connection.startNode === nodeHelper
-                );
+        //       // update input/output thumbs on composition if they changed
+        //       // (remove the not connected nodes and add the connected ones)
 
-                const connectedToNode = nodeHelper.connections?.find(
-                  (connection) => connection.startNode === nodeHelper
-                )?.endNode;
-                if (connection && connectedToNode) {
-                  nodesIdsToIgnore.push(connection.id);
-                  thumbInputIndex++;
-                  const thumb: IThumb = {
-                    thumbIndex: thumbInputIndex,
-                    thumbType: 'EndConnectorLeft',
-                    connectionType: ThumbConnectionType.end,
-                    label: ' ',
-                    name: connection?.endNodeThumb?.thumbName ?? '',
-                    prefixIcon: '',
-                    thumbConstraint:
-                      getThumbConstraint(
-                        connection?.startNodeThumb?.thumbConstraint
-                      ) ?? 'value',
-                    color: 'white',
-                    prefixLabel:
-                      (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
-                        ?.thumbName ??
-                      connection?.endNode?.label ??
-                      getThumbConstraint(
-                        connection?.startNodeThumb?.thumbConstraint
-                      )?.toString() ??
-                      '',
-                    thumbIdentifierWithinNode: crypto.randomUUID(),
-                    nodeId: connectedToNode?.id,
-                    maxConnections: 1,
-                  };
-                  composition.thumbs.push(thumb);
-                  if (!composition.inputNodes) {
-                    composition.inputNodes = [];
-                  }
-                  composition.inputNodes.push(
-                    mapShapeNodeToFlowNode(connectedToNode)
-                  );
-                  if (this.canvasApp) {
-                    this.addThumbToComposition(
-                      this.canvasApp,
-                      composition.id,
-                      thumb
-                    );
-                  }
-                }
-              } else if (baseNodeInfo?.type === 'thumb-output') {
-                const connection = nodeHelper.connections?.find(
-                  (connection) => connection.endNode === nodeHelper
-                );
+        //       //
 
-                const connectedToNode = nodeHelper.connections?.find(
-                  (connection) => connection.endNode === nodeHelper
-                )?.startNode;
-                if (connection && connectedToNode) {
-                  nodesIdsToIgnore.push(connection.id);
-                  thumbOutputIndex++;
-                  const thumb: IThumb = {
-                    thumbIndex: thumbOutputIndex,
-                    thumbType: 'StartConnectorRight',
-                    connectionType: ThumbConnectionType.start,
-                    label: ' ',
-                    name: connection?.startNodeThumb?.thumbName ?? '',
-                    prefixIcon: '',
-                    thumbConstraint:
-                      getThumbConstraint(
-                        connection?.endNodeThumb?.thumbConstraint
-                      ) ?? 'value',
-                    color: 'white',
-                    prefixLabel:
-                      (nodeHelper?.nodeInfo as BaseNodeInfo)?.formValues
-                        ?.thumbName ??
-                      connection?.startNode?.label ??
-                      getThumbConstraint(
-                        connection?.endNodeThumb?.thumbConstraint
-                      )?.toString() ??
-                      '',
-                    thumbIdentifierWithinNode: crypto.randomUUID(),
-                    nodeId: connectedToNode?.id,
-                    maxConnections: 1,
-                  };
-                  composition.thumbs.push(thumb);
-                  if (!composition.outputNodes) {
-                    composition.outputNodes = [];
-                  }
-                  composition.outputNodes.push(
-                    mapShapeNodeToFlowNode(connectedToNode)
-                  );
-                  if (this.canvasApp) {
-                    this.addThumbToComposition(
-                      this.canvasApp,
-                      composition.id,
-                      thumb
-                    );
-                  }
-                }
-              }
-            }
-          }
-        });
+        //       if (thumbInfo.thumb.connectionType === ThumbConnectionType.end) {
+        //         composition.inputNodes = composition.inputNodes.filter(
+        //           (node) => node.id !== thumbInfo.thumb.nodeId
+        //         );
+        //         if (
+        //           composition.inputNodes.findIndex(
+        //             (node) => node.id === thumbInfo.thumb.nodeId
+        //           ) < 0
+        //         ) {
+        //           const connectedToNode =
+        //             thumbOnCanvas.nodeComponent.connections?.find(
+        //               (connection) =>
+        //                 connection.startNode?.id ===
+        //                 thumbOnCanvas.nodeComponent.id
+        //             )?.endNode;
+        //           if (connectedToNode) {
+        //             thumbInfo.thumb.nodeId = connectedToNode.id;
+        //             composition.inputNodes.push(
+        //               mapShapeNodeToFlowNode(connectedToNode)
+        //             );
+        //           } else {
+        //             thumbInfo.thumb.nodeId = undefined;
+        //           }
+        //         } else {
+        //           thumbInfo.thumb.nodeId = undefined;
+        //         }
+        //         thumbOnCanvas.nodeComponent.connections?.forEach(
+        //           (connection) => {
+        //             if (nodesIdsToIgnore.indexOf(connection.id) < 0) {
+        //               nodesIdsToIgnore.push(connection.id);
+        //             }
+        //           }
+        //         );
+        //       }
+        //       if (
+        //         thumbInfo.thumb.connectionType === ThumbConnectionType.start
+        //       ) {
+        //         composition.outputNodes = composition.outputNodes.filter(
+        //           (node) => node.id !== thumbInfo.thumb.nodeId
+        //         );
+        //         if (
+        //           composition.outputNodes.findIndex(
+        //             (node) => node.id === thumbInfo.thumb.nodeId
+        //           ) < 0
+        //         ) {
+        //           const connectedToNode =
+        //             thumbOnCanvas.nodeComponent.connections?.find(
+        //               (connection) =>
+        //                 connection.endNode?.id ===
+        //                 thumbOnCanvas.nodeComponent.id
+        //             )?.startNode;
+        //           if (connectedToNode) {
+        //             thumbInfo.thumb.nodeId = connectedToNode.id;
 
-        createdThumbsIds.forEach((thumbInfo) => {
-          const index = thumbsOnCanvas.findIndex(
-            (thumb) => thumb.id === thumbInfo.id
-          );
-          if (
-            index >= 0 &&
-            this.canvasApp &&
-            composition.inputNodes &&
-            composition.outputNodes &&
-            thumbInfo
-          ) {
-            const thumbOnCanvas = thumbsOnCanvas[index];
-            if (!thumbOnCanvas.isNew) {
-              thumbInfo.thumb.prefixLabel =
-                (thumbOnCanvas.nodeComponent.nodeInfo as BaseNodeInfo)
-                  ?.formValues?.thumbName ?? thumbInfo.thumb.prefixLabel;
+        //             composition.outputNodes.push(
+        //               mapShapeNodeToFlowNode(connectedToNode)
+        //             );
+        //           } else {
+        //             thumbInfo.thumb.nodeId = undefined;
+        //           }
+        //         } else {
+        //           thumbInfo.thumb.nodeId = undefined;
+        //         }
+        //         thumbOnCanvas.nodeComponent.connections?.forEach(
+        //           (connection) => {
+        //             if (nodesIdsToIgnore.indexOf(connection.id) < 0) {
+        //               nodesIdsToIgnore.push(connection.id);
+        //             }
+        //           }
+        //         );
+        //       }
 
-              // check if thumbconstaint is still the same
+        //       composition.thumbs.forEach((thumb) => {
+        //         if (
+        //           thumb.thumbIdentifierWithinNode ===
+        //           thumbInfo.thumbIdentifierWithInNode
+        //         ) {
+        //           thumb.thumbConstraint =
+        //             thumbOnCanvas.nodeInfo.formValues.valueType;
+        //         }
+        //       });
 
-              // update input/output thumbs on composition if they changed
-              // (remove the not connected nodes and add the connected ones)
+        //       // WARNING : here composition and nodes can get disconnected !!!
+        //       this.editThumbFromComposition(
+        //         this.canvasApp,
+        //         composition.id,
+        //         thumbInfo.thumb
+        //       );
+        //     }
+        //   } else if (
+        //     index < 0 &&
+        //     this.canvasApp &&
+        //     composition.inputNodes &&
+        //     composition.outputNodes
+        //   ) {
+        //     // thumb was removed
+        //     this.deleteThumbFromComposition(
+        //       this.canvasApp,
+        //       composition.id,
+        //       thumbInfo.thumb
+        //     );
+        //     if (thumbInfo.thumb.connectionType === ThumbConnectionType.end) {
+        //       composition.inputNodes = composition.inputNodes.filter(
+        //         (node) => node.id !== thumbInfo.thumb.nodeId
+        //       );
+        //     }
+        //     if (thumbInfo.thumb.connectionType === ThumbConnectionType.start) {
+        //       composition.outputNodes = composition.outputNodes.filter(
+        //         (node) => node.id !== thumbInfo.thumb.nodeId
+        //       );
+        //     }
 
-              //
+        //     composition.thumbs = composition.thumbs.filter(
+        //       (thumb) =>
+        //         thumb.thumbIdentifierWithinNode !==
+        //         thumbInfo.thumbIdentifierWithInNode
+        //     );
+        //   }
+        // });
 
-              if (thumbInfo.thumb.connectionType === ThumbConnectionType.end) {
-                composition.inputNodes = composition.inputNodes.filter(
-                  (node) => node.id !== thumbInfo.thumb.nodeId
-                );
-                if (
-                  composition.inputNodes.findIndex(
-                    (node) => node.id === thumbInfo.thumb.nodeId
-                  ) < 0
-                ) {
-                  const connectedToNode =
-                    thumbOnCanvas.nodeComponent.connections?.find(
-                      (connection) =>
-                        connection.startNode?.id ===
-                        thumbOnCanvas.nodeComponent.id
-                    )?.endNode;
-                  if (connectedToNode) {
-                    thumbInfo.thumb.nodeId = connectedToNode.id;
-                    composition.inputNodes.push(
-                      mapShapeNodeToFlowNode(connectedToNode)
-                    );
-                  } else {
-                    thumbInfo.thumb.nodeId = undefined;
-                  }
-                } else {
-                  thumbInfo.thumb.nodeId = undefined;
-                }
-                thumbOnCanvas.nodeComponent.connections?.forEach(
-                  (connection) => {
-                    if (nodesIdsToIgnore.indexOf(connection.id) < 0) {
-                      nodesIdsToIgnore.push(connection.id);
-                    }
-                  }
-                );
-              }
-              if (
-                thumbInfo.thumb.connectionType === ThumbConnectionType.start
-              ) {
-                composition.outputNodes = composition.outputNodes.filter(
-                  (node) => node.id !== thumbInfo.thumb.nodeId
-                );
-                if (
-                  composition.outputNodes.findIndex(
-                    (node) => node.id === thumbInfo.thumb.nodeId
-                  ) < 0
-                ) {
-                  const connectedToNode =
-                    thumbOnCanvas.nodeComponent.connections?.find(
-                      (connection) =>
-                        connection.endNode?.id ===
-                        thumbOnCanvas.nodeComponent.id
-                    )?.startNode;
-                  if (connectedToNode) {
-                    thumbInfo.thumb.nodeId = connectedToNode.id;
+        // canvasApp?.elements.forEach((element) => {
+        //   if (nodesIdsToIgnore.indexOf(element.id) >= 0) {
+        //     const nodeHelper = element as unknown as INodeComponent<T>;
+        //     if (nodeHelper.nodeType === NodeType.Connection) {
+        //       const connectionHelper =
+        //         element as unknown as IConnectionNodeComponent<T>;
+        //       if (connectionHelper.startNode) {
+        //         connectionHelper.startNode.connections =
+        //           connectionHelper.startNode?.connections?.filter(
+        //             (c) => c.id !== connectionHelper.id
+        //           );
+        //       }
+        //       if (connectionHelper.endNode) {
+        //         connectionHelper.endNode.connections =
+        //           connectionHelper.endNode?.connections?.filter(
+        //             (c) => c.id !== connectionHelper.id
+        //           );
+        //       }
+        //     }
 
-                    composition.outputNodes.push(
-                      mapShapeNodeToFlowNode(connectedToNode)
-                    );
-                  } else {
-                    thumbInfo.thumb.nodeId = undefined;
-                  }
-                } else {
-                  thumbInfo.thumb.nodeId = undefined;
-                }
-                thumbOnCanvas.nodeComponent.connections?.forEach(
-                  (connection) => {
-                    if (nodesIdsToIgnore.indexOf(connection.id) < 0) {
-                      nodesIdsToIgnore.push(connection.id);
-                    }
-                  }
-                );
-              }
-
-              composition.thumbs.forEach((thumb) => {
-                if (
-                  thumb.thumbIdentifierWithinNode ===
-                  thumbInfo.thumbIdentifierWithInNode
-                ) {
-                  thumb.thumbConstraint =
-                    thumbOnCanvas.nodeInfo.formValues.valueType;
-                }
-              });
-
-              // WARNING : here composition and nodes can get disconnected !!!
-              this.editThumbFromComposition(
-                this.canvasApp,
-                composition.id,
-                thumbInfo.thumb
-              );
-            }
-          } else if (
-            index < 0 &&
-            this.canvasApp &&
-            composition.inputNodes &&
-            composition.outputNodes
-          ) {
-            // thumb was removed
-            this.deleteThumbFromComposition(
-              this.canvasApp,
-              composition.id,
-              thumbInfo.thumb
-            );
-            if (thumbInfo.thumb.connectionType === ThumbConnectionType.end) {
-              composition.inputNodes = composition.inputNodes.filter(
-                (node) => node.id !== thumbInfo.thumb.nodeId
-              );
-            }
-            if (thumbInfo.thumb.connectionType === ThumbConnectionType.start) {
-              composition.outputNodes = composition.outputNodes.filter(
-                (node) => node.id !== thumbInfo.thumb.nodeId
-              );
-            }
-
-            composition.thumbs = composition.thumbs.filter(
-              (thumb) =>
-                thumb.thumbIdentifierWithinNode !==
-                thumbInfo.thumbIdentifierWithInNode
-            );
-          }
-        });
-
-        canvasApp?.elements.forEach((element) => {
-          if (nodesIdsToIgnore.indexOf(element.id) >= 0) {
-            const nodeHelper = element as unknown as INodeComponent<T>;
-            if (nodeHelper.nodeType === NodeType.Connection) {
-              const connectionHelper =
-                element as unknown as IConnectionNodeComponent<T>;
-              if (connectionHelper.startNode) {
-                connectionHelper.startNode.connections =
-                  connectionHelper.startNode?.connections?.filter(
-                    (c) => c.id !== connectionHelper.id
-                  );
-              }
-              if (connectionHelper.endNode) {
-                connectionHelper.endNode.connections =
-                  connectionHelper.endNode?.connections?.filter(
-                    (c) => c.id !== connectionHelper.id
-                  );
-              }
-            }
-
-            element.domElement.remove();
-            this.removeElement(element);
-          }
-        });
-        nodesIdsToIgnore.forEach((id) => {
-          canvasApp?.elements.delete(id);
-        });
+        //     element.domElement.remove();
+        //     this.removeElement(element);
+        //   }
+        // });
+        // nodesIdsToIgnore.forEach((id) => {
+        //   canvasApp?.elements.delete(id);
+        // });
 
         // store changes to composition
         const nodesToStore = Array.from(canvasApp?.elements).map((element) => {

@@ -42,6 +42,7 @@ export interface IComputeResult {
   followPath: any;
   output: any;
   stop?: boolean;
+  dummyEndpoint?: boolean;
 }
 
 export const createRectNode = <T extends BaseNodeInfo>(

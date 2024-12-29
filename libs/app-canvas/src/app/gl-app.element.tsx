@@ -166,7 +166,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       storageProvider,
       undefined,
       heightSpaceForHeaderFooterToolbars,
-      widthSpaceForSideToobars
+      widthSpaceForSideToobars,
+      getGLNodeTaskFactory
     );
 
     if (!this.rootElement) {
