@@ -13,7 +13,6 @@ import {
   Composition,
   importCompositions,
 } from '@devhelpr/visual-programming-system';
-import { RunCounter } from '../follow-path/run-counter';
 import {
   runPathForNodeConnectionPairs,
   runPathFromThumb,
@@ -26,6 +25,7 @@ import {
 } from '../node-task-registry/canvas-node-task-registry';
 import { NodeInfo } from '../types/node-info';
 import { increaseRunIndex, runNode, run } from './flow-engine';
+import { RunCounter } from '../follow-path/run-counter';
 
 export class RuntimeFlowEngine {
   public canvasApp: IFlowCanvasBase<NodeInfo>;
@@ -139,12 +139,14 @@ export class RuntimeFlowEngine {
       const runCounter = new RunCounter();
       let output: any;
 
-      runCounter.setRunCounterResetHandler(() => {
-        if (runCounter.runCounter <= 0) {
-          increaseRunIndex();
-          resolve(output);
+      runCounter.setRunCounterResetHandler(
+        (input?: string | any[], _node?: INodeComponent<NodeInfo>) => {
+          if (runCounter.runCounter <= 0) {
+            increaseRunIndex();
+            resolve(input ?? output);
+          }
         }
-      });
+      );
       run(
         this.canvasApp?.elements,
         this.canvasApp,

@@ -58,3 +58,4 @@ export * from './utils/get-node-connection-pairs';
 export * from './utils/node-flow-queries';
 export * from './forms/custom-code-editor';
 export * from './canvas-app/composition-runtime-flow-context';
+export * from './interfaces/run-counter';

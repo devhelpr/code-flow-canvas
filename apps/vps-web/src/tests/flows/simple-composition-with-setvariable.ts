@@ -23,8 +23,8 @@ export const flow: Flow<NodeInfo> = {
       nodes: [
         {
           id: "6be80048-6e33-41b3-9e7e-0a3235e2839a",
-          x: 4612.06856913936,
-          y: -812.6486298792398,
+          x: 4612.06863132962,
+          y: -812.648574722997,
           width: 200,
           height: 100,
           nodeType: "Shape",
@@ -61,8 +61,8 @@ export const flow: Flow<NodeInfo> = {
           id: "4eaff148-c558-4164-b9f5-8480145357cd",
           x: 5797.423308802282,
           y: -804.0636455698171,
-          width: 120.00005937127604,
-          height: 55.99998363947418,
+          width: 120.0000242140659,
+          height: 56.000059158246394,
           nodeType: "Shape",
           nodeInfo: {
             type: "show-input",
@@ -78,8 +78,8 @@ export const flow: Flow<NodeInfo> = {
           id: "9f7b6666-60ee-4bb4-82a9-97980a933b6d",
           x: 4524.61276449378,
           y: -1060.9154295620374,
-          width: 174.4220728419782,
-          height: 84.00001218181235,
+          width: 174.42185859824065,
+          height: 84.00001694984613,
           nodeType: "Shape",
           nodeInfo: {
             type: "scope-variable",
@@ -97,8 +97,8 @@ export const flow: Flow<NodeInfo> = {
         },
         {
           id: "d1982fff-8b06-49ec-9cb6-4b5099eafe79",
-          x: 5423.218823011143,
-          y: -829.2004895544958,
+          x: 5464.395776112563,
+          y: -830.6906924491258,
           width: 200,
           height: 100,
           nodeType: "Shape",
@@ -132,6 +132,24 @@ export const flow: Flow<NodeInfo> = {
           }
         },
         {
+          id: "448c042d-20a3-4bff-a8e0-09ffe081020c",
+          x: 5001.952283746766,
+          y: -816.2550250138434,
+          width: 200,
+          height: 112.6484375,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "composition-12b2a34f-0388-4931-b282-31d61905cff4",
+            formValues: {},
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            isComposition: true,
+            compositionId: "12b2a34f-0388-4931-b282-31d61905cff4"
+          }
+        },
+        {
           id: "5dee0968-b892-48e8-9410-e23c8e0e6454",
           x: 3975.2050254366177,
           y: -763.7059690511884,
@@ -148,8 +166,8 @@ export const flow: Flow<NodeInfo> = {
         },
         {
           id: "a28c34e5-e787-4f31-99bd-0a31f8b23ed0",
-          x: 5623.218823011143,
-          y: -779.2004895544958,
+          x: 5664.395776112563,
+          y: -780.6906924491258,
           endX: 5797.423308802282,
           endY: -774.0636455698171,
           startNodeId: "d1982fff-8b06-49ec-9cb6-4b5099eafe79",
@@ -165,8 +183,8 @@ export const flow: Flow<NodeInfo> = {
           id: "53259034-9cc8-4b32-9baf-220fcb012f76",
           x: 4427.680998224009,
           y: -765.743349708836,
-          endX: 4612.06856913936,
-          endY: -762.6486298792398,
+          endX: 4612.06863132962,
+          endY: -762.648574722997,
           startNodeId: "83bf243d-d7bd-4438-bf5e-f77d90e8defb",
           endNodeId: "6be80048-6e33-41b3-9e7e-0a3235e2839a",
           startThumbName: "output",
@@ -177,55 +195,34 @@ export const flow: Flow<NodeInfo> = {
           nodeInfo: {}
         },
         {
-          id: "21e1c107-2bc2-4cb3-9f8c-07a62a5c2d0d",
-          x: 4812.06856913936,
-          y: -762.6486298792398,
-          endX: 5001.952649539493,
-          endY: -756.973810710283,
+          id: "305d1f81-c516-4101-9aee-e2cdd786b2fa",
+          x: 4812.06863132962,
+          y: -762.648574722997,
+          endX: 5001.952283746766,
+          endY: -757.6065875138434,
           startNodeId: "6be80048-6e33-41b3-9e7e-0a3235e2839a",
           endNodeId: "448c042d-20a3-4bff-a8e0-09ffe081020c",
           startThumbName: "output",
-          endThumbName: "input_0",
-          endThumbIdentifierWithinNode: "159dde58-dca4-475a-a796-d474156a6f77",
+          endThumbName: "cf1c07f1-589d-488b-8875-d66bc5d92e7f",
           lineType: "BezierCubic",
           nodeType: "Connection",
           layer: 1,
           nodeInfo: {}
         },
         {
-          id: "aa77a84d-f295-4b6a-8c47-d017a84bd022",
-          x: 5201.95274849162,
-          y: -756.973810710283,
-          endX: 5423.218823011143,
-          endY: -779.2004895544958,
+          id: "85d8e332-22aa-4ee4-b6f1-3f3f8e24dda3",
+          x: 5201.952283746766,
+          y: -757.6065875138434,
+          endX: 5464.395776112563,
+          endY: -780.6906924491258,
           startNodeId: "448c042d-20a3-4bff-a8e0-09ffe081020c",
           endNodeId: "d1982fff-8b06-49ec-9cb6-4b5099eafe79",
-          startThumbName: "output_0",
+          startThumbName: "4464c12b-1b26-4c17-8257-bd4ed1478d90",
           endThumbName: "input",
-          startThumbIdentifierWithinNode: "9b9a1952-4b6c-4ac6-8ed8-701cfbd5af87",
           lineType: "BezierCubic",
           nodeType: "Connection",
           layer: 1,
           nodeInfo: {}
-        },
-        {
-          id: "448c042d-20a3-4bff-a8e0-09ffe081020c",
-          x: 5001.952649539493,
-          y: -816.2550908045984,
-          width: 200.00009895212673,
-          height: 113.28123138714477,
-          nodeType: "Shape",
-          nodeInfo: {
-            type: "composition-12b2a34f-0388-4931-b282-31d61905cff4",
-            formValues: {},
-            nodeCannotBeReplaced: false,
-            showFormOnlyInPopup: false,
-            useInCompositionOnly: false,
-            keepPopupOpenAfterUpdate: false,
-            isComposition: true,
-            compositionId: "12b2a34f-0388-4931-b282-31d61905cff4",
-            taskType: "composition-12b2a34f-0388-4931-b282-31d61905cff4"
-          }
         }
       ]
     }
@@ -391,6 +388,76 @@ export const flow: Flow<NodeInfo> = {
             showFormOnlyInPopup: false,
             useInCompositionOnly: false,
             keepPopupOpenAfterUpdate: false
+          }
+        },
+        {
+          id: "cf1c07f1-589d-488b-8875-d66bc5d92e7f",
+          x: 4573.841667025555,
+          y: -849.0030107851933,
+          width: 199.9999213129621,
+          height: 196.99995607257276,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "thumb-input",
+            formValues: {
+              valueType: "value",
+              thumbName: "input"
+            },
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            taskType: "thumb-input"
+          }
+        },
+        {
+          id: "a2e15ac4-bfee-4651-aa9f-fe35b1f84df0",
+          x: 4773.841588338517,
+          y: -750.5030327489069,
+          endX: 5008.938895855947,
+          endY: -768.4042767905336,
+          startNodeId: "cf1c07f1-589d-488b-8875-d66bc5d92e7f",
+          endNodeId: "8a2f58b2-4b16-4a01-94be-326af5916263",
+          startThumbName: "output",
+          endThumbName: "input",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        },
+        {
+          id: "9b6616d4-813e-4e8c-8214-c579582e78c6",
+          x: 5208.938895855947,
+          y: -768.4042767905336,
+          endX: 5404.4854191274,
+          endY: -749.7368301193679,
+          startNodeId: "8a2f58b2-4b16-4a01-94be-326af5916263",
+          endNodeId: "4464c12b-1b26-4c17-8257-bd4ed1478d90",
+          startThumbName: "output",
+          endThumbName: "input",
+          lineType: "BezierCubic",
+          nodeType: "Connection",
+          layer: 1,
+          nodeInfo: {}
+        },
+        {
+          id: "4464c12b-1b26-4c17-8257-bd4ed1478d90",
+          x: 5404.4854191274,
+          y: -848.2368398228097,
+          width: 199.99991131349026,
+          height: 197.0000194068835,
+          nodeType: "Shape",
+          nodeInfo: {
+            type: "thumb-output",
+            formValues: {
+              valueType: "value",
+              thumbName: "output"
+            },
+            nodeCannotBeReplaced: false,
+            showFormOnlyInPopup: false,
+            useInCompositionOnly: false,
+            keepPopupOpenAfterUpdate: false,
+            taskType: "thumb-output"
           }
         }
       ],
