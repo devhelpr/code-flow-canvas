@@ -178,7 +178,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
       }
 
       this.createCompositionButtons = createElement(
-        'div',
+        'button',
         {
           class: this.cssClasses.createCompositionButtonClasses,
           click: this.onCreateComposition,

@@ -231,63 +231,9 @@ export const getCreateCompositionNode =
         if (composition) {
           const runCounter = new RunCounter();
           runCounter.setRunCounterResetHandler(
-            (input?: string | any[], node?: INodeComponent<NodeInfo>) => {
+            (input?: string | any[], _node?: INodeComponent<NodeInfo>) => {
               if (runCounter.runCounter <= 0) {
-                if (!compositionNode || !node) {
-                  resolve({
-                    result: input,
-                    output: input,
-                    followPath: undefined,
-                    dummyEndpoint: true,
-                    stop: true,
-                  });
-                  return;
-                }
-
-                // TODO : alleen als Node = thumb-output
-                if (node.nodeInfo?.type !== 'thumb-output') {
-                  resolve({
-                    result: input,
-                    output: input,
-                    followPath: undefined,
-                    dummyEndpoint: true,
-                    stop: true,
-                  });
-                  return;
-                }
-                const thumb = getThumbNodeByName(node.id, compositionNode!, {
-                  start: true,
-                  end: false,
-                });
-                console.log(
-                  'composition runCounter.runCounter <= 0',
-                  input,
-                  node,
-                  thumb
-                );
-                if (!thumb || !canvasApp) {
-                  resolve({
-                    result: input,
-                    output: input,
-                    followPath: undefined,
-                    dummyEndpoint: true,
-                    stop: true,
-                  });
-                  return;
-                }
-                runNodeFromThumb(
-                  thumb,
-                  canvasApp,
-                  (_inputFromRun: string | any[]) => {
-                    //
-                  },
-                  input,
-                  compositionNode as IRectNodeComponent<NodeInfo>,
-                  loopIndex,
-                  scopeId,
-                  rootRunCounter
-                );
-
+                // THIS seems to be reliable together with onFinish above !?? tests also run well
                 resolve({
                   result: input,
                   output: input,
@@ -295,6 +241,79 @@ export const getCreateCompositionNode =
                   dummyEndpoint: true,
                   stop: true,
                 });
+                return;
+                // if (!compositionNode || !node) {
+                //   resolve({
+                //     result: input,
+                //     output: input,
+                //     followPath: undefined,
+                //     dummyEndpoint: true,
+                //     stop: true,
+                //   });
+                //   return;
+                // }
+
+                // if (node.nodeInfo?.type !== 'thumb-output') {
+                //   resolve({
+                //     result: input,
+                //     output: input,
+                //     followPath: undefined,
+                //     dummyEndpoint: true,
+                //     stop: true,
+                //   });
+                //   return;
+                // }
+
+                // // .. in the "parallel"/"merge" flow with 2 compositions..
+                // // .. then you should return and resolve here..??
+                // resolve({
+                //   result: input,
+                //   output: input,
+                //   followPath: undefined,
+                //   dummyEndpoint: true,
+                //   stop: true,
+                // });
+                // return;
+                // const thumb = getThumbNodeByName(node.id, compositionNode!, {
+                //   start: true,
+                //   end: false,
+                // });
+                // console.log(
+                //   'composition runCounter.runCounter <= 0',
+                //   input,
+                //   node,
+                //   thumb
+                // );
+                // if (!thumb || !canvasApp) {
+                //   resolve({
+                //     result: input,
+                //     output: input,
+                //     followPath: undefined,
+                //     dummyEndpoint: true,
+                //     stop: true,
+                //   });
+                //   return;
+                // }
+                // runNodeFromThumb(
+                //   thumb,
+                //   canvasApp,
+                //   (_inputFromRun: string | any[]) => {
+                //     //
+                //   },
+                //   input,
+                //   compositionNode as IRectNodeComponent<NodeInfo>,
+                //   loopIndex,
+                //   scopeId,
+                //   rootRunCounter
+                // );
+
+                // resolve({
+                //   result: input,
+                //   output: input,
+                //   followPath: undefined,
+                //   dummyEndpoint: true,
+                //   stop: true,
+                // });
               }
             }
           );

@@ -1282,7 +1282,8 @@ export class AppElement<T extends BaseNodeInfo> {
         undefined,
         undefined,
         undefined,
-        this.canvasApp
+        this.canvasApp,
+        getNodeTaskFactory
       );
       if (canvasApp) {
         canvasApp.isComposition = true;
