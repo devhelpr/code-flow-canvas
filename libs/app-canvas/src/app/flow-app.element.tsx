@@ -680,6 +680,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         if (this.storageProvider && this.canvasApp && this.rootElement) {
           this.navbarComponent = NavbarComponents({
             isReadOnly: isReadOnly,
+            getNodeFactory: getNodeTaskFactory,
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
@@ -896,6 +897,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           if (!isReadOnly) {
             NodeSidebarMenuComponents({
               clearCanvas: this.clearCanvas,
+              getNodeFactory: getNodeTaskFactory,
               initializeNodes: initializeNodes,
               storageProvider: this.storageProvider,
               selectNodeType: this.selectNodeType

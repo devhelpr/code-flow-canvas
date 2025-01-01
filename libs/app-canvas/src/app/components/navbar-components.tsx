@@ -629,5 +629,6 @@ export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
     executeCommand: props.executeCommand,
     isReadOnly: props.isReadOnly,
     hideFlowPresets: props.hideFlowPresets,
+    getNodeFactory: props.getNodeFactory,
   });
 };

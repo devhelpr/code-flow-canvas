@@ -16,12 +16,22 @@ import {
   IRectNodeComponent,
   INodeComponent,
   getSelectedNode,
+  renderElement,
+  createJSXElement,
+  NodeTaskFactory,
+  transformCameraSpaceToWorldSpace,
+  getPointerPos,
+  pointerDown,
 } from '@devhelpr/visual-programming-system';
 import {
   getFollowNodeExecution,
   setFollowNodeExecution,
 } from '../follow-path/followNodeExecution';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import {
+  canvasNodeTaskRegistryLabels,
+  getNodeFactoryNames,
+  NodeInfo,
+} from '@devhelpr/web-flow-executor';
 import { createInputDialog } from '../utils/create-input-dialog';
 
 export class NodeSidebarMenuComponent extends Component<
@@ -42,12 +52,14 @@ export class NodeSidebarMenuComponent extends Component<
   followNodeExecution: HTMLButtonElement | null = null;
   apikeysButton: HTMLButtonElement | null = null;
   showDependencyConnections = false;
+  getNodeFactory: (name: string) => NodeTaskFactory<NodeInfo>;
 
   constructor(
     parent: BaseComponent | null,
     props: AppNavComponentsProps<NodeInfo>
   ) {
     super(parent, props);
+    this.getNodeFactory = props.getNodeFactory;
     this.template = createTemplate(
       `<div class="z-20 flex flex-col absolute right-0 top-1/2 bg-slate-700 -translate-y-1/2 p-[4px] rounded-l-lg">
       <button title="Node properties" class="${navBarButtonNomargin} flex  w-[32px] h-[32px] mb-1"><span class="icon icon-tune text-[16px]"></span></button>
@@ -131,6 +143,61 @@ export class NodeSidebarMenuComponent extends Component<
           this.apikeysButton
         );
         this.rootElement.append(this.element);
+        let taskbar: HTMLElement | null = null;
+        let taskbarContainer: HTMLElement | null = null;
+        renderElement(
+          <div
+            class={`taskbar-container transition-transform z-[1050] flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-[4px] rounded-l-lg  overflow-y-scroll`}
+            getElement={(element: HTMLElement) => {
+              taskbarContainer = element;
+            }}
+          >
+            <div
+              class={`overflow-visible flex flex-col `}
+              getElement={(element: HTMLElement) => {
+                taskbar = element;
+
+                const nodeTasks = getNodeFactoryNames();
+                nodeTasks.forEach((nodeTask) => {
+                  //const factory = this.getNodeFactory(nodeTask);
+                  //let categoryName = 'Default';
+                  // if (factory) {
+                  //   const node = factory(canvasUpdated);
+                  //   if (allowedNodeTasks.indexOf(node.name) < 0) {
+                  //     return;
+                  //   }
+                  //   categoryName = node.category || 'uncategorized';
+                  // }
+                  const label =
+                    canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
+
+                  renderElement(
+                    <div
+                      class={`cursor-pointer border border-white border-solid rounded px-4 py-2 text-white`}
+                      pointerdown={(event: PointerEvent) => {
+                        this.startDragNode(
+                          event,
+                          taskbar,
+                          taskbarContainer,
+                          nodeTask
+                        );
+                      }}
+                    >
+                      {label}
+                    </div>,
+                    taskbar
+                  );
+                });
+              }}
+            ></div>
+          </div>,
+          this.rootElement
+        );
+        this.rootElement.addEventListener('pointerup', (_event) => {
+          if (taskbarContainer) {
+            taskbarContainer.classList.remove('-translate-x-[100%]');
+          }
+        });
       }
     }
     this.isMounted = true;
@@ -143,6 +210,65 @@ export class NodeSidebarMenuComponent extends Component<
     }
     this.isMounted = false;
   }
+
+  startDragNode = (
+    event: PointerEvent,
+    taskbar: HTMLElement | null,
+    taskbarContainer: HTMLElement | null,
+    nodeType: string
+  ) => {
+    const factory = this.getNodeFactory(nodeType);
+    const canvasApp = this.props.getCanvasApp();
+
+    if (factory && canvasApp && taskbar && taskbarContainer) {
+      const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+        canvasApp.canvas.domElement as HTMLElement,
+        canvasApp.rootElement,
+        event
+      );
+      const { x, y } = transformCameraSpaceToWorldSpace(
+        pointerXPos,
+        pointerYPos - (window?.visualViewport?.offsetTop ?? 0)
+      );
+
+      taskbarContainer.classList.add('-translate-x-[100%]');
+      const nodeTask = factory(this.props.canvasUpdated, canvasApp.theme);
+      const nodeInfo = undefined;
+      const node = nodeTask.createVisualNode(
+        canvasApp,
+        x,
+        y,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        nodeInfo
+      );
+      if (node && node.nodeInfo) {
+        const elementRect = (
+          node.domElement as unknown as HTMLElement | SVGElement
+        ).getBoundingClientRect();
+
+        const rect = transformCameraSpaceToWorldSpace(
+          elementRect.x - rootX,
+          elementRect.y - rootY
+        );
+        // TODO : IMPROVE THIS
+        (node.nodeInfo as any).taskType = nodeType;
+        (node.domElement as HTMLElement).setPointerCapture(event.pointerId);
+
+        pointerDown(
+          x - rect.x + (node.width ?? 0) / 2,
+          y - rect.y + (node.height ?? 0) / 2,
+          node,
+          canvasApp.canvas,
+          canvasApp.interactionStateMachine
+        );
+      }
+    }
+  };
 
   onClickSettingsNode = (event: Event) => {
     event.preventDefault();
@@ -437,5 +563,6 @@ export const NodeSidebarMenuComponents = (
     setIsStoring: props.setIsStoring,
     showPopup: props.showPopup,
     executeCommand: props.executeCommand,
+    getNodeFactory: props.getNodeFactory,
   });
 };

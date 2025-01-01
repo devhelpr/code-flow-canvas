@@ -7,6 +7,7 @@ import {
   AnimatePathFromThumbFunction,
   AnimatePathFunction,
   BaseNodeInfo,
+  NodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
 import { StorageProvider } from '../storage/StorageProvider';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
@@ -41,6 +42,7 @@ export interface AppNavComponentsProps<T extends BaseNodeInfo> {
   ) => void;
   isReadOnly?: boolean;
   hideFlowPresets?: boolean;
+  getNodeFactory: (name: string) => NodeTaskFactory<T>;
 }
 
 export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {
