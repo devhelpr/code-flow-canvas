@@ -145,9 +145,55 @@ export class NodeSidebarMenuComponent extends Component<
         this.rootElement.append(this.element);
         let taskbar: HTMLElement | null = null;
         let taskbarContainer: HTMLElement | null = null;
+
+        const categorizedNodeTasks = new Map<
+          string,
+          { label: string; nodeType: string }[]
+        >();
+        const nodeTasks = getNodeFactoryNames();
+        nodeTasks.forEach((nodeTask) => {
+          const factory = this.getNodeFactory(nodeTask);
+          let categoryName = 'Default';
+          if (factory) {
+            const node = factory(this.props.canvasUpdated);
+            categoryName = node.category || 'uncategorized';
+          }
+          const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
+          const category = categorizedNodeTasks.get(categoryName);
+          if (category) {
+            category.push({
+              label,
+              nodeType: nodeTask,
+            });
+          } else {
+            categorizedNodeTasks.set(categoryName, [
+              {
+                label,
+                nodeType: nodeTask,
+              },
+            ]);
+          }
+        });
+        // sort the categories case-insensitive
+        const sortedCategories = Array.from(categorizedNodeTasks.keys()).sort(
+          (a, b) => {
+            return a.localeCompare(b);
+          }
+        );
+
+        // sort the tasks within the categories
+        sortedCategories.forEach((categoryName) => {
+          const category = categorizedNodeTasks.get(categoryName);
+          if (category) {
+            category.sort((a, b) => {
+              return a.label.localeCompare(b.label);
+            });
+          }
+        });
+
         renderElement(
           <div
-            class={`taskbar-container transition-transform z-[1050] flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-[4px] rounded-l-lg  overflow-y-scroll`}
+            class={`taskbar-container transition-transform z-[1050] flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-4 rounded-l-lg  overflow-y-scroll`}
             getElement={(element: HTMLElement) => {
               taskbarContainer = element;
             }}
@@ -156,37 +202,38 @@ export class NodeSidebarMenuComponent extends Component<
               class={`overflow-visible flex flex-col `}
               getElement={(element: HTMLElement) => {
                 taskbar = element;
-
-                const nodeTasks = getNodeFactoryNames();
-                nodeTasks.forEach((nodeTask) => {
-                  //const factory = this.getNodeFactory(nodeTask);
-                  //let categoryName = 'Default';
-                  // if (factory) {
-                  //   const node = factory(canvasUpdated);
-                  //   if (allowedNodeTasks.indexOf(node.name) < 0) {
-                  //     return;
-                  //   }
-                  //   categoryName = node.category || 'uncategorized';
-                  // }
-                  const label =
-                    canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
-
+                sortedCategories.forEach((categoryName) => {
+                  const category = categorizedNodeTasks.get(categoryName);
+                  if (categoryName === 'deprecated') {
+                    return;
+                  }
                   renderElement(
-                    <div
-                      class={`cursor-pointer border border-white border-solid rounded px-4 py-2 text-white`}
-                      pointerdown={(event: PointerEvent) => {
-                        this.startDragNode(
-                          event,
-                          taskbar,
-                          taskbarContainer,
-                          nodeTask
-                        );
-                      }}
-                    >
-                      {label}
-                    </div>,
+                    <h2 class={`text-white py-2`}>{categoryName}</h2>,
                     taskbar
                   );
+
+                  category?.forEach((nodeTask) => {
+                    const label =
+                      canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
+                      nodeTask.nodeType;
+
+                    renderElement(
+                      <div
+                        class={`cursor-pointer border border-white border-solid rounded px-4 py-2 mb-2 text-white`}
+                        pointerdown={(event: PointerEvent) => {
+                          this.startDragNode(
+                            event,
+                            taskbar,
+                            taskbarContainer,
+                            nodeTask.nodeType
+                          );
+                        }}
+                      >
+                        {label}
+                      </div>,
+                      taskbar
+                    );
+                  });
                 });
               }}
             ></div>
