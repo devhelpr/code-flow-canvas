@@ -196,7 +196,7 @@ export class NodeSidebarMenuComponent extends Component<
 
         renderElement(
           <div
-            class={`taskbar-container transition-transform z-[1050] flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-4 rounded-l-lg  overflow-y-scroll`}
+            class={`taskbar-container transition-transform z-[20050] hidden md:flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-4 rounded-l-lg  overflow-y-scroll`}
             getElement={(element: HTMLElement) => {
               taskbarContainer = element;
             }}
