@@ -211,7 +211,7 @@ export const getNeuralInputNode =
       },
       {
         hasTitlebar: false,
-        category: 'flow-control',
+        category: 'neural networks',
         hideTitle: true,
         isRectThumb: true,
         isCircleRectThumb: true,

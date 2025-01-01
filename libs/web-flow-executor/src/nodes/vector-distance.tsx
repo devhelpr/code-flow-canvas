@@ -179,7 +179,7 @@ export const getVectorDistanceNode: NodeTaskFactory<NodeInfo> = (
   return {
     name: vectorDistanceNodeName,
     family: 'flow-canvas',
-    category: 'flow-control',
+    category: 'math',
     isContainer: false,
     thumbs,
     createVisualNode: (

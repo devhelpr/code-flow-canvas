@@ -157,6 +157,9 @@ export class NodeSidebarMenuComponent extends Component<
           if (factory) {
             const node = factory(this.props.canvasUpdated);
             categoryName = node.category || 'uncategorized';
+            if (node.useInCompositionOnly) {
+              return;
+            }
           }
           const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
           const category = categorizedNodeTasks.get(categoryName);
