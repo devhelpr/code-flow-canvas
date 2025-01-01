@@ -147,7 +147,7 @@ export const getExpression: NodeTaskFactory<NodeInfo> = (
     }
     let result: any = false;
     try {
-      compileExpression(node?.nodeInfo?.formValues?.['expression'] ?? 'input');
+      compileExpression(node?.nodeInfo?.formValues?.['expression'] || 'input');
       if (!expressionCache[node.id]) {
         return {
           result: undefined,
