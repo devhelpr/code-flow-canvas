@@ -222,7 +222,7 @@ export class NodeSidebarMenuComponent extends Component<
 
                     renderElement(
                       <div
-                        class={`cursor-pointer border border-white border-solid rounded px-4 py-2 mb-2 text-white`}
+                        class={`cursor-pointer border border-white border-solid rounded px-4 py-2 mb-2 text-white max-w-[150px] whitespace-nowrap overflow-hidden text-ellipsis`}
                         pointerdown={(event: PointerEvent) => {
                           this.startDragNode(
                             event,
@@ -231,6 +231,7 @@ export class NodeSidebarMenuComponent extends Component<
                             nodeTask.nodeType
                           );
                         }}
+                        title={label}
                       >
                         {label}
                       </div>,
