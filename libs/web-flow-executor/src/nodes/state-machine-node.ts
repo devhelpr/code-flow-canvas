@@ -493,6 +493,7 @@ export const createStateMachineNode = (
     name: 'state-machine',
     family: 'flow-canvas',
     isContainer: true,
+    category: 'state-machine',
     childNodeTasks: ['state', 'state-transition', 'state-compound'],
     getConnectionInfo: () => {
       if (!input || !output) {

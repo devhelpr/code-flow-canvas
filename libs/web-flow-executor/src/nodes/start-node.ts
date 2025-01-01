@@ -32,6 +32,7 @@ export const getStart: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'start-node',
     family: 'flow-canvas',
+    category: 'flow-control',
     createVisualNode: (
       canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,

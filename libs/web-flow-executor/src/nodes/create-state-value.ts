@@ -140,7 +140,7 @@ export const getCreateEventStateValueNode: NodeTaskFactory<NodeInfo> = (
     },
     {
       hasTitlebar: false,
-      category: 'flow-control',
+      category: 'state-machine',
     }
   );
 };

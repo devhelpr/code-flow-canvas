@@ -31,6 +31,7 @@ export const getEnd: NodeTaskFactory<NodeInfo> = (
   return {
     name: 'end-node',
     family: 'flow-canvas',
+    category: 'flow-control',
     createVisualNode: (
       canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
