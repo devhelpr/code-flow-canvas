@@ -18,10 +18,12 @@ body.code-flow-canvas {
   pointer-events: stroke;
 }
 
+.taskbar-container,
 .menu {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 .code-flow-canvas .rect-node input::selection {
   @apply bg-slate-500;
   @apply text-white;

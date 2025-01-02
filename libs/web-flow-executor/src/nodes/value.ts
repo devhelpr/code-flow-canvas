@@ -102,7 +102,7 @@ export const getValue: NodeTaskFactory<NodeInfo> = (
         'div',
         {
           class: `inner-node ${
-            theme?.nodeInversedBackground ?? 'bg-slate-500'
+            theme?.nodeBackground ?? 'bg-slate-500'
           } p-4 rounded`,
         },
         undefined
