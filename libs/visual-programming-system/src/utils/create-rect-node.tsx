@@ -340,7 +340,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
         thumbs,
         componentWrapper,
         {
-          classNames: ``,
+          classNames: '',
         },
         settings?.adjustToFormContent
           ? false
@@ -367,7 +367,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
         thumbs,
         componentWrapper,
         {
-          classNames: ``,
+          classNames: '',
         },
         settings?.adjustToFormContent
           ? false
@@ -609,7 +609,8 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
         childNode,
         isAsyncCompute,
         nodeInfo as unknown as T,
-        getNodeTaskFactory
+        getNodeTaskFactory,
+        undefined
       ) as CreateNodeInfo<T>;
       // if (!nodeInstance) {
       //   return;

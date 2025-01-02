@@ -298,6 +298,9 @@ export class NodeSidebarMenuComponent extends Component<
         nodeInfo
       );
       if (node && node.nodeInfo) {
+        // TODO : IMPROVE THIS (should be handled by the internals behind createVisualNode )
+        (node.nodeInfo as any).taskType = nodeType;
+
         const elementRect = (
           node.domElement as unknown as HTMLElement | SVGElement
         ).getBoundingClientRect();
@@ -306,16 +309,22 @@ export class NodeSidebarMenuComponent extends Component<
           elementRect.x - rootX,
           elementRect.y - rootY
         );
-        // TODO : IMPROVE THIS
-        (node.nodeInfo as any).taskType = nodeType;
-        (node.domElement as HTMLElement).setPointerCapture(event.pointerId);
 
+        (node.domElement as HTMLElement).setPointerCapture(event.pointerId);
         pointerDown(
           x - rect.x + (node.width ?? 0) / 2,
           y - rect.y + (node.height ?? 0) / 2,
           node,
           canvasApp.canvas,
           canvasApp.interactionStateMachine
+        );
+
+        // sets the initial position of the node to the pointer position so that it centers around the pointer position
+        node.update?.(
+          node,
+          node.x - (node.width ?? 0) / 2,
+          node.y - (node.height ?? 0) / 2,
+          node
         );
       }
     }
