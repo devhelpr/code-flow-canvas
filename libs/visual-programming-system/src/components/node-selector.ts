@@ -532,6 +532,42 @@ export class NodeSelector<T extends BaseNodeInfo> {
         return;
       }
 
+      let minX = -1;
+      let minY = -1;
+      let maxX = -1;
+      let maxY = -1;
+      this.elements.forEach((element) => {
+        const nodeComponent = element as unknown as IRectNodeComponent<T>;
+        if (nodeComponent.nodeType === NodeType.Shape) {
+          const isNodeSelected = this.selectedNodes.find(
+            (n) => n.id === nodeComponent.id
+          );
+          if (isNodeSelected) {
+            if (nodeComponent.x < minX || minX === -1) {
+              minX = nodeComponent.x;
+            }
+            if (nodeComponent.y < minY || minY === -1) {
+              minY = nodeComponent.y;
+            }
+            if (
+              nodeComponent.x + (nodeComponent.width ?? 0) > maxX ||
+              maxX === -1
+            ) {
+              maxX = nodeComponent.x + (nodeComponent.width ?? 0);
+            }
+            if (
+              nodeComponent.y + (nodeComponent.height ?? 0) > maxY ||
+              maxY === -1
+            ) {
+              maxY = nodeComponent.y + (nodeComponent.height ?? 0);
+            }
+          }
+        }
+      });
+
+      minX -= 300;
+      maxX += 300;
+
       this.elements.forEach((element) => {
         const nodeComponent = element as unknown as IRectNodeComponent<T>;
         if (nodeComponent.nodeType === NodeType.Shape) {
@@ -584,8 +620,8 @@ export class NodeSelector<T extends BaseNodeInfo> {
                         nodeTask.setTitle?.(thumb.name);
                         const thumbOutput = nodeTask.createVisualNode(
                           this.canvasApp,
-                          0 + 100,
-                          0 + 100 + outputThumbIndex * 200,
+                          maxX + 100,
+                          minY - 100 + outputThumbIndex * 200,
                           undefined,
                           {
                             valueType: thumb.thumbConstraint,
@@ -735,8 +771,8 @@ export class NodeSelector<T extends BaseNodeInfo> {
                         nodeTask.setTitle?.(thumb.name);
                         const thumbInput = nodeTask.createVisualNode(
                           this.canvasApp,
-                          0 - 100,
-                          0 - 100 + inputThumbIndex * 200,
+                          minX - 100,
+                          minY - 100 + inputThumbIndex * 200,
                           undefined,
                           {
                             valueType: thumb.thumbConstraint,

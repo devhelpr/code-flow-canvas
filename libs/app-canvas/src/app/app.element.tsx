@@ -1020,7 +1020,17 @@ export class AppElement<T extends BaseNodeInfo> {
     let minY = -1;
     let maxX = -1;
     let maxY = -1;
+    let nodeCounter = 0;
+    let lastNode: FlowNode<T> | undefined = undefined;
     composition.nodes.forEach((node) => {
+      if (
+        node.nodeInfo?.type === 'thumb-input' ||
+        node.nodeInfo?.type === 'thumb-output'
+      ) {
+        return;
+      } else if (node.nodeType === NodeType.Connection) {
+        return;
+      }
       if (node.x < minX || minX === -1) {
         minX = node.x;
       }
@@ -1028,16 +1038,27 @@ export class AppElement<T extends BaseNodeInfo> {
         minY = node.y;
       }
       if (node.x + (node.width ?? 0) > maxX || maxX === -1) {
-        maxX = node.x;
+        maxX = node.x + (node.width ?? 0);
       }
       if (node.y + (node.height ?? 0) > maxY || maxY === -1) {
-        maxY = node.y;
+        maxY = node.y + (node.height ?? 0);
       }
+      lastNode = node;
+      nodeCounter++;
     });
     minX = minX === -1 ? minX : composition.nodes[0]?.x ?? 0;
     minY = minY === -1 ? minY : composition.nodes[0]?.y ?? 0;
     let x = (minX + maxX) / 2 - 100;
     let y = (minY + maxY) / 2 - 100;
+
+    function isFlowNode(node: FlowNode<T> | undefined): node is FlowNode<T> {
+      return node !== undefined;
+    }
+    if (nodeCounter === 1 && isFlowNode(lastNode)) {
+      const node: FlowNode<T> = lastNode;
+      x = node.x;
+      y = node.y;
+    }
 
     if (minX === -1) {
       let halfWidth = 0;
