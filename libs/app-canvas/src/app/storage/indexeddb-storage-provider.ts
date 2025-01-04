@@ -17,27 +17,33 @@ function storeTransaction(
   ready: () => void,
   failed: () => void
 ) {
-  const objectRequest = store.put(
-    {
-      flow: transaction?.flow,
-      flowId: transaction?.flowId,
-      name: transaction?.name,
-    },
-    transaction?.flowId
-  );
+  try {
+    const objectRequest = store.put(
+      {
+        flow: transaction?.flow,
+        flowId: transaction?.flowId,
+        name: transaction?.name,
+      },
+      transaction?.flowId
+    );
 
-  objectRequest.onerror = function (event) {
-    console.log('handleTransactions error', event);
-  };
+    objectRequest.onerror = function (event) {
+      console.log('handleTransactions error', event);
+    };
 
-  objectRequest.onsuccess = function (event) {
-    if (objectRequest.result) {
-      isProcessing = false;
-      handleTransactions(ready, failed);
-    } else {
-      console.log('handleTransactions error in  onsuccess', event);
-    }
-  };
+    objectRequest.onsuccess = function (event) {
+      if (objectRequest.result) {
+        isProcessing = false;
+        handleTransactions(ready, failed);
+      } else {
+        console.error('handleTransactions error in  onsuccess', event);
+      }
+    };
+  } catch (error) {
+    console.error('storeTransaction error', error);
+    console.error('storeTransaction failed', transaction?.flow);
+    failed();
+  }
 }
 
 function handleTransactions(ready: () => void, failed: () => void) {

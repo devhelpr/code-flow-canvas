@@ -265,7 +265,10 @@ export const serializeCompositions = <T>(
       id: composition.id,
       name: composition.name,
       nodes: composition.nodes.map((node) => {
-        return node;
+        return {
+          ...node,
+          nodeInfo: cleanupNodeInfoForSerializing(node.nodeInfo as NodeInfo),
+        };
         // if (node.nodeType === NodeType.Connection) {
         //   const connection =
         //     node as unknown as IConnectionNodeComponent<NodeInfo>;
@@ -299,6 +302,7 @@ export const serializeCompositions = <T>(
         //   nodeInfo: cleanupNodeInfoForSerializing(node.nodeInfo as NodeInfo),
         // };
       }),
+
       thumbs: composition.thumbs,
       inputNodes:
         composition.inputNodes?.map((node) => {
