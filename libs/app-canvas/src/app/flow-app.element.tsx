@@ -79,7 +79,10 @@ import {
   serializeCompositions,
   serializeElementsMap,
 } from './storage/serialize-canvas';
-import { NodeSidebarMenuComponents } from './components/node-sidebar-menu';
+import {
+  NodeSidebarMenuComponent,
+  NodeSidebarMenuComponents,
+} from './components/node-sidebar-menu';
 import { AppElement } from './app.element';
 import {
   executeCommand,
@@ -196,6 +199,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   speedMeterElement: IDOMElement | undefined = undefined;
   selectNodeType: IDOMElement | undefined = undefined;
   mediaLibary: MediaLibrary | undefined = undefined;
+  nodeSidebarMenu: NodeSidebarMenuComponent | undefined = undefined;
   canvasUpdated:
     | ((
         shouldClearExecutionHistory?: boolean,
@@ -895,7 +899,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           );
 
           if (!isReadOnly) {
-            NodeSidebarMenuComponents({
+            this.nodeSidebarMenu = NodeSidebarMenuComponents({
               clearCanvas: this.clearCanvas,
               getNodeFactory: getNodeTaskFactory,
               initializeNodes: initializeNodes,
@@ -981,7 +985,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 this.isStoring = false;
                 canvasUpdated();
               },
-            }) as unknown as HTMLElement;
+            });
 
             registerCommands<NodeInfo>({
               rootElement: this.rootElement,
@@ -2152,12 +2156,24 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       connection: IConnectionNodeComponent<NodeInfo>;
     }[]
   ) => {
+    //this.nodeSidebarMenu
     return this.onAddComposition(
       composition,
       connections,
       registerComposition,
       getNodeTaskFactory,
-      setupTasksInDropdown,
+      (
+        selectNodeTypeHTMLElement: HTMLSelectElement,
+        isInComposition?: boolean,
+        compositionId?: string
+      ) => {
+        setupTasksInDropdown(
+          selectNodeTypeHTMLElement,
+          isInComposition,
+          compositionId
+        );
+        this.nodeSidebarMenu?.initNodeTaskbar(isInComposition, compositionId);
+      },
       this.selectNodeType?.domElement as HTMLSelectElement
     );
   };
@@ -2167,7 +2183,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.editComposition(
         getNodeTaskFactory,
         this.canvasUpdated,
-        setupTasksInDropdown,
+        (
+          selectNodeTypeHTMLElement: HTMLSelectElement,
+          isInComposition?: boolean,
+          compositionId?: string
+        ) => {
+          setupTasksInDropdown(
+            selectNodeTypeHTMLElement,
+            isInComposition,
+            compositionId
+          );
+          this.nodeSidebarMenu?.initNodeTaskbar(isInComposition, compositionId);
+        },
         this.selectNodeType?.domElement as HTMLSelectElement
       );
     }

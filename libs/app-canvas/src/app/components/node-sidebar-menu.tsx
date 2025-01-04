@@ -143,112 +143,7 @@ export class NodeSidebarMenuComponent extends Component<
           this.apikeysButton
         );
         this.rootElement.append(this.element);
-        let taskbar: HTMLElement | null = null;
-        let taskbarContainer: HTMLElement | null = null;
-
-        const categorizedNodeTasks = new Map<
-          string,
-          { label: string; nodeType: string }[]
-        >();
-        const nodeTasks = getNodeFactoryNames();
-        nodeTasks.forEach((nodeTask) => {
-          const factory = this.getNodeFactory(nodeTask);
-          let categoryName = 'Default';
-          if (factory) {
-            const node = factory(this.props.canvasUpdated);
-            categoryName = node.category || 'uncategorized';
-            if (node.useInCompositionOnly) {
-              return;
-            }
-          }
-          const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
-          const category = categorizedNodeTasks.get(categoryName);
-          if (category) {
-            category.push({
-              label,
-              nodeType: nodeTask,
-            });
-          } else {
-            categorizedNodeTasks.set(categoryName, [
-              {
-                label,
-                nodeType: nodeTask,
-              },
-            ]);
-          }
-        });
-        // sort the categories case-insensitive
-        const sortedCategories = Array.from(categorizedNodeTasks.keys()).sort(
-          (a, b) => {
-            return a.localeCompare(b);
-          }
-        );
-
-        // sort the tasks within the categories
-        sortedCategories.forEach((categoryName) => {
-          const category = categorizedNodeTasks.get(categoryName);
-          if (category) {
-            category.sort((a, b) => {
-              return a.label.localeCompare(b.label);
-            });
-          }
-        });
-
-        renderElement(
-          <div
-            class={`taskbar-container transition-transform z-[20050] hidden md:flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-4 rounded-l-lg  overflow-y-scroll`}
-            getElement={(element: HTMLElement) => {
-              taskbarContainer = element;
-            }}
-          >
-            <div
-              class={`overflow-visible flex flex-col `}
-              getElement={(element: HTMLElement) => {
-                taskbar = element;
-                sortedCategories.forEach((categoryName) => {
-                  const category = categorizedNodeTasks.get(categoryName);
-                  if (categoryName === 'deprecated') {
-                    return;
-                  }
-                  renderElement(
-                    <h2 class={`text-white py-2`}>{categoryName}</h2>,
-                    taskbar
-                  );
-
-                  category?.forEach((nodeTask) => {
-                    const label =
-                      canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
-                      nodeTask.nodeType;
-
-                    renderElement(
-                      <div
-                        class={`cursor-pointer border border-white border-solid rounded px-4 py-2 mb-2 text-white max-w-[150px] whitespace-nowrap overflow-hidden text-ellipsis`}
-                        pointerdown={(event: PointerEvent) => {
-                          this.startDragNode(
-                            event,
-                            taskbar,
-                            taskbarContainer,
-                            nodeTask.nodeType
-                          );
-                        }}
-                        title={label}
-                      >
-                        {label}
-                      </div>,
-                      taskbar
-                    );
-                  });
-                });
-              }}
-            ></div>
-          </div>,
-          this.rootElement
-        );
-        this.rootElement.addEventListener('pointerup', (_event) => {
-          if (taskbarContainer) {
-            taskbarContainer.classList.remove('-translate-x-[100%]');
-          }
-        });
+        this.initNodeTaskbar();
       }
     }
     this.isMounted = true;
@@ -262,16 +157,147 @@ export class NodeSidebarMenuComponent extends Component<
     this.isMounted = false;
   }
 
+  private taskbarContainer: HTMLElement | null = null;
+  initNodeTaskbar = (isInComposition?: boolean, compositionId?: string) => {
+    if (!this.rootElement) {
+      return;
+    }
+    let taskbar: HTMLElement | null = null;
+
+    if (this.taskbarContainer) {
+      this.taskbarContainer.remove();
+      this.taskbarContainer = null;
+    }
+
+    const categorizedNodeTasks = new Map<
+      string,
+      { label: string; nodeType: string }[]
+    >();
+    const nodeTasks = getNodeFactoryNames();
+    nodeTasks.forEach((nodeTask) => {
+      const factory = this.getNodeFactory(nodeTask);
+      let categoryName = 'Default';
+      if (factory) {
+        const node = factory(this.props.canvasUpdated);
+
+        if (node.isContained) {
+          return;
+        }
+        if (node.hideFromNodeTypeSelector) {
+          if (
+            !isInComposition ||
+            (isInComposition && !node.useInCompositionOnly)
+          ) {
+            return;
+          }
+        }
+        if (
+          isInComposition &&
+          nodeTask === `composition-${compositionId}` &&
+          compositionId
+        ) {
+          return;
+        }
+
+        categoryName = node.category || 'uncategorized';
+        // if (node.useInCompositionOnly) {
+        //   return;
+        // }
+      }
+      const label = canvasNodeTaskRegistryLabels[nodeTask] || nodeTask;
+      const category = categorizedNodeTasks.get(categoryName);
+      if (category) {
+        category.push({
+          label,
+          nodeType: nodeTask,
+        });
+      } else {
+        categorizedNodeTasks.set(categoryName, [
+          {
+            label,
+            nodeType: nodeTask,
+          },
+        ]);
+      }
+    });
+    // sort the categories case-insensitive
+    const sortedCategories = Array.from(categorizedNodeTasks.keys()).sort(
+      (a, b) => {
+        return a.localeCompare(b);
+      }
+    );
+
+    // sort the tasks within the categories
+    sortedCategories.forEach((categoryName) => {
+      const category = categorizedNodeTasks.get(categoryName);
+      if (category) {
+        category.sort((a, b) => {
+          return a.label.localeCompare(b.label);
+        });
+      }
+    });
+
+    renderElement(
+      <div
+        class={`taskbar-container transition-transform z-[20050] hidden md:flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-4 rounded-l-lg  overflow-y-scroll`}
+        getElement={(element: HTMLElement) => {
+          this.taskbarContainer = element;
+        }}
+      >
+        <div
+          class={`overflow-visible flex flex-col `}
+          getElement={(element: HTMLElement) => {
+            taskbar = element;
+            sortedCategories.forEach((categoryName) => {
+              const category = categorizedNodeTasks.get(categoryName);
+              if (categoryName === 'deprecated') {
+                return;
+              }
+              renderElement(
+                <h2 class={`text-white py-2`}>{categoryName}</h2>,
+                taskbar
+              );
+
+              category?.forEach((nodeTask) => {
+                const label =
+                  canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
+                  nodeTask.nodeType;
+
+                renderElement(
+                  <div
+                    class={`cursor-pointer border border-white border-solid rounded px-4 py-2 mb-2 text-white max-w-[150px] whitespace-nowrap overflow-hidden text-ellipsis`}
+                    pointerdown={(event: PointerEvent) => {
+                      this.startDragNode(event, taskbar, nodeTask.nodeType);
+                    }}
+                    title={label}
+                  >
+                    {label}
+                  </div>,
+                  taskbar
+                );
+              });
+            });
+          }}
+        ></div>
+      </div>,
+      this.rootElement
+    );
+    this.rootElement.addEventListener('pointerup', (_event) => {
+      if (this.taskbarContainer) {
+        this.taskbarContainer.classList.remove('-translate-x-[100%]');
+      }
+    });
+  };
+
   startDragNode = (
     event: PointerEvent,
     taskbar: HTMLElement | null,
-    taskbarContainer: HTMLElement | null,
     nodeType: string
   ) => {
     const factory = this.getNodeFactory(nodeType);
     const canvasApp = this.props.getCanvasApp();
 
-    if (factory && canvasApp && taskbar && taskbarContainer) {
+    if (factory && canvasApp && taskbar && this.taskbarContainer) {
       const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
         canvasApp.canvas.domElement as HTMLElement,
         canvasApp.rootElement,
@@ -282,7 +308,7 @@ export class NodeSidebarMenuComponent extends Component<
         pointerYPos - (window?.visualViewport?.offsetTop ?? 0)
       );
 
-      taskbarContainer.classList.add('-translate-x-[100%]');
+      this.taskbarContainer.classList.add('-translate-x-[100%]');
       const nodeTask = factory(this.props.canvasUpdated, canvasApp.theme);
       const nodeInfo = undefined;
       const node = nodeTask.createVisualNode(
@@ -607,7 +633,7 @@ export class NodeSidebarMenuComponent extends Component<
 export const NodeSidebarMenuComponents = (
   props: AppNavComponentsProps<NodeInfo>
 ) => {
-  new NodeSidebarMenuComponent(null, {
+  return new NodeSidebarMenuComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,
     clearCanvas: props.clearCanvas,
