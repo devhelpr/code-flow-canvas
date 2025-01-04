@@ -40,10 +40,16 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
-  const compute = (input: string, _loopIndex?: number, payload?: any) => {
+  const compute = (
+    input: string,
+    _loopIndex?: number,
+    payload?: any,
+    _thumbName?: string,
+    scopeId?: string
+  ) => {
     const nodeInfo: any = node.nodeInfo;
     if (nodeInfo?.onFinish) {
-      nodeInfo.onFinish(input, payload, node);
+      nodeInfo.onFinish(input, payload, node, scopeId);
     }
     return {
       result: input,

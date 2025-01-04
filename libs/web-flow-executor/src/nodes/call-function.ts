@@ -159,7 +159,7 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
     _payload?: any,
     _thumbName?: string,
     scopeId?: string,
-    runCounter?: RunCounter
+    _runCounter?: RunCounter
   ) => {
     const componentDomElement = componentWrapper?.domElement as HTMLElement;
     if (componentDomElement) {
@@ -204,30 +204,60 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
                 componentDomElement.classList.remove(defaultFunctionColor);
               }
 
+              const functionRunCounter = new RunCounter();
+              functionRunCounter.setRunCounterResetHandler(
+                (input?: string | any[], _node?: INodeComponent<NodeInfo>) => {
+                  if (functionRunCounter.runCounter <= 0) {
+                    canvasAppInstance?.removeScope(scopeGuid);
+                    if (componentDomElement) {
+                      componentDomElement.classList.remove(activeFunctionColor);
+                      componentDomElement.classList.add(defaultFunctionColor);
+                    }
+
+                    if (
+                      (
+                        (element as IRectNodeComponent<NodeInfo>)
+                          .nodeInfo as any
+                      ).onFunctionFinished
+                    ) {
+                      (
+                        (element as IRectNodeComponent<NodeInfo>)
+                          .nodeInfo as any
+                      ).onFunctionFinished();
+                    }
+
+                    resolve({
+                      output: input,
+                      result: input,
+                      followPath: undefined,
+                    });
+                  }
+                }
+              );
+
               runNode(
                 element as IRectNodeComponent<NodeInfo>,
                 canvasAppInstance,
-                (inputFunction) => {
-                  canvasAppInstance?.removeScope(scopeGuid);
-                  if (componentDomElement) {
-                    componentDomElement.classList.remove(activeFunctionColor);
-                    componentDomElement.classList.add(defaultFunctionColor);
-                  }
-
-                  if (
-                    ((element as IRectNodeComponent<NodeInfo>).nodeInfo as any)
-                      .onFunctionFinished
-                  ) {
-                    (
-                      (element as IRectNodeComponent<NodeInfo>).nodeInfo as any
-                    ).onFunctionFinished();
-                  }
-
-                  resolve({
-                    output: inputFunction,
-                    result: inputFunction,
-                    followPath: undefined,
-                  });
+                (_inputFunction) => {
+                  console.log('function finished', _inputFunction);
+                  // canvasAppInstance?.removeScope(scopeGuid);
+                  // if (componentDomElement) {
+                  //   componentDomElement.classList.remove(activeFunctionColor);
+                  //   componentDomElement.classList.add(defaultFunctionColor);
+                  // }
+                  // if (
+                  //   ((element as IRectNodeComponent<NodeInfo>).nodeInfo as any)
+                  //     .onFunctionFinished
+                  // ) {
+                  //   (
+                  //     (element as IRectNodeComponent<NodeInfo>).nodeInfo as any
+                  //   ).onFunctionFinished();
+                  // }
+                  // resolve({
+                  //   output: inputFunction,
+                  //   result: inputFunction,
+                  //   followPath: undefined,
+                  // });
                 },
                 {
                   ...payload,
@@ -238,7 +268,7 @@ export const getCallFunction = (updated: () => void): NodeTask<NodeInfo> => {
                 undefined,
                 undefined,
                 scopeGuid,
-                runCounter
+                functionRunCounter
               );
             }
           }

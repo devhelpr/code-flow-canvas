@@ -211,6 +211,7 @@ export const getForEach = (_updated: () => void): NodeTask<NodeInfo> => {
             node.thumbConnectors[0],
             canvasAppInstance,
             (inputFromSecondRun: string | any[]) => {
+              console.log('foreach inputFromSecondRun', inputFromSecondRun);
               resolve({
                 result: inputFromSecondRun,
                 output: inputFromSecondRun,

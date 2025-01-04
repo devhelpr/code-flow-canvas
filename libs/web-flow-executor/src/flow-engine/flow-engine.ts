@@ -235,9 +235,13 @@ const triggerExecution = (
           return new Promise((resolve, reject) => {
             promise
               .then((computeResult: any) => {
-                let result: any = undefined;
-                result = computeResult.result ?? computeResult.output ?? '';
-                decrementHelper(runCounter, result, nextNode);
+                // let result: any = undefined;
+                // result = computeResult.result ?? computeResult.output ?? '';
+                decrementHelper(
+                  runCounter,
+                  computeResult.output ?? '',
+                  nextNode
+                );
                 if (computeResult.stop && !computeResult.dummyEndpoint) {
                   if (lastConnectionExecutionHistory) {
                     lastConnectionExecutionHistory.nextNodeStates =
@@ -245,7 +249,11 @@ const triggerExecution = (
                     lastConnectionExecutionHistory = undefined;
                   }
                   if (onStopped) {
-                    decrementHelper(runCounter, result, nextNode);
+                    decrementHelper(
+                      runCounter,
+                      computeResult.output ?? '',
+                      nextNode
+                    );
                     onStopped(computeResult.output ?? '', scopeId);
                   }
                 } else {
@@ -481,7 +489,7 @@ export const runNode = (
       .then((computeResult: any) => {
         let result: any = undefined;
         result = computeResult.result ?? computeResult.output ?? '';
-        decrementHelper(runCounter, result, node);
+        decrementHelper(runCounter, computeResult.output ?? '', node);
         result = computeResult.result;
         followPath = computeResult.followPath;
 
@@ -510,7 +518,7 @@ export const runNode = (
       })
       .catch((e: any) => {
         console.log('runNode error', e);
-        decrementHelper(runCounter, node);
+        decrementHelper(runCounter, undefined, node);
       });
   } else if (formInfo && formInfo?.compute) {
     if (formInfo.decorators) {
@@ -833,7 +841,7 @@ export const runNodeFromThumb = (
             .then((computeResult: any) => {
               let result: any = undefined;
               result = computeResult.result ?? computeResult.output ?? '';
-              decrementHelper(runCounter, result, nextNode);
+              decrementHelper(runCounter, computeResult.output ?? '', nextNode);
               result = computeResult.result;
               followPath = computeResult.followPath;
               if (computeResult.stop) {

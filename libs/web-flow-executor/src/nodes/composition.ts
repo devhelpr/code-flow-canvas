@@ -146,6 +146,7 @@ export const getCreateCompositionNode =
       }
       return;
     };
+    let thumbOutputNodeComponents: INodeComponent<NodeInfo>[] = [];
     const computeAsync = (
       input: string,
       loopIndex?: number,
@@ -155,9 +156,11 @@ export const getCreateCompositionNode =
       scopeId?: string,
       rootRunCounter?: RunCounter
     ) => {
+      const helperScopeId = scopeId;
       return new Promise<IComputeResult>((resolve) => {
         if (canvasApp) {
           if (!composition) {
+            thumbOutputNodeComponents = [];
             composition = canvasApp.compositons.getComposition(compositionId);
 
             // TODO FIX THIS!!!!!
@@ -173,8 +176,6 @@ export const getCreateCompositionNode =
                 getNodeFactory
               );
 
-              // TODO : onFinish event op Thumb-output in nodeInfo
-
               contextCanvasApp.elements.forEach((node) => {
                 const nodeComponent =
                   node as unknown as INodeComponent<NodeInfo>;
@@ -184,36 +185,7 @@ export const getCreateCompositionNode =
                   }
                 }
                 if (nodeComponent.nodeInfo?.type === 'thumb-output') {
-                  (nodeComponent.nodeInfo as any).onFinish = (
-                    input: string | any[],
-                    _payload: any,
-                    thumbOutputNode: INodeComponent<NodeInfo>
-                  ) => {
-                    const thumb = getThumbNodeByName(
-                      thumbOutputNode.id,
-                      compositionNode!,
-                      {
-                        start: true,
-                        end: false,
-                      }
-                    );
-
-                    if (!thumb || !canvasApp) {
-                      return;
-                    }
-                    runNodeFromThumb(
-                      thumb,
-                      canvasApp,
-                      (_inputFromRun: string | any[]) => {
-                        //
-                      },
-                      input,
-                      compositionNode as IRectNodeComponent<NodeInfo>,
-                      loopIndex,
-                      scopeId,
-                      rootRunCounter
-                    );
-                  };
+                  thumbOutputNodeComponents.push(nodeComponent);
                 }
               });
             } catch (error) {
@@ -228,19 +200,73 @@ export const getCreateCompositionNode =
             }
           }
         }
-        if (composition) {
+        if (composition && thumbOutputNodeComponents) {
+          thumbOutputNodeComponents.forEach((thumbOutputNodeComponent) => {
+            (thumbOutputNodeComponent.nodeInfo as any).onFinish = (
+              input: string | any[],
+              _payload: any,
+              thumbOutputNode: INodeComponent<NodeInfo>,
+              _thumbOutputScopeId: string
+            ) => {
+              const thumb = getThumbNodeByName(
+                thumbOutputNode.id,
+                compositionNode!,
+                {
+                  start: true,
+                  end: false,
+                }
+              );
+
+              if (!thumb || !canvasApp) {
+                return;
+              }
+
+              //rootRunCounter?.decrementRunCounter();
+              runNodeFromThumb(
+                thumb,
+                canvasApp,
+                (_inputFromRun: string | any[]) => {
+                  console.log(
+                    'composition onFinish runNodeFromThumb',
+                    _inputFromRun
+                  );
+                  resolve({
+                    result: _inputFromRun,
+                    output: _inputFromRun,
+                    followPath: undefined,
+                    dummyEndpoint: true,
+                    stop: true,
+                  });
+                },
+                input,
+                compositionNode as IRectNodeComponent<NodeInfo>,
+                loopIndex,
+                helperScopeId,
+                rootRunCounter
+              );
+              console.log('composition onFinish', input);
+              // resolve({
+              //   result: input,
+              //   output: input,
+              //   followPath: undefined,
+              //   dummyEndpoint: true,
+              //   stop: true,
+              // });
+            };
+          });
           const runCounter = new RunCounter();
           runCounter.setRunCounterResetHandler(
             (input?: string | any[], _node?: INodeComponent<NodeInfo>) => {
               if (runCounter.runCounter <= 0) {
+                console.log('composition runCounter.runCounter <= 0', input);
                 // THIS seems to be reliable together with onFinish above !?? tests also run well
-                resolve({
-                  result: input,
-                  output: input,
-                  followPath: undefined,
-                  dummyEndpoint: true,
-                  stop: true,
-                });
+                // resolve({
+                //   result: input,
+                //   output: input,
+                //   followPath: undefined,
+                //   dummyEndpoint: true,
+                //   stop: true,
+                // });
                 return;
                 // if (!compositionNode || !node) {
                 //   resolve({
@@ -351,6 +377,7 @@ export const getCreateCompositionNode =
             return;
           }
           console.log('composition runNode', loopIndex);
+          //rootRunCounter?.incrementRunCounter();
           runNode(
             nodeInComposition,
             contextCanvasApp,
@@ -369,7 +396,7 @@ export const getCreateCompositionNode =
             undefined,
             loopIndex,
             undefined, // connection
-            undefined,
+            helperScopeId,
             runCounter,
             undefined,
             undefined,
