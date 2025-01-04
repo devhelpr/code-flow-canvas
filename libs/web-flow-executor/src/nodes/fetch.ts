@@ -133,10 +133,12 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
       try {
         sendFetchState('fetching');
 
-        const openAIKey = canvasAppInstance?.isContextOnly
-          ? process.env?.['openai_api_key'] ?? ''
-          : canvasAppInstance?.getTempData('openai-key') ?? '';
-
+        // const openAIKey = canvasAppInstance?.isContextOnly
+        //   ? (typeof process !== 'undefined' &&
+        //       process?.env?.['openai_api_key']) ??
+        //     ''
+        //   : canvasAppInstance?.getTempData('openai-key') ?? '';
+        const openAIKey = canvasAppInstance?.getTempData('openai-key') ?? '';
         let url = node?.nodeInfo?.formValues?.['url'] ?? '';
         if (url.startsWith('/')) {
           url = canvasAppInstance?.getApiUrlRoot() + url.substring(1);
@@ -268,6 +270,23 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               contentType.includes('application/json')
             ) {
               response.json().then((json) => {
+                if (response.status >= 400) {
+                  sendFetchState('error');
+                  result = undefined;
+                  if (
+                    (errorNode?.domElement as unknown as HTMLElement) &&
+                    !canvasAppInstance?.isContextOnly
+                  ) {
+                    (
+                      errorNode?.domElement as unknown as HTMLElement
+                    )?.classList.remove('hidden');
+                    (
+                      errorNode.domElement as unknown as HTMLElement
+                    ).textContent = json?.error?.toString() ?? 'Error';
+                  }
+                  sendError(json?.error?.message?.toString() ?? 'Error');
+                  return;
+                }
                 sendFetchState('ready');
                 result = json;
                 hideLoader();

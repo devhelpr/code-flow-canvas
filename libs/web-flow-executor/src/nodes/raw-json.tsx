@@ -75,10 +75,12 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       };
     }
     try {
-      const openAIKey = canvasAppInstance?.isContextOnly
-        ? process.env?.['openai_api_key'] ?? ''
-        : canvasAppInstance?.getTempData('openai-key') ?? '';
-
+      // const openAIKey = canvasAppInstance?.isContextOnly
+      //   ? (typeof process !== 'undefined' &&
+      //       process?.env?.['openai_api_key']) ??
+      //     ''
+      //   : canvasAppInstance?.getTempData('openai-key') ?? '';
+      const openAIKey = canvasAppInstance?.getTempData('openai-key') ?? '';
       const payloadForExpression = getVariablePayloadInputUtils(
         input,
         payload,
