@@ -65,8 +65,8 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
         input: string | any[],
         node: IRectNodeComponent<NodeInfo>,
         loopIndex?: number,
-        scopeId?: string,
-        runCounter?: RunCounter
+        _scopeId?: string,
+        _runCounter?: RunCounter
       ) {
         if (
           !node.thumbConnectors ||
@@ -95,6 +95,7 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
                 result: inputFromRun,
                 output: inputFromRun,
                 stop: true,
+                dummyEndpoint: true,
               });
             }
           },
@@ -143,6 +144,7 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
                   result: inputFromSecondRun,
                   output: inputFromSecondRun,
                   stop: true,
+                  dummyEndpoint: true,
                 });
               }
             },
@@ -167,6 +169,7 @@ export const getSequential = (updated: () => void): NodeTask<NodeInfo> => {
     family: 'flow-canvas',
     isContainer: false,
     category: 'flow-control',
+    thumbs: thumbs,
     createVisualNode: (
       canvasApp: IFlowCanvasBase<NodeInfo>,
       x: number,
