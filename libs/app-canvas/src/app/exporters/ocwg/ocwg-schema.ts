@@ -1,36 +1,31 @@
 export type OCWGNode = {
   id: string;
-  schema: string;
-  schema_version: string;
-  x: number;
-  y: number;
-  z?: number;
-  properties?: {
+  position?: number[];
+  size?: number[];
+  data?: {
     [key: string]: any;
-  };
-  fallback?: string;
+  }[];
 };
 
 export type OCWGEdge = {
+  type: '@ocwg/rel/edge';
   id: string;
-  name: string;
-  schema: '@ocwg/edge';
-  schema_version: '1.0';
+  directed?: boolean;
   from: string;
   to: string;
 };
 export type OCWGRelation = OCWGSet | OCWGEdge;
 
 export type OCWGSet = {
-  schema: '@ocwg/set';
-  schema_version: string;
+  type: '@ocwg/set';
   members: Array<string>;
-  name: string;
+  id: string;
 };
 export type OCWGFile = {
-  schema_version: string;
+  ocif: string;
   nodes: OCWGNode[];
   relations: OCWGRelation[];
+  resources: any[];
   schemas: {
     [key: string]: any;
   };

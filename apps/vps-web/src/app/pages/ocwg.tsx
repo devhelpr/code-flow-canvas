@@ -14,7 +14,7 @@ export function ocwgPage() {
   renderElement(
     <div
       id="color-picker-popup"
-      class=" bg-white z-[100000]  fixed w-[300px] h-auto max-w-[calc(100vw-80px)] top-[80px] right-[40px] shadow-lg rounded-lg"
+      class=" hidden bg-white z-[100000]  fixed w-[300px] h-auto max-w-[calc(100vw-80px)] top-[80px] right-[40px] shadow-lg rounded-lg"
     >
       <div class="flex flex-wrap p-4">
         <h2 class="font-bold text-lg mb-4 w-full">Theme Colors</h2>

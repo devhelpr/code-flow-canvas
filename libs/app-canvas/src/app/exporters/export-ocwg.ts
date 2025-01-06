@@ -34,37 +34,35 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     _context: OCWGInfo,
     node: INodeComponent<BaseNodeInfo>,
     nodeInfo: BaseNodeInfo,
-    nodeText: string,
+    _nodeText: string,
     _isContainer: boolean,
     _isRectThumb: boolean,
     parentId?: string
   ): string {
     const ocwgNode: OCWGNode = {
       id: `shape:${node.id}`,
-      schema: '@code-flow-canvas/node',
-      schema_version: '0.1',
-      x: node.x,
-      y: node.y,
-      properties: {
-        width: node.width ?? 0,
-        height: node.height ?? 0,
-        [nodeInfoPropertyName]: nodeInfo,
-      },
-      fallback: nodeText,
+      position: [node.x, node.y],
+      size: [node.width ?? 0, node.height ?? 0],
+      data: [
+        {
+          ...nodeInfo,
+          type: nodeInfoPropertyName,
+          nodeType: nodeInfo.type,
+        },
+      ],
     };
     if (this.file?.nodes) {
       this.file.nodes.push(ocwgNode);
     }
     if (parentId && this.file) {
-      const relation = this.file.relations.find((r) => r.name === parentId);
-      if (relation && relation.schema === '@ocwg/set') {
+      const relation = this.file.relations.find((r) => r.id === parentId);
+      if (relation && relation.type === '@ocwg/set') {
         relation.members.push(ocwgNode.id);
       } else {
         const relation = {
-          schema: '@ocwg/set' as const,
-          schema_version: '0.1',
+          type: '@ocwg/set' as const,
           members: [ocwgNode.id],
-          name: parentId,
+          id: parentId,
         };
         this.file.relations.push(relation);
       }
@@ -88,24 +86,23 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     }
     const ocwgNode: OCWGNode = {
       id: `shape:${node.id}`,
-      schema: '@code-flow-canvas/connection',
-      schema_version: '0.1',
-      x: node.x,
-      y: node.y,
-      properties: {
-        width: node.width ?? 0,
-        height: node.height ?? 0,
-        [nodeInfoPropertyName]: nodeInfo,
-        start: {
-          connected_to: `shape:${node.startNode.id}`,
-          port_name: 'output',
+      position: [node.x, node.y],
+      size: [node.width ?? 0, node.height ?? 0],
+      data: [
+        {
+          ...nodeInfo,
+          type: nodeInfoPropertyName,
+          nodeType: nodeInfo.type,
+          start: {
+            connected_to: `shape:${node.startNode.id}`,
+            port_name: 'output',
+          },
+          end: {
+            connected_to: `shape:${node.endNode.id}`,
+            port_name: 'input',
+          },
         },
-        end: {
-          connected_to: `shape:${node.endNode.id}`,
-          port_name: 'input',
-        },
-      },
-      fallback: 'connection',
+      ],
     };
     if (this.file?.nodes) {
       this.file.nodes.push(ocwgNode);
@@ -113,12 +110,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     if (this.file?.relations) {
       {
         const relation = {
-          id: node.id,
-          name: `${node.id}-edge`,
-          schema: '@ocwg/edge' as const,
-          schema_version: '1.0' as const,
+          type: '@ocwg/rel/edge' as const,
+          id: `${node.id}-edge`,
           from: `shape:${node.startNode.id}`,
           to: `shape:${node.endNode.id}`,
+          directed: true,
         };
         this.file.relations.push(relation);
       }
@@ -135,24 +131,23 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     }
     const ocwgNode: OCWGNode = {
       id: `connection:${node.id}`,
-      schema: '@code-flow-canvas/connection',
-      schema_version: '0.1',
-      x: node.x,
-      y: node.y,
-      properties: {
-        width: node.width ?? 0,
-        height: node.height ?? 0,
-        [nodeInfoPropertyName]: nodeInfo,
-        start: {
-          connected_to: `shape:${node.startNode.id}`,
-          port_name: node.startNodeThumb?.thumbName,
+      position: [node.x, node.y],
+      size: [node.width ?? 0, node.height ?? 0],
+      data: [
+        {
+          ...nodeInfo,
+          type: nodeInfoPropertyName,
+          nodeType: nodeInfo.type,
+          start: {
+            connected_to: `shape:${node.startNode.id}`,
+            port_name: node.startNodeThumb?.thumbName,
+          },
+          end: {
+            connected_to: `shape:${node.endNode.id}`,
+            port_name: node.endNodeThumb?.thumbName,
+          },
         },
-        end: {
-          connected_to: `shape:${node.endNode.id}`,
-          port_name: node.endNodeThumb?.thumbName,
-        },
-      },
-      fallback: 'connection',
+      ],
     };
     if (this.file?.nodes) {
       this.file.nodes.push(ocwgNode);
@@ -160,10 +155,9 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     if (this.file?.relations) {
       {
         const relation = {
-          id: node.id,
-          name: `${node.id}-edge`,
-          schema: '@ocwg/edge' as const,
-          schema_version: '1.0' as const,
+          id: `${node.id}-edge`,
+          type: '@ocwg/rel/edge' as const,
+          directed: true,
           from: `shape:${node.startNode.id}`,
           to: `shape:${node.endNode.id}`,
         };
