@@ -779,3 +779,7 @@ html:active-view-transition-type(normal) {
 .blink-thumb {
   animation: blink-thumb 750ms infinite ease-in-out;
 }
+
+#breadcrumbs:not(.hidden) ~ .taskbar-container {
+  @apply top-[116px] max-h-[calc(100vh-166px)];
+}
