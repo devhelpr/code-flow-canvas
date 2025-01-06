@@ -52,7 +52,7 @@ export function ocwgPage() {
       class="hidden bg-white z-[50000] overflow-hidden fixed w-[384px] h-[384px] max-w-[calc(100vw-80px)] bottom-[80px] right-[40px] grid grid-rows-[auto_1fr]"
     >
       <div class="flex flex-wrap">
-        <h1 class="font-bold text-xl p-2">OpenCanvas(OCWG) WiP Export</h1>
+        <h1 class="font-bold text-xl p-2">OpenCanvas OCIF 0.2 WiP Export</h1>
         <button
           id="ocwg-copy-to-clipboard"
           title="Copy to clipboard"
