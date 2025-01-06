@@ -36,6 +36,7 @@ import {
   IFlowCanvasBase,
   Theme,
   IThumb,
+  GetNodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -148,7 +149,8 @@ export class CodeFlowWebAppCanvas {
   }
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
-    canvasApp: IFlowCanvasBase<BaseNodeInfo>
+    canvasApp: IFlowCanvasBase<BaseNodeInfo>,
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
   ) => void;
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction
@@ -220,7 +222,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
-    canvasApp: IFlowCanvasBase<BaseNodeInfo>
+    canvasApp: IFlowCanvasBase<BaseNodeInfo>,
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
   ) => void;
 
   createThumbNode = (_thumb: IThumb): false => {
@@ -235,7 +238,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     widthSpaceForSideToobars?: number,
     onStoreFlow?: (
       flow: Flow<NodeInfo>,
-      canvasApp: IFlowCanvasBase<BaseNodeInfo>
+      canvasApp: IFlowCanvasBase<BaseNodeInfo>,
+      getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
     ) => void,
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction
@@ -1040,7 +1044,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             );
             this.updateToolbarTaskList?.();
             if (this.onStoreFlow) {
-              this.onStoreFlow(flow, this.canvasApp);
+              this.onStoreFlow(flow, this.canvasApp, getNodeTaskFactory);
             }
             this.isStoring = false;
           })
@@ -1075,7 +1079,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           compositions: compositions,
         };
         if (this.onStoreFlow && this.canvasApp) {
-          this.onStoreFlow(flow, this.canvasApp);
+          this.onStoreFlow(flow, this.canvasApp, getNodeTaskFactory);
         }
         this.storageProvider.saveFlow(this.flowId, flow).then(() => {
           if (this.canvasAction === CanvasAction.newConnectionCreated) {
@@ -2132,7 +2136,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         },
         compositions: {},
       };
-      this.onStoreFlow(flow, this.canvasApp);
+      this.onStoreFlow(flow, this.canvasApp, getNodeTaskFactory);
     }
   };
 

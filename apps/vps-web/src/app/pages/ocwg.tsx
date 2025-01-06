@@ -169,7 +169,7 @@ export function ocwgPage() {
         }
       });
 
-    app.onStoreFlow = (_flow, canvasApp) => {
+    app.onStoreFlow = (_flow, canvasApp, _getNodeTaskFactory) => {
       const ocwg = new module.OCWGExporter({
         canvasApp: canvasApp,
         downloadFile: (_data: any, _name: string, _dataType: string) => {
