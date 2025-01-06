@@ -629,10 +629,13 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 if (!this.canvasApp) {
                   return;
                 }
-                exportTldraw({
-                  canvasApp: this.canvasApp,
-                  downloadFile,
-                });
+                exportTldraw(
+                  {
+                    canvasApp: this.canvasApp,
+                    downloadFile,
+                  },
+                  getGLNodeTaskFactory
+                );
               }}
               getElement={(element: HTMLElement) => {
                 this.exportExternalButton = element;

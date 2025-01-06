@@ -3,12 +3,14 @@ import {
   INodeComponent,
   BaseNodeInfo,
   IThumbNodeComponent,
+  GetNodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
 import { Exporter } from './Exporter';
 
 import { BaseExporter } from './BaseExporter';
 import { OCWGFile, OCWGNode } from './ocwg/ocwg-schema';
 import { ocwgEmptyFile } from './ocwg/ocwg-empty-file';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 interface OCWGInfo {
   index: number;
@@ -16,8 +18,11 @@ interface OCWGInfo {
 const nodeInfoPropertyName = '@code-flow-canvas/node-properties';
 
 export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
-  constructor(exportInfo: Exporter) {
-    super(exportInfo);
+  constructor(
+    exportInfo: Exporter,
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+  ) {
+    super(exportInfo, getNodeTaskFactory);
   }
 
   override createExportFile(): OCWGFile {
@@ -39,6 +44,29 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     _isRectThumb: boolean,
     parentId?: string
   ): string {
+    const ports: string[] = [];
+    if (nodeInfo.type) {
+      const factory = this.getNodeTaskFactory(nodeInfo.type);
+      if (factory) {
+        const nodeTask = factory(() => {
+          //
+        });
+        if (nodeTask) {
+          nodeTask.thumbs?.forEach((thumb) => {
+            if (thumb.name) {
+              ports.push(thumb.name);
+            }
+          });
+        }
+      }
+    }
+    const portsNode: any[] = [];
+    if (ports.length > 0) {
+      portsNode.push({
+        type: '@ocwg/node/ports',
+        ports: ports,
+      });
+    }
     const ocwgNode: OCWGNode = {
       id: `shape:${node.id}`,
       position: [node.x, node.y],
@@ -49,6 +77,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           type: nodeInfoPropertyName,
           nodeType: nodeInfo.type,
         },
+        ...portsNode,
       ],
     };
     if (this.file?.nodes) {
@@ -168,8 +197,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
   }
 }
 
-export const exportOCWG = (exportInfo: Exporter) => {
-  const tldrawExporter = new OCWGExporter(exportInfo);
+export const exportOCWG = (
+  exportInfo: Exporter,
+  getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+) => {
+  const tldrawExporter = new OCWGExporter(exportInfo, getNodeTaskFactory);
   const file = tldrawExporter.convertToExportFile();
   exportInfo.downloadFile(
     JSON.stringify(file),

@@ -835,10 +835,13 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   if (!this.canvasApp) {
                     return;
                   }
-                  exportTldraw({
-                    canvasApp: this.canvasApp,
-                    downloadFile,
-                  });
+                  exportTldraw(
+                    {
+                      canvasApp: this.canvasApp,
+                      downloadFile,
+                    },
+                    getNodeTaskFactory
+                  );
                 }}
                 getElement={(element: HTMLElement) => {
                   this.exportCodeButton = element;

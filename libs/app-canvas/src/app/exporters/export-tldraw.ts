@@ -4,6 +4,7 @@ import {
   cleanupNodeInfoForSerializing,
   BaseNodeInfo,
   IThumbNodeComponent,
+  GetNodeTaskFactory,
 } from '@devhelpr/visual-programming-system';
 import { Exporter } from './Exporter';
 import {
@@ -16,14 +17,18 @@ import {
 } from './tldraw/tldraw-emtpy-file';
 import { TlDrawFile } from './tldraw/tldraw-schema';
 import { BaseExporter } from './BaseExporter';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 interface TLDrawInfo {
   index: number;
 }
 
 export class TLDrawExporter extends BaseExporter<TlDrawFile, TLDrawInfo> {
-  constructor(exportInfo: Exporter) {
-    super(exportInfo);
+  constructor(
+    exportInfo: Exporter,
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+  ) {
+    super(exportInfo, getNodeTaskFactory);
   }
 
   override createExportFile(): TlDrawFile {
@@ -194,8 +199,11 @@ export class TLDrawExporter extends BaseExporter<TlDrawFile, TLDrawInfo> {
   }
 }
 
-export const exportTldraw = (exportInfo: Exporter) => {
-  const tldrawExporter = new TLDrawExporter(exportInfo);
+export const exportTldraw = (
+  exportInfo: Exporter,
+  getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+) => {
+  const tldrawExporter = new TLDrawExporter(exportInfo, getNodeTaskFactory);
   const file = tldrawExporter.convertToExportFile();
   exportInfo.downloadFile(
     JSON.stringify(file),

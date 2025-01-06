@@ -169,13 +169,16 @@ export function ocwgPage() {
         }
       });
 
-    app.onStoreFlow = (_flow, canvasApp, _getNodeTaskFactory) => {
-      const ocwg = new module.OCWGExporter({
-        canvasApp: canvasApp,
-        downloadFile: (_data: any, _name: string, _dataType: string) => {
-          //
+    app.onStoreFlow = (_flow, canvasApp, getNodeTaskFactory) => {
+      const ocwg = new module.OCWGExporter(
+        {
+          canvasApp: canvasApp,
+          downloadFile: (_data: any, _name: string, _dataType: string) => {
+            //
+          },
         },
-      });
+        getNodeTaskFactory
+      );
       const file = ocwg.convertToExportFile();
       currentOcwgExport = JSON.stringify(file, null, 2);
       ocwgExport.innerHTML = '';
