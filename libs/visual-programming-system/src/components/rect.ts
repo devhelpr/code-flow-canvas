@@ -32,6 +32,7 @@ import { getPointerPos } from '../utils/pointer-pos';
 import { FlowChangeType } from '../interfaces';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
+import { Theme } from '../interfaces/theme';
 
 export class Rect<T extends BaseNodeInfo> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -73,6 +74,7 @@ export class Rect<T extends BaseNodeInfo> {
   };
 
   protected cssClasses: ReturnType<typeof getRectNodeCssClasses>;
+  protected theme?: Theme;
 
   constructor(
     canvas: IElementNode<T>,
@@ -104,7 +106,8 @@ export class Rect<T extends BaseNodeInfo> {
     isStaticPosition?: boolean,
     parentNodeClassName?: string,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    theme?: Theme
   ) {
     this.cssClasses = getRectNodeCssClasses();
     this.canvas = canvas;
@@ -114,6 +117,7 @@ export class Rect<T extends BaseNodeInfo> {
     this.nodeTransformer = nodeTransformer;
     this.nodeTransformer.detachNode();
     this.rootElement = rootElement;
+    this.theme = theme;
 
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
@@ -251,7 +255,8 @@ export class Rect<T extends BaseNodeInfo> {
           canvasUpdated,
           containerNode,
           setCanvasAction,
-          rootElement
+          rootElement,
+          this.theme
         );
 
         if (!thumbNode.nodeComponent) {

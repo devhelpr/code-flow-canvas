@@ -38,9 +38,11 @@ import { thumbTwoDots } from './icons/thumb-two-dots';
 import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
 import { BaseNodeInfo } from '../types/base-node-info';
+import { Theme } from '../interfaces/theme';
 
 export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
+  theme: Theme | undefined = undefined;
   constructor(
     thumb: IThumb,
     canvasElement: DOMElementNode,
@@ -73,7 +75,8 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     canvasUpdated?: () => void,
     containerNode?: IRectNodeComponent<T>,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    theme?: Theme
   ) {
     super(
       canvasElement,
@@ -111,6 +114,7 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
     }
+    this.theme = theme;
     this.rootElement = rootElement;
     this.nodeComponent.prefixIcon = thumb.prefixIcon;
     this.nodeComponent.prefixLabel = thumb.prefixLabel;
@@ -734,7 +738,7 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
           this.canvasUpdated,
           undefined,
           this.containerNode,
-          undefined,
+          this.theme, // theme
           undefined,
           this.rootElement
         );

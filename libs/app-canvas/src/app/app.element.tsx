@@ -94,7 +94,7 @@ export class AppElement<T extends BaseNodeInfo> {
   commandRegistry = new Map<string, ICommandHandler>();
 
   toggleFullscreenPopup = false;
-
+  theme?: Theme;
   constructor(
     appRootSelector: string,
     customTemplate?: HTMLTemplateElement,
@@ -113,6 +113,7 @@ export class AppElement<T extends BaseNodeInfo> {
         'NO Crypto defined ... uuid cannot be created! Are you on a http connection!?'
       );
     }
+    this.theme = theme;
     this.appRootElement = document.querySelector(appRootSelector);
     if (!this.appRootElement) {
       return;
@@ -1295,7 +1296,7 @@ export class AppElement<T extends BaseNodeInfo> {
         undefined,
         undefined,
         'composition-canvas-' + node.nodeInfo.compositionId,
-        undefined,
+        this.theme, // theme
         this.showEditCompositionNameDialog,
         undefined,
         undefined,

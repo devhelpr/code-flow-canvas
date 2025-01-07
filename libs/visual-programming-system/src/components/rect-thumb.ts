@@ -13,6 +13,7 @@ import {
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces';
+import { Theme } from '../interfaces/theme';
 import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, NodeType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
@@ -57,7 +58,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     isCircle?: boolean,
     createStraightLineConnection?: boolean,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    theme?: Theme
   ) {
     super(
       canvas,
@@ -82,7 +84,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
       isStaticPosition,
       getRectNodeCssClasses().defaultRectThumbClasses,
       setCanvasAction,
-      rootElement
+      rootElement,
+      theme
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');

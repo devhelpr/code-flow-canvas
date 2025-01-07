@@ -1346,7 +1346,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       isStaticPosition,
       parentNodeClassNames,
       this.onCanvasAction,
-      this.rootElement
+      this.rootElement,
+      this.theme
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
@@ -1405,7 +1406,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       isCircle,
       createStraightLineConnection,
       this.onCanvasAction,
-      this.rootElement
+      this.rootElement,
+      this.theme
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
@@ -1767,7 +1769,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.onCanvasUpdated,
       rectInstance.containerNode,
       undefined,
-      this.rootElement
+      this.rootElement,
+      this.theme
     );
 
     if (!thumbNode.nodeComponent) {
