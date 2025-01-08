@@ -20,7 +20,7 @@ export interface DropdownButtonProps {
 export const DropdownButton = (props: DropdownButtonProps) => {
   let wrapperElement: HTMLDivElement | null = null;
   let ulElement: HTMLUListElement | null = null;
-  let toggle: boolean = false;
+  let toggle = false;
   window.addEventListener('resize', () => {
     if (wrapperElement) {
       toggle = false;
@@ -73,10 +73,12 @@ export const DropdownButton = (props: DropdownButtonProps) => {
         getElement={(element: HTMLUListElement) => {
           ulElement = element;
         }}
-        class={`fixed hidden group-[.open]:flex ${props.bgColorClasses} p-4 rounded-md flex-col gap-2`}
+        class={`fixed hidden group-[.open]:flex ${props.bgColorClasses} rounded-md flex-col`}
       >
         {props.dropdownItems.map((item) => (
-          <li class={`text-white ${props.textColorClasses}`}>
+          <li
+            class={`text-white hover:bg-slate-600 px-4 py-2 ${props.textColorClasses}`}
+          >
             <button
               class="appearance-none"
               click={(event: MouseEvent) => {

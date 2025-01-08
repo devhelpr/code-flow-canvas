@@ -140,7 +140,7 @@ export class NavbarComponent extends Component<
           <DropdownButton
             class=""
             mainBgColorClass="bg-slate-500"
-            bgColorClasses="bg-slate-500 hover:bg-slate-600 "
+            bgColorClasses="bg-slate-500 "
             textColorClasses="text-white"
             caption="Export"
             onClick={() => {
@@ -151,6 +151,12 @@ export class NavbarComponent extends Component<
                 caption: 'Export as typescript',
                 onClick: () => {
                   this.export(true);
+                },
+              },
+              {
+                caption: 'Export as mermaid',
+                onClick: () => {
+                  this.exportToMermaid();
                 },
               },
             ]}
@@ -435,6 +441,47 @@ export class NavbarComponent extends Component<
       'application/json',
       '.json',
       'vps-flow-json'
+    );
+  };
+
+  exportToMermaid = () => {
+    const canvasApp = this.props.getCanvasApp();
+    if (!canvasApp) {
+      return;
+    }
+    const data = serializeElementsMap(canvasApp.elements);
+    // const compositions = serializeCompositions<NodeInfo>(
+    //   canvasApp.compositons.getAllCompositions()
+    // );
+
+    let mermaid = 'flowchart TD\n';
+    for (const node of data) {
+      if (node.nodeType === 'Shape') {
+        let isNodeExported = false;
+        data.forEach((n) => {
+          if (n.nodeType === 'Connection') {
+            const connection = n;
+            if (connection.startNodeId === node.id && connection.endNodeId) {
+              const endNode = data.find((n) => n.id === connection.endNodeId);
+              if (endNode) {
+                isNodeExported = true;
+                mermaid += `  ${node.id}[${node.nodeInfo?.type}] --> ${endNode?.id}[${endNode.nodeInfo?.type}]\n`;
+              }
+            }
+          }
+        });
+        if (!isNodeExported) {
+          mermaid += `  ${node.id}[${node.nodeInfo?.type}]\n`;
+        }
+      }
+    }
+
+    saveFile(
+      mermaid,
+      'vps-flow',
+      'text/vnd.mermaid',
+      '.mermaid',
+      'vps-flow-mermaid'
     );
   };
 
