@@ -39,6 +39,7 @@ import {
   getIsStopAnimations,
   setStopAnimations,
 } from '../follow-path/animate-path';
+import { OCWGExporter } from '../exporters/export-ocwg';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -156,7 +157,45 @@ export class NavbarComponent extends Component<
               {
                 caption: 'Export as mermaid',
                 onClick: () => {
-                  this.exportToMermaid();
+                  try {
+                    this.exportToMermaid();
+                  } catch (err) {
+                    console.error(err);
+                  }
+                },
+              },
+              {
+                caption: 'Export as OCIF',
+                onClick: () => {
+                  const canvasApp = this.props.getCanvasApp();
+                  if (!canvasApp) {
+                    return;
+                  }
+                  const exporter = new OCWGExporter(
+                    {
+                      canvasApp: canvasApp,
+                      downloadFile: (
+                        _data: any,
+                        _name: string,
+                        _dataType: string
+                      ) => {
+                        //
+                      },
+                    },
+                    getNodeTaskFactory
+                  );
+                  const ocifFile = exporter.convertToExportFile();
+                  try {
+                    saveFile(
+                      JSON.stringify(ocifFile, null, 2),
+                      'code-flow-canvas.ocif.json',
+                      'application/json',
+                      '.ocif.json',
+                      'ocif-json'
+                    );
+                  } catch (err) {
+                    console.error(err);
+                  }
                 },
               },
             ]}
@@ -428,19 +467,19 @@ export class NavbarComponent extends Component<
           compositions,
           canvasApp.elements
         ),
-        'vps-flow',
+        'code-flow-canvas.ts',
         'text/x.typescript',
         '.ts',
-        'vps-flow-typescript'
+        'code-flow-canvas-flow-typescript'
       );
       return;
     }
     saveFile(
       exportFlowToJson<NodeInfo>('1234', data, compositions),
-      'vps-flow',
+      'code-flow-canvas.json',
       'application/json',
       '.json',
-      'vps-flow-json'
+      'code-flow-canvas-json'
     );
   };
 
@@ -478,10 +517,10 @@ export class NavbarComponent extends Component<
 
     saveFile(
       mermaid,
-      'vps-flow',
+      'code-flow-canvas.mermaid',
       'text/vnd.mermaid',
       '.mermaid',
-      'vps-flow-mermaid'
+      'code-flow-canvas-mermaid'
     );
   };
 
