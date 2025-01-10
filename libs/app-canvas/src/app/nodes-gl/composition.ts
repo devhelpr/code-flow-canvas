@@ -9,6 +9,7 @@ import {
   NodeType,
   ThumbConnectionType,
   visualNodeFactory,
+  ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { GLNodeInfo } from '../types/gl-node-info';
 import { getSortedNodes } from '../utils/sort-nodes';
@@ -17,10 +18,11 @@ const familyName = 'flow-canvas';
 
 export const getCreateCompositionNode =
   (
-    thumbsOnInitialisation: IThumb[],
+    _thumbsOnInitialisation: IThumb[],
     compositionId: string,
     name: string,
-    getGLNodeFactory: (name: string) => NodeTaskFactory<GLNodeInfo>
+    getGLNodeFactory: (name: string) => NodeTaskFactory<GLNodeInfo>,
+    compositionData: Composition<GLNodeInfo>
   ): NodeTaskFactory<GLNodeInfo> =>
   (_updated: () => void): NodeTask<GLNodeInfo> => {
     const fieldName = 'composition';
@@ -42,13 +44,12 @@ export const getCreateCompositionNode =
       let outputthumbIdentifierWithinNode = thumbIdentifierWithinNode;
       compositionThumbs.forEach((thumb) => {
         if (
-          thumb.nodeId === node.id &&
+          thumb.name === node.id &&
           thumb.connectionType === ThumbConnectionType.end
         ) {
-          if (thumb.thumbIdentifierWithinNode) {
+          if (thumb.name) {
             hasInputBeenSet = true;
-            inputs[thumb.name ?? ''] =
-              payload?.[thumb.thumbIdentifierWithinNode];
+            inputs[thumb.name ?? ''] = payload?.[thumb.name];
           }
         }
       });
@@ -145,8 +146,8 @@ export const getCreateCompositionNode =
       input: string,
       _loopIndex?: number,
       payload?: any,
-      _thumbName?: string,
-      thumbIdentifierWithinNode?: string,
+      thumbName?: string,
+      _thumbIdentifierWithinNode?: string,
       _unknownVariable?: boolean
     ) => {
       let shader = '';
@@ -154,12 +155,12 @@ export const getCreateCompositionNode =
       if (!canvasApp) {
         return;
       }
-      if (thumbIdentifierWithinNode) {
+      if (thumbName) {
         if (!composition) {
           composition = canvasApp?.compositons.getComposition(compositionId);
           if (composition) {
             nodes = composition.nodes;
-            compositionThumbs = composition.thumbs;
+            compositionThumbs = generatedThumbs;
             composition.nodes.forEach((node) => {
               node.connections = [];
               if (composition && node.nodeType === NodeType.Shape) {
@@ -207,28 +208,20 @@ export const getCreateCompositionNode =
               node.nodeInfo?.type === 'set-color-variable-node' ||
               node.nodeInfo?.type === 'set-and-add-color-variable-node'
             ) {
-              shader += getNodeOutput(
-                node,
-                '',
-                thumbIdentifierWithinNode,
-                payload
-              );
+              shader += getNodeOutput(node, '', thumbName, payload);
             }
           });
 
-          composition.thumbs.forEach((thumb) => {
-            if (
-              composition &&
-              thumb.thumbIdentifierWithinNode === thumbIdentifierWithinNode
-            ) {
+          generatedThumbs.forEach((thumb) => {
+            if (composition && thumb.name === thumbName) {
               const startNode = composition.nodes.find(
-                (nodeEval) => nodeEval.id === thumb.nodeId
+                (nodeEval) => nodeEval.id === thumb.name
               );
               if (startNode && !result) {
                 result = getNodeOutput(
                   startNode,
                   thumb.name ?? '',
-                  thumbIdentifierWithinNode,
+                  thumbName,
                   payload
                 );
               }
@@ -237,13 +230,40 @@ export const getCreateCompositionNode =
         }
       }
       return {
-        result: thumbIdentifierWithinNode === 'test' ? shader : result ?? '',
+        result: thumbName === 'test' ? shader : result ?? '',
         output: input,
         preoutput: shader,
         followPath: undefined,
       };
     };
-
+    const generatedThumbs: IThumb[] = [];
+    let inputThumbIndex = 0;
+    let outputThumbIndex = 0;
+    compositionData.nodes.forEach((node) => {
+      if (node.nodeInfo?.type === 'thumb-input') {
+        generatedThumbs.push({
+          thumbType: ThumbType.EndConnectorLeft,
+          thumbIndex: inputThumbIndex,
+          connectionType: ThumbConnectionType.end,
+          color: 'white',
+          label: ' ',
+          name: node.id,
+        });
+        inputThumbIndex++;
+      }
+      if (node.nodeInfo?.type === 'thumb-output') {
+        generatedThumbs.push({
+          thumbType: ThumbType.StartConnectorRight,
+          thumbIndex: outputThumbIndex,
+          connectionType: ThumbConnectionType.start,
+          color: 'white',
+          label: ' ',
+          name: node.id,
+          maxConnections: -1,
+        });
+        outputThumbIndex++;
+      }
+    });
     return visualNodeFactory(
       nodeName,
       labelName,
@@ -254,7 +274,7 @@ export const getCreateCompositionNode =
       false,
       200,
       100,
-      thumbsOnInitialisation,
+      generatedThumbs,
       (_values?: InitialValues) => {
         return [];
       },

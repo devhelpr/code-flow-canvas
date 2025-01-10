@@ -1667,17 +1667,18 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         //   connection.startNodeThumb
         // );
 
-        if (
-          connection.endNodeThumb?.thumbIdentifierWithinNode &&
-          node.nodeInfo?.isComposition
-        ) {
-          inputs[connection.endNodeThumb.thumbIdentifierWithinNode] =
-            this.getNodeOutput(
-              connection.startNode as IRectNodeComponent<GLNodeInfo>,
-              connection.startNodeThumb?.thumbName ?? '',
-              connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
-            );
-        } else if (connection.endNodeThumb?.thumbName) {
+        // if (
+        //   connection.endNodeThumb && // thumbIdentifierWithinNode
+        //   node.nodeInfo?.isComposition
+        // ) {
+        //   inputs[connection.endNodeThumb.id] = // thumbIdentifierWithinNode
+        //     this.getNodeOutput(
+        //       connection.startNode as IRectNodeComponent<GLNodeInfo>,
+        //       connection.startNodeThumb?.thumbName ?? '',
+        //       connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
+        //     );
+        // } else
+        if (connection.endNodeThumb?.thumbName) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
             connection.startNode as IRectNodeComponent<GLNodeInfo>,
             connection.startNodeThumb?.thumbName ?? '',

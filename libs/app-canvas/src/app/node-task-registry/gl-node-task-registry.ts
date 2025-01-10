@@ -330,7 +330,8 @@ export const registerCompositionNodes = (
       composition.thumbs,
       key,
       composition.name,
-      getGLNodeTaskFactory
+      getGLNodeTaskFactory,
+      composition
     );
     registerGLNodeFactory(`composition-${key}`, node, composition.name);
   });
@@ -343,7 +344,8 @@ export const registerComposition: RegisterComposition<GLNodeInfo> = (
     composition.thumbs,
     composition.id,
     composition.name,
-    getGLNodeTaskFactory
+    getGLNodeTaskFactory,
+    composition
   );
   registerGLNodeFactory(
     `composition-${composition.id}`,
