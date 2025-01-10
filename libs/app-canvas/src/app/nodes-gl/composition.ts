@@ -37,7 +37,8 @@ export const getCreateCompositionNode =
       node: FlowNode<GLNodeInfo>,
       thumbName: string,
       thumbIdentifierWithinNode?: string,
-      payload?: any
+      payload?: any,
+      compositionInput?: string
     ) => {
       const inputs: Record<string, string> = {};
       let hasInputBeenSet = false;
@@ -84,7 +85,11 @@ export const getCreateCompositionNode =
               );
             }
             if (startNode) {
-              if (
+              if (startNode.nodeInfo?.type === 'thumb-input') {
+                if (compositionInput) {
+                  inputs[connection.endThumbName] = compositionInput;
+                }
+              } else if (
                 connection.endThumbIdentifierWithinNode &&
                 node.nodeInfo?.isComposition
               ) {
@@ -95,7 +100,8 @@ export const getCreateCompositionNode =
                   startNode,
                   connection.startThumbName ?? '',
                   undefined,
-                  payload
+                  payload,
+                  compositionInput
                 );
                 console.log('composition in composition output', output);
                 inputs[connection.endThumbIdentifierWithinNode] = output;
@@ -104,7 +110,8 @@ export const getCreateCompositionNode =
                   startNode,
                   connection.startThumbName ?? '',
                   undefined,
-                  payload
+                  payload,
+                  compositionInput
                 );
               }
             }
@@ -208,22 +215,44 @@ export const getCreateCompositionNode =
               node.nodeInfo?.type === 'set-color-variable-node' ||
               node.nodeInfo?.type === 'set-and-add-color-variable-node'
             ) {
-              shader += getNodeOutput(node, '', thumbName, payload);
+              shader += getNodeOutput(node, '', thumbName, payload, input);
             }
           });
-
+          let compositionInput: string = '';
+          generatedThumbs.forEach((thumb) => {
+            if (
+              !compositionInput &&
+              thumb.name &&
+              thumb.connectionType === ThumbConnectionType.end
+            ) {
+              if (payload?.[thumb.name]) {
+                compositionInput = payload?.[thumb.name];
+              }
+            }
+          });
           generatedThumbs.forEach((thumb) => {
             if (composition && thumb.name === thumbName) {
-              const startNode = composition.nodes.find(
+              const thumbOutputNode = composition.nodes.find(
                 (nodeEval) => nodeEval.id === thumb.name
               );
-              if (startNode && !result) {
-                result = getNodeOutput(
-                  startNode,
-                  thumb.name ?? '',
-                  thumbName,
-                  payload
+              if (thumbOutputNode && !result) {
+                const connection = composition.nodes.find(
+                  (nodeEval) => nodeEval.endNodeId === thumbOutputNode.id
                 );
+                if (connection) {
+                  const startNode = composition.nodes.find(
+                    (nodeEval) => nodeEval.id === connection.startNodeId
+                  );
+                  if (startNode) {
+                    result = getNodeOutput(
+                      startNode,
+                      connection.startThumbName ?? '',
+                      undefined,
+                      payload,
+                      compositionInput
+                    );
+                  }
+                }
               }
             }
           });

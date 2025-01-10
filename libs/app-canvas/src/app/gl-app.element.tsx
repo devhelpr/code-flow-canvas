@@ -1709,17 +1709,19 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     const inputs: Record<string, string> = {};
     (node?.connections ?? []).forEach((connection) => {
       if (connection.endNode?.id === node.id) {
-        if (
-          connection.endNodeThumb?.thumbIdentifierWithinNode &&
-          connection.startNode
-        ) {
-          inputs[connection.endNodeThumb.thumbIdentifierWithinNode] =
-            this.getNodeOutput(
-              connection.startNode,
-              connection.startNodeThumb?.thumbName ?? '',
-              connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
-            );
-        } else if (connection.endNodeThumb?.thumbName && connection.startNode) {
+        // if (
+        //   connection.endNodeThumb?.thumbIdentifierWithinNode &&
+        //   connection.startNode
+        // ) {
+        //   inputs[connection.endNodeThumb.thumbIdentifierWithinNode] =
+        //     this.getNodeOutput(
+        //       connection.startNode,
+        //       connection.startNodeThumb?.thumbName ?? '',
+        //       connection.startNodeThumb?.thumbIdentifierWithinNode ?? ''
+        //     );
+        // } else
+
+        if (connection.endNodeThumb?.thumbName && connection.startNode) {
           inputs[connection.endNodeThumb.thumbName] = this.getNodeOutput(
             connection.startNode,
             connection.startNodeThumb?.thumbName ?? '',
