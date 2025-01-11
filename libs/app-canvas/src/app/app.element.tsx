@@ -1319,6 +1319,7 @@ export class AppElement<T extends BaseNodeInfo> {
         setSelectNode(undefined);
       });
 
+      canvasApp?.setOnCameraChanged(this.onCameraChanged);
       importToCanvas(
         composition.nodes as FlowNode<BaseNodeInfo>[],
         canvasApp as unknown as IFlowCanvasBase<BaseNodeInfo>,
