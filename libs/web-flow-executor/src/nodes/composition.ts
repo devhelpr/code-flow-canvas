@@ -329,6 +329,7 @@ export const getCreateCompositionNode =
           color: 'white',
           label: ' ',
           name: node.id,
+          prefixLabel: node.nodeInfo?.formValues?.['thumbName'],
         });
         inputThumbIndex++;
       }
@@ -341,6 +342,7 @@ export const getCreateCompositionNode =
           label: ' ',
           name: node.id,
           maxConnections: 1,
+          prefixLabel: node.nodeInfo?.formValues?.['thumbName'],
         });
         outputThumbIndex++;
       }

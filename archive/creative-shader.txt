@@ -1,0 +1,267 @@
+fsSource #version 300 es
+    precision highp float;
+    uniform float u_time;
+    uniform float u_width;
+    uniform float u_height;
+    uniform float u_test;
+    uniform float u_mouseX;
+    uniform float u_mouseY;
+    uniform float u_wheel;
+    uniform float u_positionX;
+    uniform float u_positionY;
+
+    uniform float value_1006af12a69e4b0794bb69e67d5552a5;
+uniform float value_6247f081d7ed46df9bd2b9dec2d97634;
+uniform float value_eb1d87be989d4667b517d4d784dd95c9;
+uniform float value_305d3627e9184fc3888824cfcc0debbc;
+uniform float value_62f9a833519c464fa032e91f2d063123;
+uniform float value_ea25f66467b844e4900a20302676d117;
+
+
+   
+    
+    #define PI = 3.1415926535897932384626433832795;
+    float metaball(vec2 p, vec2 center, float radius) {
+      float r = radius * radius;
+      float d = length(p - center);
+      return r / (d * d);
+    }
+
+    vec3 palete( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
+    return a + b*cos( 6.28318*(c*t+d) );  
+  }
+
+  vec3  palete2(float  t) {
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    vec3 d = vec3(0.263,0.416,0.557);
+
+    return a + b*cos( 6.28318*(c*t+d) );
+  }
+
+  vec3 chooseColor(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(2.0,1.0,0.0), vec3(0.5,0.20,0.25));
+  }
+
+  vec3  chooseColor2(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.33,0.67));
+  }
+
+  vec3  chooseColor3(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.1,0.2));
+  }
+  vec3  chooseColor4(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.3,0.2,0.2));
+  }
+  vec3  chooseColor5(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,0.5), vec3(0.8,0.9,0.3));
+  }
+  vec3  chooseColor6(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,0.7,0.4), vec3(0.0,0.15,0.2));
+  }
+  vec3  chooseColor7(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.8,0.5,0.4), vec3(0.2,0.4,0.2), vec3(2.0,1.0,1.0), vec3(0.0,0.25,0.25));
+  }
+  vec3  choosePalete(float  paleteOffset , float  paleteType) {
+    if (paleteType == 1.0) {
+      return chooseColor(paleteOffset);
+    }
+    if (paleteType == 2.0) {
+      return chooseColor2(paleteOffset);
+    }
+    if (paleteType == 3.0) {
+      return chooseColor3(paleteOffset);
+    }
+    if (paleteType == 4.0) {
+      return chooseColor4(paleteOffset);
+    }
+    if (paleteType == 5.0) {
+      return chooseColor5(paleteOffset);
+    }
+    if (paleteType == 6.0) {
+      return chooseColor6(paleteOffset);
+    }
+    if (paleteType == 7.0) {
+      return chooseColor7(paleteOffset);
+    }
+    return palete2(paleteOffset);
+
+  }
+  vec2 rotate(vec2 v, float a) {
+    float degreeToRad = a * 0.017453292519943295;
+    return vec2(sin(degreeToRad) * v.x + cos(degreeToRad) * v.y, cos(degreeToRad) * v.x - sin(degreeToRad) * v.y);
+  }	
+    
+
+    out vec4 fragColor;
+    void main() {
+     
+      float aspect = u_width/u_height;
+      vec2 resolution = vec2(u_width, u_height);
+      vec2 uv = (gl_FragCoord.xy / resolution.xy);      
+      uv = uv * 2.0 - 1.0;
+      uv.x *= aspect;
+
+      vec3 backgroundColor = vec3(0.0, 0.0, 0.0);
+      vec3 finalColor = vec3(0.0);
+      vec3 totalcolinf = vec3(0.00);
+      float totalInfluence = 0.0;
+
+      
+      vec2 uvfract = rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117);
+vec3 color = vec3(0., 0., 0.);
+color += (choosePalete(((value_305d3627e9184fc3888824cfcc0debbc * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));color += (choosePalete(((value_eb1d87be989d4667b517d4d784dd95c9 * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));color += (choosePalete(((value_1006af12a69e4b0794bb69e67d5552a5 * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));
+      backgroundColor = color;
+    color += (choosePalete(((value_62f9a833519c464fa032e91f2d063123 * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));
+    
+
+      float threshold = 1.5;
+      float threshold2 = 13.5;
+      if (totalInfluence > threshold) {
+        vec3 color = (totalcolinf) / totalInfluence;
+          if (totalInfluence < threshold2) {
+            color = mix(backgroundColor, color, (totalInfluence - threshold) / (threshold2 - threshold));
+          }
+          fragColor = vec4(color, 1.0);
+      } else {
+        fragColor = vec4(backgroundColor, 1.0);
+      }          
+    }
+
+====================================================================================================
+
+
+
+
+
+	fsSource #version 300 es
+    precision highp float;
+    uniform float u_time;
+    uniform float u_width;
+    uniform float u_height;
+    uniform float u_test;
+    uniform float u_mouseX;
+    uniform float u_mouseY;
+    uniform float u_wheel;
+    uniform float u_positionX;
+    uniform float u_positionY;
+
+    uniform float value_1006af12a69e4b0794bb69e67d5552a5;
+uniform float value_6247f081d7ed46df9bd2b9dec2d97634;
+uniform float value_eb1d87be989d4667b517d4d784dd95c9;
+uniform float value_305d3627e9184fc3888824cfcc0debbc;
+uniform float value_62f9a833519c464fa032e91f2d063123;
+uniform float value_ea25f66467b844e4900a20302676d117;
+
+
+   
+    
+    #define PI = 3.1415926535897932384626433832795;
+    float metaball(vec2 p, vec2 center, float radius) {
+      float r = radius * radius;
+      float d = length(p - center);
+      return r / (d * d);
+    }
+
+    vec3 palete( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
+    return a + b*cos( 6.28318*(c*t+d) );  
+  }
+
+  vec3  palete2(float  t) {
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(0.5, 0.5, 0.5);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    vec3 d = vec3(0.263,0.416,0.557);
+
+    return a + b*cos( 6.28318*(c*t+d) );
+  }
+
+  vec3 chooseColor(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(2.0,1.0,0.0), vec3(0.5,0.20,0.25));
+  }
+
+  vec3  chooseColor2(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.33,0.67));
+  }
+
+  vec3  chooseColor3(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.0,0.1,0.2));
+  }
+  vec3  chooseColor4(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,1.0), vec3(0.3,0.2,0.2));
+  }
+  vec3  chooseColor5(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,1.0,0.5), vec3(0.8,0.9,0.3));
+  }
+  vec3  chooseColor6(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.5,0.5,0.5), vec3(0.5,0.5,0.5), vec3(1.0,0.7,0.4), vec3(0.0,0.15,0.2));
+  }
+  vec3  chooseColor7(float  paleteOffset) {
+    return palete(paleteOffset, vec3(0.8,0.5,0.4), vec3(0.2,0.4,0.2), vec3(2.0,1.0,1.0), vec3(0.0,0.25,0.25));
+  }
+  vec3  choosePalete(float  paleteOffset , float  paleteType) {
+    if (paleteType == 1.0) {
+      return chooseColor(paleteOffset);
+    }
+    if (paleteType == 2.0) {
+      return chooseColor2(paleteOffset);
+    }
+    if (paleteType == 3.0) {
+      return chooseColor3(paleteOffset);
+    }
+    if (paleteType == 4.0) {
+      return chooseColor4(paleteOffset);
+    }
+    if (paleteType == 5.0) {
+      return chooseColor5(paleteOffset);
+    }
+    if (paleteType == 6.0) {
+      return chooseColor6(paleteOffset);
+    }
+    if (paleteType == 7.0) {
+      return chooseColor7(paleteOffset);
+    }
+    return palete2(paleteOffset);
+
+  }
+  vec2 rotate(vec2 v, float a) {
+    float degreeToRad = a * 0.017453292519943295;
+    return vec2(sin(degreeToRad) * v.x + cos(degreeToRad) * v.y, cos(degreeToRad) * v.x - sin(degreeToRad) * v.y);
+  }	
+    
+
+    out vec4 fragColor;
+    void main() {
+     
+      float aspect = u_width/u_height;
+      vec2 resolution = vec2(u_width, u_height);
+      vec2 uv = (gl_FragCoord.xy / resolution.xy);      
+      uv = uv * 2.0 - 1.0;
+      uv.x *= aspect;
+
+      vec3 backgroundColor = vec3(0.0, 0.0, 0.0);
+      vec3 finalColor = vec3(0.0);
+      vec3 totalcolinf = vec3(0.00);
+      float totalInfluence = 0.0;
+
+      
+      vec2 uvfract = rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117);
+vec3 color = vec3(0., 0., 0.);
+color += (choosePalete(((value_1006af12a69e4b0794bb69e67d5552a5 * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));color += (choosePalete(((undefined * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));color += (choosePalete(((value_eb1d87be989d4667b517d4d784dd95c9 * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));
+      backgroundColor = color;
+    color += (choosePalete(((value_62f9a833519c464fa032e91f2d063123 * 0.4) + ((u_time * 0.4) + length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117)))),value_6247f081d7ed46df9bd2b9dec2d97634) * pow((0.01 / abs(((sin(((8.0 * (exp((-(length(rotate((vec2(u_positionX, u_positionY) + uv) * u_wheel, value_ea25f66467b844e4900a20302676d117))))) * length((fract(uvfract * 1.5) + vec2(-0.5, -0.5))))) + (1.0 * u_time)) * 1.0 + 0.0) * 1.0) / 8.0))),1.2));uvfract = (fract(uvfract * 1.5) + vec2(-0.5, -0.5));
+    
+
+      float threshold = 1.5;
+      float threshold2 = 13.5;
+      if (totalInfluence > threshold) {
+        vec3 color = (totalcolinf) / totalInfluence;
+          if (totalInfluence < threshold2) {
+            color = mix(backgroundColor, color, (totalInfluence - threshold) / (threshold2 - threshold));
+          }
+          fragColor = vec4(color, 1.0);
+      } else {
+        fragColor = vec4(backgroundColor, 1.0);
+      }          
+    }

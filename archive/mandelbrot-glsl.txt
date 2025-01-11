@@ -1,0 +1,84 @@
+fsSource #version 300 es
+    precision highp float;
+    uniform float u_time;
+    uniform float u_width;
+    uniform float u_height;
+    uniform float u_test;
+    uniform float u_mouseX;
+    uniform float u_mouseY;
+    uniform float u_wheel;
+    uniform float u_positionX;
+    uniform float u_positionY;
+
+    uniform float value_5f3621270de84d5e87f043581d434940;
+uniform float value_a4ab03ce9f2942f1b9e486d740fcf497;
+uniform float value_12e5e70e35c04f9c98e4222db436d5fe;
+
+
+   
+    
+    #define PI = 3.1415926535897932384626433832795;
+    float metaball(vec2 p, vec2 center, float radius) {
+      float r = radius * radius;
+      float d = length(p - center);
+      return r / (d * d);
+    }
+
+    	
+    
+
+    out vec4 fragColor;
+    void main() {
+     
+      float aspect = u_width/u_height;
+      vec2 resolution = vec2(u_width, u_height);
+      vec2 uv = (gl_FragCoord.xy / resolution.xy);      
+      uv = uv * 2.0 - 1.0;
+      uv.x *= aspect;
+
+      vec3 backgroundColor = vec3(0.0, 0.0, 0.0);
+      vec3 finalColor = vec3(0.0);
+      vec3 totalcolinf = vec3(0.00);
+      float totalInfluence = 0.0;
+
+      
+      float iterations = 0.;
+vec2 c = (vec2(u_positionX, u_positionY) + uv) * u_wheel;
+vec2 z = vec2(0., 0.);
+for (float i1 = 0.; i1 < 1024.0; i1+=1.0) {
+        z = vec2((((z.x * z.x) - (z.y * z.y)) + c.x), (c.y + ((z.x * 2.0) * z.y)));if ((dot(z,z) > value_12e5e70e35c04f9c98e4222db436d5fe)) {
+        break;
+    }iterations = i1 > 511.0 ? 0.0 : i1 - log2(log2(dot(z,z))) + 4.0;
+    }
+      backgroundColor = vec3(cos(((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940)), cos((((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940) + 0.6)), cos((((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940) + 1.0)));
+    
+    
+
+      float threshold = 1.5;
+      float threshold2 = 13.5;
+      if (totalInfluence > threshold) {
+        vec3 color = (totalcolinf) / totalInfluence;
+          if (totalInfluence < threshold2) {
+            color = mix(backgroundColor, color, (totalInfluence - threshold) / (threshold2 - threshold));
+          }
+          fragColor = vec4(color, 1.0);
+      } else {
+        fragColor = vec4(backgroundColor, 1.0);
+      }          
+    }
+
+
+
+====================================================================================================
+
+backgroundColor = vec3(
+	cos(((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940)), 
+	cos((((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940) + 0.6)), 
+	cos((((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940) + 1.0))
+);
+
+backgroundColor = vec3(
+	((cos(((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940)) * 0.5) + 0.5), 
+	((cos((((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940) + 0.6)) * 0.5) + 0.5), 
+	((cos((((iterations * value_a4ab03ce9f2942f1b9e486d740fcf497) + value_5f3621270de84d5e87f043581d434940) + 1.0)) * 0.5) + 0.5));
+

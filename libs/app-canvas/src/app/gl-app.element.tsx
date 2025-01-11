@@ -2358,4 +2358,36 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       node.innerHTML = `Scene zoom ${this.wheel.toFixed(5)}`;
     });
   };
+
+  onSetupCompositionCanvasEdit(canvasApp: IFlowCanvasBase<GLNodeInfo>) {
+    canvasApp.setOnAddcomposition(this.onAddGLComposition);
+  }
+
+  onAddFlowComposition = (
+    composition: Composition<GLNodeInfo>,
+    connections: {
+      thumbIdentifierWithinNode: string;
+      connection: IConnectionNodeComponent<GLNodeInfo>;
+    }[]
+  ) => {
+    //this.nodeSidebarMenu
+    return this.onAddComposition(
+      composition,
+      connections,
+      registerComposition,
+      getGLNodeTaskFactory,
+      (
+        selectNodeTypeHTMLElement: HTMLSelectElement,
+        isInComposition?: boolean,
+        compositionId?: string
+      ) => {
+        setupGLTasksInDropdown(
+          selectNodeTypeHTMLElement,
+          isInComposition,
+          compositionId
+        );
+      },
+      this.selectNodeType?.domElement as HTMLSelectElement
+    );
+  };
 }

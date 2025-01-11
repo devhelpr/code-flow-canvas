@@ -36,13 +36,13 @@ export const getCreateCompositionNode =
     const getNodeOutput = (
       node: FlowNode<GLNodeInfo>,
       thumbName: string,
-      thumbIdentifierWithinNode?: string,
+      _thumbIdentifierWithinNode?: string,
       payload?: any,
       compositionInput?: string
     ) => {
       const inputs: Record<string, string> = {};
       let hasInputBeenSet = false;
-      let outputthumbIdentifierWithinNode = thumbIdentifierWithinNode;
+      //let outputthumbIdentifierWithinNode = thumbIdentifierWithinNode;
       compositionThumbs.forEach((thumb) => {
         if (
           thumb.name === node.id &&
@@ -86,16 +86,16 @@ export const getCreateCompositionNode =
             }
             if (startNode) {
               if (startNode.nodeInfo?.type === 'thumb-input') {
-                if (compositionInput) {
-                  inputs[connection.endThumbName] = compositionInput;
+                const compositionPortInput = payload?.[startNode.id];
+                if (compositionPortInput) {
+                  inputs[connection.endThumbName] = compositionPortInput;
                 }
               } else if (
-                connection.endThumbIdentifierWithinNode &&
+                //connection.endThumbIdentifierWithinNode &&
                 node.nodeInfo?.isComposition
               ) {
                 console.log('composition in composition', endNode, connection);
-                outputthumbIdentifierWithinNode =
-                  connection.endThumbIdentifierWithinNode;
+                //outputthumbIdentifierWithinNode = connection.endThumbName;
                 const output = getNodeOutput(
                   startNode,
                   connection.startThumbName ?? '',
@@ -104,7 +104,7 @@ export const getCreateCompositionNode =
                   compositionInput
                 );
                 console.log('composition in composition output', output);
-                inputs[connection.endThumbIdentifierWithinNode] = output;
+                inputs[connection.endThumbName] = output;
               } else {
                 inputs[connection.endThumbName] = getNodeOutput(
                   startNode,
@@ -134,7 +134,7 @@ export const getCreateCompositionNode =
             ? { ...inputs, nodeInfo: node?.nodeInfo }
             : { ...payload, nodeInfo: node?.nodeInfo },
           thumbName,
-          outputthumbIdentifierWithinNode,
+          undefined,
           true
         );
 
@@ -154,7 +154,7 @@ export const getCreateCompositionNode =
       _loopIndex?: number,
       payload?: any,
       thumbName?: string,
-      _thumbIdentifierWithinNode?: string,
+      thumbIdentifierWithinNode?: string,
       _unknownVariable?: boolean
     ) => {
       let shader = '';
@@ -163,6 +163,7 @@ export const getCreateCompositionNode =
         return;
       }
       if (thumbName) {
+        console.log('composition input', thumbName, input, payload);
         if (!composition) {
           composition = canvasApp?.compositons.getComposition(compositionId);
           if (composition) {
@@ -204,21 +205,7 @@ export const getCreateCompositionNode =
           //   (thumbEval) =>
           //     thumbEval.thumbIdentifierWithinNode === thumbIdentifierWithinNode
           // );
-
-          (
-            getSortedNodes(
-              composition.nodes
-            ) as unknown as FlowNode<GLNodeInfo>[]
-          ).forEach((node) => {
-            if (
-              node.nodeInfo?.type === 'set-vec2-variable-node' ||
-              node.nodeInfo?.type === 'set-color-variable-node' ||
-              node.nodeInfo?.type === 'set-and-add-color-variable-node'
-            ) {
-              shader += getNodeOutput(node, '', thumbName, payload, input);
-            }
-          });
-          let compositionInput: string = '';
+          let compositionInput = '';
           generatedThumbs.forEach((thumb) => {
             if (
               !compositionInput &&
@@ -230,12 +217,35 @@ export const getCreateCompositionNode =
               }
             }
           });
+          (
+            getSortedNodes(
+              composition.nodes
+            ) as unknown as FlowNode<GLNodeInfo>[]
+          ).forEach((node) => {
+            if (
+              node.nodeInfo?.type === 'set-vec2-variable-node' ||
+              node.nodeInfo?.type === 'set-color-variable-node' ||
+              node.nodeInfo?.type === 'set-and-add-color-variable-node'
+            ) {
+              shader += getNodeOutput(
+                node,
+                '',
+                thumbName,
+                payload,
+                compositionInput
+              );
+            }
+          });
+
           generatedThumbs.forEach((thumb) => {
             if (composition && thumb.name === thumbName) {
               const thumbOutputNode = composition.nodes.find(
                 (nodeEval) => nodeEval.id === thumb.name
               );
               if (thumbOutputNode && !result) {
+                // TODO here: get all the input from the input ports of this composition
+                // and pass it to the composition node .. OR : payload that is passed
+                // to getNodeOutput should be used there
                 const connection = composition.nodes.find(
                   (nodeEval) => nodeEval.endNodeId === thumbOutputNode.id
                 );
@@ -259,7 +269,7 @@ export const getCreateCompositionNode =
         }
       }
       return {
-        result: thumbName === 'test' ? shader : result ?? '',
+        result: thumbIdentifierWithinNode === 'test' ? shader : result ?? '',
         output: input,
         preoutput: shader,
         followPath: undefined,
@@ -277,6 +287,7 @@ export const getCreateCompositionNode =
           color: 'white',
           label: ' ',
           name: node.id,
+          prefixLabel: node.nodeInfo?.formValues?.['thumbName'],
         });
         inputThumbIndex++;
       }
@@ -289,6 +300,7 @@ export const getCreateCompositionNode =
           label: ' ',
           name: node.id,
           maxConnections: -1,
+          prefixLabel: node.nodeInfo?.formValues?.['thumbName'],
         });
         outputThumbIndex++;
       }
