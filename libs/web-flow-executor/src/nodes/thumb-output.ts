@@ -14,7 +14,7 @@ import {
 import { NodeInfo } from '../types/node-info';
 
 const fieldName = 'thumb-output';
-const labelName = 'Thumb output';
+const labelName = 'Output';
 const nodeName = 'thumb-output';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
@@ -66,7 +66,7 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
     compute,
     initializeCompute,
     false,
-    200,
+    100,
     100,
     thumbs,
     (values?: InitialValues): FormField[] => {
@@ -159,6 +159,12 @@ export const getThumbOutputNode: NodeTaskFactory<NodeInfo> = (
         theme?.compositionThumbOutputNodeBackground ?? 'bg-yellow-500',
       textColorClassName: theme?.compositionThumbOutputNodeText ?? 'text-black',
       category: 'Compositions',
+      hasSettingsPopup: false,
+      hasFormInPopup: true,
+      additionalInnerNodeClassNames: 'rounded-full items-center justify-center',
+      hasStaticWidthHeight: true,
+      additionalClassNames:
+        'rounded-full bg-yellow-500 border-[black] border-2 border-solid h-[90px] w-[90px] flex-[0_0_auto]',
     },
     undefined,
     undefined,

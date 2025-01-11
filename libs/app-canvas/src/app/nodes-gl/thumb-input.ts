@@ -14,7 +14,7 @@ import {
 import { GLNodeInfo } from '../types/gl-node-info';
 
 const fieldName = 'thumb-input';
-const labelName = 'Thumb input';
+const labelName = 'Input';
 const nodeName = 'thumb-input';
 const familyName = 'flow-canvas';
 const thumbConstraint = 'value';
@@ -56,7 +56,7 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
     compute,
     initializeCompute,
     false,
-    200,
+    100,
     100,
     thumbs,
     (values?: InitialValues): FormField[] => {
@@ -138,6 +138,11 @@ export const getThumbInputNode: NodeTaskFactory<GLNodeInfo> = (
         theme?.compositionThumbInputNodeBackground ?? 'bg-yellow-300',
       textColorClassName: theme?.compositionThumbInputNodeText ?? 'text-black',
       category: 'Compositions',
+      hasSettingsPopup: false,
+      hasFormInPopup: true,
+
+      additionalInnerNodeClassNames: 'rounded-full',
+      hasStaticWidthHeight: true,
     },
     undefined,
     undefined,
