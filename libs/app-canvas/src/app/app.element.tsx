@@ -1497,6 +1497,33 @@ export class AppElement<T extends BaseNodeInfo> {
           }
         });
 
+        existingThumbs.forEach((element) => {
+          const nodeHelper = element as unknown as IRectNodeComponent<T>;
+          const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
+
+          let isExistingThumb = false;
+          canvasApp?.elements.forEach((canvasElement) => {
+            if (canvasElement.id === nodeHelper.id) {
+              isExistingThumb = true;
+            }
+          });
+          if (!isExistingThumb && this.canvasApp) {
+            let thumbType: ThumbType = ThumbType.EndConnectorLeft;
+            let thumbConnectionType: ThumbConnectionType =
+              ThumbConnectionType.end;
+            if (baseNodeInfo?.type === 'thumb-output') {
+              thumbType = ThumbType.StartConnectorRight;
+              thumbConnectionType = ThumbConnectionType.start;
+            }
+            // thumb removed
+            this.deleteThumbFromComposition(this.canvasApp, composition.id, {
+              thumbType: thumbType,
+              connectionType: thumbConnectionType,
+              name: nodeHelper.id,
+            } as IThumb);
+          }
+        });
+
         // Only store the nodes and not the thumbs and connections to the thumbs
         // nodesIdsToIgnore contains the node and connection id's of the thumbs
         // and connections to the thumbs. In below code this list gets updated

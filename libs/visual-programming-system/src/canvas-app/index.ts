@@ -1650,9 +1650,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
 
     if (rectInstance.nodeComponent?.thumbConnectors) {
       const thumbIndex = rectInstance.nodeComponent.thumbConnectors.findIndex(
-        (t) =>
-          t.thumbIdentifierWithinNode === thumb.thumbIdentifierWithinNode &&
-          thumb.thumbIdentifierWithinNode
+        (t) => t.thumbName === thumb.name && thumb.name
       );
       if (thumbIndex >= 0) {
         const thumbNode =
