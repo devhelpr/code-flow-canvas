@@ -1463,6 +1463,8 @@ export class AppElement<T extends BaseNodeInfo> {
                 label: ' ',
                 name: nodeHelper.id,
                 prefixLabel: baseNodeInfo.formValues?.['thumbName'],
+                thumbConstraint:
+                  baseNodeInfo.formValues?.['valueType'] ?? 'default',
               };
               this.addThumbToComposition(
                 this.canvasApp,
@@ -1487,6 +1489,8 @@ export class AppElement<T extends BaseNodeInfo> {
                 label: ' ',
                 name: nodeHelper.id,
                 prefixLabel: baseNodeInfo.formValues?.['thumbName'],
+                thumbConstraint:
+                  baseNodeInfo.formValues?.['valueType'] ?? 'default',
               };
               this.editThumbFromComposition(
                 this.canvasApp,
