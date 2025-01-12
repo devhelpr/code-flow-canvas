@@ -402,8 +402,8 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);
     registerNodeFactory(sendResetToNodeTreeNodeName, sendResetToNodeTree);
 
-    registerNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
-    registerNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
+    registerNodeFactory('thumb-input', getThumbInputNode, 'Input port');
+    registerNodeFactory('thumb-output', getThumbOutputNode, 'Output port');
 
     registerNodeFactory('test-node', getTestNode, 'Test Node');
     registerNodeFactory(

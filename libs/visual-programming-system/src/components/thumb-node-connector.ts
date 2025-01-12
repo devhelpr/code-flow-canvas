@@ -188,22 +188,21 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
         this.circleElement.domElement
       );
     }
-    if (thumb.prefixLabel) {
-      createElement(
-        'div',
-        {
-          class: `${this.cssClasses.prefixLabelClasses} ${
-            thumb.prefixLabelCssClass ?? 'text-white'
-          } ${
-            thumb.connectionType === ThumbConnectionType.end
-              ? this.cssClasses.prefixLabelEndClasses
-              : this.cssClasses.prefixLabelStartClasses
-          }`,
-        },
-        this.circleElement.domElement,
-        thumb.prefixLabel
-      );
-    }
+    createElement(
+      'div',
+      {
+        class: `${this.cssClasses.prefixLabelClasses} ${
+          thumb.prefixLabelCssClass ?? 'text-white'
+        } ${
+          thumb.connectionType === ThumbConnectionType.end
+            ? this.cssClasses.prefixLabelEndClasses
+            : this.cssClasses.prefixLabelStartClasses
+        }`,
+      },
+      this.circleElement.domElement,
+      thumb.prefixLabel ?? ''
+    );
+
     let additionalInnerCirlceClasses = '';
     if (connectionType === ThumbConnectionType.end) {
       additionalInnerCirlceClasses = this.cssClasses.innerCircleClasses;

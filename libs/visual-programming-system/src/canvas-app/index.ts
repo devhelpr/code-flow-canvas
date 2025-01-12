@@ -1552,23 +1552,24 @@ export class FlowCanvas<T extends BaseNodeInfo>
 
     if (rectInstance.nodeComponent?.thumbConnectors) {
       const thumbIndex = rectInstance.nodeComponent.thumbConnectors.findIndex(
-        (t) =>
-          t.thumbIdentifierWithinNode === thumb.thumbIdentifierWithinNode &&
-          thumb.thumbIdentifierWithinNode
+        (t) => t.thumbName === thumb.name && thumb.name
       );
       if (thumbIndex >= 0) {
         const thumbNode =
           rectInstance.nodeComponent.thumbConnectors[thumbIndex];
 
         if (thumbNode) {
+          thumbNode.prefixLabel = thumb.prefixLabel;
+          updateThumbPrefixLabel(thumb.prefixLabel ?? '', thumbNode);
+
           rectInstance.nodeComponent.connections.forEach((c) => {
             if (c.startNodeThumb?.id === thumbNode.id) {
               c.startNodeThumb.thumbConstraint = getThumbConstraint(
                 thumb.thumbConstraint
               );
-              c.startNodeThumb.prefixLabel = thumb.prefixLabel;
+              // c.startNodeThumb.prefixLabel = thumb.prefixLabel;
 
-              updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.startNodeThumb);
+              // updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.startNodeThumb);
 
               if (
                 (c.startNodeThumb?.thumbConstraint ?? '') !==
@@ -1582,9 +1583,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
               c.endNodeThumb.thumbConstraint = getThumbConstraint(
                 thumb.thumbConstraint
               );
-              c.endNodeThumb.prefixLabel = thumb.prefixLabel;
+              // c.endNodeThumb.prefixLabel = thumb.prefixLabel;
 
-              updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.endNodeThumb);
+              // updateThumbPrefixLabel(thumb.prefixLabel ?? '', c.endNodeThumb);
 
               if (
                 (c.endNodeThumb?.thumbConstraint ?? '') !==

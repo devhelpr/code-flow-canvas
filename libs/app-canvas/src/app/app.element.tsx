@@ -35,6 +35,8 @@ import {
   IFlowCanvasBase,
   renderElement,
   createJSXElement,
+  ThumbType,
+  ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
 
 import {
@@ -1384,6 +1386,26 @@ export class AppElement<T extends BaseNodeInfo> {
 
       setupTasksInDropdown(selectNodeTypeHTMLElement, true, composition.id);
 
+      let maxInputThumbIndex = -1;
+      let maxOutputThumbIndex = -1;
+      const existingThumbs: FlowNode<T>[] = [];
+
+      canvasApp?.elements.forEach((element) => {
+        const nodeHelper = element as unknown as IRectNodeComponent<T>;
+        const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
+        if (
+          baseNodeInfo?.type === 'thumb-input' ||
+          baseNodeInfo?.type === 'thumb-output'
+        ) {
+          existingThumbs.push(mapShapeNodeToFlowNode(nodeHelper));
+          if (baseNodeInfo?.type === 'thumb-input') {
+            maxInputThumbIndex++;
+          } else {
+            maxOutputThumbIndex++;
+          }
+        }
+      });
+
       const onExitCompositionMode = () => {
         if (composition.id !== this.compositionUnderEdit?.id) {
           (
@@ -1399,6 +1421,81 @@ export class AppElement<T extends BaseNodeInfo> {
 
         // TODO : indien nieuwe thumb-input/output nodes, dan toevoegen aan compositon node op canvas
         // TODO : indien thumb-input/output nodes verwijderd, dan deze verwijderen van composition node op canvas
+
+        // use
+        //     this.addThumbToComposition
+        //     this.editThumbFromComposition
+        //     this.deleteThumbFromComposition
+
+        canvasApp?.elements.forEach((element) => {
+          const nodeHelper = element as unknown as IRectNodeComponent<T>;
+          const baseNodeInfo = nodeHelper.nodeInfo as BaseNodeInfo;
+          if (
+            this.canvasApp &&
+            (baseNodeInfo?.type === 'thumb-input' ||
+              baseNodeInfo?.type === 'thumb-output')
+          ) {
+            const isEXistingThumb = existingThumbs.find((thumb) => {
+              return thumb.id === nodeHelper.id;
+            });
+            if (!isEXistingThumb) {
+              // new thumb/port
+
+              let thumbType: ThumbType = ThumbType.EndConnectorLeft;
+              let thumbConnectionType: ThumbConnectionType =
+                ThumbConnectionType.end;
+              let thumbIndex = maxInputThumbIndex + 1;
+
+              if (baseNodeInfo?.type === 'thumb-output') {
+                thumbType = ThumbType.StartConnectorRight;
+                thumbConnectionType = ThumbConnectionType.start;
+                thumbIndex = maxOutputThumbIndex + 1;
+                maxOutputThumbIndex++;
+              } else {
+                maxInputThumbIndex++;
+              }
+
+              const newThumb: IThumb = {
+                thumbType: thumbType,
+                thumbIndex: thumbIndex,
+                connectionType: thumbConnectionType,
+                color: 'white',
+                label: ' ',
+                name: nodeHelper.id,
+                prefixLabel: baseNodeInfo.formValues?.['thumbName'],
+              };
+              this.addThumbToComposition(
+                this.canvasApp,
+                composition.id,
+                newThumb
+              );
+            } else {
+              // existing thumb/port
+
+              let thumbType: ThumbType = ThumbType.EndConnectorLeft;
+              let thumbConnectionType: ThumbConnectionType =
+                ThumbConnectionType.end;
+              if (baseNodeInfo?.type === 'thumb-output') {
+                thumbType = ThumbType.StartConnectorRight;
+                thumbConnectionType = ThumbConnectionType.start;
+              }
+              const thumb: IThumb = {
+                thumbType: thumbType,
+                thumbIndex: 0,
+                connectionType: thumbConnectionType,
+                color: 'white',
+                label: ' ',
+                name: nodeHelper.id,
+                prefixLabel: baseNodeInfo.formValues?.['thumbName'],
+              };
+              this.editThumbFromComposition(
+                this.canvasApp,
+                composition.id,
+                thumb
+              );
+            }
+          }
+        });
 
         // Only store the nodes and not the thumbs and connections to the thumbs
         // nodesIdsToIgnore contains the node and connection id's of the thumbs

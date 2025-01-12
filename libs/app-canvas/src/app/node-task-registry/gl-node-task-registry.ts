@@ -228,8 +228,8 @@ export const setupGLNodeTaskRegistry = (
   registerGLNodeFactory('palette', getPaletteNode, 'Palette');
   registerGLNodeFactory('circle-node', getCircleNode, 'Metaball(2d)');
 
-  registerGLNodeFactory('thumb-input', getThumbInputNode, 'ThumbInput');
-  registerGLNodeFactory('thumb-output', getThumbOutputNode, 'ThumbOutput');
+  registerGLNodeFactory('thumb-input', getThumbInputNode, 'Input port');
+  registerGLNodeFactory('thumb-output', getThumbOutputNode, 'Output port');
 
   registerGLNodeFactory(
     'define-vec2-variable-node',
