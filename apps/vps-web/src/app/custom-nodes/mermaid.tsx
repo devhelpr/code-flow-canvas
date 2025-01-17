@@ -50,7 +50,12 @@ export const getMermaidNode =
       return;
     };
     const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
-      return mermaidNode.compute(input, loopIndex, payload);
+      return mermaidNode.compute(input, loopIndex, payload).then((result) => {
+        if (rect && rect.resize) {
+          rect.resize(undefined, true, '.child-node-wrapper > *:first-child');
+        }
+        return result;
+      });
     };
 
     return visualNodeFactory(
@@ -87,13 +92,13 @@ export const getMermaidNode =
         if (nodeRenderElement) {
           mermaidNode.nodeRenderElement = nodeRenderElement;
           const resizeObserver = new ResizeObserver(() => {
-            if (rect && rect.resize) {
-              rect.resize(
-                undefined,
-                true,
-                '.child-node-wrapper > *:first-child'
-              );
-            }
+            // if (rect && rect.resize) {
+            //   rect.resize(
+            //     undefined,
+            //     true,
+            //     '.child-node-wrapper > *:first-child'
+            //   );
+            // }
           });
           resizeObserver.observe(nodeRenderElement);
           if (node?.nodeInfo) {

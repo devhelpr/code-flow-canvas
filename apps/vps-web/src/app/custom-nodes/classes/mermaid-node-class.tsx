@@ -29,17 +29,15 @@ export class MermaidNode {
         mermaid
           .render(`_${this.id.replaceAll('-', '')}Mermaid`, mermaidDefintion)
           .then((renderResult) => {
-            setTimeout(() => {
-              if (this.nodeRenderElement) {
-                this.nodeRenderElement.innerHTML = renderResult.svg;
-              }
+            if (this.nodeRenderElement) {
+              this.nodeRenderElement.innerHTML = renderResult.svg;
+            }
 
-              resolve({
-                result: input,
-                output: input,
-                followPath: undefined,
-              });
-            }, 2000);
+            resolve({
+              result: input,
+              output: input,
+              followPath: undefined,
+            });
           })
           .catch((error) => {
             console.error('Error rendering mermaid diagram', error);

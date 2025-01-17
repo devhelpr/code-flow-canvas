@@ -1,0 +1,62 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "2e7ca45f-a13e-4deb-8e8f-cae85b46b091",
+          "x": 3205.4072698505697,
+          "y": 1721.4742245852408,
+          "width": 199.96093174395054,
+          "height": 180.9296625777389,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "mermaid-node",
+            "formValues": {},
+            "nodeCannotBeReplaced": false,
+            "showFormOnlyInPopup": false,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": false
+          }
+        },
+        {
+          "id": "a1af55a9-cd5b-4675-a577-cfc8c57e1cf7",
+          "x": 2997.67853126743,
+          "y": 1778.9796798117168,
+          "width": 74.7109375,
+          "height": 64,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "text-node",
+            "formValues": {
+              "text": "erDiagram\n    CUSTOMER }|..|{ DELIVERY-ADDRESS : has\n    CUSTOMER ||--o{ ORDER : places\n    CUSTOMER ||--o{ INVOICE : \"liable for\"\n    DELIVERY-ADDRESS ||--o{ ORDER : receives\n    INVOICE ||--|{ ORDER : covers\n    ORDER ||--|{ ORDER-ITEM : includes\n    PRODUCT-CATEGORY ||--|{ PRODUCT : contains\n    PRODUCT ||--o{ ORDER-ITEM : \"ordered in\""
+            },
+            "nodeCannotBeReplaced": true,
+            "showFormOnlyInPopup": true,
+            "useInCompositionOnly": false,
+            "keepPopupOpenAfterUpdate": true
+          }
+        },
+        {
+          "id": "75229244-ebd1-411d-8c6d-aca0df473c9e",
+          "x": 3072.38946876743,
+          "y": 1810.9796798117168,
+          "endX": 3205.4072698505697,
+          "endY": 1811.9390558741102,
+          "startNodeId": "a1af55a9-cd5b-4675-a577-cfc8c57e1cf7",
+          "endNodeId": "2e7ca45f-a13e-4deb-8e8f-cae85b46b091",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
