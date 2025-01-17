@@ -239,13 +239,24 @@ export class NodeSidebarMenuComponent extends Component<
 
     renderElement(
       <div
-        class={`taskbar-container transition-transform z-[20050] hidden md:flex flex-col absolute left-0 top-[58px] max-h-[calc(100vh-108px)] bg-slate-700  p-4 overflow-y-scroll`}
+        class={`taskbar-container 
+          transition-transform 
+          z-[20050]
+          hidden 
+          md:flex flex-col 
+          absolute left-0 top-[108px] 
+          max-h-[calc(100vh-208px)] 
+          bg-slate-700  
+          rounded-tr
+          rounder-br
+          p-4 
+          overflow-y-scroll`}
         getElement={(element: HTMLElement) => {
           this.taskbarContainer = element;
         }}
       >
         <div
-          class={`overflow-visible flex flex-col `}
+          class={`overflow-visible flex flex-col gap-2`}
           getElement={(element: HTMLElement) => {
             taskbar = element;
             sortedCategories.forEach((categoryName) => {
@@ -265,7 +276,13 @@ export class NodeSidebarMenuComponent extends Component<
 
                 renderElement(
                   <div
-                    class={`cursor-pointer border border-white border-solid rounded px-4 py-2 mb-2 text-white max-w-[150px] whitespace-nowrap overflow-hidden text-ellipsis`}
+                    class={`cursor-pointer 
+                        bg-slate-500
+                        text-white 
+                        rounded 
+                        px-4 py-2 mb-2 
+                        max-w-[150px] 
+                        whitespace-nowrap overflow-hidden text-ellipsis`}
                     pointerdown={(event: PointerEvent) => {
                       this.startDragNode(event, taskbar, nodeTask.nodeType);
                     }}
