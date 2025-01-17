@@ -70,7 +70,7 @@ export const getMermaidNode =
       (nodeInstance) => {
         rect = nodeInstance.rect;
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
-        mermaidNode = new MermaidNode();
+        mermaidNode = new MermaidNode(node.id);
 
         const childNodeWrapper = (nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement

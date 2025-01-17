@@ -4,12 +4,16 @@ import {
 } from '@devhelpr/visual-programming-system';
 import mermaid from 'mermaid';
 
+mermaid.initialize({
+  startOnLoad: true,
+});
+
 export class MermaidNode {
   nodeRenderElement: HTMLElement | undefined = undefined;
-  constructor() {
-    mermaid.initialize({
-      startOnLoad: true,
-    });
+
+  id: string;
+  constructor(id: string) {
+    this.id = id;
   }
   compute = (
     input: string,
@@ -23,19 +27,19 @@ export class MermaidNode {
           .replaceAll('```', '')
           .trim();
         mermaid
-          .render('dynamic', mermaidDefintion)
+          .render(`_${this.id.replaceAll('-', '')}Mermaid`, mermaidDefintion)
           .then((renderResult) => {
-            if (this.nodeRenderElement) {
-              this.nodeRenderElement.innerHTML = renderResult.svg;
-            }
-            // if (rect && rect.resize) {
-            //   rect.resize(undefined, true, '.mermaid');
-            // }
-            resolve({
-              result: input,
-              output: input,
-              followPath: undefined,
-            });
+            setTimeout(() => {
+              if (this.nodeRenderElement) {
+                this.nodeRenderElement.innerHTML = renderResult.svg;
+              }
+
+              resolve({
+                result: input,
+                output: input,
+                followPath: undefined,
+              });
+            }, 2000);
           })
           .catch((error) => {
             console.error('Error rendering mermaid diagram', error);
