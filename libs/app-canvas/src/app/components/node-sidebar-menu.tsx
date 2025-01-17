@@ -240,15 +240,14 @@ export class NodeSidebarMenuComponent extends Component<
     renderElement(
       <div
         class={`taskbar-container
-          h-[100vh]
+          absolute left-0 top-[108px] 
           w-[182px] 
+          h-[100vh]
+          max-h-[calc(100vh-208px)] 
           transition-transform
-          peer 
           z-[20050]
           hidden 
-          md:flex flex-col 
-          absolute left-0 top-[108px] 
-          max-h-[calc(100vh-208px)] 
+          md:flex flex-col           
           bg-slate-700  
           rounded-r-md      
           overflow-y-scroll`}
@@ -262,14 +261,14 @@ export class NodeSidebarMenuComponent extends Component<
             top-0 left-0
             z-[20050]
             overflow-y-scroll
-            p-4
+            px-4 py-2
             max-h-[calc(100vh-208px)] 
             w-min
             h-min
           `}
         >
           <div
-            class={`overflow-visible flex flex-col gap-2 relative pt-4 pb-4`}
+            class={`overflow-visible flex flex-col gap-2 relative pt-2 pb-2`}
             getElement={(element: HTMLElement) => {
               taskbar = element;
               sortedCategories.forEach((categoryName) => {
@@ -313,12 +312,11 @@ export class NodeSidebarMenuComponent extends Component<
         <div
           class="taskbar-container-before
             pointer-events-none
-            peer[.dragging]:hidden
             absolute
             left-0             
             w-[182px]
             top-0
-            h-8
+            h-4
             bg-gradient-to-b
             from-slate-700
             to-transparent
@@ -327,12 +325,11 @@ export class NodeSidebarMenuComponent extends Component<
         <div
           class="taskbar-container-after
             pointer-events-none
-            absolute
-            peer[.dragging]:hidden
+            absolute            
             left-0              
             w-[182px]
             bottom-0
-            h-8
+            h-4
             bg-gradient-to-t
             from-slate-700
             to-transparent
