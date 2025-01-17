@@ -239,69 +239,113 @@ export class NodeSidebarMenuComponent extends Component<
 
     renderElement(
       <div
-        class={`taskbar-container 
-          transition-transform 
+        class={`taskbar-container
+          h-[100vh]
+          w-[182px] 
+          transition-transform
+          peer 
           z-[20050]
           hidden 
           md:flex flex-col 
           absolute left-0 top-[108px] 
           max-h-[calc(100vh-208px)] 
           bg-slate-700  
-          rounded-tr
-          rounder-br
-          p-4 
+          rounded-r-md      
           overflow-y-scroll`}
         getElement={(element: HTMLElement) => {
           this.taskbarContainer = element;
         }}
       >
         <div
-          class={`overflow-visible flex flex-col gap-2`}
-          getElement={(element: HTMLElement) => {
-            taskbar = element;
-            sortedCategories.forEach((categoryName) => {
-              const category = categorizedNodeTasks.get(categoryName);
-              if (categoryName === 'deprecated') {
-                return;
-              }
-              renderElement(
-                <h2 class={`text-white py-2`}>{categoryName}</h2>,
-                taskbar
-              );
-
-              category?.forEach((nodeTask) => {
-                const label =
-                  canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
-                  nodeTask.nodeType;
-
+          class={`absolute 
+            flex flex-col 
+            top-0 left-0
+            z-[20050]
+            overflow-y-scroll
+            p-4
+            max-h-[calc(100vh-208px)] 
+            w-min
+            h-min
+          `}
+        >
+          <div
+            class={`overflow-visible flex flex-col gap-2 relative pt-4 pb-4`}
+            getElement={(element: HTMLElement) => {
+              taskbar = element;
+              sortedCategories.forEach((categoryName) => {
+                const category = categorizedNodeTasks.get(categoryName);
+                if (categoryName === 'deprecated') {
+                  return;
+                }
                 renderElement(
-                  <div
-                    class={`cursor-pointer 
+                  <h2 class={`text-white py-2`}>{categoryName}</h2>,
+                  taskbar
+                );
+
+                category?.forEach((nodeTask) => {
+                  const label =
+                    canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
+                    nodeTask.nodeType;
+
+                  renderElement(
+                    <div
+                      class={`cursor-pointer 
                         bg-slate-500
                         text-white 
                         rounded 
                         px-4 py-2 mb-2 
                         max-w-[150px] 
                         whitespace-nowrap overflow-hidden text-ellipsis`}
-                    pointerdown={(event: PointerEvent) => {
-                      this.startDragNode(event, taskbar, nodeTask.nodeType);
-                    }}
-                    title={label}
-                  >
-                    {label}
-                  </div>,
-                  taskbar
-                );
+                      pointerdown={(event: PointerEvent) => {
+                        this.startDragNode(event, taskbar, nodeTask.nodeType);
+                      }}
+                      title={label}
+                    >
+                      {label}
+                    </div>,
+                    taskbar
+                  );
+                });
               });
-            });
-          }}
+            }}
+          ></div>
+        </div>
+        <div
+          class="taskbar-container-before
+            pointer-events-none
+            peer[.dragging]:hidden
+            absolute
+            left-0             
+            w-[182px]
+            top-0
+            h-8
+            bg-gradient-to-b
+            from-slate-700
+            to-transparent
+            z-[20051]"
+        ></div>
+        <div
+          class="taskbar-container-after
+            pointer-events-none
+            absolute
+            peer[.dragging]:hidden
+            left-0              
+            w-[182px]
+            bottom-0
+            h-8
+            bg-gradient-to-t
+            from-slate-700
+            to-transparent
+            z-[20051]"
         ></div>
       </div>,
+
       this.rootElement
     );
     this.rootElement.addEventListener('pointerup', (_event) => {
       if (this.taskbarContainer) {
         this.taskbarContainer.classList.remove('-translate-x-[100%]');
+        this.taskbarContainer.classList.remove('dragging');
       }
     });
   };
@@ -326,6 +370,7 @@ export class NodeSidebarMenuComponent extends Component<
       );
 
       this.taskbarContainer.classList.add('-translate-x-[100%]');
+      this.taskbarContainer.classList.add('dragging');
       const nodeTask = factory(this.props.canvasUpdated, canvasApp.theme);
       const nodeInfo = undefined;
       const node = nodeTask.createVisualNode(

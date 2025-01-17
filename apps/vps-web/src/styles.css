@@ -787,3 +787,8 @@ html:active-view-transition-type(normal) {
 .mermaid-node .inner-node {
   @apply bg-white text-black;
 }
+
+.taskbar-container > div {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(100, 116, 139) transparent;
+}

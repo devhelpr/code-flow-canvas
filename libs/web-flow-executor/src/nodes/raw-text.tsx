@@ -37,6 +37,7 @@ const thumbs = [
     color: 'white',
     label: ' ',
     name: 'output',
+    maxConnections: -1,
   },
 ];
 
