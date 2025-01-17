@@ -92,6 +92,7 @@ export class Rect<T extends BaseNodeInfo> {
     layoutProperties?: {
       classNames?: string;
       autoSizeToContentIfNodeHasNoThumbs?: boolean;
+      hasCustomStyling?: boolean;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
@@ -107,7 +108,8 @@ export class Rect<T extends BaseNodeInfo> {
     parentNodeClassName?: string,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement,
-    theme?: Theme
+    theme?: Theme,
+    customClassName?: string
   ) {
     this.cssClasses = getRectNodeCssClasses();
     this.canvas = canvas;
@@ -156,7 +158,8 @@ export class Rect<T extends BaseNodeInfo> {
       disableInteraction,
       canvasUpdated,
       id,
-      parentNodeClassName ?? this.cssClasses.defaultRectClasses
+      parentNodeClassName ?? this.cssClasses.defaultRectClasses,
+      customClassName
     );
     this.nodeComponent = this.rectInfo.nodeComponent;
     this.nodeComponent.setSize = this.setSize;
@@ -418,8 +421,15 @@ export class Rect<T extends BaseNodeInfo> {
     }
   }
 
-  public resize(width?: number) {
-    if (this.hasStaticWidthHeight || !this.nodeComponent) {
+  public resize(
+    width?: number,
+    overrideStaticWidthHeight?: boolean,
+    selectChildElemenSelectorAsReference?: string
+  ) {
+    if (
+      (this.hasStaticWidthHeight && !overrideStaticWidthHeight) ||
+      !this.nodeComponent
+    ) {
       return;
     }
     const { scale } = getCamera();
@@ -468,8 +478,16 @@ export class Rect<T extends BaseNodeInfo> {
         minHeightAdd + Math.max(thumbEndHeight, thumbStartHeight);
     }
 
-    const astElementHtmlElement = this.rectInfo.astElement
+    let astElementHtmlElement: HTMLElement = this.rectInfo.astElement
       ?.domElement as unknown as HTMLElement;
+
+    if (selectChildElemenSelectorAsReference) {
+      astElementHtmlElement =
+        (this.nodeComponent.domElement as unknown as HTMLElement).querySelector(
+          selectChildElemenSelectorAsReference
+        ) ?? astElementHtmlElement;
+    }
+
     if (astElementHtmlElement && !this.autSizeToContentIfNodeHasNoThumbs) {
       astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
       astElementHtmlElement.style.height = 'auto';
@@ -908,7 +926,8 @@ export class Rect<T extends BaseNodeInfo> {
     disableInteraction?: boolean,
     _canvasUpdated?: () => void,
     id?: string,
-    parentNodeClassName?: string
+    parentNodeClassName?: string,
+    customClassName?: string
   ) => {
     /*
       draw svg path based on bbox of the hidden path
@@ -942,7 +961,7 @@ export class Rect<T extends BaseNodeInfo> {
       {
         class: `${parentNodeClassName ?? this.cssClasses.defaultRectClasses} ${
           this.cssClasses.rectClasses
-        } ${autoSizeClasses}`,
+        } ${autoSizeClasses} ${customClassName ?? ''}`,
         ['data-node-id']: id ?? '',
       },
       canvasElement,

@@ -45,6 +45,32 @@ export interface IComputeResult {
   dummyEndpoint?: boolean;
 }
 
+export interface NodeSettings {
+  category?: string;
+  hasTitlebar?: boolean;
+  childNodeWrapperClass?: string;
+  additionalClassNames?: string;
+  additionalInnerNodeClassNames?: string;
+  hasFormInPopup?: boolean;
+  hasSettingsPopup?: boolean;
+  hasStaticWidthHeight?: boolean;
+  hideFromNodeTypeSelector?: boolean;
+  hideTitle?: boolean;
+  backgroundColorClassName?: string;
+  textColorClassName?: string;
+  backgroundThemeProperty?: string;
+  textColorThemeProperty?: string;
+  adjustToFormContent?: boolean;
+  isRectThumb?: boolean;
+  isCircleRectThumb?: boolean;
+  rectThumbWithStraightConnections?: boolean;
+  nodeCannotBeReplaced?: boolean;
+  decoratorTitle?: string;
+  keepPopupOpenAfterUpdate?: boolean;
+  hasCustomStyling?: boolean;
+  customClassName?: string;
+}
+
 export const createRectNode = <T extends BaseNodeInfo>(
   nodeTypeName: string,
   nodeTitle: string,
@@ -64,26 +90,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
   id?: string,
   containerNode?: IRectNodeComponent<T>,
   initialValues?: InitialValues,
-  settings?: {
-    hasTitlebar?: boolean;
-    childNodeWrapperClass?: string;
-    additionalClassNames?: string;
-    additionalInnerNodeClassNames?: string;
-    hasFormInPopup?: boolean;
-    hasStaticWidthHeight?: boolean;
-    hideFromNodeTypeSelector?: boolean;
-    hideTitle?: boolean;
-    backgroundColorClassName?: string;
-    textColorClassName?: string;
-    backgroundThemeProperty?: string;
-    textColorThemeProperty?: string;
-    adjustToFormContent?: boolean;
-    isRectThumb?: boolean;
-    isCircleRectThumb?: boolean;
-    rectThumbWithStraightConnections?: boolean;
-    nodeCannotBeReplaced?: boolean;
-    keepPopupOpenAfterUpdate?: boolean;
-  },
+  settings?: NodeSettings,
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
   nodeInfo?: T,
@@ -104,7 +111,25 @@ export const createRectNode = <T extends BaseNodeInfo>(
       }
     });
   }
+  let colorClasses = `${
+    (settings?.backgroundThemeProperty &&
+      (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
+    settings?.backgroundColorClassName ??
+    canvasApp.theme.nodeBackground
+  } ${
+    (settings?.textColorThemeProperty &&
+      (canvasApp.theme as any)[settings.textColorThemeProperty]) ??
+    settings?.textColorClassName ??
+    canvasApp.theme.nodeText
+  }`;
 
+  if (settings?.hasCustomStyling) {
+    colorClasses = '';
+  }
+  let paddingY = showTitlebar ? 'py-2' : '';
+  if (settings?.hasCustomStyling) {
+    paddingY = '';
+  }
   const componentWrapper =
     settings?.isRectThumb && settings.isCircleRectThumb
       ? (createNodeElement<T>(
@@ -116,17 +141,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
       ${settings?.adjustToFormContent ? 'w-min' : 'w-[50px] '}
       h-[50px] 
       overflow-hidden text-center
-      ${
-        (settings?.backgroundThemeProperty &&
-          (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
-        settings?.backgroundColorClassName ??
-        canvasApp.theme.nodeBackground
-      } ${
-              (settings?.textColorThemeProperty &&
-                (canvasApp.theme as any)[settings.textColorThemeProperty]) ??
-              settings?.textColorClassName ??
-              canvasApp.theme.nodeText
-            }
+      ${colorClasses}
       `,
             style: {
               'clip-path': 'circle(50%)',
@@ -139,17 +154,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           {
             class: `inner-node relative flex flex-col ${
               settings?.additionalInnerNodeClassNames ?? ''
-            } ${
-              (settings?.backgroundThemeProperty &&
-                (canvasApp.theme as any)[settings.backgroundThemeProperty]) ??
-              settings?.backgroundColorClassName ??
-              canvasApp.theme.nodeBackground
-            } ${
-              (settings?.textColorThemeProperty &&
-                (canvasApp.theme as any)[settings.textColorThemeProperty]) ??
-              settings?.textColorClassName ??
-              canvasApp.theme.nodeText
-            } rounded ${showTitlebar ? '' : 'py-2'}      
+            } ${colorClasses} rounded ${paddingY}      
       ${settings?.adjustToFormContent ? 'w-min' : ''}`,
           },
           undefined
@@ -190,12 +195,17 @@ export const createRectNode = <T extends BaseNodeInfo>(
 
   if (showTitlebar) {
     if (componentWrapper?.domElement) {
+      let colorClassesTitlebar = `${canvasApp.theme.nodeTitleBarBackground} border-slate-500 
+          ${canvasApp.theme.nodeTitleBarText}`;
+
+      if (settings?.hasCustomStyling) {
+        colorClassesTitlebar = '';
+      }
       createElement(
         'div',
         {
-          class: `flex items-center 
-          ${canvasApp.theme.nodeTitleBarBackground} border-slate-500 
-          ${canvasApp.theme.nodeTitleBarText} p-1 px-3 rounded-t pointer-events-none w-full min-w-[max-content]`,
+          class: `flex items-center ${colorClassesTitlebar}
+           p-1 px-3 rounded-t pointer-events-none w-full min-w-[max-content]`,
         },
         componentWrapper?.domElement,
         settings?.hideTitle ? '' : nodeTitle
@@ -219,10 +229,19 @@ export const createRectNode = <T extends BaseNodeInfo>(
   const hasCenteredLabel =
     (formElements.length === 0 && settings?.hasTitlebar === false) ||
     (settings?.hasFormInPopup && settings?.hasTitlebar === false);
+
+  let cssClasses = `border-slate-500 ${
+    hasCenteredLabel
+      ? 'border-slate-500 flex items-center  justify-center text-center'
+      : 'p-4 pt-4'
+  }`;
+  if (settings?.hasCustomStyling) {
+    cssClasses = '';
+  }
   const formWrapper = createElement(
     'div',
     {
-      class: `node-content border-slate-500  ${
+      class: `node-content   ${
         showTitlebar
           ? 'rounded-b'
           : !hasBeforeDecorator && !hasAfterDecorator
@@ -230,11 +249,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           : hasBeforeDecorator && !hasAfterDecorator
           ? 'rounded-b'
           : ''
-      } min-h-auto flex-auto ${
-        hasCenteredLabel
-          ? 'flex items-center border-slate-500 justify-center text-center'
-          : 'p-4 pt-4'
-      }
+      } min-h-auto flex-auto ${cssClasses}
       ${settings?.additionalClassNames ?? ''} 
       `,
     },
@@ -254,8 +269,9 @@ export const createRectNode = <T extends BaseNodeInfo>(
       hasSubmitButton: false,
       settings: {
         minWidthContent: settings?.adjustToFormContent ?? false,
-        textLabelColor:
-          settings?.textColorClassName ?? canvasApp.theme.nodeText,
+        textLabelColor: settings?.hasCustomStyling
+          ? ''
+          : settings?.textColorClassName ?? canvasApp.theme.nodeText,
       },
       onSave: (formValues) => {
         console.log('onSave', formValues, rect);
@@ -318,7 +334,9 @@ export const createRectNode = <T extends BaseNodeInfo>(
     const topLabel = createElement(
       'div',
       {
-        class: `node-top-label text-center text-white`,
+        class: `node-top-label text-center ${
+          settings?.hasCustomStyling ? '' : 'text-white'
+        }`,
       },
       undefined,
       nodeTitle.replace('^2', '²')
@@ -341,6 +359,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
         componentWrapper,
         {
           classNames: '',
+          hasCustomStyling: settings?.hasCustomStyling ?? false,
+          customClassName: settings?.customClassName,
         },
         settings?.adjustToFormContent
           ? false
@@ -368,6 +388,8 @@ export const createRectNode = <T extends BaseNodeInfo>(
         componentWrapper,
         {
           classNames: '',
+          hasCustomStyling: settings?.hasCustomStyling ?? false,
+          customClassName: settings?.customClassName,
         },
         settings?.adjustToFormContent
           ? false
@@ -474,29 +496,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
     nodeInfo: CreateNodeInfo<T>,
     containerNode?: IRectNodeComponent<T>
   ) => void,
-  settings?: {
-    hasTitlebar?: boolean;
-    childNodeWrapperClass?: string;
-    additionalClassNames?: string;
-    additionalInnerNodeClassNames?: string;
-    hasFormInPopup?: boolean;
-    hasSettingsPopup?: boolean;
-    hasStaticWidthHeight?: boolean;
-    decoratorTitle?: string;
-    category?: string;
-    hideFromNodeTypeSelector?: boolean;
-    hideTitle?: boolean;
-    backgroundColorClassName?: string;
-    textColorClassName?: string;
-    backgroundThemeProperty?: string;
-    textColorThemeProperty?: string;
-    adjustToFormContent?: boolean;
-    isRectThumb?: boolean;
-    isCircleRectThumb?: boolean;
-    rectThumbWithStraightConnections?: boolean;
-    nodeCannotBeReplaced?: boolean;
-    keepPopupOpenAfterUpdate?: boolean;
-  },
+  settings?: NodeSettings,
   childNode?: HTMLElement | JSX.Element,
   isAsyncCompute = false,
   canBeUsedAsDecorator = false,

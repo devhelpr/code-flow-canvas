@@ -47,6 +47,7 @@ import { getCanvasAppCssClasses } from './css-classes/canvasapp-css-classes';
 import { IFlowCanvasBase } from './flow-canvas';
 import { FlowCore } from './flow-core';
 import { GetNodeTaskFactory } from '../interfaces/node-task-registry';
+import { LayoutProperties } from '../interfaces/layout-properties';
 
 export const createFlowCanvas = <T extends BaseNodeInfo>(
   rootElement: HTMLElement,
@@ -1310,10 +1311,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     text?: string,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T> | HTMLElement,
-    layoutProperties?: {
-      classNames?: string;
-      autoSizeToContentIfNodeHasNoThumbs?: boolean;
-    },
+    layoutProperties?: LayoutProperties,
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,
@@ -1347,7 +1345,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       parentNodeClassNames,
       this.onCanvasAction,
       this.rootElement,
-      this.theme
+      this.theme,
+      layoutProperties?.customClassName
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
@@ -1368,10 +1367,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     text?: string,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T>,
-    layoutProperties?: {
-      classNames?: string;
-      autoSizeToContentIfNodeHasNoThumbs?: boolean;
-    },
+    layoutProperties?: LayoutProperties,
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,
@@ -1407,7 +1403,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       createStraightLineConnection,
       this.onCanvasAction,
       this.rootElement,
-      this.theme
+      this.theme,
+      layoutProperties?.customClassName
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');

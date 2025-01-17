@@ -4,6 +4,7 @@ import {
   IComputeResult,
   InitialValues,
   NodeTask,
+  Rect,
   ThumbConnectionType,
   ThumbType,
   visualNodeFactory,
@@ -22,7 +23,7 @@ const MermaidImage = ({
 
   return (
     <div
-      className="mermaid"
+      class="mermaid w-min h-min p-4 border-4 border-slate-400 border-solid rounded"
       getElement={(element: HTMLElement) => {
         render(element);
       }}
@@ -60,7 +61,7 @@ export const getMermaidNode =
   // (): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     //let node: IRectNodeComponent<NodeInfo>;
-    ///let rect: Rect<NodeInfo> | undefined;
+    let rect: Rect<NodeInfo> | undefined;
 
     let nodeRenderElement: HTMLElement | undefined = undefined;
     const initializeCompute = () => {
@@ -83,6 +84,9 @@ export const getMermaidNode =
               if (nodeRenderElement) {
                 nodeRenderElement.innerHTML = renderResult.svg;
               }
+              if (rect && rect.resize) {
+                rect.resize(undefined, true, '.mermaid');
+              }
               resolve({
                 result: input,
                 output: input,
@@ -102,6 +106,12 @@ export const getMermaidNode =
     };
     const onRender = (element: HTMLElement) => {
       nodeRenderElement = element;
+      const resizeObserver = new ResizeObserver(() => {
+        if (rect && rect.resize) {
+          rect.resize(undefined, true, '.mermaid');
+        }
+      });
+      resizeObserver.observe(element);
     };
     return visualNodeFactory(
       mermaidNodeName,
@@ -117,14 +127,18 @@ export const getMermaidNode =
       (_values?: InitialValues): FormField[] => {
         return [];
       },
-      (_nodeInstance) => {
-        //rect = nodeInstance.rect;
+      (nodeInstance) => {
+        rect = nodeInstance.rect;
         //node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
-        //rect?.resize();
+        if (rect && rect.resize) {
+          rect.resize();
+        }
       },
       {
         category: 'Diagrams',
         hasStaticWidthHeight: true,
+        hasCustomStyling: true,
+        customClassName: 'mermaid-node',
       },
       <MermaidImage render={onRender} />,
       true

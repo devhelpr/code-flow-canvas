@@ -47,6 +47,7 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     markup?: string | INodeComponent<T>,
     layoutProperties?: {
       classNames?: string;
+      hasCustomStyling?: boolean;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
@@ -59,7 +60,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     createStraightLineConnection?: boolean,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement,
-    theme?: Theme
+    theme?: Theme,
+    customClassName?: string
   ) {
     super(
       canvas,
@@ -85,7 +87,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
       getRectNodeCssClasses().defaultRectThumbClasses,
       setCanvasAction,
       rootElement,
-      theme
+      theme,
+      customClassName
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');

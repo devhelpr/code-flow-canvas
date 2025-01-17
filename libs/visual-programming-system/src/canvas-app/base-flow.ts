@@ -21,6 +21,7 @@ import {
 import { Composition } from '../interfaces/composition';
 import { Theme } from '../interfaces/theme';
 import { BaseNodeInfo } from '../types/base-node-info';
+import { LayoutProperties } from '../interfaces/layout-properties';
 
 export interface IBaseFlow<T extends BaseNodeInfo> {
   elements: ElementNodeMap<T>;
@@ -98,10 +99,7 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     text?: string,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T> | HTMLElement,
-    layoutProperties?: {
-      classNames?: string;
-      autoSizeToContentIfNodeHasNoThumbs?: boolean;
-    },
+    layoutProperties?: LayoutProperties,
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,
@@ -123,6 +121,8 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     layoutProperties?: {
       classNames?: string;
       autoSizeToContentIfNodeHasNoThumbs?: boolean;
+      hasCustomStyling?: boolean;
+      customClassName?: string;
     },
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
