@@ -1,12 +1,16 @@
 const url = new URL(window.location.href);
 import './userWorker';
-import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
+import {
+  registerNodeFactory,
+  RegisterNodeFactoryFunction,
+} from '@devhelpr/web-flow-executor';
 import { runFlow } from './app/run-flow';
 import { ocwgPage } from './app/pages/ocwg';
 import { pythonPage } from './app/pages/python';
 import { examplePage } from './app/pages/example';
 import { setupCustomEditor } from '@devhelpr/visual-programming-system';
 import * as monaco from 'monaco-editor';
+import { getMermaidNode, mermaidNodeName } from './app/custom-nodes/mermaid';
 
 if (url.pathname === '/run-flow') {
   runFlow();
@@ -110,6 +114,7 @@ if (url.pathname === '/run-flow') {
       undefined,
       (_registerNodeFactory: RegisterNodeFactoryFunction) => {
         //registerNodeFactory('test-external-node', getExternalTestNode());
+        registerNodeFactory(mermaidNodeName, getMermaidNode());
       },
       undefined,
       undefined,

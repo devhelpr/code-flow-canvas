@@ -1,0 +1,132 @@
+import {
+  createJSXElement,
+  FormField,
+  IComputeResult,
+  InitialValues,
+  NodeTask,
+  ThumbConnectionType,
+  ThumbType,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
+import mermaid from 'mermaid';
+
+const MermaidImage = ({
+  render,
+}: {
+  render: (element: HTMLElement) => void;
+}) => {
+  mermaid.initialize({
+    startOnLoad: true,
+  });
+
+  return (
+    <div
+      className="mermaid"
+      getElement={(element: HTMLElement) => {
+        render(element);
+      }}
+    ></div>
+  );
+};
+
+const fieldName = 'mermaid-input';
+const nodeTitle = 'Mermaid diagram';
+export const mermaidNodeName = 'mermaid-node';
+const familyName = 'flow-canvas';
+const thumbs = [
+  {
+    thumbType: ThumbType.StartConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.start,
+    color: 'white',
+    label: ' ',
+    name: 'output',
+    maxConnections: -1,
+  },
+  {
+    thumbType: ThumbType.EndConnectorCenter,
+    thumbIndex: 0,
+    connectionType: ThumbConnectionType.end,
+    color: 'white',
+    label: ' ',
+    name: 'input',
+    maxConnections: 1,
+  },
+];
+
+export const getMermaidNode =
+  () =>
+  // (): NodeTaskFactory<NodeInfo> =>
+  (_updated: () => void): NodeTask<NodeInfo> => {
+    //let node: IRectNodeComponent<NodeInfo>;
+    ///let rect: Rect<NodeInfo> | undefined;
+
+    let nodeRenderElement: HTMLElement | undefined = undefined;
+    const initializeCompute = () => {
+      return;
+    };
+    const computeAsync = (
+      input: string,
+      _loopIndex?: number,
+      _payload?: any
+    ) => {
+      return new Promise<IComputeResult>((resolve) => {
+        if (nodeRenderElement && input) {
+          const mermaidDefintion = input
+            .replaceAll('```mermaid', '')
+            .replaceAll('```', '')
+            .trim();
+          mermaid
+            .render('dynamic', mermaidDefintion)
+            .then((renderResult) => {
+              if (nodeRenderElement) {
+                nodeRenderElement.innerHTML = renderResult.svg;
+              }
+              resolve({
+                result: input,
+                output: input,
+                followPath: undefined,
+              });
+            })
+            .catch((error) => {
+              console.error('Error rendering mermaid diagram', error);
+              resolve({
+                result: input,
+                output: input,
+                followPath: undefined,
+              });
+            });
+        }
+      });
+    };
+    const onRender = (element: HTMLElement) => {
+      nodeRenderElement = element;
+    };
+    return visualNodeFactory(
+      mermaidNodeName,
+      nodeTitle,
+      familyName,
+      fieldName,
+      computeAsync,
+      initializeCompute,
+      false,
+      200,
+      100,
+      thumbs,
+      (_values?: InitialValues): FormField[] => {
+        return [];
+      },
+      (_nodeInstance) => {
+        //rect = nodeInstance.rect;
+        //node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+        //rect?.resize();
+      },
+      {
+        category: 'Diagrams',
+        hasStaticWidthHeight: true,
+      },
+      <MermaidImage render={onRender} />,
+      true
+    );
+  };
