@@ -41,7 +41,6 @@ const thumbs = [
 
 export const getMermaidNode =
   () =>
-  // (): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let rect: Rect<NodeInfo> | undefined;
@@ -50,12 +49,8 @@ export const getMermaidNode =
     const initializeCompute = () => {
       return;
     };
-    const computeAsync = (
-      input: string,
-      _loopIndex?: number,
-      _payload?: any
-    ) => {
-      return mermaidNode.compute(input);
+    const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
+      return mermaidNode.compute(input, loopIndex, payload);
     };
 
     return visualNodeFactory(
@@ -101,6 +96,14 @@ export const getMermaidNode =
             }
           });
           resizeObserver.observe(nodeRenderElement);
+          if (node?.nodeInfo) {
+            node.nodeInfo.delete = () => {
+              if (nodeRenderElement) {
+                resizeObserver.unobserve(nodeRenderElement);
+              }
+              resizeObserver.disconnect();
+            };
+          }
         }
         if (rect && rect.resize) {
           rect.resize();
