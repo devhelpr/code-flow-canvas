@@ -3,33 +3,16 @@ import {
   FormField,
   IComputeResult,
   InitialValues,
+  IRectNodeComponent,
   NodeTask,
   Rect,
+  renderElement,
   ThumbConnectionType,
   ThumbType,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
-import mermaid from 'mermaid';
-
-const MermaidImage = ({
-  render,
-}: {
-  render: (element: HTMLElement) => void;
-}) => {
-  mermaid.initialize({
-    startOnLoad: true,
-  });
-
-  return (
-    <div
-      class="mermaid w-min h-min p-4 border-4 border-slate-400 border-solid rounded"
-      getElement={(element: HTMLElement) => {
-        render(element);
-      }}
-    ></div>
-  );
-};
+import { MermaidNode } from './classes/mermaid-node-class';
 
 const fieldName = 'mermaid-input';
 const nodeTitle = 'Mermaid diagram';
@@ -60,10 +43,10 @@ export const getMermaidNode =
   () =>
   // (): NodeTaskFactory<NodeInfo> =>
   (_updated: () => void): NodeTask<NodeInfo> => {
-    //let node: IRectNodeComponent<NodeInfo>;
+    let node: IRectNodeComponent<NodeInfo>;
     let rect: Rect<NodeInfo> | undefined;
-
-    let nodeRenderElement: HTMLElement | undefined = undefined;
+    let mermaidNode: MermaidNode;
+    let nodeRenderElement: HTMLElement | null = null;
     const initializeCompute = () => {
       return;
     };
@@ -72,47 +55,9 @@ export const getMermaidNode =
       _loopIndex?: number,
       _payload?: any
     ) => {
-      return new Promise<IComputeResult>((resolve) => {
-        if (nodeRenderElement && input) {
-          const mermaidDefintion = input
-            .replaceAll('```mermaid', '')
-            .replaceAll('```', '')
-            .trim();
-          mermaid
-            .render('dynamic', mermaidDefintion)
-            .then((renderResult) => {
-              if (nodeRenderElement) {
-                nodeRenderElement.innerHTML = renderResult.svg;
-              }
-              if (rect && rect.resize) {
-                rect.resize(undefined, true, '.mermaid');
-              }
-              resolve({
-                result: input,
-                output: input,
-                followPath: undefined,
-              });
-            })
-            .catch((error) => {
-              console.error('Error rendering mermaid diagram', error);
-              resolve({
-                result: input,
-                output: input,
-                followPath: undefined,
-              });
-            });
-        }
-      });
+      return mermaidNode.compute(input);
     };
-    const onRender = (element: HTMLElement) => {
-      nodeRenderElement = element;
-      const resizeObserver = new ResizeObserver(() => {
-        if (rect && rect.resize) {
-          rect.resize(undefined, true, '.mermaid');
-        }
-      });
-      resizeObserver.observe(element);
-    };
+
     return visualNodeFactory(
       mermaidNodeName,
       nodeTitle,
@@ -129,7 +74,34 @@ export const getMermaidNode =
       },
       (nodeInstance) => {
         rect = nodeInstance.rect;
-        //node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+        node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+        mermaidNode = new MermaidNode();
+
+        const childNodeWrapper = (nodeRenderElement = (
+          rect?.nodeComponent?.domElement as HTMLElement
+        ).querySelector('.child-node-wrapper'));
+        const childNodeInstance =
+          childNodeWrapper?.querySelector('.child-instance');
+        if (childNodeInstance) {
+          childNodeInstance.remove();
+        }
+        renderElement(mermaidNode.render(), childNodeWrapper);
+        nodeRenderElement = (
+          rect?.nodeComponent?.domElement as HTMLElement
+        ).querySelector('.child-node-wrapper > *:first-child');
+        if (nodeRenderElement) {
+          mermaidNode.nodeRenderElement = nodeRenderElement;
+          const resizeObserver = new ResizeObserver(() => {
+            if (rect && rect.resize) {
+              rect.resize(
+                undefined,
+                true,
+                '.child-node-wrapper > *:first-child'
+              );
+            }
+          });
+          resizeObserver.observe(nodeRenderElement);
+        }
         if (rect && rect.resize) {
           rect.resize();
         }
@@ -139,8 +111,9 @@ export const getMermaidNode =
         hasStaticWidthHeight: true,
         hasCustomStyling: true,
         customClassName: 'mermaid-node',
+        childNodeWrapperClass: 'child-node-wrapper',
       },
-      <MermaidImage render={onRender} />,
+      <div class="child-instance"></div>,
       true
     );
   };
