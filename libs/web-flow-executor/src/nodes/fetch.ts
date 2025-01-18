@@ -42,6 +42,9 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
   const initializeCompute = () => {
     return;
   };
+
+  let inputCache: string | undefined = undefined;
+  let currentOutput: any = undefined;
   const computeAsync = (
     input: string,
     loopIndex?: number,
@@ -51,8 +54,26 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
     runCounter?: RunCounter
   ) => {
     return new Promise((resolve, reject) => {
-      function sendFetchResult(result: any) {
+      if (node.nodeInfo?.formValues?.cacheOutput) {
+        if (inputCache === input && inputCache && currentOutput) {
+          resolve({
+            result: currentOutput,
+            followPath: undefined,
+            stop: true,
+            dummyEndpoint: true,
+          });
+          return;
+        }
+      }
+      inputCache = input;
+      function sendFetchResult(result: any, isStreamChunk = false) {
         return new Promise<void>((resolve) => {
+          // no cache when streaming
+          if (isStreamChunk) {
+            currentOutput = undefined;
+          } else {
+            currentOutput = result;
+          }
           runNodeFromThumb(
             node.thumbConnectors![0],
             canvasAppInstance!,
@@ -199,6 +220,9 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                   .then(({ value, done }) => {
                     if (done) {
                       if (!isFullJson) {
+                        // no cache when streaming
+                        currentOutput = undefined;
+
                         sendEndStream().then(() => {
                           resolve({
                             result: false,
@@ -246,7 +270,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                         .map((line) => JSON.parse(line));
                       if (lines.length > 0) {
                         console.log('lines', lines);
-                        sendFetchResult(lines).then(() => {
+                        sendFetchResult(lines, true).then(() => {
                           readChunk();
                         });
                       }
@@ -264,9 +288,9 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                       )?.classList.remove('hidden');
                       (
                         errorNode.domElement as unknown as HTMLElement
-                      ).textContent = error?.toString() ?? 'Error';
+                      ).textContent = error?.message?.toString() ?? 'Error';
                     }
-                    sendError(error?.toString() ?? 'Error');
+                    sendError(error?.message?.toString() ?? 'Error');
                   });
               };
 
@@ -289,7 +313,7 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                     )?.classList.remove('hidden');
                     (
                       errorNode.domElement as unknown as HTMLElement
-                    ).textContent = json?.error?.toString() ?? 'Error';
+                    ).textContent = json?.error?.message?.toString() ?? 'Error';
                   }
                   sendError(json?.error?.message?.toString() ?? 'Error');
                   return;
@@ -333,9 +357,9 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
                 errorNode?.domElement as unknown as HTMLElement
               )?.classList.remove('hidden');
               (errorNode.domElement as unknown as HTMLElement).textContent =
-                error?.toString() ?? 'Error';
+                error?.message?.toString() ?? 'Error';
             }
-            sendError(error?.toString() ?? 'Error');
+            sendError(error?.message?.toString() ?? 'Error');
           });
 
         //
@@ -490,7 +514,8 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         errorNode = createElement(
           'div',
           {
-            class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+8px)] h-[min-content] w-full hidden
+            class: `bg-red-500 p-4 rounded absolute bottom-[calc(100%+8px)] h-[min-content] w-full hidden 
+            break-words
             after:content-['']
             after:w-0 after:h-0 
             after:border-l-[10px] after:border-l-transparent
@@ -609,6 +634,24 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
               node.nodeInfo.formValues = {
                 ...node.nodeInfo.formValues,
                 ['headers']: value,
+              };
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Checkbox,
+            fieldName: 'cacheOutput',
+            label: 'Cache Output for same input',
+            value: initalValues?.['cacheOutput'] ?? false,
+            onChange: (value: boolean) => {
+              if (!node || !node.nodeInfo) {
+                return;
+              }
+              node.nodeInfo.formValues = {
+                ...node.nodeInfo.formValues,
+                ['cacheOutput']: value,
               };
               if (updated) {
                 updated();
