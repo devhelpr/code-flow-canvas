@@ -9,6 +9,7 @@ import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
 import '@shoelace-style/shoelace/dist/themes/light.css';
 import '@shoelace-style/shoelace/dist/components/color-picker/color-picker.js';
 import { getMermaidNode, mermaidNodeName } from '../custom-nodes/mermaid';
+import { registerNodes } from '../custom-nodes/register-nodes';
 
 export function ocwgPage() {
   // Add color picker popup
@@ -100,12 +101,7 @@ export function ocwgPage() {
     app.theme.backgroundAsHexColor = '#336699';
     app.theme.nodeBackground = 'bg-[#113366]';
 
-    app.registerExternalNodes = (
-      registerNodeFactory: RegisterNodeFactoryFunction
-    ) => {
-      //registerNodeFactory('test-external-node', getExternalTestNode());
-      registerNodeFactory(mermaidNodeName, getMermaidNode());
-    };
+    app.registerExternalNodes = registerNodes;
 
     // Add color picker change handlers
     const backgroundPicker = document.getElementById('background-color') as any;

@@ -11,6 +11,7 @@ import { examplePage } from './app/pages/example';
 import { setupCustomEditor } from '@devhelpr/visual-programming-system';
 import * as monaco from 'monaco-editor';
 import { getMermaidNode, mermaidNodeName } from './app/custom-nodes/mermaid';
+import { registerNodes } from './app/custom-nodes/register-nodes';
 
 if (url.pathname === '/run-flow') {
   runFlow();
@@ -112,10 +113,7 @@ if (url.pathname === '/run-flow') {
       100,
       32,
       undefined,
-      (_registerNodeFactory: RegisterNodeFactoryFunction) => {
-        //registerNodeFactory('test-external-node', getExternalTestNode());
-        registerNodeFactory(mermaidNodeName, getMermaidNode());
-      },
+      registerNodes,
       undefined,
       undefined,
       API_URL_ROOT
