@@ -618,7 +618,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.resetConnectionSlider(shouldClearExecutionHistory);
       }
       if (
-        flowChangeType === FlowChangeType.AddNode ||
+        //flowChangeType === FlowChangeType.AddNode ||
         flowChangeType === FlowChangeType.UpdateNode ||
         flowChangeType === FlowChangeType.AddConnection ||
         flowChangeType === FlowChangeType.UpdateConnection ||
@@ -1330,19 +1330,19 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         this.rootElement
       );
 
-      this.selectNodeType = createElement(
-        'select',
-        {
-          type: 'select',
-          class: 'p-2 m-2 relative max-w-[220px]', //top-[60px]',
-          name: 'select-node-type',
-          change: (_event) => {
-            //
-          },
-        },
-        menubarElement?.domElement,
-        ''
-      );
+      // this.selectNodeType = createElement(
+      //   'select',
+      //   {
+      //     type: 'select',
+      //     class: 'p-2 m-2 relative max-w-[220px]', //top-[60px]',
+      //     name: 'select-node-type',
+      //     change: (_event) => {
+      //       //
+      //     },
+      //   },
+      //   menubarElement?.domElement,
+      //   ''
+      // );
     }
     const setupTasksForContainerTaskInDropdown = (
       allowedNodeTasks: string[]

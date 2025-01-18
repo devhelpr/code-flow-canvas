@@ -10,7 +10,6 @@ import {
   navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
-  navBarPrimaryIconButton,
 } from '../consts/classes';
 import { DropdownButton } from './dropdown-button';
 
@@ -68,10 +67,10 @@ export class NavbarComponent extends Component<
     if (props.isReadOnly) {
       return;
     }
+    //         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
 
     this.template = createTemplate(
       `<div class="inline-flex items-center content-center">
-        <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <div></div>
@@ -115,9 +114,8 @@ export class NavbarComponent extends Component<
 
       if (this.element) {
         this.element.remove();
-        this.addNodeButton = this.element.firstChild as HTMLButtonElement;
-        this.centerButton = this.addNodeButton
-          ?.nextSibling as HTMLButtonElement;
+        //this.addNodeButton = this.element.firstChild as HTMLButtonElement;
+        this.centerButton = this.element.firstChild as HTMLButtonElement;
         this.deleteButton = this.centerButton?.nextSibling as HTMLButtonElement;
         this.exportButton = this.deleteButton?.nextSibling as HTMLButtonElement;
         this.importButton = this.exportButton?.nextSibling as HTMLButtonElement;
@@ -128,7 +126,7 @@ export class NavbarComponent extends Component<
         // this.importScriptButton = this.importButton
         //   ?.nextSibling as HTMLButtonElement;
 
-        this.addNodeButton.addEventListener('click', this.onClickAddNode);
+        //this.addNodeButton.addEventListener('click', this.onClickAddNode);
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
         //this.exportButton.addEventListener('click', this.onClickExport);
@@ -209,7 +207,7 @@ export class NavbarComponent extends Component<
         // );
 
         this.renderList.push(
-          this.addNodeButton,
+          //this.addNodeButton,
           this.centerButton,
           this.deleteButton,
           this.exportButton,
