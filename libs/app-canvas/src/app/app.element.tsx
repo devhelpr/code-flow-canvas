@@ -171,7 +171,7 @@ export class AppElement<T extends BaseNodeInfo> {
       {
         id: 'textAreaContainer',
         class:
-          'popup-node-editor absolute w-[400px] z-[20020] bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
+          'popup-node-editor absolute w-[400px] z-[20070] bg-slate-500 hidden overflow-x-visible overflow-y-auto text-white',
         wheel: (event) => {
           event.stopPropagation();
         },
