@@ -8,6 +8,7 @@ import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
 // Add Shoelace imports at the top
 import '@shoelace-style/shoelace/dist/themes/light.css';
 import '@shoelace-style/shoelace/dist/components/color-picker/color-picker.js';
+import { getMermaidNode, mermaidNodeName } from '../custom-nodes/mermaid';
 
 export function ocwgPage() {
   // Add color picker popup
@@ -99,6 +100,13 @@ export function ocwgPage() {
     app.theme.backgroundAsHexColor = '#336699';
     app.theme.nodeBackground = 'bg-[#113366]';
 
+    app.registerExternalNodes = (
+      registerNodeFactory: RegisterNodeFactoryFunction
+    ) => {
+      //registerNodeFactory('test-external-node', getExternalTestNode());
+      registerNodeFactory(mermaidNodeName, getMermaidNode());
+    };
+
     // Add color picker change handlers
     const backgroundPicker = document.getElementById('background-color') as any;
     const nodeBackgroundPicker = document.getElementById(
@@ -127,12 +135,6 @@ export function ocwgPage() {
         app.updateTheme();
       }
     });
-
-    app.registerExternalNodes = (
-      _registerNodeFactory: RegisterNodeFactoryFunction
-    ) => {
-      //
-    };
 
     // Rest of the existing code...
     let currentOcwgExport = '';

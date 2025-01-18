@@ -20,7 +20,7 @@ if (url.pathname === '/run-flow') {
   import('./app/gl-app.element').then((module) => {
     new module.GLAppElement('#app-root');
   });
-} else if (url.pathname === '/ocwg') {
+} else if (url.pathname === '/ocwg' || url.pathname === '/ocif') {
   ocwgPage();
 } else if (url.pathname === '/python') {
   pythonPage();
