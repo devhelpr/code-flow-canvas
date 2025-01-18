@@ -26,6 +26,7 @@ export type FormField = (
       fieldType: 'Text';
       value: string;
       enableAutoComplete?: boolean;
+      enablePassword?: boolean;
       onKeyDown?: (event: KeyboardEvent) => void;
       onKeyUp?: (event: KeyboardEvent) => void;
       onChange?: (value: string, formComponent: IFormsComponent) => void;

@@ -279,6 +279,16 @@ export class FlowAppElement extends AppElement<NodeInfo> {
 
     let intervalCancel: any = undefined;
     let intervalPreview: any = undefined;
+
+    const openAIKey = sessionStorage.getItem('openai-key');
+    const googleGeminiAIKey = sessionStorage.getItem('googleGeminiAI-key');
+    if (openAIKey) {
+      this.canvasApp.setTempData('openai-key', openAIKey);
+    }
+    if (googleGeminiAIKey) {
+      this.canvasApp.setTempData('googleGeminiAI-key', googleGeminiAIKey);
+    }
+
     this.canvasApp.setOnDraggingOverNode((node, draggedNode, isCancelling) => {
       const connection = draggedNode as IConnectionNodeComponent<NodeInfo>;
       if (connection.startNodeThumb) {

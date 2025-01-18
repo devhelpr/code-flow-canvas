@@ -15,6 +15,7 @@ export interface InputFieldProps extends BaseFormFieldProps {
   isRow?: boolean;
   isLast?: boolean;
   enableAutoComplete?: boolean;
+  enablePassword?: boolean;
   onChange?: (value: string, formComponent: IFormsComponent) => void;
   onKeyDown?: (event: KeyboardEvent) => void;
   onKeyUp?: (event: KeyboardEvent) => void;
@@ -42,9 +43,11 @@ export class InputFieldChildComponent extends FormFieldComponent<InputFieldProps
         <input class="block w-full p-1"
           name="${props.fieldName}"
           ${props.enableAutoComplete ? '' : "autocomplete='off'"}
+          
           id="${props.formId}_${props.fieldName}"
           value="${props.value ?? ''}"
-          type="text"></input>
+          ${props.enablePassword ? 'type="password"' : 'type="text"'}
+          ></input>
         </div>`
     );
 

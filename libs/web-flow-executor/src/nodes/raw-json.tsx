@@ -81,6 +81,8 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       //     ''
       //   : canvasAppInstance?.getTempData('openai-key') ?? '';
       const openAIKey = canvasAppInstance?.getTempData('openai-key') ?? '';
+      const googleGeminiAIKey =
+        canvasAppInstance?.getTempData('googleGeminiAI-key') ?? '';
       const payloadForExpression = getVariablePayloadInputUtils(
         input,
         payload,
@@ -103,7 +105,9 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       });
 
       const json = JSON.parse(
-        node.nodeInfo.formValues['json'].replace('[openai-key]', openAIKey)
+        node.nodeInfo.formValues['json']
+          .replace('[openai-key]', openAIKey)
+          .replace('[googleGeminiAI-key]', googleGeminiAIKey)
       );
 
       const transformedJson = transformJSON(

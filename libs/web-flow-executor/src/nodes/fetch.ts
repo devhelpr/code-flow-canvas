@@ -139,11 +139,16 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
         //     ''
         //   : canvasAppInstance?.getTempData('openai-key') ?? '';
         const openAIKey = canvasAppInstance?.getTempData('openai-key') ?? '';
+        const googleGeminiAIKey =
+          canvasAppInstance?.getTempData('googleGeminiAI-key') ?? '';
+
         let url = node?.nodeInfo?.formValues?.['url'] ?? '';
         if (url.startsWith('/')) {
           url = canvasAppInstance?.getApiUrlRoot() + url.substring(1);
         }
-        url = url.replace('[openai-key]', openAIKey);
+        url = url
+          .replace('[openai-key]', openAIKey)
+          .replace('[googleGeminiAI-key]', googleGeminiAIKey);
 
         const responseType =
           node?.nodeInfo?.formValues?.['response-type'] ?? 'json';
@@ -158,7 +163,9 @@ export const getFetch: NodeTaskFactory<NodeInfo> = (
           headersArray.forEach((header: string) => {
             const headerArray = header.split(':');
             if (headerArray.length === 2) {
-              const value = headerArray[1].replace('[openai-key]', openAIKey);
+              const value = headerArray[1]
+                .replace('[openai-key]', openAIKey)
+                .replace('[googleGeminiAI-key]', googleGeminiAIKey);
               headers.append(headerArray[0], value);
             }
           });

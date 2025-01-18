@@ -59,7 +59,7 @@ export const createFormDialog = (
     });
     const dialogElement = createElement(
       'dialog',
-      { class: 'input-dialog modal-dialog-form bg-slate-600' },
+      { class: 'input-dialog modal-dialog-form bg-slate-600 p-4' },
       rootElement || document.body,
       formWrapperElement
     );

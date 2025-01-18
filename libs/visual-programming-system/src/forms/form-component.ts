@@ -278,6 +278,7 @@ export class FormsComponent
           isRow: formControl.isRow,
           settings,
           enableAutoComplete: this.props.enableAutoComplete,
+          enablePassword: formControl.enablePassword,
           setValue: this.setValue,
           onChange: (value) => this.onChange(formControl, value),
           onKeyDown: formControl.onKeyDown,

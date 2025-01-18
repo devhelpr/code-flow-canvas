@@ -22,6 +22,9 @@ import {
   transformCameraSpaceToWorldSpace,
   getPointerPos,
   pointerDown,
+  createFormDialog,
+  FormFieldType,
+  IFormsComponent,
 } from '@devhelpr/visual-programming-system';
 import {
   getFollowNodeExecution,
@@ -32,7 +35,6 @@ import {
   getNodeFactoryNames,
   NodeInfo,
 } from '@devhelpr/web-flow-executor';
-import { createInputDialog } from '../utils/create-input-dialog';
 
 export class NodeSidebarMenuComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -643,29 +645,76 @@ export class NodeSidebarMenuComponent extends Component<
       return false;
     }
     const openAIKey = canvasApp.getTempData('openai-key') ?? '';
-    createInputDialog(
-      this.rootAppElement,
-      'Openai-key',
-      openAIKey,
-      (_name) => {
-        return {
-          valid: true,
-        };
-      },
-      {
-        isPassword: true,
+    const googleGeminiAIKey = canvasApp.getTempData('googleGeminiAI-key') ?? '';
+    createFormDialog(
+      [
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'openAIAPIKey',
+          label: 'OpenAI API Key',
+          value: openAIKey ?? '',
+          enablePassword: true,
+          onChange: (_value: string, _formComponent: IFormsComponent) => {
+            //
+          },
+        },
+        {
+          fieldType: FormFieldType.Text,
+          fieldName: 'googleGeminiAPIKey',
+          label: 'Google Gemini API Key',
+          value: googleGeminiAIKey ?? '',
+          enablePassword: true,
+          onChange: (_value: string, _formComponent: IFormsComponent) => {
+            //
+          },
+        },
+        {
+          fieldType: FormFieldType.Checkbox,
+          fieldName: 'storeInSessionStorage',
+          label: 'Store in browser session storage',
+          value: 'false',
+          onChange: (_value: boolean, _formComponent: IFormsComponent) => {
+            //
+          },
+        },
+      ],
+      this.rootAppElement
+    ).then((values) => {
+      console.log('form values', values);
+      canvasApp.setTempData('openai-key', values['openAIAPIKey']);
+      canvasApp.setTempData('googleGeminiAI-key', values['googleGeminiAPIKey']);
+      if (values['storeInSessionStorage']) {
+        sessionStorage.setItem('openai-key', values['openAIAPIKey']);
+        sessionStorage.setItem(
+          'googleGeminiAI-key',
+          values['googleGeminiAPIKey']
+        );
       }
-    ).then((value) => {
-      if (value === false) {
-        return;
-      }
-      const canvasApp = this.props.getCanvasApp();
-      if (!canvasApp) {
-        return;
-      }
-      canvasApp.setTempData('openai-key', value);
-      console.log('openai-key value', value);
     });
+    // const openAIKey = canvasApp.getTempData('openai-key') ?? '';
+    // createInputDialog(
+    //   this.rootAppElement,
+    //   'Openai-key',
+    //   openAIKey,
+    //   (_name) => {
+    //     return {
+    //       valid: true,
+    //     };
+    //   },
+    //   {
+    //     isPassword: true,
+    //   }
+    // ).then((value) => {
+    //   if (value === false) {
+    //     return;
+    //   }
+    //   const canvasApp = this.props.getCanvasApp();
+    //   if (!canvasApp) {
+    //     return;
+    //   }
+    //   canvasApp.setTempData('openai-key', value);
+    //   console.log('openai-key value', value);
+    // });
     return false;
   };
 
