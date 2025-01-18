@@ -646,6 +646,11 @@ export class NodeSidebarMenuComponent extends Component<
     }
     const openAIKey = canvasApp.getTempData('openai-key') ?? '';
     const googleGeminiAIKey = canvasApp.getTempData('googleGeminiAI-key') ?? '';
+    const isStoredInSessionStorage =
+      sessionStorage.getItem('openai-key') ||
+      sessionStorage.getItem('googleGeminiAI-key')
+        ? 'true'
+        : 'false';
     createFormDialog(
       [
         {
@@ -672,15 +677,18 @@ export class NodeSidebarMenuComponent extends Component<
           fieldType: FormFieldType.Checkbox,
           fieldName: 'storeInSessionStorage',
           label: 'Store in browser session storage',
-          value: 'false',
+          value: isStoredInSessionStorage,
           onChange: (_value: boolean, _formComponent: IFormsComponent) => {
             //
           },
         },
       ],
       this.rootAppElement
-    ).then((values) => {
+    ).then((values: Record<string, string>) => {
       console.log('form values', values);
+      if (!values) {
+        return;
+      }
       canvasApp.setTempData('openai-key', values['openAIAPIKey']);
       canvasApp.setTempData('googleGeminiAI-key', values['googleGeminiAPIKey']);
       if (values['storeInSessionStorage']) {
@@ -691,30 +699,7 @@ export class NodeSidebarMenuComponent extends Component<
         );
       }
     });
-    // const openAIKey = canvasApp.getTempData('openai-key') ?? '';
-    // createInputDialog(
-    //   this.rootAppElement,
-    //   'Openai-key',
-    //   openAIKey,
-    //   (_name) => {
-    //     return {
-    //       valid: true,
-    //     };
-    //   },
-    //   {
-    //     isPassword: true,
-    //   }
-    // ).then((value) => {
-    //   if (value === false) {
-    //     return;
-    //   }
-    //   const canvasApp = this.props.getCanvasApp();
-    //   if (!canvasApp) {
-    //     return;
-    //   }
-    //   canvasApp.setTempData('openai-key', value);
-    //   console.log('openai-key value', value);
-    // });
+
     return false;
   };
 
