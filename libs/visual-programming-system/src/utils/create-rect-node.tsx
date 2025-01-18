@@ -69,6 +69,7 @@ export interface NodeSettings {
   keepPopupOpenAfterUpdate?: boolean;
   hasCustomStyling?: boolean;
   customClassName?: string;
+  noFlexAutoInNodeContentWrapper?: boolean;
 }
 
 export const createRectNode = <T extends BaseNodeInfo>(
@@ -230,9 +231,10 @@ export const createRectNode = <T extends BaseNodeInfo>(
     (formElements.length === 0 && settings?.hasTitlebar === false) ||
     (settings?.hasFormInPopup && settings?.hasTitlebar === false);
 
-  let cssClasses = `border-slate-500 ${
+  // warning: dont add colors here! it affects a lot of nodes (especially the thumb-output node-type)
+  let cssClasses = `${
     hasCenteredLabel
-      ? 'border-slate-500 flex items-center  justify-center text-center'
+      ? ' flex items-center  justify-center text-center'
       : 'p-4 pt-4'
   }`;
   if (settings?.hasCustomStyling) {
@@ -249,7 +251,9 @@ export const createRectNode = <T extends BaseNodeInfo>(
           : hasBeforeDecorator && !hasAfterDecorator
           ? 'rounded-b'
           : ''
-      } min-h-auto flex-auto ${cssClasses}
+      } min-h-auto ${
+        settings?.noFlexAutoInNodeContentWrapper ? '' : 'flex-auto'
+      } ${cssClasses}
       ${settings?.additionalClassNames ?? ''} 
       `,
     },

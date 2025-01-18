@@ -146,6 +146,7 @@ export const getThumbOutputNode: NodeTaskFactory<GLNodeInfo> = (
       hasFormInPopup: true,
       additionalInnerNodeClassNames: 'rounded-full items-center justify-center',
       hasStaticWidthHeight: true,
+      noFlexAutoInNodeContentWrapper: true,
       additionalClassNames:
         'rounded-full bg-yellow-500 border-[black] border-2 border-solid h-[90px] w-[90px] flex-[0_0_auto]',
     },

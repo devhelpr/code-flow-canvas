@@ -150,8 +150,10 @@ export const getThumbInputNode: NodeTaskFactory<NodeInfo> = (
       category: 'Compositions',
       hasSettingsPopup: false,
       hasFormInPopup: true,
+
+      noFlexAutoInNodeContentWrapper: true,
       //hideTitle: true,
-      additionalInnerNodeClassNames: 'rounded-full',
+      additionalInnerNodeClassNames: 'rounded-full items-center justify-center',
       hasStaticWidthHeight: true,
     },
     undefined,
