@@ -252,7 +252,7 @@ export class NodeSidebarMenuComponent extends Component<
           md:flex flex-col           
           bg-slate-700  
           rounded-r-md      
-          overflow-y-scroll`}
+          `}
         getElement={(element: HTMLElement) => {
           this.taskbarContainer = element;
         }}

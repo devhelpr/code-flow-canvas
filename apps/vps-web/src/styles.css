@@ -790,5 +790,5 @@ html:active-view-transition-type(normal) {
 
 .taskbar-container > div {
   scrollbar-width: thin;
-  scrollbar-color: rgb(100, 116, 139) transparent;
+  scrollbar-color: rgb(100, 116, 139) rgb(51, 65, 85);
 }
