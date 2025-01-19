@@ -3,12 +3,10 @@ import {
   createJSXElement,
   standardTheme,
 } from '@devhelpr/visual-programming-system';
-import { RegisterNodeFactoryFunction } from '@devhelpr/web-flow-executor';
 
 // Add Shoelace imports at the top
 import '@shoelace-style/shoelace/dist/themes/light.css';
 import '@shoelace-style/shoelace/dist/components/color-picker/color-picker.js';
-import { getMermaidNode, mermaidNodeName } from '../custom-nodes/mermaid';
 import { registerNodes } from '../custom-nodes/register-nodes';
 
 export function ocwgPage() {

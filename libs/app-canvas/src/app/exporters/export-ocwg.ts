@@ -16,6 +16,8 @@ interface OCWGInfo {
   index: number;
 }
 const nodeInfoPropertyName = '@code-flow-canvas/node-properties';
+const connectionNodeInfoPropertyName =
+  '@code-flow-canvas/connection-properties';
 
 export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
   constructor(
@@ -120,7 +122,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       data: [
         {
           ...nodeInfo,
-          type: nodeInfoPropertyName,
+          type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
           start: {
             connected_to: `shape:${node.startNode.id}`,
@@ -165,7 +167,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       data: [
         {
           ...nodeInfo,
-          type: nodeInfoPropertyName,
+          type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
           start: {
             connected_to: `shape:${node.startNode.id}`,
