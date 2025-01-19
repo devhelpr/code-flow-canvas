@@ -70,6 +70,7 @@ export interface NodeSettings {
   hasCustomStyling?: boolean;
   customClassName?: string;
   noFlexAutoInNodeContentWrapper?: boolean;
+  centerToYPositionThumb?: boolean;
 }
 
 export const createRectNode = <T extends BaseNodeInfo>(
@@ -394,6 +395,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           classNames: '',
           hasCustomStyling: settings?.hasCustomStyling ?? false,
           customClassName: settings?.customClassName,
+          centerToYPositionThumb: settings?.centerToYPositionThumb,
         },
         settings?.adjustToFormContent
           ? false
@@ -600,8 +602,12 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
         settings?.hasSettingsPopup ? [] : formElements,
         x,
         y,
-        width,
-        height,
+        settings?.hasStaticWidthHeight && settings?.centerToYPositionThumb
+          ? _width ?? width
+          : width,
+        settings?.hasStaticWidthHeight && settings?.centerToYPositionThumb
+          ? _height ?? height
+          : height,
         compute,
         initializeCompute,
         thumbs,

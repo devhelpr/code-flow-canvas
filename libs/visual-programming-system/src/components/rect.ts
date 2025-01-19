@@ -33,6 +33,7 @@ import { FlowChangeType } from '../interfaces';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
 import { Theme } from '../interfaces/theme';
+import { LayoutProperties } from '../interfaces/layout-properties';
 
 export class Rect<T extends BaseNodeInfo> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -89,11 +90,7 @@ export class Rect<T extends BaseNodeInfo> {
     text?: string,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T> | HTMLElement,
-    layoutProperties?: {
-      classNames?: string;
-      autoSizeToContentIfNodeHasNoThumbs?: boolean;
-      hasCustomStyling?: boolean;
-    },
+    layoutProperties?: LayoutProperties,
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,
@@ -121,6 +118,7 @@ export class Rect<T extends BaseNodeInfo> {
     this.rootElement = rootElement;
     this.theme = theme;
 
+    const oldHeight = height ?? 0;
     this.interactionStateMachine = interactionStateMachine;
     this.hasStaticWidthHeight = hasStaticWidthHeight;
 
@@ -305,6 +303,18 @@ export class Rect<T extends BaseNodeInfo> {
       hasStaticWidthHeight ?? false
     );
 
+    if (layoutProperties?.centerToYPositionThumb) {
+      this.nodeComponent.y =
+        this.nodeComponent.y +
+        (oldHeight ?? 0) / 2 -
+        (this.nodeComponent.height ?? 0) / 2;
+    } //paddingRect -
+
+    // if (centerToYPositionThumb) {
+    //   this.nodeComponent.y =
+    //     this.nodeComponent.y + (oldHeight ?? 0) / 2 - this.points.height / 2;
+    // }
+
     // WARNING! .. if this is not done, then thumb positioning is incoraddUpdateEventListenerafter loading flow
     //  for thumb-types EndConnecterCenter and StartConnectorCenter
     this.cachedWidth = -1;
@@ -312,8 +322,8 @@ export class Rect<T extends BaseNodeInfo> {
 
     this.nodeComponent.update(
       this.nodeComponent,
-      startX,
-      startY,
+      this.nodeComponent.x,
+      this.nodeComponent.y,
       this.nodeComponent
     );
 
@@ -424,7 +434,8 @@ export class Rect<T extends BaseNodeInfo> {
   public resize(
     width?: number,
     overrideStaticWidthHeight?: boolean,
-    selectChildElemenSelectorAsReference?: string
+    selectChildElemenSelectorAsReference?: string,
+    centerToYPositionThumb?: boolean
   ) {
     if (
       (this.hasStaticWidthHeight && !overrideStaticWidthHeight) ||
@@ -432,6 +443,7 @@ export class Rect<T extends BaseNodeInfo> {
     ) {
       return;
     }
+    const oldHeight = this.nodeComponent.height;
     const { scale } = getCamera();
     if (this.nodeComponent.thumbConnectors) {
       let minHeightAdd = 0;
@@ -517,6 +529,11 @@ export class Rect<T extends BaseNodeInfo> {
     if (!this.autSizeToContentIfNodeHasNoThumbs) {
       rectContainerDOMElement.style.width = `${this.nodeComponent.width}px`;
       rectContainerDOMElement.style.height = `${this.nodeComponent.height}px`;
+    }
+
+    if (centerToYPositionThumb) {
+      this.nodeComponent.y =
+        this.nodeComponent.y + (oldHeight ?? 0) / 2 - this.points.height / 2;
     }
     if (this.nodeComponent.update) {
       this.nodeComponent.update(

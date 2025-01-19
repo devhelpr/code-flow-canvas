@@ -13,6 +13,7 @@ import {
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces';
+import { LayoutProperties } from '../interfaces/layout-properties';
 import { Theme } from '../interfaces/theme';
 import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, NodeType } from '../types';
@@ -45,10 +46,7 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     text?: string,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T>,
-    layoutProperties?: {
-      classNames?: string;
-      hasCustomStyling?: boolean;
-    },
+    layoutProperties?: LayoutProperties,
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,

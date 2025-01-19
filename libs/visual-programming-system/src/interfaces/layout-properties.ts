@@ -3,4 +3,5 @@ export interface LayoutProperties {
   autoSizeToContentIfNodeHasNoThumbs?: boolean;
   hasCustomStyling?: boolean;
   customClassName?: string;
+  centerToYPositionThumb?: boolean;
 }

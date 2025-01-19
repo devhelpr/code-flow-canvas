@@ -52,7 +52,12 @@ export const getMermaidNode =
     const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
       return mermaidNode.compute(input, loopIndex, payload).then((result) => {
         if (rect && rect.resize) {
-          rect.resize(undefined, true, '.child-node-wrapper > *:first-child');
+          rect.resize(
+            undefined,
+            true,
+            '.child-node-wrapper > *:first-child',
+            true
+          );
         }
         return result;
       });
@@ -96,7 +101,8 @@ export const getMermaidNode =
               rect.resize(
                 undefined,
                 true,
-                '.child-node-wrapper > *:first-child'
+                '.child-node-wrapper > *:first-child',
+                true
               );
             }
           });
@@ -110,9 +116,9 @@ export const getMermaidNode =
             };
           }
         }
-        if (rect && rect.resize) {
-          rect.resize();
-        }
+        // if (rect && rect.resize) {
+        //   rect.resize(undefined, undefined, undefined, true);
+        // }
       },
       {
         category: 'Diagrams',
@@ -120,6 +126,7 @@ export const getMermaidNode =
         hasCustomStyling: true,
         customClassName: 'mermaid-node',
         childNodeWrapperClass: 'child-node-wrapper',
+        centerToYPositionThumb: true,
       },
       <div class="child-instance"></div>,
       true

@@ -118,12 +118,7 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     text?: string,
     thumbs?: IThumb[],
     markup?: string | INodeComponent<T> | undefined,
-    layoutProperties?: {
-      classNames?: string;
-      autoSizeToContentIfNodeHasNoThumbs?: boolean;
-      hasCustomStyling?: boolean;
-      customClassName?: string;
-    },
+    layoutProperties?: LayoutProperties,
     hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     disableManualResize?: boolean,
