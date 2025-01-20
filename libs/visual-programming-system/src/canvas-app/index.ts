@@ -48,6 +48,7 @@ import { IFlowCanvasBase } from './flow-canvas';
 import { FlowCore } from './flow-core';
 import { GetNodeTaskFactory } from '../interfaces/node-task-registry';
 import { LayoutProperties } from '../interfaces/layout-properties';
+import { FlowCanvasOptions } from '../interfaces/flow-canvas';
 
 export const createFlowCanvas = <T extends BaseNodeInfo>(
   rootElement: HTMLElement,
@@ -71,7 +72,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     isCancelling: boolean
   ) => void,
   rootFlowCanvas?: IFlowCanvasBase<T>,
-  getNodeTaskFactory?: GetNodeTaskFactory<T>
+  getNodeTaskFactory?: GetNodeTaskFactory<T>,
+  options?: FlowCanvasOptions
 ): IFlowCanvasBase<T> => {
   return new FlowCanvas(
     rootElement,
@@ -88,7 +90,8 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     onDroppedOnNode,
     onDraggingOverNode,
     rootFlowCanvas,
-    getNodeTaskFactory
+    getNodeTaskFactory,
+    options
   );
 };
 
@@ -106,6 +109,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
   public nodeSelector: NodeSelector<T>;
   public isContextOnly = false;
   public isComposition = false;
+
+  public hasNodeTypeSideBar?: boolean;
+  public nodeTypeSideBarSelector?: string;
 
   private rectInstanceList: Record<string, Rect<T>>;
   private CanvasClickEvent: Event;
@@ -179,6 +185,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     | undefined;
 
   private rootFlowCanvas: IFlowCanvasBase<T> | undefined;
+
   public getRootFlowCanvas = () => this.rootFlowCanvas;
   constructor(
     rootElement: HTMLElement,
@@ -202,7 +209,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       isCancelling: boolean
     ) => void,
     rootFlowCanvas?: IFlowCanvasBase<T>,
-    getNodeTaskFactory?: GetNodeTaskFactory<T>
+    getNodeTaskFactory?: GetNodeTaskFactory<T>,
+    options?: FlowCanvasOptions
   ) {
     super();
     this.rootFlowCanvas = rootFlowCanvas;
@@ -211,6 +219,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
     this.heightSpaceForHeaderFooterToolbars =
       heightSpaceForHeaderFooterToolbars;
     this.widthSpaceForSideToobars = widthSpaceForSideToobars;
+
+    this.hasNodeTypeSideBar = options?.hasNodeTypeSideBar;
+    this.nodeTypeSideBarSelector = options?.nodeTypeSideBarSelector;
 
     this.rootElement = rootElement;
     this.theme = customTheme ?? standardTheme;
@@ -1193,8 +1204,11 @@ export class FlowCanvas<T extends BaseNodeInfo>
       const helperScale = rootWidth / helperWidth;
       const helperHeight = maxY - minY;
       const helperScaleHeight = rootHeight / helperHeight;
-
-      const width = maxX - minX + 120 / helperScale;
+      let offsetNodesidebar = 0;
+      if (this.hasNodeTypeSideBar) {
+        offsetNodesidebar = 280;
+      }
+      const width = maxX - minX + (120 + offsetNodesidebar) / helperScale;
       const height = maxY - minY + 240 / helperScaleHeight;
 
       let scale = rootWidth / width;
@@ -1242,11 +1256,16 @@ export class FlowCanvas<T extends BaseNodeInfo>
         this.heightSpaceForHeaderFooterToolbars ?? 0
       ); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
 
+      let xOffsetNodesidebar = 0;
+      if (this.hasNodeTypeSideBar) {
+        xOffsetNodesidebar = 200;
+      }
       this.xCamera =
         rootWidth / 2 -
         (scale * width) / 2 -
         scale * (minX + (-60 + 60) / helperScale) -
-        boudingBoxCorrectionX;
+        boudingBoxCorrectionX +
+        xOffsetNodesidebar;
       this.yCamera =
         rootHeight / 2 -
         (scale * height) / 2 -

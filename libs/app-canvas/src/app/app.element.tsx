@@ -56,6 +56,7 @@ import {
   showHTMLElement,
 } from './utils/show-hide-element';
 import { createInputDialog } from './utils/create-input-dialog';
+import { APPFlowOptions } from './interfaces/app-flow-options';
 
 export class AppElement<T extends BaseNodeInfo> {
   public static observedAttributes = [];
@@ -105,7 +106,8 @@ export class AppElement<T extends BaseNodeInfo> {
     _isReadOnly?: boolean,
     heightSpaceForHeaderFooterToolbars?: number,
     widthSpaceForSideToobars?: number,
-    getNodeTaskFactory?: GetNodeTaskFactory<T>
+    getNodeTaskFactory?: GetNodeTaskFactory<T>,
+    options?: APPFlowOptions
   ) {
     // NOTE : on http instead of https, crypto is not available...
     // so uuid's cannot be created and the app will not work
@@ -157,7 +159,11 @@ export class AppElement<T extends BaseNodeInfo> {
       undefined,
       undefined,
       undefined,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      {
+        hasNodeTypeSideBar: options?.hasNodeTypeSideBar,
+        nodeTypeSideBarSelector: options?.nodeTypeSideBarSelector,
+      }
     );
     this.canvas = canvasApp.canvas;
     this.canvasApp = canvasApp;

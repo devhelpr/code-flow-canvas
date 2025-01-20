@@ -33,6 +33,10 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
   isContextOnly: boolean;
   isComposition: boolean;
   theme: Theme;
+
+  hasNodeTypeSideBar?: boolean;
+  nodeTypeSideBarSelector?: string;
+
   setOnAddcomposition: (
     _onAddComposition: (
       composition: Composition<T>,

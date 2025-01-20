@@ -272,7 +272,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       isReadOnly,
       heightSpaceForHeaderFooterToolbars,
       widthSpaceForSideToobars,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      {
+        hasNodeTypeSideBar: true,
+        nodeTypeSideBarSelector: '.taskbar-container',
+      }
     );
     if (!this.rootElement) {
       return;

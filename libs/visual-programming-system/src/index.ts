@@ -61,3 +61,4 @@ export * from './canvas-app/composition-runtime-flow-context';
 export * from './interfaces/run-counter';
 export * from './utils/pointer-pos';
 export * from './components/events/pointer-events';
+export * from './interfaces/layout-properties';
