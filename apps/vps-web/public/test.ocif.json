@@ -6,6 +6,7 @@
       "position": [100, 100],
       "resource": "r1"
     },
+
     {
       "id": "n2",
       "position": [100, 100],
@@ -13,6 +14,19 @@
         {
           "type": "circle-node",
           "radius": 50
+        }
+      ]
+    },
+    {
+      "id": "n3",
+      "position": [200, 200],
+      "resource": "r1",
+      "data": [
+        {
+          "type": "rect-node",
+          "strokeColor": "red",
+          "strokeWidth": 2,
+          "fillColor": "darkred"
         }
       ]
     }

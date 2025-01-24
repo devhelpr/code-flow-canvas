@@ -5,6 +5,7 @@ export type OCWGNode = {
   data?: {
     [key: string]: any;
   }[];
+  resource?: string;
 };
 
 export type OCWGEdge = {

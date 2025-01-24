@@ -7,6 +7,14 @@ import {
 
 let rootOCIF: any = undefined;
 
+function isSupportedOCIFNode(ocifNode: any): boolean {
+  return (
+    ocifNode.data &&
+    Array.isArray(ocifNode.data) &&
+    ocifNode.data.some((d: any) => d.type === 'rect-node')
+  );
+}
+
 function isValidCodeFlowCanvasNode(node: any): boolean {
   if (node.data && Array.isArray(node.data)) {
     return node.data.some((d: any) => d.type === nodeInfoPropertyName);
@@ -25,10 +33,11 @@ function isValidCodeFlowCanvasConnection(node: any): boolean {
 function getNodeInfoFromOCIFNode(node: any): NodeInfo | false {
   const nodeInfo = node.data.find((d: any) => d.type === nodeInfoPropertyName);
   if (nodeInfo) {
-    delete nodeInfo.type;
-    nodeInfo.type = nodeInfo.nodeType;
-    delete nodeInfo.nodeType;
-    return nodeInfo;
+    const clonedNodeInfo = structuredClone(nodeInfo);
+    delete clonedNodeInfo.type;
+    clonedNodeInfo.type = clonedNodeInfo.nodeType;
+    delete clonedNodeInfo.nodeType;
+    return clonedNodeInfo;
   }
   return false;
 }
@@ -38,16 +47,17 @@ function getConnectionInfoFromOCIFNode(node: any): any | false {
     (d: any) => d.type === connectionNodeInfoPropertyName
   );
   if (nodeInfo) {
-    delete nodeInfo.type;
-    nodeInfo.type = nodeInfo.nodeType;
-    delete nodeInfo.nodeType;
+    const clonedNodeInfo = structuredClone(nodeInfo);
+    delete clonedNodeInfo.type;
+    clonedNodeInfo.type = clonedNodeInfo.nodeType;
+    delete clonedNodeInfo.nodeType;
     return {
       endX: node.position[0],
       endY: node.position[1],
-      startNodeId: nodeInfo.start.connected_to,
-      endNodeId: nodeInfo.end.connected_to,
-      startThumbName: nodeInfo.start.port_name,
-      endThumbName: nodeInfo.end.port_name,
+      startNodeId: clonedNodeInfo.start.connected_to,
+      endNodeId: clonedNodeInfo.end.connected_to,
+      startThumbName: clonedNodeInfo.start.port_name,
+      endThumbName: clonedNodeInfo.end.port_name,
       lineType: 'BezierCubic',
       layer: 1,
       nodeInfo: {},
@@ -94,6 +104,16 @@ export const importOCIF = (ocif: any) => {
             ...connection,
           });
         }
+      } else if (node.data && isSupportedOCIFNode(node)) {
+        flow.flows['flow'].nodes.push({
+          id: node.id,
+          x: node.position[0],
+          y: node.position[1],
+          nodeType: 'Shape',
+          nodeInfo: {
+            type: 'expression',
+          },
+        });
       } else if (!node.data) {
         flow.flows['flow'].nodes.push({
           id: node.id,

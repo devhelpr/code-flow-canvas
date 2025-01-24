@@ -33,6 +33,26 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     return structuredClone(ocwgEmptyFile);
   }
 
+  isOCIFNodeThatCodeFlowCanvasSupports(node: any): boolean {
+    if (node.data && Array.isArray(node.data)) {
+      const result = node.data.some((d: any) => d.type === 'rect-node');
+      if (result) {
+        return true;
+      }
+    }
+    if (!node.data) {
+      return true;
+    }
+    if (node.data && Array.isArray(node.data)) {
+      return node.data.some(
+        (d: any) =>
+          d.type === nodeInfoPropertyName ||
+          d.type === connectionNodeInfoPropertyName
+      );
+    }
+    return false;
+  }
+
   isValidCodeFlowCanvasNode(node: any): boolean {
     if (node.data && Array.isArray(node.data)) {
       return node.data.some(
@@ -64,6 +84,30 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     if (rootOCIF.nodes) {
       rootOCIF.nodes.forEach((node: any) => {
         if (
+          this.isOCIFNodeThatCodeFlowCanvasSupports(node) &&
+          this.doesRootOCIFNodeExistInFlow(node.id, elements)
+        ) {
+          const codeFlowCanvasNode = this.file?.nodes.find(
+            (n) => n.id === node.id
+          );
+          if (codeFlowCanvasNode && codeFlowCanvasNode.data) {
+            node.data?.forEach((d: any) => {
+              if (!codeFlowCanvasNode.data) {
+                return;
+              }
+              if (
+                d.type !== nodeInfoPropertyName &&
+                d.type !== connectionNodeInfoPropertyName
+              ) {
+                codeFlowCanvasNode.data.push(d);
+              }
+            });
+          }
+
+          if (node.resource && codeFlowCanvasNode) {
+            codeFlowCanvasNode.resource = node.resource;
+          }
+        } else if (
           !this.isValidCodeFlowCanvasNode(node) &&
           !this.doesRootOCIFNodeExistInFlow(node.id, elements)
         ) {
