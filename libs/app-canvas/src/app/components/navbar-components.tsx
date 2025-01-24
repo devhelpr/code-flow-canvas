@@ -38,6 +38,7 @@ import {
   setStopAnimations,
 } from '../follow-path/animate-path';
 import { OCWGExporter } from '../exporters/export-ocwg';
+import { clearOCIF, importOCIF, isValidOCIF } from '../importers/ocif-importer';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -143,13 +144,67 @@ export class NavbarComponent extends Component<
             textColorClasses="text-white"
             caption="Import"
             onClick={() => {
+              clearOCIF();
               this.import();
             }}
             dropdownItems={[
               {
                 caption: 'Import as OCIF',
                 onClick: () => {
-                  //
+                  const input = document.createElement(
+                    'input'
+                  ) as HTMLInputElement & {
+                    files: FileList;
+                  };
+
+                  input.type = 'file';
+                  input.setAttribute('accept', 'application/JSON');
+                  input.onchange = () => {
+                    const files = Array.from(input.files);
+                    if (files && files.length > 0) {
+                      // const file = URL.createObjectURL(files[0]);
+                      // console.log(file);
+
+                      const reader = new FileReader();
+                      reader.addEventListener('load', (event) => {
+                        const canvasApp = this.props.getCanvasApp();
+                        if (!canvasApp) {
+                          return;
+                        }
+                        if (event && event.target && event.target.result) {
+                          const ocifData = JSON.parse(
+                            event.target.result.toString()
+                          );
+                          if (!isValidOCIF(ocifData)) {
+                            alert('Invalid OCIF file');
+                            return;
+                          }
+                          const flow = importOCIF(ocifData);
+                          console.log('IMPORT DATA OCIF', ocifData, flow);
+                          setStopAnimations();
+                          const interval = setInterval(() => {
+                            if (!getIsStopAnimations()) {
+                              clearInterval(interval);
+                              this.props.clearCanvas();
+                              this.props.importToCanvas(
+                                flow.flows.flow.nodes,
+                                canvasApp,
+                                this.props.canvasUpdated,
+                                undefined,
+                                0,
+                                getNodeTaskFactory,
+                                flow.compositions
+                              );
+                              this.props.getCanvasApp()?.centerCamera();
+                              this.props.initializeNodes();
+                            }
+                          }, 0);
+                        }
+                      });
+                      reader.readAsBinaryString(files[0]);
+                    }
+                  };
+                  input.click();
                 },
               },
             ]}
@@ -651,6 +706,7 @@ export class NavbarComponent extends Component<
     event.preventDefault();
     const example = (event.target as HTMLSelectElement).value;
     if (example && confirm(`Are you sure you want to load ${example}?`)) {
+      clearOCIF();
       fetch(`/example-flows/${example}`)
         .then((response) => response.json())
         .then((data) => {

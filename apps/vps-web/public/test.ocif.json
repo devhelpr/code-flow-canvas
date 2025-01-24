@@ -1,0 +1,28 @@
+{
+  "ocif": "https://canvasprotocol.org/ocif/0.2",
+  "nodes": [
+    {
+      "id": "n1",
+      "position": [100, 100],
+      "resource": "r1"
+    },
+    {
+      "id": "n2",
+      "position": [100, 100],
+      "data": [
+        {
+          "type": "circle-node",
+          "radius": 50
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "r1",
+      "representations": [
+        { "mime-type": "text/plain", "content": "Hello, World!" }
+      ]
+    }
+  ]
+}

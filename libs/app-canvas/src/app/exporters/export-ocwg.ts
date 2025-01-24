@@ -4,6 +4,7 @@ import {
   BaseNodeInfo,
   IThumbNodeComponent,
   GetNodeTaskFactory,
+  ElementNodeMap,
 } from '@devhelpr/visual-programming-system';
 import { Exporter } from './Exporter';
 
@@ -11,12 +12,13 @@ import { BaseExporter } from './BaseExporter';
 import { OCWGFile, OCWGNode } from './ocwg/ocwg-schema';
 import { ocwgEmptyFile } from './ocwg/ocwg-empty-file';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { getCurrentOCIF } from '../importers/ocif-importer';
 
 interface OCWGInfo {
   index: number;
 }
-const nodeInfoPropertyName = '@code-flow-canvas/node-properties';
-const connectionNodeInfoPropertyName =
+export const nodeInfoPropertyName = '@code-flow-canvas/node-properties';
+export const connectionNodeInfoPropertyName =
   '@code-flow-canvas/connection-properties';
 
 export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
@@ -29,6 +31,67 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
 
   override createExportFile(): OCWGFile {
     return structuredClone(ocwgEmptyFile);
+  }
+
+  isValidCodeFlowCanvasNode(node: any): boolean {
+    if (node.data && Array.isArray(node.data)) {
+      return node.data.some(
+        (d: any) =>
+          d.type === nodeInfoPropertyName ||
+          d.type === connectionNodeInfoPropertyName
+      );
+    }
+    return false;
+  }
+
+  doesRootOCIFNodeExistInFlow(
+    id: string,
+    elements: ElementNodeMap<BaseNodeInfo>
+  ): boolean {
+    return elements.has(`${id}`);
+  }
+
+  override mergeWithAdditionalIbfo(
+    elements: ElementNodeMap<BaseNodeInfo>
+  ): void {
+    const rootOCIF = getCurrentOCIF();
+    if (!this.file || !rootOCIF) {
+      return;
+    }
+    if (rootOCIF.resources) {
+      this.file.resources = rootOCIF.resources;
+    }
+    if (rootOCIF.nodes) {
+      rootOCIF.nodes.forEach((node: any) => {
+        if (
+          !this.isValidCodeFlowCanvasNode(node) &&
+          !this.doesRootOCIFNodeExistInFlow(node.id, elements)
+        ) {
+          this.file?.nodes.push(node);
+        }
+      });
+    }
+    if (rootOCIF.relations) {
+      rootOCIF.relations.forEach((relation: any) => {
+        if (!this.file?.relations.find((r) => r.id === relation.id)) {
+          this.file?.relations.push(relation);
+        }
+      });
+    }
+    if (rootOCIF.schemas) {
+      rootOCIF.schemas.forEach((schema: any) => {
+        if (!this.file?.schemas.find((s) => s.uri === schema.uri)) {
+          this.file?.schemas.push(schema);
+        }
+      });
+    }
+    if (rootOCIF.resources) {
+      rootOCIF.resources.forEach((resource: any) => {
+        if (!this.file?.resources.find((r) => r.uri === resource.uri)) {
+          this.file?.resources.push(resource);
+        }
+      });
+    }
   }
 
   override createExportInfoContext(): OCWGInfo {
@@ -70,7 +133,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       });
     }
     const ocwgNode: OCWGNode = {
-      id: `shape:${node.id}`,
+      id: `${node.id}`,
       position: [node.x, node.y],
       size: [node.width ?? 0, node.height ?? 0],
       data: [
@@ -116,7 +179,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       return;
     }
     const ocwgNode: OCWGNode = {
-      id: `shape:${node.id}`,
+      id: `connection:${node.id}`,
       position: [node.x, node.y],
       size: [node.width ?? 0, node.height ?? 0],
       data: [
@@ -125,11 +188,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
           start: {
-            connected_to: `shape:${node.startNode.id}`,
+            connected_to: `${node.startNode.id}`,
             port_name: 'output',
           },
           end: {
-            connected_to: `shape:${node.endNode.id}`,
+            connected_to: `${node.endNode.id}`,
             port_name: 'input',
           },
         },
@@ -143,8 +206,8 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
         const relation = {
           type: '@ocwg/rel/edge' as const,
           id: `${node.id}-edge`,
-          from: `shape:${node.startNode.id}`,
-          to: `shape:${node.endNode.id}`,
+          from: `${node.startNode.id}`,
+          to: `${node.endNode.id}`,
           directed: true,
         };
         this.file.relations.push(relation);
@@ -170,11 +233,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
           start: {
-            connected_to: `shape:${node.startNode.id}`,
+            connected_to: `${node.startNode.id}`,
             port_name: node.startNodeThumb?.thumbName,
           },
           end: {
-            connected_to: `shape:${node.endNode.id}`,
+            connected_to: `${node.endNode.id}`,
             port_name: node.endNodeThumb?.thumbName,
           },
         },
@@ -189,8 +252,8 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           id: `${node.id}-edge`,
           type: '@ocwg/rel/edge' as const,
           directed: true,
-          from: `shape:${node.startNode.id}`,
-          to: `shape:${node.endNode.id}`,
+          from: `${node.startNode.id}`,
+          to: `${node.endNode.id}`,
         };
         this.file.relations.push(relation);
       }

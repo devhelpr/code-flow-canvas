@@ -25,9 +25,15 @@ export abstract class BaseExporter<T extends ExportFile, X> {
   protected createExportFile(): T {
     throw new Error('Method not implemented.');
   }
+  protected mergeWithAdditionalIbfo(
+    _elements: ElementNodeMap<BaseNodeInfo>
+  ): void {
+    //
+  }
   convertToExportFile(): T {
     this.file = this.createExportFile();
     this.exportNodes(undefined, this.exportInfo.canvasApp.elements);
+
     return this.file;
   }
 
@@ -137,6 +143,8 @@ export abstract class BaseExporter<T extends ExportFile, X> {
       }
       this.exportMultiPortConnection(connectionContextInfo, nodeInfo, node);
     });
+
+    this.mergeWithAdditionalIbfo(elements);
   }
   protected exportConnection(
     _contextInfo: X,
