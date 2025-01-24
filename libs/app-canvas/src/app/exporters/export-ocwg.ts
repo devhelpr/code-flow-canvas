@@ -97,7 +97,8 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
               }
               if (
                 d.type !== nodeInfoPropertyName &&
-                d.type !== connectionNodeInfoPropertyName
+                d.type !== connectionNodeInfoPropertyName &&
+                d.type !== '@ocwg/node/ports'
               ) {
                 codeFlowCanvasNode.data.push(d);
               }
