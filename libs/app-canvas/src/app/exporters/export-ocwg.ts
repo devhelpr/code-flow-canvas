@@ -87,11 +87,11 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     }
     if (parentId && this.file) {
       const relation = this.file.relations.find((r) => r.id === parentId);
-      if (relation && relation.type === '@ocwg/set') {
+      if (relation && relation.type === '@ocwg/rel/group') {
         relation.members.push(ocwgNode.id);
       } else {
         const relation = {
-          type: '@ocwg/set' as const,
+          type: '@ocwg/rel/group' as const,
           members: [ocwgNode.id],
           id: parentId,
         };

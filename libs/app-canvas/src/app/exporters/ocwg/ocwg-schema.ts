@@ -14,10 +14,10 @@ export type OCWGEdge = {
   from: string;
   to: string;
 };
-export type OCWGRelation = OCWGSet | OCWGEdge;
+export type OCWGRelation = OCWGGroup | OCWGEdge;
 
-export type OCWGSet = {
-  type: '@ocwg/set';
+export type OCWGGroup = {
+  type: '@ocwg/rel/group';
   members: Array<string>;
   id: string;
 };
@@ -26,7 +26,5 @@ export type OCWGFile = {
   nodes: OCWGNode[];
   relations: OCWGRelation[];
   resources: any[];
-  schemas: {
-    [key: string]: any;
-  };
+  schemas: any[];
 };

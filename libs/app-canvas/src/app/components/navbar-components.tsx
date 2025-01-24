@@ -7,7 +7,6 @@ import {
   setSelectNode,
 } from '@devhelpr/visual-programming-system';
 import {
-  navBarButton,
   navBarIconButton,
   navBarIconButtonInnerElement,
 } from '../consts/classes';
@@ -68,13 +67,13 @@ export class NavbarComponent extends Component<
       return;
     }
     //         <button class="${navBarPrimaryIconButton}"><span class="${navBarIconButtonInnerElement} icon-add"></span></button>
-
+    //<button class="${navBarButton}">Import</button>
     this.template = createTemplate(
       `<div class="inline-flex items-center content-center">
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-fit_screen"></span></button>
         <button class="${navBarIconButton}"><span class="${navBarIconButtonInnerElement} icon-delete"></span></button>
         <div></div>
-        <button class="${navBarButton}">Import</button>
+        <div></div>
         ${
           props.hideFlowPresets
             ? ''
@@ -130,10 +129,32 @@ export class NavbarComponent extends Component<
         this.centerButton.addEventListener('click', this.onClickCenter);
         this.deleteButton.addEventListener('click', this.onClickDelete);
         //this.exportButton.addEventListener('click', this.onClickExport);
-        this.importButton.addEventListener('click', this.onClickImport);
+        //this.importButton.addEventListener('click', this.onClickImport);
         this.selectExampleFlow?.addEventListener(
           'change',
           this.onClickImportExample
+        );
+
+        renderElement(
+          <DropdownButton
+            class=""
+            mainBgColorClass="bg-slate-500"
+            bgColorClasses="bg-slate-500 "
+            textColorClasses="text-white"
+            caption="Import"
+            onClick={() => {
+              this.import();
+            }}
+            dropdownItems={[
+              {
+                caption: 'Import as OCIF',
+                onClick: () => {
+                  //
+                },
+              },
+            ]}
+          />,
+          this.importButton
         );
         renderElement(
           <DropdownButton
@@ -522,8 +543,7 @@ export class NavbarComponent extends Component<
     );
   };
 
-  onClickImport = (event: Event) => {
-    event.preventDefault();
+  import = () => {
     const input = document.createElement('input') as HTMLInputElement & {
       files: FileList;
     };
@@ -569,7 +589,6 @@ export class NavbarComponent extends Component<
       }
     };
     input.click();
-    return false;
   };
 
   onClickImportScript = (event: Event) => {
