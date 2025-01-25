@@ -71,6 +71,23 @@ function getConnectionInfoFromOCIFNode(node: any): any | false {
   return false;
 }
 
+export const getResourceById = (ocif: any, resourceId: string) => {
+  if (!ocif.resources || !resourceId) {
+    return undefined;
+  }
+  return ocif.resources.find((r: any) => r.id === resourceId);
+};
+
+export const getTextRepresentation = (resource: any): string | false => {
+  if (!resource || !resource.representations) {
+    return false;
+  }
+  return (
+    resource.representations.find((r: any) => r['mime-type'] === 'text/plain')
+      ?.content ?? false
+  );
+};
+
 export const importOCIF = (ocif: any) => {
   rootOCIF = ocif;
   const flow: Flow<NodeInfo> = {
@@ -112,6 +129,14 @@ export const importOCIF = (ocif: any) => {
         }
       } else if (node.data && isSupportedOCIFNode(node)) {
         const data = getExtenstionData(node, 'rect-node');
+        let text = '';
+        const resource = getResourceById(ocif, node.resource);
+        if (resource) {
+          const textRepresentation = getTextRepresentation(resource);
+          if (textRepresentation) {
+            text = textRepresentation;
+          }
+        }
         flow.flows['flow'].nodes.push({
           id: node.id,
           x: node.position[0],
@@ -124,10 +149,19 @@ export const importOCIF = (ocif: any) => {
             strokeColor: data?.strokeColor ?? 'black',
             fillColor: data?.fillColor ?? 'white',
             strokeWidth: data?.strokeWidth ?? 2,
+            text: text,
           } as any,
         });
         console.log('ocif node size', node.size);
       } else if (!node.data) {
+        let text = '';
+        const resource = getResourceById(ocif, node.resource);
+        if (resource) {
+          const textRepresentation = getTextRepresentation(resource);
+          if (textRepresentation) {
+            text = textRepresentation;
+          }
+        }
         flow.flows['flow'].nodes.push({
           id: node.id,
           x: node.position[0],
@@ -140,6 +174,7 @@ export const importOCIF = (ocif: any) => {
             strokeColor: 'black',
             fillColor: 'white',
             strokeWidth: 2,
+            text: text,
           } as any,
         });
       }

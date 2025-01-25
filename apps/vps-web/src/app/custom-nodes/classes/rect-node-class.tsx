@@ -40,13 +40,17 @@ w-min h-min
           getElement={(element: HTMLElement) => {
             this.rectElement = element;
           }}
-          class={`rounded`}
+          class={`rounded flex justify-center items-center text-center`}
           style={`width:${node.width ?? 50}px;height:${
             node.height ?? 50
           }px;background:${nodeInfo?.fillColor ?? 'black'};border: ${
-            nodeInfo?.strokeWidth ?? '2px'
-          } ${nodeInfo?.strokeColor ?? 'white'} solid`}
-        ></div>
+            nodeInfo?.strokeWidth ?? '2'
+          }px ${nodeInfo?.strokeColor ?? 'white'} solid;color:${
+            nodeInfo?.strokeColor ?? 'white'
+          }`}
+        >
+          {nodeInfo?.text ?? ''}
+        </div>
       </div>
     );
   };
