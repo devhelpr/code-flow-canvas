@@ -12,7 +12,9 @@ function isSupportedOCIFNode(ocifNode: any): boolean {
   return (
     ocifNode.data &&
     Array.isArray(ocifNode.data) &&
-    ocifNode.data.some((d: any) => d.type === 'rect-node')
+    ocifNode.data.some(
+      (d: any) => d.type === 'rect-node' || d.type === '@ocwg/node/rect'
+    )
   );
 }
 
@@ -128,7 +130,9 @@ export const importOCIF = (ocif: any) => {
           });
         }
       } else if (node.data && isSupportedOCIFNode(node)) {
-        const data = getExtenstionData(node, 'rect-node');
+        const data =
+          getExtenstionData(node, 'rect-node') ??
+          getExtenstionData(node, '@ocwg/node/rect');
         let text = '';
         const resource = getResourceById(ocif, node.resource);
         if (resource) {

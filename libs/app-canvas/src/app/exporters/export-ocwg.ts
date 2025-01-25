@@ -36,7 +36,9 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
 
   isOCIFNodeThatCodeFlowCanvasSupports(node: any): boolean {
     if (node.data && Array.isArray(node.data)) {
-      const result = node.data.some((d: any) => d.type === 'rect-node');
+      const result = node.data.some(
+        (d: any) => d.type === 'rect-node' || d.type === '@ocwg/node/rect'
+      );
       if (result) {
         return true;
       }
