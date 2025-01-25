@@ -23,6 +23,7 @@ export interface Flow<T> {
   schemaType: string;
   schemaVersion: string;
   id: string;
+  ocif?: any; // for ocif .. for now "any"
   flows: {
     [flowName: string]: {
       flowType: string;

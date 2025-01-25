@@ -335,6 +335,8 @@ export class NodeTransformer<T extends BaseNodeInfo> {
         (event.target as HTMLElement).getAttribute('data-ResizeMode')
       );
 
+      this.attachedNode.isSettingSize = false;
+
       const { pointerXPos, pointerYPos } = getPointerPos(
         this.canvas.domElement as HTMLElement,
         this.rootElement,
@@ -470,6 +472,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
         } else {
           this.attachedNode.height = this.orgHeight - offsetY;
         }
+        this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
@@ -482,6 +485,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
         } else {
           this.attachedNode.height = this.orgHeight - offsetY;
         }
+        this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
@@ -493,6 +497,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
         } else {
           this.attachedNode.height = this.orgHeight + offsetY;
         }
+        this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
@@ -505,6 +510,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
         } else {
           this.attachedNode.height = this.orgHeight + offsetY;
         }
+        this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
           this.attachedNode.width,
           this.attachedNode.height
@@ -527,6 +533,9 @@ export class NodeTransformer<T extends BaseNodeInfo> {
     interactionStateMachine: InteractionStateMachine<T>
   ) => {
     this.attachedNode?.updateEnd?.();
+    if (this.attachedNode) {
+      this.attachedNode.isSettingSize = false;
+    }
     (this.nodeTransformElement?.domElement as HTMLElement).classList.add(
       this.cssClasses.noPointerEvents
     );

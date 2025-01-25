@@ -4,6 +4,7 @@ import {
   connectionNodeInfoPropertyName,
   nodeInfoPropertyName,
 } from '../exporters/export-ocwg';
+import { ocifSchema } from '../consts/ocif';
 
 let rootOCIF: any = undefined;
 
@@ -13,6 +14,10 @@ function isSupportedOCIFNode(ocifNode: any): boolean {
     Array.isArray(ocifNode.data) &&
     ocifNode.data.some((d: any) => d.type === 'rect-node')
   );
+}
+
+function getExtenstionData(ocifNode: any, extensionName: string): any {
+  return ocifNode.data.find((d: any) => d.type === extensionName);
 }
 
 function isValidCodeFlowCanvasNode(node: any): boolean {
@@ -72,6 +77,7 @@ export const importOCIF = (ocif: any) => {
     schemaType: 'ocif',
     schemaVersion: '0.1',
     id: '1234',
+    ocif: structuredClone(ocif),
     flows: {
       ['flow']: {
         flowType: 'flow',
@@ -105,24 +111,36 @@ export const importOCIF = (ocif: any) => {
           });
         }
       } else if (node.data && isSupportedOCIFNode(node)) {
+        const data = getExtenstionData(node, 'rect-node');
         flow.flows['flow'].nodes.push({
           id: node.id,
           x: node.position[0],
           y: node.position[1],
+          width: node.size?.[0] ?? 100,
+          height: node.size?.[1] ?? 100,
           nodeType: 'Shape',
           nodeInfo: {
-            type: 'expression',
-          },
+            type: 'rect-node',
+            strokeColor: data?.strokeColor ?? 'black',
+            fillColor: data?.fillColor ?? 'white',
+            strokeWidth: data?.strokeWidth ?? 2,
+          } as any,
         });
+        console.log('ocif node size', node.size);
       } else if (!node.data) {
         flow.flows['flow'].nodes.push({
           id: node.id,
           x: node.position[0],
           y: node.position[1],
+          width: node.size?.[0] ?? 100,
+          height: node.size?.[1] ?? 100,
           nodeType: 'Shape',
           nodeInfo: {
-            type: 'expression',
-          },
+            type: 'rect-node',
+            strokeColor: 'black',
+            fillColor: 'white',
+            strokeWidth: 2,
+          } as any,
         });
       }
     });
@@ -132,6 +150,9 @@ export const importOCIF = (ocif: any) => {
 
 export const isValidOCIF = (ocif: any) => {
   if (!ocif.ocif) {
+    return false;
+  }
+  if (!ocif.ocif.startsWith(ocifSchema)) {
     return false;
   }
   if (ocif.nodes && !Array.isArray(ocif.nodes)) {

@@ -85,6 +85,7 @@ export interface IRectNodeComponent<T extends BaseNodeInfo>
   canvasAppInstance?: IFlowCanvasBase<T>;
   canBeResized?: boolean;
   thumbs: IThumb[];
+  isSettingSize?: boolean;
   setSize: (width: number, height: number) => void;
 }
 

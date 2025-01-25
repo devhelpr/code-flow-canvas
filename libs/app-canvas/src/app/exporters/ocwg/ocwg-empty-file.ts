@@ -1,7 +1,8 @@
+import { ocifSchema, ocifVersion } from '../../consts/ocif';
 import { OCWGFile } from './ocwg-schema';
 
 export const ocwgEmptyFile: OCWGFile = {
-  ocif: 'https://canvasprotocol.org/ocif/0.2',
+  ocif: `${ocifSchema}${ocifVersion}`,
   nodes: [],
   relations: [],
   resources: [],

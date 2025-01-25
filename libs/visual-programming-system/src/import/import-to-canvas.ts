@@ -27,7 +27,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
     if (getNodeTaskFactory && node.nodeType === NodeType.Shape) {
       const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
       if (factory) {
-        const nodeTask = factory(canvasUpdated, canvasApp.theme);
+        const nodeTask = factory(canvasUpdated, canvasApp.theme, node);
         if (nodeTask) {
           if (nodeTask.isContainer) {
             const canvasVisualNode = nodeTask.createVisualNode(

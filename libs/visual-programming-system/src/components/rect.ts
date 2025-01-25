@@ -199,7 +199,8 @@ export class Rect<T extends BaseNodeInfo> {
       startY,
       width,
       height,
-      hasStaticWidthHeight ?? false
+      hasStaticWidthHeight ?? false,
+      layoutProperties?.skipDetermineSizeOnInit ?? false
     );
 
     const thumbConnectors: IThumbNodeComponent<T>[] = [];
@@ -300,7 +301,8 @@ export class Rect<T extends BaseNodeInfo> {
       startY,
       width,
       height,
-      hasStaticWidthHeight ?? false
+      hasStaticWidthHeight ?? false,
+      layoutProperties?.skipDetermineSizeOnInit ?? false
     );
 
     if (layoutProperties?.centerToYPositionThumb) {
@@ -396,7 +398,8 @@ export class Rect<T extends BaseNodeInfo> {
     startY: number,
     width: number,
     height: number,
-    hasStaticWidthHeight: boolean
+    hasStaticWidthHeight: boolean,
+    skipDetermineSizeOnInit: boolean
   ) {
     if (!this.nodeComponent) {
       return;
@@ -409,7 +412,7 @@ export class Rect<T extends BaseNodeInfo> {
     this.cachedWidth = width;
     this.cachedHeight = Math.max(height, this.minHeight);
 
-    if (!hasStaticWidthHeight) {
+    if (!hasStaticWidthHeight && !skipDetermineSizeOnInit) {
       const astElementSize = (
         this.rectInfo.astElement?.domElement as unknown as HTMLElement
       ).getBoundingClientRect();
@@ -424,7 +427,7 @@ export class Rect<T extends BaseNodeInfo> {
       }
     }
 
-    if (!this.autSizeToContentIfNodeHasNoThumbs) {
+    if (!this.autSizeToContentIfNodeHasNoThumbs && !skipDetermineSizeOnInit) {
       (
         this.nodeComponent.domElement as HTMLElement
       ).style.height = `${this.nodeComponent.height}px`;
@@ -935,10 +938,7 @@ export class Rect<T extends BaseNodeInfo> {
       thumb?: IThumbNodeComponent<T>
     ) => { x: number; y: number },
     markup?: string | INodeComponent<T> | HTMLElement,
-    layoutProperties?: {
-      classNames?: string;
-      autoSizeToContentIfNodeHasNoThumbs?: boolean;
-    },
+    layoutProperties?: LayoutProperties,
     _hasStaticWidthHeight?: boolean,
     disableInteraction?: boolean,
     _canvasUpdated?: () => void,
@@ -1057,7 +1057,10 @@ export class Rect<T extends BaseNodeInfo> {
 
     const divDomElement =
       rectContainerElement.domElement as unknown as HTMLElement;
-    if (!this.autSizeToContentIfNodeHasNoThumbs) {
+    if (
+      !this.autSizeToContentIfNodeHasNoThumbs &&
+      !layoutProperties?.skipDetermineSizeOnInit
+    ) {
       divDomElement.style.width = `${bbox.width}px`;
       divDomElement.style.height = `${bbox.height}px`;
     }

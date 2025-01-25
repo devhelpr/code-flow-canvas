@@ -4,6 +4,7 @@ import { BaseNodeInfo } from '../types/base-node-info';
 import { InitialValues } from '../types/values';
 import { Composition } from './composition';
 import { Theme } from './theme';
+import { FlowNode } from './flow';
 
 export type NodeTaskFactory<T extends BaseNodeInfo> = (
   onUpdatedCanvas: (
@@ -11,7 +12,8 @@ export type NodeTaskFactory<T extends BaseNodeInfo> = (
     isStoreOnly?: boolean,
     flowChangeType?: FlowChangeType
   ) => void,
-  theme?: Theme
+  theme?: Theme,
+  node?: FlowNode<T>
 ) => NodeTask<T>;
 export type GetNodeTaskFactory<T extends BaseNodeInfo> = (
   name: string

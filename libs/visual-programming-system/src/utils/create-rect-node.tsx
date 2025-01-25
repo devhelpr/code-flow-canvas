@@ -71,6 +71,7 @@ export interface NodeSettings {
   customClassName?: string;
   noFlexAutoInNodeContentWrapper?: boolean;
   centerToYPositionThumb?: boolean;
+  skipDetermineSizeOnInit?: boolean;
 }
 
 export const createRectNode = <T extends BaseNodeInfo>(
@@ -366,6 +367,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           classNames: '',
           hasCustomStyling: settings?.hasCustomStyling ?? false,
           customClassName: settings?.customClassName,
+          skipDetermineSizeOnInit: settings?.skipDetermineSizeOnInit,
         },
         settings?.adjustToFormContent
           ? false
@@ -374,6 +376,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
         undefined,
         id,
         {
+          ...nodeInfo,
           type: nodeTypeName,
           formValues: initialValues ?? {},
           decorators: nodeInfo?.decorators,
@@ -396,6 +399,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           hasCustomStyling: settings?.hasCustomStyling ?? false,
           customClassName: settings?.customClassName,
           centerToYPositionThumb: settings?.centerToYPositionThumb,
+          skipDetermineSizeOnInit: settings?.skipDetermineSizeOnInit,
         },
         settings?.adjustToFormContent
           ? false
@@ -404,6 +408,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
         undefined,
         id,
         {
+          ...nodeInfo,
           type: nodeTypeName,
           formValues: initialValues ?? {},
           decorators: nodeInfo?.decorators,

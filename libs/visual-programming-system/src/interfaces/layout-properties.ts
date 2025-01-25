@@ -4,4 +4,5 @@ export interface LayoutProperties {
   hasCustomStyling?: boolean;
   customClassName?: string;
   centerToYPositionThumb?: boolean;
+  skipDetermineSizeOnInit?: boolean;
 }

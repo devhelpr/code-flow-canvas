@@ -1,55 +1,40 @@
 import {
   createJSXElement,
+  FlowNode,
   FormField,
   InitialValues,
   IRectNodeComponent,
   NodeTask,
   Rect,
   renderElement,
-  ThumbConnectionType,
-  ThumbType,
+  Theme,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
-import { MermaidNode } from './classes/mermaid-node-class';
+import { RectNode } from './classes/rect-node-class';
 
-const fieldName = 'mermaid-input';
-const nodeTitle = 'Mermaid diagram';
-export const mermaidNodeName = 'mermaid-node';
+const category = 'Default';
+const fieldName = 'rect-input';
+const nodeTitle = 'Rect node';
+export const rectNodeName = 'rect-node';
 const familyName = 'flow-canvas';
-const thumbs = [
-  {
-    thumbType: ThumbType.StartConnectorCenter,
-    thumbIndex: 0,
-    connectionType: ThumbConnectionType.start,
-    color: 'white',
-    label: ' ',
-    name: 'output',
-    maxConnections: -1,
-  },
-  {
-    thumbType: ThumbType.EndConnectorCenter,
-    thumbIndex: 0,
-    connectionType: ThumbConnectionType.end,
-    color: 'white',
-    label: ' ',
-    name: 'input',
-    maxConnections: 1,
-  },
-];
 
-export const getMermaidNode =
+export const getRectNode =
   () =>
-  (_updated: () => void): NodeTask<NodeInfo> => {
+  (
+    _updated: () => void,
+    _theme?: Theme,
+    flowNode?: FlowNode<NodeInfo>
+  ): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
     let rect: Rect<NodeInfo> | undefined;
-    let mermaidNode: MermaidNode;
+    let rectNode: RectNode;
     let nodeRenderElement: HTMLElement | null = null;
     const initializeCompute = () => {
       return;
     };
     const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
-      return mermaidNode.compute(input, loopIndex, payload).then((result) => {
+      return rectNode.compute(input, loopIndex, payload).then((result) => {
         if (rect && rect.resize) {
           rect.resize(
             undefined,
@@ -63,23 +48,27 @@ export const getMermaidNode =
     };
 
     return visualNodeFactory(
-      mermaidNodeName,
+      rectNodeName,
       nodeTitle,
       familyName,
       fieldName,
       computeAsync,
       initializeCompute,
       false,
-      200,
-      100,
-      thumbs,
+      flowNode?.width ?? 10,
+      flowNode?.height ?? 10,
+      [],
       (_values?: InitialValues): FormField[] => {
         return [];
       },
       (nodeInstance) => {
+        if (!flowNode) {
+          return;
+        }
         rect = nodeInstance.rect;
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
-        mermaidNode = new MermaidNode(node.id);
+
+        rectNode = new RectNode(node.id);
 
         const childNodeWrapper = (nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement
@@ -89,14 +78,22 @@ export const getMermaidNode =
         if (childNodeInstance) {
           childNodeInstance.remove();
         }
-        renderElement(mermaidNode.render(), childNodeWrapper);
+        renderElement(rectNode.render(flowNode), childNodeWrapper);
         nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement
         ).querySelector('.child-node-wrapper > *:first-child');
         if (nodeRenderElement) {
-          mermaidNode.nodeRenderElement = nodeRenderElement;
+          rectNode.nodeRenderElement = nodeRenderElement;
           const resizeObserver = new ResizeObserver(() => {
             if (rect && rect.resize) {
+              console.log('RECT RESIZE via observer');
+              // problem with manual resizing is partially solved when this is commented
+              // node content is not resized though...
+              if (node.isSettingSize) {
+                node.isSettingSize = false;
+                rectNode.setSize(node.width ?? 10, node.height ?? 10);
+                return;
+              }
               rect.resize(
                 undefined,
                 true,
@@ -120,12 +117,13 @@ export const getMermaidNode =
         // }
       },
       {
-        category: 'Diagrams',
+        category,
         hasStaticWidthHeight: true,
         hasCustomStyling: true,
-        customClassName: 'mermaid-node',
+        customClassName: 'custom-rect-node',
         childNodeWrapperClass: 'child-node-wrapper',
-        centerToYPositionThumb: true,
+        centerToYPositionThumb: false,
+        skipDetermineSizeOnInit: true,
       },
       <div class="child-instance"></div>,
       true

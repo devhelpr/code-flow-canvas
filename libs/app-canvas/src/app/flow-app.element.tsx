@@ -1092,6 +1092,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         console.log('nodesList', nodesList);
         const compositions = getSerializeCompositions() || {};
         console.log('compositions', compositions);
+
+
+        // TODO : store ocif here as well.. if it's available
         const flow: Flow<NodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',

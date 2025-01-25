@@ -13,6 +13,7 @@ import { OCWGFile, OCWGNode } from './ocwg/ocwg-schema';
 import { ocwgEmptyFile } from './ocwg/ocwg-empty-file';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { getCurrentOCIF } from '../importers/ocif-importer';
+import { ocifRelationGroup } from '../consts/ocif';
 
 interface OCWGInfo {
   index: number;
@@ -91,6 +92,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
             (n) => n.id === node.id
           );
           if (codeFlowCanvasNode && codeFlowCanvasNode.data) {
+            console.log('export ocif node', codeFlowCanvasNode);
             node.data?.forEach((d: any) => {
               if (!codeFlowCanvasNode.data) {
                 return;
@@ -195,13 +197,21 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     }
     if (parentId && this.file) {
       const relation = this.file.relations.find((r) => r.id === parentId);
-      if (relation && relation.type === '@ocwg/rel/group') {
-        relation.members.push(ocwgNode.id);
+      if (
+        relation &&
+        relation.data.length > 0 &&
+        relation.data[0].type === ocifRelationGroup
+      ) {
+        relation.data[0].members.push(ocwgNode.id);
       } else {
         const relation = {
-          type: '@ocwg/rel/group' as const,
-          members: [ocwgNode.id],
           id: parentId,
+          data: [
+            {
+              type: '@ocwg/rel/group' as const,
+              members: [ocwgNode.id],
+            },
+          ],
         };
         this.file.relations.push(relation);
       }
@@ -249,11 +259,15 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     if (this.file?.relations) {
       {
         const relation = {
-          type: '@ocwg/rel/edge' as const,
           id: `${node.id}-edge`,
-          from: `${node.startNode.id}`,
-          to: `${node.endNode.id}`,
-          directed: true,
+          data: [
+            {
+              type: '@ocwg/rel/edge' as const,
+              from: `${node.startNode.id}`,
+              to: `${node.endNode.id}`,
+              directed: true,
+            },
+          ],
         };
         this.file.relations.push(relation);
       }
@@ -295,10 +309,14 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
       {
         const relation = {
           id: `${node.id}-edge`,
-          type: '@ocwg/rel/edge' as const,
-          directed: true,
-          from: `${node.startNode.id}`,
-          to: `${node.endNode.id}`,
+          data: [
+            {
+              type: '@ocwg/rel/edge' as const,
+              directed: true,
+              from: `${node.startNode.id}`,
+              to: `${node.endNode.id}`,
+            },
+          ],
         };
         this.file.relations.push(relation);
       }

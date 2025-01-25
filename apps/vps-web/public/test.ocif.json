@@ -6,10 +6,10 @@
       "position": [100, 100],
       "resource": "r1"
     },
-
     {
       "id": "n2",
       "position": [100, 100],
+
       "data": [
         {
           "type": "circle-node",
@@ -20,12 +20,13 @@
     {
       "id": "n3",
       "position": [200, 200],
+      "size": [200, 200],
       "resource": "r1",
       "data": [
         {
           "type": "rect-node",
           "strokeColor": "red",
-          "strokeWidth": 2,
+          "strokeWidth": "2px",
           "fillColor": "darkred"
         }
       ]

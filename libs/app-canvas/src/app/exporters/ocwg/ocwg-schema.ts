@@ -1,3 +1,5 @@
+import { ocifRelationEdge, ocifRelationGroup } from '../../consts/ocif';
+
 export type OCWGNode = {
   id: string;
   position?: number[];
@@ -9,18 +11,22 @@ export type OCWGNode = {
 };
 
 export type OCWGEdge = {
-  type: '@ocwg/rel/edge';
   id: string;
-  directed?: boolean;
-  from: string;
-  to: string;
+  data: {
+    type: typeof ocifRelationEdge;
+    directed?: boolean;
+    from: string;
+    to: string;
+  }[];
 };
 export type OCWGRelation = OCWGGroup | OCWGEdge;
 
 export type OCWGGroup = {
-  type: '@ocwg/rel/group';
-  members: Array<string>;
   id: string;
+  data: {
+    type: typeof ocifRelationGroup;
+    members: Array<string>;
+  }[];
 };
 export type OCWGFile = {
   ocif: string;

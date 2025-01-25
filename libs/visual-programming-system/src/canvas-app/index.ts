@@ -1642,6 +1642,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       nodeComponent.y,
       nodeComponent.width ?? 0,
       nodeComponent.height ?? 0,
+      false,
       false
     );
     rectInstance.cachedHeight = -1;
@@ -1719,6 +1720,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       nodeComponent.y,
       nodeComponent.width ?? 0,
       nodeComponent.height ?? 0,
+      false,
       false
     );
     rectInstance.cachedHeight = -1;
@@ -1835,6 +1837,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       nodeComponent.y,
       nodeComponent.width ?? 0,
       nodeComponent.height ?? 0,
+      false,
       false
     );
     rectInstance.cachedHeight = -1;
