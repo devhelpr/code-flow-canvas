@@ -49,7 +49,7 @@ w-min h-min
           getElement={(element: HTMLElement) => {
             this.rectElement = element;
           }}
-          class={`rounded flex justify-center items-center text-center`}
+          class={`rounded flex justify-center items-center text-center whitespace-pre`}
           style={`width:${node.width ?? 50}px;height:${
             node.height ?? 50
           }px;background:${nodeInfo?.fillColor ?? 'black'};border: ${
