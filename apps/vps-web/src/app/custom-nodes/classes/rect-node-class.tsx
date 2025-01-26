@@ -57,6 +57,7 @@ w-min h-min
           }px ${nodeInfo?.strokeColor ?? 'white'} solid;color:${
             nodeInfo?.strokeColor ?? 'white'
           }`}
+          spellcheck="false"
           blur={() => {
             console.log('blur', this.rectElement?.textContent);
             if (this.node?.nodeInfo) {

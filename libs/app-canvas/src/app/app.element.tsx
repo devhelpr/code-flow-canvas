@@ -461,6 +461,16 @@ export class AppElement<T extends BaseNodeInfo> {
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0;
+    if (
+      key === 'escape' &&
+      !inInputControle &&
+      (event.target as HTMLElement)?.isContentEditable
+    ) {
+      if (document.activeElement) {
+        (document.activeElement as HTMLElement).blur();
+      }
+      return;
+    }
     if (key === 'backspace' || key === 'delete' || key === 'enter') {
       if (inInputControle || (event.target as HTMLElement)?.isContentEditable) {
         return;
