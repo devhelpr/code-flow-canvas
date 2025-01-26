@@ -69,11 +69,10 @@ export interface INodeDecorator {
   };
 }
 
-export interface BaseNodeInfo {
-  taskType?: string;
-  type?: string;
-  compositionId?: string;
-  isComposition?: boolean;
+// These also contain properties from NodeInfo (which is a superset of BaseNodeInfo)..
+// TODO : move that and have some sort of registration construction so that it can be
+//   used dynamically by the serialization proces
+export interface BaseSettingsNodeInfo {
   useInCompositionOnly?: boolean;
   nodeCannotBeReplaced?: boolean;
   isAnnotation?: boolean;
@@ -81,6 +80,47 @@ export interface BaseNodeInfo {
   readPropertyFromNodeInfoForInitialTrigger?: string;
   keepPopupOpenAfterUpdate?: boolean;
   supportsPreview?: boolean;
+  showFormOnlyInPopup?: boolean;
+  isSettingsPopup?: boolean;
+  hasNoFormPopup?: boolean;
+  meta?: AllMetaFieldTypes[];
+  metaInputs?: AllMetaFieldTypes[];
+  canvasAppInstance?: IFlowCanvasBase<BaseNodeInfo>;
+  initializeOnStartFlow?: boolean;
+  isVariable?: boolean;
+  isUINode?: boolean;
+  supportsDecorators?: boolean;
+}
+const baseSettingsNodeInfoSchema: Record<keyof BaseSettingsNodeInfo, boolean> =
+  {
+    useInCompositionOnly: true,
+    nodeCannotBeReplaced: true,
+    isAnnotation: true,
+    canBeStartedByTrigger: true,
+    readPropertyFromNodeInfoForInitialTrigger: true,
+    keepPopupOpenAfterUpdate: true,
+    supportsPreview: true,
+    showFormOnlyInPopup: true,
+    isSettingsPopup: true,
+    hasNoFormPopup: true,
+    meta: true,
+    metaInputs: true,
+    canvasAppInstance: true,
+    initializeOnStartFlow: true,
+    isVariable: true,
+    isUINode: true,
+    supportsDecorators: true,
+  };
+
+export const baseSettingsNodeInfoProperties = Object.keys(
+  baseSettingsNodeInfoSchema
+) as (keyof BaseSettingsNodeInfo)[];
+
+export interface BaseNodeInfo extends BaseSettingsNodeInfo {
+  taskType?: string;
+  type?: string;
+  compositionId?: string;
+  isComposition?: boolean;
   cancelPreview?: () => void;
   outputConnectionInfo?: {
     text: string;
@@ -88,18 +128,11 @@ export interface BaseNodeInfo {
     form?: any[];
     onChanged?: (connection: IConnectionNodeComponent<BaseNodeInfo>) => void;
   };
-  canvasAppInstance?: IFlowCanvasBase<BaseNodeInfo>;
 
   initializeCompute?: () => void;
-  showFormOnlyInPopup?: boolean;
-  isSettingsPopup?: boolean;
-  hasNoFormPopup?: boolean;
   formElements?: any[];
   delete?: () => void;
   formValues?: any;
   decorators?: INodeDecorator[];
   update?: () => void;
-
-  meta?: AllMetaFieldTypes[];
-  metaInputs?: AllMetaFieldTypes[];
 }

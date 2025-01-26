@@ -3,7 +3,10 @@ import {
   IConnectionNodeComponent,
   IRectNodeComponent,
 } from '../interfaces';
-import { BaseNodeInfo } from '../types/base-node-info';
+import {
+  BaseNodeInfo,
+  baseSettingsNodeInfoProperties,
+} from '../types/base-node-info';
 
 export const cleanupNodeInfoForSerializing = <T extends BaseNodeInfo>(
   nodeInfo: T | undefined
@@ -12,6 +15,7 @@ export const cleanupNodeInfoForSerializing = <T extends BaseNodeInfo>(
   if (nodeInfo) {
     for (const key in nodeInfo) {
       if (
+        !baseSettingsNodeInfoProperties.find((item) => item === key) &&
         typeof (nodeInfo as any)[key] !== 'function' &&
         key !== 'formElements' &&
         key !== 'canvasAppInstance' &&
