@@ -122,6 +122,13 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
       if (!info) {
         return;
       }
+      if (
+        document &&
+        document.activeElement &&
+        (document.activeElement as unknown as HTMLElement).isContentEditable
+      ) {
+        return;
+      }
       console.log(
         'Toolbar selectedNodeInfo',
         selectedNodeInfo,
