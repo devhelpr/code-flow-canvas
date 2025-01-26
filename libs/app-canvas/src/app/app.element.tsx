@@ -413,7 +413,7 @@ export class AppElement<T extends BaseNodeInfo> {
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0;
-    if (!inInputControle) {
+    if (!inInputControle || !(event.target as HTMLElement)?.isContentEditable) {
       if ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'c') {
         event.preventDefault();
         this.removeFormElement();
@@ -462,7 +462,7 @@ export class AppElement<T extends BaseNodeInfo> {
         (event.target as HTMLElement)?.tagName
       ) >= 0;
     if (key === 'backspace' || key === 'delete' || key === 'enter') {
-      if (inInputControle) {
+      if (inInputControle || (event.target as HTMLElement)?.isContentEditable) {
         return;
       }
       this.removeFormElement();

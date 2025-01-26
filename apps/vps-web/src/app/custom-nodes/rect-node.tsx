@@ -22,7 +22,7 @@ const familyName = 'flow-canvas';
 export const getRectNode =
   () =>
   (
-    _updated: () => void,
+    updated: () => void,
     _theme?: Theme,
     flowNode?: FlowNode<NodeInfo>
   ): NodeTask<NodeInfo> => {
@@ -68,7 +68,7 @@ export const getRectNode =
         rect = nodeInstance.rect;
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
 
-        rectNode = new RectNode(node.id);
+        rectNode = new RectNode(node.id, updated, node);
 
         const childNodeWrapper = (nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement

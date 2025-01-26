@@ -2,6 +2,7 @@ import {
   createJSXElement,
   FlowNode,
   IComputeResult,
+  IRectNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 
@@ -9,8 +10,16 @@ export class RectNode {
   nodeRenderElement: HTMLElement | undefined = undefined;
   rectElement: HTMLElement | undefined = undefined;
   id: string;
-  constructor(id: string) {
+  node: IRectNodeComponent<NodeInfo> | undefined = undefined;
+  updated: () => void;
+  constructor(
+    id: string,
+    updated: () => void,
+    node: IRectNodeComponent<NodeInfo>
+  ) {
     this.id = id;
+    this.updated = updated;
+    this.node = node;
   }
   compute = (
     input: string,
@@ -48,6 +57,14 @@ w-min h-min
           }px ${nodeInfo?.strokeColor ?? 'white'} solid;color:${
             nodeInfo?.strokeColor ?? 'white'
           }`}
+          blur={() => {
+            console.log('blur', this.rectElement?.textContent);
+            if (this.node?.nodeInfo) {
+              (this.node.nodeInfo as any).text = this.rectElement?.textContent;
+            }
+            this.updated();
+          }}
+          contentEditable={true}
         >
           {nodeInfo?.text ?? ''}
         </div>
