@@ -73,7 +73,6 @@ import {
   navBarOutlineButton,
   menubarContainerClasses,
   navBarPrimaryButton,
-  navBarIconButton,
 } from './consts/classes';
 
 import {
@@ -102,12 +101,8 @@ import {
   removeClassesHTMLElement,
 } from './utils/add-remove-classes';
 import { createMediaLibrary, MediaLibrary } from '@devhelpr/media-library';
-import { downloadFile } from './utils/create-download-link';
 import { TestComponent } from './components/test-component';
 import { Toolbar } from './components/toolbar';
-import { exportTldraw } from './exporters/export-tldraw';
-import { createUploadJSONFileInput } from './utils/create-upload-input';
-import { syncFromTldraw } from './exporters/sync-from-tldraw';
 import { StorageProvider } from './storage/StorageProvider';
 import {
   NodeInfo,
@@ -849,66 +844,66 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               'Create composition'
             );
 
-            renderElement(
-              <button
-                class={`${navBarIconButton}`}
-                title="Export to external (work in progress - currently to tldraw)"
-                click={() => {
-                  if (!this.canvasApp) {
-                    return;
-                  }
-                  exportTldraw(
-                    {
-                      canvasApp: this.canvasApp,
-                      downloadFile,
-                    },
-                    getNodeTaskFactory
-                  );
-                }}
-                getElement={(element: HTMLElement) => {
-                  this.exportCodeButton = element;
-                }}
-              >
-                <span
-                  class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
-                ></span>
-              </button>,
-              menubarElement!.domElement as HTMLElement
-            );
+            // renderElement(
+            //   <button
+            //     class={`${navBarIconButton}`}
+            //     title="Export to external (work in progress - currently to tldraw)"
+            //     click={() => {
+            //       if (!this.canvasApp) {
+            //         return;
+            //       }
+            //       exportTldraw(
+            //         {
+            //           canvasApp: this.canvasApp,
+            //           downloadFile,
+            //         },
+            //         getNodeTaskFactory
+            //       );
+            //     }}
+            //     getElement={(element: HTMLElement) => {
+            //       this.exportCodeButton = element;
+            //     }}
+            //   >
+            //     <span
+            //       class={`${navBarIconButtonInnerElement} icon-file_downloadget_app`}
+            //     ></span>
+            //   </button>,
+            //   menubarElement!.domElement as HTMLElement
+            // );
 
-            renderElement(
-              <button
-                class={`${navBarIconButton}`}
-                title="Sync from external (work in progress - currently to tldraw)"
-                click={() => {
-                  createUploadJSONFileInput()
-                    .then((data) => {
-                      if (!this.canvasApp) {
-                        return;
-                      }
-                      if (data) {
-                        console.log('data', data);
-                        syncFromTldraw(data, {
-                          canvasApp: this.canvasApp,
-                          downloadFile,
-                        });
-                      }
-                      //alert('File imported');
-                    })
-                    .catch(() => {
-                      // alert('Cancel or error importing file');
-                    });
-                }}
-                getElement={(_element: HTMLElement) => {
-                  //this.syncWithExternalButton = element;
-                }}
-              >
-                <span
-                  class={`${navBarIconButtonInnerElement} icon-file_upload`}
-                ></span>
-              </button>,
-              menubarElement!.domElement as HTMLElement
-            );
+            // renderElement(
+            //   <button
+            //     class={`${navBarIconButton}`}
+            //     title="Sync from external (work in progress - currently to tldraw)"
+            //     click={() => {
+            //       createUploadJSONFileInput()
+            //         .then((data) => {
+            //           if (!this.canvasApp) {
+            //             return;
+            //           }
+            //           if (data) {
+            //             console.log('data', data);
+            //             syncFromTldraw(data, {
+            //               canvasApp: this.canvasApp,
+            //               downloadFile,
+            //             });
+            //           }
+            //           //alert('File imported');
+            //         })
+            //         .catch(() => {
+            //           // alert('Cancel or error importing file');
+            //         });
+            //     }}
+            //     getElement={(_element: HTMLElement) => {
+            //       //this.syncWithExternalButton = element;
+            //     }}
+            //   >
+            //     <span
+            //       class={`${navBarIconButtonInnerElement} icon-file_upload`}
+            //     ></span>
+            //   </button>,
+            //   menubarElement!.domElement as HTMLElement
+            // );
             this.compositionEditExitButton = createElement(
               'button',
               {
@@ -1092,7 +1087,6 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         console.log('nodesList', nodesList);
         const compositions = getSerializeCompositions() || {};
         console.log('compositions', compositions);
-
 
         // TODO : store ocif here as well.. if it's available
         const flow: Flow<NodeInfo> = {

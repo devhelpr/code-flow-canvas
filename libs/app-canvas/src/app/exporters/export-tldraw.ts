@@ -204,12 +204,7 @@ export const exportTldraw = (
   getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
 ) => {
   const tldrawExporter = new TLDrawExporter(exportInfo, getNodeTaskFactory);
-  const file = tldrawExporter.convertToExportFile();
-  exportInfo.downloadFile(
-    JSON.stringify(file),
-    'tldraw.tldr',
-    'application/json'
-  );
+  return tldrawExporter.convertToExportFile();
 };
 
 // const exportNodesToTldraw = (

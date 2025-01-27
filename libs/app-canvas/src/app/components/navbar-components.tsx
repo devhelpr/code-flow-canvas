@@ -39,6 +39,7 @@ import {
 } from '../follow-path/animate-path';
 import { OCWGExporter } from '../exporters/export-ocwg';
 import { clearOCIF, importOCIF, isValidOCIF } from '../importers/ocif-importer';
+import { exportTldraw } from '../exporters/export-tldraw';
 
 export class NavbarComponent extends Component<
   AppNavComponentsProps<NodeInfo>
@@ -266,6 +267,40 @@ export class NavbarComponent extends Component<
                       'application/json',
                       '.ocif.json',
                       'ocif-json'
+                    );
+                  } catch (err) {
+                    console.error(err);
+                  }
+                },
+              },
+              {
+                caption: 'Export to tldraw',
+                onClick: () => {
+                  try {
+                    const canvasApp = this.props.getCanvasApp();
+                    if (!canvasApp) {
+                      return;
+                    }
+                    const tldrawJson = exportTldraw(
+                      {
+                        canvasApp: canvasApp,
+                        downloadFile: (
+                          _data: any,
+                          _name: string,
+                          _dataType: string
+                        ) => {
+                          //
+                        },
+                      },
+                      getNodeTaskFactory
+                    );
+
+                    saveFile(
+                      JSON.stringify(tldrawJson, null, 2),
+                      'code-flow-canvas.tldr.json',
+                      'application/json',
+                      '.tldr.json',
+                      'tldraw-json'
                     );
                   } catch (err) {
                     console.error(err);
