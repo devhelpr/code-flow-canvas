@@ -180,7 +180,7 @@ export const tldrawEmptyArrowNode: TLDrawShapeNode = {
     fill: 'none',
     color: 'black',
     labelColor: 'black',
-    bend: -31.381061908684,
+    bend: 0, // -31.381061908684,
     start: { x: 7.548828125, y: 4.02734375 },
     end: { x: 132.5625, y: 111.8125 },
     arrowheadStart: 'none',
