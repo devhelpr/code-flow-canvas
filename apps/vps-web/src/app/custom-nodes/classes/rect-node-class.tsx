@@ -66,6 +66,16 @@ w-min h-min
             this.updated();
           }}
           contentEditable={true}
+          pointerdown={(e: PointerEvent) => {
+            if (e.shiftKey && this.rectElement) {
+              this.rectElement.contentEditable = 'false';
+            }
+          }}
+          pointerup={(e: PointerEvent) => {
+            if (this.rectElement) {
+              this.rectElement.contentEditable = 'true';
+            }
+          }}
         >
           {nodeInfo?.text ?? ''}
         </div>

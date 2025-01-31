@@ -367,6 +367,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           classNames: '',
           hasCustomStyling: settings?.hasCustomStyling ?? false,
           customClassName: settings?.customClassName,
+          centerToYPositionThumb: settings?.centerToYPositionThumb,
           skipDetermineSizeOnInit: settings?.skipDetermineSizeOnInit,
         },
         settings?.adjustToFormContent

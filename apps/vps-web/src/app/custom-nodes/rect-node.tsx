@@ -8,6 +8,8 @@ import {
   Rect,
   renderElement,
   Theme,
+  ThumbConnectionType,
+  ThumbType,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
@@ -55,14 +57,38 @@ export const getRectNode =
       computeAsync,
       initializeCompute,
       false,
-      flowNode?.width ?? 10,
-      flowNode?.height ?? 10,
-      [],
+      flowNode?.width ?? 200,
+      flowNode?.height ?? 100,
+      [
+        {
+          thumbType: ThumbType.Center,
+          thumbIndex: 0,
+          connectionType: ThumbConnectionType.startOrEnd,
+          color: 'white',
+          label: ' ',
+          name: 'input-output',
+          hidden: true,
+          maxConnections: -1,
+        },
+      ],
       (_values?: InitialValues): FormField[] => {
         return [];
       },
       (nodeInstance) => {
-        if (!flowNode) {
+        console.log('before rect-node !flowNod', flowNode);
+        const flowNodeInstance: FlowNode<NodeInfo> = flowNode ?? {
+          id: nodeInstance.node.id,
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 100,
+          nodeInfo: {
+            fillColor: 'black',
+            strokeColor: 'white',
+            strokeWidth: 2,
+          } as any,
+        };
+        if (!flowNodeInstance) {
           return;
         }
         rect = nodeInstance.rect;
@@ -78,7 +104,13 @@ export const getRectNode =
         if (childNodeInstance) {
           childNodeInstance.remove();
         }
-        renderElement(rectNode.render(flowNode), childNodeWrapper);
+
+        console.log(
+          'render rect-node',
+          flowNodeInstance.width,
+          flowNodeInstance.height
+        );
+        renderElement(rectNode.render(flowNodeInstance), childNodeWrapper);
         nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement
         ).querySelector('.child-node-wrapper > *:first-child');
@@ -124,6 +156,9 @@ export const getRectNode =
         childNodeWrapperClass: 'child-node-wrapper',
         centerToYPositionThumb: false,
         skipDetermineSizeOnInit: true,
+
+        isRectThumb: true,
+        rectThumbWithStraightConnections: true,
       },
       <div class="child-instance"></div>,
       true

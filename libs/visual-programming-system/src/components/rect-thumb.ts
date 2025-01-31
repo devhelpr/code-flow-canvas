@@ -253,7 +253,7 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
             this.canvasUpdated,
             undefined,
             this.containerNode,
-            undefined,
+            this.theme,
             undefined,
             this.rootElement
           )
@@ -274,7 +274,7 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
             this.canvasUpdated,
             undefined,
             this.containerNode,
-            undefined,
+            this.theme,
             undefined,
             this.rootElement
           );

@@ -158,9 +158,9 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
         props.getCanvasAction() !== CanvasAction.newConnectionCreated
       ) {
         const outputConnectionInfo = (
-          (info.node as IConnectionNodeComponent<T>).startNode
+          (info.node as IConnectionNodeComponent<T>)?.startNode
             ?.nodeInfo as BaseNodeInfo
-        ).outputConnectionInfo;
+        )?.outputConnectionInfo;
         if (outputConnectionInfo) {
           popupTriggeredFromEffect = false;
           // skipHide = true;

@@ -1428,6 +1428,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
     }
+    this.rectInstanceList[rectInstance.nodeComponent.id] = rectInstance;
     rectInstance.nodeComponent.nodeInfo = nodeInfo;
     if (this.onCanvasUpdated) {
       this.onCanvasUpdated(undefined, undefined, FlowChangeType.AddNode);
