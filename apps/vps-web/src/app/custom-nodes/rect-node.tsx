@@ -75,7 +75,10 @@ export const getRectNode =
         return [];
       },
       (nodeInstance) => {
-        console.log('before rect-node !flowNod', flowNode);
+        const fillColorDefault = 'black';
+        const strokeColorDefault = 'white';
+        const strokeWidthDefault = 2;
+
         const flowNodeInstance: FlowNode<NodeInfo> = flowNode ?? {
           id: nodeInstance.node.id,
           x: 0,
@@ -83,9 +86,10 @@ export const getRectNode =
           width: 200,
           height: 100,
           nodeInfo: {
-            fillColor: 'black',
-            strokeColor: 'white',
-            strokeWidth: 2,
+            fillColor: fillColorDefault,
+            strokeColor: strokeColorDefault,
+            strokeWidth: strokeWidthDefault,
+            text: 'rect',
           } as any,
         };
         if (!flowNodeInstance) {
@@ -93,6 +97,15 @@ export const getRectNode =
         }
         rect = nodeInstance.rect;
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+        if (!flowNode) {
+          if (!node.nodeInfo) {
+            node.nodeInfo = {} as any;
+          }
+          (node.nodeInfo as any).fillColor = fillColorDefault;
+          (node.nodeInfo as any).strokeColor = strokeColorDefault;
+          (node.nodeInfo as any).strokeWidth = strokeWidthDefault;
+          (node.nodeInfo as any).text = 'rect';
+        }
 
         rectNode = new RectNode(node.id, updated, node);
 
@@ -105,11 +118,6 @@ export const getRectNode =
           childNodeInstance.remove();
         }
 
-        console.log(
-          'render rect-node',
-          flowNodeInstance.width,
-          flowNodeInstance.height
-        );
         renderElement(rectNode.render(flowNodeInstance), childNodeWrapper);
         nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement

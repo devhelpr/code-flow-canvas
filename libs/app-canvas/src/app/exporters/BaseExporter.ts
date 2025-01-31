@@ -25,7 +25,7 @@ export abstract class BaseExporter<T extends ExportFile, X> {
   protected createExportFile(): T {
     throw new Error('Method not implemented.');
   }
-  protected mergeWithAdditionalIbfo(
+  protected mergeWithAdditionalInfo(
     _elements: ElementNodeMap<BaseNodeInfo>
   ): void {
     //
@@ -144,7 +144,7 @@ export abstract class BaseExporter<T extends ExportFile, X> {
       this.exportMultiPortConnection(connectionContextInfo, nodeInfo, node);
     });
 
-    this.mergeWithAdditionalIbfo(elements);
+    this.mergeWithAdditionalInfo(elements);
   }
   protected exportConnection(
     _contextInfo: X,

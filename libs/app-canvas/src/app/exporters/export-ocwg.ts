@@ -74,7 +74,14 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     return elements.has(`${id}`);
   }
 
-  override mergeWithAdditionalIbfo(
+  getNodeFromElements = (
+    id: string,
+    elements: ElementNodeMap<BaseNodeInfo>
+  ) => {
+    return elements.get(id);
+  };
+
+  override mergeWithAdditionalInfo(
     elements: ElementNodeMap<BaseNodeInfo>
   ): void {
     const rootOCIF = getCurrentOCIF();
@@ -97,6 +104,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
             console.log('export ocif node', codeFlowCanvasNode);
             node.data?.forEach((d: any) => {
               if (!codeFlowCanvasNode.data) {
+                // purely for typescript
                 return;
               }
               if (
@@ -104,6 +112,19 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
                 d.type !== connectionNodeInfoPropertyName &&
                 d.type !== '@ocwg/node/ports'
               ) {
+                if (d.type === 'rect-node') {
+                  const canvasNode = this.getNodeFromElements(
+                    node.id,
+                    elements
+                  );
+                  if (canvasNode) {
+                    const nodeInfo = canvasNode.nodeInfo as any;
+
+                    d.fillColor = nodeInfo?.fillColor ?? d.fillColor;
+                    d.strokeColor = nodeInfo?.strokeColor ?? d.strokeColor;
+                    d.strokeWidth = nodeInfo?.strokeWidth ?? d.strokeWidth;
+                  }
+                }
                 codeFlowCanvasNode.data.push(d);
               }
             });
@@ -181,13 +202,17 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
         ports: ports,
       });
     }
+    const clonedNodeInfo = structuredClone(nodeInfo) as any;
+    delete clonedNodeInfo.fillColor;
+    delete clonedNodeInfo.strokeColor;
+    delete clonedNodeInfo.strokeWidth;
     const ocwgNode: OCWGNode = {
       id: `${node.id}`,
       position: [node.x, node.y],
       size: [node.width ?? 0, node.height ?? 0],
       data: [
         {
-          ...nodeInfo,
+          ...clonedNodeInfo,
           type: nodeInfoPropertyName,
           nodeType: nodeInfo.type,
         },

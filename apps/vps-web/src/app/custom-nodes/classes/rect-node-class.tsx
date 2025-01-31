@@ -59,6 +59,12 @@ w-min h-min
           }`}
           spellcheck="false"
           blur={() => {
+            if (this.rectElement) {
+              if (this.rectElement.innerHTML.toString().length == 0) {
+                // hacky solution to prevent caret being aligned to top
+                this.rectElement.innerHTML = '&nbsp;';
+              }
+            }
             console.log('blur', this.rectElement?.textContent);
             if (this.node?.nodeInfo) {
               (this.node.nodeInfo as any).text = this.rectElement?.textContent;
@@ -71,7 +77,7 @@ w-min h-min
               this.rectElement.contentEditable = 'false';
             }
           }}
-          pointerup={(e: PointerEvent) => {
+          pointerup={() => {
             if (this.rectElement) {
               this.rectElement.contentEditable = 'true';
             }

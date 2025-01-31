@@ -129,6 +129,7 @@ import {
   setupCanvasNodeTaskRegistry,
 } from '@devhelpr/web-flow-executor';
 import { PasteNodeCommand } from './command-handlers/paste-node-command/paste-node-command';
+import { clearOCIF, getCurrentOCIF, setOCIF } from './importers/ocif-importer';
 
 export class CodeFlowWebAppCanvas {
   appRootSelector?: string;
@@ -1042,7 +1043,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
             }
-
+            clearOCIF();
+            if (flow.ocif) {
+              setOCIF(flow.ocif);
+            }
             removeAllCompositions();
             importCompositions<NodeInfo>(flow.compositions, this.canvasApp);
             registerCompositionNodes(
@@ -1093,6 +1097,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
           id: this.flowId,
+          ocif: getCurrentOCIF(),
           flows: {
             flow: {
               flowType: 'flow',

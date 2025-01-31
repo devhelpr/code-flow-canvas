@@ -211,3 +211,7 @@ export const clearOCIF = () => {
 export const getCurrentOCIF = () => {
   return rootOCIF;
 };
+
+export const setOCIF = (ocif: any) => {
+  rootOCIF = ocif;
+};
