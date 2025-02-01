@@ -8,19 +8,35 @@
     },
     {
       "id": "n2",
-      "position": [100, 100],
+      "position": [300, 400],
       "data": [
         {
-          "type": "circle-node",
-          "radius": 50
+          "type": "rect-node"
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "data": [
+        {
+          "type": "arrow-node",
+          "from": "n1",
+          "to": "n2"
         }
       ]
     }
   ],
   "relations": [
     {
-      "type": "@ocwg/set",
-      "members": ["n1", "n2"]
+      "type": "@ocwg/rel/edge",
+      "data": [
+        {
+          "from": "n1",
+          "to": "n2",
+          "directed": true,
+          "edge": "c2"
+        }
+      ]
     }
   ],
   "resources": [

@@ -1,0 +1,129 @@
+{
+  "ocif": "https://canvasprotocol.org/ocif/0.2",
+  "nodes": [
+    {
+      "id": "112cc79c-6ea0-4438-baf1-9d34bb0660e2",
+      "position": [-117.05704093373691, 88.18055130305666],
+      "size": [200, 100],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "text": "rect",
+          "taskType": "rect-node",
+          "nodeType": "rect-node"
+        },
+        {
+          "type": "@ocwg/node/ports",
+          "ports": ["input-output"]
+        }
+      ]
+    },
+    {
+      "id": "01d07003-7347-4a12-8955-a0ecd2b293c9",
+      "position": [284.22932347659525, 223.8293644103727],
+      "size": [200, 100],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "text": "rect",
+          "taskType": "rect-node",
+          "nodeType": "rect-node"
+        },
+        {
+          "type": "@ocwg/node/ports",
+          "ports": ["input-output"]
+        }
+      ]
+    },
+    {
+      "id": "connection:31a62e02-39f9-4a58-9e08-f570336e71ec",
+      "position": [-17.057037867826054, 138.18055283601208],
+      "size": [0, 0],
+      "data": [
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "start": {
+            "connected_to": "112cc79c-6ea0-4438-baf1-9d34bb0660e2",
+            "port_name": "input-output"
+          },
+          "end": {
+            "connected_to": "01d07003-7347-4a12-8955-a0ecd2b293c9",
+            "port_name": "input-output"
+          }
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "31a62e02-39f9-4a58-9e08-f570336e71ec-edge",
+      "data": [
+        {
+          "type": "@ocwg/rel/edge",
+          "from": "112cc79c-6ea0-4438-baf1-9d34bb0660e2",
+          "to": "01d07003-7347-4a12-8955-a0ecd2b293c9",
+          "directed": true
+        }
+      ]
+    }
+  ],
+  "resources": [],
+  "schemas": [
+    {
+      "uri": "https://codeflowcanvas.io/schemas/node/0.1.json",
+      "name": "@code-flow-canvas/node-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "nodeType": {
+          "type": "string"
+        }
+      },
+      "required": ["type", "nodeType"],
+      "additionalProperties": true
+    },
+    {
+      "uri": "https://codeflowcanvas.io/schemas/connection/0.1.json",
+      "name": "@code-flow-canvas/connection-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "start": {
+          "type": "object",
+          "properties": {
+            "connected_to": {
+              "type": "string"
+            },
+            "portName": {
+              "type": "string"
+            }
+          },
+          "required": ["connected_to", "portName"],
+          "additionalProperties": false
+        },
+        "end": {
+          "type": "object",
+          "properties": {
+            "connected_to": {
+              "type": "string"
+            },
+            "portName": {
+              "type": "string"
+            }
+          },
+          "required": ["connected_to", "portName"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["type", "start", "end"],
+      "additionalProperties": true
+    }
+  ]
+}

@@ -18,6 +18,16 @@ function isSupportedOCIFNode(ocifNode: any): boolean {
   );
 }
 
+function isSupportedOCIFConnectionNode(ocifNode: any): boolean {
+  return (
+    ocifNode.data &&
+    Array.isArray(ocifNode.data) &&
+    ocifNode.data.some(
+      (d: any) => d.type === 'arrow-node' || d.type === '@ocwg/node/arrow'
+    )
+  );
+}
+
 function getExtenstionData(ocifNode: any, extensionName: string): any {
   return ocifNode.data.find((d: any) => d.type === extensionName);
 }
@@ -59,16 +69,35 @@ function getConnectionInfoFromOCIFNode(node: any): any | false {
     clonedNodeInfo.type = clonedNodeInfo.nodeType;
     delete clonedNodeInfo.nodeType;
     return {
-      endX: node.position[0],
-      endY: node.position[1],
+      endX: node.position?.[0],
+      endY: node.position?.[1],
       startNodeId: clonedNodeInfo.start.connected_to,
       endNodeId: clonedNodeInfo.end.connected_to,
       startThumbName: clonedNodeInfo.start.port_name,
       endThumbName: clonedNodeInfo.end.port_name,
-      lineType: 'BezierCubic',
+      lineType: clonedNodeInfo.lineType ?? 'BezierCubic',
       layer: 1,
       nodeInfo: {},
     };
+  } else {
+    if (node.data && Array.isArray(node.data)) {
+      const data = node.data.find(
+        (d: any) => d.type === 'arrow-node' || d.type === '@ocwg/node/arrow'
+      );
+      if (data) {
+        return {
+          endX: node.position?.[0],
+          endY: node.position?.[1],
+          startNodeId: data.from,
+          endNodeId: data.to,
+          startThumbName: data.start?.port_name ?? 'input-output',
+          endThumbName: data.end?.port_name ?? 'input-output',
+          lineType: 'Straight',
+          layer: 1,
+          nodeInfo: {},
+        };
+      }
+    }
   }
   return false;
 }
@@ -114,6 +143,8 @@ export const importOCIF = (ocif: any) => {
             id: node.id,
             x: node.position[0],
             y: node.position[1],
+            width: node.size?.[0] ?? 100,
+            height: node.size?.[1] ?? 100,
             nodeInfo: nodeInfo,
             nodeType: 'Shape',
           });
@@ -157,6 +188,17 @@ export const importOCIF = (ocif: any) => {
           } as any,
         });
         console.log('ocif node size', node.size);
+      } else if (node.data && isSupportedOCIFConnectionNode(node)) {
+        const connection = getConnectionInfoFromOCIFNode(node);
+        if (connection) {
+          flow.flows['flow'].nodes.push({
+            id: node.id,
+            x: node.position?.[0],
+            y: node.position?.[1],
+            nodeType: 'Connection',
+            ...connection,
+          });
+        }
       } else if (!node.data) {
         let text = '';
         const resource = getResourceById(ocif, node.resource);

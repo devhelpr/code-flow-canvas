@@ -150,7 +150,7 @@ export class NavbarComponent extends Component<
             }}
             dropdownItems={[
               {
-                caption: 'Import as OCIF',
+                caption: 'Import OCIF',
                 onClick: () => {
                   const input = document.createElement(
                     'input'
@@ -655,6 +655,12 @@ export class NavbarComponent extends Component<
           if (event && event.target && event.target.result) {
             const data = JSON.parse(event.target.result.toString());
             console.log('IMPORT DATA', data);
+            if (data.ocif) {
+              alert(
+                "Can't import OCIF file this way... use OCIF import option"
+              );
+              return;
+            }
             setStopAnimations();
             const interval = setInterval(() => {
               if (!getIsStopAnimations()) {

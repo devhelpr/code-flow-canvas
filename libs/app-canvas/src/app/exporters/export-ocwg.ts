@@ -269,13 +269,14 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           ...nodeInfo,
           type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
+          lineType: (nodeInfo as any).lineType ?? 'Straight',
           start: {
             connected_to: `${node.startNode.id}`,
-            port_name: 'output',
+            port_name: node.startNodeThumb?.thumbName ?? 'output',
           },
           end: {
             connected_to: `${node.endNode.id}`,
-            port_name: 'input',
+            port_name: node.endNodeThumb?.thumbName ?? 'input',
           },
         },
       ],
@@ -318,6 +319,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           ...nodeInfo,
           type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
+          lineType: (nodeInfo as any).lineType ?? 'Straight',
           start: {
             connected_to: `${node.startNode.id}`,
             port_name: node.startNodeThumb?.thumbName,
