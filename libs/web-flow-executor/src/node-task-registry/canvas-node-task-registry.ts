@@ -251,7 +251,12 @@ export const setupCanvasNodeTaskRegistry = (
     onFlowFinished?: () => void
   ) => RunCounter,
   registerExternalNodes?: (
-    registerNodeFactory: RegisterNodeFactoryFunction
+    registerNodeFactory: RegisterNodeFactoryFunction,
+    createRunCounterContext: (
+      isRunViaRunButton: boolean,
+      shouldResetConnectionSlider: boolean,
+      onFlowFinished?: () => void
+    ) => RunCounter
   ) => void,
   clearPresetRegistry?: boolean
 ) => {
@@ -475,7 +480,7 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory(createGuidNodeName, createGuid);
   }
 
-  registerExternalNodes?.(registerNodeFactory);
+  registerExternalNodes?.(registerNodeFactory, createRunCounterContext);
 };
 
 export const getNodeTaskFactory = (name: string) => {

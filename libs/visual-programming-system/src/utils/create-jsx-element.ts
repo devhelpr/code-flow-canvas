@@ -47,6 +47,12 @@ export const createJSXElement = (
         element.setAttribute(key, (val as any).toString());
       }
     });
+
+    Object.entries(properties).forEach(([key, val]) => {
+      if (key === 'renderElement' && typeof val === 'function') {
+        val(element);
+      }
+    });
   }
   for (const child of children) {
     if (typeof child === 'string') {

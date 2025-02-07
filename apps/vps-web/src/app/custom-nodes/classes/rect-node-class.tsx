@@ -2,16 +2,40 @@ import {
   createJSXElement,
   FlowNode,
   IComputeResult,
+  IDOMElement,
   IRectNodeComponent,
+  Rect,
+  IFlowCanvasBase,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
 
-export class RectNode {
+export type CreateRunCounterContext = (
+  isRunViaRunButton: boolean,
+  shouldResetConnectionSlider: boolean,
+  onFlowFinished?: () => void
+) => RunCounter;
+
+export class BaseRectNode {
   nodeRenderElement: HTMLElement | undefined = undefined;
   rectElement: HTMLElement | undefined = undefined;
+  canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   id: string;
   node: IRectNodeComponent<NodeInfo> | undefined = undefined;
   updated: () => void;
+  getSettingsPopup:
+    | ((popupContainer: HTMLElement) => IDOMElement | undefined)
+    | undefined = undefined;
+
+  rectInstance: Rect<NodeInfo> | undefined;
+
+  createRunCounterContext: CreateRunCounterContext | undefined = undefined;
+
+  static readonly nodeTypeName: string = 'rect-node';
+  static readonly nodeTitle: string = 'Rect node';
+  static readonly category: string = 'Default';
+
+  static readonly text: string = 'rect';
+
   constructor(
     id: string,
     updated: () => void,
@@ -49,8 +73,8 @@ w-min h-min
           getElement={(element: HTMLElement) => {
             this.rectElement = element;
           }}
-          class={`rounded flex justify-center items-center text-center whitespace-pre`}
-          style={`width:${node.width ?? 50}px;height:${
+          class={`rounded  justify-center items-center text-center whitespace-pre inline-flex`}
+          style={`min-width:${node.width ?? 50}px;min-height:${
             node.height ?? 50
           }px;background:${nodeInfo?.fillColor ?? 'black'};border: ${
             nodeInfo?.strokeWidth ?? '2'

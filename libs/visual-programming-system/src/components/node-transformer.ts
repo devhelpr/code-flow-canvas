@@ -555,4 +555,14 @@ export class NodeTransformer<T extends BaseNodeInfo> {
   onPointerUp = (_event: PointerEvent) => {
     //
   };
+
+  resizeNodeTransformer(width: number, height: number) {
+    if (this.attachedNode) {
+      const transformerDomElement = this.nodeTransformElement
+        ?.domElement as HTMLElement;
+
+      transformerDomElement.style.width = `${width}px`;
+      transformerDomElement.style.height = `${height}px`;
+    }
+  }
 }

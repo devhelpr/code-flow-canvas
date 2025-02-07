@@ -131,6 +131,12 @@ import {
 import { PasteNodeCommand } from './command-handlers/paste-node-command/paste-node-command';
 import { clearOCIF, getCurrentOCIF, setOCIF } from './importers/ocif-importer';
 
+export type CreateRunCounterContext = (
+  isRunViaRunButton: boolean,
+  shouldResetConnectionSlider: boolean,
+  onFlowFinished?: () => void
+) => RunCounter;
+
 export class CodeFlowWebAppCanvas {
   appRootSelector?: string;
   storageProvider?: StorageProvider<NodeInfo>;
@@ -149,7 +155,8 @@ export class CodeFlowWebAppCanvas {
     getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
   ) => void;
   registerExternalNodes?: (
-    registerNodeFactory: RegisterNodeFactoryFunction
+    registerNodeFactory: RegisterNodeFactoryFunction,
+    createRunCounterContext: CreateRunCounterContext
   ) => void;
   theme?: Theme;
   render() {
@@ -252,7 +259,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
     ) => void,
     registerExternalNodes?: (
-      registerNodeFactory: RegisterNodeFactoryFunction
+      registerNodeFactory: RegisterNodeFactoryFunction,
+      createRunCounterContext: CreateRunCounterContext
     ) => void,
     flowId?: string,
     clearPresetRegistry?: boolean,
@@ -1995,94 +2003,106 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (this.formElement) {
       this.formElement.domElement.remove();
     }
-    const formElementInstance = createElement(
-      'div',
-      { class: 'max-h-[380px]  h-[fit-content]  p-3 pb-6' },
-      this.editPopupContainer?.domElement,
-      undefined
-    );
-    this.formElement = formElementInstance;
-    this.focusedNode = node;
-    const currentFocusNode = this.focusedNode;
-    this.popupNode = currentFocusNode;
-    FormComponent({
-      rootElement: this.formElement!.domElement as HTMLElement,
-      id: selectedNodeInfo.id,
-      hasSubmitButton: false,
-      onSave: (values: any) => {
-        console.log('onSave', values);
 
-        this.rootElement?.querySelectorAll('.selected').forEach((element) => {
-          element.classList.remove('selected');
-        });
+    if (node.nodeInfo?.getSettingsPopup) {
+      const element = node.nodeInfo.getSettingsPopup(
+        this.editPopupContainer?.domElement as HTMLElement
+      );
 
-        const node = (
-          selectedNodeInfo?.containerNode
-            ? (selectedNodeInfo?.containerNode.nodeInfo as any)
-                ?.canvasAppInstance?.elements
-            : this.currentCanvasApp?.elements
-        )?.get(selectedNodeInfo.id);
-        if (node) {
-          if (
-            (node.nodeInfo as any).formElements ||
-            node.nodeType === NodeType.Connection
-          ) {
-            (node.nodeInfo as any).formValues = values;
-            Object.entries(values).forEach(([key, value]) => {
-              console.log(
-                'updateNamedSignal',
-                selectedNodeInfo.id + '_' + key,
-                value
-              );
-              updateNamedSignal(
-                selectedNodeInfo.id + '_' + key,
-                value as unknown as string
-              );
-            });
-          } else {
-            node.nodeInfo = values;
+      this.formElement = element;
+      this.focusedNode = node;
+      const currentFocusNode = this.focusedNode;
+      this.popupNode = currentFocusNode;
+    } else {
+      const formElementInstance = createElement(
+        'div',
+        { class: 'max-h-[380px]  h-[fit-content]  p-3 pb-6' },
+        this.editPopupContainer?.domElement,
+        undefined
+      );
+      this.formElement = formElementInstance;
+      this.focusedNode = node;
+      const currentFocusNode = this.focusedNode;
+      this.popupNode = currentFocusNode;
+      FormComponent({
+        rootElement: this.formElement!.domElement as HTMLElement,
+        id: selectedNodeInfo.id,
+        hasSubmitButton: false,
+        onSave: (values: any) => {
+          console.log('onSave', values);
+
+          this.rootElement?.querySelectorAll('.selected').forEach((element) => {
+            element.classList.remove('selected');
+          });
+
+          const node = (
+            selectedNodeInfo?.containerNode
+              ? (selectedNodeInfo?.containerNode.nodeInfo as any)
+                  ?.canvasAppInstance?.elements
+              : this.currentCanvasApp?.elements
+          )?.get(selectedNodeInfo.id);
+          if (node) {
+            if (
+              (node.nodeInfo as any).formElements ||
+              node.nodeType === NodeType.Connection
+            ) {
+              (node.nodeInfo as any).formValues = values;
+              Object.entries(values).forEach(([key, value]) => {
+                console.log(
+                  'updateNamedSignal',
+                  selectedNodeInfo.id + '_' + key,
+                  value
+                );
+                updateNamedSignal(
+                  selectedNodeInfo.id + '_' + key,
+                  value as unknown as string
+                );
+              });
+            } else {
+              node.nodeInfo = values;
+            }
           }
-        }
 
-        this.removeFormElement();
-        //currentSelectedNode = undefined;
+          this.removeFormElement();
+          //currentSelectedNode = undefined;
 
-        if (this.selectedNodeLabel) {
-          this.selectedNodeLabel.domElement.textContent = '';
-        }
-        (
-          this.editPopupContainer?.domElement as unknown as HTMLElement
-        ).classList.add('hidden');
-        (
-          this.editPopupLineContainer?.domElement as unknown as HTMLElement
-        ).classList.add('hidden');
+          if (this.selectedNodeLabel) {
+            this.selectedNodeLabel.domElement.textContent = '';
+          }
+          (
+            this.editPopupContainer?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
+          (
+            this.editPopupLineContainer?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
 
-        (
-          this.editPopupEditingNodeIndicator
-            ?.domElement as unknown as HTMLElement
-        ).classList.add('hidden');
+          (
+            this.editPopupEditingNodeIndicator
+              ?.domElement as unknown as HTMLElement
+          ).classList.add('hidden');
 
-        (
-          this.editPopupEditingNodeIndicator
-            ?.domElement as unknown as HTMLElement
-        ).classList.remove('editing-node-indicator');
+          (
+            this.editPopupEditingNodeIndicator
+              ?.domElement as unknown as HTMLElement
+          ).classList.remove('editing-node-indicator');
 
-        console.log('onsave this.focusedNode', this.focusedNode);
-        if (currentFocusNode) {
-          (currentFocusNode.domElement as HTMLElement).focus();
-        }
-      },
-      formElements: (
-        formElements ||
-        ((node?.nodeInfo as any)?.formElements ?? [])
-      ).map((item: any) => {
-        return {
-          ...item,
-          value: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
-          //values: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
-        };
-      }),
-    }) as unknown as HTMLElement;
+          console.log('onsave this.focusedNode', this.focusedNode);
+          if (currentFocusNode) {
+            (currentFocusNode.domElement as HTMLElement).focus();
+          }
+        },
+        formElements: (
+          formElements ||
+          ((node?.nodeInfo as any)?.formElements ?? [])
+        ).map((item: any) => {
+          return {
+            ...item,
+            value: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
+            //values: ((node?.nodeInfo as any)?.formValues ?? {})[item.fieldName],
+          };
+        }),
+      }) as unknown as HTMLElement;
+    }
     console.log('before positionPopup1');
     this.positionPopup(node);
   };
@@ -2121,6 +2141,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       }
     } else {
       formElements = (nodeInfo as any)?.formElements ?? [];
+      if (
+        node.nodeInfo?.getSettingsPopup &&
+        node.nodeInfo?.isSettingsPopup &&
+        !(
+          this.editPopupContainer?.domElement as unknown as HTMLElement
+        )?.classList.contains('hidden')
+      ) {
+        return true;
+      }
     }
 
     if ((formElements ?? []).length === 0) {

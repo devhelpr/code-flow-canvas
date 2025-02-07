@@ -283,6 +283,12 @@ export class FlowCanvas<T extends BaseNodeInfo>
       }
 
       if (
+        !event.shiftKey &&
+        (event.target as HTMLElement)?.getAttribute('data-disable-interaction')
+      ) {
+        return;
+      }
+      if (
         ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
           (event.target as HTMLElement)?.tagName
         ) >= 0 ||

@@ -13,7 +13,7 @@ import {
   IThumbNodeComponent,
   ThumbConnectionType,
 } from '../interfaces/element';
-import { setSelectNode } from '../reactivity';
+import { getSelectedNode, setSelectNode } from '../reactivity';
 import { ConnectionControllerType, ThumbType } from '../types';
 import { createASTNodeElement, createNodeElement } from '../utils';
 import { pointerDown } from './events/pointer-events';
@@ -344,6 +344,29 @@ export class Rect<T extends BaseNodeInfo> {
       );
     };
     this.nodeComponent.connections = [];
+  }
+
+  public isSelected() {
+    if (!this.nodeComponent) {
+      return false;
+    }
+    const selectedNode = getSelectedNode();
+
+    return selectedNode && selectedNode.id === this.nodeComponent.id;
+  }
+  public selectNode() {
+    if (!this.nodeComponent) {
+      return;
+    }
+    console.log('Rect : selectNode', this.nodeComponent.id);
+    setSelectNode({
+      id: this.nodeComponent.id,
+      containerNode: this.nodeComponent
+        .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
+    });
+    this.nodeTransformer.attachNode(
+      this.nodeComponent as unknown as IRectNodeComponent<BaseNodeInfo>
+    );
   }
 
   public updateMinHeight() {
@@ -1085,6 +1108,13 @@ export class Rect<T extends BaseNodeInfo> {
       this.nodeComponent?.id,
       this.nodeComponent?.nodeInfo
     );
+
+    if (
+      !event.shiftKey &&
+      (event.target as HTMLElement)?.getAttribute('data-disable-interaction')
+    ) {
+      return;
+    }
     if (
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
         (event.target as HTMLElement)?.tagName

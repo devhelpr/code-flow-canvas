@@ -2,6 +2,7 @@ import {
   BaseNodeInfo,
   IFlowCanvasBase,
   IConnectionNodeComponent,
+  IDOMElement,
 } from '@devhelpr/visual-programming-system';
 import { RunCounter } from '../follow-path/run-counter';
 import { StateMachine } from '../state-machine';
@@ -52,6 +53,8 @@ export interface NodeInfo extends BaseNodeInfo {
     ) => string;
     getGlobalCode?: () => string;
   };
+
+  getSettingsPopup?: (popupContainer: HTMLElement) => IDOMElement;
 }
 
 //export type NodeInfo = any;
