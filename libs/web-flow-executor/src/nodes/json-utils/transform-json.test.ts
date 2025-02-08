@@ -173,4 +173,22 @@ describe('transformJSON', () => {
       role: 'assistant',
     });
   });
+
+  it('should transform a nested array with @flat', () => {
+    const input = {
+      '@flat:output': [1, 2, [3, 4]],
+    };
+    const result = transformJSON(input, undefined, 'root', {});
+    expect((result as any)['output']).toEqual([1, 2, 3, 4]);
+  });
+
+  it('should transform a property from the payload with @flat', () => {
+    const input = {
+      '@flat:output': 'test',
+    };
+    const result = transformJSON(input, undefined, 'root', {
+      test: [1, 2, [3, 4]],
+    });
+    expect((result as any)['output']).toEqual([1, 2, 3, 4]);
+  });
 });

@@ -23,7 +23,19 @@ const evaluateAtProperty = (
   payload: any,
   initialPayload?: any
 ) => {
-  if (key.startsWith('@serialize')) {
+  if (key.startsWith('@flat')) {
+    const flatProperty = key.replace('@flat:', '');
+    if (Array.isArray(value)) {
+      const result = value.flat();
+
+      newJson[flatProperty] = result;
+    } else if (typeof value === 'string') {
+      const flattenValue = initialPayload[value];
+      newJson[flatProperty] = flattenValue.flat();
+    } else {
+      newJson[flatProperty] = value;
+    }
+  } else if (key.startsWith('@serialize')) {
     const setProperty = key.replace('@serialize:', '');
 
     const toSerialize: Record<string, any> = {};
