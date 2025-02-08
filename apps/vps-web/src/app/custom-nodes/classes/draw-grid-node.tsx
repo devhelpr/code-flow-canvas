@@ -14,8 +14,8 @@ class GridDraw {
   public gridValues: number[][] = []; // Store intensity values (0 to 1)
   public gridColors: [number, number, number][][] = []; // Store RGB colors
   private isDrawing = false;
-  private readonly GRID_SIZE = 64;
-  private readonly MIN_CELL_SIZE = 2; // Minimum cell size in pixels
+  private readonly GRID_SIZE = 28; //64;
+  //private readonly MIN_CELL_SIZE = 2; // Minimum cell size in pixels
   private readonly BG_COLOR: [number, number, number] = [255, 255, 255]; // White background
   private gridContainer: HTMLDivElement;
   private clearButton: HTMLButtonElement | undefined;
@@ -251,15 +251,15 @@ class GridDraw {
       : null;
   }
 
-  private updateGridSize() {
-    const viewportMin = Math.min(window.innerWidth, window.innerHeight);
-    const maxGridSize = Math.floor(viewportMin * 0.9); // 90% of viewport's smaller dimension
-    const cellSize = Math.max(this.MIN_CELL_SIZE, maxGridSize / this.GRID_SIZE);
-    const totalSize = cellSize * this.GRID_SIZE;
+  // private updateGridSize() {
+  //   const viewportMin = Math.min(window.innerWidth, window.innerHeight);
+  //   const maxGridSize = Math.floor(viewportMin * 0.9); // 90% of viewport's smaller dimension
+  //   const cellSize = Math.max(this.MIN_CELL_SIZE, maxGridSize / this.GRID_SIZE);
+  //   const totalSize = cellSize * this.GRID_SIZE;
 
-    this.gridContainer.style.width = `${totalSize}px`;
-    this.gridContainer.style.height = `${totalSize}px`;
-  }
+  //   this.gridContainer.style.width = `${totalSize}px`;
+  //   this.gridContainer.style.height = `${totalSize}px`;
+  // }
 
   private addEventListeners() {
     const handleStart = (e: MouseEvent | TouchEvent) => {
@@ -337,6 +337,9 @@ class GridDraw {
         this.gridColors[y][x] = [...this.BG_COLOR];
         this.updateCellColor(x, y);
       }
+    }
+    if (this.onDrawCell) {
+      this.onDrawCell();
     }
   }
 
@@ -470,6 +473,7 @@ export class DrawGridNode extends BaseRectNode {
   static readonly nodeTitle = 'Draw grid';
   static readonly category = 'Default';
   static readonly text = 'draw grid';
+  static readonly disableManualResize: boolean = true;
 
   drawGrid: GridDraw | undefined;
 
@@ -515,39 +519,39 @@ export class DrawGridNode extends BaseRectNode {
   changeTimeout: NodeJS.Timeout | null = null;
   onDrawCell = () => {
     console.log('onDrawCell', this.drawGrid);
-    if (this.changeTimeout) {
-      clearTimeout(this.changeTimeout);
-      this.changeTimeout = null;
-    }
+    // if (this.changeTimeout) {
+    //   clearTimeout(this.changeTimeout);
+    //   this.changeTimeout = null;
+    // }
 
-    this.changeTimeout = setTimeout(() => {
-      this.changeTimeout = null;
-      if (
-        !this.node ||
-        !this.canvasAppInstance ||
-        !this.createRunCounterContext
-      ) {
-        return;
+    // this.changeTimeout = setTimeout(() => {
+    //   this.changeTimeout = null;
+    if (
+      !this.node ||
+      !this.canvasAppInstance ||
+      !this.createRunCounterContext
+    ) {
+      return;
+    }
+    runNode(
+      this.node,
+      this.canvasAppInstance,
+      () => {
+        //
+      },
+      undefined,
+      undefined,
+      undefined,
+      getRunIndex(),
+      undefined,
+      undefined,
+      this.createRunCounterContext(false, false),
+      false,
+      {
+        trigger: true,
       }
-      runNode(
-        this.node,
-        this.canvasAppInstance,
-        () => {
-          //
-        },
-        undefined,
-        undefined,
-        undefined,
-        getRunIndex(),
-        undefined,
-        undefined,
-        this.createRunCounterContext(false, false),
-        false,
-        {
-          trigger: true,
-        }
-      );
-    }, 50);
+    );
+    //}, 50);
   };
 
   render = (node: FlowNode<NodeInfo>) => {

@@ -36,6 +36,8 @@ export class BaseRectNode {
 
   static readonly text: string = 'rect';
 
+  static readonly disableManualResize: boolean = false;
+
   constructor(
     id: string,
     updated: () => void,

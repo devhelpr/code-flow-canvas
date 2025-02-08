@@ -221,7 +221,7 @@ export const getRectNode =
         childNodeWrapperClass: 'child-node-wrapper',
         centerToYPositionThumb: false,
         skipDetermineSizeOnInit: true,
-
+        disableManualResize: NodeClass.disableManualResize,
         isRectThumb: true,
         rectThumbWithStraightConnections: true,
       },

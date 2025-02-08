@@ -72,6 +72,7 @@ export interface NodeSettings {
   noFlexAutoInNodeContentWrapper?: boolean;
   centerToYPositionThumb?: boolean;
   skipDetermineSizeOnInit?: boolean;
+  disableManualResize?: boolean;
 }
 
 export const createRectNode = <T extends BaseNodeInfo>(
@@ -374,7 +375,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           ? false
           : settings?.hasStaticWidthHeight ?? false,
         undefined,
-        undefined,
+        settings?.disableManualResize,
         id,
         {
           ...nodeInfo,
@@ -406,7 +407,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
           ? false
           : settings?.hasStaticWidthHeight ?? false,
         undefined,
-        undefined,
+        settings?.disableManualResize,
         id,
         {
           ...nodeInfo,
