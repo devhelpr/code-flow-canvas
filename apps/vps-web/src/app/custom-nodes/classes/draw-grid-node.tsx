@@ -9,12 +9,19 @@ import { BaseRectNode } from './rect-node-class';
 
 import './style.css';
 
+interface GridDrawSettings {
+  fadeRadius: number;
+  fadePower: number;
+  gamma: number;
+  gridSize: number;
+}
+
 class GridDraw {
   private grid: HTMLDivElement[][] = [];
   public gridValues: number[][] = []; // Store intensity values (0 to 1)
   public gridColors: [number, number, number][][] = []; // Store RGB colors
   private isDrawing = false;
-  private GRID_SIZE = 28; //64;
+  //private GRID_SIZE = 28; //64;
   //private readonly MIN_CELL_SIZE = 2; // Minimum cell size in pixels
   private readonly BG_COLOR: [number, number, number] = [255, 255, 255]; // White background
   private gridContainer: HTMLDivElement;
@@ -24,10 +31,11 @@ class GridDraw {
   private rectNode: BaseRectNode;
 
   // Configurable brush parameters
-  private brushParams = {
+  private brushParams: GridDrawSettings = {
     fadeRadius: 5, // 11x11 brush (5 cells in each direction from center)
     fadePower: 1.0,
     gamma: 2.0,
+    gridSize: 28,
   };
 
   private readonly COLOR_PRESETS: [number, number, number][] = [
@@ -58,9 +66,14 @@ class GridDraw {
     [148, 103, 189], // d3 purple
   ];
 
-  constructor(gridContainer: HTMLDivElement, rectNode: BaseRectNode) {
+  constructor(
+    gridContainer: HTMLDivElement,
+    rectNode: BaseRectNode,
+    settings: GridDrawSettings
+  ) {
     this.rectNode = rectNode;
     this.gridContainer = gridContainer as HTMLDivElement;
+    this.brushParams = settings;
 
     if (!this.gridContainer) {
       console.error('Grid container not found!');
@@ -77,23 +90,23 @@ class GridDraw {
     this.gridContainer.innerHTML = '';
 
     // Set grid template
-    this.gridContainer.style.gridTemplateColumns = `repeat(${this.GRID_SIZE}, 1fr)`;
-    this.gridContainer.style.gridTemplateRows = `repeat(${this.GRID_SIZE}, 1fr)`;
+    this.gridContainer.style.gridTemplateColumns = `repeat(${this.brushParams.gridSize}, 1fr)`;
+    this.gridContainer.style.gridTemplateRows = `repeat(${this.brushParams.gridSize}, 1fr)`;
 
     // Initialize grid arrays
-    this.gridValues = Array(this.GRID_SIZE)
+    this.gridValues = Array(this.brushParams.gridSize)
       .fill(0)
-      .map(() => Array(this.GRID_SIZE).fill(0));
-    this.grid = Array(this.GRID_SIZE)
+      .map(() => Array(this.brushParams.gridSize).fill(0));
+    this.grid = Array(this.brushParams.gridSize)
       .fill(null)
-      .map(() => Array(this.GRID_SIZE).fill(null));
-    this.gridColors = Array(this.GRID_SIZE)
+      .map(() => Array(this.brushParams.gridSize).fill(null));
+    this.gridColors = Array(this.brushParams.gridSize)
       .fill(null)
-      .map(() => Array(this.GRID_SIZE).fill([...this.BG_COLOR]));
+      .map(() => Array(this.brushParams.gridSize).fill([...this.BG_COLOR]));
 
     // Create grid cells
-    for (let y = 0; y < this.GRID_SIZE; y++) {
-      for (let x = 0; x < this.GRID_SIZE; x++) {
+    for (let y = 0; y < this.brushParams.gridSize; y++) {
+      for (let x = 0; x < this.brushParams.gridSize; x++) {
         const cell = document.createElement('div');
         cell.className = 'draw-grid-cell';
         cell.setAttribute('data-disable-interaction', 'true');
@@ -157,9 +170,9 @@ class GridDraw {
         }">
       </div>
       <div class="control-group">
-        <label>Grid size (${this.GRID_SIZE.toFixed(0)})</label>
+        <label>Grid size (${this.brushParams.gridSize.toFixed(0)})</label>
         <input type="range" id="GRID_SIZE" min="16" max="64" step="1" value="${
-          this.GRID_SIZE
+          this.brushParams.gridSize
         }">
       </div>
       <button id="clearButton" class="control-button">Clear Grid</button>
@@ -232,6 +245,7 @@ class GridDraw {
       fadeRadiusSlider.previousElementSibling!.textContent = `Brush Size (${
         this.brushParams.fadeRadius * 2 + 1
       }x${this.brushParams.fadeRadius * 2 + 1})`;
+      this.onStorageChange?.(this.brushParams);
     });
 
     fadePowerSlider.addEventListener('input', (e) => {
@@ -241,6 +255,7 @@ class GridDraw {
       fadePowerSlider.previousElementSibling!.textContent = `Fade Power (${this.brushParams.fadePower.toFixed(
         1
       )})`;
+      this.onStorageChange?.(this.brushParams);
     });
 
     gammaSlider.addEventListener('input', (e) => {
@@ -248,14 +263,18 @@ class GridDraw {
       gammaSlider.previousElementSibling!.textContent = `Color Intensity (${this.brushParams.gamma.toFixed(
         1
       )})`;
+      this.onStorageChange?.(this.brushParams);
     });
 
     GRID_SIZE.addEventListener('input', (e) => {
-      this.GRID_SIZE = parseInt((e.target as HTMLInputElement).value);
-      GRID_SIZE.previousElementSibling!.textContent = `Grid size (${this.GRID_SIZE.toFixed(
+      this.brushParams.gridSize = parseInt(
+        (e.target as HTMLInputElement).value
+      );
+      GRID_SIZE.previousElementSibling!.textContent = `Grid size (${this.brushParams.gridSize.toFixed(
         1
       )})`;
       this.setupGrid();
+      this.onStorageChange?.(this.brushParams);
     });
     this.clearButton.addEventListener('click', () => this.clearGrid());
 
@@ -353,8 +372,8 @@ class GridDraw {
 
   public clearGrid() {
     // Reset all grid values and colors
-    for (let y = 0; y < this.GRID_SIZE; y++) {
-      for (let x = 0; x < this.GRID_SIZE; x++) {
+    for (let y = 0; y < this.brushParams.gridSize; y++) {
+      for (let x = 0; x < this.brushParams.gridSize; x++) {
         this.gridValues[y][x] = 0;
         this.gridColors[y][x] = [...this.BG_COLOR];
         this.updateCellColor(x, y);
@@ -368,13 +387,18 @@ class GridDraw {
   private handleDraw(e: MouseEvent | Touch) {
     const rect = this.gridContainer.getBoundingClientRect();
     const x = Math.floor(
-      ((e.clientX - rect.left) / rect.width) * this.GRID_SIZE
+      ((e.clientX - rect.left) / rect.width) * this.brushParams.gridSize
     );
     const y = Math.floor(
-      ((e.clientY - rect.top) / rect.height) * this.GRID_SIZE
+      ((e.clientY - rect.top) / rect.height) * this.brushParams.gridSize
     );
 
-    if (x >= 0 && x < this.GRID_SIZE && y >= 0 && y < this.GRID_SIZE) {
+    if (
+      x >= 0 &&
+      x < this.brushParams.gridSize &&
+      y >= 0 &&
+      y < this.brushParams.gridSize
+    ) {
       // Set center cell to current color
       this.gridValues[y][x] = 1;
       this.gridColors[y][x] = [...this.currentColor] as [
@@ -402,9 +426,9 @@ class GridDraw {
 
           if (
             newX >= 0 &&
-            newX < this.GRID_SIZE &&
+            newX < this.brushParams.gridSize &&
             newY >= 0 &&
-            newY < this.GRID_SIZE
+            newY < this.brushParams.gridSize
           ) {
             const distance = Math.sqrt(dx * dx + dy * dy);
             const maxDistance = Math.sqrt(
@@ -488,6 +512,8 @@ class GridDraw {
   }
 
   onDrawCell: undefined | (() => void) = undefined;
+  onStorageChange: undefined | ((storageObject: GridDrawSettings) => void) =
+    undefined;
 }
 
 export class DrawGridNode extends BaseRectNode {
@@ -576,6 +602,13 @@ export class DrawGridNode extends BaseRectNode {
     //}, 50);
   };
 
+  onStorageChange = (storageObject: GridDrawSettings) => {
+    if (this.node && this.node.nodeInfo) {
+      (this.node.nodeInfo as any).drawGridSettings = storageObject;
+      this.updated();
+    }
+  };
+
   render = (node: FlowNode<NodeInfo>) => {
     //const nodeInfo = node.nodeInfo as any;
     console.log('render rect-node', node.width, node.height);
@@ -590,9 +623,19 @@ export class DrawGridNode extends BaseRectNode {
             this.rectElement = element;
           }}
           renderElement={(element: HTMLElement) => {
-            this.drawGrid = new GridDraw(element as HTMLDivElement, this);
+            this.drawGrid = new GridDraw(
+              element as HTMLDivElement,
+              this,
+              (node.nodeInfo as any)?.drawGridSettings ?? {
+                fadeRadius: 5, // 11x11 brush (5 cells in each direction from center)
+                fadePower: 1.0,
+                gamma: 2.0,
+                gridSize: 28,
+              }
+            );
 
             this.drawGrid.onDrawCell = this.onDrawCell;
+            this.drawGrid.onStorageChange = this.onStorageChange;
           }}
           class={`draw-grid  text-center whitespace-nowrap`}
           data-disable-interaction={true}
