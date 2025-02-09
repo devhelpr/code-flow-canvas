@@ -1,0 +1,91 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "e33e0b27-66bf-4ac7-9126-5e4cbe9f59f8",
+          "x": -2689.8681948158783,
+          "y": 1405.721525842579,
+          "width": 288.96101118050825,
+          "height": 289.12507858089606,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "draw-grid-node",
+            "formValues": {},
+            "fillColor": "black",
+            "strokeColor": "white",
+            "strokeWidth": 2,
+            "text": "rect",
+            "taskType": "draw-grid-node"
+          }
+        },
+        {
+          "id": "5c2abde3-15c6-4eae-9976-b7d3b5edb8ff",
+          "x": -2267.2866874855386,
+          "y": 1488.5735486782864,
+          "width": 111.7109375,
+          "height": 96,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{\n    \"@flat:output\" : \"input\"\n}"
+            },
+            "taskType": "json-node"
+          }
+        },
+        {
+          "id": "fa02a383-97c3-4925-b7c8-476ee0a8c944",
+          "x": -2545.387689225624,
+          "y": 1550.284065133027,
+          "endX": -2267.2866874855386,
+          "endY": 1536.5735486782864,
+          "startNodeId": "e33e0b27-66bf-4ac7-9126-5e4cbe9f59f8",
+          "endNodeId": "5c2abde3-15c6-4eae-9976-b7d3b5edb8ff",
+          "startThumbName": "input-output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "b0aefd50-44ad-491d-96f0-457470bacfa1",
+          "x": -2155.5757499855386,
+          "y": 1536.5735486782864,
+          "endX": -1941.1837188605377,
+          "endY": 1536.6945682233434,
+          "startNodeId": "5c2abde3-15c6-4eae-9976-b7d3b5edb8ff",
+          "endNodeId": "d2e88de7-2deb-4626-806c-9c348f3c48d6",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "d2e88de7-2deb-4626-806c-9c348f3c48d6",
+          "x": -1941.1837188605377,
+          "y": 1506.6945682233434,
+          "width": 119.99999776715113,
+          "height": 272.0001307441066,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            },
+            "taskType": "show-input"
+          }
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

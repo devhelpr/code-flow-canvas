@@ -14,7 +14,7 @@ class GridDraw {
   public gridValues: number[][] = []; // Store intensity values (0 to 1)
   public gridColors: [number, number, number][][] = []; // Store RGB colors
   private isDrawing = false;
-  private readonly GRID_SIZE = 28; //64;
+  private GRID_SIZE = 28; //64;
   //private readonly MIN_CELL_SIZE = 2; // Minimum cell size in pixels
   private readonly BG_COLOR: [number, number, number] = [255, 255, 255]; // White background
   private gridContainer: HTMLDivElement;
@@ -101,7 +101,12 @@ class GridDraw {
         this.grid[y][x] = cell;
       }
     }
-
+    // const buttonElement = document.createElement('button');
+    // buttonElement.innerHTML = 'Clear Grid';
+    // buttonElement.className = 'control-button';
+    // buttonElement.id = 'clearButtonGrid';
+    // this.gridContainer.appendChild(buttonElement);
+    // <button id="clearButton" class="control-button">Clear Grid</button>
     console.log('Grid setup complete');
   }
 
@@ -151,6 +156,12 @@ class GridDraw {
           this.brushParams.gamma
         }">
       </div>
+      <div class="control-group">
+        <label>Grid size (${this.GRID_SIZE.toFixed(0)})</label>
+        <input type="range" id="GRID_SIZE" min="16" max="64" step="1" value="${
+          this.GRID_SIZE
+        }">
+      </div>
       <button id="clearButton" class="control-button">Clear Grid</button>
     `;
 
@@ -187,6 +198,9 @@ class GridDraw {
     const colorPicker = document.getElementById(
       'colorPicker'
     ) as HTMLInputElement;
+
+    const GRID_SIZE = document.getElementById('GRID_SIZE') as HTMLInputElement;
+
     this.clearButton = document.getElementById(
       'clearButton'
     ) as HTMLButtonElement;
@@ -196,6 +210,7 @@ class GridDraw {
       !fadePowerSlider ||
       !gammaSlider ||
       !colorPicker ||
+      !GRID_SIZE ||
       !this.clearButton
     ) {
       console.error('Control elements not found!');
@@ -235,6 +250,13 @@ class GridDraw {
       )})`;
     });
 
+    GRID_SIZE.addEventListener('input', (e) => {
+      this.GRID_SIZE = parseInt((e.target as HTMLInputElement).value);
+      GRID_SIZE.previousElementSibling!.textContent = `Grid size (${this.GRID_SIZE.toFixed(
+        1
+      )})`;
+      this.setupGrid();
+    });
     this.clearButton.addEventListener('click', () => this.clearGrid());
 
     console.log('Control panel setup complete');
@@ -329,7 +351,7 @@ class GridDraw {
     // });
   }
 
-  private clearGrid() {
+  public clearGrid() {
     // Reset all grid values and colors
     for (let y = 0; y < this.GRID_SIZE; y++) {
       for (let x = 0; x < this.GRID_SIZE; x++) {
@@ -558,7 +580,11 @@ export class DrawGridNode extends BaseRectNode {
     //const nodeInfo = node.nodeInfo as any;
     console.log('render rect-node', node.width, node.height);
     return (
-      <div>
+      <div
+        style={`min-width:${node.width ?? 50}px;min-height:${
+          node.height ?? 50
+        }px;`}
+      >
         <div
           getElement={(element: HTMLDivElement) => {
             this.rectElement = element;
@@ -569,11 +595,11 @@ export class DrawGridNode extends BaseRectNode {
             this.drawGrid.onDrawCell = this.onDrawCell;
           }}
           class={`draw-grid  text-center whitespace-nowrap`}
-          style={`min-width:${node.width ?? 50}px;min-height:${
-            node.height ?? 50
-          }px;`}
           data-disable-interaction={true}
         ></div>
+        <button class="control-button" click={() => this.drawGrid?.clearGrid()}>
+          Clear Grid
+        </button>
       </div>
     );
   };

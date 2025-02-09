@@ -4602,8 +4602,7 @@
               ],
               "neural-layer-name": "input",
               "neural-layer-node-count": "784"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -4709,31 +4708,29 @@
               "neural-layer-name": "hidden2",
               "activation-function": "sigmoid",
               "neural-layer-node-count": "16"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
           "id": "fa84ea63-a4cb-4b52-966b-6a8ea5633e93",
           "x": 1027.268107933096,
           "y": 529.1270712044999,
-          "width": 157.0703125,
-          "height": 56,
+          "width": 150,
+          "height": 80,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "neural-node-train-hidden-layer",
             "formValues": {
               "neural-layer-name": "hidden2"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
           "id": "a89ba0c4-b3e8-4f47-b3db-e1def686c005",
-          "x": 1277.112132124425,
-          "y": 254.79429866680638,
+          "x": 1277.1122590399345,
+          "y": 254.79426406304555,
           "width": 150,
-          "height": 115.00001525878906,
+          "height": 114.99998474121094,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "neural-node-output-layer",
@@ -4747,88 +4744,49 @@
               "neural-layer-name": "output",
               "neural-layer-node-count": "10",
               "activation-function": "sigmoid"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
           "id": "23d82e5c-7f3a-46dd-b2d9-ebcaae97572e",
           "x": 1273.1343759292772,
           "y": 527.4909874314283,
-          "width": 155.0859375,
-          "height": 56,
+          "width": 150,
+          "height": 80,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "neural-node-train-output-layer",
             "formValues": {
               "neural-layer-name": "output",
               "cost-function": ""
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
           "id": "2189dceb-a565-47de-be0a-a58acc6498b5",
           "x": 255.75567907100952,
           "y": 149.28347308685477,
-          "width": 166.8046875,
-          "height": 56,
+          "width": 150,
+          "height": 80,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "neural-mnist-training-data",
-            "formValues": {},
-            "isSettingsPopup": true
-          }
-        },
-        {
-          "id": "44128995-91e3-48c5-929b-f5d703ff7833",
-          "x": -190.98474398601897,
-          "y": 484.44458611441854,
-          "width": 250,
-          "height": 250,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "neural-manual-drawable-canvas-input.",
-            "formValues": {},
-            "isSettingsPopup": true
-          }
-        },
-        {
-          "id": "de3d5cb7-49f6-4fac-b213-862d51068e17",
-          "x": -560.2556648719542,
-          "y": 538.0329971677079,
-          "width": 200,
-          "height": 72,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "button",
-            "formValues": {
-              "caption": "send drawing to NN"
-            },
-            "showFormOnlyInPopup": true,
-            "isUINode": true
-          }
-        },
-        {
-          "id": "ff6f4c73-ce77-4aa7-9d15-69fc7d2c182a",
-          "x": 423.1284952802133,
-          "y": 638.277622093501,
-          "width": 119.99993212285298,
-          "height": 56.00009555645945,
-          "nodeType": "Shape",
-          "nodeInfo": {
-            "type": "show-input"
+            "formValues": {}
           }
         },
         {
           "id": "878a4d03-784c-421c-94e3-05451ae34334",
           "x": 2028.8945637663494,
           "y": 201.1873420722414,
-          "width": 119.99966215627906,
-          "height": 55.99999769932806,
+          "width": 120.0002059703973,
+          "height": 56.00000593177375,
           "nodeType": "Shape",
           "nodeInfo": {
-            "type": "show-input"
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            }
           }
         },
         {
@@ -4857,9 +4815,7 @@
             "type": "button",
             "formValues": {
               "caption": "start training"
-            },
-            "showFormOnlyInPopup": true,
-            "isUINode": true
+            }
           }
         },
         {
@@ -4883,8 +4839,7 @@
                 }
               ],
               "clearMode": "false"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -4906,15 +4861,14 @@
           "id": "ba31efde-7232-4eac-8709-87ed666eece6",
           "x": 784.4409322335918,
           "y": 528.5247656361388,
-          "width": 157.0703125,
-          "height": 56,
+          "width": 150,
+          "height": 80,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "neural-node-train-hidden-layer",
             "formValues": {
               "neural-layer-name": "hidden"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -5071,8 +5025,7 @@
               "neural-layer-name": "hidden",
               "activation-function": "sigmoid",
               "neural-layer-node-count": "16"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -5094,11 +5047,15 @@
           "id": "b3acd5db-aab0-43a8-b246-dea0a301845b",
           "x": 2031.596184958666,
           "y": 329.5110889295169,
-          "width": 119.999953455775,
-          "height": 80.00001752043266,
+          "width": 119.99972496909069,
+          "height": 56.00000593177375,
           "nodeType": "Shape",
           "nodeInfo": {
-            "type": "show-input"
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            }
           }
         },
         {
@@ -5118,8 +5075,7 @@
                 }
               ],
               "clearMode": "false"
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -5142,20 +5098,14 @@
           "x": -470.5511175850997,
           "y": 278.286842856491,
           "width": 200,
-          "height": 132,
+          "height": 124,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "slider",
             "formValues": {
               "value": "844",
               "valueSliderSettings": "{\"min\":0,\"max\":9999,\"step\":1}"
-            },
-            "showFormOnlyInPopup": false,
-            "useInCompositionOnly": false,
-            "canBeStartedByTrigger": true,
-            "isUINode": true,
-            "readPropertyFromNodeInfoForInitialTrigger": "value",
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -5177,11 +5127,15 @@
           "id": "f8c54bdb-6917-4ed3-83a5-e33abadaefbb",
           "x": 1944.49295759378,
           "y": -4.735050647593239,
-          "width": 119.999953455775,
-          "height": 55.99999769932806,
+          "width": 119.999965469744,
+          "height": 55.999998416128335,
           "nodeType": "Shape",
           "nodeInfo": {
-            "type": "show-input"
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            }
           }
         },
         {
@@ -5196,16 +5150,47 @@
             "formValues": {
               "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Bar visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: flex-end;\n        justify-content: center;\n        padding: 4px;\n      }\n      .bar {\n        /*transition: scale 50ms ease-in-out;*/\n        height: 0%;\n        width: 5%;\n        transform-origin: bottom;\n        border-top-left-radius: 2px;\n        border-top-right-radius: 2px;\n        background: rgb(180, 58, 95);\n        background: linear-gradient(\n          180deg,\n          rgba(180, 58, 95, 1) 0%,\n          rgba(253, 29, 29, 1) 50%,\n          rgba(252, 176, 69, 1) 100%\n        );\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\"></div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n          let loop = 0;\n          while (loop < 30) {\n            elements.push(\n              createElement?.(\n                'div',\n                {\n                  class: 'bar',\n                  id: `bar-${loop}`,\n                  style: `--bar-height:${0}%;height:100%;`,\n                },\n                document.getElementById('inner')\n              ).domElement\n            );\n            loop++;\n          }\n        }\n        if (window.input !== undefined) {\n          inputstream.push(window.input);\n          inputstream = inputstream.slice(-30);\n          inputstream.forEach((item, index) => {\n            const percentage = 10000 * (Math.min(200, parseFloat(item)) / 200); //\n\n            //const element = document.getElementById(`bar-${index}`);\n\n            const element = elements[index];\n            //element?.style.setProperty('height', `${percentage}%`);\n            element?.style.setProperty('scale', `1 ${percentage}%`);\n          });\n        }\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
               "aiprompt": ""
+            }
+          }
+        },
+        {
+          "id": "c7cd5ab3-ba76-43a8-958d-ae68d9fbf94f",
+          "x": -515.5760490791351,
+          "y": 617.6115412245163,
+          "width": 199.46090031864438,
+          "height": 261.09370211393104,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "draw-grid-node",
+            "formValues": {},
+            "fillColor": "black",
+            "strokeColor": "white",
+            "strokeWidth": 2,
+            "text": "rect",
+            "taskType": "draw-grid-node"
+          }
+        },
+        {
+          "id": "1358ed96-3fca-4e55-b7a5-a8ce4826d564",
+          "x": -115.92360745712196,
+          "y": 630.3317410278619,
+          "width": 111.7109375,
+          "height": 95.99993896484375,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{\n    \"@flat:inputs\":\"input\",\n    \"training\":0,\n    \"expectedOutput\": [0,0,0,0,0,0,0,0,0,0,0]\n}"
             },
-            "showFormOnlyInPopup": true
+            "taskType": "json-node"
           }
         },
         {
           "id": "72633578-149b-43fa-bcde-ccd46832258a",
           "x": 1190.0797820839891,
           "y": 312.30267710932014,
-          "endX": 1277.112132124425,
-          "endY": 312.29430629620094,
+          "endX": 1277.1122590399345,
+          "endY": 312.294256433651,
           "startNodeId": "b646c650-af4d-4a23-b050-05be5654e69b",
           "endNodeId": "a89ba0c4-b3e8-4f47-b3db-e1def686c005",
           "startThumbName": "output",
@@ -5218,9 +5203,9 @@
         {
           "id": "f8ae3047-843f-43bb-a171-d0953daf3cee",
           "x": 1273.1343759292772,
-          "y": 555.4909874314283,
-          "endX": 1184.338420433096,
-          "endY": 557.1270712044999,
+          "y": 567.4909874314283,
+          "endX": 1177.268107933096,
+          "endY": 569.1270712044999,
           "startNodeId": "23d82e5c-7f3a-46dd-b2d9-ebcaae97572e",
           "endNodeId": "fa84ea63-a4cb-4b52-966b-6a8ea5633e93",
           "startThumbName": "output",
@@ -5232,10 +5217,10 @@
         },
         {
           "id": "8771436f-d455-4d92-a260-f2065af50415",
-          "x": 1427.112132124425,
-          "y": 312.29430629620094,
-          "endX": 1428.2203134292772,
-          "endY": 555.4909874314283,
+          "x": 1427.1122590399345,
+          "y": 312.294256433651,
+          "endX": 1423.1343759292772,
+          "endY": 567.4909874314283,
           "startNodeId": "a89ba0c4-b3e8-4f47-b3db-e1def686c005",
           "endNodeId": "23d82e5c-7f3a-46dd-b2d9-ebcaae97572e",
           "startThumbName": "output",
@@ -5247,8 +5232,8 @@
         },
         {
           "id": "40f5ecd6-0f72-479d-82f8-b2e080c79ec9",
-          "x": 422.5603665710095,
-          "y": 177.28347308685477,
+          "x": 405.7556790710095,
+          "y": 189.28347308685477,
           "endX": 482.9330940943892,
           "endY": 308.5456608868027,
           "startNodeId": "2189dceb-a565-47de-be0a-a58acc6498b5",
@@ -5261,39 +5246,9 @@
           "nodeInfo": {}
         },
         {
-          "id": "b5f829d6-687c-42b8-9c1b-56ea3a24fd8f",
-          "x": -360.2556648719542,
-          "y": 574.0329971677079,
-          "endX": -190.98474398601897,
-          "endY": 609.4445861144186,
-          "startNodeId": "de3d5cb7-49f6-4fac-b213-862d51068e17",
-          "endNodeId": "44128995-91e3-48c5-929b-f5d703ff7833",
-          "startThumbName": "output",
-          "endThumbName": "input",
-          "lineType": "BezierCubic",
-          "nodeType": "Connection",
-          "layer": 1,
-          "nodeInfo": {}
-        },
-        {
-          "id": "23c563cc-1209-408c-bd80-bb045f7b353e",
-          "x": 59.01525601398103,
-          "y": 609.4445861144186,
-          "endX": 423.1284952802133,
-          "endY": 668.277622093501,
-          "startNodeId": "44128995-91e3-48c5-929b-f5d703ff7833",
-          "endNodeId": "ff6f4c73-ce77-4aa7-9d15-69fc7d2c182a",
-          "startThumbName": "output",
-          "endThumbName": "input",
-          "lineType": "BezierCubic",
-          "nodeType": "Connection",
-          "layer": 1,
-          "nodeInfo": {}
-        },
-        {
           "id": "9c11328e-a9d0-46d6-a72d-19d21719ac7d",
-          "x": 1427.112132124425,
-          "y": 312.29430629620094,
+          "x": 1427.1122590399345,
+          "y": 312.294256433651,
           "endX": 1568.9596573664107,
           "endY": 195.1092294695126,
           "startNodeId": "a89ba0c4-b3e8-4f47-b3db-e1def686c005",
@@ -5313,21 +5268,6 @@
           "endY": 231.1873420722414,
           "startNodeId": "8903ccfa-b93f-4a9c-a185-04255c03dd6d",
           "endNodeId": "878a4d03-784c-421c-94e3-05451ae34334",
-          "startThumbName": "output",
-          "endThumbName": "input",
-          "lineType": "BezierCubic",
-          "nodeType": "Connection",
-          "layer": 1,
-          "nodeInfo": {}
-        },
-        {
-          "id": "ec923ad4-3745-4036-aaad-9d193030835e",
-          "x": 59.01525601398103,
-          "y": 609.4445861144186,
-          "endX": 482.9330940943892,
-          "endY": 308.5456608868027,
-          "startNodeId": "44128995-91e3-48c5-929b-f5d703ff7833",
-          "endNodeId": "1fb71439-a841-486a-82c1-7cb9460e0b74",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "BezierCubic",
@@ -5370,7 +5310,7 @@
           "x": 37.387200791173356,
           "y": 231.2934671976889,
           "endX": 255.75567907100952,
-          "endY": 177.28347308685477,
+          "endY": 189.28347308685477,
           "startNodeId": "ac453a94-572f-4f49-b94a-319415bda328",
           "endNodeId": "2189dceb-a565-47de-be0a-a58acc6498b5",
           "startThumbName": "output",
@@ -5383,9 +5323,9 @@
         {
           "id": "80c45d2a-7b56-43f8-ada9-df274e482f6b",
           "x": 1027.268107933096,
-          "y": 557.1270712044999,
-          "endX": 941.5112447335918,
-          "endY": 556.5247656361388,
+          "y": 569.1270712044999,
+          "endX": 934.4409322335918,
+          "endY": 568.5247656361388,
           "startNodeId": "fa84ea63-a4cb-4b52-966b-6a8ea5633e93",
           "endNodeId": "ba31efde-7232-4eac-8709-87ed666eece6",
           "startThumbName": "output",
@@ -5398,9 +5338,9 @@
         {
           "id": "1ccdf764-ba83-4876-8bf3-91e844290303",
           "x": 784.4409322335918,
-          "y": 556.5247656361388,
+          "y": 568.5247656361388,
           "endX": 255.75567907100952,
-          "endY": 177.28347308685477,
+          "endY": 189.28347308685477,
           "startNodeId": "ba31efde-7232-4eac-8709-87ed666eece6",
           "endNodeId": "2189dceb-a565-47de-be0a-a58acc6498b5",
           "startThumbName": "output",
@@ -5442,8 +5382,8 @@
         },
         {
           "id": "acdc0996-d5d7-4030-9401-5d3b609fd2fc",
-          "x": 1427.112132124425,
-          "y": 312.29430629620094,
+          "x": 1427.1122590399345,
+          "y": 312.294256433651,
           "endX": 1569.5405139629293,
           "endY": 389.1072600451386,
           "startNodeId": "a89ba0c4-b3e8-4f47-b3db-e1def686c005",
@@ -5490,7 +5430,7 @@
           "x": 123.84561627567689,
           "y": -15.197918977196537,
           "endX": 255.75567907100952,
-          "endY": 177.28347308685477,
+          "endY": 189.28347308685477,
           "startNodeId": "7b8c2665-97ad-4eec-9071-864004db401a",
           "endNodeId": "2189dceb-a565-47de-be0a-a58acc6498b5",
           "startThumbName": "output",
@@ -5503,7 +5443,7 @@
         {
           "id": "2ff8b0a4-5768-4680-84b7-64cf9d4b7419",
           "x": -270.5511175850997,
-          "y": 344.286842856491,
+          "y": 340.286842856491,
           "endX": -112.61279920882664,
           "endY": 258.7934748270834,
           "startNodeId": "70af5bb2-627a-48e4-8aa6-eb6420eb9efd",
@@ -5517,8 +5457,8 @@
         },
         {
           "id": "912900fa-c461-42b9-bf83-db1ee4ae2c62",
-          "x": 1427.112132124425,
-          "y": 312.29430629620094,
+          "x": 1427.1122590399345,
+          "y": 312.294256433651,
           "endX": 1535.9392469354027,
           "endY": 27.637416693059876,
           "startNodeId": "a89ba0c4-b3e8-4f47-b3db-e1def686c005",
@@ -5547,12 +5487,42 @@
         },
         {
           "id": "bc1e53b8-e719-4b3d-bc99-c696cda1c4d6",
-          "x": 2151.596138414441,
+          "x": 2151.5959099277566,
           "y": 359.5110889295169,
           "endX": 2462.754760612709,
           "endY": 339.78536652350977,
           "startNodeId": "b3acd5db-aab0-43a8-b246-dea0a301845b",
           "endNodeId": "b8f5e9cb-836f-4aa1-806d-8e78e58fa19f",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "ff3be6b5-4621-4888-b2b3-40f9b1946f57",
+          "x": -415.84559891981297,
+          "y": 748.1583922814818,
+          "endX": -115.92360745712196,
+          "endY": 678.3317105102838,
+          "startNodeId": "c7cd5ab3-ba76-43a8-958d-ae68d9fbf94f",
+          "endNodeId": "1358ed96-3fca-4e55-b7a5-a8ce4826d564",
+          "startThumbName": "input-output",
+          "endThumbName": "input",
+          "lineType": "Straight",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "ae05bd0c-1e4b-4a23-aece-fdbf6b8d3621",
+          "x": -4.21266995712196,
+          "y": 678.3317105102838,
+          "endX": 482.9330940943892,
+          "endY": 308.5456608868027,
+          "startNodeId": "1358ed96-3fca-4e55-b7a5-a8ce4826d564",
+          "endNodeId": "1fb71439-a841-486a-82c1-7cb9460e0b74",
           "startThumbName": "output",
           "endThumbName": "input",
           "lineType": "BezierCubic",
