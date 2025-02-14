@@ -31,7 +31,7 @@ import { intersectionCircleLine } from './utils/vector-math';
 export const MIN_RADIUS = 150;
 export const CLOSE_DISTANCE_THRESHOLD = 0.75; // Multiplier for the smallest rectangle dimension
 
-export class ArcConnection<T extends BaseNodeInfo> extends Connection<T> {
+export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
   endPointElement: IThumbNodeComponent<T> | undefined;
 
@@ -344,10 +344,22 @@ export class ArcConnection<T extends BaseNodeInfo> extends Connection<T> {
       const x2 = this.points.endX + endOffsetX;
       const y2 = this.points.endY + endOffsetY;
 
-      const path = this.getLinePath(
+      // const path = this.getLinePath(
+      //   { x: 0, y: 0 },
+      //   startOffsetX,
+      //   startOffsetY,
+      //   x1,
+      //   y1,
+      //   x2,
+      //   y2
+      // );
+
+      const path = this.getArc(
         { x: 0, y: 0 },
         startOffsetX,
         startOffsetY,
+        1,
+        1,
         x1,
         y1,
         x2,
@@ -372,10 +384,21 @@ export class ArcConnection<T extends BaseNodeInfo> extends Connection<T> {
     const y1 = this.points.beginY - bbox.y + startOffsetY;
     const x2 = this.points.endX - bbox.x + endOffsetX;
     const y2 = this.points.endY - bbox.y + endOffsetY;
-    const path = this.getLinePath(
+    // const path = this.getLinePath(
+    //   bbox,
+    //   startOffsetX,
+    //   startOffsetY,
+    //   x1,
+    //   y1,
+    //   x2,
+    //   y2
+    // );
+    const path = this.getArc(
       bbox,
       startOffsetX,
       startOffsetY,
+      1,
+      1,
       x1,
       y1,
       x2,
@@ -389,32 +412,52 @@ export class ArcConnection<T extends BaseNodeInfo> extends Connection<T> {
     );
   }
 
-  protected updateArrow(factor = 1, factor2 = 1) {
+  protected getArc(
+    bbox: { x: number; y: number },
+    startOffsetX: number,
+    startOffsetY: number,
+    factor = 1,
+    factor2 = 1,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
+  ) {
+    const spacingAABB = 10;
+
     const startNode = this.nodeComponent?.startNode;
     const endNode = this.nodeComponent?.endNode;
-    const halfStartWidth = startNode?.width ? startNode.width / 2 : 0;
-    const halfStartHeight = startNode?.height ? startNode.height / 2 : 0;
-    const halfEndWidth = endNode?.width ? endNode.width / 2 : 0;
-    const halfEndHeight = endNode?.height ? endNode.height / 2 : 0;
+    const halfStartWidth = startNode?.width ? startNode.width / 2 : 50;
+    const halfStartHeight = startNode?.height ? startNode.height / 2 : 50;
+    const halfEndWidth = endNode?.width ? endNode.width / 2 : 50;
+    const halfEndHeight = endNode?.height ? endNode.height / 2 : 50;
 
-    const startX = this.points.beginX;
-    const startY = this.points.beginY;
-    const endX = this.points.endX;
-    const endY = this.points.endY;
+    const startX = startNode
+      ? (startNode?.x ?? 0) - bbox.x + startOffsetX - spacingAABB
+      : x1;
+    const startY = startNode
+      ? (startNode?.y ?? 0) - bbox.y + startOffsetY - spacingAABB
+      : y1;
+    const endX = endNode
+      ? (endNode?.x ?? 0) - bbox.x + startOffsetX + spacingAABB * 2
+      : x2;
+    const endY = endNode
+      ? (endNode?.y ?? 0) - bbox.y + startOffsetY + spacingAABB * 2
+      : y2;
 
-    const startWidth = startNode?.width ?? 0;
-    const startHeight = startNode?.height ?? 0;
-    const endWidth = endNode?.width ?? 0;
-    const endHeight = endNode?.height ?? 0;
+    const startWidth = startNode?.width ?? 100;
+    const startHeight = startNode?.height ?? 100;
+    const endWidth = endNode?.width ?? 100;
+    const endHeight = endNode?.height ?? 100;
 
     const start = {
-      x: this.points.beginX + halfStartWidth,
-      y: this.points.beginY + halfStartHeight,
+      x: startX + halfStartWidth,
+      y: startY + halfStartHeight,
     };
 
     const end = {
-      x: this.points.endX + halfEndWidth,
-      y: this.points.endY + halfEndHeight,
+      x: endX + halfEndWidth,
+      y: endY + halfEndHeight,
     };
 
     // Check if rectangles are overlapping or very close
@@ -561,7 +604,7 @@ export class ArcConnection<T extends BaseNodeInfo> extends Connection<T> {
         const controlX = (startX + endX) / 2;
         const controlY = (startY + endY) / 2;
         //canvas.updateControlPoint(controlX, controlY);
-        const d = `M ${startX} ${startY} L ${endX} ${endY}`;
+        return `M ${startX} ${startY} L ${endX} ${endY}`;
         //canvas.updateTestArcPath(d);
       } else {
         //canvas.updateControlPoint(controlX, controlY);
@@ -576,18 +619,20 @@ export class ArcConnection<T extends BaseNodeInfo> extends Connection<T> {
           bestIntersection2.y
         }`;
         //canvas.updateTestArcPath(d);
+        return d;
       }
 
-      const finalSweepFlag = isOverlapping ? 1 : angleDiff > 0 ? 1 : 0;
-      const finalLargeArcFlag = isOverlapping
-        ? 0
-        : radius < 150
-        ? 0 // Force small arc for small radii
-        : isLargeArc(bestIntersection1, bestIntersection2, centerX, centerY)
-        ? 1
-        : 0;
+      // const finalSweepFlag = isOverlapping ? 1 : angleDiff > 0 ? 1 : 0;
+      // const finalLargeArcFlag = isOverlapping
+      //   ? 0
+      //   : radius < 150
+      //   ? 0 // Force small arc for small radii
+      //   : isLargeArc(bestIntersection1, bestIntersection2, centerX, centerY)
+      //   ? 1
+      //   : 0;
     } else {
       //canvas.updateTestArcPath('');
+      return '';
     }
 
     //canvas.updateIntersectionPoints([...intersections1, ...intersections2]);
