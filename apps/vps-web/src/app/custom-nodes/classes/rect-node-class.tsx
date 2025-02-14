@@ -36,7 +36,7 @@ export class BaseRectNode {
 
   static readonly text: string = 'rect';
 
-  static readonly disableManualResize: boolean = false;
+  static readonly disableManualResize: boolean = true;
 
   constructor(
     id: string,
@@ -66,6 +66,8 @@ w-min h-min
 			p-0 
 			flex items-center justify-center
 */
+
+  childElementSelector = '.child-node-wrapper > textarea'; // '.child-node-wrapper > *:first-child'
   render = (node: FlowNode<NodeInfo>) => {
     const nodeInfo = node.nodeInfo as any;
     console.log(
