@@ -461,13 +461,46 @@ export class Rect<T extends BaseNodeInfo> {
     width?: number,
     overrideStaticWidthHeight?: boolean,
     selectChildElemenSelectorAsReference?: string,
-    centerToYPositionThumb?: boolean
+    centerToYPositionThumb?: boolean,
+    height?: number,
+    forceWidthHeight?: boolean
   ) {
     if (
       (this.hasStaticWidthHeight && !overrideStaticWidthHeight) ||
       !this.nodeComponent
     ) {
       return;
+    }
+    if (forceWidthHeight) {
+      const oldHeight = this.nodeComponent.height;
+      this.nodeComponent.width = width ?? this.nodeComponent.width;
+      this.nodeComponent.height = height ?? this.nodeComponent.height;
+      this.points.width = this.nodeComponent.width ?? this.points.width;
+      this.points.height = this.nodeComponent.height ?? this.points.height;
+
+      const rectContainerDOMElement = this.nodeComponent
+        .domElement as unknown as HTMLElement;
+      if (!this.autSizeToContentIfNodeHasNoThumbs) {
+        rectContainerDOMElement.style.width = `${this.points.width}px`;
+        rectContainerDOMElement.style.height = `${this.points.height}px`;
+      }
+
+      if (centerToYPositionThumb) {
+        this.nodeComponent.y =
+          this.nodeComponent.y + (oldHeight ?? 0) / 2 - this.points.height / 2;
+      }
+      if (this.nodeComponent.update) {
+        this.nodeComponent.update(
+          this.nodeComponent,
+          this.nodeComponent.x,
+          this.nodeComponent.y,
+          this.nodeComponent
+        );
+      }
+      return {
+        width: this.points.width,
+        height: this.points.height,
+      };
     }
     const oldHeight = this.nodeComponent.height;
     const { scale } = getCamera();

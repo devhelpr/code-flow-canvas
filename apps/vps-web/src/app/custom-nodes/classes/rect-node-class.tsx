@@ -68,14 +68,19 @@ w-min h-min
 */
   render = (node: FlowNode<NodeInfo>) => {
     const nodeInfo = node.nodeInfo as any;
-    console.log('render rect-node', node.width, node.height);
+    console.log(
+      'render rect-node',
+      node.width,
+      node.height,
+      (node?.nodeInfo as any)?.text
+    );
     return (
       <div>
         <div
           getElement={(element: HTMLElement) => {
             this.rectElement = element;
           }}
-          class={`rounded  justify-center items-center text-center whitespace-pre inline-flex`}
+          class={`rounded  justify-center items-center text-center whitespace-pre inline-flex grow-textarea`}
           style={`min-width:${node.width ?? 50}px;min-height:${
             node.height ?? 50
           }px;background:${nodeInfo?.fillColor ?? 'black'};border: ${
@@ -84,20 +89,7 @@ w-min h-min
             nodeInfo?.strokeColor ?? 'white'
           }`}
           spellcheck="false"
-          blur={() => {
-            if (this.rectElement) {
-              if (this.rectElement.innerHTML.toString().length == 0) {
-                // hacky solution to prevent caret being aligned to top
-                this.rectElement.innerHTML = '&nbsp;';
-              }
-            }
-            console.log('blur', this.rectElement?.textContent);
-            if (this.node?.nodeInfo) {
-              (this.node.nodeInfo as any).text = this.rectElement?.textContent;
-            }
-            this.updated();
-          }}
-          contentEditable={true}
+          contentEditable={false}
           pointerdown={(e: PointerEvent) => {
             if (e.shiftKey && this.rectElement) {
               this.rectElement.contentEditable = 'false';
@@ -109,12 +101,54 @@ w-min h-min
             }
           }}
         >
-          {nodeInfo?.text ?? ''}
+          <textarea
+            class="w-full h-full bg-transparent text-center appearance-none focus-visible:outline-none resize-none"
+            resize="none"
+            rows="1"
+            renderElement={(element: HTMLTextAreaElement) => {
+              element.value = nodeInfo?.text ?? '';
+              setTimeout(() => {
+                element.style.height = 'auto';
+                console.log('renderElement textarea', element.scrollHeight);
+                element.style.height = element.scrollHeight + 'px';
+              }, 0);
+            }}
+            input={(event: InputEvent) => {
+              //w-full h-full
+              // if (this.rectElement) {
+              //   if (this.rectElement.innerHTML.toString().length == 0) {
+              //     // hacky solution to prevent caret being aligned to top
+              //     this.rectElement.innerHTML = '&nbsp;';
+              //   }
+              // }
+              // console.log('blur', this.rectElement?.textContent);
+              if (
+                this.node?.nodeInfo &&
+                this.rectElement &&
+                (event?.target as HTMLTextAreaElement)?.value
+              ) {
+                console.log(
+                  'textarea input',
+                  (event?.target as HTMLTextAreaElement)?.value
+                );
+                const value = (event?.target as HTMLTextAreaElement)?.value;
+
+                (this.node.nodeInfo as any).text = value;
+                const textarea = event.target as HTMLTextAreaElement;
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+                if (this.onResize) {
+                  this.onResize(this.node.width ?? 10, textarea.scrollHeight);
+                }
+              }
+              this.updated();
+            }}
+          ></textarea>
         </div>
       </div>
     );
   };
-
+  onResize: ((width: number, height: number) => void) | undefined = undefined;
   setSize = (width: number, height: number) => {
     if (this.rectElement) {
       this.rectElement.style.width = `${width}px`;

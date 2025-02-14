@@ -11,6 +11,7 @@ export class OvalNode extends BaseRectNode {
   static readonly category = 'Default test';
   static readonly text = 'oval';
 
+  childElementSelector = '.child-node-wrapper > *:first-child';
   render = (node: FlowNode<NodeInfo>) => {
     const nodeInfo = node.nodeInfo as any;
     console.log('render rect-node', node.width, node.height);

@@ -50,12 +50,7 @@ export const getRectNode =
     const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
       return rectNode.compute(input, loopIndex, payload).then((result) => {
         if (rect && rect.resize) {
-          rect.resize(
-            undefined,
-            true,
-            '.child-node-wrapper > *:first-child',
-            true
-          );
+          rect.resize(undefined, true, rectNode.childElementSelector, true);
         }
         return result;
       });
@@ -122,6 +117,28 @@ export const getRectNode =
         rectNode = new NodeClass(node.id, updated, node);
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
+        rectNode.onResize = (width: number, height: number) => {
+          const newHeight =
+            height > (node.height ?? 10) ? height : node.height ?? 10;
+          console.log('RECT RESIZE via onResize', width, newHeight);
+          node.width = width;
+          node.height = newHeight;
+          node.isSettingSize = true;
+          rectNode.setSize(width, newHeight);
+
+          rect?.resize(
+            width,
+            true,
+            rectNode.childElementSelector,
+            true,
+            newHeight,
+            true
+          );
+          nodeInstance.contextInstance?.nodeTransformer.resizeNodeTransformer(
+            width,
+            newHeight
+          );
+        };
         rectNode.createRunCounterContext = createRunCounterContext;
         if (rectNode.getSettingsPopup) {
           if (!node.nodeInfo) {
@@ -146,7 +163,7 @@ export const getRectNode =
         renderElement(rectNode.render(flowNodeInstance), childNodeWrapper);
         nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement
-        ).querySelector('.child-node-wrapper > *:first-child');
+        ).querySelector(rectNode.childElementSelector);
         if (nodeRenderElement) {
           rectNode.nodeRenderElement = nodeRenderElement;
           const resizeObserver = new ResizeObserver(() => {
@@ -159,12 +176,7 @@ export const getRectNode =
                 rectNode.setSize(node.width ?? 10, node.height ?? 10);
                 return;
               }
-              rect.resize(
-                undefined,
-                true,
-                '.child-node-wrapper > *:first-child',
-                true
-              );
+              rect.resize(undefined, true, rectNode.childElementSelector, true);
             }
           });
           resizeObserver.observe(nodeRenderElement);
@@ -184,7 +196,7 @@ export const getRectNode =
                 rect.resize(
                   undefined,
                   true,
-                  '.child-node-wrapper > *:first-child',
+                  rectNode.childElementSelector,
                   true
                 );
               if (result) {
