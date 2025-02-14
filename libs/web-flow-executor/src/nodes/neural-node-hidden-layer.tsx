@@ -152,7 +152,12 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
 
         // - run sum through activation function
         // - send activation value to next layers multiplied by wieght per layer
-        const activationValue = activationFunction(activationFunctionType, sum); // RELU
+        const activationValue = activationFunction(
+          activationFunctionType,
+          sum,
+          [],
+          0
+        ); // RELU
 
         hiddenNodeOutputs.push(activationValue);
 

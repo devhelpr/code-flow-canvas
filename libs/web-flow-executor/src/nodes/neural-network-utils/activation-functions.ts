@@ -12,20 +12,20 @@ function softmax(logits: number[]): number[] {
   return expValues.map((v) => v / sumExp);
 }
 
-function categoricalCrossentropy(yTrue: number[], yPred: number[]): number {
-  const epsilon = 1e-9;
-  return -yTrue.reduce(
-    (sum, yi, i) => sum + yi * Math.log(yPred[i] + epsilon),
-    0
-  );
-}
+// function categoricalCrossentropy(yTrue: number[], yPred: number[]): number {
+//   const epsilon = 1e-9;
+//   return -yTrue.reduce(
+//     (sum, yi, i) => sum + yi * Math.log(yPred[i] + epsilon),
+//     0
+//   );
+// }
 
-function categoricalCrossentropyDerivative(
-  yTrue: number[],
-  yPred: number[]
-): number[] {
-  return yPred.map((yp, i) => yp - yTrue[i]);
-}
+// function categoricalCrossentropyDerivative(
+//   yTrue: number[],
+//   yPred: number[]
+// ): number[] {
+//   return yPred.map((yp, i) => yp - yTrue[i]);
+// }
 
 export type ActivationFunctionType = 'relu' | 'sigmoid' | 'softmax';
 export function deriviateActivationFunction(
