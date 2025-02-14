@@ -140,6 +140,18 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
         }
       }
 
+      /*
+        TODO :
+        - train in batches
+        - so just calculate the proposed new weights and biases with backward propagation
+        - collect all proposed weights and biases here
+        - when batch is done.. calculate average weights and biases and update the weights and biases
+        - reset the proposed weights and biases
+        - continue with the next batch
+
+        - eerste stap om hier te komen: gewichten niet meer updaten tijdens backward propagation maar hier opvangen en dan updaten
+      */
+
       const maxProgress = maxIndex * maxEpochs;
       const currentProgress = currentEpoch * maxIndex + currentIndex;
       const progress = (currentProgress / maxProgress) * 100;

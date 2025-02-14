@@ -132,17 +132,24 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
               layerInput.outputs?.[i] - layerInput.expectedOutput?.[i]
             );
           }
+          const costFunction =
+            nodeComponent.nodeInfo?.formValues['cost-function'] ??
+            'mean-squared-error';
 
           // Output laag delta's berekenen
-          const outputDeltas = [];
-          for (let i = 0; i < currentLayerNodeCount; i++) {
-            outputDeltas.push(
-              outputErrors[i] *
-                deriviateActivationFunction(
-                  activationFunction as ActivationFunctionType,
-                  layerInput.outputs?.[i]
-                )
-            );
+          let outputDeltas = [];
+          if (costFunction === 'cross-entropy') {
+            outputDeltas = [...outputErrors];
+          } else {
+            for (let i = 0; i < currentLayerNodeCount; i++) {
+              outputDeltas.push(
+                outputErrors[i] *
+                  deriviateActivationFunction(
+                    activationFunction as ActivationFunctionType,
+                    layerInput.outputs?.[i]
+                  )
+              );
+            }
           }
 
           const nodeHiddenLayer = hiddenLayer! as IRectNodeComponent<NodeInfo>;
@@ -299,6 +306,7 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
             options: [
               { label: 'mean squared error', value: 'mean-squared-error' },
               { label: 'mean absolute error', value: 'mean-absolute-error' },
+              { label: 'cross entropy', value: 'cross-entropy' },
             ],
             onChange: (value: string) => {
               if (!nodeComponent || !nodeComponent.nodeInfo) {

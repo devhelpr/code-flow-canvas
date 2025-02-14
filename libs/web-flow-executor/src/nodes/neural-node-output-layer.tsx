@@ -111,10 +111,24 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
           columnLoop++;
         }
         sum += nodeComponent.nodeInfo?.formValues?.['bias']?.[loop] ?? 0;
-        const activationValue = activationFunction(activationFunctionType, sum);
+        const activationValue =
+          activationFunctionType !== 'softmax'
+            ? activationFunction(activationFunctionType, sum, [], 0)
+            : sum;
         outputs.push(activationValue);
 
         loop++;
+      }
+      if (activationFunctionType === 'softmax') {
+        const rawOutputs = [...outputs];
+        outputs.forEach((output, index) => {
+          outputs[index] = activationFunction(
+            'softmax',
+            output,
+            rawOutputs,
+            index
+          );
+        });
       }
 
       let maxDigit = -1;
