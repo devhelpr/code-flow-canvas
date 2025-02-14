@@ -609,6 +609,7 @@ export class DrawGridNode extends BaseRectNode {
     }
   };
 
+  childElementSelector = '.child-node-wrapper > *:first-child';
   render = (node: FlowNode<NodeInfo>) => {
     //const nodeInfo = node.nodeInfo as any;
     console.log('render rect-node', node.width, node.height);
