@@ -1,5 +1,12 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
-import { thumbRadius, thumbWidth, thumbHeight } from '../constants/measures';
+import { IBaseFlow } from '../canvas-app/base-flow';
+import {
+  thumbRadius,
+  thumbWidth,
+  thumbHeight,
+  thumbHalfWidth,
+  thumbHalfHeight,
+} from '../constants/measures';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   DOMElementNode,
@@ -24,7 +31,7 @@ export class ThumbConnectionController<
 > extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
   connectionInstance: Connection<T> | undefined = undefined;
-
+  canvasApp?: IBaseFlow<T>;
   constructor(
     canvasElement: DOMElementNode,
     canvas: IElementNode<T>,
@@ -56,7 +63,8 @@ export class ThumbConnectionController<
     canvasUpdated?: () => void,
     containerNode?: IRectNodeComponent<T>,
     rootElement?: HTMLElement,
-    connectionInstance?: Connection<T>
+    connectionInstance?: Connection<T>,
+    canvasApp?: IBaseFlow<T>
   ) {
     super(
       canvasElement,
@@ -71,7 +79,7 @@ export class ThumbConnectionController<
       yInitial,
       connectionControllerType,
       nodeType,
-      additionalClasses,
+      `${additionalClasses}`,
       width,
       height,
       radius,
@@ -93,7 +101,7 @@ export class ThumbConnectionController<
     }
 
     this.connectionInstance = connectionInstance;
-
+    this.canvasApp = canvasApp;
     this.rootElement = rootElement;
     if (connectionControllerType !== undefined) {
       (this.nodeComponent.domElement as HTMLElement).classList.add(
@@ -134,10 +142,11 @@ export class ThumbConnectionController<
       'div',
       {
         class: `${
-          disableInteraction
-            ? this.cssClasses.noPointerEvents
-            : this.cssClasses.autoPointerEvents
-        }        
+          this.cssClasses.noPointerEvents
+          // disableInteraction
+          //   ? this.cssClasses.noPointerEvents
+          //   : this.cssClasses.autoPointerEvents
+        }                
         ${this.cssClasses.circleClasses}`,
         style: {
           width: `${size}px`,
@@ -183,13 +192,13 @@ export class ThumbConnectionController<
       (
         this.nodeComponent.domElement as unknown as SVGElement
       ).style.display = `${visible ? 'block' : 'none'}`;
-
-      if (visible && !disableInteraction) {
-        const circleDomElement = this.circleElement
-          ?.domElement as unknown as SVGElement;
-        circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
-        circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
-      }
+      console.log('setVisibilty thumb connection: remove noPointerEvents');
+      // if (visible && !disableInteraction) {
+      //   const circleDomElement = this.circleElement
+      //     ?.domElement as unknown as SVGElement;
+      //   circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+      //   circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+      // }
     };
 
     this.nodeComponent.initPointerDown = (
@@ -269,10 +278,10 @@ export class ThumbConnectionController<
 
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
-    x: number,
-    y: number,
-    rootX: number,
-    rootY: number,
+    _x: number,
+    _y: number,
+    _rootX: number,
+    _rootY: number,
     _parentXcaller: number,
     _parentYcaller: number
   ) => {
@@ -280,61 +289,31 @@ export class ThumbConnectionController<
       return;
     }
 
-    const elementRect = (
-      connectionThumb.domElement as unknown as HTMLElement | SVGElement
-    ).getBoundingClientRect();
-    // const rootBounds = (
-    //   this.rootElement as HTMLElement
+    // const elementRect = (
+    //   connectionThumb.domElement as unknown as HTMLElement | SVGElement
     // ).getBoundingClientRect();
 
-    // const rectCamera = transformCameraSpaceToWorldSpace(
-    //   elementRect.x - rootBounds.x, //+ window.scrollX,
-    //   elementRect.y - rootBounds.y //+ window.scrollY
+    // const rectCamera = this.nodeComponent?.parent?.containerNode
+    //   ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
+    //   : transformCameraSpaceToWorldSpace(
+    //       elementRect.x - rootX,
+    //       elementRect.y - rootY
+    //     );
+
+    // console.log(
+    //   'connection-controller THUMB initiateDraggingConnection',
+    //   this.canvas,
+    //   connectionThumb,
+    //   this.nodeComponent?.parent?.containerNode,
+    //   elementRect.x,
+    //   elementRect.y,
+    //   rectCamera.x,
+    //   rectCamera.y
     // );
 
-    const rectCamera = this.nodeComponent?.parent?.containerNode
-      ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
-      : transformCameraSpaceToWorldSpace(
-          elementRect.x - rootX,
-          elementRect.y - rootY
-        );
-
-    const parentX = 0;
-    const parentY = 0;
-    // if (this.containerNode) {
-    //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-    //     const parentCoordinates =
-    //       this.containerNode?.getParentedCoordinates() ?? {
-    //         x: 0,
-    //         y: 0,
-    //       };
-    //     // parentX = this.containerNode.x - paddingRect;
-    //     // parentY = this.containerNode.y - paddingRect;
-    //     parentX = parentCoordinates.x - paddingRect;
-    //     parentY = parentCoordinates.y - paddingRect;
-    //   }
-    // }
-
-    console.log(
-      'connection-controller THUMB initiateDraggingConnection',
-      this.canvas,
-      connectionThumb,
-      this.nodeComponent?.parent?.containerNode,
-      elementRect.x,
-      elementRect.y,
-      //x,
-      //y
-      rectCamera.x,
-      rectCamera.y
-      // parentX,
-      // parentY
-      // x - parentXcaller,
-      // y - parentYcaller
-    );
-
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x + parentX,
-      y - rectCamera.y + parentY,
+      thumbHalfWidth, //x - rectCamera.x + parentX,
+      thumbHalfHeight, //y - rectCamera.y + parentY,
       connectionThumb,
       this.canvas,
       this.interactionStateMachine
@@ -347,10 +326,12 @@ export class ThumbConnectionController<
     }
 
     if (connectionThumb.getThumbCircleElement) {
-      const circleDomElement = connectionThumb.getThumbCircleElement();
+      // const circleDomElement = connectionThumb.getThumbCircleElement();
 
-      circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
-      circleDomElement.classList.add(this.cssClasses.noPointerEvents);
+      // circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
+
+      // circleDomElement.classList.add(this.cssClasses.noPointerEvents);
+      console.log('NOPOINTEREVENTS (ADD)');
 
       const domNodeElement = this.nodeComponent
         ?.domElement as unknown as HTMLElement;
@@ -362,9 +343,15 @@ export class ThumbConnectionController<
   previousStartNode: IRectNodeComponent<T> | undefined = undefined;
   previousEndNode: IRectNodeComponent<T> | undefined = undefined;
   onPointerDown = (e: PointerEvent) => {
+    console.log(
+      'connection-controller onPointerDown',
+      this.nodeComponent?.id,
+      this.canvasApp?.sendDebugInfo
+    );
     if (this.disableInteraction) {
       return;
     }
+
     this.oldElement = null;
     if (this.nodeComponent) {
       if (this.nodeComponent.parent) {
@@ -405,7 +392,11 @@ export class ThumbConnectionController<
       // lookup connection to with this connection-controller as start point
       const connection = this.nodeComponent
         .parent as unknown as IConnectionNodeComponent<T>;
-
+      console.log(
+        'connection-controller thumb 1',
+        this.nodeComponent.connectionControllerType,
+        connection
+      );
       if (connection && this.canvas && connection.startNodeThumb) {
         const connectionThumb =
           this.nodeComponent.connectionControllerType ===
@@ -413,15 +404,31 @@ export class ThumbConnectionController<
             ? connection.connectionStartNodeThumb
             : undefined;
         if (connectionThumb && this.rootElement) {
-          const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+          const {
+            pointerXPos,
+            pointerYPos,
+            rootX,
+            rootY,
+            eventClientX,
+            eventClientY,
+          } = getPointerPos(
             this.canvas.domElement as HTMLElement,
             this.rootElement,
             e
           );
+          const { x: rootXCamera, y: rootYCamera } =
+            transformCameraSpaceToWorldSpace(rootX, rootY);
+
+          const { x: clientXCamera, y: clientYCamera } =
+            transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+          const xpos = clientXCamera - rootXCamera;
+          const ypos = clientYCamera - rootYCamera;
           const { x, y } = transformCameraSpaceToWorldSpace(
             pointerXPos,
             pointerYPos
           );
+
           let parentX = 0;
           let parentY = 0;
           if (this.nodeComponent?.parent?.containerNode) {
@@ -447,10 +454,12 @@ export class ThumbConnectionController<
           connection.startNode = undefined;
           connection.startNodeThumb = undefined;
           console.log('x y', event?.target, x, y);
+
+          console.log('initiateDraggingConnection 1');
           this.initiateDraggingConnection(
             connectionThumb,
-            x + parentX,
-            y + parentY,
+            xpos, //x + parentX,
+            ypos, //y + parentY,
             rootX,
             rootY,
             parentX,
@@ -459,24 +468,52 @@ export class ThumbConnectionController<
           return;
         }
       }
-
+      console.log(
+        'connection-controller thumb 2',
+        connection.endNodeThumb,
+        this.canvas,
+        this.rootElement,
+        this.nodeComponent.connectionControllerType ===
+          ConnectionControllerType.end
+      );
       if (connection && this.canvas && connection.endNodeThumb) {
         const connectionThumb =
           this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.end
             ? connection.connectionEndNodeThumb
             : undefined;
-
+        console.log(
+          'connection-controller thumb 3',
+          connectionThumb,
+          this.rootElement
+        );
         if (connectionThumb && this.rootElement) {
-          const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+          const {
+            pointerXPos,
+            pointerYPos,
+            rootX,
+            rootY,
+            eventClientX,
+            eventClientY,
+          } = getPointerPos(
             this.canvas.domElement as HTMLElement,
             this.rootElement,
             e
           );
+
+          const { x: rootXCamera, y: rootYCamera } =
+            transformCameraSpaceToWorldSpace(rootX, rootY);
+
+          const { x: clientXCamera, y: clientYCamera } =
+            transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+          const xpos = clientXCamera - rootXCamera;
+          const ypos = clientYCamera - rootYCamera;
           const { x, y } = transformCameraSpaceToWorldSpace(
             pointerXPos,
             pointerYPos
           );
+
           this.previousEndNode = connection.endNode;
           connection.endNode = undefined;
           connection.endNodeThumb = undefined;
@@ -504,10 +541,11 @@ export class ThumbConnectionController<
           }
 
           console.log('x y (2)', event?.target, x, y);
+          console.log('initiateDraggingConnection 2');
           this.initiateDraggingConnection(
             connectionThumb,
-            x + parentX,
-            y + parentY,
+            xpos, //x + parentX,
+            ypos, //y + parentY,
             rootX,
             rootY,
             parentX,
@@ -524,11 +562,28 @@ export class ThumbConnectionController<
         return;
       }
 
-      const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+      // handle dragging of connection thumbs when not connected to node
+
+      const {
+        pointerXPos,
+        pointerYPos,
+        rootX,
+        rootY,
+        eventClientX,
+        eventClientY,
+      } = getPointerPos(
         this.canvas.domElement as HTMLElement,
         this.rootElement,
         e
       );
+      const { x: rootXCamera, y: rootYCamera } =
+        transformCameraSpaceToWorldSpace(rootX, rootY);
+
+      const { x: clientXCamera, y: clientYCamera } =
+        transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+      const xpos = clientXCamera - rootXCamera;
+      const ypos = clientYCamera - rootYCamera;
       const { x, y } = transformCameraSpaceToWorldSpace(
         pointerXPos,
         pointerYPos
@@ -547,63 +602,28 @@ export class ThumbConnectionController<
                 x: 0,
                 y: 0,
               };
-            // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
-            // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
             parentX = parentCoordinates.x;
             parentY = parentCoordinates.y;
           }
         }
       }
-      // console.log(
-      //   'connection-controller thumb 3',
-      //   x,
-      //   y,
-      //   this.nodeComponent?.nodeType,
-      //   this.nodeComponent?.thumbType,
-      //   this.nodeComponent?.thumbConnectionType,
-      //   'parent',
-      //   this.nodeComponent?.parent,
-      //   'containers',
-      //   this.containerNode,
-      //   this.nodeComponent?.parent?.containerNode
-      // );
+
       console.log('x y (3)', event?.target, x, y);
 
-      const elementRect = (
-        this.nodeComponent.domElement as unknown as HTMLElement | SVGElement
-      ).getBoundingClientRect();
-
-      // TODO : check if wihtin container... then use container x/y as parentX/Y....
-      const rectCamera = this.nodeComponent?.parent?.containerNode
-        ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
-        : transformCameraSpaceToWorldSpace(
-            elementRect.x - rootX,
-            elementRect.y - rootY
-          );
-
-      const interactionInfoResult = pointerDown(
-        x - rectCamera.x + parentX,
-        y - rectCamera.y + parentY,
-        this.nodeComponent,
-        this.canvas as IElementNode<T>,
-        this.interactionStateMachine
+      console.log(
+        'initiateDraggingConnection 3',
+        event?.target,
+        this.nodeComponent
       );
-
-      if (interactionInfoResult) {
-        this.interactionInfo = interactionInfoResult;
-        const circleDomElement = this.circleElement?.domElement as unknown as
-          | HTMLElement
-          | SVGElement;
-        circleDomElement.classList.remove(this.cssClasses.autoPointerEvents);
-        circleDomElement.classList.add(this.cssClasses.noPointerEvents);
-
-        const domNodeElement = this.nodeComponent
-          ?.domElement as unknown as HTMLElement;
-        domNodeElement.classList.remove(this.cssClasses.autoPointerEvents);
-        domNodeElement.classList.add(this.cssClasses.noPointerEvents);
-
-        domNodeElement.classList.add(this.cssClasses.dragging);
-      }
+      this.initiateDraggingConnection(
+        this.nodeComponent,
+        xpos,
+        ypos,
+        rootX,
+        rootY,
+        parentX,
+        parentY
+      );
     }
   };
   oldElement: Element | null = null;
@@ -666,6 +686,7 @@ export class ThumbConnectionController<
         pointerXPos,
         pointerYPos
       );
+
       pointerMove(
         x,
         y,
@@ -736,8 +757,8 @@ export class ThumbConnectionController<
         'connection-controller onPointerUp circleDomElement (BEFORE remove pointer-events-none)',
         circleDomElement
       );
-      circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
-      circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+      // circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+      // circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
 
       const domNodeElement = this.nodeComponent
         ?.domElement as unknown as HTMLElement;
@@ -937,11 +958,11 @@ export class ThumbConnectionController<
 
     this.setEnableInteraction();
 
-    const circleDomElement = this.circleElement?.domElement as unknown as
-      | HTMLElement
-      | SVGElement;
-    circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
-    circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
+    // const circleDomElement = this.circleElement?.domElement as unknown as
+    //   | HTMLElement
+    //   | SVGElement;
+    // circleDomElement.classList.add(this.cssClasses.autoPointerEvents);
+    // circleDomElement.classList.remove(this.cssClasses.noPointerEvents);
 
     const domNodeElement = this.nodeComponent
       ?.domElement as unknown as HTMLElement;

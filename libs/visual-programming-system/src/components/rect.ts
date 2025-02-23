@@ -34,6 +34,7 @@ import { BaseNodeInfo } from '../types/base-node-info';
 import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
 import { Theme } from '../interfaces/theme';
 import { LayoutProperties } from '../interfaces/layout-properties';
+import { IBaseFlow } from '../canvas-app/base-flow';
 
 export class Rect<T extends BaseNodeInfo> {
   public nodeComponent?: IRectNodeComponent<T>;
@@ -77,6 +78,8 @@ export class Rect<T extends BaseNodeInfo> {
   protected cssClasses: ReturnType<typeof getRectNodeCssClasses>;
   protected theme?: Theme;
 
+  protected canvasApp?: IBaseFlow<T>;
+
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -106,11 +109,14 @@ export class Rect<T extends BaseNodeInfo> {
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement,
     theme?: Theme,
-    customClassName?: string
+    customClassName?: string,
+    canvasApp?: IBaseFlow<T>
   ) {
     this.cssClasses = getRectNodeCssClasses();
     this.canvas = canvas;
     this.canvasElements = elements;
+    this.canvasApp = canvasApp;
+
     this.canvasUpdated = canvasUpdated;
     this.setCanvasAction = setCanvasAction;
     this.nodeTransformer = nodeTransformer;
@@ -258,7 +264,8 @@ export class Rect<T extends BaseNodeInfo> {
           containerNode,
           setCanvasAction,
           rootElement,
-          this.theme
+          this.theme,
+          this.canvasApp
         );
 
         if (!thumbNode.nodeComponent) {
@@ -1204,6 +1211,15 @@ export class Rect<T extends BaseNodeInfo> {
         pointerYPos - (window?.visualViewport?.offsetTop ?? 0)
       );
 
+      const { x: rootXCamera, y: rootYCamera } =
+        transformCameraSpaceToWorldSpace(rootX, rootY);
+
+      const { x: clientXCamera, y: clientYCamera } =
+        transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+      const xpos = clientXCamera - rootXCamera;
+      const ypos = clientYCamera - rootYCamera;
+
       const rect = this.containerNode
         ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
         : transformCameraSpaceToWorldSpace(
@@ -1217,27 +1233,27 @@ export class Rect<T extends BaseNodeInfo> {
       //   y,
       //   rect.y
       // );
-      const bbox = this.getBBoxPath(this.points);
+      //const bbox = this.getBBoxPath(this.points);
 
-      let parentX = 0;
-      let parentY = 0;
-      if (this.containerNode) {
-        if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-          const parentCoordinates =
-            this.containerNode?.getParentedCoordinates() ?? {
-              x: 0,
-              y: 0,
-            };
-          // parentX = this.containerNode.x;
-          // parentY = this.containerNode.y;
-          parentX = parentCoordinates.x;
-          parentY = parentCoordinates.y;
-        }
-      }
+      // let parentX = 0;
+      // let parentY = 0;
+      // if (this.containerNode) {
+      //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+      //     const parentCoordinates =
+      //       this.containerNode?.getParentedCoordinates() ?? {
+      //         x: 0,
+      //         y: 0,
+      //       };
+      //     // parentX = this.containerNode.x;
+      //     // parentY = this.containerNode.y;
+      //     parentX = parentCoordinates.x;
+      //     parentY = parentCoordinates.y;
+      //   }
+      // }
 
       const interactionInfoResult = pointerDown(
-        x - rect.x + parentX - (this.points.beginX - bbox.x),
-        y - rect.y + parentY - (this.points.beginY - bbox.y),
+        this.containerNode ? xpos - this.points.beginX : x - rect.x,
+        this.containerNode ? ypos - this.points.beginY : y - rect.y,
         this.nodeComponent,
         this.canvas,
         this.interactionStateMachine

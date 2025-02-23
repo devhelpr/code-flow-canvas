@@ -154,7 +154,7 @@ export const showMetaViewDialog = (
                 ></td>,
                 rowElement
               );
-              let value = matrix[i][j];
+              let value = matrix[i]?.[j];
               if (typeof value === 'number') {
                 value = `${value.toFixed(2)}`;
               } else {

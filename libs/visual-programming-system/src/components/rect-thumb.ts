@@ -1,5 +1,10 @@
 import { transformCameraSpaceToWorldSpace } from '../camera';
-import { paddingRect } from '../constants/measures';
+import { IBaseFlow } from '../canvas-app/base-flow';
+import {
+  paddingRect,
+  thumbHalfHeight,
+  thumbHalfWidth,
+} from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
@@ -59,7 +64,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement,
     theme?: Theme,
-    customClassName?: string
+    customClassName?: string,
+    canvasApp?: IBaseFlow<T>
   ) {
     super(
       canvas,
@@ -86,7 +92,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
       setCanvasAction,
       rootElement,
       theme,
-      customClassName
+      customClassName,
+      canvasApp
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');
@@ -151,16 +158,48 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
           parentY = parentCoordinates.y - paddingRect;
         }
       }
-      const { pointerXPos, pointerYPos } = getPointerPos(
+      console.log('pre getPointerPos', this.rootElement);
+      const {
+        pointerXPos,
+        pointerYPos,
+        rootX,
+        rootY,
+        eventClientX,
+        eventClientY,
+      } = getPointerPos(
         this.canvas.domElement as HTMLElement,
         this.rootElement,
         event
       );
+
+      const { x: rootXCamera, y: rootYCamera } =
+        transformCameraSpaceToWorldSpace(rootX, rootY);
+
+      const { x: clientXCamera, y: clientYCamera } =
+        transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+      const xpos = clientXCamera - rootXCamera;
+      const ypos = clientYCamera - rootYCamera;
+
       let { x, y } = transformCameraSpaceToWorldSpace(pointerXPos, pointerYPos);
       const xorg = x;
       const yorg = y;
       x = x - parentX;
       y = y - parentY;
+
+      console.log(
+        'RECT-THUMB pointerdown',
+        event.clientX,
+        event.clientY,
+        x,
+        y,
+        xorg,
+        yorg,
+        pointerXPos,
+        pointerYPos,
+        rootX,
+        rootY
+      );
 
       const selectedNodeId = getSelectedNode();
       if (selectedNodeId) {
@@ -195,7 +234,9 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
                 connection.connectionStartNodeThumb,
                 xorg,
                 yorg,
-                connection
+                //connection
+                rootX,
+                rootY
               );
             }
             return true;
@@ -228,7 +269,9 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
                 connection.connectionEndNodeThumb,
                 xorg,
                 yorg,
-                connection
+                //connection.
+                rootX,
+                rootY
               );
             }
             return true;
@@ -242,10 +285,10 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
             this.interactionStateMachine,
             this.pathHiddenElement as unknown as IElementNode<T>,
             this.canvasElements,
-            x,
-            y,
-            x,
-            y,
+            xpos,
+            ypos,
+            xpos,
+            ypos,
             0,
             0,
             false,
@@ -262,12 +305,12 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
             this.interactionStateMachine,
             this.pathHiddenElement as unknown as IElementNode<T>,
             this.canvasElements,
-            x,
-            y,
-            x,
-            y,
-            x,
-            y,
+            xpos,
+            ypos,
+            xpos,
+            ypos,
+            xpos,
+            ypos,
 
             false,
             undefined,
@@ -324,9 +367,13 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
 
         this.initiateDraggingConnection(
           curve.endPointElement,
-          xorg,
-          yorg,
-          curve.nodeComponent
+          // xorg + parentX,
+          // yorg + parentY,
+          xpos,
+          ypos,
+          //curve.nodeComponent,
+          rootX,
+          rootY
         );
       }
 
@@ -337,66 +384,33 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
 
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
-    x: number,
-    y: number,
-    _connection: IConnectionNodeComponent<T>
+    _x: number,
+    _y: number,
+    _rootX: number,
+    _rootY: number
   ) => {
     if (!this.canvas) {
       return;
     }
 
-    const elementRect = (
-      this.nodeComponent?.domElement as unknown as HTMLElement | SVGElement
-    ).getBoundingClientRect();
+    const elementRect =
+      //connectionThumb?.domElement as unknown as HTMLElement | SVGElement
+      //(connectionThumb?.domElement as unknown as HTMLElement | SVGElement)
+      (
+        this.nodeComponent?.domElement as unknown as HTMLElement | SVGElement
+      ).getBoundingClientRect();
     console.log(
       'RECT-THUMB initiateDraggingConnection',
       elementRect,
       this.nodeComponent?.width,
       this.nodeComponent?.height
     );
-    const rectCamera = transformCameraSpaceToWorldSpace(
-      elementRect.x,
-      elementRect.y
-    );
-
-    let parentX = 0;
-    let parentY = 0;
-    if (this.containerNode) {
-      if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-        const parentCoordinates =
-          this.containerNode?.getParentedCoordinates() ?? {
-            x: 0,
-            y: 0,
-          };
-        // parentX = this.containerNode.x - paddingRect;
-        // parentY = this.containerNode.y - paddingRect;
-        parentX = parentCoordinates.x - paddingRect;
-        parentY = parentCoordinates.y - paddingRect;
-      }
-    }
-    // console.log(
-    //   'RECT-THUMB initiateDraggingConnection',
-    //   this.nodeComponent,
-    //   connectionThumb,
-    //   x,
-    //   y,
-    //   parentX,
-    //   parentY,
-    //   rectCamera.x,
-    //   rectCamera.y,
-    //   x - rectCamera.x + parentX,
-    //   y - rectCamera.y + parentY
-    // );
 
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x + parentX,
-      y - rectCamera.y + parentY,
+      thumbHalfWidth,
+      thumbHalfHeight,
       connectionThumb,
       this.canvas,
-      // this.containerNode
-      //   ? (this.containerNode.nodeInfo as any)?.canvasAppInstance?.canvas
-      //       ?.domElement
-      //   : this.canvas.domElement,
       this.interactionStateMachine
     );
 

@@ -28,6 +28,7 @@ import {
 import { BaseNodeInfo } from '../types/base-node-info';
 import { FlowChangeType } from '../interfaces';
 import { getConnectionCssClasses } from './css-classes/connection-css-classes';
+import { IBaseFlow } from '../canvas-app/base-flow';
 
 const standardControlPointDistance = 150;
 
@@ -79,6 +80,8 @@ export class Connection<T extends BaseNodeInfo> {
 
   connectionUpdateState: ConnectionUpdateState | undefined = undefined;
   protected cssClasses: ReturnType<typeof getConnectionCssClasses>;
+  canvasApp?: IBaseFlow<T>;
+
   constructor(
     canvas: IElementNode<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -103,7 +106,8 @@ export class Connection<T extends BaseNodeInfo> {
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    canvasApp?: IBaseFlow<T>
   ) {
     /*
     draw svg path based on bbox of the hidden path
@@ -116,6 +120,7 @@ export class Connection<T extends BaseNodeInfo> {
     */
 
     this.cssClasses = getConnectionCssClasses();
+    this.canvasApp = canvasApp;
     this.onCalculateControlPoints = onCalculateControlPoints;
     this.pathHiddenElement = pathHiddenElement;
     this.canvas = canvas;
@@ -358,11 +363,28 @@ export class Connection<T extends BaseNodeInfo> {
       if (!this.canvas || !this.rootElement) {
         return;
       }
-      const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+      const {
+        pointerXPos,
+        pointerYPos,
+        rootX,
+        rootY,
+        eventClientX,
+        eventClientY,
+      } = getPointerPos(
         this.canvas.domElement as HTMLElement,
         this.rootElement,
         e
       );
+
+      const { x: rootXCamera, y: rootYCamera } =
+        transformCameraSpaceToWorldSpace(rootX, rootY);
+
+      const { x: clientXCamera, y: clientYCamera } =
+        transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+      const xpos = clientXCamera - rootXCamera;
+      const ypos = clientYCamera - rootYCamera;
+
       const { x, y } = transformCameraSpaceToWorldSpace(
         pointerXPos,
         pointerYPos
@@ -374,25 +396,29 @@ export class Connection<T extends BaseNodeInfo> {
             elementRect.y - rootY
           );
 
-      let parentX = 0;
-      let parentY = 0;
-      if (this.containerNode) {
-        if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-          const parentCoordinates =
-            this.containerNode?.getParentedCoordinates() ?? {
-              x: 0,
-              y: 0,
-            };
-          // parentX = this.containerNode.x ;
-          // parentY = this.containerNode.y;
-          parentX = parentCoordinates.x;
-          parentY = parentCoordinates.y;
-        }
-      }
+      // let parentX = 0;
+      // let parentY = 0;
+      // if (this.containerNode) {
+      //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
+      //     const parentCoordinates =
+      //       this.containerNode?.getParentedCoordinates() ?? {
+      //         x: 0,
+      //         y: 0,
+      //       };
+      //     // parentX = this.containerNode.x ;
+      //     // parentY = this.containerNode.y;
+      //     parentX = parentCoordinates.x;
+      //     parentY = parentCoordinates.y;
+      //   }
+      // }
 
       const interactionInfoResult = pointerDown<T>(
-        x - rect.x - (this.points.beginX - bbox.x - paddingRect) + parentX,
-        y - rect.y - (this.points.beginY - bbox.y - paddingRect) + parentY,
+        this.containerNode
+          ? xpos - this.points.beginX
+          : x - rect.x - (this.points.beginX - bbox.x - paddingRect),
+        this.containerNode
+          ? ypos - this.points.beginY
+          : y - rect.y - (this.points.beginY - bbox.y - paddingRect),
         this.nodeComponent,
         this.canvas as IElementNode<T>,
         this.interactionStateMachine

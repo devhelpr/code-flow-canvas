@@ -181,6 +181,12 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       this.canvasActionPayload = payload;
     });
 
+    // const debugInfoController = new DebugInfoController(this.rootElement);
+
+    // this.canvasApp.setOnDebugInfoHandler((debugInfo) => {
+    //   debugInfoController.sendDebugInfo(debugInfo);
+    // });
+
     this.setupWindowResize();
     this.setupGLCanvas();
     const glcanvas = document.getElementById('glcanvas');

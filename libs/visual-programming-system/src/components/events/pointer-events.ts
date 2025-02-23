@@ -9,23 +9,15 @@ import { NodeType } from '../../types';
 import { BaseNodeInfo } from '../../types/base-node-info';
 
 export const pointerDown = <T extends BaseNodeInfo>(
-  x: number,
-  y: number,
+  xOffsetWithinElementOnFirstClick: number,
+  yOffsetWithinElementOnFirstClick: number,
   element: INodeComponent<T>,
   canvasNode: IElementNode<T>,
   interactionStateMachine: InteractionStateMachine<T>
 ): IPointerDownResult | false => {
-  let xOffsetWithinElementOnFirstClick = 0;
-  let yOffsetWithinElementOnFirstClick = 0;
+  // let xOffsetWithinElementOnFirstClick = 0;
+  // let yOffsetWithinElementOnFirstClick = 0;
   let offsetXhelper = 0;
-
-  // const canvasBoundingRect = (
-  //   canvasNode.domElement as HTMLElement
-  // ).getBoundingClientRect();
-  const boundingOffsetX = 0;
-  const boundingOffsetY = 0; // -canvasBoundingRect.y; //-(element.domElement as HTMLElement).scrollTop; //window.scrollY;
-
-  //console.log('canvasBoundingRect', y, canvasBoundingRect.y);
 
   // this fixes moving elements that have a xOffset (like the node-tree-visualizer)
   if (element && element.domElement) {
@@ -63,8 +55,9 @@ export const pointerDown = <T extends BaseNodeInfo>(
         pointerMove,
         pointerUp,
         interactionInfo: {
-          xOffsetWithinElementOnFirstClick: x + offsetXhelper + boundingOffsetX,
-          yOffsetWithinElementOnFirstClick: y + boundingOffsetY,
+          xOffsetWithinElementOnFirstClick:
+            xOffsetWithinElementOnFirstClick + offsetXhelper,
+          yOffsetWithinElementOnFirstClick: yOffsetWithinElementOnFirstClick,
         },
       },
       element,
@@ -72,9 +65,6 @@ export const pointerDown = <T extends BaseNodeInfo>(
       canvasNode
     )
   ) {
-    xOffsetWithinElementOnFirstClick = x + offsetXhelper + boundingOffsetX;
-    yOffsetWithinElementOnFirstClick = y + boundingOffsetY;
-
     if (element?.nodeType === NodeType.Shape) {
       // .. this is a hack to make sure that the element is always on top
       // .. this causes a refresh of the iframe-html-node
@@ -99,7 +89,8 @@ export const pointerDown = <T extends BaseNodeInfo>(
     }
 
     return {
-      xOffsetWithinElementOnFirstClick,
+      xOffsetWithinElementOnFirstClick:
+        xOffsetWithinElementOnFirstClick + offsetXhelper,
       yOffsetWithinElementOnFirstClick,
     };
   }

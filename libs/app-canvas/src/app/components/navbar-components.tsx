@@ -202,7 +202,7 @@ export class NavbarComponent extends Component<
                           }, 0);
                         }
                       });
-                      reader.readAsBinaryString(files[0]);
+                      reader.readAsText(files[0]);
                     }
                   };
                   input.click();
@@ -681,7 +681,7 @@ export class NavbarComponent extends Component<
             }, 0);
           }
         });
-        reader.readAsBinaryString(files[0]);
+        reader.readAsText(files[0]);
       }
     };
     input.click();
@@ -736,7 +736,7 @@ export class NavbarComponent extends Component<
             }
           }
         });
-        reader.readAsBinaryString(files[0]);
+        reader.readAsText(files[0]);
       }
     };
     input.click();

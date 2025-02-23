@@ -420,7 +420,7 @@ export class GLNavbarComponent extends Component<
             this.props.initializeNodes();
           }
         });
-        reader.readAsBinaryString(files[0]);
+        reader.readAsText(files[0]);
       }
     };
     input.click();

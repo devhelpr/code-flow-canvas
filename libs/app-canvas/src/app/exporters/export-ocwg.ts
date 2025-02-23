@@ -13,7 +13,11 @@ import { OCWGFile, OCWGNode } from './ocwg/ocwg-schema';
 import { ocwgEmptyFile } from './ocwg/ocwg-empty-file';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { getCurrentOCIF } from '../importers/ocif-importer';
-import { ocifRelationGroup } from '../consts/ocif';
+import {
+  ocifArrow,
+  ocifRelationGroup,
+  ocifToCodeFlowCanvas,
+} from '../consts/ocif';
 
 interface OCWGInfo {
   index: number;
@@ -37,7 +41,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
   isOCIFNodeThatCodeFlowCanvasSupports(node: any): boolean {
     if (node.data && Array.isArray(node.data)) {
       const result = node.data.some(
-        (d: any) => d.type === 'rect-node' || d.type === '@ocwg/node/rect'
+        (d: any) => d.type === 'rect-node' || ocifToCodeFlowCanvas[d.type]
       );
       if (result) {
         return true;
@@ -262,9 +266,17 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     }
     const ocwgNode: OCWGNode = {
       id: `connection:${node.id}`,
-      position: [node.x, node.y],
-      size: [node.width ?? 0, node.height ?? 0],
+      //position: [node.x, node.y],
+      //size: [node.width ?? 0, node.height ?? 0],
       data: [
+        {
+          type: ocifArrow,
+          start: [node.x, node.y],
+          end: [node.endX ?? node.x, node.endY ?? 0],
+          startMarker: 'none',
+          endMarker: 'arrowhead',
+          relation: `${node.id}-edge`,
+        },
         {
           ...nodeInfo,
           type: connectionNodeInfoPropertyName,
@@ -291,8 +303,9 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           data: [
             {
               type: '@ocwg/rel/edge' as const,
-              from: `${node.startNode.id}`,
-              to: `${node.endNode.id}`,
+              start: `${node.startNode.id}`,
+              end: `${node.endNode.id}`,
+              node: `connection:${node.id}`,
               directed: true,
             },
           ],
@@ -342,8 +355,9 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
             {
               type: '@ocwg/rel/edge' as const,
               directed: true,
-              from: `${node.startNode.id}`,
-              to: `${node.endNode.id}`,
+              start: `${node.startNode.id}`,
+              end: `${node.endNode.id}`,
+              node: `connection:${node.id}`,
             },
           ],
         };

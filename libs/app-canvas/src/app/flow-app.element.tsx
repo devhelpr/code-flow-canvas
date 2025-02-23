@@ -299,6 +299,12 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       this.canvasActionPayload = payload;
     });
 
+    // const debugInfoController = new DebugInfoController(this.rootElement);
+
+    // this.canvasApp.setOnDebugInfoHandler((debugInfo) => {
+    //   debugInfoController.sendDebugInfo(debugInfo);
+    // });
+
     let intervalCancel: any = undefined;
     let intervalPreview: any = undefined;
 

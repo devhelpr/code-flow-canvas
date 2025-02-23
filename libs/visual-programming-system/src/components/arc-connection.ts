@@ -21,6 +21,7 @@ import {
   findCircleCenter,
   getPointAngle,
   isLargeArc,
+  perpendicularDistance,
 } from './geometry/geometry';
 import { findRectangleIntersections } from './geometry/pathCalculation';
 import { ThumbConnectionController } from './thumb-connection-controller';
@@ -427,10 +428,16 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
 
     const startNode = this.nodeComponent?.startNode;
     const endNode = this.nodeComponent?.endNode;
-    const halfStartWidth = startNode?.width ? startNode.width / 2 : 50;
-    const halfStartHeight = startNode?.height ? startNode.height / 2 : 50;
-    const halfEndWidth = endNode?.width ? endNode.width / 2 : 50;
-    const halfEndHeight = endNode?.height ? endNode.height / 2 : 50;
+    const halfStartWidth = startNode?.width
+      ? startNode.width / 2 + spacingAABB
+      : 0;
+    const halfStartHeight = startNode?.height
+      ? startNode.height / 2 + spacingAABB
+      : 0;
+    const halfEndWidth = endNode?.width ? endNode.width / 2 + spacingAABB : 0;
+    const halfEndHeight = endNode?.height
+      ? endNode.height / 2 + spacingAABB
+      : 0;
 
     const startX = startNode
       ? (startNode?.x ?? 0) - bbox.x + startOffsetX - spacingAABB
@@ -439,16 +446,20 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       ? (startNode?.y ?? 0) - bbox.y + startOffsetY - spacingAABB
       : y1;
     const endX = endNode
-      ? (endNode?.x ?? 0) - bbox.x + startOffsetX + spacingAABB * 2
+      ? (endNode?.x ?? 0) - bbox.x + startOffsetX - spacingAABB
       : x2;
     const endY = endNode
-      ? (endNode?.y ?? 0) - bbox.y + startOffsetY + spacingAABB * 2
+      ? (endNode?.y ?? 0) - bbox.y + startOffsetY - spacingAABB
       : y2;
 
-    const startWidth = startNode?.width ?? 100;
-    const startHeight = startNode?.height ?? 100;
-    const endWidth = endNode?.width ?? 100;
-    const endHeight = endNode?.height ?? 100;
+    const startWidth = startNode?.width
+      ? startNode?.width + spacingAABB * 2
+      : 0;
+    const startHeight = startNode?.height
+      ? startNode?.height + spacingAABB * 2
+      : 0;
+    const endWidth = endNode?.width ? endNode?.width + spacingAABB * 2 : 0;
+    const endHeight = endNode?.height ? endNode?.height + spacingAABB * 2 : 0;
 
     const start = {
       x: startX + halfStartWidth,
@@ -532,7 +543,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       ? sortedIntersections2.filter((point) => Math.abs(point.y - endY) > 0.1)
       : sortedIntersections2;
 
-    let bestIntersection2 = validIntersections2[0];
+    let bestIntersection2 = validIntersections2?.[0] ?? bestIntersection1;
     let bestAngle2 = getPointAngle(bestIntersection2, centerX, centerY);
     for (const point of validIntersections2) {
       const angle = getPointAngle(point, centerX, centerY);
@@ -578,9 +589,19 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       const controlY = centerY + radius * Math.sin(midAngle);
       //canvas.updateControlPoint(controlX, controlY);
 
+      const distance = perpendicularDistance(
+        controlX,
+        controlY,
+        start.x,
+        start.y,
+        end.x,
+        end.y
+      );
+
       // When the path is nearly flat (very large radius), use a straight line
       // that goes from the edge to the center of the target rectangle
-      if (radius > 1000) {
+      if (distance < 0.01) {
+        //(radius > 1000) {
         // threshold for "flat" path
         const dx = end.x - start.x;
         const dy = end.y - start.y;

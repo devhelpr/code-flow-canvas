@@ -185,7 +185,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     | undefined;
 
   private rootFlowCanvas: IFlowCanvasBase<T> | undefined;
-
+  private isNodeContainer = false;
   public getRootFlowCanvas = () => this.rootFlowCanvas;
   constructor(
     rootElement: HTMLElement,
@@ -214,6 +214,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
   ) {
     super();
     this.rootFlowCanvas = rootFlowCanvas;
+    this.isNodeContainer = isNodeContainer ?? false;
     this.disableInteraction = disableInteraction ?? false;
 
     this.heightSpaceForHeaderFooterToolbars =
@@ -414,11 +415,39 @@ export class FlowCanvas<T extends BaseNodeInfo>
         return;
       }
 
-      const { pointerXPos, pointerYPos } = getPointerPos(
+      const {
+        pointerXPos,
+        pointerYPos,
+        rootX,
+        rootY,
+        eventClientX,
+        eventClientY,
+      } = getPointerPos(
         this.canvas.domElement as HTMLElement,
         rootElement,
         event
       );
+
+      /*
+        indien binnen container ... (this.isNodeContainer )
+
+          dan mouse position binnen container bepalen door:
+          - rootX/Y te vertalen naar positie in world space
+          - clientX/Y te vertalen naar positie in world space
+          - die van elkaar aftrekken
+
+          indien buiten container
+          - dan rootX/Y rechtstreeks van clientX/Y aftrekken
+          - en daarna vertalen naar world coordinates
+
+
+          verschil komt doordat de container in een ander canvas staat 
+      */
+
+      // const { x: xhelp, y: yhelp } = transformCameraSpaceToWorldSpace(
+      //   pointerXPos,
+      //   pointerYPos
+      // );
 
       // if (!this.wasMoved) {
       //   const { x, y } = transformCameraSpaceToWorldSpace(
@@ -428,7 +457,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       //   orgPointerX = x;
       //   orgPointerY = y;
       // }
-
+      //console.log('pointermove canvas', event.target);
       if (
         ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'CANVAS'].indexOf(
           (event.target as HTMLElement)?.tagName
@@ -517,19 +546,32 @@ export class FlowCanvas<T extends BaseNodeInfo>
               pointerYPos
             );
 
-            const rect = currentState?.element as IRectNodeComponent<T>;
+            const { x: rootXCamera, y: rootYCamera } =
+              transformCameraSpaceToWorldSpace(rootX, rootY);
 
+            const { x: clientXCamera, y: clientYCamera } =
+              transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+            const xpos = clientXCamera - rootXCamera;
+            const ypos = clientYCamera - rootYCamera;
+
+            const rect = currentState?.element as IRectNodeComponent<T>;
+            //console.log('pointermove', event.target);
             if (
               rect?.containerNode?.id === this.canvas.id ||
               rect?.canvasAppInstance?.canvas?.id !== this.canvas.id ||
               !rect?.canvasAppInstance?.canvas?.id
             ) {
+              if (currentState.canvasNode?.id !== this.canvas.id) {
+                return;
+              }
+
               event.preventDefault();
               event.stopPropagation();
               currentState.target.pointerMove &&
                 currentState.target.pointerMove(
-                  x,
-                  y,
+                  this.isNodeContainer ? xpos : x,
+                  this.isNodeContainer ? ypos : y,
                   currentState.element,
                   this.canvas,
                   currentState.target.interactionInfo,
@@ -639,7 +681,14 @@ export class FlowCanvas<T extends BaseNodeInfo>
       if (this.disableInteraction) {
         return;
       }
-      const { pointerXPos, pointerYPos } = getPointerPos(
+      const {
+        pointerXPos,
+        pointerYPos,
+        rootX,
+        rootY,
+        eventClientX,
+        eventClientY,
+      } = getPointerPos(
         this.canvas.domElement as HTMLElement,
         rootElement,
         event
@@ -725,10 +774,23 @@ export class FlowCanvas<T extends BaseNodeInfo>
                 }
               }
               if (!skipPointerUp) {
+                const { x: rootXCamera, y: rootYCamera } =
+                  transformCameraSpaceToWorldSpace(rootX, rootY);
+
+                const { x: clientXCamera, y: clientYCamera } =
+                  transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+                const xpos = clientXCamera - rootXCamera;
+                const ypos = clientYCamera - rootYCamera;
+
+                if (currentState.canvasNode?.id !== this.canvas.id) {
+                  this.interactionStateMachine.reset();
+                  return;
+                }
                 currentState.target.pointerUp &&
                   currentState.target.pointerUp(
-                    x,
-                    y,
+                    this.isNodeContainer ? xpos : x,
+                    this.isNodeContainer ? ypos : y,
                     currentState.element,
                     this.canvas,
                     currentState.target.interactionInfo,
@@ -762,6 +824,10 @@ export class FlowCanvas<T extends BaseNodeInfo>
         return;
       }
 
+      if (this.isNodeContainer) {
+        return;
+      }
+
       if (currentColldingElement) {
         const closestSVGElement = (
           currentColldingElement.domElement as HTMLElement
@@ -771,20 +837,27 @@ export class FlowCanvas<T extends BaseNodeInfo>
 
       currentColldingElement = undefined;
 
-      this.isMoving = false;
-      this.isClicking = false;
-      this.wasMoved = false;
-
       const currentState =
         this.interactionStateMachine.getCurrentInteractionState();
-      console.log('pointerleave canvas', event, currentState, this.canvas.id);
+      console.log(
+        'pointerleave canvas',
+        event,
+        currentState,
+        this.canvas.id,
+        this.isNodeContainer
+      );
       if (currentState?.canvasNode?.id === undefined || !event.target) {
-        console.log('pointerleave reset');
+        console.log('pointerleave reset', this.canvas.id, this.isNodeContainer);
+        this.isMoving = false;
+        this.isClicking = false;
+        this.wasMoved = false;
         this.interactionStateMachine.reset();
         return;
       } else if (currentState.canvasNode?.id !== this.canvas.id) {
+        console.log('pointerleave canvas2');
         return;
       }
+      console.log('pointerleave canvas3');
       if (
         currentState.state === InteractionState.Moving &&
         currentState.element &&
@@ -796,16 +869,21 @@ export class FlowCanvas<T extends BaseNodeInfo>
             currentState.target,
             currentState.element
           );
-
+        console.log('pointerleave canvas4');
         if (interactionState) {
           if (currentState.target?.id === this.canvas.id) {
-            //
+            console.log('pointerleave canvas5');
           } else if (
             currentState.element?.parent?.containerNode?.domElement ===
             event.target
           ) {
-            //
+            console.log('pointerleave canvas6');
           } else {
+            console.log('pointerleave canvas7 (pointerup)');
+            this.isMoving = false;
+            this.isClicking = false;
+            this.wasMoved = false;
+
             const canvasRect = (
               this.canvas.domElement as unknown as HTMLElement | SVGElement
             ).getBoundingClientRect();
@@ -1371,7 +1449,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.onCanvasAction,
       this.rootElement,
       this.theme,
-      layoutProperties?.customClassName
+      layoutProperties?.customClassName,
+      this
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
@@ -1429,7 +1508,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.onCanvasAction,
       this.rootElement,
       this.theme,
-      layoutProperties?.customClassName
+      layoutProperties?.customClassName,
+      this
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
@@ -1476,7 +1556,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       containerNode,
       this.theme,
       this.onCanvasAction,
-      this.rootElement
+      this.rootElement,
+      this
     );
     curve.connectionUpdateState = undefined;
     if (this.onCanvasUpdated) {
@@ -1552,7 +1633,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       containerNode,
       this.theme,
       this.onCanvasAction,
-      this.rootElement
+      this.rootElement,
+      this
     );
     line.connectionUpdateState = undefined;
     if (this.onCanvasUpdated) {
@@ -1794,7 +1876,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       rectInstance.containerNode,
       undefined,
       this.rootElement,
-      this.theme
+      this.theme,
+      this
     );
 
     if (!thumbNode.nodeComponent) {
@@ -1943,5 +2026,31 @@ export class FlowCanvas<T extends BaseNodeInfo>
     ) => void
   ) => {
     this.onDraggingOverNode = onDraggingOverNode;
+  };
+
+  onDebugInfoHandler?: (
+    debugInfo: Record<string, string | number | boolean>
+  ) => void;
+  setOnDebugInfoHandler = (
+    event: (debugInfo: Record<string, string | number | boolean>) => void
+  ) => {
+    this.onDebugInfoHandler = event;
+  };
+
+  lastDebugInfo: Record<string, string | number | boolean> | undefined =
+    undefined;
+  sendDebugInfo = (debugInfo: Record<string, string | number | boolean>) => {
+    const newDebugInfo = { ...this.lastDebugInfo };
+    Object.keys(debugInfo).forEach((key) => {
+      newDebugInfo[key] = debugInfo[key];
+    });
+    if (this.onDebugInfoHandler) {
+      this.onDebugInfoHandler(newDebugInfo);
+    }
+    this.lastDebugInfo = newDebugInfo;
+  };
+
+  getDebugInfoHandler = () => {
+    return this.onDebugInfoHandler;
   };
 }

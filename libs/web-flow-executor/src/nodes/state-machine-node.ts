@@ -658,6 +658,10 @@ export const createStateMachineNode = (
           undefined,
           true
         );
+        const debugHandler = canvasApp?.getDebugInfoHandler();
+        if (debugHandler) {
+          canvasAppInstance.setOnDebugInfoHandler(debugHandler);
+        }
         console.log('canvasAppInstance', canvasAppInstance.canvas.id);
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;
 

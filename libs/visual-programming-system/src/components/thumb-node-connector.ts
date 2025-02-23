@@ -11,6 +11,8 @@ import {
   thumbInnerCircleSizeClasses,
   thumbTextBaseSizeClass,
   paddingRect,
+  thumbHalfWidth,
+  thumbHalfHeight,
 } from '../constants/measures';
 import {
   InteractionState,
@@ -39,10 +41,12 @@ import { CanvasAction } from '../enums/canvas-action';
 import { getPointerPos } from '../utils/pointer-pos';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { Theme } from '../interfaces/theme';
+import { IBaseFlow } from '../canvas-app/base-flow';
 
 export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
   rootElement: HTMLElement | undefined = undefined;
   theme: Theme | undefined = undefined;
+  protected canvasApp?: IBaseFlow<T>;
   constructor(
     thumb: IThumb,
     canvasElement: DOMElementNode,
@@ -76,7 +80,8 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     containerNode?: IRectNodeComponent<T>,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement,
-    theme?: Theme
+    theme?: Theme,
+    canvasApp?: IBaseFlow<T>
   ) {
     super(
       canvasElement,
@@ -116,6 +121,7 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     }
     this.theme = theme;
     this.rootElement = rootElement;
+    this.canvasApp = canvasApp;
     this.nodeComponent.prefixIcon = thumb.prefixIcon;
     this.nodeComponent.prefixLabel = thumb.prefixLabel;
     this.nodeComponent.thumbName = thumbName;
@@ -539,76 +545,18 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
 
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
-    x: number,
-    y: number,
-    rootX: number,
-    rootY: number
+    _x: number,
+    _y: number,
+    _rootX: number,
+    _rootY: number
   ) => {
     if (!this.canvas || !this.rootElement) {
       return;
     }
 
-    // TODO: use different reference ??? maybe the node-thumb ??
-    const elementRect =
-      //connectionThumb.domElement as unknown as HTMLElement | SVGElement
-      (
-        this.nodeComponent?.domElement as unknown as HTMLElement | SVGElement
-      ).getBoundingClientRect();
-    // const rootBounds = (
-    //   this.rootElement as HTMLElement
-    // ).getBoundingClientRect();
-
-    // const rectCamera = transformCameraSpaceToWorldSpace(
-    //   elementRect.x - rootBounds.x, // window.scrollX,
-    //   elementRect.y - rootBounds.y // window.scrollY
-    // );
-
-    const rectCamera = this.containerNode
-      ? transformCameraSpaceToWorldSpace(elementRect.x, elementRect.y)
-      : transformCameraSpaceToWorldSpace(
-          elementRect.x - rootX,
-          elementRect.y - rootY
-        );
-
-    const parentX = 0;
-    const parentY = 0;
-    // if (this.containerNode) {
-    //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-    //     const parentCoordinates =
-    //       this.containerNode?.getParentedCoordinates() ?? {
-    //         x: 0,
-    //         y: 0,
-    //       };
-    //     // parentX = this.containerNode.x - paddingRect;
-    //     // parentY = this.containerNode.y - paddingRect;
-    //     parentX = parentCoordinates.x; // + paddingRect;
-    //     parentY = parentCoordinates.y + paddingRect;
-    //   }
-    // }
-
-    console.log(
-      'node-connector THUMB initiateDraggingConnection',
-      this.canvas.id,
-      this.canvas,
-      connectionThumb,
-      this.containerNode,
-      elementRect.x,
-      elementRect.y,
-      // x - rectCamera.x + parentX - paddingRect,
-      // y - rectCamera.y + parentY,
-      // x + parentX,
-      // y + parentY
-      rectCamera.x,
-      rectCamera.y
-      // parentX,
-      // parentY
-      // x,
-      // y
-    );
-
     const interactionInfoResult = pointerDown(
-      x - rectCamera.x + parentX - (this.containerNode ? 0 : paddingRect),
-      y - rectCamera.y + parentY,
+      thumbHalfWidth,
+      thumbHalfHeight,
       connectionThumb,
       this.canvas,
       this.interactionStateMachine
@@ -706,15 +654,32 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
         if (!this.canvas) {
           return;
         }
-        const { pointerXPos, pointerYPos, rootX, rootY } = getPointerPos(
+        const {
+          pointerXPos,
+          pointerYPos,
+          rootX,
+          rootY,
+          eventClientX,
+          eventClientY,
+        } = getPointerPos(
           this.canvas.domElement as HTMLElement,
           this.rootElement,
           e
         );
+
+        const { x: rootXCamera, y: rootYCamera } =
+          transformCameraSpaceToWorldSpace(rootX, rootY);
+
+        const { x: clientXCamera, y: clientYCamera } =
+          transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
         let { x, y } = transformCameraSpaceToWorldSpace(
           pointerXPos,
           pointerYPos
         );
+        const xpos = this.containerNode ? clientXCamera - rootXCamera : x;
+        const ypos = this.containerNode ? clientYCamera - rootYCamera : y;
+
         const xorg = x;
         const yorg = y;
         x = x - parentX;
@@ -724,14 +689,14 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
           this.interactionStateMachine,
           this.pathHiddenElement as unknown as IElementNode<T>,
           this.canvasElements,
-          x,
-          y,
-          x, //+ 40,
-          y,
-          x, // + 20,
-          y,
-          x, //+ 40,
-          y,
+          xpos,
+          ypos,
+          xpos,
+          ypos,
+          xpos,
+          ypos,
+          xpos,
+          ypos,
           false,
           undefined,
           this.canvasUpdated,
@@ -745,15 +710,21 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
         // Waarom is x/y kleiner dan 0?
         console.log(
           'x y',
-          event?.target,
+          e.clientX,
+          e.clientY,
           xorg,
           yorg,
           x,
           y,
+          xpos,
+          ypos,
+
           parentX,
           parentY,
-          this.canvas.domElement as HTMLElement,
-          this.rootElement
+          pointerXPos,
+          pointerYPos,
+          rootX,
+          rootY
         );
         if (curve.nodeComponent?.connectionEndNodeThumb) {
           const circleDomElement =
@@ -825,8 +796,10 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
           this.initiateDraggingConnection(
             curve.endPointElement,
             //curve.nodeComponent.connectionEndNodeThumb,
-            xorg + parentX,
-            yorg + parentY,
+            xpos,
+            ypos,
+            // xorg + parentX,
+            // yorg + parentY,
             rootX,
             rootY
           );

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { IBaseFlow } from '../canvas-app/base-flow';
 import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
@@ -43,7 +44,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    canvasApp?: IBaseFlow<T>
   ) {
     super(
       canvas,
@@ -65,7 +67,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       containerNode,
       theme,
       setCanvasAction,
-      rootElement
+      rootElement,
+      canvasApp
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
@@ -140,7 +143,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       undefined,
       undefined,
       rootElement,
-      this
+      this,
+      this.canvasApp
     );
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode.nodeComponent is undefined');
@@ -212,7 +216,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       undefined,
       undefined,
       rootElement,
-      this
+      this,
+      this.canvasApp
     );
     if (!endPointNode.nodeComponent) {
       throw new Error('endPointNode.nodeComponent is undefined');

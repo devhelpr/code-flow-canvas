@@ -15,6 +15,9 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
   },
+  worker: {
+    format: 'es',
+  },
   server: {
     port: 4200,
     host: 'localhost',

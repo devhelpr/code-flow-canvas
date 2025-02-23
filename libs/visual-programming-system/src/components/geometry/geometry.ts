@@ -59,3 +59,22 @@ export function getPointAngle(
 ): number {
   return Math.atan2(point.y - centerY, point.x - centerX);
 }
+
+export function perpendicularDistance(
+  px: number,
+  py: number, // Punt waarvoor de afstand berekend wordt
+  x1: number,
+  y1: number, // Beginpunt van de lijn
+  x2: number,
+  y2: number // Eindpunt van de lijn
+): number {
+  // Verschillen in x en y tussen de twee lijnpunten
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+
+  // Berekening volgens de formule
+  const numerator = Math.abs(dy * px - dx * py + x2 * y1 - y2 * x1);
+  const denominator = Math.sqrt(dx * dx + dy * dy);
+
+  return numerator / denominator;
+}

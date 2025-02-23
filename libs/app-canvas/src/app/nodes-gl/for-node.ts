@@ -159,6 +159,10 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           undefined,
           true
         );
+        const debugHandler = canvasApp?.getDebugInfoHandler();
+        if (debugHandler) {
+          canvasAppInstance.setOnDebugInfoHandler(debugHandler);
+        }
 
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;
         canvasAppInstance.compositons = canvasApp.compositons;

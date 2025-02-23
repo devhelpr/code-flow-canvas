@@ -15,8 +15,8 @@ export type OCWGEdge = {
   data: {
     type: typeof ocifRelationEdge;
     directed?: boolean;
-    from: string;
-    to: string;
+    start: string;
+    end: string;
   }[];
 };
 export type OCWGRelation = OCWGGroup | OCWGEdge;

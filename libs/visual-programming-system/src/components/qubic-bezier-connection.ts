@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { IBaseFlow } from '../canvas-app/base-flow';
 import { thumbHalfHeight, thumbHalfWidth } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
@@ -43,7 +44,8 @@ export class CubicBezierConnection<
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    canvasApp?: IBaseFlow<T>
   ) {
     super(
       canvas,
@@ -65,7 +67,8 @@ export class CubicBezierConnection<
       containerNode,
       theme,
       setCanvasAction,
-      rootElement
+      rootElement,
+      canvasApp
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
@@ -144,7 +147,8 @@ export class CubicBezierConnection<
       undefined,
       undefined,
       rootElement,
-      this
+      this,
+      this.canvasApp
     );
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode nodeComponent is undefined');
@@ -198,7 +202,8 @@ export class CubicBezierConnection<
       undefined,
       undefined,
       rootElement,
-      this
+      this,
+      this.canvasApp
     );
 
     if (!endPointNode.nodeComponent) {

@@ -225,4 +225,13 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
       isCancelling: boolean
     ) => void
   ) => void;
+
+  setOnDebugInfoHandler: (
+    event: (debugInfo: Record<string, string | number | boolean>) => void
+  ) => void;
+
+  sendDebugInfo: (debugInfo: Record<string, string | number | boolean>) => void;
+  getDebugInfoHandler: () =>
+    | ((debugInfo: Record<string, string | number | boolean>) => void)
+    | undefined;
 }

@@ -385,4 +385,18 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
   ) => {
     //
   };
+
+  setOnDebugInfoHandler = (
+    _event: (debugInfo: Record<string, string | number | boolean>) => void
+  ) => {
+    //
+  };
+
+  sendDebugInfo = (_debugInfo: Record<string, string | number | boolean>) => {
+    //
+  };
+
+  getDebugInfoHandler = () => {
+    return undefined;
+  };
 }

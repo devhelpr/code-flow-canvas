@@ -1,6 +1,7 @@
 import { Flow } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import flowData from './counter.json';
+import { registerNodes } from '../custom-nodes/register-nodes';
 
 export function examplePage() {
   const appElement = document.getElementById('app-root')!;
@@ -19,7 +20,15 @@ export function examplePage() {
     };
     appElement.classList.add('hidden');
     pageElement.classList.remove('hidden');
-    new module.FlowAppElement('#page-app-root', storageProvider, true, 20, 32);
+    new module.FlowAppElement(
+      '#page-app-root',
+      storageProvider,
+      false,
+      20,
+      32,
+      undefined,
+      registerNodes
+    );
     //result.destroy();
   });
 }

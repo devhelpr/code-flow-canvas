@@ -576,4 +576,18 @@ export class CompositionRuntimeFlowContext<T extends BaseNodeInfo>
   override getTempData = (key: string) => {
     return this.canvasApp.getTempData(key);
   };
+
+  setOnDebugInfoHandler = (
+    _event: (debugInfo: Record<string, string | number | boolean>) => void
+  ) => {
+    //
+  };
+
+  sendDebugInfo = (_debugInfo: Record<string, string | number | boolean>) => {
+    //
+  };
+
+  getDebugInfoHandler = () => {
+    return undefined;
+  };
 }

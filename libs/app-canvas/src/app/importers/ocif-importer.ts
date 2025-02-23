@@ -4,7 +4,8 @@ import {
   connectionNodeInfoPropertyName,
   nodeInfoPropertyName,
 } from '../exporters/export-ocwg';
-import { ocifSchema } from '../consts/ocif';
+import { ocifArrow, ocifSchema, ocifToCodeFlowCanvas } from '../consts/ocif';
+import { OCIFEdgeRelation } from '../interfaces/ocif';
 
 let rootOCIF: any = undefined;
 
@@ -13,9 +14,13 @@ function isSupportedOCIFNode(ocifNode: any): boolean {
     ocifNode.data &&
     Array.isArray(ocifNode.data) &&
     ocifNode.data.some(
-      (d: any) => d.type === 'rect-node' || d.type === '@ocwg/node/rect'
+      (d: any) => d.type === 'rect-node' || ocifToCodeFlowCanvas[d.type]
     )
   );
+}
+
+function getFirstNodeType(ocifNode: any): string {
+  return ocifNode.data?.[0].type ?? '';
 }
 
 function isSupportedOCIFConnectionNode(ocifNode: any): boolean {
@@ -23,7 +28,7 @@ function isSupportedOCIFConnectionNode(ocifNode: any): boolean {
     ocifNode.data &&
     Array.isArray(ocifNode.data) &&
     ocifNode.data.some(
-      (d: any) => d.type === 'arrow-node' || d.type === '@ocwg/node/arrow'
+      (d: any) => d.type === 'arrow-node' || d.type === ocifArrow
     )
   );
 }
@@ -47,6 +52,28 @@ function isValidCodeFlowCanvasConnection(node: any): boolean {
   return false;
 }
 
+function getEdgeRelationById(
+  ocif: any,
+  relationId: string
+): OCIFEdgeRelation | undefined {
+  if (!ocif.relations || !relationId) {
+    return undefined;
+  }
+  const data = ocif.relations.find((r: any) => r.id === relationId);
+  if (data) {
+    const extension = getExtenstionData(data, '@ocwg/rel/edge');
+    return {
+      id: data.id,
+      type: extension.type,
+      start: extension.start,
+      end: extension.end,
+      rel: extension.rel,
+      node: extension.node,
+    };
+  }
+  return undefined;
+}
+
 function getNodeInfoFromOCIFNode(node: any): NodeInfo | false {
   const nodeInfo = node.data.find((d: any) => d.type === nodeInfoPropertyName);
   if (nodeInfo) {
@@ -63,6 +90,7 @@ function getConnectionInfoFromOCIFNode(node: any): any | false {
   const nodeInfo = node.data.find(
     (d: any) => d.type === connectionNodeInfoPropertyName
   );
+
   if (nodeInfo) {
     const clonedNodeInfo = structuredClone(nodeInfo);
     delete clonedNodeInfo.type;
@@ -81,17 +109,18 @@ function getConnectionInfoFromOCIFNode(node: any): any | false {
     };
   } else {
     if (node.data && Array.isArray(node.data)) {
-      const data = node.data.find(
-        (d: any) => d.type === 'arrow-node' || d.type === '@ocwg/node/arrow'
-      );
+      const arrowData = getExtenstionData(node, ocifArrow);
+      const data = getEdgeRelationById(rootOCIF, arrowData.relation);
       if (data) {
         return {
-          endX: node.position?.[0],
-          endY: node.position?.[1],
-          startNodeId: data.from,
-          endNodeId: data.to,
-          startThumbName: data.start?.port_name ?? 'input-output',
-          endThumbName: data.end?.port_name ?? 'input-output',
+          x: data.start?.[0],
+          y: data.start?.[1],
+          endX: data.end?.[0],
+          endY: data.end?.[1],
+          startNodeId: data.start,
+          endNodeId: data.end,
+          startThumbName: 'input-output',
+          endThumbName: 'input-output',
           lineType: 'Straight',
           layer: 1,
           nodeInfo: {},
@@ -161,9 +190,8 @@ export const importOCIF = (ocif: any) => {
           });
         }
       } else if (node.data && isSupportedOCIFNode(node)) {
-        const data =
-          getExtenstionData(node, 'rect-node') ??
-          getExtenstionData(node, '@ocwg/node/rect');
+        const dataType = getFirstNodeType(node);
+        const data = getExtenstionData(node, dataType);
         let text = '';
         const resource = getResourceById(ocif, node.resource);
         if (resource) {
@@ -180,7 +208,7 @@ export const importOCIF = (ocif: any) => {
           height: node.size?.[1] ?? 100,
           nodeType: 'Shape',
           nodeInfo: {
-            type: 'rect-node',
+            type: ocifToCodeFlowCanvas[dataType] ?? 'rect-node',
             strokeColor: data?.strokeColor ?? 'black',
             fillColor: data?.fillColor ?? 'white',
             strokeWidth: data?.strokeWidth ?? 2,

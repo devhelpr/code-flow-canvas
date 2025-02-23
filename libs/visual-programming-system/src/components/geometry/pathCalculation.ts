@@ -40,7 +40,7 @@ export function findRectangleIntersections(
   radius: number
 ): Point[] {
   const points: Point[] = [];
-
+  if (rectWidth <= 0 || rectHeight <= 0) return [{ x: rectX, y: rectY }];
   // Check each edge of the rectangle
   const edges = [
     { x1: rectX, y1: rectY, x2: rectX + rectWidth, y2: rectY }, // top
