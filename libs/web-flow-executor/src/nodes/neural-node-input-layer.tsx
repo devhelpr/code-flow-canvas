@@ -115,7 +115,7 @@ export const getNeuralNodeInputLayerNode: NodeTaskFactory<NodeInfo> = (
           const input = layerInput.inputs[loop];
           // loop door alle hidden layers
           const inputWeight =
-            nodeComponent.nodeInfo?.formValues?.['weights']?.[loopHidden][
+            nodeComponent.nodeInfo?.formValues?.['weights']?.[loopHidden]?.[
               loop
             ] ?? 0;
           outputs[loopHidden].push(inputWeight * input);

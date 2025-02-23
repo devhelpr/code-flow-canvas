@@ -150,13 +150,36 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
       });
 
       const outputErrors = [];
+      const costFunction =
+        nodeComponent.nodeInfo?.formValues?.['cost-function'];
+
       let totalError = 0;
-      for (let i = 0; i < currentLayerNodeCount; i++) {
-        const error = Math.pow(layerInput.expectedOutput?.[i] - outputs[i], 2);
-        outputErrors.push(error);
-        totalError += error;
+      if (costFunction === 'categorical-crossentropy') {
+        // function categoricalCrossentropy(yTrue: number[], yPred: number[]): number {
+        //   const epsilon = 1e-9;
+        //   return -yTrue.reduce(
+        //     (sum, yi, i) => sum + yi * Math.log(yPred[i] + epsilon),
+        //     0
+        //   );
+        // }
+
+        outputs.forEach((output, index) => {
+          const error = layerInput.expectedOutput[index] * Math.log(output);
+          outputErrors.push(error);
+          totalError += error;
+        });
+        totalError *= -1;
+      } else {
+        for (let i = 0; i < currentLayerNodeCount; i++) {
+          const error = Math.pow(
+            layerInput.expectedOutput?.[i] - outputs[i],
+            2
+          );
+          outputErrors.push(error);
+          totalError += error;
+        }
+        totalError *= 0.5;
       }
-      totalError *= 0.5;
 
       const outputData = {
         hiddenLayers: {
@@ -310,6 +333,8 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
               initalValues?.['neural-layer-node-count'] ?? 1,
             ['activation-function']:
               initalValues?.['activation-function'] ?? 'relu',
+            ['cost-function']:
+              initalValues?.['cost-function'] ?? 'mean-squared-error',
           },
         },
 
@@ -349,7 +374,7 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
             fieldName: 'neural-layer-node-count',
             label: 'Node count',
             min: 1,
-            max: 10000,
+            max: 256,
             step: 1,
             value: initalValues?.['neural-layer-node-count'] ?? 1,
             onChange: (value: string) => {
@@ -385,6 +410,32 @@ export const getNeuralNodeOutputLayerNode: NodeTaskFactory<NodeInfo> = (
               nodeComponent.nodeInfo.formValues = {
                 ...nodeComponent.nodeInfo.formValues,
                 ['activation-function']: value,
+              };
+              console.log('onChange', nodeComponent.nodeInfo);
+              if (updated) {
+                updated();
+              }
+            },
+          },
+          {
+            fieldType: FormFieldType.Select,
+            fieldName: 'cost-function',
+            label: 'Cost function',
+            value: initalValues?.['cost-function'] ?? 'mean-squared-error',
+            options: [
+              { label: 'mean-squared-error', value: 'mean-squared-error' },
+              {
+                label: 'categorical-crossentropy',
+                value: 'categorical-crossentropy',
+              },
+            ],
+            onChange: (value: string) => {
+              if (!nodeComponent || !nodeComponent.nodeInfo) {
+                return;
+              }
+              nodeComponent.nodeInfo.formValues = {
+                ...nodeComponent.nodeInfo.formValues,
+                ['cost-function']: value,
               };
               console.log('onChange', nodeComponent.nodeInfo);
               if (updated) {

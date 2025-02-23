@@ -375,7 +375,7 @@ export const getNeuralNodeHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
             fieldName: 'neural-layer-node-count',
             label: 'Node count',
             min: 1,
-            max: 10000,
+            max: 256,
             step: 1,
             value: initalValues?.['neural-layer-node-count'] ?? 1,
             onChange: (value: string) => {

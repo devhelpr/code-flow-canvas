@@ -20,6 +20,10 @@ import {
   ActivationFunctionType,
   deriviateActivationFunction,
 } from './neural-network-utils/activation-functions';
+import {
+  NeuralNetworkLayerTrainingSample,
+  NodeWeightsBias,
+} from './neural-network-utils/types';
 
 export const neuralNodeTrainOutputLayerName = 'neural-node-train-output-layer';
 const thumbs = [
@@ -158,6 +162,19 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
           const orgWeights = weights.map((row: number[]) => [...row]);
 
           const hiddenOutputs = layerInput.hiddenLayers[hiddenLayerName];
+
+          const weightsAndBiasesPerNodeInLayer: NodeWeightsBias[] = [];
+          for (let i = 0; i < currentLayerNodeCount; i++) {
+            const weightsAndBiases: NodeWeightsBias = {
+              weights: new Array(inputLayerNodeCount).fill(0),
+              bias: 0,
+              count: 0,
+            };
+            // for (let j = 0; j < inputLayerNodeCount; j++) {
+            //   weightsAndBiases.weights.push(0);
+            // }
+            weightsAndBiasesPerNodeInLayer.push(weightsAndBiases);
+          }
           for (let i = 0; i < currentLayerNodeCount; i++) {
             for (let j = 0; j < inputLayerNodeCount; j++) {
               let deltaWeight = outputDeltas[i] * hiddenOutputs[j];
@@ -169,15 +186,26 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
                 nodeHiddenLayer?.nodeInfo?.formValues?.['weights']?.[i][j] !==
                 undefined
               ) {
-                nodeHiddenLayer.nodeInfo.formValues['weights'][i][j] -=
-                  deltaWeight;
+                weightsAndBiasesPerNodeInLayer[i].weights[j] =
+                  nodeHiddenLayer.nodeInfo.formValues['weights'][i][j] -=
+                    deltaWeight;
+                // nodeHiddenLayer.nodeInfo.formValues['weights'][i][j] -=
+                //   deltaWeight;
               }
             }
             const deltaBias = learningRate * outputDeltas[i];
             if (neuralLayer.nodeInfo?.formValues?.['bias']?.[i] !== undefined) {
-              neuralLayer.nodeInfo.formValues['bias'][i] -= deltaBias;
+              weightsAndBiasesPerNodeInLayer[i].bias =
+                neuralLayer.nodeInfo.formValues['bias'][i] -= deltaBias;
+              //neuralLayer.nodeInfo.formValues['bias'][i] -= deltaBias;
             }
           }
+
+          const layers: NeuralNetworkLayerTrainingSample = {
+            ...layerInput.layers,
+            [neuralLayer?.nodeInfo?.formValues['neural-layer-name']]:
+              weightsAndBiasesPerNodeInLayer,
+          };
           const output = {
             ...(input as unknown as any),
             training: layerInput.training,
@@ -188,6 +216,7 @@ export const getNeuralNodeTrainOutputLayerNode: NodeTaskFactory<NodeInfo> = (
             outputDeltas: outputDeltas,
             orgWeightsHiddenToOutput: orgWeights,
             connectionHistory: layerInput.connectionHistory,
+            layers,
           };
           return {
             result: output,

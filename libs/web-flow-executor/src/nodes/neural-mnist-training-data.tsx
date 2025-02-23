@@ -12,6 +12,29 @@ import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
 import { Mnist } from './neural-network-utils/mnist';
 import { getNodesByNeuralLayerType } from './neural-network-utils/get-neural-node';
+import { NeuralNetworkLayerTrainingSample } from './neural-network-utils/types';
+
+/*
+
+  neural layer structure:
+
+
+  inputs:
+
+    has [input node count] weights  for each node in the connected hidden layer
+    
+
+  hidden layer:
+  
+    has [hidden node count] weights for each node in the connected hidden or output layer
+    has bias for eac node in this layer
+    
+
+  output layer:
+
+    has bias for each node in this layer
+    
+*/
 
 export const neuralMnistTrainingDataName = 'neural-mnist-training-data';
 const thumbs = [
@@ -45,6 +68,9 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
     return;
   };
   let mnist: Mnist | undefined = undefined;
+
+  let trainedWeightsPerBatch: NeuralNetworkLayerTrainingSample[] = [];
+
   const computeAsync = (
     input: string,
     _loopIndex?: number,
@@ -150,6 +176,10 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
         - continue with the next batch
 
         - eerste stap om hier te komen: gewichten niet meer updaten tijdens backward propagation maar hier opvangen en dan updaten
+
+          - nu wordt direct de formValues bijgewerkt
+          - ipv daarvan : in de output in layers sectie met node layer-name de weights/biases doorsturen
+        
       */
 
       const maxProgress = maxIndex * maxEpochs;
@@ -158,6 +188,344 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
       if (nodeHTMLElement) {
         nodeHTMLElement.innerHTML = `training ${progress.toFixed(2)}%`;
       }
+      trainedWeightsPerBatch.push(inputAsObject.layers);
+      if (currentIndex % 32 === 0) {
+        // 32 is batch size
+
+        // TODO : calculate new weights and biases here .. determine average
+        //    store per layer-node the weights and biases
+
+        /*
+          the adjust weights and node are in the layers object
+            .. stored for the linked layer connected to the training-node
+
+
+
+        */
+
+        const inputNodes = getNodesByNeuralLayerType(
+          'neural-node-input-layer',
+          canvasAppInstance!
+        );
+
+        const hiddenNodes = getNodesByNeuralLayerType(
+          'neural-node-hidden-layer',
+          canvasAppInstance!
+        );
+
+        const outputNodes = getNodesByNeuralLayerType(
+          'neural-node-output-layer',
+          canvasAppInstance!
+        );
+
+        if (inputNodes && hiddenNodes && outputNodes) {
+          const inputNames: string[] = [];
+          const hiddenNames: string[] = [];
+          const outputNames: string[] = [];
+
+          inputNodes.forEach((inputNode) => {
+            inputNames.push(
+              inputNode.nodeInfo!.formValues['neural-layer-name']
+            );
+          });
+          hiddenNodes.forEach((hiddenNode) => {
+            hiddenNames.push(
+              hiddenNode.nodeInfo!.formValues['neural-layer-name']
+            );
+          });
+          outputNodes.forEach((outputNode) => {
+            outputNames.push(
+              outputNode.nodeInfo!.formValues['neural-layer-name']
+            );
+          });
+
+          const layerWeights: NeuralNetworkLayerTrainingSample = {};
+
+          trainedWeightsPerBatch.forEach((layer) => {
+            // inputNames.forEach((layerName) => {
+            //   if (layer[layerName]) {
+            //     const nodesWeightsBias = layer[layerName];
+            //     if (!layerWeights[layerName]) {
+            //       layerWeights[layerName] = new Array(
+            //         nodesWeightsBias.length
+            //       ).fill({
+            //         weights: new Array(nodesWeightsBias[0].weights.length).fill(
+            //           0
+            //         ),
+            //         bias: 0,
+            //         count: 0,
+            //       });
+            //     }
+            //     for (let i = 0; i < nodesWeightsBias.length; i++) {
+            //       const neuralNetworkLayerTrainingSample = nodesWeightsBias[i];
+            //       for (
+            //         let j = 0;
+            //         j < neuralNetworkLayerTrainingSample.weights.length;
+            //         j++
+            //       ) {
+            //         const weight = neuralNetworkLayerTrainingSample.weights[j];
+            //         layerWeights[layerName][i].weights[j] += weight;
+            //       }
+            //       layerWeights[layerName][i].count += 1;
+            //     }
+            //   }
+            // });
+
+            hiddenNames.forEach((layerName) => {
+              if (layer[layerName]) {
+                const nodesWeightsBias = layer[layerName];
+                if (!layerWeights[layerName]) {
+                  layerWeights[layerName] = new Array(
+                    nodesWeightsBias.length
+                  ).fill({});
+                  layerWeights[layerName] = layerWeights[layerName].map(() => {
+                    return {
+                      weights: new Array(
+                        nodesWeightsBias[0].weights.length
+                      ).fill(0),
+                      bias: 0,
+                      count: 0,
+                    };
+                  });
+                }
+                for (let i = 0; i < nodesWeightsBias.length; i++) {
+                  const neuralNetworkLayerTrainingSample = nodesWeightsBias[i];
+                  for (
+                    let j = 0;
+                    j < neuralNetworkLayerTrainingSample.weights.length;
+                    j++
+                  ) {
+                    const weight = neuralNetworkLayerTrainingSample.weights[j];
+                    layerWeights[layerName][i].weights[j] += weight;
+                  }
+                  layerWeights[layerName][i].bias +=
+                    neuralNetworkLayerTrainingSample.bias;
+                  layerWeights[layerName][i].count += 1;
+                }
+              }
+            });
+
+            outputNames.forEach((layerName) => {
+              if (layer[layerName]) {
+                const nodesWeightsBias = layer[layerName];
+                if (!layerWeights[layerName]) {
+                  layerWeights[layerName] = new Array(
+                    nodesWeightsBias.length
+                  ).fill({});
+                  layerWeights[layerName] = layerWeights[layerName].map(() => {
+                    return {
+                      weights: new Array(
+                        nodesWeightsBias[0].weights.length
+                      ).fill(0),
+                      bias: 0,
+                      count: 0,
+                    };
+                  });
+                }
+                for (let i = 0; i < nodesWeightsBias.length; i++) {
+                  const neuralNetworkLayerTrainingSample = nodesWeightsBias[i];
+                  for (
+                    let j = 0;
+                    j < neuralNetworkLayerTrainingSample.weights.length;
+                    j++
+                  ) {
+                    const weight = neuralNetworkLayerTrainingSample.weights[j];
+                    layerWeights[layerName][i].weights[j] += weight;
+                  }
+                  layerWeights[layerName][i].bias +=
+                    neuralNetworkLayerTrainingSample.bias;
+                  layerWeights[layerName][i].count += 1;
+                }
+              }
+            });
+
+            // inputNodes.forEach((inputNode) => {
+            //   // input layer
+            //   const layer =
+            //     layerWeights[
+            //       inputNode.nodeInfo!.formValues['neural-layer-name']
+            //     ];
+            //   if (layer) {
+            //     for (let i = 0; i < layer.length; i++) {
+            //       for (let j = 0; j < layer[i].weights.length; j++) {
+            //         inputNode.nodeInfo!.formValues['weights'][i] =
+            //           layer[i].weights[j] / layer[i].count;
+            //       }
+            //       inputNode.nodeInfo!.formValues['bias'] =
+            //         layer[i].bias / layer[i].count;
+            //     }
+            //   }
+            // });
+
+            // hiddenNodes.forEach((hiddenNode) => {
+            //   const layer =
+            //     layerWeights[
+            //       hiddenNode.nodeInfo!.formValues['neural-layer-name']
+            //     ];
+            //   if (layer) {
+            //     for (let i = 0; i < layer.length; i++) {
+            //       for (let j = 0; j < layer[i].weights.length; j++) {
+            //         hiddenNode.nodeInfo!.formValues['weights'][i] =
+            //           layer[i].weights[j] / layer[i].count;
+            //       }
+            //       hiddenNode.nodeInfo!.formValues['bias'] =
+            //         layer[i].bias / layer[i].count;
+            //     }
+            //   }
+            // });
+            // outputNodes.forEach((outputNode) => {
+            //   const layer =
+            //     layerWeights[
+            //       outputNode.nodeInfo!.formValues['neural-layer-name']
+            //     ];
+            //   if (layer) {
+            //     for (let i = 0; i < layer.length; i++) {
+            //       for (let j = 0; j < layer[i].weights.length; j++) {
+            //         outputNode.nodeInfo!.formValues['weights'][i] =
+            //           layer[i].weights[j] / layer[i].count;
+            //       }
+            //       outputNode.nodeInfo!.formValues['bias'] =
+            //         layer[i].bias / layer[i].count;
+            //     }
+            //   }
+            // });
+
+            inputNodes.forEach((inputNode) => {
+              // input layer
+              const inputLayerNodeCount =
+                parseInt(
+                  inputNode.nodeInfo?.formValues['neural-layer-node-count']
+                ) ?? 0;
+              inputNode.nodeInfo!.formValues['weights'] = [];
+
+              let hiddenOrOutputLayerNodeCount = 0;
+              let hiddenLayerName = '';
+              inputNode.connections?.forEach((connection) => {
+                if (
+                  connection.startNode?.id === inputNode.id &&
+                  (connection.endNode?.nodeInfo?.type ===
+                    'neural-node-hidden-layer' ||
+                    connection.endNode?.nodeInfo?.type ===
+                      'neural-node-output-layer') &&
+                  connection.endNode?.nodeInfo?.formValues
+                ) {
+                  hiddenOrOutputLayerNodeCount =
+                    parseInt(
+                      connection.endNode.nodeInfo.formValues[
+                        'neural-layer-node-count'
+                      ]
+                    ) ?? 0;
+                  hiddenLayerName =
+                    connection.endNode.nodeInfo.formValues['neural-layer-name'];
+                }
+              });
+
+              const layer = layerWeights[hiddenLayerName];
+              if (layer) {
+                let loopHidden = 0;
+                while (loopHidden < hiddenOrOutputLayerNodeCount) {
+                  const layerNode = layer[loopHidden];
+
+                  inputNode.nodeInfo?.formValues['weights']?.push([]);
+                  let loop = 0;
+                  while (loop < inputLayerNodeCount) {
+                    inputNode.nodeInfo?.formValues['weights'][loopHidden].push(
+                      layerNode.weights[loop] / layerNode.count
+                    );
+                    loop++;
+                  }
+                  loopHidden++;
+                }
+              }
+            });
+
+            hiddenNodes.forEach((hiddenNode) => {
+              const hiddenLayerNodeCount =
+                parseInt(
+                  hiddenNode.nodeInfo?.formValues['neural-layer-node-count']
+                ) ?? 0;
+
+              hiddenNode.nodeInfo!.formValues['weights'] = [];
+              const currentHiddenLayerName =
+                hiddenNode.nodeInfo?.formValues['neural-layer-name'];
+
+              let hiddenOrOutputLayerNodeCount = 0;
+              let hiddenLayerName = '';
+              hiddenNode.connections?.forEach((connection) => {
+                if (
+                  connection.startNode?.id === hiddenNode.id &&
+                  (connection.endNode?.nodeInfo?.type ===
+                    'neural-node-hidden-layer' ||
+                    connection.endNode?.nodeInfo?.type ===
+                      'neural-node-output-layer') &&
+                  connection.endNode?.nodeInfo?.formValues
+                ) {
+                  hiddenOrOutputLayerNodeCount =
+                    parseInt(
+                      connection.endNode.nodeInfo.formValues[
+                        'neural-layer-node-count'
+                      ]
+                    ) ?? 0;
+                  hiddenLayerName =
+                    connection.endNode.nodeInfo.formValues['neural-layer-name'];
+                }
+              });
+              const layer = layerWeights[hiddenLayerName];
+              if (layer) {
+                let loopHidden = 0;
+                while (loopHidden < hiddenOrOutputLayerNodeCount) {
+                  const layerNode = layer[loopHidden];
+                  hiddenNode.nodeInfo?.formValues['weights']?.push([]);
+                  let loop = 0;
+                  while (loop < hiddenLayerNodeCount) {
+                    hiddenNode.nodeInfo?.formValues['weights'][loopHidden].push(
+                      layerNode.weights[loop] / layerNode.count
+                    );
+                    loop++;
+                  }
+                  loopHidden++;
+                }
+              }
+              const biasLayer = layerWeights[currentHiddenLayerName];
+              if (biasLayer) {
+                hiddenNode.nodeInfo!.formValues['bias'] = [];
+                let loop = 0;
+                while (loop < hiddenLayerNodeCount) {
+                  const layerNode = biasLayer[loop];
+                  hiddenNode.nodeInfo?.formValues['bias']?.push(
+                    layerNode.bias / layerNode.count
+                  );
+                  loop++;
+                }
+              }
+            });
+
+            outputNodes.forEach((outputNode) => {
+              const outputLayerNodeCount =
+                parseInt(
+                  outputNode.nodeInfo!.formValues['neural-layer-node-count']
+                ) ?? 0;
+              const outputLayerName =
+                outputNode.nodeInfo!.formValues['neural-layer-name'];
+              const layer = layerWeights[outputLayerName];
+              if (layer) {
+                outputNode.nodeInfo!.formValues['bias'] = [];
+                let loop = 0;
+                while (loop < outputLayerNodeCount) {
+                  const layerNode = layer[loop];
+                  outputNode.nodeInfo?.formValues['bias']?.push(
+                    layerNode.bias / layerNode.count
+                  );
+                  loop++;
+                }
+              }
+            });
+          });
+        }
+
+        trainedWeightsPerBatch = [];
+      }
+
       const inputData: any = {
         inputs: mnist.structuredData.shuffledData[currentIndex].input,
         expectedOutput:
@@ -378,6 +746,8 @@ export const getNeuralMnistTrainingDataNode: NodeTaskFactory<NodeInfo> = (
         if (nodeHTMLElement) {
           nodeHTMLElement.innerHTML = 'MNist loaded';
         }
+
+        trainedWeightsPerBatch = [];
 
         const inputData: any = {
           inputs: mnist.structuredData.shuffledData[0].input,
