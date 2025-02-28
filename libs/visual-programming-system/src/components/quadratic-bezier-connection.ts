@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
@@ -99,29 +98,10 @@ export class QuadraticBezierConnection<
       });
     };
 
-    function setPosition(
-      element: INodeComponent<T>,
-      x: number,
-      y: number,
-      updateConnection = true
-    ) {
+    function setPosition(element: INodeComponent<T>, x: number, y: number) {
       (
         element.domElement as unknown as HTMLElement | SVGElement
       ).style.transform = `translate(${x}px, ${y}px)`;
-
-      if (!updateConnection) {
-        return;
-      }
-
-      // update the connection of this thumb
-      if (element.parent && element.parent.update) {
-        element.parent.update(
-          element.parent,
-          x + thumbHalfWidth,
-          y + thumbHalfHeight,
-          element
-        );
-      }
     }
     const startPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
@@ -180,11 +160,8 @@ export class QuadraticBezierConnection<
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      // if (this.nodeComponent?.startNode) {
-      //   startPointNode.setDisableInteraction();
-      // }
 
-      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
+      setPosition(target, x, y);
       return true;
     };
     this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
@@ -239,34 +216,17 @@ export class QuadraticBezierConnection<
       y?: number,
       initiator?: INodeComponent<T>
     ) => {
-      console.log('endPointNode quadratic update', target, x, y, initiator);
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
-      //console.log('endPointNode.nodeComponent.update', x, y);
-      // if (this.nodeComponent?.endNode) {
-      //   endPointNode.setDisableInteraction();
-      // }
-      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
+
+      setPosition(target, x, y);
       return true;
     };
     this.svgParent?.domElement.after(endPointNode.nodeComponent.domElement);
 
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
-
-    // createEffect(() => {
-    //   const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
-    //   if (!startPointNode.nodeComponent || !endPointNode.nodeComponent) {
-    //     return;
-    //   }
-    //   (
-    //     startPointNode.nodeComponent.domElement as unknown as SVGElement
-    //   ).style.display = visibility ? 'block' : 'none';
-    //   (
-    //     endPointNode.nodeComponent.domElement as unknown as SVGElement
-    //   ).style.display = visibility ? 'block' : 'none';
-    // });
 
     this.startPointElement = startPointNode.nodeComponent;
     this.endPointElement = endPointNode.nodeComponent;

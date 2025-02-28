@@ -396,22 +396,6 @@ export class Connection<T extends BaseNodeInfo> {
             elementRect.y - rootY
           );
 
-      // let parentX = 0;
-      // let parentY = 0;
-      // if (this.containerNode) {
-      //   if (this.containerNode && this.containerNode?.getParentedCoordinates) {
-      //     const parentCoordinates =
-      //       this.containerNode?.getParentedCoordinates() ?? {
-      //         x: 0,
-      //         y: 0,
-      //       };
-      //     // parentX = this.containerNode.x ;
-      //     // parentY = this.containerNode.y;
-      //     parentX = parentCoordinates.x;
-      //     parentY = parentCoordinates.y;
-      //   }
-      // }
-
       const interactionInfoResult = pointerDown<T>(
         this.containerNode
           ? xpos - this.points.beginX
@@ -673,13 +657,6 @@ export class Connection<T extends BaseNodeInfo> {
         this.points.cx2 = end.cx;
         this.points.cy2 = end.cy;
       } else {
-        // if (initiator.nodeType === NodeType.Connection) {
-        //   if (!connection.startNode && connection.endNode) {
-        //     console.log('CONNECTion without startNode with endNode');
-        //   } else if (connection.startNode && connection.endNode) {
-        //     console.log('CONNECTion with startNode with endNode');
-        //   }
-        // }
         const isStaticStart = connection.startNode?.isStaticPosition ?? false;
         const isStaticEnd = connection.endNode?.isStaticPosition ?? false;
         const diffC1x = this.points.cx1 - this.points.beginX;
@@ -739,42 +716,12 @@ export class Connection<T extends BaseNodeInfo> {
           this.cssClasses.draggingPointerNone
         );
       }
-      if (this.nodeComponent?.controlPoints?.length) {
-        // const { offsetX: startOffsetX, offsetY: startOffsetY } =
-        //   onGetConnectionToThumbOffset(
-        //     ControlAndEndPointNodeType.start,
-        //     this.nodeComponent?.startNodeThumb?.thumbType ??
-        //       (this.nodeComponent.isAnnotationConnection
-        //         ? ThumbType.Center
-        //         : ThumbType.None)
-        //   );
-        // const { offsetX: endOffsetX, offsetY: endOffsetY } =
-        //   onGetConnectionToThumbOffset(
-        //     ControlAndEndPointNodeType.end,
-        //     this.nodeComponent?.endNodeThumb?.thumbType ??
-        //       (this.nodeComponent.isAnnotationConnection
-        //         ? ThumbType.Center
-        //         : ThumbType.None)
-        //   );
-        // this.nodeComponent.connectionStartNodeThumb?.update?.(
-        //   this.nodeComponent?.connectionStartNodeThumb,
-        //   this.points.beginX + startOffsetX,
-        //   this.points.beginY + startOffsetY,
-        //   this.nodeComponent
-        // );
-        // this.nodeComponent.connectionEndNodeThumb?.update?.(
-        //   this.nodeComponent?.connectionEndNodeThumb,
-        //   this.points.endX + endOffsetX,
-        //   this.points.endY + endOffsetY,
-        //   this.nodeComponent
-        // );
-      }
     } else if (!skipChecks) {
       if (initiator && !initiator.connectionControllerType) {
         return false;
       }
       updateThumbs = true;
-      // Neem de x en y van de controller-thumb over...
+
       if (initiator && x !== undefined && y !== undefined) {
         if (this.nodeComponent?.startNode) {
           const start = this.onCalculateControlPoints(
@@ -830,15 +777,6 @@ export class Connection<T extends BaseNodeInfo> {
           if (!this.nodeComponent?.startNode) {
             this.points.cx1 = this.points.beginX + standardControlPointDistance;
             this.points.cy1 = this.points.beginY;
-
-            // if (this.nodeComponent) {
-            //   this.nodeComponent.connectionStartNodeThumb?.update?.(
-            //     this.nodeComponent.connectionStartNodeThumb,
-            //     this.points.beginX + startOffsetX,
-            //     this.points.beginY,
-            //     this.nodeComponent
-            //   );
-            // }
           }
         } else if (
           initiator.connectionControllerType === ConnectionControllerType.c1
@@ -860,15 +798,6 @@ export class Connection<T extends BaseNodeInfo> {
             this.points.cx2 = this.points.endX - standardControlPointDistance;
             this.points.cy2 = this.points.endY;
           }
-
-          // if (this.nodeComponent) {
-          //   this.nodeComponent.connectionEndNodeThumb?.update?.(
-          //     this.nodeComponent.connectionEndNodeThumb,
-          //     this.points.endX + (this.nodeComponent?.endNode ? 0 : endOffsetX),
-          //     this.points.endY,
-          //     this.nodeComponent
-          //   );
-          // }
         } else {
           return false;
         }

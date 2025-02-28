@@ -98,29 +98,10 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       }
     };
 
-    function setPosition(
-      element: INodeComponent<T>,
-      x: number,
-      y: number,
-      updateConnection = true
-    ) {
+    function setPosition(element: INodeComponent<T>, x: number, y: number) {
       (
         element.domElement as unknown as HTMLElement | SVGElement
       ).style.transform = `translate(${x}px, ${y}px)`;
-
-      if (!updateConnection) {
-        return;
-      }
-
-      // update the connection of this thumb
-      if (element.parent && element.parent.update) {
-        element.parent.update(
-          element.parent,
-          x + thumbHalfWidth,
-          y + thumbHalfHeight,
-          element
-        );
-      }
     }
     const startPointNode = new ThumbConnectionController<T>(
       canvas.domElement,
@@ -189,7 +170,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       //   startPointNode.setEnableInteraction();
       // }
 
-      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
+      setPosition(target, x, y);
       return true;
     };
     this.svgParent?.domElement.after(startPointNode.nodeComponent.domElement);
@@ -248,13 +229,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
         return false;
       }
 
-      // if (this.nodeComponent?.endNode && this.nodeComponent?.endNode?.isThumb) {
-      //   endPointNode.setDisableInteraction();
-      // } else {
-      //   endPointNode.setEnableInteraction();
-      // }
-
-      setPosition(target, x, y, initiator?.nodeType !== NodeType.Connection);
+      setPosition(target, x, y);
       return true;
     };
     this.svgParent?.domElement.after(endPointNode.nodeComponent.domElement);

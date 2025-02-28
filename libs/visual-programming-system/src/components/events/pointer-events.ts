@@ -123,13 +123,7 @@ export const pointerMove = <T extends BaseNodeInfo>(
     if (interactionState && element && element.domElement) {
       if (element.update) {
         if (element.parent && element.parent.nodeType === NodeType.Connection) {
-          console.log(
-            'pointermove',
-            element.nodeType,
-            element.parent.nodeType,
-            x,
-            y
-          );
+          // when dragging connection-controller-thumb... pass event through to connection
           if (element.parent.update) {
             element.parent.update(
               element.parent,
