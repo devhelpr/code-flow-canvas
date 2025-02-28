@@ -493,6 +493,12 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
         wrapper = element as HTMLDivElement;
       }}
     >
+      <button>
+        <span class="icon icon-arrow_right_alt px-2" />
+      </button>
+      <button>
+        <span class="icon icon-assistant px-2" />
+      </button>
       <input
         type="text"
         placeholder="Search node types"
