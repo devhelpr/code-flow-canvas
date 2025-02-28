@@ -12,7 +12,7 @@ import {
   IThumbNodeComponent,
 } from '../interfaces/element';
 import { Theme } from '../interfaces/theme';
-import { createEffect, getVisbility, setSelectNode } from '../reactivity';
+import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
@@ -237,19 +237,6 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
 
-    createEffect(() => {
-      const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
-      if (!startPointNode.nodeComponent || !endPointNode.nodeComponent) {
-        return;
-      }
-      (
-        startPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-      (
-        endPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-    });
-
     this.startPointElement = startPointNode.nodeComponent;
     this.endPointElement = endPointNode.nodeComponent;
   }
@@ -391,10 +378,10 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       pathInfo.path
     );
     return {
-      startX: pathInfo.startX,
-      startY: pathInfo.startY,
-      endX: pathInfo.endX,
-      endY: pathInfo.endY,
+      startX: pathInfo.startX + bbox.x - startOffsetX,
+      startY: pathInfo.startY + bbox.y - startOffsetY,
+      endX: pathInfo.endX + bbox.x - endOffsetX,
+      endY: pathInfo.endY + bbox.y - endOffsetY,
     };
   }
 
