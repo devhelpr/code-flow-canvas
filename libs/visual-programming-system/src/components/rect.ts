@@ -749,9 +749,13 @@ export class Rect<T extends BaseNodeInfo> {
           }
         }
 
-        (this.canvas?.domElement as unknown as HTMLElement | SVGElement).append(
-          draggedConnection.startNode?.domElement as unknown as HTMLElement
-        );
+        if (draggedConnection.startNode?.domElement) {
+          (
+            this.canvas?.domElement as unknown as HTMLElement | SVGElement
+          ).append(
+            draggedConnection.startNode?.domElement as unknown as HTMLElement
+          );
+        }
 
         if (this.canvasUpdated) {
           this.canvasUpdated(
