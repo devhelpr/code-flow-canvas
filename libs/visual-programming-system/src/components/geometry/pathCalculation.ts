@@ -1,4 +1,4 @@
-import { Point, Node } from './types/types';
+import { Point } from './types/types';
 import { isLargeArc } from './geometry';
 
 export function createSVGWithArcPoints(

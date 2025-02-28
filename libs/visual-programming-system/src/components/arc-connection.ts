@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
+import { IBaseFlow } from '../canvas-app/base-flow';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
@@ -18,7 +18,6 @@ import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
 import {
-  doRectanglesOverlap,
   findCircleCenter,
   getPointAngle,
   isLargeArc,
@@ -55,7 +54,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     containerNode?: IRectNodeComponent<T>,
     theme?: Theme,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
-    rootElement?: HTMLElement
+    rootElement?: HTMLElement,
+    canvasApp?: IBaseFlow<T>
   ) {
     super(
       canvas,
@@ -77,7 +77,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       containerNode,
       theme,
       setCanvasAction,
-      rootElement
+      rootElement,
+      canvasApp
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent is undefined');
@@ -133,7 +134,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       undefined,
       undefined,
       rootElement,
-      this
+      this,
+      this.canvasApp
     );
     if (!startPointNode.nodeComponent) {
       throw new Error('startPointNode.nodeComponent is undefined');
@@ -205,7 +207,8 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       undefined,
       undefined,
       rootElement,
-      this
+      this,
+      this.canvasApp
     );
     if (!endPointNode.nodeComponent) {
       throw new Error('endPointNode.nodeComponent is undefined');
@@ -400,6 +403,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
 
     const startNode = this.nodeComponent?.startNode;
     const endNode = this.nodeComponent?.endNode;
+
     const halfStartWidth = startNode?.width
       ? startNode.width / 2 + spacingAABB
       : 0;
@@ -462,25 +466,29 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     }
 
     // Find intersection points
-    const intersections1 = findRectangleIntersections(
-      startX,
-      startY,
-      startWidth,
-      startHeight,
-      centerX,
-      centerY,
-      radius
-    );
+    const intersections1 = this.nodeComponent?.startNode
+      ? findRectangleIntersections(
+          startX,
+          startY,
+          startWidth,
+          startHeight,
+          centerX,
+          centerY,
+          radius
+        )
+      : [{ x: x1, y: y1 }];
 
-    const intersections2 = findRectangleIntersections(
-      endX,
-      endY,
-      endWidth,
-      endHeight,
-      centerX,
-      centerY,
-      radius
-    );
+    const intersections2 = this.nodeComponent?.endNode
+      ? findRectangleIntersections(
+          endX,
+          endY,
+          endWidth,
+          endHeight,
+          centerX,
+          centerY,
+          radius
+        )
+      : [{ x: x2, y: y2 }];
 
     // Sort intersection points by angle
     const sortedIntersections1 = [...intersections1].sort(
@@ -528,22 +536,22 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     }
 
     if (bestIntersection1 && bestIntersection2) {
-      const isOverlapping = doRectanglesOverlap(
-        {
-          x: startX,
-          y: startY,
-          width: startWidth,
-          height: startHeight,
-          element: startNode?.domElement as SVGRectElement,
-        },
-        {
-          x: endX,
-          y: endY,
-          width: endWidth,
-          height: endHeight,
-          element: endNode?.domElement as SVGRectElement,
-        }
-      );
+      // const isOverlapping = doRectanglesOverlap(
+      //   {
+      //     x: startX,
+      //     y: startY,
+      //     width: startWidth,
+      //     height: startHeight,
+      //     element: startNode?.domElement as SVGRectElement,
+      //   },
+      //   {
+      //     x: endX,
+      //     y: endY,
+      //     width: endWidth,
+      //     height: endHeight,
+      //     element: endNode?.domElement as SVGRectElement,
+      //   }
+      // );
 
       // Calculate angles and determine sweep flag
       const angle1 = getPointAngle(bestIntersection1, centerX, centerY);
@@ -553,7 +561,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
 
       // Calculate if points are on opposite sides
-      const isOpposite = Math.abs(Math.abs(angleDiff) - Math.PI) < 0.01;
+      //const isOpposite = Math.abs(Math.abs(angleDiff) - Math.PI) < 0.01;
 
       // Calculate control point position on the actual arc path
       const midAngle = angle1 + angleDiff / 2;
@@ -617,6 +625,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
         } ${angleDiff > 0 ? 1 : 0} ${bestIntersection2.x} ${
           bestIntersection2.y
         }`;
+
         //canvas.updateTestArcPath(d);
         return {
           path: d,

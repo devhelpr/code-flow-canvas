@@ -12,15 +12,25 @@ import {
   IThumbNodeComponent,
 } from '../interfaces/element';
 import { Theme } from '../interfaces/theme';
-import { createEffect, getVisbility, setSelectNode } from '../reactivity';
+import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
 import { Connection } from './connection';
+import {
+  findCircleCenter,
+  getPointAngle,
+  isLargeArc,
+  perpendicularDistance,
+} from './geometry/geometry';
+import { findRectangleIntersections } from './geometry/pathCalculation';
 import { ThumbConnectionController } from './thumb-connection-controller';
 import { onQuadraticCalculateControlPoints } from './utils/calculate-quadratic-control-points';
 import { pointOnRect } from './utils/intersect-line';
 import { intersectionCircleLine } from './utils/vector-math';
+
+export const MIN_RADIUS = 150;
+export const CLOSE_DISTANCE_THRESHOLD = 0.75; // Multiplier for the smallest rectangle dimension
 
 export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
@@ -153,6 +163,15 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
         return false;
       }
 
+      // if (
+      //   this.nodeComponent?.startNode &&
+      //   this.nodeComponent?.startNode?.isThumb
+      // ) {
+      //   startPointNode.setDisableInteraction();
+      // } else {
+      //   startPointNode.setEnableInteraction();
+      // }
+
       setPosition(target, x, y);
       return true;
     };
@@ -221,19 +240,6 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
 
-    createEffect(() => {
-      const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
-      if (!startPointNode.nodeComponent || !endPointNode.nodeComponent) {
-        return;
-      }
-      (
-        startPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-      (
-        endPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-    });
-
     this.startPointElement = startPointNode.nodeComponent;
     this.endPointElement = endPointNode.nodeComponent;
   }
@@ -257,13 +263,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       x2,
       y2
     );
-    return {
-      path: `M${xStart} ${yStart} ${xEnd} ${yEnd}`,
-      startX: xStart,
-      startY: yStart,
-      endX: xEnd,
-      endY: yEnd,
-    };
+    return `M${xStart} ${yStart} ${xEnd} ${yEnd}`;
   }
 
   protected override initializeControlPoints() {
@@ -311,10 +311,22 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       const x2 = this.points.endX + endOffsetX;
       const y2 = this.points.endY + endOffsetY;
 
-      const pathInfo = this.getLinePath(
+      // const path = this.getLinePath(
+      //   { x: 0, y: 0 },
+      //   startOffsetX,
+      //   startOffsetY,
+      //   x1,
+      //   y1,
+      //   x2,
+      //   y2
+      // );
+
+      const pathInfo = this.getArc(
         { x: 0, y: 0 },
         startOffsetX,
         startOffsetY,
+        1,
+        1,
         x1,
         y1,
         x2,
@@ -339,10 +351,21 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     const y1 = this.points.beginY - bbox.y + startOffsetY;
     const x2 = this.points.endX - bbox.x + endOffsetX;
     const y2 = this.points.endY - bbox.y + endOffsetY;
-    const pathInfo = this.getLinePath(
+    // const path = this.getLinePath(
+    //   bbox,
+    //   startOffsetX,
+    //   startOffsetY,
+    //   x1,
+    //   y1,
+    //   x2,
+    //   y2
+    // );
+    const pathInfo = this.getArc(
       bbox,
       startOffsetX,
       startOffsetY,
+      1,
+      1,
       x1,
       y1,
       x2,
@@ -358,11 +381,275 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       pathInfo.path
     );
     return {
-      startX: pathInfo.startX + bbox.x,
-      startY: pathInfo.startY + bbox.y,
-      endX: pathInfo.endX + bbox.x,
-      endY: pathInfo.endY + bbox.y,
+      startX: pathInfo.startX + bbox.x - startOffsetX,
+      startY: pathInfo.startY + bbox.y - startOffsetY,
+      endX: pathInfo.endX + bbox.x - endOffsetX,
+      endY: pathInfo.endY + bbox.y - endOffsetY,
     };
+  }
+
+  protected getArc(
+    bbox: { x: number; y: number },
+    startOffsetX: number,
+    startOffsetY: number,
+    factor = 1,
+    factor2 = 1,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
+  ) {
+    const spacingAABB = 10;
+
+    const startNode = this.nodeComponent?.startNode;
+    const endNode = this.nodeComponent?.endNode;
+
+    const halfStartWidth = startNode?.width
+      ? startNode.width / 2 + spacingAABB
+      : 0;
+    const halfStartHeight = startNode?.height
+      ? startNode.height / 2 + spacingAABB
+      : 0;
+    const halfEndWidth = endNode?.width ? endNode.width / 2 + spacingAABB : 0;
+    const halfEndHeight = endNode?.height
+      ? endNode.height / 2 + spacingAABB
+      : 0;
+
+    const startX = startNode
+      ? (startNode?.x ?? 0) - bbox.x + startOffsetX - spacingAABB
+      : x1;
+    const startY = startNode
+      ? (startNode?.y ?? 0) - bbox.y + startOffsetY - spacingAABB
+      : y1;
+    const endX = endNode
+      ? (endNode?.x ?? 0) - bbox.x + startOffsetX - spacingAABB
+      : x2;
+    const endY = endNode
+      ? (endNode?.y ?? 0) - bbox.y + startOffsetY - spacingAABB
+      : y2;
+
+    const startWidth = startNode?.width
+      ? startNode?.width + spacingAABB * 2
+      : 0;
+    const startHeight = startNode?.height
+      ? startNode?.height + spacingAABB * 2
+      : 0;
+    const endWidth = endNode?.width ? endNode?.width + spacingAABB * 2 : 0;
+    const endHeight = endNode?.height ? endNode?.height + spacingAABB * 2 : 0;
+
+    const start = {
+      x: startX + halfStartWidth,
+      y: startY + halfStartHeight,
+    };
+
+    const end = {
+      x: endX + halfEndWidth,
+      y: endY + halfEndHeight,
+    };
+
+    // Check if rectangles are overlapping or very close
+    const minDimension = Math.min(startWidth, startHeight, endWidth, endHeight);
+    const distance = Math.sqrt(
+      Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+    );
+    const isClose = distance < minDimension * CLOSE_DISTANCE_THRESHOLD;
+
+    // Calculate circle properties
+    let centerX = (start.x + end.x) / 2;
+    let centerY = (start.y + end.y) / 2;
+    const radius = isClose ? MIN_RADIUS : (factor * factor2 * distance) / 2;
+
+    const centers = findCircleCenter(radius, start, end);
+    if (centers) {
+      centerX = centers[0].x;
+      centerY = centers[0].y;
+    }
+
+    // Find intersection points
+    const intersections1 = this.nodeComponent?.startNode
+      ? findRectangleIntersections(
+          startX,
+          startY,
+          startWidth,
+          startHeight,
+          centerX,
+          centerY,
+          radius
+        )
+      : [{ x: x1, y: y1 }];
+
+    const intersections2 = this.nodeComponent?.endNode
+      ? findRectangleIntersections(
+          endX,
+          endY,
+          endWidth,
+          endHeight,
+          centerX,
+          centerY,
+          radius
+        )
+      : [{ x: x2, y: y2 }];
+
+    // Sort intersection points by angle
+    const sortedIntersections1 = [...intersections1].sort(
+      (a, b) =>
+        getPointAngle(a, centerX, centerY) - getPointAngle(b, centerX, centerY)
+    );
+    const sortedIntersections2 = [...intersections2].sort(
+      (a, b) =>
+        getPointAngle(a, centerX, centerY) - getPointAngle(b, centerX, centerY)
+    );
+
+    // Calculate center to end angle
+    const centerToEndAngle = Math.atan2(end.y - centerY, end.x - centerX);
+
+    // Find best intersection points
+    let bestIntersection1 = sortedIntersections1[0];
+    let bestAngle1 = getPointAngle(bestIntersection1, centerX, centerY);
+    for (const point of sortedIntersections1) {
+      const angle = getPointAngle(point, centerX, centerY);
+      let angleDiff = centerToEndAngle - angle;
+      if (angleDiff < 0) angleDiff += 2 * Math.PI;
+      if (angleDiff < Math.PI && angle > bestAngle1) {
+        bestAngle1 = angle;
+        bestIntersection1 = point;
+      }
+    }
+
+    const isFirstPointOnBottom =
+      Math.abs(bestIntersection1.y - (startY + startHeight)) < 0.1;
+
+    const validIntersections2 = isFirstPointOnBottom
+      ? sortedIntersections2.filter((point) => Math.abs(point.y - endY) > 0.1)
+      : sortedIntersections2;
+
+    let bestIntersection2 = validIntersections2?.[0] ?? bestIntersection1;
+    let bestAngle2 = getPointAngle(bestIntersection2, centerX, centerY);
+    for (const point of validIntersections2) {
+      const angle = getPointAngle(point, centerX, centerY);
+      let angleDiff = angle - centerToEndAngle;
+      if (angleDiff < 0) angleDiff += 2 * Math.PI;
+      if (angleDiff < Math.PI && angle < bestAngle2) {
+        bestAngle2 = angle;
+        bestIntersection2 = point;
+      }
+    }
+
+    if (bestIntersection1 && bestIntersection2) {
+      // const isOverlapping = doRectanglesOverlap(
+      //   {
+      //     x: startX,
+      //     y: startY,
+      //     width: startWidth,
+      //     height: startHeight,
+      //     element: startNode?.domElement as SVGRectElement,
+      //   },
+      //   {
+      //     x: endX,
+      //     y: endY,
+      //     width: endWidth,
+      //     height: endHeight,
+      //     element: endNode?.domElement as SVGRectElement,
+      //   }
+      // );
+
+      // Calculate angles and determine sweep flag
+      const angle1 = getPointAngle(bestIntersection1, centerX, centerY);
+      const angle2 = getPointAngle(bestIntersection2, centerX, centerY);
+      let angleDiff = angle2 - angle1;
+      if (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+      if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+
+      // Calculate if points are on opposite sides
+      //const isOpposite = Math.abs(Math.abs(angleDiff) - Math.PI) < 0.01;
+
+      // Calculate control point position on the actual arc path
+      const midAngle = angle1 + angleDiff / 2;
+      const controlX = centerX + radius * Math.cos(midAngle);
+      const controlY = centerY + radius * Math.sin(midAngle);
+      //canvas.updateControlPoint(controlX, controlY);
+
+      const distance = perpendicularDistance(
+        controlX,
+        controlY,
+        start.x,
+        start.y,
+        end.x,
+        end.y
+      );
+
+      // When the path is nearly flat (very large radius), use a straight line
+      // that goes from the edge to the center of the target rectangle
+      if (distance < 0.01) {
+        //(radius > 1000) {
+        // threshold for "flat" path
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const unitX = dx / length;
+        const unitY = dy / length;
+
+        // Calculate intersection with source rectangle's edge
+        const sourceWidth = startWidth;
+        const sourceHeight = startHeight;
+        const startX = start.x + (sourceWidth / 2) * unitX;
+        const startY = start.y + (sourceHeight / 2) * unitY;
+
+        // Calculate intersection with target rectangle's edge
+        const targetWidth = endWidth;
+        const targetHeight = endHeight;
+        const endX = end.x - (targetWidth / 2) * unitX;
+        const endY = end.y - (targetHeight / 2) * unitY;
+
+        // Create path from edge to edge
+        // const controlX = (startX + endX) / 2;
+        // const controlY = (startY + endY) / 2;
+        //canvas.updateControlPoint(controlX, controlY);
+        return {
+          path: `M ${startX} ${startY} L ${endX} ${endY}`,
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY,
+        };
+        //canvas.updateTestArcPath(d);
+      } else {
+        //canvas.updateControlPoint(controlX, controlY);
+        // Use the regular arc path for curved paths
+        const d = `M ${bestIntersection1.x} ${
+          bestIntersection1.y
+        } A ${radius} ${radius} 0 ${
+          isLargeArc(bestIntersection1, bestIntersection2, centerX, centerY)
+            ? 1
+            : 0
+        } ${angleDiff > 0 ? 1 : 0} ${bestIntersection2.x} ${
+          bestIntersection2.y
+        }`;
+
+        //canvas.updateTestArcPath(d);
+        return {
+          path: d,
+          startX: bestIntersection1.x,
+          startY: bestIntersection1.y,
+          endX: bestIntersection2.x,
+          endY: bestIntersection2.y,
+        };
+      }
+
+      // const finalSweepFlag = isOverlapping ? 1 : angleDiff > 0 ? 1 : 0;
+      // const finalLargeArcFlag = isOverlapping
+      //   ? 0
+      //   : radius < 150
+      //   ? 0 // Force small arc for small radii
+      //   : isLargeArc(bestIntersection1, bestIntersection2, centerX, centerY)
+      //   ? 1
+      //   : 0;
+    } else {
+      //canvas.updateTestArcPath('');
+      return { path: '', startX: 0, startY: 0, endX: 0, endY: 0 };
+    }
+
+    //canvas.updateIntersectionPoints([...intersections1, ...intersections2]);
   }
 }
 

@@ -295,7 +295,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
             this.containerNode,
             this.theme,
             undefined,
-            this.rootElement
+            this.rootElement,
+            this.canvasApp
           )
         : new QuadraticBezierConnection<T>(
             this.canvas as unknown as INodeComponent<T>,
