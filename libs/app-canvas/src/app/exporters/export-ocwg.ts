@@ -258,7 +258,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
 
   override exportConnection(
     _context: OCWGInfo,
-    nodeInfo: BaseNodeInfo,
+    _nodeInfo: BaseNodeInfo,
     node: IConnectionNodeComponent<BaseNodeInfo>
   ): void {
     if (!node.startNode || !node.endNode) {
@@ -277,20 +277,20 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
           endMarker: 'arrowhead',
           relation: `${node.id}-edge`,
         },
-        {
-          ...nodeInfo,
-          type: connectionNodeInfoPropertyName,
-          nodeType: nodeInfo.type,
-          lineType: (nodeInfo as any).lineType ?? 'Straight',
-          start: {
-            connected_to: `${node.startNode.id}`,
-            port_name: node.startNodeThumb?.thumbName ?? 'output',
-          },
-          end: {
-            connected_to: `${node.endNode.id}`,
-            port_name: node.endNodeThumb?.thumbName ?? 'input',
-          },
-        },
+        // {
+        //   ...nodeInfo,
+        //   type: connectionNodeInfoPropertyName,
+        //   nodeType: nodeInfo.type,
+        //   lineType: (nodeInfo as any).lineType ?? 'Straight',
+        //   start: {
+        //     connected_to: `${node.startNode.id}`,
+        //     port_name: node.startNodeThumb?.thumbName ?? 'output',
+        //   },
+        //   end: {
+        //     connected_to: `${node.endNode.id}`,
+        //     port_name: node.endNodeThumb?.thumbName ?? 'input',
+        //   },
+        // },
       ],
     };
     if (this.file?.nodes) {

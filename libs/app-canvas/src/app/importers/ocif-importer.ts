@@ -5,7 +5,7 @@ import {
   nodeInfoPropertyName,
 } from '../exporters/export-ocwg';
 import { ocifArrow, ocifSchema, ocifToCodeFlowCanvas } from '../consts/ocif';
-import { OCIFEdgeRelation } from '../interfaces/ocif';
+import { OCIFEdgeRelationExtension } from '../interfaces/ocif';
 
 let rootOCIF: any = undefined;
 
@@ -55,7 +55,7 @@ function isValidCodeFlowCanvasConnection(node: any): boolean {
 function getEdgeRelationById(
   ocif: any,
   relationId: string
-): OCIFEdgeRelation | undefined {
+): OCIFEdgeRelationExtension | undefined {
   if (!ocif.relations || !relationId) {
     return undefined;
   }
@@ -63,7 +63,6 @@ function getEdgeRelationById(
   if (data) {
     const extension = getExtenstionData(data, '@ocwg/rel/edge');
     return {
-      id: data.id,
       type: extension.type,
       start: extension.start,
       end: extension.end,

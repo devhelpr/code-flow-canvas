@@ -130,6 +130,11 @@ import {
 } from '@devhelpr/web-flow-executor';
 import { PasteNodeCommand } from './command-handlers/paste-node-command/paste-node-command';
 import { clearOCIF, getCurrentOCIF, setOCIF } from './importers/ocif-importer';
+import {
+  OCIFRelation,
+  OCIFNode,
+  OCIFEdgeRelationExtension,
+} from './interfaces/ocif';
 
 export type CreateRunCounterContext = (
   isRunViaRunButton: boolean,
@@ -2170,6 +2175,30 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   onPreRemoveElement = (element: IElementNode<NodeInfo>) => {
     if (element.nodeInfo?.delete) {
       element.nodeInfo.delete();
+    }
+    const ocif = getCurrentOCIF();
+    if (!ocif) {
+      return;
+    }
+    const node = element as INodeComponent<NodeInfo>;
+    if (node.nodeType === NodeType.Connection) {
+      const connection = node as IConnectionNodeComponent<NodeInfo>;
+      ocif.relations = ocif.relations.filter((relation: OCIFRelation) => {
+        let hasRelationToNode = false;
+        relation.data.forEach((extensionData) => {
+          if (
+            extensionData.type === '@ocwg/rel/edge' &&
+            (extensionData as unknown as OCIFEdgeRelationExtension).node ===
+              connection.id
+          ) {
+            hasRelationToNode = true;
+          }
+        });
+        return !hasRelationToNode;
+      });
+      ocif.nodes = ocif.nodes.filter((ocifNode: OCIFNode) => {
+        return ocifNode.id !== connection.id;
+      });
     }
   };
 
