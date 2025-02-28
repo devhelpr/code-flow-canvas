@@ -590,4 +590,11 @@ export class CompositionRuntimeFlowContext<T extends BaseNodeInfo>
   getDebugInfoHandler = () => {
     return undefined;
   };
+
+  getPointerPositionInLocalSpace = (_event: MouseEvent) => {
+    return {
+      x: 0,
+      y: 0,
+    };
+  };
 }

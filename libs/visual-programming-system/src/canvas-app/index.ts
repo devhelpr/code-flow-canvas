@@ -2053,4 +2053,27 @@ export class FlowCanvas<T extends BaseNodeInfo>
   getDebugInfoHandler = () => {
     return this.onDebugInfoHandler;
   };
+
+  getPointerPositionInLocalSpace = (event: MouseEvent) => {
+    const { rootX, rootY, eventClientX, eventClientY } = getPointerPos(
+      this.canvas.domElement as HTMLElement,
+      this.rootElement,
+      event
+    );
+
+    const { x: rootXCamera, y: rootYCamera } = transformCameraSpaceToWorldSpace(
+      rootX,
+      rootY
+    );
+
+    const { x: clientXCamera, y: clientYCamera } =
+      transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+
+    const xpos = clientXCamera - rootXCamera;
+    const ypos = clientYCamera - rootYCamera;
+    return {
+      x: xpos,
+      y: ypos,
+    };
+  };
 }

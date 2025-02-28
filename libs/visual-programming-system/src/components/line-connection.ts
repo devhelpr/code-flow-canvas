@@ -4,6 +4,7 @@ import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
+  ConnectionStartEndPositions,
   ElementNodeMap,
   IConnectionNodeComponent,
   IElementNode,
@@ -291,7 +292,13 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       x2,
       y2
     );
-    return `M${xStart} ${yStart} ${xEnd} ${yEnd}`;
+    return {
+      path: `M${xStart} ${yStart} ${xEnd} ${yEnd}`,
+      startX: xStart,
+      startY: yStart,
+      endX: xEnd,
+      endY: yEnd,
+    };
   }
 
   protected override initializeControlPoints() {
@@ -339,7 +346,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       const x2 = this.points.endX + endOffsetX;
       const y2 = this.points.endY + endOffsetY;
 
-      const path = this.getLinePath(
+      const pathInfo = this.getLinePath(
         { x: 0, y: 0 },
         startOffsetX,
         startOffsetY,
@@ -351,7 +358,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
 
       (this.pathHiddenElement.domElement as HTMLElement).setAttribute(
         'd',
-        path
+        pathInfo.path
       );
     }
   }
@@ -362,12 +369,12 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     startOffsetY: number,
     endOffsetX: number,
     endOffsetY: number
-  ): void {
+  ): ConnectionStartEndPositions {
     const x1 = this.points.beginX - bbox.x + startOffsetX;
     const y1 = this.points.beginY - bbox.y + startOffsetY;
     const x2 = this.points.endX - bbox.x + endOffsetX;
     const y2 = this.points.endY - bbox.y + endOffsetY;
-    const path = this.getLinePath(
+    const pathInfo = this.getLinePath(
       bbox,
       startOffsetX,
       startOffsetY,
@@ -377,11 +384,20 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       y2
     );
 
-    (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
+    (this.pathElement?.domElement as HTMLElement).setAttribute(
+      'd',
+      pathInfo.path
+    );
     (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
       'd',
-      path
+      pathInfo.path
     );
+    return {
+      startX: pathInfo.startX + bbox.x,
+      startY: pathInfo.startY + bbox.y,
+      endX: pathInfo.endX + bbox.x,
+      endY: pathInfo.endY + bbox.y,
+    };
   }
 }
 

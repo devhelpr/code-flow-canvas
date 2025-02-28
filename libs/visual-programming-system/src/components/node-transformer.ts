@@ -452,6 +452,7 @@ export class NodeTransformer<T extends BaseNodeInfo> {
 
     // TODO : check if bounds are ok
     if (this.attachedNode) {
+      console.log('pointerMoveHelper nodetransformer', this.resizeMode, x, y);
       if (
         this.resizeMode == 'move-upstream-nodes' ||
         this.resizeMode == 'move-downstream-nodes'

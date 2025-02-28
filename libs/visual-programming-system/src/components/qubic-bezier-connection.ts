@@ -4,6 +4,7 @@ import { thumbHalfHeight, thumbHalfWidth } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
+  ConnectionStartEndPositions,
   ElementNodeMap,
   IElementNode,
   INodeComponent,
@@ -218,6 +219,7 @@ export class CubicBezierConnection<
       y?: number,
       initiator?: INodeComponent<T>
     ) => {
+      console.log('endPointNode update', target, x, y, initiator);
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
@@ -549,9 +551,14 @@ export class CubicBezierConnection<
     startOffsetY: number,
     endOffsetX: number,
     endOffsetY: number
-  ): void {
+  ): ConnectionStartEndPositions {
     if (!this.nodeComponent) {
-      return;
+      return {
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0,
+      };
     }
     let path = `
     
@@ -816,5 +823,12 @@ export class CubicBezierConnection<
       'd',
       path
     );
+
+    return {
+      startX: this.points.beginX + startOffsetX, //+ bbox.x - startOffsetX,
+      startY: this.points.beginY + startOffsetY, //+ bbox.y - startOffsetY,
+      endX: this.points.endX + endOffsetX, //+ bbox.x - endOffsetX,
+      endY: this.points.endY + endOffsetY, //+ bbox.y - endOffsetY,
+    };
   }
 }

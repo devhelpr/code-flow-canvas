@@ -242,12 +242,24 @@ export class ThumbConnectionController<
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
       this.cssClasses.onPointerOverCursor
     );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
+      this.cssClasses.hovering
+    );
   };
 
   onPointerLeave = (event: PointerEvent) => {
     if (this.disableInteraction) {
       return;
     }
+    if (!this.nodeComponent) {
+      return;
+    }
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.onPointerOverCursor
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.hovering
+    );
     const element = document.elementFromPoint(event.pageX, event.pageY);
 
     if (
@@ -273,17 +285,20 @@ export class ThumbConnectionController<
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
         this.cssClasses.onPointerOverCursor
       );
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+        this.cssClasses.hovering
+      );
     }
   };
 
   initiateDraggingConnection = (
     connectionThumb: IThumbNodeComponent<T>,
     _x: number,
-    _y: number,
-    _rootX: number,
-    _rootY: number,
-    _parentXcaller: number,
-    _parentYcaller: number
+    _y: number
+    // _rootX: number,
+    // _rootY: number,
+    // _parentXcaller: number,
+    // _parentYcaller: number
   ) => {
     if (!this.canvas || !this.rootElement) {
       return;
@@ -359,27 +374,27 @@ export class ThumbConnectionController<
           this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.end
         ) {
-          if (this.nodeComponent.parent.nodeType === NodeType.Connection) {
-            const connection = this.nodeComponent
-              .parent as unknown as IConnectionNodeComponent<T>;
-            if (connection.endNode?.isThumb) {
-              console.log("Can't drag from 'end' rect-thumb");
-              return;
-            }
-          }
+          // if (this.nodeComponent.parent.nodeType === NodeType.Connection) {
+          //   const connection = this.nodeComponent
+          //     .parent as unknown as IConnectionNodeComponent<T>;
+          //   if (connection.endNode?.isThumb) {
+          //     console.log("Can't drag from 'end' rect-thumb");
+          //     return;
+          //   }
+          // }
         }
         if (
           this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.begin
         ) {
-          if (this.nodeComponent.parent.nodeType === NodeType.Connection) {
-            const connection = this.nodeComponent
-              .parent as unknown as IConnectionNodeComponent<T>;
-            if (connection.startNode?.isThumb) {
-              console.log("Can't drag from 'end' rect-thumb");
-              return;
-            }
-          }
+          // if (this.nodeComponent.parent.nodeType === NodeType.Connection) {
+          //   const connection = this.nodeComponent
+          //     .parent as unknown as IConnectionNodeComponent<T>;
+          //   if (connection.startNode?.isThumb) {
+          //     console.log("Can't drag from 'end' rect-thumb");
+          //     return;
+          //   }
+          // }
         }
       }
 
@@ -429,27 +444,27 @@ export class ThumbConnectionController<
             pointerYPos
           );
 
-          let parentX = 0;
-          let parentY = 0;
-          if (this.nodeComponent?.parent?.containerNode) {
-            if (this.nodeComponent?.parent?.containerNode) {
-              if (
-                this.nodeComponent?.parent?.containerNode &&
-                this.nodeComponent?.parent?.containerNode
-                  ?.getParentedCoordinates
-              ) {
-                const parentCoordinates =
-                  this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
-                    x: 0,
-                    y: 0,
-                  };
-                // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
-                // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
-                parentX = parentCoordinates.x;
-                parentY = parentCoordinates.y;
-              }
-            }
-          }
+          // let parentX = 0;
+          // let parentY = 0;
+          // if (this.nodeComponent?.parent?.containerNode) {
+          //   if (this.nodeComponent?.parent?.containerNode) {
+          //     if (
+          //       this.nodeComponent?.parent?.containerNode &&
+          //       this.nodeComponent?.parent?.containerNode
+          //         ?.getParentedCoordinates
+          //     ) {
+          //       const parentCoordinates =
+          //         this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
+          //           x: 0,
+          //           y: 0,
+          //         };
+          //       // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
+          //       // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+          //       parentX = parentCoordinates.x;
+          //       parentY = parentCoordinates.y;
+          //     }
+          //   }
+          // }
           this.previousStartNode = connection.startNode;
           connection.startNode = undefined;
           connection.startNodeThumb = undefined;
@@ -459,11 +474,7 @@ export class ThumbConnectionController<
           this.initiateDraggingConnection(
             connectionThumb,
             xpos, //x + parentX,
-            ypos, //y + parentY,
-            rootX,
-            rootY,
-            parentX,
-            parentY
+            ypos //y + parentY,
           );
           return;
         }
@@ -476,7 +487,12 @@ export class ThumbConnectionController<
         this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.end
       );
-      if (connection && this.canvas && connection.endNodeThumb) {
+      if (
+        connection &&
+        this.canvas &&
+        connection.endNodeThumb &&
+        this.canvasApp
+      ) {
         const connectionThumb =
           this.nodeComponent.connectionControllerType ===
           ConnectionControllerType.end
@@ -488,69 +504,63 @@ export class ThumbConnectionController<
           this.rootElement
         );
         if (connectionThumb && this.rootElement) {
-          const {
-            pointerXPos,
-            pointerYPos,
-            rootX,
-            rootY,
-            eventClientX,
-            eventClientY,
-          } = getPointerPos(
-            this.canvas.domElement as HTMLElement,
-            this.rootElement,
-            e
-          );
+          // const {
+          //   pointerXPos,
+          //   pointerYPos,
+          //   rootX,
+          //   rootY,
+          //   eventClientX,
+          //   eventClientY,
+          // } = getPointerPos(
+          //   this.canvas.domElement as HTMLElement,
+          //   this.rootElement,
+          //   e
+          // );
 
-          const { x: rootXCamera, y: rootYCamera } =
-            transformCameraSpaceToWorldSpace(rootX, rootY);
+          // const { x: rootXCamera, y: rootYCamera } =
+          //   transformCameraSpaceToWorldSpace(rootX, rootY);
 
-          const { x: clientXCamera, y: clientYCamera } =
-            transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
+          // const { x: clientXCamera, y: clientYCamera } =
+          //   transformCameraSpaceToWorldSpace(eventClientX, eventClientY);
 
-          const xpos = clientXCamera - rootXCamera;
-          const ypos = clientYCamera - rootYCamera;
-          const { x, y } = transformCameraSpaceToWorldSpace(
-            pointerXPos,
-            pointerYPos
-          );
+          // const xpos = clientXCamera - rootXCamera;
+          // const ypos = clientYCamera - rootYCamera;
+          // const { x, y } = transformCameraSpaceToWorldSpace(
+          //   pointerXPos,
+          //   pointerYPos
+          // );
+
+          const { x, y } = this.canvasApp.getPointerPositionInLocalSpace(e);
 
           this.previousEndNode = connection.endNode;
           connection.endNode = undefined;
           connection.endNodeThumb = undefined;
 
-          let parentX = 0;
-          let parentY = 0;
-          if (this.nodeComponent?.parent?.containerNode) {
-            if (this.nodeComponent?.parent?.containerNode) {
-              if (
-                this.nodeComponent?.parent?.containerNode &&
-                this.nodeComponent?.parent?.containerNode
-                  ?.getParentedCoordinates
-              ) {
-                const parentCoordinates =
-                  this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
-                    x: 0,
-                    y: 0,
-                  };
-                // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
-                // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
-                parentX = parentCoordinates.x;
-                parentY = parentCoordinates.y;
-              }
-            }
-          }
+          // let parentX = 0;
+          // let parentY = 0;
+          // if (this.nodeComponent?.parent?.containerNode) {
+          //   if (this.nodeComponent?.parent?.containerNode) {
+          //     if (
+          //       this.nodeComponent?.parent?.containerNode &&
+          //       this.nodeComponent?.parent?.containerNode
+          //         ?.getParentedCoordinates
+          //     ) {
+          //       const parentCoordinates =
+          //         this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
+          //           x: 0,
+          //           y: 0,
+          //         };
+          //       // parentX = this.nodeComponent?.parent?.containerNode.x; //- paddingRect;
+          //       // parentY = this.nodeComponent?.parent?.containerNode.y; //- paddingRect;
+          //       parentX = parentCoordinates.x;
+          //       parentY = parentCoordinates.y;
+          //     }
+          //   }
+          // }
 
           console.log('x y (2)', event?.target, x, y);
           console.log('initiateDraggingConnection 2');
-          this.initiateDraggingConnection(
-            connectionThumb,
-            xpos, //x + parentX,
-            ypos, //y + parentY,
-            rootX,
-            rootY,
-            parentX,
-            parentY
-          );
+          this.initiateDraggingConnection(connectionThumb, x, y);
           return;
         }
       }
@@ -589,24 +599,24 @@ export class ThumbConnectionController<
         pointerYPos
       );
 
-      let parentX = 0;
-      let parentY = 0;
-      if (this.nodeComponent?.parent?.containerNode) {
-        if (this.nodeComponent?.parent?.containerNode) {
-          if (
-            this.nodeComponent?.parent?.containerNode &&
-            this.nodeComponent?.parent?.containerNode?.getParentedCoordinates
-          ) {
-            const parentCoordinates =
-              this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
-                x: 0,
-                y: 0,
-              };
-            parentX = parentCoordinates.x;
-            parentY = parentCoordinates.y;
-          }
-        }
-      }
+      // let parentX = 0;
+      // let parentY = 0;
+      // if (this.nodeComponent?.parent?.containerNode) {
+      //   if (this.nodeComponent?.parent?.containerNode) {
+      //     if (
+      //       this.nodeComponent?.parent?.containerNode &&
+      //       this.nodeComponent?.parent?.containerNode?.getParentedCoordinates
+      //     ) {
+      //       const parentCoordinates =
+      //         this.nodeComponent?.parent?.containerNode?.getParentedCoordinates() ?? {
+      //           x: 0,
+      //           y: 0,
+      //         };
+      //       parentX = parentCoordinates.x;
+      //       parentY = parentCoordinates.y;
+      //     }
+      //   }
+      // }
 
       console.log('x y (3)', event?.target, x, y);
 
@@ -615,15 +625,7 @@ export class ThumbConnectionController<
         event?.target,
         this.nodeComponent
       );
-      this.initiateDraggingConnection(
-        this.nodeComponent,
-        xpos,
-        ypos,
-        rootX,
-        rootY,
-        parentX,
-        parentY
-      );
+      this.initiateDraggingConnection(this.nodeComponent, xpos, ypos);
     }
   };
   oldElement: Element | null = null;
@@ -708,6 +710,13 @@ export class ThumbConnectionController<
     if (!this.nodeComponent) {
       return;
     }
+
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.onPointerOverCursor
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.hovering
+    );
     // if (!this.nodeComponent || (element && element !== event.target)) {
     //   if (element) {
     //     console.log(

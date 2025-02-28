@@ -1,4 +1,5 @@
 import { CLICK_MOVEMENT_THRESHOLD } from '../../constants';
+import { thumbHalfHeight, thumbHalfWidth } from '../../constants/measures';
 import {
   InteractionEvent,
   InteractionStateMachine,
@@ -121,14 +122,36 @@ export const pointerMove = <T extends BaseNodeInfo>(
 
     if (interactionState && element && element.domElement) {
       if (element.update) {
-        element.update(
-          element,
-          x - interactionInfo.xOffsetWithinElementOnFirstClick,
-          y -
-            //canvasBoundingRect.y -
-            interactionInfo.yOffsetWithinElementOnFirstClick,
-          element
-        );
+        if (element.parent && element.parent.nodeType === NodeType.Connection) {
+          console.log(
+            'pointermove',
+            element.nodeType,
+            element.parent.nodeType,
+            x,
+            y
+          );
+          if (element.parent.update) {
+            element.parent.update(
+              element.parent,
+              x -
+                interactionInfo.xOffsetWithinElementOnFirstClick +
+                thumbHalfWidth,
+              y -
+                interactionInfo.yOffsetWithinElementOnFirstClick +
+                thumbHalfHeight,
+              element
+            );
+          }
+        } else {
+          element.update(
+            element,
+            x - interactionInfo.xOffsetWithinElementOnFirstClick,
+            y -
+              //canvasBoundingRect.y -
+              interactionInfo.yOffsetWithinElementOnFirstClick,
+            element
+          );
+        }
       }
 
       if (element.pointerMove) {

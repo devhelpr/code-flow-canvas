@@ -3,6 +3,7 @@ import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
+  ConnectionStartEndPositions,
   ElementNodeMap,
   IElementNode,
   INodeComponent,
@@ -10,7 +11,7 @@ import {
   IThumbNodeComponent,
 } from '../interfaces/element';
 import { Theme } from '../interfaces/theme';
-import { createEffect, getVisbility, setSelectNode } from '../reactivity';
+import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType, ThumbType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { LineType } from '../types/line-type';
@@ -238,6 +239,7 @@ export class QuadraticBezierConnection<
       y?: number,
       initiator?: INodeComponent<T>
     ) => {
+      console.log('endPointNode quadratic update', target, x, y, initiator);
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
@@ -253,18 +255,18 @@ export class QuadraticBezierConnection<
     this.nodeComponent.connectionStartNodeThumb = startPointNode.nodeComponent;
     this.nodeComponent.connectionEndNodeThumb = endPointNode.nodeComponent;
 
-    createEffect(() => {
-      const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
-      if (!startPointNode.nodeComponent || !endPointNode.nodeComponent) {
-        return;
-      }
-      (
-        startPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-      (
-        endPointNode.nodeComponent.domElement as unknown as SVGElement
-      ).style.display = visibility ? 'block' : 'none';
-    });
+    // createEffect(() => {
+    //   const visibility = getVisbility(); //&& selectedNode && selectedNode === connection.id;
+    //   if (!startPointNode.nodeComponent || !endPointNode.nodeComponent) {
+    //     return;
+    //   }
+    //   (
+    //     startPointNode.nodeComponent.domElement as unknown as SVGElement
+    //   ).style.display = visibility ? 'block' : 'none';
+    //   (
+    //     endPointNode.nodeComponent.domElement as unknown as SVGElement
+    //   ).style.display = visibility ? 'block' : 'none';
+    // });
 
     this.startPointElement = startPointNode.nodeComponent;
     this.endPointElement = endPointNode.nodeComponent;
@@ -281,6 +283,8 @@ export class QuadraticBezierConnection<
     x2: number,
     y2: number
   ) {
+    let hasStartNode = false;
+    let hasEndNode = false;
     const isCircleStart = this.nodeComponent?.startNode?.isCircle ?? false;
     const isCircleEnd = this.nodeComponent?.endNode?.isCircle ?? false;
 
@@ -327,6 +331,7 @@ export class QuadraticBezierConnection<
       }
     } else {
       if (this.nodeComponent?.startNode) {
+        hasStartNode = true;
         const xleft =
           this.nodeComponent.startNode.x - bbox.x + startOffsetX - spacingAABB;
         const yleft =
@@ -447,6 +452,7 @@ export class QuadraticBezierConnection<
       // and take the point closest to the center point of AABB??
       // lets start with the first found...
       if (this.nodeComponent?.endNode) {
+        hasEndNode = true;
         const xleft =
           this.nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB;
         const yleft =
@@ -519,7 +525,13 @@ export class QuadraticBezierConnection<
       tEnd ?? 1
     );
 
-    return `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`;
+    return {
+      path: `M${curves.curve1.x1} ${curves.curve1.y1} Q${curves.curve1.c1x} ${curves.curve1.c1y}  ${curves.curve1.x2} ${curves.curve1.y2}`,
+      startX: curves.curve1.x1 + (hasStartNode ? 0 : startOffsetX),
+      startY: curves.curve1.y1 + (hasStartNode ? 0 : startOffsetY),
+      endX: curves.curve1.x2 + (hasEndNode ? 0 : startOffsetX),
+      endY: curves.curve1.y2 + (hasEndNode ? 0 : startOffsetY),
+    };
   }
 
   protected override initializeControlPoints() {
@@ -569,7 +581,7 @@ export class QuadraticBezierConnection<
       const x2 = this.points.endX + endOffsetX;
       const y2 = this.points.endY + endOffsetY;
 
-      const path = this.getQuadraticBezierPath(
+      const { path } = this.getQuadraticBezierPath(
         { x: 0, y: 0 },
         startOffsetX,
         startOffsetY,
@@ -594,14 +606,15 @@ export class QuadraticBezierConnection<
     startOffsetY: number,
     endOffsetX: number,
     endOffsetY: number
-  ): void {
+  ): ConnectionStartEndPositions {
     const x1 = this.points.beginX - bbox.x + startOffsetX;
     const y1 = this.points.beginY - bbox.y + startOffsetY;
     const cx = this.points.cx1 - bbox.x;
     const cy = this.points.cy1 - bbox.y;
     const x2 = this.points.endX - bbox.x + endOffsetX;
     const y2 = this.points.endY - bbox.y + endOffsetY;
-    const path = this.getQuadraticBezierPath(
+
+    const pathInfo = this.getQuadraticBezierPath(
       bbox,
       startOffsetX,
       startOffsetY,
@@ -613,10 +626,19 @@ export class QuadraticBezierConnection<
       y2
     );
 
-    (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
+    (this.pathElement?.domElement as HTMLElement).setAttribute(
+      'd',
+      pathInfo.path
+    );
     (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
       'd',
-      path
+      pathInfo.path
     );
+    return {
+      startX: pathInfo.startX + bbox.x, // - startOffsetX,
+      startY: pathInfo.startY + bbox.y, // - startOffsetY,
+      endX: pathInfo.endX + bbox.x, //- endOffsetX,
+      endY: pathInfo.endY + bbox.y, //- endOffsetY,
+    };
   }
 }

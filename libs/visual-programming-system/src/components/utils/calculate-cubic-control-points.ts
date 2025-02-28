@@ -473,16 +473,17 @@ export const onGetConnectionToThumbOffset = (
   thumbType: ThumbType
 ) => {
   if (thumbType === ThumbType.None) {
+    // no more needed due to different way of determining connection-thumb positions??
     // HACK: this seems to fix the bug when a connection without start node is clicked and the end node jumps
     if (nodeType === ControlAndEndPointNodeType.start) {
       return {
-        offsetX: connectionToThumbDistance * 3,
+        offsetX: 0, //connectionToThumbDistance * 3,
         offsetY: 0,
       };
     }
     if (nodeType === ControlAndEndPointNodeType.end) {
       return {
-        offsetX: -connectionToThumbDistance * 3,
+        offsetX: 0, //-connectionToThumbDistance * 3,
         offsetY: 0,
       };
     }

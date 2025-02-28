@@ -129,6 +129,9 @@ rect-node:has(.hover) > .shape-circle,
 .connection-controller.thumb.dragging div {
   @apply !bg-white;
 }
+.connection-controller.thumb.hovering div {
+  @apply !bg-white;
+}
 
 .rect-thumb-node:not(.dropping):hover > .rect-thumb-tooltip {
   @apply bg-white text-black block;

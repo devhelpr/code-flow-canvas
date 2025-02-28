@@ -11,6 +11,7 @@ export const getThumbCssClasses = () => {
     hover: 'hover',
     cursorNotAllowed: 'cursor-not-allowed',
     dragging: 'dragging',
+    hovering: 'hovering',
     nodePortClasses: `inline-flex items-center origin-center relative`,
     prefixIconClasses: `relative text-white -left-[10px] thumb-prefix-icon`,
     prefixLabelClasses: `thumb-prefix-label absolute whitespace-nowrap pointer-events-none select-none `,

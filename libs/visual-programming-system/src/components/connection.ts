@@ -26,7 +26,7 @@ import {
   onGetConnectionToThumbOffset,
 } from './utils/calculate-cubic-control-points';
 import { BaseNodeInfo } from '../types/base-node-info';
-import { FlowChangeType } from '../interfaces';
+import { ConnectionStartEndPositions, FlowChangeType } from '../interfaces';
 import { getConnectionCssClasses } from './css-classes/connection-css-classes';
 import { IBaseFlow } from '../canvas-app/base-flow';
 
@@ -627,6 +627,7 @@ export class Connection<T extends BaseNodeInfo> {
       (initiator.nodeType === NodeType.Connection ||
         initiator.nodeType === NodeType.Shape)
     ) {
+      updateThumbs = true;
       if (connection.startNode && initiator.id === connection.startNode.id) {
         const start = this.onCalculateControlPoints(
           initiator as unknown as IRectNodeComponent<T>,
@@ -739,42 +740,40 @@ export class Connection<T extends BaseNodeInfo> {
         );
       }
       if (this.nodeComponent?.controlPoints?.length) {
-        const { offsetX: startOffsetX, offsetY: startOffsetY } =
-          onGetConnectionToThumbOffset(
-            ControlAndEndPointNodeType.start,
-            this.nodeComponent?.startNodeThumb?.thumbType ??
-              (this.nodeComponent.isAnnotationConnection
-                ? ThumbType.Center
-                : ThumbType.None)
-          );
-        const { offsetX: endOffsetX, offsetY: endOffsetY } =
-          onGetConnectionToThumbOffset(
-            ControlAndEndPointNodeType.end,
-            this.nodeComponent?.endNodeThumb?.thumbType ??
-              (this.nodeComponent.isAnnotationConnection
-                ? ThumbType.Center
-                : ThumbType.None)
-          );
-
-        this.nodeComponent.connectionStartNodeThumb?.update?.(
-          this.nodeComponent?.connectionStartNodeThumb,
-          this.points.beginX + startOffsetX,
-          this.points.beginY + startOffsetY,
-          this.nodeComponent
-        );
-
-        this.nodeComponent.connectionEndNodeThumb?.update?.(
-          this.nodeComponent?.connectionEndNodeThumb,
-          this.points.endX + endOffsetX,
-          this.points.endY + endOffsetY,
-          this.nodeComponent
-        );
+        // const { offsetX: startOffsetX, offsetY: startOffsetY } =
+        //   onGetConnectionToThumbOffset(
+        //     ControlAndEndPointNodeType.start,
+        //     this.nodeComponent?.startNodeThumb?.thumbType ??
+        //       (this.nodeComponent.isAnnotationConnection
+        //         ? ThumbType.Center
+        //         : ThumbType.None)
+        //   );
+        // const { offsetX: endOffsetX, offsetY: endOffsetY } =
+        //   onGetConnectionToThumbOffset(
+        //     ControlAndEndPointNodeType.end,
+        //     this.nodeComponent?.endNodeThumb?.thumbType ??
+        //       (this.nodeComponent.isAnnotationConnection
+        //         ? ThumbType.Center
+        //         : ThumbType.None)
+        //   );
+        // this.nodeComponent.connectionStartNodeThumb?.update?.(
+        //   this.nodeComponent?.connectionStartNodeThumb,
+        //   this.points.beginX + startOffsetX,
+        //   this.points.beginY + startOffsetY,
+        //   this.nodeComponent
+        // );
+        // this.nodeComponent.connectionEndNodeThumb?.update?.(
+        //   this.nodeComponent?.connectionEndNodeThumb,
+        //   this.points.endX + endOffsetX,
+        //   this.points.endY + endOffsetY,
+        //   this.nodeComponent
+        // );
       }
     } else if (!skipChecks) {
       if (initiator && !initiator.connectionControllerType) {
         return false;
       }
-
+      updateThumbs = true;
       // Neem de x en y van de controller-thumb over...
       if (initiator && x !== undefined && y !== undefined) {
         if (this.nodeComponent?.startNode) {
@@ -832,14 +831,14 @@ export class Connection<T extends BaseNodeInfo> {
             this.points.cx1 = this.points.beginX + standardControlPointDistance;
             this.points.cy1 = this.points.beginY;
 
-            if (this.nodeComponent) {
-              this.nodeComponent.connectionStartNodeThumb?.update?.(
-                this.nodeComponent.connectionStartNodeThumb,
-                this.points.beginX + startOffsetX,
-                this.points.beginY,
-                this.nodeComponent
-              );
-            }
+            // if (this.nodeComponent) {
+            //   this.nodeComponent.connectionStartNodeThumb?.update?.(
+            //     this.nodeComponent.connectionStartNodeThumb,
+            //     this.points.beginX + startOffsetX,
+            //     this.points.beginY,
+            //     this.nodeComponent
+            //   );
+            // }
           }
         } else if (
           initiator.connectionControllerType === ConnectionControllerType.c1
@@ -862,14 +861,14 @@ export class Connection<T extends BaseNodeInfo> {
             this.points.cy2 = this.points.endY;
           }
 
-          if (this.nodeComponent) {
-            this.nodeComponent.connectionEndNodeThumb?.update?.(
-              this.nodeComponent.connectionEndNodeThumb,
-              this.points.endX + (this.nodeComponent?.endNode ? 0 : endOffsetX),
-              this.points.endY,
-              this.nodeComponent
-            );
-          }
+          // if (this.nodeComponent) {
+          //   this.nodeComponent.connectionEndNodeThumb?.update?.(
+          //     this.nodeComponent.connectionEndNodeThumb,
+          //     this.points.endX + (this.nodeComponent?.endNode ? 0 : endOffsetX),
+          //     this.points.endY,
+          //     this.nodeComponent
+          //   );
+          // }
         } else {
           return false;
         }
@@ -953,19 +952,25 @@ export class Connection<T extends BaseNodeInfo> {
       endOffsetX,
       endOffsetY
     );
-    this.setPath(bbox, startOffsetX, startOffsetY, endOffsetX, endOffsetY);
+    const pathInfo = this.setPath(
+      bbox,
+      startOffsetX,
+      startOffsetY,
+      endOffsetX,
+      endOffsetY
+    );
     if (updateThumbs && this.nodeComponent) {
       this.nodeComponent.connectionStartNodeThumb?.update?.(
         this.nodeComponent.connectionStartNodeThumb,
-        this.points.beginX + startOffsetX,
-        this.points.beginY + startOffsetY,
+        pathInfo.startX ?? this.points.beginX + startOffsetX,
+        pathInfo.startY ?? this.points.beginY + startOffsetY,
         this.nodeComponent
       );
 
       this.nodeComponent.connectionEndNodeThumb?.update?.(
         this.nodeComponent.connectionEndNodeThumb,
-        this.points.endX + endOffsetX,
-        this.points.endY + endOffsetY,
+        pathInfo.endX ?? this.points.endX + endOffsetX,
+        pathInfo.endY ?? this.points.endY + endOffsetY,
         this.nodeComponent
       );
     }
@@ -1144,7 +1149,12 @@ export class Connection<T extends BaseNodeInfo> {
     _endOffsetX: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _endOffsetY: number
-  ): void {
-    //
+  ): ConnectionStartEndPositions {
+    return {
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+    };
   }
 }

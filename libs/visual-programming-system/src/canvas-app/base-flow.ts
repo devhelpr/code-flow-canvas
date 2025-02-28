@@ -234,4 +234,9 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
   getDebugInfoHandler: () =>
     | ((debugInfo: Record<string, string | number | boolean>) => void)
     | undefined;
+
+  getPointerPositionInLocalSpace: (event: MouseEvent) => {
+    x: number;
+    y: number;
+  };
 }

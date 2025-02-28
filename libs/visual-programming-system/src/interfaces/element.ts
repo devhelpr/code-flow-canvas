@@ -206,3 +206,10 @@ export type IThumb = {
   hint?: string;
   internalName?: string;
 };
+
+export interface ConnectionStartEndPositions {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+}

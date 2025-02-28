@@ -3,6 +3,7 @@ import { thumbHalfWidth, thumbHalfHeight } from '../constants/measures';
 import { CanvasAction } from '../enums/canvas-action';
 import { InteractionStateMachine } from '../interaction-state-machine';
 import {
+  ConnectionStartEndPositions,
   ElementNodeMap,
   IConnectionNodeComponent,
   IElementNode,
@@ -355,7 +356,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       //   y2
       // );
 
-      const path = this.getArc(
+      const pathInfo = this.getArc(
         { x: 0, y: 0 },
         startOffsetX,
         startOffsetY,
@@ -369,7 +370,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
 
       (this.pathHiddenElement.domElement as HTMLElement).setAttribute(
         'd',
-        path
+        pathInfo.path
       );
     }
   }
@@ -380,7 +381,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     startOffsetY: number,
     endOffsetX: number,
     endOffsetY: number
-  ): void {
+  ): ConnectionStartEndPositions {
     const x1 = this.points.beginX - bbox.x + startOffsetX;
     const y1 = this.points.beginY - bbox.y + startOffsetY;
     const x2 = this.points.endX - bbox.x + endOffsetX;
@@ -394,7 +395,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
     //   x2,
     //   y2
     // );
-    const path = this.getArc(
+    const pathInfo = this.getArc(
       bbox,
       startOffsetX,
       startOffsetY,
@@ -406,11 +407,20 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       y2
     );
 
-    (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
+    (this.pathElement?.domElement as HTMLElement).setAttribute(
+      'd',
+      pathInfo.path
+    );
     (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
       'd',
-      path
+      pathInfo.path
     );
+    return {
+      startX: pathInfo.startX,
+      startY: pathInfo.startY,
+      endX: pathInfo.endX,
+      endY: pathInfo.endY,
+    };
   }
 
   protected getArc(
@@ -622,10 +632,16 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
         const endY = end.y - (targetHeight / 2) * unitY;
 
         // Create path from edge to edge
-        const controlX = (startX + endX) / 2;
-        const controlY = (startY + endY) / 2;
+        // const controlX = (startX + endX) / 2;
+        // const controlY = (startY + endY) / 2;
         //canvas.updateControlPoint(controlX, controlY);
-        return `M ${startX} ${startY} L ${endX} ${endY}`;
+        return {
+          path: `M ${startX} ${startY} L ${endX} ${endY}`,
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY,
+        };
         //canvas.updateTestArcPath(d);
       } else {
         //canvas.updateControlPoint(controlX, controlY);
@@ -640,7 +656,13 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
           bestIntersection2.y
         }`;
         //canvas.updateTestArcPath(d);
-        return d;
+        return {
+          path: d,
+          startX: bestIntersection1.x,
+          startY: bestIntersection1.y,
+          endX: bestIntersection2.x,
+          endY: bestIntersection2.y,
+        };
       }
 
       // const finalSweepFlag = isOverlapping ? 1 : angleDiff > 0 ? 1 : 0;
@@ -653,7 +675,7 @@ export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
       //   : 0;
     } else {
       //canvas.updateTestArcPath('');
-      return '';
+      return { path: '', startX: 0, startY: 0, endX: 0, endY: 0 };
     }
 
     //canvas.updateIntersectionPoints([...intersections1, ...intersections2]);

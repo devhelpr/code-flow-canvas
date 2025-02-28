@@ -1,0 +1,91 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f",
+          "x": 379.0949864510301,
+          "y": -75.05466727079755,
+          "width": 633,
+          "height": 400,
+          "nodeType": "Shape",
+          "elements": [
+            {
+              "id": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f_input",
+              "x": 0,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "891b56d1-2fa5-428a-a2d8-a9d17f8d6d0f_output",
+              "x": 633,
+              "y": 0,
+              "width": 1,
+              "height": 1,
+              "nodeType": "Shape",
+              "nodeInfo": {}
+            },
+            {
+              "id": "018f77ce-5c3b-46d3-a127-dcf2a53d594b",
+              "x": 122.7485549656526,
+              "y": 151.4699003913202,
+              "width": 100,
+              "height": 50,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state",
+                "formValues": {
+                  "caption": "Off"
+                }
+              }
+            },
+            {
+              "id": "238d3f63-d97f-445b-a3b3-10d006c92dff",
+              "x": 250.41487495830825,
+              "y": 33.262925487642654,
+              "width": 99.99993896484375,
+              "height": 50.000003814697266,
+              "nodeType": "Shape",
+              "nodeInfo": {
+                "type": "state-transition",
+                "formValues": {
+                  "caption": "toggle"
+                }
+              }
+            },
+            {
+              "id": "bcb38eb0-06e0-4f8a-af18-1e590b429525",
+              "x": 172.7485549656526,
+              "y": 176.4699003913202,
+              "endX": 300.4148444407301,
+              "endY": 58.26292739499129,
+              "startNodeId": "018f77ce-5c3b-46d3-a127-dcf2a53d594b",
+              "endNodeId": "238d3f63-d97f-445b-a3b3-10d006c92dff",
+              "startThumbName": "state",
+              "endThumbName": "state",
+              "lineType": "BezierQuadratic",
+              "nodeType": "Connection",
+              "layer": 1,
+              "nodeInfo": {}
+            }
+          ],
+          "nodeInfo": {
+            "type": "state-machine",
+            "taskType": "state-machine",
+            "formValues": {
+              "caption": "State"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
