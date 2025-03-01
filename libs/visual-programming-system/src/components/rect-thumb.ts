@@ -394,12 +394,23 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     //   this.nodeComponent.id,
     //   this.nodeComponent
     // );
+
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       this.cssClasses.droppingCursorPointer
     );
-    (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      this.cssClasses.droppingCursorPointer
-    );
+    const isCreatingConnecting =
+      this.canvasApp?.getCanvasAttribute('mode') === 'create-connection';
+
+    if (isCreatingConnecting) {
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
+        this.cssClasses.creatingConnection
+      );
+    } else {
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
+        this.cssClasses.droppingCursorPointer
+      );
+    }
+
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       this.cssClasses.droppingNotAllowed
     );
@@ -576,6 +587,9 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       this.cssClasses.dropping
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.creatingConnection
     );
 
     (this.nodeComponent.domElement as unknown as SVGElement).style.filter =

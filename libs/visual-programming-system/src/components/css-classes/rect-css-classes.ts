@@ -13,5 +13,6 @@ export const getRectNodeCssClasses = () => {
     dragging: 'dragging',
     draggingNoPointer: 'pointer-events-none',
     draggingPointerAuto: 'pointer-events-auto',
+    creatingConnection: 'cursor-crosshair',
   };
 };

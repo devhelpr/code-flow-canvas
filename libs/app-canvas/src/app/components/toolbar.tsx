@@ -532,7 +532,7 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
           return false;
         }}
       >
-        <span class="icon icon-arrow_right_alt px-2" />
+        <span class="inline-block icon icon-arrow_right_alt px-2 -rotate-45 scale-[1.5]" />
       </button>
       <button
         getElement={(element: HTMLButtonElement) => {
