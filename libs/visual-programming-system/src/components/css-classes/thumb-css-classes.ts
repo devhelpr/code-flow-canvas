@@ -7,7 +7,7 @@ export const getThumbCssClasses = () => {
     nodePort: 'node-connector',
     clipPathStyle: 'circle(25%)',
     circleClasses: 'origin-center relative',
-    onPointerOverCursor: 'cursor-pointer',
+    onPointerOverCursor: 'cursor-crosshair',
     hover: 'hover',
     cursorNotAllowed: 'cursor-not-allowed',
     dragging: 'dragging',

@@ -454,9 +454,11 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       this.cssClasses.onPointerOverCursor
     );
-    (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      this.cssClasses.onPointerOverCursor
-    );
+    if (this.nodeComponent.thumbConnectionType !== ThumbConnectionType.end) {
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
+        this.cssClasses.onPointerOverCursor
+      );
+    }
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
       this.cssClasses.hover
     );
