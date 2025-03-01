@@ -9,6 +9,20 @@ import { BaseRectNode } from './rect-node-class';
 
 import './style.css';
 
+class Label extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    const wrapper = document.createElement('label');
+    wrapper.setAttribute('part', 'label'); // uses ::part pseudo-element
+    const text = this.getAttribute('text') || 'Label';
+    wrapper.textContent = text;
+    shadow.appendChild(wrapper);
+  }
+}
+
+customElements.define('draw-grid-label', Label);
+
 interface GridDrawSettings {
   fadeRadius: number;
   fadePower: number;
@@ -132,6 +146,7 @@ class GridDraw {
     controlsContainer.className = 'controls-container';
     controlsContainer.innerHTML = `
       <div class="control-group">
+        <draw-grid-label text="Draw Grid"></draw-grid-label>
         <label>Brush Color</label>
         <input type="color" id="colorPicker" value="#000000">
         <div class="color-presets">
