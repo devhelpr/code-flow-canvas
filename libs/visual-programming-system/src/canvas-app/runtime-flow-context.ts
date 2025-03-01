@@ -406,4 +406,11 @@ export class RuntimeFlowContext<T extends BaseNodeInfo>
       y: 0,
     };
   };
+
+  getCanvasAttribute = (_attribute: string) => {
+    return null;
+  };
+  setCanvasAttribute = (_attribute: string, _value: string) => {
+    //
+  };
 }

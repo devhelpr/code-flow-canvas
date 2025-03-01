@@ -239,4 +239,7 @@ export interface IBaseFlow<T extends BaseNodeInfo> {
     x: number;
     y: number;
   };
+
+  getCanvasAttribute: (attribute: string) => string | null;
+  setCanvasAttribute: (attribute: string, value: string) => void;
 }

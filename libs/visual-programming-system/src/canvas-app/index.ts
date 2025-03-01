@@ -187,6 +187,9 @@ export class FlowCanvas<T extends BaseNodeInfo>
   private rootFlowCanvas: IFlowCanvasBase<T> | undefined;
   private isNodeContainer = false;
   public getRootFlowCanvas = () => this.rootFlowCanvas;
+
+  private canvasAttributes: Map<string, string> = new Map();
+
   constructor(
     rootElement: HTMLElement,
     disableInteraction?: boolean,
@@ -2075,5 +2078,12 @@ export class FlowCanvas<T extends BaseNodeInfo>
       x: xpos,
       y: ypos,
     };
+  };
+
+  getCanvasAttribute = (attribute: string) => {
+    return this.canvasAttributes.get(attribute) ?? null;
+  };
+  setCanvasAttribute = (attribute: string, value: string) => {
+    this.canvasAttributes.set(attribute, value);
   };
 }

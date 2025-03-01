@@ -108,8 +108,13 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
     //   skipNextEffect = false;
     //   return;
     // }
+
     const selectedNodeInfo = getSelectedNode();
     const actionSelectedNodeInfo = getActionNode();
+
+    if (props.canvasAppInstance.getCanvasAttribute('mode') !== 'assistant') {
+      return;
+    }
     if (selectedNodeInfo || actionSelectedNodeInfo) {
       // selectedNode = undefined;
       // const info = props.getNode(
@@ -444,6 +449,15 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
       setSelectNode(undefined);
       popupTriggeredFromEffect = false;
       hideUL();
+
+      if (
+        props.canvasAppInstance.getCanvasAttribute('mode') ===
+        'create-connection'
+      ) {
+        props.canvasAppInstance.setCanvasAttribute('mode', 'default');
+        createConnectionButton?.classList.remove('bg-blue-500');
+        assistantButton?.classList.remove('bg-blue-500');
+      }
     }
   );
 
@@ -486,6 +500,8 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
     }
     fillTaskList(tasks, label);
   };
+  let createConnectionButton: HTMLButtonElement | null = null;
+  let assistantButton: HTMLButtonElement | null = null;
   const ToolbarComponent = () => (
     <div
       class="flex whitespace-nowrap absolute bottom-[80px] left-[50%] -translate-x-[50%] z-[10000] bg-white rounded-sm max-w-full w-max"
@@ -493,10 +509,54 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
         wrapper = element as HTMLDivElement;
       }}
     >
-      <button>
+      <button
+        getElement={(element: HTMLButtonElement) => {
+          createConnectionButton = element;
+        }}
+        click={(event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          createConnectionButton?.classList.toggle('bg-blue-500');
+          assistantButton?.classList.remove('bg-blue-500');
+          if (
+            props.canvasAppInstance.getCanvasAttribute('mode') ===
+            'create-connection'
+          ) {
+            props.canvasAppInstance.setCanvasAttribute('mode', 'default');
+          } else {
+            props.canvasAppInstance.setCanvasAttribute(
+              'mode',
+              'create-connection'
+            );
+          }
+          return false;
+        }}
+      >
         <span class="icon icon-arrow_right_alt px-2" />
       </button>
-      <button>
+      <button
+        getElement={(element: HTMLButtonElement) => {
+          assistantButton = element;
+        }}
+        click={(event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          createConnectionButton?.classList.remove('bg-blue-500');
+          assistantButton?.classList.toggle('bg-blue-500');
+          if (
+            props.canvasAppInstance.getCanvasAttribute('mode') === 'assistant'
+          ) {
+            props.canvasAppInstance.setCanvasAttribute('mode', 'default');
+            popupTriggeredFromEffect = false;
+            selectedNode = undefined;
+            hideUL();
+          } else {
+            props.canvasAppInstance.setCanvasAttribute('mode', 'assistant');
+          }
+          return false;
+        }}
+      >
         <span class="icon icon-assistant px-2" />
       </button>
       <input
