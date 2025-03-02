@@ -395,7 +395,9 @@ export class NodeTransformer<T extends BaseNodeInfo> {
           pointerMove: this.onPointerMoveHelper,
           pointerUp: this.onPointerUpHelper,
         },
-        this.nodeTransformElement as INodeComponent<T>
+        this.nodeTransformElement as INodeComponent<T>,
+        undefined,
+        this.canvas
       );
       event.stopPropagation();
       return false;

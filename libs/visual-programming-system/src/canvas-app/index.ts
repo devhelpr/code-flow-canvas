@@ -566,6 +566,11 @@ export class FlowCanvas<T extends BaseNodeInfo>
               !rect?.canvasAppInstance?.canvas?.id
             ) {
               if (currentState.canvasNode?.id !== this.canvas.id) {
+                // console.log(
+                //   'pointermove canvas cancelled',
+                //   currentState.canvasNode?.id,
+                //   this.canvas.id
+                // );
                 return;
               }
 
