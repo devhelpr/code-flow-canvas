@@ -119,8 +119,8 @@ export const getRectNode =
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
         rectNode.onResize = (width: number, height: number) => {
           // TODO : fix this... when changing the height, the node content is not resized
-          const newHeight =
-            height > (node.height ?? 10) ? height : node.height ?? 10;
+          const newHeight = height;
+          //height > (node.height ?? 10) ? height : node.height ?? 10;
           console.log('RECT RESIZE via onResize', width, newHeight);
           node.width = width;
           node.height = newHeight;

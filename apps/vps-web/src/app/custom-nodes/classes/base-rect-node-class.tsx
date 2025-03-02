@@ -118,6 +118,8 @@ export class BaseRectNode {
     if (this.rectElement) {
       this.rectElement.style.width = `${width}px`;
       this.rectElement.style.height = `${height}px`;
+      this.rectElement.style.minWidth = `${width}px`;
+      this.rectElement.style.minHeight = `${height}px`;
     }
   };
 }

@@ -73,10 +73,4 @@ w-min h-min
     );
   }
   onResize: ((width: number, height: number) => void) | undefined = undefined;
-  setSize = (width: number, height: number) => {
-    if (this.rectElement) {
-      this.rectElement.style.width = `${width}px`;
-      this.rectElement.style.height = `${height}px`;
-    }
-  };
 }
