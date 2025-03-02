@@ -5,9 +5,9 @@ import {
   IComputeResult,
 } from '@devhelpr/visual-programming-system';
 import { getRunIndex, NodeInfo, runNode } from '@devhelpr/web-flow-executor';
-import { BaseRectNode } from './rect-node-class';
 
 import './style.css';
+import { BaseRectNode } from './base-rect-node-class';
 
 class Label extends HTMLElement {
   constructor() {

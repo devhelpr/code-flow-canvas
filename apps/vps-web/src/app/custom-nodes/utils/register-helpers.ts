@@ -1,6 +1,6 @@
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { NodeTask } from '@devhelpr/visual-programming-system';
-import { BaseRectNode } from '../classes/rect-node-class';
+import { BaseRectNode } from '../classes/base-rect-node-class';
 
 export type NodeRegistration =
   | typeof BaseRectNode

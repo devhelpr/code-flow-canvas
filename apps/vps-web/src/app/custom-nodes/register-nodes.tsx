@@ -4,7 +4,6 @@ import {
 } from '@devhelpr/web-flow-executor';
 import { mermaidNodeName, getMermaidNode } from './mermaid';
 import { getRectNode } from './rect-node';
-import { BaseRectNode } from './classes/rect-node-class';
 import { OvalNode } from './classes/oval-node-class';
 import { DrawGridNode } from './classes/draw-grid-node';
 import {
@@ -12,13 +11,14 @@ import {
   isFactoryNode,
   NodeRegistration,
 } from './utils/register-helpers';
+import { RectNode } from './classes/rect-node-class';
 
 const nodes: NodeRegistration[] = [
   () => ({
     factory: getMermaidNode,
     name: mermaidNodeName,
   }),
-  BaseRectNode,
+  RectNode,
   OvalNode,
   DrawGridNode,
 ];

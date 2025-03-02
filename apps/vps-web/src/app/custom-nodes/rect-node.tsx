@@ -12,11 +12,11 @@ import {
   ThumbType,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 import {
   BaseRectNode,
   CreateRunCounterContext,
-} from './classes/rect-node-class';
+} from './classes/base-rect-node-class';
 
 const familyName = 'flow-canvas';
 
@@ -118,6 +118,7 @@ export const getRectNode =
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
         rectNode.onResize = (width: number, height: number) => {
+          // TODO : fix this... when changing the height, the node content is not resized
           const newHeight =
             height > (node.height ?? 10) ? height : node.height ?? 10;
           console.log('RECT RESIZE via onResize', width, newHeight);
@@ -181,37 +182,37 @@ export const getRectNode =
           });
           resizeObserver.observe(nodeRenderElement);
 
-          const mutationObserver = new MutationObserver(() => {
-            if (rect && rect.resize) {
-              console.log('RECT RESIZE via MutationObserver');
-              // problem with manual resizing is partially solved when this is commented
-              // node content is not resized though...
-              if (node.isSettingSize) {
-                node.isSettingSize = false;
-                rectNode.setSize(node.width ?? 10, node.height ?? 10);
-                return;
-              }
+          // const mutationObserver = new MutationObserver(() => {
+          //   if (rect && rect.resize) {
+          //     console.log('RECT RESIZE via MutationObserver');
+          //     // problem with manual resizing is partially solved when this is commented
+          //     // node content is not resized though...
+          //     if (node.isSettingSize) {
+          //       node.isSettingSize = false;
+          //       rectNode.setSize(node.width ?? 10, node.height ?? 10);
+          //       return;
+          //     }
 
-              const result: { width: number; height: number } | undefined =
-                rect.resize(
-                  undefined,
-                  true,
-                  rectNode.childElementSelector,
-                  true
-                );
-              if (result) {
-                nodeInstance.contextInstance?.nodeTransformer.resizeNodeTransformer(
-                  result.width,
-                  result.height
-                );
-              }
-            }
-          });
-          mutationObserver.observe(nodeRenderElement, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-          });
+          //     const result: { width: number; height: number } | undefined =
+          //       rect.resize(
+          //         undefined,
+          //         true,
+          //         rectNode.childElementSelector,
+          //         true
+          //       );
+          //     if (result) {
+          //       nodeInstance.contextInstance?.nodeTransformer.resizeNodeTransformer(
+          //         result.width,
+          //         result.height
+          //       );
+          //     }
+          //   }
+          // });
+          // mutationObserver.observe(nodeRenderElement, {
+          //   childList: true,
+          //   subtree: true,
+          //   characterData: true,
+          // });
           if (node?.nodeInfo) {
             node.nodeInfo.delete = () => {
               if (nodeRenderElement) {

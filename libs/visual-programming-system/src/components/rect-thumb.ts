@@ -5,7 +5,6 @@ import { InteractionStateMachine } from '../interaction-state-machine';
 import {
   ElementNodeMap,
   IConnectionNodeComponent,
-  IDOMElement,
   IElementNode,
   INodeComponent,
   IRectNodeComponent,
@@ -18,7 +17,6 @@ import { Theme } from '../interfaces/theme';
 import { getSelectedNode } from '../reactivity';
 import { ConnectionControllerType, NodeType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
-import { createElement } from '../utils/create-element';
 import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
 import { pointerDown } from './events/pointer-events';
 import { LineConnection } from './line-connection';
@@ -31,7 +29,7 @@ import { Rect } from './rect';
 
 export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
   createStraightLineConnection = false;
-  toolTipUseShiftToDragConnection: IDOMElement | undefined = undefined;
+  //toolTipUseShiftToDragConnection: IDOMElement | undefined = undefined;
   constructor(
     canvas: INodeComponent<T>,
     interactionStateMachine: InteractionStateMachine<T>,
@@ -96,14 +94,14 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     this.nodeComponent.isThumb = true;
     this.createStraightLineConnection = createStraightLineConnection ?? false;
 
-    this.toolTipUseShiftToDragConnection = createElement(
-      'div',
-      {
-        class: this.cssClasses.rectThumbTooltipClasses,
-      },
-      this.nodeComponent.domElement,
-      'Hold shift to drag connections'
-    );
+    // this.toolTipUseShiftToDragConnection = createElement(
+    //   'div',
+    //   {
+    //     class: this.cssClasses.rectThumbTooltipClasses,
+    //   },
+    //   this.nodeComponent.domElement,
+    //   'Hold shift to drag connections'
+    // );
 
     this.nodeComponent.domElement?.addEventListener(
       'pointerup',
