@@ -125,6 +125,12 @@ w-min h-min
               // }
               // console.log('blur', this.rectElement?.textContent);
               if (
+                this.canvasAppInstance?.getCanvasAttribute('create-connection')
+              ) {
+                event.preventDefault();
+                return false;
+              }
+              if (
                 this.node?.nodeInfo &&
                 this.rectElement &&
                 (event?.target as HTMLTextAreaElement)?.value
@@ -144,6 +150,7 @@ w-min h-min
                 }
               }
               this.updated();
+              return true;
             }}
           ></textarea>
         </div>

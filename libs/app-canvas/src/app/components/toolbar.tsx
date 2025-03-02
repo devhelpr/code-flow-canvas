@@ -450,14 +450,7 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
       popupTriggeredFromEffect = false;
       hideUL();
 
-      if (
-        props.canvasAppInstance.getCanvasAttribute('mode') ===
-        'create-connection'
-      ) {
-        props.canvasAppInstance.setCanvasAttribute('mode', 'default');
-        createConnectionButton?.classList.remove('bg-blue-500');
-        assistantButton?.classList.remove('bg-blue-500');
-      }
+      exitCreateConnectionMode();
     }
   );
 
@@ -500,6 +493,21 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
     }
     fillTaskList(tasks, label);
   };
+
+  const switchToCreateConnectionMode = () => {
+    props.canvasAppInstance.setCanvasAttribute('mode', 'create-connection');
+    createConnectionButton?.classList.add('bg-blue-500');
+    assistantButton?.classList.remove('bg-blue-500');
+    props.canvasAppInstance.rootElement.classList.add('create-connection-mode');
+  };
+  const exitCreateConnectionMode = () => {
+    props.canvasAppInstance.setCanvasAttribute('mode', 'default');
+    createConnectionButton?.classList.remove('bg-blue-500');
+    props.canvasAppInstance.rootElement.classList.remove(
+      'create-connection-mode'
+    );
+  };
+
   let createConnectionButton: HTMLButtonElement | null = null;
   let assistantButton: HTMLButtonElement | null = null;
   const ToolbarComponent = () => (
@@ -516,18 +524,15 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
         click={(event: MouseEvent) => {
           event.preventDefault();
           event.stopPropagation();
-          createConnectionButton?.classList.toggle('bg-blue-500');
-          assistantButton?.classList.remove('bg-blue-500');
+          // createConnectionButton?.classList.toggle('bg-blue-500');
+          // assistantButton?.classList.remove('bg-blue-500');
           if (
             props.canvasAppInstance.getCanvasAttribute('mode') ===
             'create-connection'
           ) {
-            props.canvasAppInstance.setCanvasAttribute('mode', 'default');
+            exitCreateConnectionMode();
           } else {
-            props.canvasAppInstance.setCanvasAttribute(
-              'mode',
-              'create-connection'
-            );
+            switchToCreateConnectionMode();
           }
           return false;
         }}
@@ -541,8 +546,7 @@ export function Toolbar<T extends BaseNodeInfo>(props: {
         click={(event: MouseEvent) => {
           event.preventDefault();
           event.stopPropagation();
-
-          createConnectionButton?.classList.remove('bg-blue-500');
+          exitCreateConnectionMode();
           assistantButton?.classList.toggle('bg-blue-500');
           if (
             props.canvasAppInstance.getCanvasAttribute('mode') === 'assistant'

@@ -240,7 +240,7 @@ export class ThumbConnectionController<
     );
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-      this.cssClasses.onPointerOverCursor
+      this.cssClasses.onPointerOverPointer
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
       this.cssClasses.hovering
@@ -255,7 +255,10 @@ export class ThumbConnectionController<
       return;
     }
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      this.cssClasses.onPointerOverCursor
+      this.cssClasses.onPointerOverCreateConnection
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.onPointerOverPointer
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       this.cssClasses.hovering
@@ -283,7 +286,10 @@ export class ThumbConnectionController<
         this.cssClasses.cursorNotAllowed
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        this.cssClasses.onPointerOverCursor
+        this.cssClasses.onPointerOverCreateConnection
+      );
+      (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+        this.cssClasses.onPointerOverPointer
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
         this.cssClasses.hovering
@@ -595,7 +601,10 @@ export class ThumbConnectionController<
     }
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      this.cssClasses.onPointerOverCursor
+      this.cssClasses.onPointerOverCreateConnection
+    );
+    (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
+      this.cssClasses.onPointerOverPointer
     );
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
       this.cssClasses.hovering

@@ -420,7 +420,9 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
               if (connections.length >= maxConnections) {
                 (
                   this.nodeComponent.domElement as unknown as SVGElement
-                ).classList.remove(this.cssClasses.onPointerOverCursor);
+                ).classList.remove(
+                  this.cssClasses.onPointerOverCreateConnection
+                );
                 console.log('start thumb has max connections reached');
                 return;
               }
@@ -441,7 +443,9 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
               if (connections.length >= maxConnections) {
                 (
                   this.nodeComponent.domElement as unknown as SVGElement
-                ).classList.remove(this.cssClasses.onPointerOverCursor);
+                ).classList.remove(
+                  this.cssClasses.onPointerOverCreateConnection
+                );
                 console.log('end thumb has max connections reached');
                 return;
               }
@@ -452,11 +456,11 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     }
 
     (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-      this.cssClasses.onPointerOverCursor
+      this.cssClasses.onPointerOverCreateConnection
     );
     if (this.nodeComponent.thumbConnectionType !== ThumbConnectionType.end) {
       (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
-        this.cssClasses.onPointerOverCursor
+        this.cssClasses.onPointerOverCreateConnection
       );
     }
     (this.nodeComponent.domElement as unknown as SVGElement).classList.add(
@@ -483,7 +487,7 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
 
             (
               this.nodeComponent.domElement as unknown as SVGElement
-            ).classList.remove(this.cssClasses.onPointerOverCursor);
+            ).classList.remove(this.cssClasses.onPointerOverCreateConnection);
             (
               this.nodeComponent.domElement as unknown as SVGElement
             ).classList.add(this.cssClasses.cursorNotAllowed);
@@ -530,7 +534,7 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
         this.cssClasses.cursorNotAllowed
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
-        this.cssClasses.onPointerOverCursor
+        this.cssClasses.onPointerOverCreateConnection
       );
       (this.nodeComponent.domElement as unknown as SVGElement).classList.remove(
         this.cssClasses.hover

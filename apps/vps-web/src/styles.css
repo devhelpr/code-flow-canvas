@@ -140,6 +140,11 @@ rect-node:has(.hover) > .shape-circle,
   @apply bg-blue-500 text-white;
 }
 
+.create-connection-mode .rect-thumb-node input,
+.create-connection-mode .rect-thumb-node textarea {
+  @apply pointer-events-none;
+}
+
 /* source : https://cssloaders.github.io/ */
 .simple-loader {
   width: 16px;
