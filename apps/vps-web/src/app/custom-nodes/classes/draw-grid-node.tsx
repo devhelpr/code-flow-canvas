@@ -3,6 +3,7 @@ import {
   createJSXElement,
   FlowNode,
   IComputeResult,
+  renderElement,
 } from '@devhelpr/visual-programming-system';
 import { getRunIndex, NodeInfo, runNode } from '@devhelpr/web-flow-executor';
 
@@ -12,12 +13,46 @@ import { BaseRectNode } from './base-rect-node-class';
 class Label extends HTMLElement {
   constructor() {
     super();
-    const shadow = this.attachShadow({ mode: 'open' });
-    const wrapper = document.createElement('label');
+    const shadowRoot = this.attachShadow({ mode: 'open' });
+
+    let template: HTMLTemplateElement | null = null;
+    renderElement(
+      <template
+        id="label-template"
+        getElement={(element: HTMLTemplateElement) => {
+          template = element as HTMLTemplateElement;
+        }}
+      >
+        <p>
+          <slot name="label-text">My default text</slot>
+        </p>
+      </template>,
+      shadowRoot
+    );
+
+    // const template = document.createElement('template');
+    // template.innerHTML = `
+    //         <p>
+    //        <slot name="label-text">My default text</slot>
+    //      </p>
+    //     `;
+
+    const wrapper = document.createElement('div');
     wrapper.setAttribute('part', 'label'); // uses ::part pseudo-element
-    const text = this.getAttribute('text') || 'Label';
-    wrapper.textContent = text;
-    shadow.appendChild(wrapper);
+    // const text = this.getAttribute('text') || 'Label';
+    // wrapper.textContent = text;
+    shadowRoot.appendChild(wrapper);
+
+    // setTimeout(() => {
+    // const template = shadowRoot.getElementById(
+    //   'label-template'
+    // ) as HTMLTemplateElement;
+    if (template) {
+      const templateContent = (template as HTMLTemplateElement)?.content;
+      console.log('templateContent', template, templateContent);
+      shadowRoot.appendChild(templateContent.cloneNode(true));
+    }
+    // }, 0);
   }
 }
 
@@ -146,7 +181,7 @@ class GridDraw {
     controlsContainer.className = 'controls-container';
     controlsContainer.innerHTML = `
       <div class="control-group">
-        <draw-grid-label text="Draw Grid"></draw-grid-label>
+        <draw-grid-label text="Draw Grid"><slot name="label-text">Hello webcomponent</slot></draw-grid-label>
         <label>Brush Color</label>
         <input type="color" id="colorPicker" value="#000000">
         <div class="color-presets">
