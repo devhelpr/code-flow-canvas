@@ -28,6 +28,7 @@ export default defineConfig({
   plugins: [nxViteTsPaths()], //mkcert()
   esbuild: {
     sourcemap: false,
+    jsxFragment: 'Fragment',
   },
 
   // Uncomment this if you are using workers.

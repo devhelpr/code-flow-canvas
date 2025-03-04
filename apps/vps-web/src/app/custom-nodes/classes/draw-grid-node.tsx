@@ -15,44 +15,12 @@ class Label extends HTMLElement {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
 
-    let template: HTMLTemplateElement | null = null;
     renderElement(
-      <template
-        id="label-template"
-        getElement={(element: HTMLTemplateElement) => {
-          template = element as HTMLTemplateElement;
-        }}
-      >
-        <p>
-          <slot name="label-text">My default text</slot>
-        </p>
-      </template>,
+      <div part="label">
+        <slot name="label-text">Test</slot>
+      </div>,
       shadowRoot
     );
-
-    // const template = document.createElement('template');
-    // template.innerHTML = `
-    //         <p>
-    //        <slot name="label-text">My default text</slot>
-    //      </p>
-    //     `;
-
-    const wrapper = document.createElement('div');
-    wrapper.setAttribute('part', 'label'); // uses ::part pseudo-element
-    // const text = this.getAttribute('text') || 'Label';
-    // wrapper.textContent = text;
-    shadowRoot.appendChild(wrapper);
-
-    // setTimeout(() => {
-    // const template = shadowRoot.getElementById(
-    //   'label-template'
-    // ) as HTMLTemplateElement;
-    if (template) {
-      const templateContent = (template as HTMLTemplateElement)?.content;
-      console.log('templateContent', template, templateContent);
-      shadowRoot.appendChild(templateContent.cloneNode(true));
-    }
-    // }, 0);
   }
 }
 
@@ -179,54 +147,88 @@ class GridDraw {
     // Create a container for the controls that can be collapsed
     const controlsContainer = document.createElement('div');
     controlsContainer.className = 'controls-container';
-    controlsContainer.innerHTML = `
-      <div class="control-group">
-        <draw-grid-label text="Draw Grid"><slot name="label-text">Hello webcomponent</slot></draw-grid-label>
-        <label>Brush Color</label>
-        <input type="color" id="colorPicker" value="#000000">
-        <div class="color-presets">
-          ${this.COLOR_PRESETS.map(
-            (color, index) => `
-            <button 
-              class="color-preset-button" 
-              style="background-color: rgb(${color[0]}, ${color[1]}, ${
-              color[2]
-            })"
-              data-color-index="${index}"
-              title="Color ${index + 1}"
-            ></button>
-          `
-          ).join('')}
+
+    renderElement(
+      <element:Fragment>
+        <div class="control-group">
+          <draw-grid-label text="Draw Grid">
+            <slot name="label-text">Hello webcomponent</slot>
+          </draw-grid-label>
+          <label>Brush Color</label>
+          <input type="color" id="colorPicker" value="#000000" />
+          <div class="color-presets">
+            {this.COLOR_PRESETS.map((color, _index) => (
+              <button
+                class="color-preset-button"
+                style={`background-color: rgb(${color[0]}, ${color[1]}, ${color[2]})`}
+                data-color-index="${index}"
+                title="Color ${index + 1}"
+              ></button>
+            ))}
+          </div>
         </div>
-      </div>
-      <div class="control-group">
-        <label>Brush Size (${this.brushParams.fadeRadius * 2 + 1}x${
-      this.brushParams.fadeRadius * 2 + 1
-    })</label>
-        <input type="range" id="fadeRadius" min="2" max="8" step="1" value="${
+        <div class="control-group">
+          <label>
+            Brush Size ({this.brushParams.fadeRadius * 2 + 1}x
+            {this.brushParams.fadeRadius * 2 + 1})
+          </label>
+          <input
+            type="range"
+            id="fadeRadius"
+            min="2"
+            max="8"
+            step="1"
+            value="{
           this.brushParams.fadeRadius
-        }">
-      </div>
-      <div class="control-group">
-        <label>Fade Power (${this.brushParams.fadePower.toFixed(1)})</label>
-        <input type="range" id="fadePower" min="0.1" max="2" step="0.1" value="${
+        }"
+          />
+        </div>
+        <div class="control-group">
+          <label>Fade Power (${this.brushParams.fadePower.toFixed(1)})</label>
+          <input
+            type="range"
+            id="fadePower"
+            min="0.1"
+            max="2"
+            step="0.1"
+            value="{
           this.brushParams.fadePower
-        }">
-      </div>
-      <div class="control-group">
-        <label>Color Intensity (${this.brushParams.gamma.toFixed(1)})</label>
-        <input type="range" id="gamma" min="0.1" max="4" step="0.1" value="${
+        }"
+          />
+        </div>
+        <div class="control-group">
+          <label>Color Intensity (${this.brushParams.gamma.toFixed(1)})</label>
+          <input
+            type="range"
+            id="gamma"
+            min="0.1"
+            max="4"
+            step="0.1"
+            value="{
           this.brushParams.gamma
-        }">
-      </div>
-      <div class="control-group">
-        <label>Grid size (${this.brushParams.gridSize.toFixed(0)})</label>
-        <input type="range" id="GRID_SIZE" min="16" max="64" step="1" value="${
+        }"
+          />
+        </div>
+        <div class="control-group">
+          <label>Grid size (${this.brushParams.gridSize.toFixed(0)})</label>
+          <input
+            type="range"
+            id="GRID_SIZE"
+            min="16"
+            max="64"
+            step="1"
+            value="{
           this.brushParams.gridSize
-        }">
-      </div>
-      <button id="clearButton" class="control-button">Clear Grid</button>
-    `;
+        }"
+          />
+        </div>
+        <button id="clearButton" class="control-button">
+          Clear Grid
+        </button>
+      </element:Fragment>,
+
+      controlsContainer
+    );
 
     panel.appendChild(controlsContainer);
     //document.body.appendChild(panel);
