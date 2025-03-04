@@ -656,7 +656,13 @@ export const createStateMachineNode = (
           undefined,
           undefined,
           undefined,
-          true
+          true,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          canvasApp
         );
         const debugHandler = canvasApp?.getDebugInfoHandler();
         if (debugHandler) {

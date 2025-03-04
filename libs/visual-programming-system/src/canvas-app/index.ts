@@ -2086,9 +2086,22 @@ export class FlowCanvas<T extends BaseNodeInfo>
   };
 
   getCanvasAttribute = (attribute: string) => {
-    return this.canvasAttributes.get(attribute) ?? null;
+    if (
+      this.rootFlowCanvas?.canvas?.id === this.canvas.id ||
+      !this.rootFlowCanvas
+    ) {
+      return this.canvasAttributes.get(attribute) ?? null;
+    }
+    return this.rootFlowCanvas?.getCanvasAttribute(attribute) ?? null;
   };
   setCanvasAttribute = (attribute: string, value: string) => {
-    this.canvasAttributes.set(attribute, value);
+    if (
+      this.rootFlowCanvas?.canvas?.id === this.canvas.id ||
+      !this.rootFlowCanvas
+    ) {
+      this.canvasAttributes.set(attribute, value);
+    } else {
+      this.rootFlowCanvas?.setCanvasAttribute(attribute, value);
+    }
   };
 }

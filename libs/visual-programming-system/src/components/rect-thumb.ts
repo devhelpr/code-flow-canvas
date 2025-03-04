@@ -14,7 +14,7 @@ import {
 } from '../interfaces';
 import { LayoutProperties } from '../interfaces/layout-properties';
 import { Theme } from '../interfaces/theme';
-import { getSelectedNode } from '../reactivity';
+import { setSelectNode } from '../reactivity';
 import { ConnectionControllerType, NodeType } from '../types';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { getRectNodeCssClasses } from './css-classes/rect-css-classes';
@@ -141,85 +141,85 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     ) {
       const { x, y } = this.canvasApp.getPointerPositionInLocalSpace(event);
 
-      const selectedNodeId = getSelectedNode();
-      if (selectedNodeId) {
-        const selectedNode = this.canvasElements?.get(
-          selectedNodeId.id
-        ) as unknown as INodeComponent<T>;
-        if (
-          selectedNode &&
-          selectedNode.nodeType === NodeType.Connection &&
-          event &&
-          this.nodeComponent?.connections &&
-          this.nodeComponent?.connections.length > 0
-        ) {
-          const startConnections = this.nodeComponent.connections.filter(
-            (connection) => {
-              return (
-                connection.startNode &&
-                connection.startNode?.id === this.nodeComponent?.id &&
-                connection.id === selectedNode.id
-              );
-            }
-          );
-          if (startConnections.length > 0) {
-            const connection = startConnections[0];
+      // const selectedNodeId = getSelectedNode();
+      // if (selectedNodeId) {
+      //   const selectedNode = this.canvasElements?.get(
+      //     selectedNodeId.id
+      //   ) as unknown as INodeComponent<T>;
+      //   if (
+      //     selectedNode &&
+      //     selectedNode.nodeType === NodeType.Connection &&
+      //     event &&
+      //     this.nodeComponent?.connections &&
+      //     this.nodeComponent?.connections.length > 0
+      //   ) {
+      //     const startConnections = this.nodeComponent.connections.filter(
+      //       (connection) => {
+      //         return (
+      //           connection.startNode &&
+      //           connection.startNode?.id === this.nodeComponent?.id &&
+      //           connection.id === selectedNode.id
+      //         );
+      //       }
+      //     );
+      //     if (startConnections.length > 0) {
+      //       const connection = startConnections[0];
 
-            console.log('thumb 2 start', x, y);
-            if (connection.connectionStartNodeThumb) {
-              connection.startNode = undefined;
-              connection.startNodeThumb = undefined;
+      //       console.log('thumb 2 start', x, y);
+      //       if (connection.connectionStartNodeThumb) {
+      //         connection.startNode = undefined;
+      //         connection.startNodeThumb = undefined;
 
-              this.initiateDraggingConnection(
-                connection.connectionStartNodeThumb,
-                x,
-                y
-                // xorg,
-                // yorg,
-                // rootX,
-                // rootY
-              );
-            }
-            return true;
-          }
+      //         this.initiateDraggingConnection(
+      //           connection.connectionStartNodeThumb,
+      //           x,
+      //           y
+      //           // xorg,
+      //           // yorg,
+      //           // rootX,
+      //           // rootY
+      //         );
+      //       }
+      //       return true;
+      //     }
 
-          const endConnections = this.nodeComponent.connections.filter(
-            (connection) => {
-              return (
-                connection.endNode &&
-                connection.endNode?.id === this.nodeComponent?.id &&
-                connection.id === selectedNode.id
-              );
-            }
-          );
-          if (endConnections.length > 0) {
-            const connection = endConnections[0];
+      //     const endConnections = this.nodeComponent.connections.filter(
+      //       (connection) => {
+      //         return (
+      //           connection.endNode &&
+      //           connection.endNode?.id === this.nodeComponent?.id &&
+      //           connection.id === selectedNode.id
+      //         );
+      //       }
+      //     );
+      //     if (endConnections.length > 0) {
+      //       const connection = endConnections[0];
 
-            console.log('thumb 2 end', x, y);
-            if (connection.connectionEndNodeThumb) {
-              if (connection.endNode) {
-                connection.endNode.connections =
-                  connection.endNode.connections.filter((connection) => {
-                    return connection.id !== connection.id;
-                  });
-              }
-              connection.endNode = undefined;
-              connection.endNodeThumb = undefined;
+      //       console.log('thumb 2 end', x, y);
+      //       if (connection.connectionEndNodeThumb) {
+      //         if (connection.endNode) {
+      //           connection.endNode.connections =
+      //             connection.endNode.connections.filter((connection) => {
+      //               return connection.id !== connection.id;
+      //             });
+      //         }
+      //         connection.endNode = undefined;
+      //         connection.endNodeThumb = undefined;
 
-              this.initiateDraggingConnection(
-                connection.connectionEndNodeThumb,
-                x,
-                y
-                // xorg,
-                // yorg,
-                // rootX,
-                // rootY
-              );
-            }
-            return true;
-          }
-        }
-      }
+      //         this.initiateDraggingConnection(
+      //           connection.connectionEndNodeThumb,
+      //           x,
+      //           y
+      //           // xorg,
+      //           // yorg,
+      //           // rootX,
+      //           // rootY
+      //         );
+      //       }
+      //       return true;
+      //     }
+      //   }
+      // }
 
       const curve = this.createStraightLineConnection
         ? new LineConnection<T>(
@@ -276,6 +276,11 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
         this.nodeComponent.thumbConnectors &&
         this.nodeComponent.thumbConnectors.length > 0
       ) {
+        setSelectNode({
+          id: curve.nodeComponent.id,
+          containerNode: curve.nodeComponent
+            .containerNode as unknown as IRectNodeComponent<BaseNodeInfo>,
+        });
         const thumbConnector = this.nodeComponent.thumbConnectors.find(
           (thumbConnector) => {
             if (

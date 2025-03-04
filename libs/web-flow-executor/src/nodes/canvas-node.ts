@@ -156,7 +156,13 @@ export const getCanvasNode = (updated: () => void): NodeTask<NodeInfo> => {
           undefined,
           undefined,
           undefined,
-          true
+          true,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          canvasApp
         );
 
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;

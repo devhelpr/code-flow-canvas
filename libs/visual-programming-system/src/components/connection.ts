@@ -926,39 +926,35 @@ export class Connection<T extends BaseNodeInfo> {
       }px - 50%), calc(${
         (this.points.beginY + this.points.endY) / 2
       }px - 50%))`;
+    }
 
-      // (
-      //   this.textElement.domElement as HTMLElement
-      // ).style.transform = `translate(calc(${this.points.endX}px - 50%), calc(${this.points.endY}px - 50%))`;
-    }
-    const connectionsFromSameoutput =
-      this.getMultipleConnectionsFromSameOutput();
-    if (
-      !inUpdateLoop &&
-      this.nodeComponent?.id &&
-      connectionsFromSameoutput.length > 0
-    ) {
-      // console.log(
-      //   'update all connections from same output',
-      //   initiator?.id,
-      //   inUpdateLoop,
-      //   connectionsFromSameoutput
-      // );
-      if (
-        !initiator ||
-        (initiator &&
-          (initiator.id === this.nodeComponent.id ||
-            initiator.id === this.nodeComponent.startNode?.id ||
-            initiator.id === this.nodeComponent.endNode?.id) &&
-          !connectionsFromSameoutput.find((c) => c.id === initiator.id))
-      ) {
-        connectionsFromSameoutput.forEach((c) => {
-          if (c.id !== this.nodeComponent?.id) {
-            c.update?.(c, undefined, undefined, this.nodeComponent, true);
-          }
-        });
-      }
-    }
+    // commented .. when dragging a connection which is connected to a node that also has another connection as output...
+    // ... the node connected to this node was not moved
+
+    // const connectionsFromSameoutput =
+    //   this.getMultipleConnectionsFromSameOutput();
+    // if (
+    //   !inUpdateLoop &&
+    //   this.nodeComponent?.id &&
+    //   connectionsFromSameoutput.length > 0
+    // ) {
+
+    //   if (
+    //     !initiator ||
+    //     (initiator &&
+    //       (initiator.id === this.nodeComponent.id ||
+    //         initiator.id === this.nodeComponent.startNode?.id ||
+    //         initiator.id === this.nodeComponent.endNode?.id) &&
+    //       !connectionsFromSameoutput.find((c) => c.id === initiator.id))
+    //   ) {
+
+    //     // connectionsFromSameoutput.forEach((c) => {
+    //     //   if (c.id !== this.nodeComponent?.id) {
+    //     //     c.update?.(c, undefined, undefined, this.nodeComponent, true);
+    //     //   }
+    //     // });
+    //   }
+    // }
     return true;
   };
 

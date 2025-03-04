@@ -153,7 +153,13 @@ export const getLayoutNode = (updated: () => void): NodeTask<NodeInfo> => {
           undefined,
           undefined,
           undefined,
-          true
+          true,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          canvasApp
         );
         if (!canvasAppInstance) {
           throw new Error('canvasAppInstance is undefined');

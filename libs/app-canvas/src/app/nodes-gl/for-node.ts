@@ -157,7 +157,13 @@ export const getForNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           undefined,
           undefined,
           undefined,
-          true
+          true,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          canvasApp
         );
         const debugHandler = canvasApp?.getDebugInfoHandler();
         if (debugHandler) {

@@ -152,7 +152,13 @@ export const getGateNode = (updated: () => void): NodeTask<GLNodeInfo> => {
           undefined,
           undefined,
           undefined,
-          true
+          true,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          canvasApp
         );
 
         rect.nodeComponent.canvasAppInstance = canvasAppInstance;
