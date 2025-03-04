@@ -252,7 +252,9 @@ export class NodeSelector<T extends BaseNodeInfo> {
           pointerMove: this.onPointerMoveHelper,
           pointerUp: this.onPointerUpHelper,
         },
-        this.nodeSelectorElement as INodeComponent<T>
+        this.nodeSelectorElement as INodeComponent<T>,
+        false,
+        this.canvas
       );
       event.stopPropagation();
       return false;
