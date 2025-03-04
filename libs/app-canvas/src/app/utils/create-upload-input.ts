@@ -24,7 +24,7 @@ export const createUploadJSONFileInput = (): Promise<any> => {
           console.error('Error reading file', event);
           reject(event);
         });
-        reader.readAsText(files[0]);
+        reader.readAsText(files[0], 'utf-8');
       }
     };
     input.click();
