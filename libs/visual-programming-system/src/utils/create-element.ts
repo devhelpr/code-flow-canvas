@@ -10,7 +10,7 @@ export type EventHandler = (event: Event) => void | boolean;
 
 export const renderElement = (
   element: JSX.Element,
-  parent?: HTMLElement | null
+  parent?: HTMLElement | ShadowRoot | null
 ) => {
   if (!parent) {
     return;
