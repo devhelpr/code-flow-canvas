@@ -5,6 +5,7 @@ import {
   IThumbNodeComponent,
   GetNodeTaskFactory,
   ElementNodeMap,
+  ThumbType,
 } from '@devhelpr/visual-programming-system';
 import { Exporter } from './Exporter';
 
@@ -192,7 +193,7 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
         });
         if (nodeTask) {
           nodeTask.thumbs?.forEach((thumb) => {
-            if (thumb.name) {
+            if (thumb.name && thumb.thumbType !== ThumbType.Center) {
               ports.push(thumb.name);
             }
           });
@@ -210,19 +211,25 @@ export class OCWGExporter extends BaseExporter<OCWGFile, OCWGInfo> {
     delete clonedNodeInfo.fillColor;
     delete clonedNodeInfo.strokeColor;
     delete clonedNodeInfo.strokeWidth;
+
     const ocwgNode: OCWGNode = {
       id: `${node.id}`,
       position: [node.x, node.y],
       size: [node.width ?? 0, node.height ?? 0],
-      data: [
-        {
-          ...clonedNodeInfo,
-          type: nodeInfoPropertyName,
-          nodeType: nodeInfo.type,
-        },
-        ...portsNode,
-      ],
+      data: [...portsNode],
     };
+
+    if (
+      ocwgNode.data &&
+      nodeInfo.type !== 'rect-node' &&
+      nodeInfo.type !== 'oval-node'
+    ) {
+      ocwgNode.data.push({
+        ...clonedNodeInfo,
+        type: nodeInfoPropertyName,
+        nodeType: nodeInfo.type,
+      });
+    }
     if (this.file?.nodes) {
       this.file.nodes.push(ocwgNode);
     }

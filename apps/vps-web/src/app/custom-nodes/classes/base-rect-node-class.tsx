@@ -1,3 +1,4 @@
+import { getCurrentOCIF } from '@devhelpr/app-canvas';
 import {
   createJSXElement,
   FlowNode,
@@ -6,8 +7,12 @@ import {
   IRectNodeComponent,
   Rect,
   IFlowCanvasBase,
+  createElement,
+  renderElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
+import { CorePropertiesSetupEditor } from './core-properties-settings-editor';
+import './style.css';
 
 export type CreateRunCounterContext = (
   isRunViaRunButton: boolean,
@@ -22,9 +27,6 @@ export class BaseRectNode {
   id: string;
   node: IRectNodeComponent<NodeInfo> | undefined = undefined;
   updated: () => void;
-  getSettingsPopup:
-    | ((popupContainer: HTMLElement) => IDOMElement | undefined)
-    | undefined = undefined;
 
   rectInstance: Rect<NodeInfo> | undefined;
 
@@ -47,6 +49,85 @@ export class BaseRectNode {
     this.updated = updated;
     this.node = node;
   }
+
+  getSettingsPopup:
+    | ((popupContainer: HTMLElement) => IDOMElement | undefined)
+    | undefined = (popupContainer: HTMLElement) => {
+    const popupInstance = createElement(
+      'div',
+      { class: 'max-h-[380px]  h-[fit-content]  p-3 pb-6' },
+      popupContainer,
+      undefined
+    );
+    const panel = popupInstance?.domElement as HTMLDivElement;
+    if (panel) {
+      panel.className = 'control-panel';
+
+      const controlsContainer = document.createElement('div');
+      controlsContainer.className = 'controls-container';
+      const nodeInfo = this.node?.nodeInfo as any;
+      renderElement(
+        <CorePropertiesSetupEditor
+          strokeColor={nodeInfo?.strokeColor ?? '#000000'}
+          fillColor={nodeInfo?.fillColor ?? '#ffffff'}
+          onStrokeColorChange={(color: string) => {
+            console.log('onStrokeColorChange', color);
+            if (this.rectElement) {
+              this.rectElement.style.borderColor = color;
+              this.rectElement.style.color = color;
+              if (this.node?.nodeInfo) {
+                (this.node.nodeInfo as any).strokeColor = color;
+              }
+            }
+            const ocif = getCurrentOCIF();
+            if (ocif) {
+              const node = ocif.nodes.find((n: any) => n.id === this.id);
+              if (node) {
+                const extension = node.data.find(
+                  (dataItem: any) =>
+                    dataItem.type === '@ocwg/node/rect' ||
+                    dataItem.type === '@ocwg/node/oval'
+                );
+                if (extension) {
+                  extension.strokeColor = color;
+                }
+              }
+            }
+            this.updated();
+          }}
+          onFillColorChange={(color: string) => {
+            console.log('onFillColorChange', color);
+            if (this.rectElement) {
+              this.rectElement.style.backgroundColor = color;
+              if (this.node?.nodeInfo) {
+                (this.node.nodeInfo as any).fillColor = color;
+              }
+            }
+
+            const ocif = getCurrentOCIF();
+            if (ocif) {
+              const node = ocif.nodes.find((n: any) => n.id === this.id);
+              if (node) {
+                const extension = node.data.find(
+                  (dataItem: any) =>
+                    dataItem.type === '@ocwg/node/rect' ||
+                    dataItem.type === '@ocwg/node/oval'
+                );
+                if (extension) {
+                  extension.fillColor = color;
+                }
+              }
+            }
+            this.updated();
+          }}
+        />,
+        controlsContainer
+      );
+      panel.appendChild(controlsContainer);
+    }
+    return popupInstance;
+  };
+
   compute = (
     input: string,
     _loopIndex?: number,
@@ -100,6 +181,23 @@ export class BaseRectNode {
             const value = (event?.target as HTMLTextAreaElement)?.value;
 
             (this.node.nodeInfo as any).text = value;
+            const ocif = getCurrentOCIF();
+            if (ocif) {
+              const node = ocif.nodes.find((n: any) => n.id === this.id);
+              if (node && node.resource) {
+                const resource = ocif.resources.find(
+                  (r: any) => r.id === node.resource
+                );
+                if (resource) {
+                  const textRepresentation = resource.representations.find(
+                    (r: any) => r['mime-type'] === 'text/plain'
+                  );
+                  if (textRepresentation) {
+                    textRepresentation.content = value;
+                  }
+                }
+              }
+            }
             const textarea = event.target as HTMLTextAreaElement;
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';

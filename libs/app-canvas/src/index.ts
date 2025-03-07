@@ -10,3 +10,4 @@ export {
   ocifArrow,
   ocifToCodeFlowCanvas,
 } from './app/consts/ocif';
+export { getCurrentOCIF } from './app/importers/ocif-importer';
