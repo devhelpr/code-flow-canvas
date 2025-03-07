@@ -56,6 +56,8 @@ class GridDraw {
   };
 
   private readonly COLOR_PRESETS: [number, number, number][] = [
+    [0, 0, 0], // black
+    [255, 255, 255], // white
     // Reds & Pinks
     [214, 39, 40], // d3 red (darker)
     [239, 68, 68], // red-500

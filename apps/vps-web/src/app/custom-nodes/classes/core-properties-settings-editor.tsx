@@ -1,6 +1,8 @@
 import { createJSXElement } from '@devhelpr/visual-programming-system';
 
 const COLOR_PRESETS: [number, number, number][] = [
+  [0, 0, 0], // black
+  [255, 255, 255], // white
   // Reds & Pinks
   [214, 39, 40], // d3 red (darker)
   [239, 68, 68], // red-500
@@ -82,7 +84,7 @@ export const CorePropertiesSetupEditor = (
   return (
     <element:Fragment>
       <div class="control-group">
-        <label>Border color</label>
+        <label>Stroke color</label>
         <input
           type="color"
           id="strokeColorPicker"

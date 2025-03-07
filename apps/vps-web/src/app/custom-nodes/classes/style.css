@@ -128,7 +128,7 @@
 
 .color-presets {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(9, 1fr);
   gap: 4px;
   margin-top: 8px;
   padding: 6px;
