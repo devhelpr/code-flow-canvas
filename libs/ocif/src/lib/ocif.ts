@@ -1,4 +1,6 @@
-export const ocif = () => {};
+export const ocif = () => {
+  return true;
+};
 
 export const ocifSchema = 'https://canvasprotocol.org/ocif/';
 export const ocifVersion = '0.3';
