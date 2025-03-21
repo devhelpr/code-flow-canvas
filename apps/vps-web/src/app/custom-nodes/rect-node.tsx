@@ -93,6 +93,7 @@ export const getRectNode =
           width: 200,
           height: 100,
           nodeInfo: {
+            isOCIFNode: true,
             fillColor: fillColorDefault,
             strokeColor: strokeColorDefault,
             strokeWidth: strokeWidthDefault,
@@ -104,14 +105,22 @@ export const getRectNode =
         }
         rect = nodeInstance.rect;
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
+
+        if (!node.nodeInfo) {
+          node.nodeInfo = {} as any;
+        }
+
         if (!flowNode) {
-          if (!node.nodeInfo) {
-            node.nodeInfo = {} as any;
+          if (node.nodeInfo) {
+            (node.nodeInfo as any).fillColor = fillColorDefault;
+            (node.nodeInfo as any).strokeColor = strokeColorDefault;
+            (node.nodeInfo as any).strokeWidth = strokeWidthDefault;
+            (node.nodeInfo as any).text = 'rect';
           }
-          (node.nodeInfo as any).fillColor = fillColorDefault;
-          (node.nodeInfo as any).strokeColor = strokeColorDefault;
-          (node.nodeInfo as any).strokeWidth = strokeWidthDefault;
-          (node.nodeInfo as any).text = 'rect';
+        }
+
+        if (node.nodeInfo) {
+          node.nodeInfo.isOCIFNode = true;
         }
 
         rectNode = new NodeClass(node.id, updated, node);

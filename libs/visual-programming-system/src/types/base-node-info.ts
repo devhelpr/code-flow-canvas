@@ -119,6 +119,7 @@ export const baseSettingsNodeInfoProperties = Object.keys(
 export interface BaseNodeInfo extends BaseSettingsNodeInfo {
   taskType?: string;
   type?: string;
+  isOCIFNode?: boolean;
   compositionId?: string;
   isComposition?: boolean;
   cancelPreview?: () => void;

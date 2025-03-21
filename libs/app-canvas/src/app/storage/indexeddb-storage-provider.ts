@@ -83,6 +83,7 @@ function handleTransactions(ready: () => void, failed: () => void) {
 }
 
 function saveFlow<T extends BaseNodeInfo>(flowId: string, flow: Flow<T>) {
+  currentFlow = flow;
   return new Promise<void>((resolve, reject) => {
     console.log('Saving flow', flowId, flow);
 
@@ -122,6 +123,7 @@ function getFlow<T extends BaseNodeInfo>(flowId: string) {
 
     objectRequest.onsuccess = function (_event) {
       if (objectRequest.result) {
+        currentFlow = objectRequest.result.flow as unknown as Flow<T>;
         resolve(objectRequest.result.flow as unknown as Flow<T>);
       } else {
         reject(Error('object not found'));
@@ -135,6 +137,7 @@ let database: IDBDatabase | null = null;
 
 const flowStoreDBName = 'flowrunner-flow-store';
 const flowStoreName = 'flowStore';
+let currentFlow: undefined | Flow<BaseNodeInfo> = undefined;
 
 export const createIndexedDBStorageProvider = <T extends BaseNodeInfo>() => {
   return new Promise<StorageProvider<T>>((resolve, reject) => {
@@ -166,6 +169,9 @@ export const createIndexedDBStorageProvider = <T extends BaseNodeInfo>() => {
       resolve({
         getFlow: getFlow<T>,
         saveFlow: saveFlow<T>,
+        getCurrentFlow: (): Flow<T> => {
+          return currentFlow as unknown as Flow<T>;
+        },
       });
     };
 

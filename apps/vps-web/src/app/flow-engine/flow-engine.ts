@@ -28,6 +28,9 @@ export class FlowEngine {
   constructor() {
     this.canvasApp = createRuntimeFlowContext<NodeInfo>();
   }
+  onSendUpdateToNode:
+    | undefined
+    | ((data: any, node: IRectNodeComponent<NodeInfo>) => void);
   initialize(flow: FlowNode<NodeInfo>[]) {
     if (!this.canvasApp) {
       throw new Error('CanvasAppInstance not initialized');
@@ -80,6 +83,11 @@ export class FlowEngine {
   }
   private runFlow = (input?: any) => {
     let output: any;
+    console.log(
+      ' this.onSendUpdateToNode',
+      this.onSendUpdateToNode !== undefined,
+      this.onSendUpdateToNode
+    );
     return new Promise<string>((resolve, _reject) => {
       const runCounter = new RunCounter();
       runCounter.setRunCounterResetHandler(() => {
@@ -94,6 +102,7 @@ export class FlowEngine {
           );
         }
       });
+      console.log('run flow', run);
       run(
         this.canvasApp?.elements,
         this.canvasApp,
@@ -105,7 +114,12 @@ export class FlowEngine {
         undefined,
         undefined,
         runCounter,
-        false
+        false,
+        undefined,
+        (data, node) => {
+          console.log('onSendUpdateToNode', data, node);
+          this.onSendUpdateToNode?.(data, node);
+        }
       );
     });
   };

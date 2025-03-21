@@ -105,6 +105,7 @@ import { TestComponent } from './components/test-component';
 import { Toolbar } from './components/toolbar';
 import { StorageProvider } from './storage/StorageProvider';
 import {
+  FlowEngine,
   NodeInfo,
   RegisterNodeFactoryFunction,
   RunCounter,
@@ -141,6 +142,21 @@ export type CreateRunCounterContext = (
   shouldResetConnectionSlider: boolean,
   onFlowFinished?: () => void
 ) => RunCounter;
+
+/*
+  TODO : implement custom events/methods for implementing a custom flow-runner 
+  outside of this class 
+  ... default @devhelpr/web-flow-executor should be used
+  ... but for AI-flow .. we want this in a web-worker
+  ... and maybe interactive neural networks should also be implemented this way
+  ... but use @devhelpr/web-flow-executor from within there (but the non-UI variant)
+
+
+  THINK about: when to trigger flow-nodes when interacting with the canvas?
+  ... currently this might be too often
+
+  
+*/
 
 export class CodeFlowWebAppCanvas {
   appRootSelector?: string;
@@ -180,9 +196,13 @@ export class CodeFlowWebAppCanvas {
       this.clearPresetRegistry,
       undefined,
       undefined,
-      this.theme
+      this.theme,
+      this.flowEngine,
+      this.onSetCanvasApp
     );
   }
+  flowEngine?: FlowEngine;
+  onSetCanvasApp?: (canvasApp: IFlowCanvasBase<NodeInfo>) => void;
 }
 
 export class FlowAppElement extends AppElement<NodeInfo> {
@@ -252,6 +272,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     }
   };
 
+  flowEngine: undefined | FlowEngine = undefined;
+
   constructor(
     appRootSelector: string,
     storageProvider?: StorageProvider<NodeInfo>,
@@ -271,7 +293,9 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     clearPresetRegistry?: boolean,
     apiUrlRoot?: string,
     hideFlowPresets?: boolean,
-    theme?: Theme
+    theme?: Theme,
+    flowEngine?: FlowEngine,
+    onSetCanvasApp?: (canvasApp: IFlowCanvasBase<NodeInfo>) => void
   ) {
     super(
       appRootSelector,
@@ -296,6 +320,10 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     if (flowId) {
       this.flowId = flowId;
     }
+    if (flowEngine) {
+      this.flowEngine = flowEngine;
+    }
+    onSetCanvasApp?.(this.canvasApp);
     this.hideFlowPresets = hideFlowPresets ?? false;
     this.onStoreFlow = onStoreFlow;
     this.canvasApp.setApiUrlRoot(apiUrlRoot ?? '');
@@ -426,18 +454,38 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               ) {
                 endNode.nodeInfo?.cancelPreview();
               }
-              runNodeFromThumb(
-                startNodeThumb,
-                canvasApp,
-                () => {
-                  //
-                },
-                this.transformValueForNodeTrigger(text),
-                endNode,
-                undefined,
-                undefined,
-                this.createRunCounterContext(false, false)
-              );
+              if (this.flowEngine?.runNodeFromThumb) {
+                this.flowEngine.runNodeFromThumb(
+                  this.storageProvider?.getCurrentFlow(),
+                  startNodeThumb,
+                  canvasApp,
+                  () => {
+                    //
+                  },
+                  this.transformValueForNodeTrigger(text),
+                  endNode,
+                  undefined,
+                  undefined,
+                  this.createRunCounterContext(false, false),
+                  undefined,
+                  this.flowEngine?.computeAsync
+                );
+              } else {
+                runNodeFromThumb(
+                  startNodeThumb,
+                  canvasApp,
+                  () => {
+                    //
+                  },
+                  this.transformValueForNodeTrigger(text),
+                  endNode,
+                  undefined,
+                  undefined,
+                  this.createRunCounterContext(false, false),
+                  undefined,
+                  this.flowEngine?.computeAsync
+                );
+              }
             }
           }, 0);
         }
@@ -655,24 +703,46 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             clearInterval(interval);
             if (flowChangeType === FlowChangeType.TriggerNode) {
               if (node && this.canvasApp) {
-                runNode(
-                  node as IRectNodeComponent<NodeInfo>,
-                  this.canvasApp,
-                  (_input: string | any[]) => {
-                    //
-                  },
-                  undefined,
-                  0,
-                  0,
-                  undefined,
-                  undefined,
-                  undefined,
-                  this.createRunCounterContext(false, false),
-                  false,
-                  {
-                    triggerNode: true,
-                  }
-                );
+                if (this.flowEngine?.runNode) {
+                  this.flowEngine?.runNode(
+                    this.storageProvider?.getCurrentFlow(),
+                    node as IRectNodeComponent<NodeInfo>,
+                    this.canvasApp,
+                    (_input: string | any[]) => {
+                      //
+                    },
+                    undefined,
+                    0,
+                    0,
+                    undefined,
+                    undefined,
+                    undefined,
+                    this.createRunCounterContext(false, false),
+                    false,
+                    {
+                      triggerNode: true,
+                    }
+                  );
+                } else {
+                  runNode(
+                    node as IRectNodeComponent<NodeInfo>,
+                    this.canvasApp,
+                    (_input: string | any[]) => {
+                      //
+                    },
+                    undefined,
+                    0,
+                    0,
+                    undefined,
+                    undefined,
+                    undefined,
+                    this.createRunCounterContext(false, false),
+                    false,
+                    {
+                      triggerNode: true,
+                    }
+                  );
+                }
               }
             } else {
               this.run();
@@ -2444,18 +2514,35 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       });
       (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
       const runCounter = this.createRunCounterContext(true, false);
-      run(
-        this.canvasApp?.elements,
-        this.canvasApp,
-        (input) => {
-          console.log('run finished', input);
-        },
-        undefined,
-        undefined,
-        undefined,
-        runCounter,
-        false
-      );
+      if (this.flowEngine?.run) {
+        this.flowEngine.run(
+          this.storageProvider?.getCurrentFlow(),
+          this.canvasApp?.elements,
+          this.canvasApp,
+          (input) => {
+            console.log('run finished', input);
+          },
+          undefined,
+          undefined,
+          undefined,
+          runCounter,
+          false,
+          this.flowEngine?.computeAsync
+        );
+      } else {
+        run(
+          this.canvasApp?.elements,
+          this.canvasApp,
+          (input) => {
+            console.log('run finished', input);
+          },
+          undefined,
+          undefined,
+          undefined,
+          runCounter,
+          false
+        );
+      }
     }
   };
 
@@ -2499,18 +2586,38 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               interval = setInterval(() => {
                 if (!getIsStopAnimations()) {
                   clearInterval(interval);
-                  runNodeFromThumb(
-                    startNodeThumb,
-                    canvasApp,
-                    () => {
-                      //
-                    },
-                    this.transformValueForNodeTrigger(text),
-                    endNode,
-                    undefined,
-                    undefined,
-                    this.createRunCounterContext(false, false)
-                  );
+                  if (this.flowEngine?.runNodeFromThumb) {
+                    this.flowEngine.runNodeFromThumb(
+                      this.storageProvider?.getCurrentFlow(),
+                      startNodeThumb,
+                      canvasApp,
+                      () => {
+                        //
+                      },
+                      this.transformValueForNodeTrigger(text),
+                      endNode,
+                      undefined,
+                      undefined,
+                      this.createRunCounterContext(false, false),
+                      undefined,
+                      this.flowEngine?.computeAsync
+                    );
+                  } else {
+                    runNodeFromThumb(
+                      startNodeThumb,
+                      canvasApp,
+                      () => {
+                        //
+                      },
+                      this.transformValueForNodeTrigger(text),
+                      endNode,
+                      undefined,
+                      undefined,
+                      this.createRunCounterContext(false, false),
+                      undefined,
+                      this.flowEngine?.computeAsync
+                    );
+                  }
                 }
               }, 0);
             }

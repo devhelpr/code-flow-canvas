@@ -1,10 +1,16 @@
 {
   "name": "@devhelpr/visual-programming-system",
   "version": "0.0.29",
-  "type": "commonjs",
+  "type": "module",
   "main": "./index.js",
   "module": "./index.mjs",
   "typings": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
   "publishConfig": {
     "access": "public"
   },

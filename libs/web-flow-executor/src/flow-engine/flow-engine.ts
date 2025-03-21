@@ -8,6 +8,7 @@ import {
   NodeType,
   ThumbConnectionType,
   hasNodeInputs,
+  IComputeResult,
 } from '@devhelpr/visual-programming-system';
 import { registerCustomFunction } from '@devhelpr/expression-compiler';
 import { NodeInfo } from '../types/node-info';
@@ -142,7 +143,18 @@ const triggerExecution = (
   offsetY?: number,
   scopeId?: string,
   runCounter?: RunCounter,
-  loopIndex?: number
+  loopIndex?: number,
+  computeAsync?: (
+    node: IRectNodeComponent<NodeInfo>,
+    input: string | any[],
+    loopIndex?: number,
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string,
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
+  ) => Promise<IComputeResult>,
+  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
 ) => {
   let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
   if (result !== undefined) {
@@ -158,7 +170,7 @@ const triggerExecution = (
         scopeId?: string
       ) => {
         let result: any = false;
-        const formInfo = nextNode.nodeInfo as unknown as any;
+        const formInfo = nextNode.nodeInfo as unknown as NodeInfo;
         const storeNodeStates = () => {
           const nodeStates = canvasApp.getNodeStates();
           if (!canvasApp.isContextOnly) {
@@ -204,7 +216,7 @@ const triggerExecution = (
         }
         const payload = getVariablePayload(nextNode, canvasApp, scopeId);
 
-        if (formInfo && formInfo.computeAsync) {
+        if (formInfo && (formInfo.computeAsync || computeAsync)) {
           if (formInfo.decorators) {
             const decoratorInput = handleDecoratrs(
               formInfo.decorators,
@@ -222,21 +234,39 @@ const triggerExecution = (
             input = decoratorInput;
           }
           incrementHelper(runCounter);
-          const promise = formInfo.computeAsync(
-            input,
-            loopIndex ?? runIndex,
-            payload,
-            connection?.endNodeThumb?.thumbName,
-            scopeId,
-            runCounter,
-            connection
-          );
+          const promise =
+            computeAsync?.(
+              nextNode,
+              input,
+              loopIndex ?? runIndex,
+              payload,
+              connection?.endNodeThumb?.thumbName,
+              scopeId,
+              runCounter,
+              connection
+            ) ??
+            formInfo.computeAsync?.(
+              input,
+              loopIndex ?? runIndex,
+              payload,
+              connection?.endNodeThumb?.thumbName,
+              scopeId,
+              runCounter,
+              connection
+            );
 
           return new Promise((resolve, reject) => {
+            if (!promise) {
+              reject();
+              return;
+            }
             promise
-              .then((computeResult: any) => {
+              ?.then((computeResult: any) => {
                 // let result: any = undefined;
                 // result = computeResult.result ?? computeResult.output ?? '';
+
+                sendOutputToNode?.(computeResult.output, nextNode);
+
                 decrementHelper(
                   runCounter,
                   computeResult.output ?? '',
@@ -319,7 +349,9 @@ const triggerExecution = (
             runCounter,
             connection
           );
+
           result = computeResult.result;
+          sendOutputToNode?.(computeResult.output, nextNode);
 
           followPath = computeResult.followPath;
 
@@ -429,7 +461,18 @@ export const runNode = (
   runCounter?: RunCounter,
   shouldClearExecutionHistory = false,
   inputPayload?: any,
-  useThumbName?: string
+  useThumbName?: string,
+  computeAsync?: (
+    node: IRectNodeComponent<NodeInfo>,
+    input: string | any[],
+    loopIndex?: number,
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string,
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
+  ) => Promise<IComputeResult>,
+  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
 ): void => {
   if (runCounter) {
     let thumbName = useThumbName ?? '';
@@ -457,11 +500,11 @@ export const runNode = (
   if (shouldClearExecutionHistory) {
     connectionExecuteHistory = [];
   }
-  const formInfo = node.nodeInfo as unknown as any;
+  const formInfo = node.nodeInfo as unknown as NodeInfo;
   let result: any = false;
   let followPath: string | undefined = undefined;
 
-  if (formInfo && formInfo?.computeAsync) {
+  if (formInfo && (formInfo?.computeAsync || computeAsync)) {
     if (formInfo.decorators) {
       const decoratorInput = handleDecoratrs(
         formInfo.decorators,
@@ -476,8 +519,9 @@ export const runNode = (
       input = decoratorInput;
     }
     incrementHelper(runCounter);
-    formInfo
-      .computeAsync(
+    const computeAsyncResult =
+      computeAsync?.(
+        node,
         input ?? '',
         loopIndex === undefined ? runIndex : loopIndex,
         payload,
@@ -485,10 +529,24 @@ export const runNode = (
         scopeId,
         runCounter,
         connection
-      )
-      .then((computeResult: any) => {
+      ) ??
+      formInfo.computeAsync?.(
+        input ?? '',
+        loopIndex === undefined ? runIndex : loopIndex,
+        payload,
+        useThumbName ?? connection?.endNodeThumb?.thumbName,
+        scopeId,
+        runCounter,
+        connection
+      );
+
+    computeAsyncResult
+      ?.then((computeResult: any) => {
         let result: any = undefined;
+
         result = computeResult.result ?? computeResult.output ?? '';
+        sendOutputToNode?.(result, node);
+
         decrementHelper(runCounter, computeResult.output ?? '', node);
         result = computeResult.result;
         followPath = computeResult.followPath;
@@ -513,7 +571,9 @@ export const runNode = (
           offsetY,
           scopeId,
           runCounter,
-          loopIndex
+          loopIndex,
+          computeAsync,
+          sendOutputToNode
         );
       })
       .catch((e: any) => {
@@ -545,6 +605,8 @@ export const runNode = (
     );
 
     result = computeResult.result;
+    sendOutputToNode?.(result, node);
+
     followPath = computeResult.followPath;
     if (computeResult.stop) {
       if (onStopped) {
@@ -577,7 +639,9 @@ export const runNode = (
       offsetY,
       scopeId,
       runCounter,
-      loopIndex
+      loopIndex,
+      computeAsync,
+      sendOutputToNode
     );
   } else {
     result = false;
@@ -643,8 +707,20 @@ export const run = (
   offsetX?: number,
   offsetY?: number,
   runCounter?: RunCounter,
-  shouldResetConnectionSlider?: boolean
+  shouldResetConnectionSlider?: boolean,
+  computeAsync?: (
+    node: IRectNodeComponent<NodeInfo>,
+    input: string | any[],
+    loopIndex?: number,
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string,
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
+  ) => Promise<IComputeResult>,
+  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
 ) => {
+  console.log('pre sendOutputToNode', sendOutputToNode !== undefined);
   /*
 	TODO : simple flow engine to run the nodes
 
@@ -678,7 +754,12 @@ export const run = (
       undefined,
       undefined,
       undefined,
-      runCounter
+      runCounter,
+      undefined,
+      undefined,
+      undefined,
+      computeAsync,
+      sendOutputToNode
     );
   });
 
@@ -707,6 +788,8 @@ export const run = (
     //   updateRunCounterElement(runCounter);
     // }
 
+    sendOutputToNode?.('test-sendOutputToNode', nodeComponent);
+
     runNode(
       nodeComponent,
       canvasApp,
@@ -725,7 +808,10 @@ export const run = (
       undefined,
       runCounter,
       undefined,
-      inputPayload
+      inputPayload,
+      undefined,
+      computeAsync,
+      sendOutputToNode
     );
   });
   if (!isRunning) {
@@ -745,7 +831,18 @@ export const runNodeFromThumb = (
   loopIndex?: number,
   scopeId?: string,
   runCounter?: RunCounter,
-  showCursorOnly = false
+  showCursorOnly = false,
+  computeAsync?: (
+    node: IRectNodeComponent<NodeInfo>,
+    input: string | any[],
+    loopIndex?: number,
+    payload?: any,
+    thumbName?: string,
+    scopeId?: string,
+    runCounter?: RunCounter,
+    connection?: IConnectionNodeComponent<NodeInfo>
+  ) => Promise<IComputeResult>,
+  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
 ) => {
   //let result: any = false;
   let firstStoreNodeState = true;
@@ -808,8 +905,8 @@ export const runNodeFromThumb = (
       }
       const payload = getVariablePayload(nextNode, canvasApp, scopeId);
       let result: any = false;
-      const formInfo = nextNode.nodeInfo as unknown as any;
-      if (formInfo && formInfo.computeAsync) {
+      const formInfo = nextNode.nodeInfo as unknown as NodeInfo;
+      if (formInfo && (formInfo.computeAsync || computeAsync)) {
         if (formInfo.decorators) {
           const decoratorInput = handleDecoratrs(
             formInfo.decorators,
@@ -828,8 +925,9 @@ export const runNodeFromThumb = (
         }
         return new Promise((resolve, reject) => {
           incrementHelper(runCounter);
-          formInfo
-            .computeAsync(
+          const computeAsyncResult =
+            computeAsync?.(
+              nextNode,
               input,
               loopIndex,
               payload,
@@ -837,10 +935,23 @@ export const runNodeFromThumb = (
               scopeId,
               runCounter,
               connection
-            )
-            .then((computeResult: any) => {
+            ) ??
+            formInfo!.computeAsync?.(
+              input,
+              loopIndex,
+              payload,
+              connection?.endNodeThumb?.thumbName,
+              scopeId,
+              runCounter,
+              connection
+            );
+
+          computeAsyncResult
+            ?.then((computeResult: any) => {
               let result: any = undefined;
               result = computeResult.result ?? computeResult.output ?? '';
+              sendOutputToNode?.(result, nextNode);
+
               decrementHelper(runCounter, computeResult.output ?? '', nextNode);
               result = computeResult.result;
               followPath = computeResult.followPath;
@@ -904,6 +1015,7 @@ export const runNodeFromThumb = (
           connection
         );
         result = computeResult.result;
+        sendOutputToNode?.(result, nextNode);
         followPath = computeResult.followPath;
 
         //previousOutput = computeResult.previousOutput;

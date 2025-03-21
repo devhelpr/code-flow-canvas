@@ -6,7 +6,7 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/libs/app-canvas',
+  cacheDir: '../../node_modules/.vite/libs/ocif',
 
   plugins: [
     nxViteTsPaths(),
@@ -19,18 +19,13 @@ export default defineConfig({
 
   // Uncomment this if you are using workers.
   // worker: {
-  //   format: 'es',
-  //   rollupOptions: {
-  //     output: {
-  //       sourcemap: true,
-  //     },
-  //   },
+  //  plugins: [ nxViteTsPaths() ],
   // },
 
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
-    outDir: '../../dist/libs/app-canvas',
+    outDir: '../../dist/libs/ocif',
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
@@ -38,7 +33,7 @@ export default defineConfig({
     lib: {
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.ts',
-      name: 'app-canvas',
+      name: 'ocif',
       fileName: 'index',
       // Change this to the formats you want to support.
       // Don't forget to update your package.json as well.
@@ -60,7 +55,7 @@ export default defineConfig({
 
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/libs/app-canvas',
+      reportsDirectory: '../../coverage/libs/ocif',
       provider: 'v8',
     },
     passWithNoTests: true,

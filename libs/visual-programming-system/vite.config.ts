@@ -34,7 +34,7 @@ export default defineConfig({
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.ts',
       name: 'visual-programming-systems',
-      fileName: 'index',
+      fileName: (format) => (format === 'es' ? 'index.mjs' : 'index.js'),
       // Change this to the formats you want to support.
       // Don't forget to update your package.json as well.
       formats: ['es', 'cjs'],

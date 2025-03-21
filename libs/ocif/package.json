@@ -1,0 +1,14 @@
+{
+  "name": "@devhelpr/ocif",
+  "version": "0.0.8",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "typings": "./index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "url": "https://github.com/devhelpr/code-flow-canvas"
+  },
+  "license": "see license in license.md"
+}
