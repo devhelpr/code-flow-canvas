@@ -43,7 +43,8 @@
       "outputs": ["{workspaceRoot}/coverage/apps/vps-web"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/apps/vps-web"
+        "reportsDirectory": "../../coverage/apps/vps-web",
+        "config": "apps/vps-web/vitest.config.ts"
       }
     },
     "lint": {
