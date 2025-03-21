@@ -2,7 +2,7 @@ import {
   createJSXElement,
   renderElement,
 } from '@devhelpr/visual-programming-system';
-import { FlowEngine } from './flow-engine/flow-engine';
+import { RuntimeFlowEngine } from './flow-engine/flow-engine';
 import { flow } from './test-flows/celsius-fahrenheit';
 import { flow as fetchFlow } from '../tests/flows/map-flow';
 function clearBody() {
@@ -15,7 +15,7 @@ function clearBody() {
 
 export const runFlow = () => {
   clearBody();
-  const flowEngine = new FlowEngine();
+  const flowEngine = new RuntimeFlowEngine();
   flowEngine.initialize(flow.flows.flow.nodes);
 
   const rootElement = document.getElementById('run-flow-container')!;
@@ -72,7 +72,7 @@ export const runFlow = () => {
       </div>
       <button
         click={() => {
-          const flowEngine = new FlowEngine();
+          const flowEngine = new RuntimeFlowEngine();
           const outputs: Record<string, any> = {};
           flowEngine.canvasApp.setOnNodeMessage(
             (key: string, inputValue: string) => {

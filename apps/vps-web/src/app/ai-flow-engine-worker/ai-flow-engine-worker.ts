@@ -1,55 +1,98 @@
 /// <reference lib="webworker" />
 
-import { IComputeResult } from '@devhelpr/visual-programming-system';
-import { FlowEngine } from '../flow-engine/flow-engine';
+import {
+  IComputeResult,
+  IRectNodeComponent,
+} from '@devhelpr/visual-programming-system';
+import { RuntimeFlowEngine } from '../flow-engine/flow-engine';
 import {
   AIWorkerMessage,
   AIWorkerWorkerSelf,
 } from './ai-flow-engine-worker-message';
-import { run } from '@devhelpr/web-flow-executor';
+import { NodeInfo, run } from '@devhelpr/web-flow-executor';
+import { registerWorkerNodes } from '../custom-nodes/register-worker-nodes';
 
 declare let self: AIWorkerWorkerSelf;
 console.log('WORKER RuntimeFlowContext', run);
+let flowEngine: RuntimeFlowEngine;
 // Message event handler
 self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
   try {
     const { data } = event;
-
-    const flowEngine = new FlowEngine();
-    flowEngine.onSendUpdateToNode = (data, node) => {
-      console.log('onSendUpdateToNode', data, node);
-      self.postMessage({
-        message: 'node-update',
-        result: {
-          result: node.id,
-          output: data,
-        } as IComputeResult,
-      });
-    };
-    flowEngine.initialize(data.flow.flows['flow'].nodes);
-    flowEngine
-      .run()
-      .then((output) => {
-        // Send the result back to the main thread
+    if (data.message === 'start-node') {
+      console.log('start-node', data);
+      const nodeId = data.nodeId;
+      if (flowEngine && nodeId) {
+        const node = flowEngine.canvasApp.elements.get(nodeId);
+        if (node) {
+          flowEngine.runNode(
+            node as IRectNodeComponent<NodeInfo>,
+            () => {
+              //
+            },
+            data.input,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            (output, node) => {
+              self.postMessage({
+                message: 'node-update',
+                result: {
+                  result: node.id,
+                  output: output,
+                } as IComputeResult,
+              });
+            }
+          );
+        }
+      }
+    } else if (data.message === 'start') {
+      if (!data.flow) {
+        throw new Error('Flow not provided');
+      }
+      flowEngine = new RuntimeFlowEngine();
+      flowEngine.onSendUpdateToNode = (data, node) => {
+        console.log('onSendUpdateToNode', data, node);
         self.postMessage({
-          message: 'computation-result',
+          message: 'node-update',
           result: {
-            result: 'success',
-            output: output,
-            followPath: undefined,
-          },
+            result: node.id,
+            output: data,
+          } as IComputeResult,
         });
-      })
-      .catch((error) => {
-        self.postMessage({
-          message: 'error',
-          result: {
-            result: error?.toString?.() ?? 'Error in flow engine worker',
-            output: undefined,
-            followPath: undefined,
-          },
+      };
+      flowEngine.initialize(data.flow.flows['flow'].nodes, registerWorkerNodes);
+      flowEngine
+        .run()
+        .then((output) => {
+          // Send the result back to the main thread
+          self.postMessage({
+            message: 'computation-result',
+            result: {
+              result: 'success',
+              output: output,
+              followPath: undefined,
+            },
+          });
+        })
+        .catch((error) => {
+          self.postMessage({
+            message: 'error',
+            result: {
+              result: error?.toString?.() ?? 'Error in flow engine worker',
+              output: undefined,
+              followPath: undefined,
+            },
+          });
         });
-      });
+    }
   } catch (error) {
     self.postMessage({
       message: 'error',

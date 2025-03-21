@@ -6,7 +6,9 @@ import {
 
 export interface AIWorkerMessage {
   message: string;
-  flow: Flow<BaseNodeInfo>;
+  flow?: Flow<BaseNodeInfo>;
+  nodeId?: string;
+  input?: any;
 }
 
 export interface AIWorkerMessageResponse {

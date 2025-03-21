@@ -295,7 +295,9 @@ export const getNeuralNodeTrainHiddenLayerNode: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.resize();
+      if (rect && rect?.resize) {
+        rect.resize();
+      }
 
       nodeComponent = rect.nodeComponent;
       if (nodeComponent.nodeInfo) {

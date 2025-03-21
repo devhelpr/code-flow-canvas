@@ -10,6 +10,8 @@ import {
   FlowNode,
   importToCanvas,
   IFlowCanvasBase,
+  IComputeResult,
+  IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import {
   setupCanvasNodeTaskRegistry,
@@ -21,9 +23,13 @@ import {
   runPathForNodeConnectionPairs,
   run,
   getNodeTaskFactory,
+  runNode,
+  RegisterNodeFactoryFunction,
+  FlowEngine,
 } from '@devhelpr/web-flow-executor';
+import { CreateRunCounterContext } from '../custom-nodes/classes/base-rect-node-class';
 
-export class FlowEngine {
+export class RuntimeFlowEngine {
   public canvasApp: IFlowCanvasBase<NodeInfo>;
   constructor() {
     this.canvasApp = createRuntimeFlowContext<NodeInfo>();
@@ -31,7 +37,14 @@ export class FlowEngine {
   onSendUpdateToNode:
     | undefined
     | ((data: any, node: IRectNodeComponent<NodeInfo>) => void);
-  initialize(flow: FlowNode<NodeInfo>[]) {
+  initialize(
+    flow: FlowNode<NodeInfo>[],
+    registerExternalNodes?: (
+      registerNodeFactory: RegisterNodeFactoryFunction,
+      createRunCounterContext: CreateRunCounterContext,
+      flowEngine?: FlowEngine
+    ) => void
+  ) {
     if (!this.canvasApp) {
       throw new Error('CanvasAppInstance not initialized');
     }
@@ -50,7 +63,7 @@ export class FlowEngine {
         }
       });
       return runCounter;
-    });
+    }, registerExternalNodes);
 
     importToCanvas(
       flow,
@@ -197,6 +210,51 @@ export class FlowEngine {
       followThumb,
       scopeId,
       runCounter
+    );
+  };
+
+  public runNode = (
+    node: IRectNodeComponent<NodeInfo>,
+
+    onStopped?: (input: string | any[], scopeId?: string) => void,
+    input?: string,
+    offsetX?: number,
+    offsetY?: number,
+    loopIndex?: number,
+    connection?: IConnectionNodeComponent<NodeInfo>,
+    scopeId?: string,
+    runCounter?: RunCounter,
+    shouldClearExecutionHistory = false,
+    inputPayload?: any,
+    useThumbName?: string,
+    computeAsync?: (
+      node: IRectNodeComponent<NodeInfo>,
+      input: string | any[],
+      loopIndex?: number,
+      payload?: any,
+      thumbName?: string,
+      scopeId?: string,
+      runCounter?: RunCounter,
+      connection?: IConnectionNodeComponent<NodeInfo>
+    ) => Promise<IComputeResult>,
+    sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+  ): void => {
+    runNode(
+      node,
+      this.canvasApp,
+      onStopped,
+      input,
+      offsetX,
+      offsetY,
+      loopIndex,
+      connection,
+      scopeId,
+      runCounter,
+      shouldClearExecutionHistory,
+      inputPayload,
+      useThumbName,
+      computeAsync,
+      sendOutputToNode
     );
   };
 }

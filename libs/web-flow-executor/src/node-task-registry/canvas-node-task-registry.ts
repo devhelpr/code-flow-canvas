@@ -224,6 +224,7 @@ import {
 } from '../nodes/vector-distance';
 import { createGuid, createGuidNodeName } from '../nodes/create-guid';
 import { getNumberValue } from '../nodes/value-number';
+import { FlowEngine } from '../interface/flow-engine';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -256,9 +257,11 @@ export const setupCanvasNodeTaskRegistry = (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean,
       onFlowFinished?: () => void
-    ) => RunCounter
+    ) => RunCounter,
+    flowEngine?: FlowEngine
   ) => void,
-  clearPresetRegistry?: boolean
+  clearPresetRegistry?: boolean,
+  flowEngine?: FlowEngine
 ) => {
   if (!clearPresetRegistry) {
     registerNodeFactory('start-node', getStart);
@@ -480,7 +483,11 @@ export const setupCanvasNodeTaskRegistry = (
     registerNodeFactory(createGuidNodeName, createGuid);
   }
 
-  registerExternalNodes?.(registerNodeFactory, createRunCounterContext);
+  registerExternalNodes?.(
+    registerNodeFactory,
+    createRunCounterContext,
+    flowEngine
+  );
 };
 
 export const getNodeTaskFactory = (name: string) => {

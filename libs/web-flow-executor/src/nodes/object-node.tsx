@@ -88,9 +88,11 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
 
     while (loop < extraInputCount) {
       if (localValues[`input${loop}`] === undefined) {
-        (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement)
-          ?.querySelector('.inner-thumb')
-          ?.classList?.add('blink-thumb');
+        if (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement) {
+          (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement)
+            ?.querySelector('.inner-thumb')
+            ?.classList?.add('blink-thumb');
+        }
       }
       loop++;
     }
@@ -119,9 +121,11 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
         localValues[`input${loop}`] = undefined;
       }
 
-      (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement)
-        ?.querySelector('.inner-thumb')
-        ?.classList?.remove('blink-thumb');
+      if (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement) {
+        (node?.thumbConnectors?.[loop + 1].domElement as HTMLElement)
+          ?.querySelector('.inner-thumb')
+          ?.classList?.remove('blink-thumb');
+      }
       loop++;
     }
     if (resetOnTrigger) {
@@ -205,7 +209,9 @@ export const getObjectNode: NodeTaskFactory<NodeInfo> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-      rect.resize();
+      if (rect && rect?.resize) {
+        rect.resize();
+      }
 
       node = rect.nodeComponent;
       if (node.nodeInfo) {

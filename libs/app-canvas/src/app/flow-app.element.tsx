@@ -177,7 +177,8 @@ export class CodeFlowWebAppCanvas {
   ) => void;
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction,
-    createRunCounterContext: CreateRunCounterContext
+    createRunCounterContext: CreateRunCounterContext,
+    flowEngine?: FlowEngine
   ) => void;
   theme?: Theme;
   render() {
@@ -287,7 +288,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     ) => void,
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction,
-      createRunCounterContext: CreateRunCounterContext
+      createRunCounterContext: CreateRunCounterContext,
+      flowEngine?: FlowEngine
     ) => void,
     flowId?: string,
     clearPresetRegistry?: boolean,
@@ -777,7 +779,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     setupCanvasNodeTaskRegistry(
       this.createRunCounterContext,
       registerExternalNodes,
-      clearPresetRegistry
+      clearPresetRegistry,
+      this.flowEngine
     );
 
     const storageProviderPromise = this.storageProvider

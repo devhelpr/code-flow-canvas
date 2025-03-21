@@ -3,28 +3,22 @@ import {
   RegisterNodeFactoryFunction,
   RunCounter,
 } from '@devhelpr/web-flow-executor';
-import { mermaidNodeName, getMermaidNode } from './mermaid';
 import { getRectNode } from './rect-node';
-import { OvalNode } from './classes/oval-node-class';
-import { DrawGridNode } from './classes/draw-grid-node';
 import {
   isBaseRectNode,
   isFactoryNode,
   NodeRegistration,
 } from './utils/register-helpers';
-import { RectNode } from './classes/rect-node-class';
+import { drawGridNodeName, getDrawGridNode } from './draw-grid-worker';
 
 const nodes: NodeRegistration[] = [
   () => ({
-    factory: getMermaidNode,
-    name: mermaidNodeName,
+    factory: getDrawGridNode,
+    name: drawGridNodeName,
   }),
-  RectNode,
-  OvalNode,
-  DrawGridNode,
 ];
 
-export const registerNodes = (
+export const registerWorkerNodes = (
   registerNodeFactory: RegisterNodeFactoryFunction,
   createRunCounterContext: (
     isRunViaRunButton: boolean,

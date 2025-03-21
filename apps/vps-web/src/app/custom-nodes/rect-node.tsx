@@ -12,7 +12,7 @@ import {
   ThumbType,
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { FlowEngine, NodeInfo } from '@devhelpr/web-flow-executor';
 import {
   BaseRectNode,
   CreateRunCounterContext,
@@ -22,18 +22,20 @@ const familyName = 'flow-canvas';
 
 export const createNodeFactoryInstance = (
   NodeClass: typeof BaseRectNode,
-  createRunCounterContext: CreateRunCounterContext
+  createRunCounterContext: CreateRunCounterContext,
+  flowEngine?: FlowEngine
 ) => {
   return {
     name: NodeClass.nodeTypeName,
-    factory: getRectNode(NodeClass, createRunCounterContext),
+    factory: getRectNode(NodeClass, createRunCounterContext, flowEngine),
   };
 };
 
 export const getRectNode =
   (
     NodeClass: typeof BaseRectNode,
-    createRunCounterContext: CreateRunCounterContext
+    createRunCounterContext: CreateRunCounterContext,
+    flowEngine?: FlowEngine
   ) =>
   (
     updated: () => void,
@@ -123,7 +125,7 @@ export const getRectNode =
           node.nodeInfo.isOCIFNode = true;
         }
 
-        rectNode = new NodeClass(node.id, updated, node);
+        rectNode = new NodeClass(node.id, updated, node, flowEngine);
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
         rectNode.onResize = (width: number, height: number) => {
@@ -186,7 +188,14 @@ export const getRectNode =
                 rectNode.setSize(node.width ?? 10, node.height ?? 10);
                 return;
               }
-              rect.resize(undefined, true, rectNode.childElementSelector, true);
+              if (rect && rect.resize) {
+                rect.resize(
+                  undefined,
+                  true,
+                  rectNode.childElementSelector,
+                  true
+                );
+              }
             }
           });
           resizeObserver.observe(nodeRenderElement);

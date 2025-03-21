@@ -7,7 +7,6 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { getRunIndex, NodeInfo, runNode } from '@devhelpr/web-flow-executor';
 
-import './style.css';
 import { BaseRectNode } from './base-rect-node-class';
 
 class Label extends HTMLElement {
@@ -635,24 +634,46 @@ export class DrawGridNode extends BaseRectNode {
     ) {
       return;
     }
-    runNode(
-      this.node,
-      this.canvasAppInstance,
-      () => {
-        //
-      },
-      undefined,
-      undefined,
-      undefined,
-      getRunIndex(),
-      undefined,
-      undefined,
-      this.createRunCounterContext(false, false),
-      false,
-      {
-        trigger: true,
-      }
-    );
+    if (this.flowEngine?.runNode) {
+      this.flowEngine?.runNode(
+        undefined,
+        this.node,
+        this.canvasAppInstance,
+        () => {
+          //
+        },
+        JSON.stringify(this.drawGrid?.gridValues ?? []),
+        undefined,
+        undefined,
+        getRunIndex(),
+        undefined,
+        undefined,
+        this.createRunCounterContext(false, false),
+        false,
+        {
+          trigger: true,
+        }
+      );
+    } else {
+      runNode(
+        this.node,
+        this.canvasAppInstance,
+        () => {
+          //
+        },
+        undefined,
+        undefined,
+        undefined,
+        getRunIndex(),
+        undefined,
+        undefined,
+        this.createRunCounterContext(false, false),
+        false,
+        {
+          trigger: true,
+        }
+      );
+    }
     //}, 50);
   };
 

@@ -10,9 +10,8 @@ import {
   createElement,
   renderElement,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
+import { FlowEngine, NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
 import { CorePropertiesSetupEditor } from './core-properties-settings-editor';
-import './style.css';
 
 export type CreateRunCounterContext = (
   isRunViaRunButton: boolean,
@@ -39,15 +38,17 @@ export class BaseRectNode {
   static readonly text: string = 'rect';
 
   static readonly disableManualResize: boolean = true;
-
+  flowEngine: FlowEngine | undefined = undefined;
   constructor(
     id: string,
     updated: () => void,
-    node: IRectNodeComponent<NodeInfo>
+    node: IRectNodeComponent<NodeInfo>,
+    flowEngine?: FlowEngine
   ) {
     this.id = id;
     this.updated = updated;
     this.node = node;
+    this.flowEngine = flowEngine;
   }
 
   getSettingsPopup:

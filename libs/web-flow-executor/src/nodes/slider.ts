@@ -181,9 +181,11 @@ export const getSlider =
         node = nodeInstance.node as IRectNodeComponent<NodeInfo>;
         canvasAppInstance = nodeInstance.contextInstance;
 
-        labelElement = (
-          nodeInstance.node.domElement as HTMLElement
-        ).querySelector('form label') as HTMLLabelElement;
+        if (nodeInstance.node.domElement) {
+          labelElement = (
+            nodeInstance.node.domElement as HTMLElement
+          ).querySelector('form label') as HTMLLabelElement;
+        }
 
         if (node.nodeInfo) {
           node.nodeInfo.canBeStartedByTrigger = true;

@@ -634,7 +634,7 @@ export const visualNodeFactory = <T extends BaseNodeInfo>(
       // }
       onCreatedNode(nodeInstance, containerNode);
       nodeInstance.node.label = nodeTitle;
-      if (nodeInstance?.rect?.resize) {
+      if (nodeInstance?.rect && nodeInstance?.rect?.resize) {
         if (settings?.adjustToFormContent) {
           nodeInstance?.rect?.resize();
         } else {

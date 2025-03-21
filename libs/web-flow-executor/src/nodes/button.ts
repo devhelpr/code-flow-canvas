@@ -91,11 +91,15 @@ export const getButton =
                 ...node.nodeInfo.formValues,
                 caption: value,
               };
-              button.domElement.textContent =
-                node.nodeInfo.formValues['caption'] || 'Button';
+              if (button && button?.domElement) {
+                button.domElement.textContent =
+                  node.nodeInfo.formValues['caption'] || 'Button';
+              }
               console.log('onChange', node.nodeInfo);
 
-              rect.resize(200);
+              if (rect && rect?.resize) {
+                rect.resize(200);
+              }
               if (updated) {
                 updated();
               }
@@ -147,9 +151,9 @@ export const getButton =
               return false;
             },
           },
-          componentWrapper.domElement
+          componentWrapper?.domElement
         );
-        if (button) {
+        if (button && button.domElement) {
           button.domElement.textContent = initialValue ?? 'Button';
         }
         const rect = canvasApp.createRect(

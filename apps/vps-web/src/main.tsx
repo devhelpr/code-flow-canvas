@@ -23,7 +23,6 @@ import {
 } from '@devhelpr/web-flow-executor';
 import AIFlowEngineWorker from './app/ai-flow-engine-worker/ai-flow-engine-worker?worker';
 import { AIWorkerWorker } from './app/ai-flow-engine-worker/ai-flow-engine-worker-message';
-import { c } from 'vite/dist/node/types.d-FdqQ54oU';
 
 const API_URL_ROOT = import.meta.env.VITE_API_URL;
 
@@ -118,6 +117,7 @@ if (url.pathname === '/run-flow') {
   pythonPage();
 } else if (url.pathname === '/ai-canvas') {
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
+  let worker: AIWorkerWorker;
   const startWorker = (
     flow: Flow<BaseNodeInfo> | undefined,
     input?: string,
@@ -127,7 +127,7 @@ if (url.pathname === '/run-flow') {
     if (!flow) {
       return;
     }
-    const worker = new AIFlowEngineWorker() as unknown as AIWorkerWorker;
+    worker = new AIFlowEngineWorker() as unknown as AIWorkerWorker;
     worker.postMessage({ message: 'start', flow });
     worker.addEventListener('message', (event) => {
       if (event.data.message === 'node-update') {
@@ -194,8 +194,17 @@ if (url.pathname === '/run-flow') {
           scopeId?: string,
           runCounter?: RunCounter
         ) => {
-          console.log('run node');
-          startWorker(flow, input, runCounter);
+          if (flow) {
+            console.log('run node and restart flow', node);
+            startWorker(flow, input, runCounter);
+          } else {
+            console.log('run node', node);
+            worker?.postMessage({
+              message: 'start-node',
+              nodeId: node.id,
+              input,
+            });
+          }
         },
         runNodeFromThumb: () => {
           console.log('run node from thumb');
