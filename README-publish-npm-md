@@ -2,6 +2,7 @@
 
 These packages are published to npm in this order:
 
+- @devhelpr/ocif
 - @devhelpr/media-library
 - @devhelpr/dom-components
 - @devhelpr/visual-programming-system
