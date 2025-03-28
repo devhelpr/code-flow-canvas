@@ -231,7 +231,8 @@ export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
   name: string,
   nodeFactory: NodeTaskFactory<NodeInfo>,
-  label?: string
+  label?: string,
+  _flowEngine?: FlowEngine
 ) => {
   canvasNodeTaskRegistry[name] = nodeFactory;
   if (label) {
@@ -264,223 +265,497 @@ export const setupCanvasNodeTaskRegistry = (
   flowEngine?: FlowEngine
 ) => {
   if (!clearPresetRegistry) {
-    registerNodeFactory('start-node', getStart);
-    registerNodeFactory('end-node', getEnd);
+    registerNodeFactory('start-node', getStart, undefined, flowEngine);
+    registerNodeFactory('end-node', getEnd, undefined, flowEngine);
 
-    registerNodeFactory('multi-trigger', getMultiTrigger);
-    registerNodeFactory('summing-junction', getSummingJunction);
+    registerNodeFactory(
+      'multi-trigger',
+      getMultiTrigger,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      'summing-junction',
+      getSummingJunction,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory('foreach', getForEach);
-    registerNodeFactory(mapNodeName, getMap);
-    registerNodeFactory(filterNodeName, getFilter);
-    registerNodeFactory(reduceNodeName, getReduce);
-    registerNodeFactory(sortNodeName, getSort);
-    registerNodeFactory(whileNodeName, getWhile);
+    registerNodeFactory('foreach', getForEach, undefined, flowEngine);
+    registerNodeFactory(mapNodeName, getMap, undefined, flowEngine);
+    registerNodeFactory(filterNodeName, getFilter, undefined, flowEngine);
+    registerNodeFactory(reduceNodeName, getReduce, undefined, flowEngine);
+    registerNodeFactory(sortNodeName, getSort, undefined, flowEngine);
+    registerNodeFactory(whileNodeName, getWhile, undefined, flowEngine);
 
-    registerNodeFactory('expression', getExpression);
+    registerNodeFactory('expression', getExpression, undefined, flowEngine);
     // registerNodeFactory('expression-part', getExpressionPart);
     // registerNodeFactory('expression-execute', getExpressionExecute);
-    registerNodeFactory('value', getValue);
-    registerNodeFactory('number-value', getNumberValue);
+    registerNodeFactory('value', getValue, undefined, flowEngine);
+    registerNodeFactory('number-value', getNumberValue, undefined, flowEngine);
 
-    registerNodeFactory('send-command', getSendCommand);
+    registerNodeFactory('send-command', getSendCommand, undefined, flowEngine);
 
-    registerNodeFactory('gate', getGate);
-    registerNodeFactory('if-condition', getIfCondition);
-    registerNodeFactory('array', getArray);
-    registerNodeFactory('show-object', getShowObject);
-    registerNodeFactory('show-input', getShowInput);
-    registerNodeFactory('show-value', getShowValue);
-    registerNodeFactory('show-image', getShowImage);
+    registerNodeFactory('gate', getGate, undefined, flowEngine);
+    registerNodeFactory('if-condition', getIfCondition, undefined, flowEngine);
+    registerNodeFactory('array', getArray, undefined, flowEngine);
+    registerNodeFactory('show-object', getShowObject, undefined, flowEngine);
+    registerNodeFactory('show-input', getShowInput, undefined, flowEngine);
+    registerNodeFactory('show-value', getShowValue, undefined, flowEngine);
+    registerNodeFactory('show-image', getShowImage, undefined, flowEngine);
 
-    registerNodeFactory('sum', getSum);
-    registerNodeFactory('state', getState);
-    registerNodeFactory('state-transition', getStateTransition);
-    registerNodeFactory('fetch', getFetch);
+    registerNodeFactory('sum', getSum, undefined, flowEngine);
+    registerNodeFactory('state', getState, undefined, flowEngine);
+    registerNodeFactory(
+      'state-transition',
+      getStateTransition,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory('fetch', getFetch, undefined, flowEngine);
     //registerNodeFactory('canvas-node', getCanvasNode(animatePath));
     //registerNodeFactory('layout-node', getLayoutNode(animatePath));
-    registerNodeFactory('state-machine', createStateMachineNode);
-    registerNodeFactory('state-compound', createStateCompound);
+    registerNodeFactory(
+      'state-machine',
+      createStateMachineNode,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      'state-compound',
+      createStateCompound,
+      undefined,
+      flowEngine
+    );
     registerNodeFactory(
       'create-state-event-value',
       getCreateEventStateValueNode,
-      'Event state-value'
+      'Event state-value',
+      flowEngine
     );
-    registerNodeFactory('variable', getVariable);
-    registerNodeFactory('set-variable', setVariable);
-    registerNodeFactory('reset-variable', resetVariable);
+    registerNodeFactory('variable', getVariable, undefined, flowEngine);
+    registerNodeFactory('set-variable', setVariable, undefined, flowEngine);
+    registerNodeFactory('reset-variable', resetVariable, undefined, flowEngine);
     registerNodeFactory(
       'set-flow-variable',
       setFlowVariable,
-      'Set flow variable'
+      'Set flow variable',
+      flowEngine
     );
 
-    registerNodeFactory('button', getButton(createRunCounterContext));
+    registerNodeFactory(
+      'button',
+      getButton(createRunCounterContext, flowEngine),
+      undefined,
+      flowEngine
+    );
     registerNodeFactory(
       'user-input',
       getUserInput(createRunCounterContext),
-      'User Input'
+      'User Input',
+      flowEngine
     );
 
     registerNodeFactory(
       'user-text-input',
       getUserTextInput(createRunCounterContext),
-      'User Text Input'
+      'User Text Input',
+      flowEngine
     );
-    registerNodeFactory('timer', getTimer);
-    registerNodeFactory('slider', getSlider(createRunCounterContext));
-    registerNodeFactory('checkbox', getCheckbox);
-    registerNodeFactory('styled-node', getStyledNode);
-    registerNodeFactory('html-node', getHtmlNode);
-    registerNodeFactory('iframe-html-node', getIFrameHtmlNode);
-    registerNodeFactory('annotation', getAnnotation);
+    registerNodeFactory('timer', getTimer, undefined, flowEngine);
+    registerNodeFactory(
+      'slider',
+      getSlider(createRunCounterContext),
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory('checkbox', getCheckbox, undefined, flowEngine);
+    registerNodeFactory('styled-node', getStyledNode, undefined, flowEngine);
+    registerNodeFactory('html-node', getHtmlNode, undefined, flowEngine);
+    registerNodeFactory(
+      'iframe-html-node',
+      getIFrameHtmlNode,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory('annotation', getAnnotation, undefined, flowEngine);
 
-    registerNodeFactory('node-trigger', getNodeTrigger);
-    registerNodeFactory('node-trigger-target', getNodeTriggerTarget);
+    registerNodeFactory('node-trigger', getNodeTrigger, undefined, flowEngine);
+    registerNodeFactory(
+      'node-trigger-target',
+      getNodeTriggerTarget,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory('call-function', getCallFunction);
-    registerNodeFactory('function', getFunction);
-    registerNodeFactory('observe-variable', observeVariable);
+    registerNodeFactory(
+      'call-function',
+      getCallFunction,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory('function', getFunction, undefined, flowEngine);
+    registerNodeFactory(
+      'observe-variable',
+      observeVariable,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory('sequential', getSequential);
+    registerNodeFactory('sequential', getSequential, undefined, flowEngine);
 
-    registerNodeFactory('parallel', getParallel);
+    registerNodeFactory('parallel', getParallel, undefined, flowEngine);
 
-    registerNodeFactory('split-by-case', getSplitByCase);
+    registerNodeFactory('split-by-case', getSplitByCase, undefined, flowEngine);
 
-    registerNodeFactory('multiply-node', getMultiplyNode);
+    registerNodeFactory(
+      'multiply-node',
+      getMultiplyNode,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(loadJSONFileNodeName, loadJSONFile);
-    registerNodeFactory(loadTextFileNodeName, loadTextFile);
-    registerNodeFactory(loadCSVFileNodeName, loadCSVFile);
-    registerNodeFactory(subFlowNodeName, subFlowNode);
+    registerNodeFactory(
+      loadJSONFileNodeName,
+      loadJSONFile,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      loadTextFileNodeName,
+      loadTextFile,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      loadCSVFileNodeName,
+      loadCSVFile,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(subFlowNodeName, subFlowNode, undefined, flowEngine);
 
-    registerNodeFactory(runRegexNodeName, runRegularExpression);
-    registerNodeFactory(mergeModeName, getMergeNode);
-    registerNodeFactory(sumMergeModeName, getMergeSumNode);
+    registerNodeFactory(
+      runRegexNodeName,
+      runRegularExpression,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(mergeModeName, getMergeNode, undefined, flowEngine);
+    registerNodeFactory(
+      sumMergeModeName,
+      getMergeSumNode,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(objectNodeName, getObjectNode);
+    registerNodeFactory(objectNodeName, getObjectNode, undefined, flowEngine);
 
-    registerNodeFactory(replaceStringMapNodeName, replaceStringMap);
+    registerNodeFactory(
+      replaceStringMapNodeName,
+      replaceStringMap,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(splitStringNodeName, splitString);
-    registerNodeFactory(createSetNodeName, createSet);
-    registerNodeFactory(createArrayNodeName, createArray);
-    registerNodeFactory(intersectSetsNodeName, getInsersectSetsNode);
-    registerNodeFactory(setSizeNodeName, getSetSizeNode);
-    registerNodeFactory('merge', getMergeNode);
-    registerNodeFactory(rangeNodeName, getRangeNode);
-    registerNodeFactory(scopeVariableNodeName, getScopedVariable(false));
+    registerNodeFactory(
+      splitStringNodeName,
+      splitString,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(createSetNodeName, createSet, undefined, flowEngine);
+    registerNodeFactory(
+      createArrayNodeName,
+      createArray,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      intersectSetsNodeName,
+      getInsersectSetsNode,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(setSizeNodeName, getSetSizeNode, undefined, flowEngine);
+    registerNodeFactory('merge', getMergeNode, undefined, flowEngine);
+    registerNodeFactory(rangeNodeName, getRangeNode, undefined, flowEngine);
+    registerNodeFactory(
+      scopeVariableNodeName,
+      getScopedVariable(false),
+      undefined,
+      flowEngine
+    );
 
     // dictionary nodes
-    registerNodeFactory(getDictionaryVariableNodeName, getDictionaryVariable);
-    registerNodeFactory(setDictionaryVariableNodeName, setDictionaryVariable);
-    registerNodeFactory(getDictionaryAsArrayNodeName, getDictionaryAsArray);
-    registerNodeFactory(getDictionarySizeNodeName, getDictionarySize);
+    registerNodeFactory(
+      getDictionaryVariableNodeName,
+      getDictionaryVariable,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      setDictionaryVariableNodeName,
+      setDictionaryVariable,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      getDictionaryAsArrayNodeName,
+      getDictionaryAsArray,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      getDictionarySizeNodeName,
+      getDictionarySize,
+      undefined,
+      flowEngine
+    );
 
     // array nodes
     registerNodeFactory(
       initializeArrayariableNodeName,
-      initializeArrayVariable
+      initializeArrayVariable,
+      undefined,
+      flowEngine
     );
-    registerNodeFactory(pushValueToArrayVariableNodeName, pushArrayVariable);
-    registerNodeFactory(getArraySizeNodeName, getArraySize);
-    registerNodeFactory(getArrayNodeName, getArrayVariable);
-    registerNodeFactory(getArrayVariableNodeName, getArrayValueByIndex);
+    registerNodeFactory(
+      pushValueToArrayVariableNodeName,
+      pushArrayVariable,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      getArraySizeNodeName,
+      getArraySize,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      getArrayNodeName,
+      getArrayVariable,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      getArrayVariableNodeName,
+      getArrayValueByIndex,
+      undefined,
+      flowEngine
+    );
     registerNodeFactory(
       setArrayValueByIndexVariableNodeName,
-      setArrayValueByIndexVariable
+      setArrayValueByIndexVariable,
+      undefined,
+      flowEngine
     );
-    registerNodeFactory(setArrayNodeName, setArrayVariable);
-    registerNodeFactory(popArrayVariableNodeName, popArrayValue);
-    registerNodeFactory(initArrayNodeName, initArrayVariable);
+    registerNodeFactory(
+      setArrayNodeName,
+      setArrayVariable,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      popArrayVariableNodeName,
+      popArrayValue,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      initArrayNodeName,
+      initArrayVariable,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(sortArrayNodeName, getSortArrayNode);
-    registerNodeFactory(joinArrayNodeName, joinArray);
-    registerNodeFactory(reverseArrayNodeName, reverseArray);
-    registerNodeFactory(getHasArrayDataNodeName, getHasArrayDataVariable);
+    registerNodeFactory(
+      sortArrayNodeName,
+      getSortArrayNode,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(joinArrayNodeName, joinArray, undefined, flowEngine);
+    registerNodeFactory(
+      reverseArrayNodeName,
+      reverseArray,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      getHasArrayDataNodeName,
+      getHasArrayDataVariable,
+      undefined,
+      flowEngine
+    );
 
     // grid nodes
-    registerNodeFactory(initializeGridVariableNodeName, initializeGridVariable);
-    registerNodeFactory(setGridRowVariableNodeName, setGridRowVariable);
+    registerNodeFactory(
+      initializeGridVariableNodeName,
+      initializeGridVariable,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      setGridRowVariableNodeName,
+      setGridRowVariable,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(dialogFormNodeName, dialogFormNode);
+    registerNodeFactory(
+      dialogFormNodeName,
+      dialogFormNode,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(nodeTreeVisualizerNodeName, getNodeTreeVisualizer);
-    registerNodeFactory(sendNodeToNodeTreeNodeName, sendNodeToNodeTree);
-    registerNodeFactory(sendResetToNodeTreeNodeName, sendResetToNodeTree);
+    registerNodeFactory(
+      nodeTreeVisualizerNodeName,
+      getNodeTreeVisualizer,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      sendNodeToNodeTreeNodeName,
+      sendNodeToNodeTree,
+      undefined,
+      flowEngine
+    );
+    registerNodeFactory(
+      sendResetToNodeTreeNodeName,
+      sendResetToNodeTree,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory('thumb-input', getThumbInputNode, 'Input port');
-    registerNodeFactory('thumb-output', getThumbOutputNode, 'Output port');
+    registerNodeFactory(
+      'thumb-input',
+      getThumbInputNode,
+      'Input port',
+      flowEngine
+    );
+    registerNodeFactory(
+      'thumb-output',
+      getThumbOutputNode,
+      'Output port',
+      flowEngine
+    );
 
-    registerNodeFactory('test-node', getTestNode, 'Test Node');
+    registerNodeFactory('test-node', getTestNode, 'Test Node', flowEngine);
     registerNodeFactory(
       'media-library-node',
       getMediaLibraryNode,
-      'Media Library'
+      'Media Library',
+      flowEngine
     );
-    registerNodeFactory('neural-node', getNeuralNode(createRunCounterContext));
+    registerNodeFactory(
+      'neural-node',
+      getNeuralNode(createRunCounterContext),
+      undefined,
+      flowEngine
+    );
     registerNodeFactory(
       'neural-input-node',
-      getNeuralInputNode(createRunCounterContext)
+      getNeuralInputNode(createRunCounterContext),
+      undefined,
+      flowEngine
     );
     registerNodeFactory(
       'neural-bias-node',
-      getNeuralBiasNode(createRunCounterContext)
+      getNeuralBiasNode(createRunCounterContext),
+      undefined,
+      flowEngine
     );
 
-    registerNodeFactory('neural-output-node', getNeuralOutputNode);
+    registerNodeFactory(
+      'neural-output-node',
+      getNeuralOutputNode,
+      undefined,
+      flowEngine
+    );
 
     registerNodeFactory(
       'neural-train-test-node',
-      getNeuralTrainTestNode(createRunCounterContext)
+      getNeuralTrainTestNode(createRunCounterContext),
+      undefined,
+      flowEngine
     );
 
     registerNodeFactory(
       neuralNodeTrainHiddenLayerName,
-      getNeuralNodeTrainHiddenLayerNode
+      getNeuralNodeTrainHiddenLayerNode,
+      undefined,
+      flowEngine
     );
     registerNodeFactory(
       neuralNodeTrainOutputLayerName,
-      getNeuralNodeTrainOutputLayerNode
+      getNeuralNodeTrainOutputLayerNode,
+      undefined,
+      flowEngine
     );
     registerNodeFactory(
       neuralNodeOutputLayerName,
-      getNeuralNodeOutputLayerNode
+      getNeuralNodeOutputLayerNode,
+      undefined,
+      flowEngine
     );
 
     registerNodeFactory(neuralNodeInputLayerName, getNeuralNodeInputLayerNode);
     registerNodeFactory(
       neuralNodeHiddenLayerName,
-      getNeuralNodeHiddenLayerNode
+      getNeuralNodeHiddenLayerNode,
+      undefined,
+      flowEngine
     );
 
     registerNodeFactory(
       neuralMnistTrainingDataName,
-      getNeuralMnistTrainingDataNode
+      getNeuralMnistTrainingDataNode,
+      undefined,
+      flowEngine
     );
     registerNodeFactory(
       neuralManualDrawableCanvasInputNodeName,
-      getNeuralManualDrawableCanvasNode
+      getNeuralManualDrawableCanvasNode,
+      undefined,
+      flowEngine
     );
 
-    registerNodeFactory(neuralTestTrainingDataName, getNeuralTestTrainingNode);
+    registerNodeFactory(
+      neuralTestTrainingDataName,
+      getNeuralTestTrainingNode,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory('image', getImage);
-    registerNodeFactory('convolution-node', getConvolutionNode);
+    registerNodeFactory('image', getImage, undefined, flowEngine);
+    registerNodeFactory(
+      'convolution-node',
+      getConvolutionNode,
+      undefined,
+      flowEngine
+    );
 
     registerNodeFactory(
       registerExpressionFunctionNodeName,
-      getRegisterExpressionFunctionNode
+      getRegisterExpressionFunctionNode,
+      undefined,
+      flowEngine
     );
 
-    registerNodeFactory(jsonNodeName, getRawJsonNode);
+    registerNodeFactory(jsonNodeName, getRawJsonNode, undefined, flowEngine);
 
-    registerNodeFactory(textNodeName, getRawTextNode);
+    registerNodeFactory(textNodeName, getRawTextNode, undefined, flowEngine);
 
-    registerNodeFactory(vectorDistanceNodeName, getVectorDistanceNode);
+    registerNodeFactory(
+      vectorDistanceNodeName,
+      getVectorDistanceNode,
+      undefined,
+      flowEngine
+    );
 
-    registerNodeFactory(createGuidNodeName, createGuid);
+    registerNodeFactory(createGuidNodeName, createGuid, undefined, flowEngine);
   }
 
   registerExternalNodes?.(

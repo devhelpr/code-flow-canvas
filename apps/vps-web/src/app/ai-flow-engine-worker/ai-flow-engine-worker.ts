@@ -38,7 +38,7 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
             undefined,
             undefined,
             undefined,
-            undefined,
+            data.inputPayload,
             undefined,
             undefined,
             (output, node) => {

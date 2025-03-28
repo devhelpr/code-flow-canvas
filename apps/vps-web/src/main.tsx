@@ -192,7 +192,9 @@ if (url.pathname === '/run-flow') {
           loopIndex?: number,
           connection?: IConnectionNodeComponent<NodeInfo>,
           scopeId?: string,
-          runCounter?: RunCounter
+          runCounter?: RunCounter,
+          shouldResetConnectionSlider?: boolean,
+          inputPayload?: any
         ) => {
           if (flow) {
             console.log('run node and restart flow', node);
@@ -203,6 +205,7 @@ if (url.pathname === '/run-flow') {
               message: 'start-node',
               nodeId: node.id,
               input,
+              inputPayload,
             });
           }
         },

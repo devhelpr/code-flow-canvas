@@ -14,13 +14,15 @@ import {
 import { NodeInfo } from '../types/node-info';
 import { RunCounter } from '../follow-path/run-counter';
 import { runNode } from '../flow-engine/flow-engine';
+import { FlowEngine } from '../interface/flow-engine';
 
 export const getButton =
   (
     _createRunCounterContext: (
       isRunViaRunButton: boolean,
       shouldResetConnectionSlider: boolean
-    ) => RunCounter
+    ) => RunCounter,
+    flowEngine?: FlowEngine
   ) =>
   (updated: () => void): NodeTask<NodeInfo> => {
     let node: IRectNodeComponent<NodeInfo>;
@@ -35,7 +37,7 @@ export const getButton =
     const compute = (
       input: string,
       _loopIndex?: number,
-      _payload?: any,
+      payload?: any,
       _thumbName?: string,
       _scopeId?: string,
       runCounterCompute?: RunCounter
@@ -48,7 +50,7 @@ export const getButton =
       } catch {
         currentValue = 0;
       }
-      if (triggerButton && node.nodeInfo) {
+      if (payload['triggerButton'] && node.nodeInfo) {
         triggerButton = false;
         return {
           result: node.nodeInfo.formValues['caption'] || 'Button',
@@ -127,26 +129,50 @@ export const getButton =
               }
               triggerButton = true;
               //runCounter = createRunCounterContext(false, false);
-
-              runNode(
-                containerNode ?? node,
-                containerNode
-                  ? (containerNode.nodeInfo as any)?.canvasAppInstance
-                  : canvasApp,
-                () => {
-                  //
-                },
-                containerNode
-                  ? node.nodeInfo.formValues['caption'] || 'Button'
-                  : currentValue.toString(),
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                runCounter,
-                false
-              );
+              if (flowEngine?.runNode) {
+                flowEngine.runNode(
+                  undefined,
+                  containerNode ?? node,
+                  containerNode
+                    ? (containerNode.nodeInfo as any)?.canvasAppInstance
+                    : canvasApp,
+                  () => {
+                    //
+                  },
+                  containerNode
+                    ? node.nodeInfo.formValues['caption'] || 'Button'
+                    : currentValue.toString(),
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  runCounter,
+                  false,
+                  { triggerButton: true }
+                );
+              } else {
+                runNode(
+                  containerNode ?? node,
+                  containerNode
+                    ? (containerNode.nodeInfo as any)?.canvasAppInstance
+                    : canvasApp,
+                  () => {
+                    //
+                  },
+                  containerNode
+                    ? node.nodeInfo.formValues['caption'] || 'Button'
+                    : currentValue.toString(),
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  runCounter,
+                  false,
+                  { triggerButton: true }
+                );
+              }
 
               return false;
             },

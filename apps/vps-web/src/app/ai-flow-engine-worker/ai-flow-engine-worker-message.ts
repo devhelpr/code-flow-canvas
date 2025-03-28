@@ -9,6 +9,7 @@ export interface AIWorkerMessage {
   flow?: Flow<BaseNodeInfo>;
   nodeId?: string;
   input?: any;
+  inputPayload?: any;
 }
 
 export interface AIWorkerMessageResponse {
