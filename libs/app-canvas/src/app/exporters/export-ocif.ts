@@ -336,6 +336,14 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       size: [node.width ?? 0, node.height ?? 0],
       data: [
         {
+          type: ocifArrow,
+          start: [node.x, node.y],
+          end: [node.endX ?? node.x, node.endY ?? 0],
+          startMarker: 'none',
+          endMarker: 'arrowhead',
+          relation: `${node.id}-edge`,
+        },
+        {
           ...nodeInfo,
           type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
