@@ -8,7 +8,7 @@
       "resource": "berlin-res",
       "data": [
         {
-          "type": "@ocwg/node/rect",
+          "type": "@ocif/node/rect",
           "strokeWidth": 3,
           "strokeColor": "#000000",
           "fillColor": "#00FF00"
@@ -22,7 +22,7 @@
       "resource": "germany-res",
       "data": [
         {
-          "type": "@ocwg/node/oval",
+          "type": "@ocif/node/oval",
           "strokeWidth": 5,
           "strokeColor": "#FF0000",
           "fillColor": "#FFFFFF"
@@ -33,7 +33,7 @@
       "id": "arrow-1",
       "data": [
         {
-          "type": "@ocwg/node/arrow",
+          "type": "@ocif/node/arrow",
           "strokeColor": "#000000",
           "start": [200, 125],
           "end": [350, 130],
@@ -49,7 +49,7 @@
       "id": "relation-1",
       "data": [
         {
-          "type": "@ocwg/rel/edge",
+          "type": "@ocif/rel/edge",
           "start": "berlin-node",
           "end": "germany-node",
           "rel": "https://www.wikidata.org/wiki/Property:P1376",

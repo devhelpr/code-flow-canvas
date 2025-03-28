@@ -37,7 +37,7 @@ import {
   getIsStopAnimations,
   setStopAnimations,
 } from '../follow-path/animate-path';
-import { OCWGExporter } from '../exporters/export-ocwg';
+import { OCIFExporter } from '../exporters/export-ocif';
 import { clearOCIF, importOCIF, isValidOCIF } from '../importers/ocif-importer';
 import { exportTldraw } from '../exporters/export-tldraw';
 
@@ -246,7 +246,7 @@ export class NavbarComponent extends Component<
                   if (!canvasApp) {
                     return;
                   }
-                  const exporter = new OCWGExporter(
+                  const exporter = new OCIFExporter(
                     {
                       canvasApp: canvasApp,
                       downloadFile: (

@@ -1,5 +1,5 @@
 {
-  "ocif": "https://canvasprotocol.org/ocif/0.2",
+  "ocif": "https://canvasprotocol.org/ocif/0.4",
   "nodes": [
     {
       "id": "n1",
@@ -28,7 +28,7 @@
   ],
   "relations": [
     {
-      "type": "@ocwg/rel/edge",
+      "type": "@ocif/rel/edge",
       "data": [
         {
           "from": "n1",

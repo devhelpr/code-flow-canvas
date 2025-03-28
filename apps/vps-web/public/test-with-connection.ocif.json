@@ -1,5 +1,5 @@
 {
-  "ocif": "https://canvasprotocol.org/ocif/0.2",
+  "ocif": "https://canvasprotocol.org/ocif/0.4",
   "nodes": [
     {
       "id": "112cc79c-6ea0-4438-baf1-9d34bb0660e2",
@@ -14,7 +14,7 @@
           "nodeType": "rect-node"
         },
         {
-          "type": "@ocwg/node/ports",
+          "type": "@ocif/node/ports",
           "ports": ["input-output"]
         }
       ]
@@ -32,7 +32,7 @@
           "nodeType": "rect-node"
         },
         {
-          "type": "@ocwg/node/ports",
+          "type": "@ocif/node/ports",
           "ports": ["input-output"]
         }
       ]
@@ -62,7 +62,7 @@
       "id": "31a62e02-39f9-4a58-9e08-f570336e71ec-edge",
       "data": [
         {
-          "type": "@ocwg/rel/edge",
+          "type": "@ocif/rel/edge",
           "from": "112cc79c-6ea0-4438-baf1-9d34bb0660e2",
           "to": "01d07003-7347-4a12-8955-a0ecd2b293c9",
           "directed": true

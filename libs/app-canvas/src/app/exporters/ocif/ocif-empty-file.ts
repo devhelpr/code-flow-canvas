@@ -1,7 +1,7 @@
 import { ocifSchema, ocifVersion } from '../../consts/ocif';
-import { OCWGFile } from './ocwg-schema';
+import { OCIFFile } from './ocif-schema';
 
-export const ocwgEmptyFile: OCWGFile = {
+export const ocifEmptyFile: OCIFFile = {
   ocif: `${ocifSchema}${ocifVersion}`,
   nodes: [],
   relations: [],

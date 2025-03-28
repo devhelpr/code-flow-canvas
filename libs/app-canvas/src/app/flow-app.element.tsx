@@ -2260,7 +2260,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
         let hasRelationToNode = false;
         relation.data.forEach((extensionData) => {
           if (
-            extensionData.type === '@ocwg/rel/edge' &&
+            extensionData.type === '@ocif/rel/edge' &&
             (extensionData as unknown as OCIFEdgeRelationExtension).node ===
               connection.id
           ) {

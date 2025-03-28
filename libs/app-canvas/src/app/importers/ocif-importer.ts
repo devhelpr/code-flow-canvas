@@ -3,7 +3,7 @@ import { NodeInfo } from '@devhelpr/web-flow-executor';
 import {
   connectionNodeInfoPropertyName,
   nodeInfoPropertyName,
-} from '../exporters/export-ocwg';
+} from '../exporters/export-ocif';
 import { ocifArrow, ocifSchema, ocifToCodeFlowCanvas } from '../consts/ocif';
 import { OCIFEdgeRelationExtension } from '../interfaces/ocif';
 
@@ -61,7 +61,7 @@ function getEdgeRelationById(
   }
   const data = ocif.relations.find((r: any) => r.id === relationId);
   if (data) {
-    const extension = getExtenstionData(data, '@ocwg/rel/edge');
+    const extension = getExtenstionData(data, '@ocif/rel/edge');
     return {
       type: extension.type,
       start: extension.start,

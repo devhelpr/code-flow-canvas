@@ -1,5 +1,5 @@
 export {
   FlowAppElement,
   CodeFlowWebAppCanvas,
-  OCWGExporter,
+  OCIFExporter,
 } from '@devhelpr/app-canvas';
