@@ -289,11 +289,11 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
         //   type: connectionNodeInfoPropertyName,
         //   nodeType: nodeInfo.type,
         //   lineType: (nodeInfo as any).lineType ?? 'Straight',
-        //   start: {
+        //   startNode: {
         //     connected_to: `${node.startNode.id}`,
         //     port_name: node.startNodeThumb?.thumbName ?? 'output',
         //   },
-        //   end: {
+        //   endNode: {
         //     connected_to: `${node.endNode.id}`,
         //     port_name: node.endNodeThumb?.thumbName ?? 'input',
         //   },
@@ -348,11 +348,11 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
           type: connectionNodeInfoPropertyName,
           nodeType: nodeInfo.type,
           lineType: (nodeInfo as any).lineType ?? 'Straight',
-          start: {
+          startNode: {
             connected_to: `${node.startNode.id}`,
             port_name: node.startNodeThumb?.thumbName,
           },
-          end: {
+          endNode: {
             connected_to: `${node.endNode.id}`,
             port_name: node.endNodeThumb?.thumbName,
           },
