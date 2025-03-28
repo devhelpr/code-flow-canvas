@@ -82,6 +82,8 @@ export class RuntimeFlowEngine {
       animatePathFromConnectionPairFunction: runPathForNodeConnectionPairs,
     });
 
+    console.log('runtime flow engine initialized', this.canvasApp.elements);
+
     this.canvasApp.elements.forEach((node) => {
       const nodeComponent = node as unknown as INodeComponent<NodeInfo>;
       if (nodeComponent.nodeType !== NodeType.Connection) {

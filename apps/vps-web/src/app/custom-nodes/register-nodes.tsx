@@ -13,6 +13,7 @@ import {
   NodeRegistration,
 } from './utils/register-helpers';
 import { RectNode } from './classes/rect-node-class';
+import { WebcamViewerNode } from './classes/webcam-node';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -22,6 +23,7 @@ const nodes: NodeRegistration[] = [
   RectNode,
   OvalNode,
   DrawGridNode,
+  WebcamViewerNode,
 ];
 
 export const registerNodes = (

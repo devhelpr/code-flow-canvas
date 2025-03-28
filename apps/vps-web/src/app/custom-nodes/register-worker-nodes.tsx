@@ -10,11 +10,19 @@ import {
   NodeRegistration,
 } from './utils/register-helpers';
 import { drawGridNodeName, getDrawGridNode } from './draw-grid-worker';
+import {
+  webcamViewerNodeName,
+  getWebcamViewerNode,
+} from './webcam-viewer-worker';
 
 const nodes: NodeRegistration[] = [
   () => ({
     factory: getDrawGridNode,
     name: drawGridNodeName,
+  }),
+  () => ({
+    factory: getWebcamViewerNode,
+    name: webcamViewerNodeName,
   }),
 ];
 

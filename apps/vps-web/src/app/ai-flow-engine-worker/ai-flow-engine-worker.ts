@@ -9,18 +9,17 @@ import {
   AIWorkerMessage,
   AIWorkerWorkerSelf,
 } from './ai-flow-engine-worker-message';
-import { NodeInfo, run } from '@devhelpr/web-flow-executor';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { registerWorkerNodes } from '../custom-nodes/register-worker-nodes';
 
 declare let self: AIWorkerWorkerSelf;
-console.log('WORKER RuntimeFlowContext', run);
 let flowEngine: RuntimeFlowEngine;
 // Message event handler
 self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
   try {
     const { data } = event;
     if (data.message === 'start-node') {
-      console.log('start-node', data);
+      //console.log('start-node', data);
       const nodeId = data.nodeId;
       if (flowEngine && nodeId) {
         const node = flowEngine.canvasApp.elements.get(nodeId);
@@ -42,6 +41,9 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
             undefined,
             undefined,
             (output, node) => {
+              if (node.nodeInfo?.shouldNotSendOutputFromWorkerToMainThread) {
+                return;
+              }
               self.postMessage({
                 message: 'node-update',
                 result: {
@@ -59,7 +61,10 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
       }
       flowEngine = new RuntimeFlowEngine();
       flowEngine.onSendUpdateToNode = (data, node) => {
-        console.log('onSendUpdateToNode', data, node);
+        //console.log('onSendUpdateToNode', data, node);
+        if (node.nodeInfo?.shouldNotSendOutputFromWorkerToMainThread) {
+          return;
+        }
         self.postMessage({
           message: 'node-update',
           result: {

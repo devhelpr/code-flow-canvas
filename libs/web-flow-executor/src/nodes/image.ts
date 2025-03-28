@@ -127,7 +127,9 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
           )?.getImageData?.();
           if (imageData) {
             const imageDataUrl = convolutionImagedataToImage(imageData);
-            (htmlNode.domElement as HTMLImageElement).src = imageDataUrl;
+            if (htmlNode) {
+              (htmlNode.domElement as HTMLImageElement).src = imageDataUrl;
+            }
             inputObject.connectionHistory = true;
             resolve({
               result: inputObject,
@@ -145,7 +147,9 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
           )?.getImageData?.();
           if (imageData && imageData instanceof ImageData) {
             const imageDataUrl = imagedataToImage(imageData);
-            (htmlNode.domElement as HTMLImageElement).src = imageDataUrl;
+            if (htmlNode) {
+              (htmlNode.domElement as HTMLImageElement).src = imageDataUrl;
+            }
             inputObject.connectionHistory = true;
             resolve({
               result: inputObject,
@@ -178,13 +182,15 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
             });
           }
         };
-        image.src = (htmlNode.domElement as HTMLImageElement).src;
+        if (image && htmlNode) {
+          image.src = (htmlNode.domElement as HTMLImageElement).src;
+        }
         return;
       }
 
       resolve({
-        result: false,
-        output: false,
+        result: input,
+        output: input,
         stop: true,
         followPath: undefined,
       });
@@ -222,10 +228,11 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
                 ) {
                   node.nodeInfo.formValues.image = image;
                   updated?.();
-
-                  (
-                    htmlNode.domElement as HTMLImageElement
-                  ).src = `data:image/png;base64,${image}`;
+                  if (htmlNode) {
+                    (
+                      htmlNode.domElement as HTMLImageElement
+                    ).src = `data:image/png;base64,${image}`;
+                  }
                   resolve();
                 } else {
                   reject();
@@ -236,11 +243,13 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
         },
       ];
 
+      // object-cover or object-contain ??
+
       htmlNode = createElement(
         'img',
         {
           class:
-            'w-full h-full object-contain block min-h-[32px] pointer-events-none object-covwr overflow-hidden',
+            'w-full h-full object-cover block min-h-[32px] pointer-events-none object-covwr overflow-hidden',
           src: emptyImage,
         },
         undefined
@@ -252,7 +261,7 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
           class: `inner-node bg-slate-500 rounded max-w-full `,
         },
         undefined,
-        htmlNode.domElement as unknown as HTMLElement
+        htmlNode?.domElement as unknown as HTMLElement
       ) as unknown as INodeComponent<NodeInfo>;
       rect = canvasApp.createRect(
         x,
@@ -295,7 +304,7 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
         }
       );
 
-      if (initalValues && initalValues['image']) {
+      if (initalValues && initalValues['image'] && htmlNode) {
         hasInitialValue = false;
         (
           htmlNode.domElement as HTMLImageElement
@@ -315,7 +324,74 @@ export const getImage: NodeTaskFactory<NodeInfo> = (
         node.nodeInfo.formValues = {
           image: initalValues?.['image'] ?? '',
         };
+        node.nodeInfo.updateVisual = (data) => {
+          if (data.frame) {
+            // data.frame is a number[][] of rgba .. convert it to a Int32Array
 
+            const helper: number[][] = data.frame as number[][];
+            const raw = new Int32Array(helper.length * helper[0].length);
+
+            helper.forEach((row, rowIndex) => {
+              for (let i = 0; i < row.length; i += 4) {
+                const r = row[i];
+                const g = row[i + 1];
+                const b = row[i + 2];
+                const a = row[i + 3];
+
+                // Pack RGBA into a single Int32 (assuming little-endian: A << 24 | B << 16 | G << 8 | R)
+                const intColor = (a << 24) | (b << 16) | (g << 8) | r;
+
+                const pixelIndex = rowIndex * (row.length / 4) + i / 4;
+                //console.log('pixelIndex', pixelIndex, intColor);
+                raw[pixelIndex] = intColor;
+              }
+            });
+
+            const canvas = document.createElement('canvas');
+            canvas.height = data.frame.length;
+            canvas.width = data.frame[0].length / 4;
+            const context = canvas.getContext('2d');
+            context!.imageSmoothingEnabled = false;
+
+            helper.forEach((row, rowIndex) => {
+              for (let i = 0; i < row.length; i += 4) {
+                const r = row[i];
+                const g = row[i + 1];
+                const b = row[i + 2];
+                const a = row[i + 3];
+
+                // Pack RGBA into a single Int32 (assuming little-endian: A << 24 | B << 16 | G << 8 | R)
+                //const intColor = (a << 24) | (b << 16) | (g << 8) | r;
+
+                context!.fillStyle = `rgba(${r},${g},${b},${a})`;
+                context!.fillRect(canvas.width - i / 4, rowIndex, 1, 1);
+
+                //const pixelIndex = rowIndex * (row.length / 4) + i / 4;
+                //console.log('pixelIndex', pixelIndex, intColor);
+                //raw[pixelIndex] = intColor;
+              }
+            });
+
+            if (htmlNode) {
+              //console.log('image updateVisual', imageDataUrl);
+              (htmlNode.domElement as HTMLImageElement).src =
+                canvas.toDataURL();
+            }
+            // const imageData: ConvolutionImageData = {
+            //   data: raw,
+            //   type: 'ConvolutionImageData',
+            //   height: data.frame.length,
+            //   width: data.frame[0].length / 4,
+            // };
+            // if (imageData) {
+            //   const imageDataUrl = convolutionImagedataToImage(imageData);
+            //   if (htmlNode) {
+            //     //console.log('image updateVisual', imageDataUrl);
+            //     (htmlNode.domElement as HTMLImageElement).src = imageDataUrl;
+            //   }
+            // }
+          }
+        };
         (node.nodeInfo as any).getImageData = () => lastImageData;
       }
       return node;

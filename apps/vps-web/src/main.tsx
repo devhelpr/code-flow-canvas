@@ -131,11 +131,12 @@ if (url.pathname === '/run-flow') {
     worker.postMessage({ message: 'start', flow });
     worker.addEventListener('message', (event) => {
       if (event.data.message === 'node-update') {
-        console.log('Worker response:', event.data);
+        //console.log('Worker response:', event.data);
         const nodeId = event.data.result.result;
-        console.log('nodeId', nodeId, event.data.result.output);
+        //console.log('nodeId', nodeId, event.data.result.output);
         if (canvasAppInstance) {
           const nodeInfo = canvasAppInstance.elements.get(nodeId)?.nodeInfo;
+          //console.log('nodeInfo', nodeInfo);
           if (nodeInfo) {
             nodeInfo.updateVisual?.(event.data.result.output);
           }
@@ -200,7 +201,7 @@ if (url.pathname === '/run-flow') {
             console.log('run node and restart flow', node);
             startWorker(flow, input, runCounter);
           } else {
-            console.log('run node', node);
+            //console.log('run node', node);
             worker?.postMessage({
               message: 'start-node',
               nodeId: node.id,
