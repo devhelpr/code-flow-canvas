@@ -413,7 +413,7 @@ export class AppElement<T extends BaseNodeInfo> {
       ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].indexOf(
         (event.target as HTMLElement)?.tagName
       ) >= 0;
-    if (!inInputControle || !(event.target as HTMLElement)?.isContentEditable) {
+    if (!inInputControle && !(event.target as HTMLElement)?.isContentEditable) {
       if ((event.ctrlKey || event.metaKey || this.metaKeyDown) && key === 'c') {
         event.preventDefault();
         this.removeFormElement();
@@ -433,7 +433,7 @@ export class AppElement<T extends BaseNodeInfo> {
         executeCommand(
           this.commandRegistry,
           'paste-node',
-          this.getSelectTaskElement().value,
+          this.getSelectTaskElement?.()?.value,
           selectedNodeInfo?.id
         );
         return false;

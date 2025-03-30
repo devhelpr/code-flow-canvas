@@ -11,68 +11,59 @@
           "x": 3386.346667223463,
           "y": 1554.3181419509813,
           "width": 111.7109375,
-          "height": 112,
+          "height": 96,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "json-node",
             "formValues": {
               "json": "{\n  \"contents\": [{\n    \"parts\":[{\"@set:text\": \"input\"}]\n    }]\n}"
-            },
-            "nodeCannotBeReplaced": true,
-            "showFormOnlyInPopup": true,
-            "useInCompositionOnly": false,
-            "keepPopupOpenAfterUpdate": true
+            }
           }
         },
         {
           "id": "e8bad215-deb0-42d9-a3e1-156090717777",
-          "x": 3663.063721988264,
-          "y": 1511.6351069890657,
+          "x": 3663.063443291062,
+          "y": 1511.6350381660247,
           "width": 200,
           "height": 200,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "fetch",
             "formValues": {
-              "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=[openai-key]",
+              "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=[googleGeminiAI-key]",
               "http-method": "post",
               "headers": ""
-            },
-            "isSettingsPopup": true
+            }
           }
         },
         {
           "id": "8144d095-7110-43d4-96fb-8683bb78c353",
           "x": 4003.48228233086,
           "y": 1511.442820331771,
-          "width": 120.000073931365,
-          "height": 271.9999777546536,
+          "width": 120.00014325456367,
+          "height": 271.99997072762085,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
             "formValues": {
               "name": "",
               "data-type": "default"
-            },
-            "initializeOnStartFlow": true,
-            "isSettingsPopup": true
+            }
           }
         },
         {
           "id": "c3a8bd9e-f4d5-46db-9384-b1de17a33c5f",
           "x": 4673.813291479845,
           "y": 1515.2823102709674,
-          "width": 120.000073931365,
-          "height": 271.9999777546536,
+          "width": 119.99971847529551,
+          "height": 271.99997072762085,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
             "formValues": {
               "name": "",
               "data-type": "default"
-            },
-            "initializeOnStartFlow": true,
-            "isSettingsPopup": true
+            }
           }
         },
         {
@@ -87,10 +78,7 @@
             "formValues": {
               "expression": "candidates[0].content.parts[0].text",
               "inputType": "number"
-            },
-            "showFormOnlyInPopup": true,
-            "isSettingsPopup": true,
-            "supportsPreview": true
+            }
           }
         },
         {
@@ -98,25 +86,21 @@
           "x": 3116.814739534093,
           "y": 1576.3308286951303,
           "width": 74.7109375,
-          "height": 80,
+          "height": 64,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "text-node",
             "formValues": {
               "text": "Input data is received in a typescript object specified below, it is in the subject property:\n\n```ts\nconst input = {\n  subject: \"{{subject}}\"\n}\n```\n\n```ts\nconst input = {\n  subject: \"{{anothersubject}}\"\n}\n```\n\nExplain in detail the relation between the subjects that are in the subject properties in the incoming input data objects, specified above"
-            },
-            "nodeCannotBeReplaced": true,
-            "showFormOnlyInPopup": true,
-            "useInCompositionOnly": false,
-            "keepPopupOpenAfterUpdate": true
+            }
           }
         },
         {
           "id": "8b7d6c8d-1806-4596-a47a-514038cffe13",
           "x": 3149.2124074033727,
           "y": 1326.8614491593612,
-          "width": 174.4218591768426,
-          "height": 84.00002177988597,
+          "width": 174.4217358717848,
+          "height": 84.00000484223884,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -127,17 +111,15 @@
               "fieldValueType": "string",
               "enumValues": [],
               "initialEnumValue": ""
-            },
-            "isVariable": true,
-            "nodeCannotBeReplaced": true
+            }
           }
         },
         {
           "id": "342b786f-955e-4ef8-968e-60b24427b75a",
           "x": 3466.3939102846325,
           "y": 1255.3912207892486,
-          "width": 174.4218591768426,
-          "height": 83.99994684971215,
+          "width": 174.421938322169,
+          "height": 84.00000484223884,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "scope-variable",
@@ -148,17 +130,15 @@
               "fieldValueType": "string",
               "enumValues": [],
               "initialEnumValue": ""
-            },
-            "isVariable": true,
-            "nodeCannotBeReplaced": true
+            }
           }
         },
         {
           "id": "6a22f828-b47c-4123-bde9-6ebe2940cc0a",
           "x": 3498.057604723463,
-          "y": 1610.3181419509813,
-          "endX": 3663.063721988264,
-          "endY": 1611.6351069890657,
+          "y": 1602.3181419509813,
+          "endX": 3663.063443291062,
+          "endY": 1611.6350381660247,
           "startNodeId": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
           "endNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
           "startThumbName": "output",
@@ -170,8 +150,8 @@
         },
         {
           "id": "41770511-b5bf-4014-9b95-1dee2abd53de",
-          "x": 3863.063721988264,
-          "y": 1541.6351069890657,
+          "x": 3863.063443291062,
+          "y": 1541.6350381660247,
           "endX": 4003.48228233086,
           "endY": 1541.442820331771,
           "startNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
@@ -185,7 +165,7 @@
         },
         {
           "id": "ea98148d-52be-473c-be87-8f0fbd6e771b",
-          "x": 4123.482356262225,
+          "x": 4123.482425585424,
           "y": 1541.442820331771,
           "endX": 4313.803391261389,
           "endY": 1544.0914007909573,
@@ -216,9 +196,9 @@
         {
           "id": "3595bb23-681a-43d1-b8c5-0a3cd2b68bfc",
           "x": 3191.525677034093,
-          "y": 1616.3308286951303,
+          "y": 1608.3308286951303,
           "endX": 3386.346667223463,
-          "endY": 1610.3181419509813,
+          "endY": 1602.3181419509813,
           "startNodeId": "9f1f3e1c-787f-406f-b52b-b6db3e7b85dd",
           "endNodeId": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
           "startThumbName": "output",
