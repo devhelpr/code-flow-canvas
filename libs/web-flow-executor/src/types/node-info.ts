@@ -56,6 +56,8 @@ export interface NodeInfo extends BaseNodeInfo {
 
   getSettingsPopup?: (popupContainer: HTMLElement) => IDOMElement;
   shouldNotSendOutputFromWorkerToMainThread?: boolean;
+
+  offscreenCanvas?: OffscreenCanvas;
 }
 
 //export type NodeInfo = any;

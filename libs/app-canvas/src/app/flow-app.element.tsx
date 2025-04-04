@@ -2424,7 +2424,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   };
 
   resetConnectionSlider = (shouldResetConnectionSlider = true) => {
-    console.log('resetConnectionSlider');
+    //console.log('resetConnectionSlider');
     document.body.classList.remove('connection-history--sliding');
     (this.pathRange?.domElement as HTMLElement).setAttribute('value', '0');
     (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
@@ -2451,11 +2451,11 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     shouldResetConnectionSlider = true,
     onFlowFinished?: () => void
   ) => {
-    console.log(
-      'createRunCounterContext',
-      isRunViaRunButton,
-      shouldResetConnectionSlider
-    );
+    // console.log(
+    //   'createRunCounterContext',
+    //   isRunViaRunButton,
+    //   shouldResetConnectionSlider
+    // );
     this.resetConnectionSlider(shouldResetConnectionSlider);
     (this.pathRange?.domElement as HTMLButtonElement).disabled = true;
 

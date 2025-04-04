@@ -22,7 +22,11 @@ import {
   RunCounter,
 } from '@devhelpr/web-flow-executor';
 import AIFlowEngineWorker from './app/ai-flow-engine-worker/ai-flow-engine-worker?worker';
-import { AIWorkerWorker } from './app/ai-flow-engine-worker/ai-flow-engine-worker-message';
+import {
+  AIWorkerWorker,
+  OffscreenCanvasNodes,
+} from './app/ai-flow-engine-worker/ai-flow-engine-worker-message';
+import { CanvasNode } from './app/custom-nodes/classes/canvas-node-class';
 
 const API_URL_ROOT = import.meta.env.VITE_API_URL;
 
@@ -120,6 +124,7 @@ if (url.pathname === '/run-flow') {
   let worker: AIWorkerWorker;
   const startWorker = (
     flow: Flow<BaseNodeInfo> | undefined,
+    nodes: ElementNodeMap<NodeInfo>,
     input?: string,
     runCounter?: RunCounter,
     onFinishRun?: (input: string | any[]) => void
@@ -127,8 +132,33 @@ if (url.pathname === '/run-flow') {
     if (!flow) {
       return;
     }
+    const offscreenCanvases: OffscreenCanvasNodes = [];
+    nodes.forEach((node) => {
+      if (node) {
+        if (node.nodeInfo?.taskType === CanvasNode.nodeTypeName) {
+          if (node.domElement) {
+            const canvas = (
+              node.domElement as unknown as HTMLDivElement
+            ).querySelector('canvas');
+            if (canvas) {
+              const offscreenCanvas = canvas.transferControlToOffscreen();
+              offscreenCanvases.push({
+                id: node.id,
+                offscreenCanvas,
+              });
+            }
+          }
+        }
+      }
+    });
+
     worker = new AIFlowEngineWorker() as unknown as AIWorkerWorker;
-    worker.postMessage({ message: 'start', flow });
+    worker.postMessage(
+      { message: 'start', flow, offscreenCanvases },
+      offscreenCanvases.map(
+        (offscreenCanvas) => offscreenCanvas.offscreenCanvas
+      )
+    );
     worker.addEventListener('message', (event) => {
       if (event.data.message === 'node-update') {
         //console.log('Worker response:', event.data);
@@ -150,7 +180,7 @@ if (url.pathname === '/run-flow') {
   };
 
   import('./app/flow-app.element').then(async (module) => {
-    new module.FlowAppElement(
+    const flowApp = new module.FlowAppElement(
       '#app-root',
       undefined,
       false,
@@ -176,8 +206,9 @@ if (url.pathname === '/run-flow') {
           shouldResetConnectionSlider?: boolean,
           computeAsync?: ComputeAsync
         ) => {
-          startWorker(flow, input, runCounter, onFinishRun);
-          console.log('run flow', flow, computeAsync);
+          console.log('run flow startWorker', flow, nodes);
+          startWorker(flow, nodes, input, runCounter, onFinishRun);
+
           // runCounter?.callRunCounterResetHandler('done');
           // onFinishRun?.('done');
           return true;
@@ -197,9 +228,12 @@ if (url.pathname === '/run-flow') {
           shouldResetConnectionSlider?: boolean,
           inputPayload?: any
         ) => {
+          if (!flowApp?.canvas?.elements) {
+            throw new Error('FlowApp has no nodes or is not created');
+          }
           if (flow) {
             console.log('run node and restart flow', node);
-            startWorker(flow, input, runCounter);
+            startWorker(flow, flowApp.canvas.elements, input, runCounter);
           } else {
             //console.log('run node', node);
             worker?.postMessage({

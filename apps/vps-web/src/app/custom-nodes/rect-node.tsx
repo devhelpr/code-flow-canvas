@@ -66,8 +66,8 @@ export const getRectNode =
       computeAsync,
       initializeCompute,
       false,
-      flowNode?.width ?? 200,
-      flowNode?.height ?? 100,
+      flowNode?.width ?? NodeClass.initialWidth ?? 200,
+      flowNode?.height ?? NodeClass.intialHeight ?? 100,
       [
         {
           thumbType: ThumbType.Center,
@@ -92,8 +92,8 @@ export const getRectNode =
           id: nodeInstance.node.id,
           x: 0,
           y: 0,
-          width: 200,
-          height: 100,
+          width: NodeClass.initialWidth ?? 200,
+          height: NodeClass.intialHeight ?? 100,
           nodeInfo: {
             isOCIFNode: true,
             fillColor: fillColorDefault,
@@ -126,6 +126,7 @@ export const getRectNode =
         }
 
         rectNode = new NodeClass(node.id, updated, node, flowEngine);
+
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
         rectNode.onResize = (width: number, height: number) => {

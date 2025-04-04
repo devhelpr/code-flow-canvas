@@ -8,12 +8,27 @@ import { RuntimeFlowEngine } from '../flow-engine/flow-engine';
 import {
   AIWorkerMessage,
   AIWorkerWorkerSelf,
+  OffscreenCanvasNodes,
 } from './ai-flow-engine-worker-message';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { registerWorkerNodes } from '../custom-nodes/register-worker-nodes';
 
 declare let self: AIWorkerWorkerSelf;
 let flowEngine: RuntimeFlowEngine;
+let offscreenCanvases: OffscreenCanvasNodes = [];
+
+// function getGradientColor(percent: number, canvas: OffscreenCanvas) {
+//   const ctx = canvas.getContext('2d');
+//   if (!ctx) {
+//     return;
+//   }
+//   const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+//   gradient.addColorStop(0, 'red');
+//   gradient.addColorStop(1, 'blue');
+//   ctx.fillStyle = gradient;
+//   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+// }
+
 // Message event handler
 self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
   try {
@@ -56,8 +71,15 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
         }
       }
     } else if (data.message === 'start') {
+      offscreenCanvases = [];
       if (!data.flow) {
         throw new Error('Flow not provided');
+      }
+      if (data.offscreenCanvases) {
+        offscreenCanvases = data.offscreenCanvases;
+        // offscreenCanvases.forEach((canvasNode) => {
+        //   getGradientColor(40, canvasNode.offscreenCanvas);
+        // });
       }
       flowEngine = new RuntimeFlowEngine();
       flowEngine.onSendUpdateToNode = (data, node) => {
@@ -74,6 +96,17 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
         });
       };
       flowEngine.initialize(data.flow.flows['flow'].nodes, registerWorkerNodes);
+      flowEngine.canvasApp.elements.forEach((node) => {
+        if (node && node.nodeInfo) {
+          node.nodeInfo.offscreenCanvas = undefined;
+          const offscreenCanvas = offscreenCanvases.find(
+            (canvasNode) => canvasNode.id === node.id
+          );
+          if (offscreenCanvas) {
+            node.nodeInfo.offscreenCanvas = offscreenCanvas.offscreenCanvas;
+          }
+        }
+      });
       flowEngine
         .run()
         .then((output) => {

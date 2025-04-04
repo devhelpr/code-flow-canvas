@@ -23,7 +23,7 @@ class WebcamViewer {
   private isStreaming = false;
   private canvas: HTMLCanvasElement | null = null;
   private frameInterval: number | null = null;
-  private readonly FPS = 2;
+  private readonly FPS = 30;
   private readonly FRAME_INTERVAL = 1000 / this.FPS;
 
   constructor(
@@ -82,9 +82,11 @@ class WebcamViewer {
         // Set canvas dimensions to match video
         this.canvas.width = this.videoElement.videoWidth;
         this.canvas.height = this.videoElement.videoHeight;
-
+        if (this.canvas.width === 0 || this.canvas.height === 0) {
+          return;
+        }
         // Draw current video frame to canvas
-        const ctx = this.canvas.getContext('2d');
+        const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
         if (ctx) {
           ctx.drawImage(this.videoElement, 0, 0);
 
@@ -212,7 +214,6 @@ export class WebcamViewerNode extends BaseRectNode {
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {
-    console.log('drawgrid compute', input);
     return new Promise<IComputeResult>((resolve) => {
       if (this.webcamViewer) {
         resolve({
@@ -247,7 +248,6 @@ export class WebcamViewerNode extends BaseRectNode {
       return;
     }
     if (this.flowEngine?.runNode) {
-      console.log('run webcam node');
       this.flowEngine?.runNode(
         undefined,
         this.node,
@@ -298,8 +298,6 @@ export class WebcamViewerNode extends BaseRectNode {
 
   childElementSelector = '.child-node-wrapper > *:first-child';
   render = (node: FlowNode<NodeInfo>) => {
-    //const nodeInfo = node.nodeInfo as any;
-    console.log('render rect-node', node.width, node.height);
     return (
       <div
         style={`min-width:${node.width ?? 50}px;min-height:${

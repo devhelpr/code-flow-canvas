@@ -10,6 +10,7 @@ export interface AIWorkerMessage {
   nodeId?: string;
   input?: any;
   inputPayload?: any;
+  offscreenCanvases?: OffscreenCanvasNodes;
 }
 
 export interface AIWorkerMessageResponse {
@@ -18,9 +19,16 @@ export interface AIWorkerMessageResponse {
 }
 
 export interface AIWorkerWorker extends Omit<Worker, 'postMessage'> {
-  postMessage: (message: AIWorkerMessage) => void;
+  postMessage: (message: AIWorkerMessage, transfer?: Transferable[]) => void;
 }
 
 export interface AIWorkerWorkerSelf extends Omit<Worker, 'postMessage'> {
   postMessage: (message: AIWorkerMessageResponse) => void;
 }
+
+export interface OffscreenCanvasNode {
+  id: string;
+  offscreenCanvas: OffscreenCanvas;
+}
+
+export type OffscreenCanvasNodes = OffscreenCanvasNode[];

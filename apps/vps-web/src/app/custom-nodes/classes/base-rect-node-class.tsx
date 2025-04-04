@@ -37,6 +37,9 @@ export class BaseRectNode {
 
   static readonly text: string = 'rect';
 
+  static initialWidth = 200;
+  static intialHeight = 100;
+
   static readonly disableManualResize: boolean = true;
   flowEngine: FlowEngine | undefined = undefined;
   constructor(
