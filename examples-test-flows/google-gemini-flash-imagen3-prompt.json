@@ -1,0 +1,148 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
+          "x": 3387.685164014321,
+          "y": 1555.9484844037624,
+          "width": 111.7109375,
+          "height": 96,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{ \n    \"contents\": [{\n      \"parts\": [\n        {\"text\": \"create an image of a swedish house in sweden with a wood and lake as a background\"}\n      ]\n    }],\n    \"generationConfig\":{\"responseModalities\":[\"Text\",\"Image\"]}\n}"
+            }
+          }
+        },
+        {
+          "id": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "x": 3660.8090486879837,
+          "y": 1511.6353941191269,
+          "width": 200,
+          "height": 200,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "fetch",
+            "formValues": {
+              "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=[googleGeminiAI-key]",
+              "http-method": "post",
+              "headers": ""
+            }
+          }
+        },
+        {
+          "id": "c3f0b94c-dc5e-43a7-97df-3821d80f8911",
+          "x": 4173.849904003409,
+          "y": 1545.6826955200447,
+          "width": 119.9998022871814,
+          "height": 272.0000645247797,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-input",
+            "formValues": {
+              "name": "",
+              "data-type": "default"
+            }
+          }
+        },
+        {
+          "id": "a80b1437-8d7e-479b-946f-a8903b429c2b",
+          "x": 5109.358235373969,
+          "y": 1542.6407596879426,
+          "width": 256,
+          "height": 256,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-image",
+            "formValues": {
+              "image": "",
+              "styling": "{\n   \n  }"
+            }
+          }
+        },
+        {
+          "id": "0b13e7f5-8e15-4923-9baa-d238fccaac8d",
+          "x": 4640.955442439913,
+          "y": 1542.6407660219656,
+          "width": 200,
+          "height": 100,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "expression",
+            "formValues": {
+              "expression": "candidates[0].content.parts[0].inlineData.data",
+              "inputType": "number"
+            }
+          }
+        },
+        {
+          "id": "6a22f828-b47c-4123-bde9-6ebe2940cc0a",
+          "x": 3499.396101514321,
+          "y": 1603.9484844037624,
+          "endX": 3660.8090486879837,
+          "endY": 1611.6353941191269,
+          "startNodeId": "1bc4104f-6c09-4bd2-9a65-9ed23137a1db",
+          "endNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "41770511-b5bf-4014-9b95-1dee2abd53de",
+          "x": 3860.8090486879837,
+          "y": 1541.6353941191269,
+          "endX": 4173.849904003409,
+          "endY": 1575.6826955200447,
+          "startNodeId": "e8bad215-deb0-42d9-a3e1-156090717777",
+          "endNodeId": "c3f0b94c-dc5e-43a7-97df-3821d80f8911",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "a306b026-8d6a-4e91-926a-64266dc986cd",
+          "x": 4293.849706290591,
+          "y": 1575.6826955200447,
+          "endX": 4640.955442439913,
+          "endY": 1592.6407660219656,
+          "startNodeId": "c3f0b94c-dc5e-43a7-97df-3821d80f8911",
+          "endNodeId": "0b13e7f5-8e15-4923-9baa-d238fccaac8d",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "6a40e586-e2de-4fb5-aa1f-6cd263f5a6a0",
+          "x": 4840.955442439913,
+          "y": 1592.6407660219656,
+          "endX": 5109.358235373969,
+          "endY": 1572.6407596879426,
+          "startNodeId": "0b13e7f5-8e15-4923-9baa-d238fccaac8d",
+          "endNodeId": "a80b1437-8d7e-479b-946f-a8903b429c2b",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}
