@@ -217,6 +217,7 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       position: [node.x, node.y],
       size: [node.width ?? 0, node.height ?? 0],
       data: [...portsNode],
+      resource: `${node.id}-resource`,
     };
 
     if (
@@ -254,6 +255,10 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
         this.file.relations.push(relation);
       }
     }
+    this.file?.resources.push({
+      id: `${ocifNode.id}-resource`,
+      representations: [{ 'mime-type': 'text/plain', content: nodeInfo.type }],
+    });
     return ocifNode.id;
   }
   override exportThumb(
