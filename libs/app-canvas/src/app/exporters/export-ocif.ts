@@ -259,6 +259,18 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       id: `${ocifNode.id}-resource`,
       representations: [{ 'mime-type': 'text/plain', content: nodeInfo.type }],
     });
+    if (node.nodeInfo?.isGroup && this.file && node.nodeInfo?.groupedNodeIds) {
+      const relation = {
+        id: `${ocifNode.id}-group}`,
+        data: [
+          {
+            type: '@ocif/rel/group' as const,
+            members: [...node.nodeInfo.groupedNodeIds],
+          },
+        ],
+      };
+      this.file.relations.push(relation);
+    }
     return ocifNode.id;
   }
   override exportThumb(
