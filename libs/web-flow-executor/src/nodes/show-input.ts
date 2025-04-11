@@ -116,6 +116,7 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
   };
 
   const updateVisual = (data: any) => {
+    inputValues = data;
     if (htmlNode && htmlNode.domElement) {
       if (data && typeof data === 'object') {
         htmlNode.domElement.textContent = JSON.stringify(data, null, 2);
@@ -135,6 +136,10 @@ export const getShowInput: NodeTaskFactory<NodeInfo> = (
         } else {
           htmlNode.domElement.textContent = (data || '-').toString();
         }
+      }
+
+      if (rect && rect.resize) {
+        rect.resize(240);
       }
     }
   };

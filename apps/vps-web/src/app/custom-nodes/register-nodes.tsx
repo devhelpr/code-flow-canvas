@@ -15,6 +15,7 @@ import {
 import { RectNode } from './classes/rect-node-class';
 import { WebcamViewerNode } from './classes/webcam-node';
 import { CanvasNode } from './classes/canvas-node-class';
+import { PromptNode } from './classes/prompt-node-class';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -26,6 +27,7 @@ const nodes: NodeRegistration[] = [
   DrawGridNode,
   WebcamViewerNode,
   CanvasNode,
+  PromptNode,
 ];
 
 export const registerNodes = (

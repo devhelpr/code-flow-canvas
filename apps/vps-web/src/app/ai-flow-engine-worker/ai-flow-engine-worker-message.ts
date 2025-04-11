@@ -11,6 +11,7 @@ export interface AIWorkerMessage {
   input?: any;
   inputPayload?: any;
   offscreenCanvases?: OffscreenCanvasNodes;
+  llmApiKeys: Record<string, string>;
 }
 
 export interface AIWorkerMessageResponse {

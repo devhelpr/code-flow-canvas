@@ -107,6 +107,9 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
           }
         }
       });
+      Object.entries(data.llmApiKeys).forEach((keyValue) => {
+        flowEngine.canvasApp.setTempData(keyValue[0], keyValue[1]);
+      });
       flowEngine
         .run()
         .then((output) => {

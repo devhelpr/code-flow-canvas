@@ -80,7 +80,10 @@ export const getRectNode =
           maxConnections: -1,
         },
       ],
-      (_values?: InitialValues): FormField[] => {
+      (values?: InitialValues): FormField[] => {
+        if (NodeClass.getFormFields) {
+          return NodeClass.getFormFields(() => node, updated, values);
+        }
         return [];
       },
       (nodeInstance) => {
@@ -153,12 +156,21 @@ export const getRectNode =
           );
         };
         rectNode.createRunCounterContext = createRunCounterContext;
-        if (rectNode.getSettingsPopup) {
+        if (rectNode.getSettingsPopup && !NodeClass.getFormFields) {
           if (!node.nodeInfo) {
             node.nodeInfo = {} as any;
           }
           (node.nodeInfo as any).getSettingsPopup = rectNode.getSettingsPopup;
           if (node.nodeInfo) {
+            node.nodeInfo.showFormOnlyInPopup = true;
+            node.nodeInfo.isSettingsPopup = true;
+          }
+        }
+        if (NodeClass.getFormFields) {
+          if (!node.nodeInfo) {
+            node.nodeInfo = {} as any;
+          }
+          if (node?.nodeInfo) {
             node.nodeInfo.showFormOnlyInPopup = true;
             node.nodeInfo.isSettingsPopup = true;
           }
@@ -256,6 +268,8 @@ export const getRectNode =
         disableManualResize: NodeClass.disableManualResize,
         isRectThumb: true,
         rectThumbWithStraightConnections: true,
+        hasFormInPopup: true,
+        hasSettingsPopup: !NodeClass.getFormFields,
       },
       <div class="child-instance"></div>,
       true

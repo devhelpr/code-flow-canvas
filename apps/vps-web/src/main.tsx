@@ -20,6 +20,7 @@ import {
   ComputeAsync,
   NodeInfo,
   RunCounter,
+  llmApiKeys,
 } from '@devhelpr/web-flow-executor';
 import AIFlowEngineWorker from './app/ai-flow-engine-worker/ai-flow-engine-worker?worker';
 import {
@@ -120,6 +121,12 @@ if (url.pathname === '/run-flow') {
 } else if (url.pathname === '/python') {
   pythonPage();
 } else if (url.pathname === '/ai-canvas') {
+  const llmApiKeyValue: Record<string, string> = {};
+  llmApiKeys.forEach((apiKeyName) => {
+    const apiKeyValue = sessionStorage.getItem(apiKeyName) ?? '';
+    llmApiKeyValue[apiKeyName] = apiKeyValue;
+  });
+
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
   let worker: AIWorkerWorker;
   const startWorker = (
@@ -154,7 +161,7 @@ if (url.pathname === '/run-flow') {
 
     worker = new AIFlowEngineWorker() as unknown as AIWorkerWorker;
     worker.postMessage(
-      { message: 'start', flow, offscreenCanvases },
+      { message: 'start', flow, offscreenCanvases, llmApiKeys: llmApiKeyValue },
       offscreenCanvases.map(
         (offscreenCanvas) => offscreenCanvas.offscreenCanvas
       )
@@ -241,6 +248,7 @@ if (url.pathname === '/run-flow') {
               nodeId: node.id,
               input,
               inputPayload,
+              llmApiKeys: llmApiKeyValue,
             });
           }
         },

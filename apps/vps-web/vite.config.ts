@@ -40,6 +40,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    assetsInclude: ['**/*.onnx'], // important for local model hosting
     server: {
       port: 4200,
       host: 'localhost',

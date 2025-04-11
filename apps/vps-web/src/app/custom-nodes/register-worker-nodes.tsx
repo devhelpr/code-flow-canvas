@@ -15,6 +15,7 @@ import {
   getWebcamViewerNode,
 } from './webcam-viewer-worker';
 import { getCanvasNode, canvasNodeName } from './canvas-node-worker';
+import { promptNodeName, getPromptNode } from './prompt-worker';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -28,6 +29,10 @@ const nodes: NodeRegistration[] = [
   () => ({
     factory: getCanvasNode,
     name: canvasNodeName,
+  }),
+  () => ({
+    factory: getPromptNode,
+    name: promptNodeName,
   }),
 ];
 

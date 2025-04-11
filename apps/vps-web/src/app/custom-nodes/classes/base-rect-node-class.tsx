@@ -9,6 +9,8 @@ import {
   IFlowCanvasBase,
   createElement,
   renderElement,
+  FormField,
+  InitialValues,
 } from '@devhelpr/visual-programming-system';
 import { FlowEngine, NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
 import { CorePropertiesSetupEditor } from './core-properties-settings-editor';
@@ -39,6 +41,14 @@ export class BaseRectNode {
 
   static initialWidth = 200;
   static intialHeight = 100;
+
+  static getFormFields:
+    | ((
+        getNode: () => IRectNodeComponent<NodeInfo>,
+        updated: () => void,
+        values?: InitialValues
+      ) => FormField[])
+    | undefined = undefined;
 
   static readonly disableManualResize: boolean = true;
   flowEngine: FlowEngine | undefined = undefined;
