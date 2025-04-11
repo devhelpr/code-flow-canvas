@@ -57,7 +57,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
     rootElement?: HTMLElement,
     theme?: Theme,
     customClassName?: string,
-    canvasApp?: IBaseFlow<T>
+    canvasApp?: IBaseFlow<T>,
+    nodeInfo?: BaseNodeInfo
   ) {
     super(
       canvas,
@@ -85,7 +86,8 @@ export class RectThumb<T extends BaseNodeInfo> extends Rect<T> {
       rootElement,
       theme,
       customClassName,
-      canvasApp
+      canvasApp,
+      nodeInfo
     );
     if (!this.nodeComponent) {
       throw new Error('nodeComponent not created');

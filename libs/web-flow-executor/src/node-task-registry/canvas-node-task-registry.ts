@@ -225,6 +225,7 @@ import {
 import { createGuid, createGuidNodeName } from '../nodes/create-guid';
 import { getNumberValue } from '../nodes/value-number';
 import { FlowEngine } from '../interface/flow-engine';
+import { getGroup } from '../nodes/group';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
@@ -281,6 +282,7 @@ export const setupCanvasNodeTaskRegistry = (
       flowEngine
     );
 
+    registerNodeFactory('group', getGroup, undefined, flowEngine);
     registerNodeFactory('foreach', getForEach, undefined, flowEngine);
     registerNodeFactory(mapNodeName, getMap, undefined, flowEngine);
     registerNodeFactory(filterNodeName, getFilter, undefined, flowEngine);

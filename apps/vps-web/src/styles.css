@@ -274,6 +274,10 @@ rect-node:has(.hover) > .shape-circle,
   cursor: grab;
   z-index: 3;
 }
+.rect-node.group-node {
+  z-index: -1;
+}
+
 .rect-node.selected {
   z-index: 4;
 }

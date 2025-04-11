@@ -87,6 +87,8 @@ export interface IRectNodeComponent<T extends BaseNodeInfo>
   thumbs: IThumb[];
   isSettingSize?: boolean;
   setSize: (width: number, height: number) => void;
+  groupNode?: IRectNodeComponent<T>;
+  nodesInGroup?: IRectNodeComponent<T>[];
 }
 
 export interface IConnectionNodeComponent<T extends BaseNodeInfo>

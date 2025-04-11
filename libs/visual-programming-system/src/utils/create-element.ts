@@ -89,7 +89,8 @@ export const createNodeElement = <T extends BaseNodeInfo>(
   attributes?: Record<string, string | number | object | EventHandler>,
   parent?: DOMElementNode,
   content?: string | HTMLElement | JSX.Element,
-  id?: string
+  id?: string,
+  shouldAddAsFirstChild?: boolean
 ): IElementNode<T> | undefined => {
   if (typeof document === 'undefined') {
     return undefined;
@@ -135,7 +136,11 @@ export const createNodeElement = <T extends BaseNodeInfo>(
     });
   }
   if (parent) {
-    parent.appendChild(domElement);
+    if (shouldAddAsFirstChild) {
+      (parent as HTMLElement).prepend(domElement);
+    } else {
+      parent.appendChild(domElement);
+    }
   }
   if (content && elementName) {
     if (typeof content === 'string') {

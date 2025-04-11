@@ -261,7 +261,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.compositons,
       onEditCompositionName ?? (() => Promise.resolve(false)),
       isNodeContainer,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      () => this.onCanvasUpdated
     );
 
     this.onDroppedOnNode = onDroppedOnNode;
@@ -1458,7 +1459,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.rootElement,
       this.theme,
       layoutProperties?.customClassName,
-      this
+      this,
+      nodeInfo
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');
@@ -1517,7 +1519,8 @@ export class FlowCanvas<T extends BaseNodeInfo>
       this.rootElement,
       this.theme,
       layoutProperties?.customClassName,
-      this
+      this,
+      nodeInfo
     );
     if (!rectInstance || !rectInstance.nodeComponent) {
       throw new Error('rectInstance is undefined');

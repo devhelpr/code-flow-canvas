@@ -122,6 +122,11 @@ export interface BaseNodeInfo extends BaseSettingsNodeInfo {
   isOCIFNode?: boolean;
   compositionId?: string;
   isComposition?: boolean;
+  isGroup?: boolean;
+  isInGroup?: boolean;
+  groupedNodeIds?: string[];
+  groupId?: string;
+
   cancelPreview?: () => void;
   outputConnectionInfo?: {
     text: string;

@@ -79,6 +79,7 @@ export class Rect<T extends BaseNodeInfo> {
   protected theme?: Theme;
 
   protected canvasApp?: IBaseFlow<T>;
+  protected nodeInfo?: BaseNodeInfo;
 
   constructor(
     canvas: IElementNode<T>,
@@ -110,12 +111,15 @@ export class Rect<T extends BaseNodeInfo> {
     rootElement?: HTMLElement,
     theme?: Theme,
     customClassName?: string,
-    canvasApp?: IBaseFlow<T>
+    canvasApp?: IBaseFlow<T>,
+    nodeInfo?: BaseNodeInfo
   ) {
     this.cssClasses = getRectNodeCssClasses();
     this.canvas = canvas;
     this.canvasElements = elements;
     this.canvasApp = canvasApp;
+
+    this.nodeInfo = nodeInfo;
 
     this.canvasUpdated = canvasUpdated;
     this.setCanvasAction = setCanvasAction;
@@ -1050,7 +1054,8 @@ export class Rect<T extends BaseNodeInfo> {
       },
       canvasElement,
       undefined,
-      id
+      id,
+      this.nodeInfo?.isGroup ?? false
     ) as unknown as IRectNodeComponent<T> | undefined;
 
     if (!rectContainerElement)
@@ -1306,6 +1311,8 @@ export class Rect<T extends BaseNodeInfo> {
       if (!target || x === undefined || y === undefined || !initiator) {
         return false;
       }
+      const orgX = this.points.beginX;
+      const orgY = this.points.beginY;
 
       if (
         this.nodeComponent &&
@@ -1558,6 +1565,75 @@ export class Rect<T extends BaseNodeInfo> {
             this.nodeComponent
           );
         }
+        if (this.nodeInfo?.isGroup) {
+          const groupOfInitiator = initiator?.nodeInfo?.groupId;
+          if (groupOfInitiator && groupOfInitiator !== this.nodeComponent.id) {
+            this.nodeInfo?.groupedNodeIds?.forEach((id) => {
+              const groupedNode = this.canvasApp?.elements.get(id);
+              if (groupedNode && groupedNode.id !== initiator.id) {
+                const groupedNodeInstance =
+                  groupedNode as unknown as IRectNodeComponent<T>;
+                const newX = this.points.beginX - orgX + groupedNodeInstance.x;
+                const newY = this.points.beginY - orgY + groupedNodeInstance.y;
+                if (groupedNodeInstance.update) {
+                  groupedNodeInstance.update(
+                    groupedNodeInstance,
+                    newX,
+                    newY,
+                    this.nodeComponent
+                  );
+                }
+              }
+            });
+          }
+        }
+        if (this.nodeInfo?.isInGroup && this.nodeInfo?.groupId) {
+          const groupNode = this.canvasApp?.elements.get(this.nodeInfo.groupId);
+          if (groupNode && groupNode.id !== initiator.id) {
+            const groupNodeInstance =
+              groupNode as unknown as IRectNodeComponent<T>;
+
+            let minX = Infinity,
+              minY = Infinity;
+            let maxX = -Infinity,
+              maxY = -Infinity;
+            if (groupNode.nodeInfo?.groupedNodeIds) {
+              groupNode.nodeInfo.groupedNodeIds.forEach((nodeId) => {
+                const groupedNode = this.canvasApp?.elements.get(
+                  nodeId
+                ) as unknown as IRectNodeComponent<T>;
+                if (groupedNode) {
+                  const x = groupedNode.x;
+                  const y = groupedNode.y;
+                  const width = groupedNode.width || 0;
+                  const height = groupedNode.height || 0;
+
+                  minX = Math.min(minX, x);
+                  minY = Math.min(minY, y);
+                  maxX = Math.max(maxX, x + width);
+                  maxY = Math.max(maxY, y + height);
+                }
+              });
+            }
+            if (
+              minX !== Infinity &&
+              minX !== Infinity &&
+              maxX !== -Infinity &&
+              maxY !== -Infinity
+            ) {
+              if (groupNodeInstance.update) {
+                groupNodeInstance.setSize(maxX - minX + 100, maxY - minY + 100);
+                groupNodeInstance.update(
+                  groupNodeInstance,
+                  minX - 50,
+                  minY - 50,
+                  this.nodeComponent
+                );
+              }
+            }
+          }
+        }
+
         if ((this.nodeComponent?.nodeInfo as any)?.update) {
           (this.nodeComponent.nodeInfo as any).update();
         }

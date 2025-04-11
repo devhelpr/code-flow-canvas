@@ -15,6 +15,7 @@ import {
   IRectNodeComponent,
   IThumb,
   ThumbConnectionType,
+  FlowChangeType,
 } from '../interfaces';
 import { Composition } from '../interfaces/composition';
 import { GetNodeTaskFactory } from '../interfaces/node-task-registry';
@@ -50,6 +51,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
   leftBottom: IDOMElement | undefined;
   rightBottom: IDOMElement | undefined;
   createCompositionButtons: IDOMElement | undefined;
+  createGroupButton: IDOMElement | undefined;
   toolsNodesPanel: IDOMElement | undefined;
 
   resizeMode = 'right-bottom';
@@ -61,6 +63,17 @@ export class NodeSelector<T extends BaseNodeInfo> {
   elements: ElementNodeMap<T> = new Map();
   orgPositionMoveNodes: { [key: string]: { x: number; y: number } } = {};
   compositions: Compositions<T>;
+  getCanvasUpdated?:
+    | (() =>
+        | ((
+            shouldClearExecutionHistory?: boolean,
+            _isStoreOnly?: boolean,
+            _flowChangeType?: FlowChangeType,
+            _node?: INodeComponent<T> | undefined
+          ) => void)
+        | undefined)
+    | undefined;
+
   protected cssClasses: ReturnType<typeof getNodeSelectorCssClasses>;
   onAddComposition?: (
     composition: Composition<T>,
@@ -83,7 +96,17 @@ export class NodeSelector<T extends BaseNodeInfo> {
     compositions: Compositions<T>,
     onEditCompositionName: () => Promise<string | false>,
     isInContainer = false,
-    getNodeTaskFactory?: GetNodeTaskFactory<T>
+    getNodeTaskFactory?: GetNodeTaskFactory<T>,
+    getCanvasUpdated?:
+      | (() =>
+          | ((
+              shouldClearExecutionHistory?: boolean,
+              _isStoreOnly?: boolean,
+              _flowChangeType?: FlowChangeType,
+              _node?: INodeComponent<T> | undefined
+            ) => void)
+          | undefined)
+      | undefined
   ) {
     this.canvasApp = canvasApp;
     this.cssClasses = getNodeSelectorCssClasses();
@@ -96,6 +119,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
     this.onEditCompositionName = onEditCompositionName;
     this.isInContainer = isInContainer;
     this.getNodeTaskFactory = getNodeTaskFactory;
+    this.getCanvasUpdated = getCanvasUpdated;
 
     this.nodeSelectorElement = createElement(
       'div',
@@ -177,6 +201,15 @@ export class NodeSelector<T extends BaseNodeInfo> {
         return;
       }
 
+      this.createGroupButton = createElement(
+        'button',
+        {
+          class: this.cssClasses.createCompositionButtonClasses,
+          click: this.onCreateGroup,
+        },
+        this.toolsNodesPanel.domElement,
+        'Create group'
+      );
       this.createCompositionButtons = createElement(
         'button',
         {
@@ -497,6 +530,92 @@ export class NodeSelector<T extends BaseNodeInfo> {
       this.selectedConnections = [];
     }
     this.selectionWasPlacedOrMoved = false;
+  };
+
+  onCreateGroup = () => {
+    const nodeIdsInGroup: string[] = [];
+
+    let minX = Infinity,
+      minY = Infinity;
+    let maxX = -Infinity,
+      maxY = -Infinity;
+
+    this.selectedNodes.forEach((node) => {
+      if (node.nodeType === NodeType.Shape) {
+        nodeIdsInGroup.push(node.id);
+
+        const x = node.x;
+        const y = node.y;
+        const width = node.width || 0;
+        const height = node.height || 0;
+
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x + width);
+        maxY = Math.max(maxY, y + height);
+      }
+    });
+    if (
+      minX === Infinity ||
+      minX === Infinity ||
+      maxX === -Infinity ||
+      maxY === -Infinity
+    ) {
+      return;
+    }
+    if (!this.getNodeTaskFactory || !this.getCanvasUpdated) {
+      return;
+    }
+    const onCanvasUpdated = this.getCanvasUpdated();
+    if (!onCanvasUpdated) {
+      return;
+    }
+    const factory = this.getNodeTaskFactory('group');
+
+    if (factory) {
+      const nodeTask = factory(onCanvasUpdated, this.canvasApp.theme);
+      const nodeInfo = undefined;
+      const node = nodeTask.createVisualNode(
+        this.canvasApp,
+        minX - 50,
+        minY - 50,
+        undefined,
+        undefined,
+        undefined,
+        maxX - minX + 100,
+        maxY - minY + 100,
+        undefined,
+        nodeInfo
+      );
+      if (node && node.nodeInfo) {
+        // TODO : IMPROVE THIS
+        (node.nodeInfo as any).taskType = 'group';
+        node.nodeInfo.isGroup = true;
+        node.nodeInfo.groupedNodeIds = nodeIdsInGroup;
+      }
+      node.nodesInGroup = this.selectedNodes.filter(
+        (node) => node.nodeType === NodeType.Shape
+      ) as unknown as IRectNodeComponent<T>[];
+      this.selectedNodes.forEach((nodeInSelection) => {
+        if (nodeInSelection.nodeType === NodeType.Shape) {
+          (nodeInSelection as unknown as IRectNodeComponent<T>).groupNode =
+            node;
+          if ((nodeInSelection as unknown as IRectNodeComponent<T>).nodeInfo) {
+            const nodeInfo = (
+              nodeInSelection as unknown as IRectNodeComponent<T>
+            ).nodeInfo;
+            if (nodeInfo) {
+              nodeInfo.isInGroup = true;
+              nodeInfo.groupId = node.id;
+            }
+          }
+        }
+      });
+      node.updateEnd?.();
+      this.selectedNodes = [];
+      this.selectionWasPlacedOrMoved = false;
+      this.removeSelector();
+    }
   };
 
   /*
