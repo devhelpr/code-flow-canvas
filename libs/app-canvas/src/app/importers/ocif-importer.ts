@@ -253,6 +253,28 @@ export const importOCIF = (ocif: any) => {
       }
     });
   }
+
+  if (ocif.relations) {
+    ocif.relations.forEach((relation: any) => {
+      if (relation && relation.data) {
+        const group = getExtenstionData(relation, '@ocif/rel/group');
+        if (group) {
+          flow.flows['flow'].nodes.push({
+            id: relation.id,
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            nodeType: 'Shape',
+            nodeInfo: {
+              type: 'group',
+              groupedNodeIds: group.members,
+            } as any,
+          });
+        }
+      }
+    });
+  }
   return flow;
 };
 

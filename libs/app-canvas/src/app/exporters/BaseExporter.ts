@@ -99,14 +99,16 @@ export abstract class BaseExporter<T extends ExportFile, X> {
         isRectThumb,
         parentId
       );
-      if (!isRectThumb) {
-        node.thumbConnectors?.forEach((thumb) => {
-          this.exportThumb(contextInfo, thumb);
-        });
-      }
+      if (id) {
+        if (!isRectThumb) {
+          node.thumbConnectors?.forEach((thumb) => {
+            this.exportThumb(contextInfo, thumb);
+          });
+        }
 
-      if (node.nodeInfo?.canvasAppInstance) {
-        this.exportNodes(id, node.nodeInfo.canvasAppInstance.elements);
+        if (node.nodeInfo?.canvasAppInstance) {
+          this.exportNodes(id, node.nodeInfo.canvasAppInstance.elements);
+        }
       }
     });
 

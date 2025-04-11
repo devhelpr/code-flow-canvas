@@ -219,7 +219,26 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       data: [...portsNode],
       resource: `${node.id}-resource`,
     };
-
+    if (nodeInfo.type === 'group') {
+      // only export group as a relation
+      if (
+        node.nodeInfo?.isGroup &&
+        this.file &&
+        node.nodeInfo?.groupedNodeIds
+      ) {
+        const relation = {
+          id: `${ocifNode.id}`,
+          data: [
+            {
+              type: '@ocif/rel/group' as const,
+              members: [...node.nodeInfo.groupedNodeIds],
+            },
+          ],
+        };
+        this.file.relations.push(relation);
+      }
+      return '';
+    }
     if (
       ocifNode.data &&
       nodeInfo.type !== 'rect-node' &&
@@ -259,18 +278,7 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       id: `${ocifNode.id}-resource`,
       representations: [{ 'mime-type': 'text/plain', content: nodeInfo.type }],
     });
-    if (node.nodeInfo?.isGroup && this.file && node.nodeInfo?.groupedNodeIds) {
-      const relation = {
-        id: `${ocifNode.id}-group}`,
-        data: [
-          {
-            type: '@ocif/rel/group' as const,
-            members: [...node.nodeInfo.groupedNodeIds],
-          },
-        ],
-      };
-      this.file.relations.push(relation);
-    }
+
     return ocifNode.id;
   }
   override exportThumb(
