@@ -245,7 +245,7 @@ export const importToCanvas = <T extends BaseNodeInfo>(
               });
             }
           } else {
-            nodeTask.createVisualNode(
+            const createdNode = nodeTask.createVisualNode(
               canvasApp,
               node.x,
               node.y,
@@ -258,6 +258,19 @@ export const importToCanvas = <T extends BaseNodeInfo>(
               node.nodeInfo,
               getNodeTaskFactory
             );
+
+            // TODO : find a better implementation for this
+            // problem now is that the nodes should pass the above node.nodeInfo themselves
+            // to the create canvasApp.createRect function call when creating the node ...
+            // ... and then it is overwritten.. the below fixes this for now
+            if (
+              createdNode &&
+              node.nodeInfo?.isInGroup &&
+              createdNode.nodeInfo
+            ) {
+              createdNode.nodeInfo.isInGroup = true;
+              createdNode.nodeInfo.groupId = node.nodeInfo.groupId;
+            }
           }
         }
       }

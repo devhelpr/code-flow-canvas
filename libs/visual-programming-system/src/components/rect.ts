@@ -1567,7 +1567,10 @@ export class Rect<T extends BaseNodeInfo> {
         }
         if (this.nodeInfo?.isGroup) {
           const groupOfInitiator = initiator?.nodeInfo?.groupId;
-          if (groupOfInitiator && groupOfInitiator !== this.nodeComponent.id) {
+          if (
+            !groupOfInitiator ||
+            (groupOfInitiator && groupOfInitiator !== this.nodeComponent.id)
+          ) {
             this.nodeInfo?.groupedNodeIds?.forEach((id) => {
               const groupedNode = this.canvasApp?.elements.get(id);
               if (groupedNode && groupedNode.id !== initiator.id) {

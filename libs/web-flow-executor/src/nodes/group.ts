@@ -49,7 +49,7 @@ export const getGroup: NodeTaskFactory<NodeInfo> = (
       const wrapper = createElement(
         'div',
         {
-          class: `${cssClasses.wrapperGroupCssClasses} bg-purple-500`,
+          class: `${cssClasses.wrapperGroupCssClasses} bg-slate-700`,
         },
         undefined
       ) as unknown as INodeComponent<NodeInfo>;
