@@ -209,7 +209,7 @@ export const importOCIF = (ocif: any) => {
         const data = getFirstOcifExtensionInData(node);
         //const data = getExtenstionData(node, dataType);
         if (data) {
-          const dataType = data.dataType;
+          const dataType = data.type;
           let text = '';
           const resource = getResourceById(ocif, node.resource);
           if (resource) {
