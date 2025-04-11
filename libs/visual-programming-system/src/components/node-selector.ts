@@ -498,6 +498,24 @@ export class NodeSelector<T extends BaseNodeInfo> {
         this.createCompositionButtons.domElement as HTMLElement
       ).style.borderWidth = `${reversScale}px`;
     }
+
+    if (this.createGroupButton) {
+      (this.createGroupButton.domElement as HTMLElement).style.fontSize = `${
+        12 * reversScale
+      }px`;
+      (this.createGroupButton.domElement as HTMLElement).style.padding = `${
+        0.5 * reversScale
+      }rem`;
+      (this.createGroupButton.domElement as HTMLElement).style.margin = `${
+        0.5 * reversScale
+      }rem`;
+      (
+        this.createGroupButton.domElement as HTMLElement
+      ).style.borderRadius = `${0.15 * reversScale}rem`;
+      (
+        this.createGroupButton.domElement as HTMLElement
+      ).style.borderWidth = `${reversScale}px`;
+    }
     if (this.toolsNodesPanel) {
       (this.toolsNodesPanel.domElement as HTMLElement).style.bottom = `-${
         48 * reversScale

@@ -271,6 +271,16 @@ export const importOCIF = (ocif: any) => {
               groupedNodeIds: group.members,
             } as any,
           });
+
+          group.members.forEach((memberId: string) => {
+            const nodeInFlow = flow.flows['flow'].nodes.find(
+              (node) => node.id === memberId
+            );
+            if (nodeInFlow && nodeInFlow.nodeInfo) {
+              nodeInFlow.nodeInfo.isInGroup = true;
+              nodeInFlow.nodeInfo.groupId = relation.id;
+            }
+          });
         }
       }
     });
