@@ -1,0 +1,3283 @@
+{
+  "ocif": "https://canvasprotocol.org/ocif/0.4",
+  "nodes": [
+    {
+      "id": "f030a86e-2280-4b12-8615-4644f98cb625",
+      "position": [
+        3218.510068723205,
+        1079.3107144634794
+      ],
+      "size": [
+        91.51536401742845,
+        84.00005139409024
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "data",
+            "initialValue": "",
+            "fieldType": "array",
+            "fieldValueType": "number",
+            "enumValues": [],
+            "initialEnumValue": ""
+          },
+          "nodeType": "variable"
+        }
+      ],
+      "resource": "f030a86e-2280-4b12-8615-4644f98cb625-resource"
+    },
+    {
+      "id": "693410e0-2810-4237-b888-07ea51248a6e",
+      "position": [
+        3605.68753580387,
+        1102.179755079369
+      ],
+      "size": [
+        91.51536401742845,
+        83.99991216233182
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "clusters",
+            "initialValue": "",
+            "fieldType": "array",
+            "fieldValueType": "array",
+            "enumValues": [],
+            "initialEnumValue": ""
+          },
+          "nodeType": "variable"
+        }
+      ],
+      "resource": "693410e0-2810-4237-b888-07ea51248a6e-resource"
+    },
+    {
+      "id": "dab880f1-662c-4e23-98eb-4b374ca84e68",
+      "position": [
+        3901.659453834542,
+        1076.8259188667582
+      ],
+      "size": [
+        91.51592094446207,
+        84.00005139409024
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "centroids",
+            "initialValue": "",
+            "fieldType": "array",
+            "fieldValueType": "number",
+            "enumValues": [],
+            "initialEnumValue": ""
+          },
+          "nodeType": "variable"
+        }
+      ],
+      "resource": "dab880f1-662c-4e23-98eb-4b374ca84e68-resource"
+    },
+    {
+      "id": "ae56dc77-4c0e-479c-9caf-390762aac180",
+      "position": [
+        3263.074212637936,
+        1621.031313917981
+      ],
+      "size": [
+        150,
+        155
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "min",
+            "max",
+            "step"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "nodeType": "range"
+        }
+      ],
+      "resource": "ae56dc77-4c0e-479c-9caf-390762aac180-resource"
+    },
+    {
+      "id": "248c7829-295b-44fd-b581-18cafc953842",
+      "position": [
+        2928.9264141208932,
+        1544.9889592387547
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "value": "0"
+          },
+          "nodeType": "value"
+        }
+      ],
+      "resource": "248c7829-295b-44fd-b581-18cafc953842-resource"
+    },
+    {
+      "id": "bfc7c418-33fa-44a9-bd5a-5acef9038735",
+      "position": [
+        2924.212382306903,
+        1717.5867652234415
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "value": "100"
+          },
+          "nodeType": "value"
+        }
+      ],
+      "resource": "bfc7c418-33fa-44a9-bd5a-5acef9038735-resource"
+    },
+    {
+      "id": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+      "position": [
+        3502.101617072024,
+        1630.6227343932114
+      ],
+      "size": [
+        110,
+        110
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output1",
+            "output2",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "nodeType": "map"
+        }
+      ],
+      "resource": "be12c859-b2c1-4be9-9359-ced5985aebcc-resource"
+    },
+    {
+      "id": "7b8c7fbf-81d0-4ea7-adb3-1ce04f0ce5c5",
+      "position": [
+        3705.1795902474455,
+        1720.5065054596478
+      ],
+      "size": [
+        229.20923207859414,
+        115.77249145425958
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "[random() , random()]",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "7b8c7fbf-81d0-4ea7-adb3-1ce04f0ce5c5-resource"
+    },
+    {
+      "id": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b",
+      "position": [
+        3808.52078598491,
+        1602.4215404853467
+      ],
+      "size": [
+        200,
+        55
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "array"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "data"
+          },
+          "nodeType": "set-array-variable"
+        }
+      ],
+      "resource": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b-resource"
+    },
+    {
+      "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424",
+      "position": [
+        2948.003739242402,
+        1092.1766682834289
+      ],
+      "size": [
+        91.51536401742845,
+        84.00005139409024
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "k",
+            "initialValue": "5",
+            "fieldType": "value",
+            "fieldValueType": "number",
+            "enumValues": [],
+            "initialEnumValue": ""
+          },
+          "nodeType": "variable"
+        }
+      ],
+      "resource": "3b1c2a61-436e-4625-93e9-8e6117ba0424-resource"
+    },
+    {
+      "id": "ac063440-0517-4880-8ffc-79610e86fc7a",
+      "position": [
+        4548.207982977223,
+        1741.4621262284763
+      ],
+      "size": [
+        150,
+        155
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "min",
+            "max",
+            "step"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "nodeType": "range"
+        }
+      ],
+      "resource": "ac063440-0517-4880-8ffc-79610e86fc7a-resource"
+    },
+    {
+      "id": "d6a6b905-9c2d-4bbe-b489-acbae0355ede",
+      "position": [
+        4120.909137276225,
+        2003.2320601343065
+      ],
+      "size": [
+        200,
+        111.9998779296875
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "k",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "d6a6b905-9c2d-4bbe-b489-acbae0355ede-resource"
+    },
+    {
+      "id": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+      "position": [
+        4839.885203842909,
+        1770.5647124219797
+      ],
+      "size": [
+        110,
+        110
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output1",
+            "output2",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "nodeType": "map"
+        }
+      ],
+      "resource": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b-resource"
+    },
+    {
+      "id": "28fe4ef5-5577-4943-a722-a2c1c618b7e2",
+      "position": [
+        5039.513606938384,
+        1870.024157597062
+      ],
+      "size": [
+        223.00997277902025,
+        119.87738546114588
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "[random() , random()]",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "28fe4ef5-5577-4943-a722-a2c1c618b7e2-resource"
+    },
+    {
+      "id": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c",
+      "position": [
+        5012.936333470498,
+        1710.9236203121095
+      ],
+      "size": [
+        200,
+        55
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "array"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "centroids"
+          },
+          "nodeType": "set-array-variable"
+        }
+      ],
+      "resource": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c-resource"
+    },
+    {
+      "id": "a301c7c2-c840-449c-8fcf-094168b0a42a",
+      "position": [
+        4237.832875462038,
+        1727.7376854356596
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "value": "0"
+          },
+          "nodeType": "value"
+        }
+      ],
+      "resource": "a301c7c2-c840-449c-8fcf-094168b0a42a-resource"
+    },
+    {
+      "id": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
+      "position": [
+        7352.834731500443,
+        1383.5318984721157
+      ],
+      "size": [
+        541.607184260587,
+        520.5699638027584
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        if (window.input !== undefined && window.input.clusters) {\n          if (Array.isArray(window.input.clusters)) {\n            window.input.clusters.forEach((element, index) => {\n              if (Array.isArray(element)) {\n                element.forEach((point, i) => {\n                  if (Array.isArray(point)) {\n                    let circle = document.createElementNS(\n                      'http://www.w3.org/2000/svg',\n                      'circle'\n                    );\n                    circle.setAttribute('cx', point[0] * 10 + 100);\n                    circle.setAttribute('cy', point[1] * 10 + 100);\n                    circle.setAttribute('r', 25);\n                    circle.setAttribute('fill', getColor(index));\n                    documentFragment.appendChild(circle);\n                  }\n                });\n              }\n            });\n            if (window.input.centroids) {\n              window.input.centroids.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 50);\n                  circle.setAttribute('fill-opacity', \"50%\"); \n                  circle.setAttribute('fill', getDarkenColor(index));\n                  documentFragment.appendChild(circle);\n                }\n              });\n            }\n          }\n        }\n        svg.replaceChildren(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+            "aiprompt": ""
+          },
+          "nodeType": "iframe-html-node"
+        }
+      ],
+      "resource": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f-resource"
+    },
+    {
+      "id": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+      "position": [
+        5721.680464640531,
+        1659.6576691336236
+      ],
+      "size": [
+        110,
+        110
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output1",
+            "output2",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {},
+          "nodeType": "map"
+        }
+      ],
+      "resource": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f-resource"
+    },
+    {
+      "id": "1d1b2896-c11d-4ddd-a4b8-1d3b77e493ba",
+      "position": [
+        5924.359698349896,
+        1765.7883444118866
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "[]",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "1d1b2896-c11d-4ddd-a4b8-1d3b77e493ba-resource"
+    },
+    {
+      "id": "ab054f77-2e88-49ec-afe6-848468c0be3c",
+      "position": [
+        5925.051508209566,
+        1630.4898975210604
+      ],
+      "size": [
+        200,
+        55
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "array"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "clusters"
+          },
+          "nodeType": "set-array-variable"
+        }
+      ],
+      "resource": "ab054f77-2e88-49ec-afe6-848468c0be3c-resource"
+    },
+    {
+      "id": "6373efe5-c0de-4674-8e62-94917080c536",
+      "position": [
+        5757.601513643001,
+        2943.4906635281454
+      ],
+      "size": [
+        508.1328125,
+        152
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "functionName": "assign_points_to_clusters",
+            "customFunctionCode": "(centroids, points, clusters) => {\n  if (\n    Array.isArray(centroids) &&\n    Array.isArray(points) &&\n    Array.isArray(clusters)\n  ) {\n    let result = [...clusters];\n\n    points.forEach((point) => {\n      let distances = [];\n      centroids.forEach((vector) => {\n        const distance = Math.sqrt(\n          Math.pow(point[0] - vector[0], 2) + Math.pow(point[1] - vector[1], 2)\n        );\n        distances.push(distance);\n      });\n      let minimum = -1;\n      let minIndex = -1;\n      distances.forEach((distance, index) => {\n        if (minimum == -1 || distance < minimum) {\n          minimum = distance;\n          minIndex = index;\n        }\n      });\n      if (minIndex >= 0 && minIndex < clusters.length) {\n        result[minIndex].push(point);\n      }\n    });\n    return {\n      clusters: result,\n      centroids: centroids\n    }\n  }\n  return  {\n    clusters: [],\n    centroids: []\n  };\n};\n"
+          },
+          "isRunOnStart": true,
+          "nodeType": "register-expression-function-node"
+        }
+      ],
+      "resource": "6373efe5-c0de-4674-8e62-94917080c536-resource"
+    },
+    {
+      "id": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+      "position": [
+        6314.426498783223,
+        1603.2007610146404
+      ],
+      "size": [
+        467.59282779498153,
+        131.57610086277032
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "assign_points_to_clusters(centroids,data,clusters)",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "5a697c29-8f0b-4b8f-b251-29d389d4b606-resource"
+    },
+    {
+      "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
+      "position": [
+        6997.1068187887195,
+        1641.399733371719
+      ],
+      "size": [
+        119.9999540786217,
+        55.999987852140684
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "name": "output",
+            "data-type": "default"
+          },
+          "nodeType": "show-input"
+        }
+      ],
+      "resource": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa-resource"
+    },
+    {
+      "id": "0e543618-6d2d-4cef-84f8-62431f40847d",
+      "position": [
+        6470.189415300728,
+        2931.1294491842896
+      ],
+      "size": [
+        394.2265625,
+        152
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "functionName": "calculate_centroids",
+            "customFunctionCode": "(clusters, centroids, iterationCount) => {\n  let newcentroids = [];\n  clusters.forEach((cluster) => {\n    let sumX = 0;\n    let sumY = 0;\n    cluster.forEach((point) => {\n      sumX += point[0];\n      sumY += point[1];\n    });\n    newcentroids.push([sumX / cluster.length, sumY / cluster.length]);\n  });\n  let centroidsfound = [];\n  newcentroids.forEach((newcentroid) => {\n    centroids.forEach((oldcentroid, index) => {\n      const indexWasMatchedForOtherCentrod =\n        centroidsfound.findIndex((centroidIndex) => index === centroidIndex) >=\n        0;\n      if (\n        !indexWasMatchedForOtherCentrod &&\n        oldcentroid[0] === newcentroid[0] &&\n        oldcentroid[1].toFixed(5) === newcentroid[1].toFixed(5)\n      ) {\n        centroidsfound.push(index);\n      }\n    });\n  });\n  \n  const converged = (centroidsfound.length === newcentroids.length) || (iterationCount >= 15);\n  console.log('converged', centroidsfound, converged, newcentroids, centroids);\n  return {\n    newcentroids: newcentroids,\n    converged: converged,\n    nextIteration: iterationCount + 1 \n  };\n};"
+          },
+          "isRunOnStart": true,
+          "nodeType": "register-expression-function-node"
+        }
+      ],
+      "resource": "0e543618-6d2d-4cef-84f8-62431f40847d-resource"
+    },
+    {
+      "id": "0934003b-1022-4bd0-aba9-db1425d64ced",
+      "position": [
+        7002.481385436919,
+        2136.3062796165837
+      ],
+      "size": [
+        462.29624577114646,
+        111.14524633572455
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "calculate_centroids(clusters,centroids,iterationCount)",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "0934003b-1022-4bd0-aba9-db1425d64ced-resource"
+    },
+    {
+      "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
+      "position": [
+        7715.462781449716,
+        2210.149928905682
+      ],
+      "size": [
+        119.9999540786217,
+        56.00012708389909
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "name": "",
+            "data-type": "default"
+          },
+          "nodeType": "show-input"
+        }
+      ],
+      "resource": "21d97ca7-019a-47d5-9c8a-c9da448487ee-resource"
+    },
+    {
+      "id": "1b20430f-e529-4493-a163-aa9e999560c7",
+      "position": [
+        2202.301773797244,
+        1585.4703729045239
+      ],
+      "size": [
+        50,
+        50
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "name": "",
+            "group": ""
+          },
+          "nodeType": "start-node"
+        }
+      ],
+      "resource": "1b20430f-e529-4493-a163-aa9e999560c7-resource"
+    },
+    {
+      "id": "50eef179-242e-40cb-9d36-68a85ccccfc5",
+      "position": [
+        8227.26873270523,
+        2230.4184457324804
+      ],
+      "size": [
+        150,
+        150
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "success",
+            "failure",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "Mode": "expression",
+            "expression": "converged == true",
+            "inputType": "boolean"
+          },
+          "nodeType": "if-condition"
+        }
+      ],
+      "resource": "50eef179-242e-40cb-9d36-68a85ccccfc5-resource"
+    },
+    {
+      "id": "308d7104-2a78-448b-8b13-9fb1496f17ac",
+      "position": [
+        8591.960083322982,
+        2356.8842461188474
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "newcentroids",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "308d7104-2a78-448b-8b13-9fb1496f17ac-resource"
+    },
+    {
+      "id": "60e86642-ddd3-42a1-8dfa-79374effa93d",
+      "position": [
+        9038.650722580649,
+        2372.1023257293264
+      ],
+      "size": [
+        200,
+        55
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "array"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "centroids"
+          },
+          "nodeType": "set-array-variable"
+        }
+      ],
+      "resource": "60e86642-ddd3-42a1-8dfa-79374effa93d-resource"
+    },
+    {
+      "id": "044da6a1-974d-42fe-85dd-5058d7ef43d9",
+      "position": [
+        5377.135579848421,
+        1838.3030479835184
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "centroids",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "044da6a1-974d-42fe-85dd-5058d7ef43d9-resource"
+    },
+    {
+      "id": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+      "position": [
+        5602.437274145248,
+        1703.9978529280963
+      ],
+      "size": [
+        50,
+        50
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "nodeType": "summing-junction"
+        }
+      ],
+      "resource": "857c7840-b47b-415e-a3e8-9a9d03ababe3-resource"
+    },
+    {
+      "id": "5f45e8e4-4b24-4dd9-83c1-d5653e824e6b",
+      "position": [
+        3162.1770029416493,
+        1987.1999045927596
+      ],
+      "size": [
+        622.8532678601155,
+        260.2117197359662
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "annotation": "Initialisation : create 100 random points and initialize centroids with random points (use variable k for number of clusters)",
+            "fontSize": "37.6",
+            "fontWeight": "false"
+          },
+          "nodeType": "annotation"
+        }
+      ],
+      "resource": "5f45e8e4-4b24-4dd9-83c1-d5653e824e6b-resource"
+    },
+    {
+      "id": "a3a7e41f-f95a-485f-85cf-de31e0a20f39",
+      "position": [
+        5703.010130615032,
+        2024.5313950487891
+      ],
+      "size": [
+        979.4172478500905,
+        389.7487833543769
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "annotation": "k-means algorithm : \n- Fill clusters by assign each point to the \"closest\" centroid \n- Calculate new centroids (use centre of clusters)\n- Check if new centroids equal the previous centroids\n- If yes: then stop",
+            "fontSize": "37.6",
+            "fontWeight": "false"
+          },
+          "nodeType": "annotation"
+        }
+      ],
+      "resource": "a3a7e41f-f95a-485f-85cf-de31e0a20f39-resource"
+    },
+    {
+      "id": "b460f627-e6c1-4236-832f-789da2a7ab9a",
+      "position": [
+        5140.735637975367,
+        2935.5571740014793
+      ],
+      "size": [
+        497.3528357296998,
+        216.81059916859294
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "annotation": "Escape hatches for assigning points to closest centroids , calculating new centroids and checking if old centroids equal the new centroids",
+            "fontSize": "24.1",
+            "fontWeight": "false"
+          },
+          "nodeType": "annotation"
+        }
+      ],
+      "resource": "b460f627-e6c1-4236-832f-789da2a7ab9a-resource"
+    },
+    {
+      "id": "be2b1562-842a-4373-ac70-a601789c1725",
+      "position": [
+        4297.9383006443095,
+        1098.0292244361813
+      ],
+      "size": [
+        91.51592094446207,
+        83.99991216233182
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "iterationCount",
+            "initialValue": "0",
+            "fieldType": "value",
+            "fieldValueType": "number",
+            "enumValues": [],
+            "initialEnumValue": ""
+          },
+          "nodeType": "variable"
+        }
+      ],
+      "resource": "be2b1562-842a-4373-ac70-a601789c1725-resource"
+    },
+    {
+      "id": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+      "position": [
+        7675.026955717727,
+        2034.096635207233
+      ],
+      "size": [
+        200,
+        112.0001220703125
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "expression": "nextIteration",
+            "inputType": "number"
+          },
+          "nodeType": "expression"
+        }
+      ],
+      "resource": "f5d98b6a-f894-496d-9597-6ae58c263fe7-resource"
+    },
+    {
+      "id": "a7fc22c0-1e33-43c0-aa41-dae551926d70",
+      "position": [
+        8006.663792802744,
+        2026.4248504552354
+      ],
+      "size": [
+        200.00048828125,
+        112
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "iterationCount"
+          },
+          "nodeType": "set-variable"
+        }
+      ],
+      "resource": "a7fc22c0-1e33-43c0-aa41-dae551926d70-resource"
+    },
+    {
+      "id": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+      "position": [
+        2531.2746399032585,
+        1557.5320104130874
+      ],
+      "size": [
+        200,
+        112
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "iterationCount"
+          },
+          "nodeType": "reset-variable"
+        }
+      ],
+      "resource": "11d8c68e-1bc1-4665-aa22-c205b602d367-resource"
+    },
+    {
+      "id": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
+      "position": [
+        9293.132944253684,
+        2739.035617260596
+      ],
+      "size": [
+        400,
+        400
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // Define the colors for the clusters .. borrowed the d3-palette colors observable10\n      let colors = [\n        '#4269d0',\n        '#efb118',\n        '#ff725c',\n        '#6cc5b0',\n        '#3ca951',\n        '#ff8ab7',\n        '#a463f2',\n        '#97bbf5',\n        '#9c6b4e',\n        '#9498a0',\n      ];\n      function getColor(index) {\n        return colors[index % colors.length];\n      }\n\n      function getDarkenColor(index) {\n        // darken color with pure javascript\n        let color = colors[index % colors.length];\n        let r = parseInt(color.slice(1, 3), 16);\n        let g = parseInt(color.slice(3, 5), 16);\n        let b = parseInt(color.slice(5, 7), 16);\n\n        const newColor = [r, g, b].map((c) => parseInt((c * 0.75).toFixed(0)));\n\n        return `#${newColor[0].toString(16)}${newColor[1].toString(\n          16\n        )}${newColor[2].toString(16)}`;\n      }\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        let circles = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            if (true) {\n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  \n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 50);\n                  circle.setAttribute('fill', getColor(index));\n                  documentFragment.appendChild(circle);\n                }\n              });\n              \n            }\n          }\n        }\n        svg.replaceChildren(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+            "aiprompt": ""
+          },
+          "nodeType": "iframe-html-node"
+        }
+      ],
+      "resource": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84-resource"
+    },
+    {
+      "id": "e370f15f-1236-4ce3-80b1-c03082dc303e",
+      "position": [
+        8402.890563864143,
+        2884.574035604281
+      ],
+      "size": [
+        200,
+        116
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "centroids"
+          },
+          "nodeType": "observe-variable"
+        }
+      ],
+      "resource": "e370f15f-1236-4ce3-80b1-c03082dc303e-resource"
+    },
+    {
+      "id": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
+      "position": [
+        5316.04821508736,
+        931.1035785274935
+      ],
+      "size": [
+        400,
+        400
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Plot visualization</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <style>\n      .wrapper {\n        display: flex;\n        flex-direction: row;\n        gap: 4px;\n        height: 100vh;\n        align-items: center;\n        justify-content: center;\n        padding: 4px;\n      }\n    </style>\n  </head>\n  <body class=\"bg-white\">\n    <div class=\"min-h-screen flex wrapper\" id=\"inner\">\n      <svg\n        id=\"svg\"\n        class=\"object-cover h-full w-full\"\n        viewbox=\"0 0 1200 1200\"\n      ></svg>\n    </div>\n\n    <script>\n      // Initialize the global variable \"input\"\n      window.input = window.input;\n      let inputstream = [];\n      let initialized = false;\n      let elements = [];\n\n      let svg = document.getElementById('svg');\n      // Function to rerender the UI\n      function rerenderUI() {\n        if (!initialized && window['createElement']) {\n          initialized = true;\n        }\n        let documentFragment = document.createDocumentFragment();\n        let circles = [];\n        if (window.input !== undefined) {\n          if (Array.isArray(window.input)) {\n            \n              window.input.forEach((element, index) => {\n                if (Array.isArray(element)) {\n                  \n                  let circle = document.createElementNS(\n                    'http://www.w3.org/2000/svg',\n                    'circle'\n                  );\n                  circle.setAttribute('cx', element[0] * 10 + 100);\n                  circle.setAttribute('cy', element[1] * 10 + 100);\n                  circle.setAttribute('r', 25);\n                  circle.setAttribute('fill', \"#000000\");\n                  documentFragment.appendChild(circle);\n                }\n              });\n          }\n        }\n        svg.replaceChildren(documentFragment);\n      }\n\n      // Attach the rerenderUI function to the global onExecute method\n      window.onExecute = rerenderUI;\n\n      rerenderUI();\n    </script>\n  </body>\n</html>\n",
+            "aiprompt": ""
+          },
+          "nodeType": "iframe-html-node"
+        }
+      ],
+      "resource": "f59f81b7-c03d-454a-b64e-aad6620ff46e-resource"
+    },
+    {
+      "id": "472fd563-dd51-4ce1-8b2b-756acb532d7d",
+      "position": [
+        4683.779848577736,
+        1120.7399989127512
+      ],
+      "size": [
+        200,
+        116
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "variableName": "data"
+          },
+          "nodeType": "observe-variable"
+        }
+      ],
+      "resource": "472fd563-dd51-4ce1-8b2b-756acb532d7d-resource"
+    },
+    {
+      "id": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+      "position": [
+        8879.875271979377,
+        2886.5842758669705
+      ],
+      "size": [
+        119.9999540786217,
+        56.00012708389909
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/ports",
+          "ports": [
+            "output",
+            "input"
+          ]
+        },
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "name": "",
+            "data-type": "default"
+          },
+          "nodeType": "show-input"
+        }
+      ],
+      "resource": "e4771889-b12b-4895-8617-b1559c8a8fdc-resource"
+    },
+    {
+      "id": "7d03a09b-92b6-47df-ba75-a19e4f37924d",
+      "position": [
+        2304.292679248284,
+        626.2694021261923
+      ],
+      "size": [
+        962.9379108363605,
+        112.48052141047594
+      ],
+      "data": [
+        {
+          "type": "@code-flow-canvas/node-properties",
+          "formValues": {
+            "annotation": "K-Means clustering algorithm",
+            "fontSize": "64.8",
+            "fontWeight": true
+          },
+          "nodeType": "annotation"
+        }
+      ],
+      "resource": "7d03a09b-92b6-47df-ba75-a19e4f37924d-resource"
+    },
+    {
+      "id": "connection:47a51f3b-751e-4ad9-9e3b-6b993d4a3a7f",
+      "position": [
+        3128.9264141208932,
+        1600.9889592387547
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            3128.9264141208932,
+            1600.9889592387547
+          ],
+          "end": [
+            3263.074212637936,
+            1651.031313917981
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "47a51f3b-751e-4ad9-9e3b-6b993d4a3a7f-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "248c7829-295b-44fd-b581-18cafc953842",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "ae56dc77-4c0e-479c-9caf-390762aac180",
+            "port_name": "min"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:87bb9375-9cbc-4baf-b337-ceb4f92b875e",
+      "position": [
+        3124.212382306903,
+        1773.5867652234415
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            3124.212382306903,
+            1773.5867652234415
+          ],
+          "end": [
+            3263.074212637936,
+            1701.031313917981
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "87bb9375-9cbc-4baf-b337-ceb4f92b875e-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "bfc7c418-33fa-44a9-bd5a-5acef9038735",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "ae56dc77-4c0e-479c-9caf-390762aac180",
+            "port_name": "max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:389e6b59-cc14-419c-9533-1585745efe0b",
+      "position": [
+        3413.074212637936,
+        1698.531313917981
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            3413.074212637936,
+            1698.531313917981
+          ],
+          "end": [
+            3502.101617072024,
+            1685.6227343932114
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "389e6b59-cc14-419c-9533-1585745efe0b-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "ae56dc77-4c0e-479c-9caf-390762aac180",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:0c99804e-4f80-4e02-a852-eb62de744925",
+      "position": [
+        3612.101617072024,
+        1710.6227343932114
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            3612.101617072024,
+            1710.6227343932114
+          ],
+          "end": [
+            3705.1795902474455,
+            1778.3927511867776
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "0c99804e-4f80-4e02-a852-eb62de744925-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+            "port_name": "output2"
+          },
+          "endNode": {
+            "connected_to": "7b8c7fbf-81d0-4ea7-adb3-1ce04f0ce5c5",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:cc562af5-1e54-43c7-b561-cd786cc22061",
+      "position": [
+        3612.101617072024,
+        1660.6227343932114
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            3612.101617072024,
+            1660.6227343932114
+          ],
+          "end": [
+            3808.52078598491,
+            1632.4215404853467
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "cc562af5-1e54-43c7-b561-cd786cc22061-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+            "port_name": "output1"
+          },
+          "endNode": {
+            "connected_to": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b",
+            "port_name": "array"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:8595bdb7-1c77-4e61-98d4-832947564bcf",
+      "position": [
+        4320.909137276225,
+        2059.23199909915
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4320.909137276225,
+            2059.23199909915
+          ],
+          "end": [
+            4548.207982977223,
+            1821.4621262284763
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "8595bdb7-1c77-4e61-98d4-832947564bcf-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "d6a6b905-9c2d-4bbe-b489-acbae0355ede",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "ac063440-0517-4880-8ffc-79610e86fc7a",
+            "port_name": "max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:898b3158-53e7-4462-aa9d-4c612f922b43",
+      "position": [
+        4698.207982977223,
+        1818.9621262284763
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4698.207982977223,
+            1818.9621262284763
+          ],
+          "end": [
+            4839.885203842909,
+            1825.5647124219797
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "898b3158-53e7-4462-aa9d-4c612f922b43-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "ac063440-0517-4880-8ffc-79610e86fc7a",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:3dfdf87f-4fc7-4031-9e08-521f49b94e15",
+      "position": [
+        4949.885203842909,
+        1850.5647124219797
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4949.885203842909,
+            1850.5647124219797
+          ],
+          "end": [
+            5039.513606938384,
+            1929.962850327635
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "3dfdf87f-4fc7-4031-9e08-521f49b94e15-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+            "port_name": "output2"
+          },
+          "endNode": {
+            "connected_to": "28fe4ef5-5577-4943-a722-a2c1c618b7e2",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:75005860-4bc9-4c0f-8610-abd10d784eed",
+      "position": [
+        4949.885203842909,
+        1800.5647124219797
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4949.885203842909,
+            1800.5647124219797
+          ],
+          "end": [
+            5012.936333470498,
+            1740.9236203121095
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "75005860-4bc9-4c0f-8610-abd10d784eed-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+            "port_name": "output1"
+          },
+          "endNode": {
+            "connected_to": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c",
+            "port_name": "array"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:43985ccd-ac5d-48d1-93c1-75defbda64c3",
+      "position": [
+        4437.832875462038,
+        1783.7376854356596
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4437.832875462038,
+            1783.7376854356596
+          ],
+          "end": [
+            4548.207982977223,
+            1771.4621262284763
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "43985ccd-ac5d-48d1-93c1-75defbda64c3-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "a301c7c2-c840-449c-8fcf-094168b0a42a",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "ac063440-0517-4880-8ffc-79610e86fc7a",
+            "port_name": "min"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:eab6e4a7-1e12-4bbb-b7ef-809b3ef43ca5",
+      "position": [
+        5831.680464640531,
+        1739.6576691336236
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            5831.680464640531,
+            1739.6576691336236
+          ],
+          "end": [
+            5924.359698349896,
+            1821.7883444118866
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "eab6e4a7-1e12-4bbb-b7ef-809b3ef43ca5-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+            "port_name": "output2"
+          },
+          "endNode": {
+            "connected_to": "1d1b2896-c11d-4ddd-a4b8-1d3b77e493ba",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:e03baa33-862d-4ea1-9712-ab81e08a550e",
+      "position": [
+        5831.680464640531,
+        1689.6576691336236
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            5831.680464640531,
+            1689.6576691336236
+          ],
+          "end": [
+            5925.051508209566,
+            1660.4898975210604
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "e03baa33-862d-4ea1-9712-ab81e08a550e-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+            "port_name": "output1"
+          },
+          "endNode": {
+            "connected_to": "ab054f77-2e88-49ec-afe6-848468c0be3c",
+            "port_name": "array"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:7b116fa8-c0f4-47d6-9d28-5151802abba9",
+      "position": [
+        4008.52078598491,
+        1629.9215404853467
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4008.52078598491,
+            1629.9215404853467
+          ],
+          "end": [
+            4237.832875462038,
+            1783.7376854356596
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "7b116fa8-c0f4-47d6-9d28-5151802abba9-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "a301c7c2-c840-449c-8fcf-094168b0a42a",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:6a09a070-9bd1-4bd5-bbd0-844769d30f62",
+      "position": [
+        6125.051508209566,
+        1657.9898975210604
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            6125.051508209566,
+            1657.9898975210604
+          ],
+          "end": [
+            6314.426498783223,
+            1668.9888114460255
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "6a09a070-9bd1-4bd5-bbd0-844769d30f62-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "ab054f77-2e88-49ec-afe6-848468c0be3c",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:74dfb159-7b16-4027-b2d0-c3fb755b008a",
+      "position": [
+        6782.0193265782045,
+        1668.9888114460255
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            6782.0193265782045,
+            1668.9888114460255
+          ],
+          "end": [
+            6997.1068187887195,
+            1671.399733371719
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "74dfb159-7b16-4027-b2d0-c3fb755b008a-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:e05858fb-5e14-444e-8685-b44cdd5129f9",
+      "position": [
+        7117.1067728673415,
+        1671.399733371719
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            7117.1067728673415,
+            1671.399733371719
+          ],
+          "end": [
+            7352.834731500443,
+            1643.8168803734948
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "e05858fb-5e14-444e-8685-b44cdd5129f9-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:40767bbd-3b06-4afb-a791-31254aac14cc",
+      "position": [
+        6782.0193265782045,
+        1668.9888114460255
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            6782.0193265782045,
+            1668.9888114460255
+          ],
+          "end": [
+            7002.481385436919,
+            2191.878902784446
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "40767bbd-3b06-4afb-a791-31254aac14cc-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "0934003b-1022-4bd0-aba9-db1425d64ced",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:71d16b29-ff93-4ef8-a81d-fc4ef10dc69b",
+      "position": [
+        7464.777631208065,
+        2191.878902784446
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            7464.777631208065,
+            2191.878902784446
+          ],
+          "end": [
+            7715.462781449716,
+            2240.149928905682
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "71d16b29-ff93-4ef8-a81d-fc4ef10dc69b-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "0934003b-1022-4bd0-aba9-db1425d64ced",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:101abac1-2a71-4b84-86bc-05be40561539",
+      "position": [
+        2227.301773797244,
+        1610.4703729045239
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            2227.301773797244,
+            1610.4703729045239
+          ],
+          "end": [
+            2531.2746399032585,
+            1613.5320104130874
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "101abac1-2a71-4b84-86bc-05be40561539-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "1b20430f-e529-4493-a163-aa9e999560c7",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92",
+      "position": [
+        7835.462735528338,
+        2240.149928905682
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            7835.462735528338,
+            2240.149928905682
+          ],
+          "end": [
+            8227.26873270523,
+            2305.4184457324804
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "50eef179-242e-40cb-9d36-68a85ccccfc5",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:2fab76ba-2731-4cef-8924-ecd1188ca1fb",
+      "position": [
+        8302.26873270523,
+        2380.4184457324804
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            8302.26873270523,
+            2380.4184457324804
+          ],
+          "end": [
+            8591.960083322982,
+            2412.8842461188474
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "2fab76ba-2731-4cef-8924-ecd1188ca1fb-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "50eef179-242e-40cb-9d36-68a85ccccfc5",
+            "port_name": "failure"
+          },
+          "endNode": {
+            "connected_to": "308d7104-2a78-448b-8b13-9fb1496f17ac",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:705c7eb3-fe63-4a5d-9432-330b3be57cb6",
+      "position": [
+        8791.960083322982,
+        2412.8842461188474
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            8791.960083322982,
+            2412.8842461188474
+          ],
+          "end": [
+            9038.650722580649,
+            2402.1023257293264
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "705c7eb3-fe63-4a5d-9432-330b3be57cb6-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "308d7104-2a78-448b-8b13-9fb1496f17ac",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "60e86642-ddd3-42a1-8dfa-79374effa93d",
+            "port_name": "array"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:db375f3c-d3fe-43b2-a580-3f860fadad22",
+      "position": [
+        9238.650722580649,
+        2399.6023257293264
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            9238.650722580649,
+            2399.6023257293264
+          ],
+          "end": [
+            5377.135579848421,
+            1894.3030479835184
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "db375f3c-d3fe-43b2-a580-3f860fadad22-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "60e86642-ddd3-42a1-8dfa-79374effa93d",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "044da6a1-974d-42fe-85dd-5058d7ef43d9",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:9f3d40cc-43bb-40db-b1a2-0e1a257a5388",
+      "position": [
+        5577.135579848421,
+        1894.3030479835184
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            5577.135579848421,
+            1894.3030479835184
+          ],
+          "end": [
+            5627.437274145248,
+            1763.9978529280963
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "9f3d40cc-43bb-40db-b1a2-0e1a257a5388-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "044da6a1-974d-42fe-85dd-5058d7ef43d9",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:08ab0691-205f-46e6-8b0c-7e01da76b7b5",
+      "position": [
+        5212.936333470498,
+        1738.4236203121095
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            5212.936333470498,
+            1738.4236203121095
+          ],
+          "end": [
+            5592.446320050816,
+            1729.7935485742917
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "08ab0691-205f-46e6-8b0c-7e01da76b7b5-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:ec9295bf-c9fa-4e61-a761-d9e802fe8147",
+      "position": [
+        5627.437274145248,
+        1728.9978529280963
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            5627.437274145248,
+            1728.9978529280963
+          ],
+          "end": [
+            5721.680464640531,
+            1714.6576691336236
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "ec9295bf-c9fa-4e61-a761-d9e802fe8147-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:17606be6-5c55-4abe-94fb-220c188968be",
+      "position": [
+        7464.777631208065,
+        2191.878902784446
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            7464.777631208065,
+            2191.878902784446
+          ],
+          "end": [
+            7675.026955717727,
+            2090.096696242389
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "17606be6-5c55-4abe-94fb-220c188968be-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "0934003b-1022-4bd0-aba9-db1425d64ced",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:08e6a922-39f9-46a6-a19d-6e49c94b809c",
+      "position": [
+        7875.026955717727,
+        2090.096696242389
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            7875.026955717727,
+            2090.096696242389
+          ],
+          "end": [
+            8006.663792802744,
+            2082.424850455235
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "08e6a922-39f9-46a6-a19d-6e49c94b809c-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "a7fc22c0-1e33-43c0-aa41-dae551926d70",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:de81b3b0-5547-4c03-be79-85a269702cd5",
+      "position": [
+        2731.2746399032585,
+        1613.5320104130874
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            2731.2746399032585,
+            1613.5320104130874
+          ],
+          "end": [
+            2928.9264141208932,
+            1600.9889592387547
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "de81b3b0-5547-4c03-be79-85a269702cd5-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "248c7829-295b-44fd-b581-18cafc953842",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:e877d2e7-6102-443b-a2a9-12003cd3b6a6",
+      "position": [
+        8602.890563864143,
+        2942.574035604281
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            8602.890563864143,
+            2942.574035604281
+          ],
+          "end": [
+            8879.875271979377,
+            2916.5842758669705
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "e877d2e7-6102-443b-a2a9-12003cd3b6a6-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "e370f15f-1236-4ce3-80b1-c03082dc303e",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:ab9de524-e39d-460d-bc9b-ce78f2346bf7",
+      "position": [
+        4883.779848577736,
+        1178.7399989127512
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            4883.779848577736,
+            1178.7399989127512
+          ],
+          "end": [
+            5316.04821508736,
+            1131.1035785274935
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "ab9de524-e39d-460d-bc9b-ce78f2346bf7-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "472fd563-dd51-4ce1-8b2b-756acb532d7d",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
+            "port_name": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "connection:d203878c-8c7e-4e18-96e2-efee31ca152a",
+      "position": [
+        8999.875226057999,
+        2916.5842758669705
+      ],
+      "size": [
+        0,
+        0
+      ],
+      "data": [
+        {
+          "type": "@ocif/node/arrow",
+          "start": [
+            8999.875226057999,
+            2916.5842758669705
+          ],
+          "end": [
+            9293.132944253684,
+            2939.035617260596
+          ],
+          "startMarker": "none",
+          "endMarker": "arrowhead",
+          "relation": "d203878c-8c7e-4e18-96e2-efee31ca152a-edge"
+        },
+        {
+          "type": "@code-flow-canvas/connection-properties",
+          "lineType": "Straight",
+          "startNode": {
+            "connected_to": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+            "port_name": "output"
+          },
+          "endNode": {
+            "connected_to": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
+            "port_name": "input"
+          }
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "47a51f3b-751e-4ad9-9e3b-6b993d4a3a7f-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "248c7829-295b-44fd-b581-18cafc953842",
+          "end": "ae56dc77-4c0e-479c-9caf-390762aac180",
+          "node": "connection:47a51f3b-751e-4ad9-9e3b-6b993d4a3a7f"
+        }
+      ]
+    },
+    {
+      "id": "87bb9375-9cbc-4baf-b337-ceb4f92b875e-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "bfc7c418-33fa-44a9-bd5a-5acef9038735",
+          "end": "ae56dc77-4c0e-479c-9caf-390762aac180",
+          "node": "connection:87bb9375-9cbc-4baf-b337-ceb4f92b875e"
+        }
+      ]
+    },
+    {
+      "id": "389e6b59-cc14-419c-9533-1585745efe0b-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "ae56dc77-4c0e-479c-9caf-390762aac180",
+          "end": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+          "node": "connection:389e6b59-cc14-419c-9533-1585745efe0b"
+        }
+      ]
+    },
+    {
+      "id": "0c99804e-4f80-4e02-a852-eb62de744925-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+          "end": "7b8c7fbf-81d0-4ea7-adb3-1ce04f0ce5c5",
+          "node": "connection:0c99804e-4f80-4e02-a852-eb62de744925"
+        }
+      ]
+    },
+    {
+      "id": "cc562af5-1e54-43c7-b561-cd786cc22061-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "be12c859-b2c1-4be9-9359-ced5985aebcc",
+          "end": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b",
+          "node": "connection:cc562af5-1e54-43c7-b561-cd786cc22061"
+        }
+      ]
+    },
+    {
+      "id": "8595bdb7-1c77-4e61-98d4-832947564bcf-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "d6a6b905-9c2d-4bbe-b489-acbae0355ede",
+          "end": "ac063440-0517-4880-8ffc-79610e86fc7a",
+          "node": "connection:8595bdb7-1c77-4e61-98d4-832947564bcf"
+        }
+      ]
+    },
+    {
+      "id": "898b3158-53e7-4462-aa9d-4c612f922b43-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "ac063440-0517-4880-8ffc-79610e86fc7a",
+          "end": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+          "node": "connection:898b3158-53e7-4462-aa9d-4c612f922b43"
+        }
+      ]
+    },
+    {
+      "id": "3dfdf87f-4fc7-4031-9e08-521f49b94e15-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+          "end": "28fe4ef5-5577-4943-a722-a2c1c618b7e2",
+          "node": "connection:3dfdf87f-4fc7-4031-9e08-521f49b94e15"
+        }
+      ]
+    },
+    {
+      "id": "75005860-4bc9-4c0f-8610-abd10d784eed-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b",
+          "end": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c",
+          "node": "connection:75005860-4bc9-4c0f-8610-abd10d784eed"
+        }
+      ]
+    },
+    {
+      "id": "43985ccd-ac5d-48d1-93c1-75defbda64c3-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "a301c7c2-c840-449c-8fcf-094168b0a42a",
+          "end": "ac063440-0517-4880-8ffc-79610e86fc7a",
+          "node": "connection:43985ccd-ac5d-48d1-93c1-75defbda64c3"
+        }
+      ]
+    },
+    {
+      "id": "eab6e4a7-1e12-4bbb-b7ef-809b3ef43ca5-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+          "end": "1d1b2896-c11d-4ddd-a4b8-1d3b77e493ba",
+          "node": "connection:eab6e4a7-1e12-4bbb-b7ef-809b3ef43ca5"
+        }
+      ]
+    },
+    {
+      "id": "e03baa33-862d-4ea1-9712-ab81e08a550e-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+          "end": "ab054f77-2e88-49ec-afe6-848468c0be3c",
+          "node": "connection:e03baa33-862d-4ea1-9712-ab81e08a550e"
+        }
+      ]
+    },
+    {
+      "id": "7b116fa8-c0f4-47d6-9d28-5151802abba9-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b",
+          "end": "a301c7c2-c840-449c-8fcf-094168b0a42a",
+          "node": "connection:7b116fa8-c0f4-47d6-9d28-5151802abba9"
+        }
+      ]
+    },
+    {
+      "id": "6a09a070-9bd1-4bd5-bbd0-844769d30f62-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "ab054f77-2e88-49ec-afe6-848468c0be3c",
+          "end": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+          "node": "connection:6a09a070-9bd1-4bd5-bbd0-844769d30f62"
+        }
+      ]
+    },
+    {
+      "id": "74dfb159-7b16-4027-b2d0-c3fb755b008a-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+          "end": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
+          "node": "connection:74dfb159-7b16-4027-b2d0-c3fb755b008a"
+        }
+      ]
+    },
+    {
+      "id": "e05858fb-5e14-444e-8685-b44cdd5129f9-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa",
+          "end": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f",
+          "node": "connection:e05858fb-5e14-444e-8685-b44cdd5129f9"
+        }
+      ]
+    },
+    {
+      "id": "40767bbd-3b06-4afb-a791-31254aac14cc-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "5a697c29-8f0b-4b8f-b251-29d389d4b606",
+          "end": "0934003b-1022-4bd0-aba9-db1425d64ced",
+          "node": "connection:40767bbd-3b06-4afb-a791-31254aac14cc"
+        }
+      ]
+    },
+    {
+      "id": "71d16b29-ff93-4ef8-a81d-fc4ef10dc69b-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "0934003b-1022-4bd0-aba9-db1425d64ced",
+          "end": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
+          "node": "connection:71d16b29-ff93-4ef8-a81d-fc4ef10dc69b"
+        }
+      ]
+    },
+    {
+      "id": "101abac1-2a71-4b84-86bc-05be40561539-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "1b20430f-e529-4493-a163-aa9e999560c7",
+          "end": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+          "node": "connection:101abac1-2a71-4b84-86bc-05be40561539"
+        }
+      ]
+    },
+    {
+      "id": "5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "21d97ca7-019a-47d5-9c8a-c9da448487ee",
+          "end": "50eef179-242e-40cb-9d36-68a85ccccfc5",
+          "node": "connection:5b57afe5-bdcd-4fbf-bb3a-3ebae7a3bc92"
+        }
+      ]
+    },
+    {
+      "id": "2fab76ba-2731-4cef-8924-ecd1188ca1fb-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "50eef179-242e-40cb-9d36-68a85ccccfc5",
+          "end": "308d7104-2a78-448b-8b13-9fb1496f17ac",
+          "node": "connection:2fab76ba-2731-4cef-8924-ecd1188ca1fb"
+        }
+      ]
+    },
+    {
+      "id": "705c7eb3-fe63-4a5d-9432-330b3be57cb6-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "308d7104-2a78-448b-8b13-9fb1496f17ac",
+          "end": "60e86642-ddd3-42a1-8dfa-79374effa93d",
+          "node": "connection:705c7eb3-fe63-4a5d-9432-330b3be57cb6"
+        }
+      ]
+    },
+    {
+      "id": "db375f3c-d3fe-43b2-a580-3f860fadad22-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "60e86642-ddd3-42a1-8dfa-79374effa93d",
+          "end": "044da6a1-974d-42fe-85dd-5058d7ef43d9",
+          "node": "connection:db375f3c-d3fe-43b2-a580-3f860fadad22"
+        }
+      ]
+    },
+    {
+      "id": "9f3d40cc-43bb-40db-b1a2-0e1a257a5388-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "044da6a1-974d-42fe-85dd-5058d7ef43d9",
+          "end": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+          "node": "connection:9f3d40cc-43bb-40db-b1a2-0e1a257a5388"
+        }
+      ]
+    },
+    {
+      "id": "08ab0691-205f-46e6-8b0c-7e01da76b7b5-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c",
+          "end": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+          "node": "connection:08ab0691-205f-46e6-8b0c-7e01da76b7b5"
+        }
+      ]
+    },
+    {
+      "id": "ec9295bf-c9fa-4e61-a761-d9e802fe8147-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "857c7840-b47b-415e-a3e8-9a9d03ababe3",
+          "end": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f",
+          "node": "connection:ec9295bf-c9fa-4e61-a761-d9e802fe8147"
+        }
+      ]
+    },
+    {
+      "id": "17606be6-5c55-4abe-94fb-220c188968be-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "0934003b-1022-4bd0-aba9-db1425d64ced",
+          "end": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+          "node": "connection:17606be6-5c55-4abe-94fb-220c188968be"
+        }
+      ]
+    },
+    {
+      "id": "08e6a922-39f9-46a6-a19d-6e49c94b809c-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "f5d98b6a-f894-496d-9597-6ae58c263fe7",
+          "end": "a7fc22c0-1e33-43c0-aa41-dae551926d70",
+          "node": "connection:08e6a922-39f9-46a6-a19d-6e49c94b809c"
+        }
+      ]
+    },
+    {
+      "id": "de81b3b0-5547-4c03-be79-85a269702cd5-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "11d8c68e-1bc1-4665-aa22-c205b602d367",
+          "end": "248c7829-295b-44fd-b581-18cafc953842",
+          "node": "connection:de81b3b0-5547-4c03-be79-85a269702cd5"
+        }
+      ]
+    },
+    {
+      "id": "e877d2e7-6102-443b-a2a9-12003cd3b6a6-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "e370f15f-1236-4ce3-80b1-c03082dc303e",
+          "end": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+          "node": "connection:e877d2e7-6102-443b-a2a9-12003cd3b6a6"
+        }
+      ]
+    },
+    {
+      "id": "ab9de524-e39d-460d-bc9b-ce78f2346bf7-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "472fd563-dd51-4ce1-8b2b-756acb532d7d",
+          "end": "f59f81b7-c03d-454a-b64e-aad6620ff46e",
+          "node": "connection:ab9de524-e39d-460d-bc9b-ce78f2346bf7"
+        }
+      ]
+    },
+    {
+      "id": "d203878c-8c7e-4e18-96e2-efee31ca152a-edge",
+      "data": [
+        {
+          "type": "@ocif/rel/edge",
+          "directed": true,
+          "start": "e4771889-b12b-4895-8617-b1559c8a8fdc",
+          "end": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84",
+          "node": "connection:d203878c-8c7e-4e18-96e2-efee31ca152a"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "f030a86e-2280-4b12-8615-4644f98cb625-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "variable"
+        }
+      ]
+    },
+    {
+      "id": "693410e0-2810-4237-b888-07ea51248a6e-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "variable"
+        }
+      ]
+    },
+    {
+      "id": "dab880f1-662c-4e23-98eb-4b374ca84e68-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "variable"
+        }
+      ]
+    },
+    {
+      "id": "ae56dc77-4c0e-479c-9caf-390762aac180-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "range"
+        }
+      ]
+    },
+    {
+      "id": "248c7829-295b-44fd-b581-18cafc953842-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "value"
+        }
+      ]
+    },
+    {
+      "id": "bfc7c418-33fa-44a9-bd5a-5acef9038735-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "value"
+        }
+      ]
+    },
+    {
+      "id": "be12c859-b2c1-4be9-9359-ced5985aebcc-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "map"
+        }
+      ]
+    },
+    {
+      "id": "7b8c7fbf-81d0-4ea7-adb3-1ce04f0ce5c5-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "2b646b69-3b5d-41b0-b1bf-65cff9b6898b-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "set-array-variable"
+        }
+      ]
+    },
+    {
+      "id": "3b1c2a61-436e-4625-93e9-8e6117ba0424-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "variable"
+        }
+      ]
+    },
+    {
+      "id": "ac063440-0517-4880-8ffc-79610e86fc7a-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "range"
+        }
+      ]
+    },
+    {
+      "id": "d6a6b905-9c2d-4bbe-b489-acbae0355ede-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "d1f557d9-2ce4-47f4-9982-6739dfce3b7b-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "map"
+        }
+      ]
+    },
+    {
+      "id": "28fe4ef5-5577-4943-a722-a2c1c618b7e2-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "ea7bdf4e-6c33-48f4-b633-bff38ffb2a3c-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "set-array-variable"
+        }
+      ]
+    },
+    {
+      "id": "a301c7c2-c840-449c-8fcf-094168b0a42a-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "value"
+        }
+      ]
+    },
+    {
+      "id": "d68aeeb6-d2b2-4503-a704-7d21334b9c7f-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "iframe-html-node"
+        }
+      ]
+    },
+    {
+      "id": "8a5cfde7-22fd-4f25-8af4-4540f69e3c8f-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "map"
+        }
+      ]
+    },
+    {
+      "id": "1d1b2896-c11d-4ddd-a4b8-1d3b77e493ba-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "ab054f77-2e88-49ec-afe6-848468c0be3c-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "set-array-variable"
+        }
+      ]
+    },
+    {
+      "id": "6373efe5-c0de-4674-8e62-94917080c536-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "register-expression-function-node"
+        }
+      ]
+    },
+    {
+      "id": "5a697c29-8f0b-4b8f-b251-29d389d4b606-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "d074bb8f-1693-45b6-80ab-e5ed4557c4fa-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "show-input"
+        }
+      ]
+    },
+    {
+      "id": "0e543618-6d2d-4cef-84f8-62431f40847d-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "register-expression-function-node"
+        }
+      ]
+    },
+    {
+      "id": "0934003b-1022-4bd0-aba9-db1425d64ced-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "21d97ca7-019a-47d5-9c8a-c9da448487ee-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "show-input"
+        }
+      ]
+    },
+    {
+      "id": "1b20430f-e529-4493-a163-aa9e999560c7-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "start-node"
+        }
+      ]
+    },
+    {
+      "id": "50eef179-242e-40cb-9d36-68a85ccccfc5-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "if-condition"
+        }
+      ]
+    },
+    {
+      "id": "308d7104-2a78-448b-8b13-9fb1496f17ac-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "60e86642-ddd3-42a1-8dfa-79374effa93d-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "set-array-variable"
+        }
+      ]
+    },
+    {
+      "id": "044da6a1-974d-42fe-85dd-5058d7ef43d9-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "857c7840-b47b-415e-a3e8-9a9d03ababe3-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "summing-junction"
+        }
+      ]
+    },
+    {
+      "id": "5f45e8e4-4b24-4dd9-83c1-d5653e824e6b-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "annotation"
+        }
+      ]
+    },
+    {
+      "id": "a3a7e41f-f95a-485f-85cf-de31e0a20f39-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "annotation"
+        }
+      ]
+    },
+    {
+      "id": "b460f627-e6c1-4236-832f-789da2a7ab9a-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "annotation"
+        }
+      ]
+    },
+    {
+      "id": "be2b1562-842a-4373-ac70-a601789c1725-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "variable"
+        }
+      ]
+    },
+    {
+      "id": "f5d98b6a-f894-496d-9597-6ae58c263fe7-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "expression"
+        }
+      ]
+    },
+    {
+      "id": "a7fc22c0-1e33-43c0-aa41-dae551926d70-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "set-variable"
+        }
+      ]
+    },
+    {
+      "id": "11d8c68e-1bc1-4665-aa22-c205b602d367-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "reset-variable"
+        }
+      ]
+    },
+    {
+      "id": "ec2f9ba6-9436-415e-8bf8-3b0f5a698b84-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "iframe-html-node"
+        }
+      ]
+    },
+    {
+      "id": "e370f15f-1236-4ce3-80b1-c03082dc303e-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "observe-variable"
+        }
+      ]
+    },
+    {
+      "id": "f59f81b7-c03d-454a-b64e-aad6620ff46e-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "iframe-html-node"
+        }
+      ]
+    },
+    {
+      "id": "472fd563-dd51-4ce1-8b2b-756acb532d7d-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "observe-variable"
+        }
+      ]
+    },
+    {
+      "id": "e4771889-b12b-4895-8617-b1559c8a8fdc-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "show-input"
+        }
+      ]
+    },
+    {
+      "id": "7d03a09b-92b6-47df-ba75-a19e4f37924d-resource",
+      "representations": [
+        {
+          "mime-type": "text/plain",
+          "content": "annotation"
+        }
+      ]
+    }
+  ],
+  "schemas": [
+    {
+      "uri": "https://codeflowcanvas.io/schemas/node/0.1.json",
+      "name": "@code-flow-canvas/node-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "nodeType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "nodeType"
+      ],
+      "additionalProperties": true
+    },
+    {
+      "uri": "https://codeflowcanvas.io/schemas/connection/0.1.json",
+      "name": "@code-flow-canvas/connection-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "start": {
+          "type": "object",
+          "properties": {
+            "connected_to": {
+              "type": "string"
+            },
+            "portName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "connected_to",
+            "portName"
+          ],
+          "additionalProperties": false
+        },
+        "end": {
+          "type": "object",
+          "properties": {
+            "connected_to": {
+              "type": "string"
+            },
+            "portName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "connected_to",
+            "portName"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "type",
+        "start",
+        "end"
+      ],
+      "additionalProperties": true
+    }
+  ]
+}

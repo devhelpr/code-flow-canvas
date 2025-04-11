@@ -14,14 +14,31 @@ function isSupportedOCIFNode(ocifNode: any): boolean {
     ocifNode.data &&
     Array.isArray(ocifNode.data) &&
     ocifNode.data.some(
-      (d: any) => d.type === 'rect-node' || ocifToCodeFlowCanvas[d.type]
+      (d: any) =>
+        d.type === 'rect-node' ||
+        d.type === 'oval-node' ||
+        ocifToCodeFlowCanvas[d.type]
     )
   );
 }
 
-function getFirstNodeType(ocifNode: any): string {
-  return ocifNode.data?.[0].type ?? '';
+function getFirstOcifExtensionInData(ocifNode: any): any {
+  if (ocifNode.data && Array.isArray(ocifNode.data)) {
+    const extension = ocifNode.data.find(
+      (d: any) =>
+        d.type === 'rect-node' ||
+        d.type === 'oval-node' ||
+        ocifToCodeFlowCanvas[d.type]
+    );
+
+    return extension;
+  }
+  return false;
 }
+
+// function getFirstNodeType(ocifNode: any): string {
+//   return ocifNode.data?.[0].type ?? '';
+// }
 
 function isSupportedOCIFConnectionNode(ocifNode: any): boolean {
   return (
@@ -164,7 +181,7 @@ export const importOCIF = (ocif: any) => {
   };
   if (ocif.nodes && Array.isArray(ocif.nodes)) {
     ocif.nodes.forEach((node: any) => {
-      if (isValidCodeFlowCanvasNode(node)) {
+      if (isValidCodeFlowCanvasNode(node) && !isSupportedOCIFNode(node)) {
         const nodeInfo = getNodeInfoFromOCIFNode(node);
         if (nodeInfo) {
           flow.flows['flow'].nodes.push({
@@ -189,32 +206,35 @@ export const importOCIF = (ocif: any) => {
           });
         }
       } else if (node.data && isSupportedOCIFNode(node)) {
-        const dataType = getFirstNodeType(node);
-        const data = getExtenstionData(node, dataType);
-        let text = '';
-        const resource = getResourceById(ocif, node.resource);
-        if (resource) {
-          const textRepresentation = getTextRepresentation(resource);
-          if (textRepresentation) {
-            text = textRepresentation;
+        const data = getFirstOcifExtensionInData(node);
+        //const data = getExtenstionData(node, dataType);
+        if (data) {
+          const dataType = data.dataType;
+          let text = '';
+          const resource = getResourceById(ocif, node.resource);
+          if (resource) {
+            const textRepresentation = getTextRepresentation(resource);
+            if (textRepresentation) {
+              text = textRepresentation;
+            }
           }
+          flow.flows['flow'].nodes.push({
+            id: node.id,
+            x: node.position[0],
+            y: node.position[1],
+            width: node.size?.[0] ?? 100,
+            height: node.size?.[1] ?? 100,
+            nodeType: 'Shape',
+            nodeInfo: {
+              type: ocifToCodeFlowCanvas[dataType] ?? 'rect-node',
+              strokeColor: data?.strokeColor ?? 'black',
+              fillColor: data?.fillColor ?? 'white',
+              strokeWidth: data?.strokeWidth ?? 2,
+              text: text,
+            } as any,
+          });
+          console.log('ocif node size', node.size);
         }
-        flow.flows['flow'].nodes.push({
-          id: node.id,
-          x: node.position[0],
-          y: node.position[1],
-          width: node.size?.[0] ?? 100,
-          height: node.size?.[1] ?? 100,
-          nodeType: 'Shape',
-          nodeInfo: {
-            type: ocifToCodeFlowCanvas[dataType] ?? 'rect-node',
-            strokeColor: data?.strokeColor ?? 'black',
-            fillColor: data?.fillColor ?? 'white',
-            strokeWidth: data?.strokeWidth ?? 2,
-            text: text,
-          } as any,
-        });
-        console.log('ocif node size', node.size);
       } else if (node.data && isSupportedOCIFConnectionNode(node)) {
         const connection = getConnectionInfoFromOCIFNode(node);
         if (connection) {

@@ -9,3 +9,8 @@ export const ocifToCodeFlowCanvas: Record<string, string> = {
   '@ocif/node/rect': 'rect-node',
   '@ocif/node/oval': 'oval-node',
 };
+
+export const codeFlowCanvasToOcif: Record<string, string> = {
+  'rect-node': '@ocif/node/rect',
+  'oval-node': '@ocif/node/oval',
+};

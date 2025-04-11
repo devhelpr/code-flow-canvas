@@ -18,6 +18,7 @@ import {
   ocifArrow,
   ocifRelationGroup,
   ocifToCodeFlowCanvas,
+  codeFlowCanvasToOcif,
 } from '../consts/ocif';
 
 interface OCIFInfo {
@@ -42,7 +43,10 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
   isOCIFNodeThatCodeFlowCanvasSupports(node: any): boolean {
     if (node.data && Array.isArray(node.data)) {
       const result = node.data.some(
-        (d: any) => d.type === 'rect-node' || ocifToCodeFlowCanvas[d.type]
+        (d: any) =>
+          d.type === 'rect-node' ||
+          d.type === 'oval-node' ||
+          ocifToCodeFlowCanvas[d.type]
       );
       if (result) {
         return true;
@@ -117,7 +121,11 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
                 d.type !== connectionNodeInfoPropertyName &&
                 d.type !== '@ocif/node/ports'
               ) {
-                if (d.type === 'rect-node') {
+                const nodeType = codeFlowCanvasToOcif[d.type] ?? d.type;
+                if (
+                  nodeType === '@ocif/node/rect' ||
+                  nodeType === '@ocif/node/oval'
+                ) {
                   const canvasNode = this.getNodeFromElements(
                     node.id,
                     elements
@@ -239,11 +247,9 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       }
       return '';
     }
-    if (
-      ocifNode.data &&
-      nodeInfo.type !== 'rect-node' &&
-      nodeInfo.type !== 'oval-node'
-    ) {
+    const nodeType =
+      codeFlowCanvasToOcif[nodeInfo?.type ?? ''] ?? nodeInfo.type;
+    if (ocifNode.data && nodeType !== 'rect-node' && nodeType !== 'oval-node') {
       ocifNode.data.push({
         ...clonedNodeInfo,
         type: nodeInfoPropertyName,
