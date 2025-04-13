@@ -22,6 +22,7 @@ import {
   RunCounter,
   llmApiKeys,
 } from '@devhelpr/web-flow-executor';
+/* @ts-expect-error:will-fix-later */
 import AIFlowEngineWorker from './app/ai-flow-engine-worker/ai-flow-engine-worker?worker';
 import {
   AIWorkerWorker,
@@ -29,6 +30,7 @@ import {
 } from './app/ai-flow-engine-worker/ai-flow-engine-worker-message';
 import { CanvasNode } from './app/custom-nodes/classes/canvas-node-class';
 
+/* @ts-expect-error:will-fix-later */
 const API_URL_ROOT = import.meta.env.VITE_API_URL;
 
 setupCustomEditor(() => {
@@ -132,7 +134,7 @@ if (url.pathname === '/run-flow') {
   const startWorker = (
     flow: Flow<BaseNodeInfo> | undefined,
     nodes: ElementNodeMap<NodeInfo>,
-    input?: string,
+    _input?: string,
     runCounter?: RunCounter,
     onFinishRun?: (input: string | any[]) => void
   ) => {
@@ -204,14 +206,14 @@ if (url.pathname === '/run-flow') {
         run: (
           flow: Flow<BaseNodeInfo> | undefined,
           nodes: ElementNodeMap<NodeInfo>,
-          canvasApp: IFlowCanvasBase<NodeInfo>,
+          _canvasApp: IFlowCanvasBase<NodeInfo>,
           onFinishRun?: (input: string | any[]) => void,
           input?: string,
-          offsetX?: number,
-          offsetY?: number,
+          _offsetX?: number,
+          _offsetY?: number,
           runCounter?: RunCounter,
-          shouldResetConnectionSlider?: boolean,
-          computeAsync?: ComputeAsync
+          _shouldResetConnectionSlider?: boolean,
+          _computeAsync?: ComputeAsync
         ) => {
           console.log('run flow startWorker', flow, nodes);
           startWorker(flow, nodes, input, runCounter, onFinishRun);
@@ -223,16 +225,16 @@ if (url.pathname === '/run-flow') {
         runNode: (
           flow: Flow<BaseNodeInfo> | undefined,
           node: IRectNodeComponent<NodeInfo>,
-          canvasApp: IFlowCanvasBase<NodeInfo>,
-          onStopped?: (input: string | any[], scopeId?: string) => void,
+          _canvasApp: IFlowCanvasBase<NodeInfo>,
+          _onStopped?: (input: string | any[], scopeId?: string) => void,
           input?: string,
-          offsetX?: number,
-          offsetY?: number,
-          loopIndex?: number,
-          connection?: IConnectionNodeComponent<NodeInfo>,
-          scopeId?: string,
+          _offsetX?: number,
+          _offsetY?: number,
+          _loopIndex?: number,
+          _connection?: IConnectionNodeComponent<NodeInfo>,
+          _scopeId?: string,
           runCounter?: RunCounter,
-          shouldResetConnectionSlider?: boolean,
+          _shouldResetConnectionSlider?: boolean,
           inputPayload?: any
         ) => {
           if (!flowApp?.canvas?.elements) {

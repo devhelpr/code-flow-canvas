@@ -19,7 +19,7 @@ export const runFlow = () => {
   flowEngine.initialize(flow.flows.flow.nodes);
 
   const rootElement = document.getElementById('run-flow-container')!;
-  let resultElement: HTMLDivElement | undefined = undefined;
+  //let resultElement: HTMLDivElement | undefined = undefined;
   let celciusElement: HTMLInputElement | undefined = undefined;
   let fahrenheitElement: HTMLInputElement | undefined = undefined;
 
@@ -40,7 +40,7 @@ export const runFlow = () => {
   renderElement(
     <div class="w-[clamp(240px,100%,1024px)] mx-auto">
       <div
-        getElement={(element: HTMLDivElement) => (resultElement = element)}
+      // getElement={(element: HTMLDivElement) => (resultElement = element)}
       ></div>
       <div class="flex flex-col">
         <label>Celcius</label>

@@ -17,7 +17,7 @@ interface WebcamViewerSettings {
 }
 
 class WebcamViewer {
-  private rectNode: BaseRectNode;
+  //private rectNode: BaseRectNode;
   private videoElement: HTMLVideoElement | null = null;
   private stream: MediaStream | null = null;
   private isStreaming = false;
@@ -28,10 +28,10 @@ class WebcamViewer {
 
   constructor(
     gridContainer: HTMLDivElement,
-    rectNode: BaseRectNode,
-    settings: WebcamViewerSettings
+    _rectNode: BaseRectNode,
+    _settings: WebcamViewerSettings
   ) {
-    this.rectNode = rectNode;
+    //this.rectNode = rectNode;
     this.initializeWebcam(gridContainer);
   }
 
@@ -210,7 +210,7 @@ export class WebcamViewerNode extends BaseRectNode {
   };
 
   compute = (
-    input: string,
+    _input: string,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {

@@ -5,12 +5,13 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 
+// @ts-expect-error:will-fix-later
 import TestWorker from './workers/test-worker?worker';
 import { BaseRectNode } from './base-rect-node-class';
 
 const testWorker = new TestWorker();
 
-testWorker.addEventListener('message', (event) => {
+testWorker.addEventListener('message', (event: any) => {
   console.log('Worker response:', event.data);
 });
 
@@ -27,7 +28,7 @@ export class OvalNode extends BaseRectNode {
   ): Promise<IComputeResult> => {
     return new Promise<IComputeResult>((resolve) => {
       testWorker.postMessage(input);
-      testWorker.onmessage = (event) => {
+      testWorker.onmessage = (event: any) => {
         resolve({
           result: event.data.payload.processedData,
           output: event.data.payload.processedData,

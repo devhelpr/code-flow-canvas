@@ -17,6 +17,9 @@ export function examplePage() {
       saveFlow: async (_flowId: string, _flow: any) => {
         return Promise.resolve();
       },
+      getCurrentFlow: () => {
+        return flowData as Flow<NodeInfo>;
+      },
     };
     appElement.classList.add('hidden');
     pageElement.classList.remove('hidden');
