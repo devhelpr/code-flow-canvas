@@ -65,6 +65,15 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
     return false;
   }
 
+  isExtensionInNode(node: any, extensionType: string): boolean {
+    if (node && node.data) {
+      return node.data.some(
+        (extension: any) => extensionType === extension.type
+      );
+    }
+    return false;
+  }
+
   isValidCodeFlowCanvasNode(node: any): boolean {
     if (node.data && Array.isArray(node.data)) {
       return node.data.some(
@@ -74,6 +83,10 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       );
     }
     return false;
+  }
+
+  isOcifCompatibleCodeFlowCanvasNode(nodeType: string) {
+    return codeFlowCanvasToOcif[nodeType] !== undefined;
   }
 
   doesRootOCIFNodeExistInFlow(
@@ -123,8 +136,9 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
               ) {
                 const nodeType = codeFlowCanvasToOcif[d.type] ?? d.type;
                 if (
-                  nodeType === '@ocif/node/rect' ||
-                  nodeType === '@ocif/node/oval'
+                  !this.isExtensionInNode(codeFlowCanvasNode, nodeType) &&
+                  (nodeType === '@ocif/node/rect' ||
+                    nodeType === '@ocif/node/oval')
                 ) {
                   const canvasNode = this.getNodeFromElements(
                     node.id,
@@ -215,11 +229,8 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
         ports: ports,
       });
     }
-    const clonedNodeInfo = structuredClone(nodeInfo) as any;
-    delete clonedNodeInfo.fillColor;
-    delete clonedNodeInfo.strokeColor;
-    delete clonedNodeInfo.strokeWidth;
 
+    const clonedNodeInfo = structuredClone(nodeInfo) as any;
     const ocifNode: OCIFNode = {
       id: `${node.id}`,
       position: [node.x, node.y],
@@ -227,6 +238,25 @@ export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
       data: [...portsNode],
       resource: `${node.id}-resource`,
     };
+
+    if (
+      ocifNode &&
+      ocifNode.data &&
+      nodeInfo.type &&
+      this.isOcifCompatibleCodeFlowCanvasNode(nodeInfo.type)
+    ) {
+      const ocifType = codeFlowCanvasToOcif[nodeInfo.type];
+      ocifNode.data.push({
+        fillColor: clonedNodeInfo.fillColor,
+        strokeColor: clonedNodeInfo.strokeColor,
+        strokeWidth: clonedNodeInfo.strokeWidth,
+        type: ocifType,
+      });
+    }
+    delete clonedNodeInfo.fillColor;
+    delete clonedNodeInfo.strokeColor;
+    delete clonedNodeInfo.strokeWidth;
+
     if (nodeInfo.type === 'group') {
       // only export group as a relation
       if (
