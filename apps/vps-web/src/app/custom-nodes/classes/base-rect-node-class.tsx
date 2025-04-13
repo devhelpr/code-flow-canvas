@@ -64,6 +64,8 @@ export class BaseRectNode {
     this.flowEngine = flowEngine;
   }
 
+  updateVisual: ((data: any) => void) | undefined = undefined;
+
   getSettingsPopup:
     | ((popupContainer: HTMLElement) => IDOMElement | undefined)
     | undefined = (popupContainer: HTMLElement) => {

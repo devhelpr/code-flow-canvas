@@ -175,6 +175,9 @@ export const getRectNode =
             node.nodeInfo.isSettingsPopup = true;
           }
         }
+        if (rectNode.updateVisual && node.nodeInfo) {
+          node.nodeInfo.updateVisual = rectNode.updateVisual;
+        }
 
         const childNodeWrapper = (nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement

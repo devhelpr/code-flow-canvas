@@ -16,6 +16,7 @@ import { RectNode } from './classes/rect-node-class';
 import { WebcamViewerNode } from './classes/webcam-node';
 import { CanvasNode } from './classes/canvas-node-class';
 import { PromptNode } from './classes/prompt-node-class';
+import { PromptImageNode } from './classes/prompt-image-class';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -28,6 +29,7 @@ const nodes: NodeRegistration[] = [
   WebcamViewerNode,
   CanvasNode,
   PromptNode,
+  PromptImageNode,
 ];
 
 export const registerNodes = (
