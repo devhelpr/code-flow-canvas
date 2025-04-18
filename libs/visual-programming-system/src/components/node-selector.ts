@@ -622,7 +622,30 @@ export class NodeSelector<T extends BaseNodeInfo> {
             const nodeInfo = (
               nodeInSelection as unknown as IRectNodeComponent<T>
             ).nodeInfo;
-            if (nodeInfo) {
+            if (nodeInfo && !nodeInfo.isGroup) {
+              if (nodeInfo.isInGroup && nodeInfo.groupId) {
+                const group = this.canvasApp.elements.get(
+                  nodeInfo.groupId
+                ) as unknown as IRectNodeComponent<BaseNodeInfo>;
+                if (group) {
+                  const groupNodeInfo =
+                    group.nodeInfo as unknown as BaseNodeInfo;
+                  if (
+                    groupNodeInfo &&
+                    group.nodesInGroup &&
+                    groupNodeInfo.groupedNodeIds
+                  ) {
+                    groupNodeInfo.groupedNodeIds =
+                      groupNodeInfo.groupedNodeIds.filter(
+                        (groupNodeId) => groupNodeId !== nodeInSelection.id
+                      );
+
+                    group.nodesInGroup = group.nodesInGroup?.filter(
+                      (nodeInGroup) => nodeInGroup.id !== nodeInSelection.id
+                    );
+                  }
+                }
+              }
               nodeInfo.isInGroup = true;
               nodeInfo.groupId = node.id;
             }
