@@ -504,6 +504,19 @@ export class Connection<T extends BaseNodeInfo> {
     let updateThumbs = false;
 
     if (!target || x === undefined || y === undefined || !initiator) {
+      (
+        this.pathTransparentElement?.domElement as SVGPathElement
+      ).classList.remove('hidden');
+      if (this.nodeComponent?.startNode && this.nodeComponent?.endNode) {
+        if (
+          this.nodeComponent.startNode.nodeInfo?.isInGroup ||
+          this.nodeComponent.endNode.nodeInfo?.isInGroup
+        ) {
+          (
+            this.pathTransparentElement?.domElement as SVGPathElement
+          ).classList.add('hidden');
+        }
+      }
       // needed for updating without using parameters (...update() )
       if (this.nodeComponent?.startNode) {
         const start = this.onCalculateControlPoints(
