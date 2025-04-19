@@ -875,7 +875,8 @@ export const runNodeFromThumb = (
               connection as unknown as IConnectionNodeComponent<NodeInfo>,
             connectionValue: inputToHistory,
             nodeStates: canvasApp.getNodeStates(),
-            cursorOnly: firstStoreNodeState && showCursorOnly === true,
+            cursorOnly:
+              (firstStoreNodeState && showCursorOnly === true) || !input,
           };
           connectionExecuteHistory.push(lastConnectionExecutionHistory);
         }

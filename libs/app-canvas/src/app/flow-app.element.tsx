@@ -1696,7 +1696,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             domCircle.style.display = 'flex';
 
             domCircle.style.transform = `translate(${xHelper}px, ${yHelper}px)`;
-            if (pathStep.cursorOnly === true) {
+            if (pathStep.cursorOnly === true || !pathStep.connectionValue) {
               domMessage.style.display = 'none';
             } else {
               domMessage.style.display = 'flex';
