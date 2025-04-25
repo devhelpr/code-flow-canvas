@@ -263,6 +263,7 @@ export class Connection<T extends BaseNodeInfo> {
         style: {
           filter: `url(#${arrowIdPrefix}_shadow)`,
         },
+        pointerdown: this.onPointerDown,
       },
       this.nodeComponent.domElement
     );
