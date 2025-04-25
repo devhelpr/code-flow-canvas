@@ -104,7 +104,7 @@ export class Connection<T extends BaseNodeInfo> {
     ) => void,
     id?: string,
     containerNode?: IRectNodeComponent<T>,
-    theme?: Theme,
+    _theme?: Theme,
     setCanvasAction?: (canvasAction: CanvasAction, payload?: any) => void,
     rootElement?: HTMLElement,
     canvasApp?: IBaseFlow<T>
@@ -234,20 +234,20 @@ export class Connection<T extends BaseNodeInfo> {
       endOffsetY
     );
 
-    this.pathTransparentElement = createNSElement(
-      'path',
-      {
-        class: this.cssClasses.pathTransparentCssClasses,
-        d: path,
-        stroke: containerNode
-          ? '#94a3b8'
-          : theme?.backgroundAsHexColor ?? '#1e293b',
-        'stroke-width': 20,
-        fill: 'transparent',
-        pointerdown: this.onPointerDown,
-      },
-      this.nodeComponent.domElement
-    );
+    // this.pathTransparentElement = createNSElement(
+    //   'path',
+    //   {
+    //     class: this.cssClasses.pathTransparentCssClasses,
+    //     d: path,
+    //     stroke: containerNode
+    //       ? '#94a3b8'
+    //       : theme?.backgroundAsHexColor ?? '#1e293b',
+    //     'stroke-width': 20,
+    //     fill: 'transparent',
+    //     pointerdown: this.onPointerDown,
+    //   },
+    //   this.nodeComponent.domElement
+    // );
 
     this.pathElement = createNSElement(
       'path',
@@ -260,14 +260,17 @@ export class Connection<T extends BaseNodeInfo> {
         'stroke-width': 3,
         ...dashedStroke,
         fill: 'transparent',
+        style: {
+          filter: `url(#${arrowIdPrefix}_shadow)`,
+        },
       },
       this.nodeComponent.domElement
     );
     this.nodeComponent.pathElement = this.pathElement;
 
     if (!this.pathElement) throw new Error('pathElement is undefined');
-    if (!this.pathTransparentElement)
-      throw new Error('pathTransparentElement is undefined');
+    // if (!this.pathTransparentElement)
+    //   throw new Error('pathTransparentElement is undefined');
 
     elements.set(this.nodeComponent.id, this.nodeComponent);
     this.nodeComponent.elements.set(this.pathElement.id, this.pathElement);
@@ -504,19 +507,19 @@ export class Connection<T extends BaseNodeInfo> {
     let updateThumbs = false;
 
     if (!target || x === undefined || y === undefined || !initiator) {
-      (
-        this.pathTransparentElement?.domElement as SVGPathElement
-      ).classList.remove('hidden');
-      if (this.nodeComponent?.startNode && this.nodeComponent?.endNode) {
-        if (
-          this.nodeComponent.startNode.nodeInfo?.isInGroup ||
-          this.nodeComponent.endNode.nodeInfo?.isInGroup
-        ) {
-          (
-            this.pathTransparentElement?.domElement as SVGPathElement
-          ).classList.add('hidden');
-        }
-      }
+      // (
+      //   this.pathTransparentElement?.domElement as SVGPathElement
+      // ).classList.remove('hidden');
+      // if (this.nodeComponent?.startNode && this.nodeComponent?.endNode) {
+      //   if (
+      //     this.nodeComponent.startNode.nodeInfo?.isInGroup ||
+      //     this.nodeComponent.endNode.nodeInfo?.isInGroup
+      //   ) {
+      //     (
+      //       this.pathTransparentElement?.domElement as SVGPathElement
+      //     ).classList.add('hidden');
+      //   }
+      // }
       // needed for updating without using parameters (...update() )
       if (this.nodeComponent?.startNode) {
         const start = this.onCalculateControlPoints(
@@ -1034,6 +1037,31 @@ export class Connection<T extends BaseNodeInfo> {
       },
       markerBegin.domElement
     );
+
+    const shadowFilter = createNSElement(
+      'filter',
+      {
+        id: `${id}_shadow`,
+        x: '-10%',
+        y: '-10%',
+        height: '120%',
+        width: '120%',
+        filterUnits: 'userSpaceOnUse',
+      },
+      defs.domElement
+    );
+
+    if (shadowFilter) {
+      createNSElement(
+        'feDropShadow',
+        {
+          dx: '2.0',
+          dy: '2.0',
+          stdDeviation: '1.0',
+        },
+        shadowFilter.domElement
+      );
+    }
   }
 
   protected initializeControlPoints(): { x: number; y: number }[] {

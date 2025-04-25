@@ -590,10 +590,12 @@ export class QuadraticBezierConnection<
       'd',
       pathInfo.path
     );
-    (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
-      'd',
-      pathInfo.path
-    );
+    if (this.pathTransparentElement) {
+      (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
+        'd',
+        pathInfo.path
+      );
+    }
     return {
       startX: pathInfo.startX + bbox.x, // - startOffsetX,
       startY: pathInfo.startY + bbox.y, // - startOffsetY,

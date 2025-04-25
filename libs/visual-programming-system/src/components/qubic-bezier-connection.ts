@@ -799,10 +799,12 @@ export class CubicBezierConnection<
     }
     (this.pathElement?.domElement as HTMLElement).setAttribute('d', path);
 
-    (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
-      'd',
-      path
-    );
+    if (this.pathTransparentElement) {
+      (this.pathTransparentElement?.domElement as HTMLElement).setAttribute(
+        'd',
+        path
+      );
+    }
 
     return {
       startX: this.points.beginX + startOffsetX, //+ bbox.x - startOffsetX,
