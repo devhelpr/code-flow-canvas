@@ -454,7 +454,6 @@ export class NodeTransformer<T extends BaseNodeInfo> {
 
     // TODO : check if bounds are ok
     if (this.attachedNode) {
-      console.log('pointerMoveHelper nodetransformer', this.resizeMode, x, y);
       if (
         this.resizeMode == 'move-upstream-nodes' ||
         this.resizeMode == 'move-downstream-nodes'
@@ -467,56 +466,86 @@ export class NodeTransformer<T extends BaseNodeInfo> {
           node.update?.(node, node.x, node.y, node);
         });
       } else if (this.resizeMode == 'left-top') {
+        const newWidth = this.orgWidth - offsetX;
         this.attachedNode.x = x;
         this.attachedNode.y = y;
-        this.attachedNode.width = this.orgWidth - offsetX;
+        if (newWidth >= (this.attachedNode.width ?? 0)) {
+          this.attachedNode.width = newWidth;
+        }
+        let newHeight = 0;
         if (this.resizeSameWidthAndHeight) {
-          this.attachedNode.height = this.attachedNode.width;
+          newHeight = this.attachedNode.width ?? 0;
         } else {
-          this.attachedNode.height = this.orgHeight - offsetY;
+          newHeight = this.orgHeight - offsetY;
+        }
+        if (newHeight >= (this.attachedNode?.restrictHeight ?? 0)) {
+          this.attachedNode.height = newHeight;
         }
         this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
-          this.attachedNode.width,
-          this.attachedNode.height
+          this.attachedNode.width ?? 0,
+          this.attachedNode.height ?? 0
         );
       } else if (this.resizeMode == 'right-top') {
         this.attachedNode.y = y;
-        this.attachedNode.width = this.orgWidth + offsetX;
+        const newWidth = this.orgWidth + offsetX;
+        if (newWidth >= (this.attachedNode.width ?? 0)) {
+          this.attachedNode.width = newWidth;
+        }
+        let newHeight = 0;
         if (this.resizeSameWidthAndHeight) {
-          this.attachedNode.height = this.attachedNode.width;
+          newHeight = this.attachedNode.width ?? 0;
         } else {
-          this.attachedNode.height = this.orgHeight - offsetY;
+          newHeight = this.orgHeight - offsetY;
+        }
+        if (newHeight >= (this.attachedNode?.restrictHeight ?? 0)) {
+          this.attachedNode.height = newHeight;
         }
         this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
-          this.attachedNode.width,
-          this.attachedNode.height
+          this.attachedNode.width ?? 0,
+          this.attachedNode.height ?? 0
         );
       } else if (this.resizeMode == 'right-bottom') {
-        this.attachedNode.width = this.orgWidth + offsetX;
-        if (this.resizeSameWidthAndHeight) {
-          this.attachedNode.height = this.attachedNode.width;
-        } else {
-          this.attachedNode.height = this.orgHeight + offsetY;
+        const newWidth = this.orgWidth + offsetX;
+        if (newWidth >= (this.attachedNode?.restrictWidth ?? 0)) {
+          this.attachedNode.width = this.orgWidth + offsetX;
         }
+        let newHeight = 0;
+
+        if (this.resizeSameWidthAndHeight) {
+          newHeight = this.attachedNode.width ?? 0;
+        } else {
+          newHeight = this.orgHeight + offsetY;
+        }
+        if (newHeight >= (this.attachedNode?.restrictHeight ?? 0)) {
+          this.attachedNode.height = newHeight;
+        }
+
         this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
-          this.attachedNode.width,
-          this.attachedNode.height
+          this.attachedNode.width ?? 0,
+          this.attachedNode.height ?? 0
         );
       } else if (this.resizeMode == 'left-bottom') {
         this.attachedNode.x = x;
-        this.attachedNode.width = this.orgWidth - offsetX;
+        const newWidth = this.orgWidth - offsetX;
+        if (newWidth >= (this.attachedNode.width ?? 0)) {
+          this.attachedNode.width = newWidth;
+        }
+        let newHeight = 0;
         if (this.resizeSameWidthAndHeight) {
-          this.attachedNode.height = this.attachedNode.width;
+          newHeight = this.attachedNode.width ?? 0;
         } else {
-          this.attachedNode.height = this.orgHeight + offsetY;
+          newHeight = this.orgHeight + offsetY;
+        }
+        if (newHeight >= (this.attachedNode?.restrictHeight ?? 0)) {
+          this.attachedNode.height = newHeight;
         }
         this.attachedNode.isSettingSize = true;
         this.attachedNode.setSize(
-          this.attachedNode.width,
-          this.attachedNode.height
+          this.attachedNode.width ?? 0,
+          this.attachedNode.height ?? 0
         );
       }
       this.attachedNode.update?.(

@@ -14,7 +14,7 @@ export class RectNode extends BaseRectNode {
 
   static readonly text: string = 'rect';
 
-  static readonly disableManualResize: boolean = true;
+  static readonly disableManualResize: boolean = false;
 
   constructor(
     id: string,
@@ -43,7 +43,7 @@ w-min h-min
 			flex items-center justify-center
 */
 
-  childElementSelector = '.child-node-wrapper > textarea'; // '.child-node-wrapper > *:first-child'
+  childElementSelector = '.child-node-wrapper textarea'; // '.child-node-wrapper > *:first-child'
   render(node: FlowNode<NodeInfo>) {
     const nodeInfo = node.nodeInfo as any;
     console.log(
@@ -53,15 +53,13 @@ w-min h-min
       (node?.nodeInfo as any)?.text
     );
     return (
-      <div>
+      <div class="h-full w-full">
         <div
           getElement={(element: HTMLElement) => {
             this.rectElement = element;
           }}
-          class={`rounded overflow-clip justify-center items-center text-center whitespace-pre inline-flex grow-textarea`}
-          style={`min-width:${node.width ?? 50}px;min-height:${
-            node.height ?? 50
-          }px;background:${nodeInfo?.fillColor ?? 'black'};border: ${
+          class={`h-full w-full rounded overflow-clip justify-center items-center text-center whitespace-pre inline-flex grow-textarea`}
+          style={`background:${nodeInfo?.fillColor ?? 'black'};border: ${
             nodeInfo?.strokeWidth ?? '2'
           }px ${nodeInfo?.strokeColor ?? 'white'} solid;color:${
             nodeInfo?.strokeColor ?? 'white'
@@ -71,6 +69,11 @@ w-min h-min
         </div>
       </div>
     );
+    /*
+    min-width:${node.width ?? 50}px;min-height:${
+            node.height ?? 50
+          }px;
+    */
   }
   onResize: ((width: number, height: number) => void) | undefined = undefined;
 }

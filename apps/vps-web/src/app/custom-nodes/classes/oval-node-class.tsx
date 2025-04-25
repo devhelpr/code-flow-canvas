@@ -21,6 +21,8 @@ export class OvalNode extends BaseRectNode {
   static readonly category = 'Default test';
   static readonly text = 'oval';
 
+  static readonly disableManualResize: boolean = false;
+
   override compute = (
     input: string,
     _loopIndex?: number,
@@ -38,20 +40,18 @@ export class OvalNode extends BaseRectNode {
     });
   };
 
-  childElementSelector = '.child-node-wrapper > *:first-child';
+  childElementSelector = '.child-node-wrapper textarea';
   render = (node: FlowNode<NodeInfo>) => {
     const nodeInfo = node.nodeInfo as any;
     console.log('render rect-node', node.width, node.height);
     return (
-      <div>
+      <div class="h-full w-full">
         <div
           getElement={(element: HTMLElement) => {
             this.rectElement = element;
           }}
-          class={`rounded-full overflow-clip justify-center items-center text-center whitespace-pre inline-flex`}
-          style={`min-width:${node.width ?? 50}px;min-height:${
-            node.height ?? 50
-          }px;background:${nodeInfo?.fillColor ?? 'black'};border: ${
+          class={`h-full w-full rounded-full overflow-clip justify-center items-center text-center whitespace-pre inline-flex`}
+          style={`;background:${nodeInfo?.fillColor ?? 'black'};border: ${
             nodeInfo?.strokeWidth ?? '2'
           }px ${nodeInfo?.strokeColor ?? 'white'} solid;color:${
             nodeInfo?.strokeColor ?? 'white'
@@ -61,5 +61,10 @@ export class OvalNode extends BaseRectNode {
         </div>
       </div>
     );
+    /*
+min-width:${node.width ?? 50}px;min-height:${
+            node.height ?? 50
+          }px
+    */
   };
 }

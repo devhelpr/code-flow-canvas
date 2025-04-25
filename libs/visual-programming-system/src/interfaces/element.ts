@@ -89,6 +89,8 @@ export interface IRectNodeComponent<T extends BaseNodeInfo>
   setSize: (width: number, height: number) => void;
   groupNode?: IRectNodeComponent<T>;
   nodesInGroup?: IRectNodeComponent<T>[];
+  restrictHeight?: number;
+  restrictWidth?: number;
 }
 
 export interface IConnectionNodeComponent<T extends BaseNodeInfo>

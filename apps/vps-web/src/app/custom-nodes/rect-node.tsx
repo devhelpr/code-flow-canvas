@@ -51,12 +51,21 @@ export const getRectNode =
     };
     const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
       return rectNode.compute(input, loopIndex, payload).then((result) => {
-        if (rect && rect.resize) {
-          rect.resize(undefined, true, rectNode.childElementSelector, true);
-        }
+        // if (rect && rect.resize) {
+        //   rect.resize(
+        //     undefined,
+        //     true,
+        //     rectNode.childElementSelector,
+        //     true,
+        //     undefined,
+        //     undefined,
+        //     true
+        //   );
+        // }
         return result;
       });
     };
+    console.log('rect node width/height', flowNode?.width, flowNode?.height);
 
     return visualNodeFactory(
       NodeClass.nodeTypeName,
@@ -133,14 +142,18 @@ export const getRectNode =
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
         rectNode.onResize = (width: number, height: number) => {
+          node.restrictHeight = height;
+          if (height < (node?.height ?? 0)) {
+            return;
+          }
           // TODO : fix this... when changing the height, the node content is not resized
           const newHeight = height;
           //height > (node.height ?? 10) ? height : node.height ?? 10;
           console.log('RECT RESIZE via onResize', width, newHeight);
-          node.width = width;
+          //node.width = width;
           node.height = newHeight;
           node.isSettingSize = true;
-          rectNode.setSize(width, newHeight);
+          //rectNode.setSize(width, newHeight);
 
           rect?.resize(
             width,
@@ -149,6 +162,8 @@ export const getRectNode =
             true,
             newHeight,
             true
+            // true,
+            // newHeight
           );
           nodeInstance.contextInstance?.nodeTransformer.resizeNodeTransformer(
             width,
@@ -192,29 +207,30 @@ export const getRectNode =
         nodeRenderElement = (
           rect?.nodeComponent?.domElement as HTMLElement
         ).querySelector(rectNode.childElementSelector);
+        console.log('rect-node nodeRenderElement', nodeRenderElement);
         if (nodeRenderElement) {
           rectNode.nodeRenderElement = nodeRenderElement;
-          const resizeObserver = new ResizeObserver(() => {
-            if (rect && rect.resize) {
-              console.log('RECT RESIZE via observer');
-              // problem with manual resizing is partially solved when this is commented
-              // node content is not resized though...
-              if (node.isSettingSize) {
-                node.isSettingSize = false;
-                rectNode.setSize(node.width ?? 10, node.height ?? 10);
-                return;
-              }
-              if (rect && rect.resize) {
-                rect.resize(
-                  undefined,
-                  true,
-                  rectNode.childElementSelector,
-                  true
-                );
-              }
-            }
-          });
-          resizeObserver.observe(nodeRenderElement);
+          // const resizeObserver = new ResizeObserver(() => {
+          //   if (rect && rect.resize) {
+          //     console.log('RECT RESIZE via observer');
+          //     // problem with manual resizing is partially solved when this is commented
+          //     // node content is not resized though...
+          //     if (node.isSettingSize) {
+          //       node.isSettingSize = false;
+          //       rectNode.setSize(node.width ?? 10, node.height ?? 10);
+          //       return;
+          //     }
+          //     if (rect && rect.resize) {
+          //       rect.resize(
+          //         undefined,
+          //         true,
+          //         rectNode.childElementSelector,
+          //         true
+          //       );
+          //     }
+          //   }
+          // });
+          //resizeObserver.observe(nodeRenderElement);
 
           // const mutationObserver = new MutationObserver(() => {
           //   if (rect && rect.resize) {
@@ -249,10 +265,10 @@ export const getRectNode =
           // });
           if (node?.nodeInfo) {
             node.nodeInfo.delete = () => {
-              if (nodeRenderElement) {
-                resizeObserver.unobserve(nodeRenderElement);
-              }
-              resizeObserver.disconnect();
+              // if (nodeRenderElement) {
+              //   resizeObserver.unobserve(nodeRenderElement);
+              // }
+              // resizeObserver.disconnect();
             };
           }
         }
@@ -264,8 +280,9 @@ export const getRectNode =
         category: NodeClass.category,
         hasStaticWidthHeight: true,
         hasCustomStyling: true,
+        additionalClassNames: 'h-full w-full',
         customClassName: 'custom-rect-node',
-        childNodeWrapperClass: 'child-node-wrapper',
+        childNodeWrapperClass: 'child-node-wrapper h-full w-full',
         centerToYPositionThumb: false,
         skipDetermineSizeOnInit: true,
         disableManualResize: NodeClass.disableManualResize,
@@ -274,7 +291,7 @@ export const getRectNode =
         hasFormInPopup: true,
         hasSettingsPopup: !NodeClass.getFormFields,
       },
-      <div class="child-instance"></div>,
+      <div class="child-instance h-full w-full"></div>,
       true
     );
   };

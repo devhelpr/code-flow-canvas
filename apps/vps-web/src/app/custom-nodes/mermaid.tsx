@@ -50,14 +50,14 @@ export const getMermaidNode =
     };
     const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
       return mermaidNode.compute(input, loopIndex, payload).then((result) => {
-        if (rect && rect.resize) {
-          rect.resize(
-            undefined,
-            true,
-            '.child-node-wrapper > *:first-child',
-            true
-          );
-        }
+        // if (rect && rect.resize) {
+        //   rect.resize(
+        //     undefined,
+        //     true,
+        //     '.child-node-wrapper > *:first-child',
+        //     true
+        //   );
+        // }
         return result;
       });
     };
@@ -95,25 +95,26 @@ export const getMermaidNode =
         ).querySelector('.child-node-wrapper > *:first-child');
         if (nodeRenderElement) {
           mermaidNode.nodeRenderElement = nodeRenderElement;
-          const resizeObserver = new ResizeObserver(() => {
-            if (rect && rect.resize) {
-              rect.resize(
-                undefined,
-                true,
-                '.child-node-wrapper > *:first-child',
-                true
-              );
-            }
-          });
-          resizeObserver.observe(nodeRenderElement);
-          if (node?.nodeInfo) {
-            node.nodeInfo.delete = () => {
-              if (nodeRenderElement) {
-                resizeObserver.unobserve(nodeRenderElement);
-              }
-              resizeObserver.disconnect();
-            };
-          }
+          // const resizeObserver = new ResizeObserver(() => {
+          //   console.log('mermaid resize');
+          //   if (rect && rect.resize) {
+          //     rect.resize(
+          //       undefined,
+          //       true,
+          //       '.child-node-wrapper > *:first-child',
+          //       true
+          //     );
+          //   }
+          // });
+          // resizeObserver.observe(nodeRenderElement);
+          // if (node?.nodeInfo) {
+          //   node.nodeInfo.delete = () => {
+          //     if (nodeRenderElement) {
+          //       resizeObserver.unobserve(nodeRenderElement);
+          //     }
+          //     resizeObserver.disconnect();
+          //   };
+          // }
         }
         // if (rect && rect.resize) {
         //   rect.resize(undefined, undefined, undefined, true);
@@ -124,8 +125,10 @@ export const getMermaidNode =
         hasStaticWidthHeight: true,
         hasCustomStyling: true,
         customClassName: 'mermaid-node',
-        childNodeWrapperClass: 'child-node-wrapper',
+        childNodeWrapperClass:
+          'child-node-wrapper w-full h-full overflow-hidden',
         centerToYPositionThumb: true,
+        additionalClassNames: 'h-full w-full',
       },
       <div class="child-instance"></div>,
       true

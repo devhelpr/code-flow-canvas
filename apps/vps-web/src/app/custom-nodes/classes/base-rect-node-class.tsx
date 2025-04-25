@@ -175,9 +175,14 @@ export class BaseRectNode {
         renderElement={(element: HTMLTextAreaElement) => {
           element.value = nodeInfo?.text ?? '';
           setTimeout(() => {
+            element.style.width = 'auto';
             element.style.height = 'auto';
-            console.log('renderElement textarea', element.scrollHeight);
+            //console.log('renderElement textarea', element.scrollHeight);
             element.style.height = element.scrollHeight + 'px';
+            if (this.node) {
+              this.node.restrictHeight = element.scrollHeight;
+              this.node.restrictWidth = element.scrollWidth;
+            }
           }, 0);
         }}
         input={(event: InputEvent) => {

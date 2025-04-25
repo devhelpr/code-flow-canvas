@@ -61,7 +61,7 @@ export class Rect<T extends BaseNodeInfo> {
   public containerNode?: IRectNodeComponent<T>;
 
   protected minHeight = 0;
-  private autSizeToContentIfNodeHasNoThumbs = false;
+  private autoSizeToContentIfNodeHasNoThumbs = false;
   protected updateEventListeners: ((
     target?: INodeComponent<T>,
     x?: number,
@@ -140,7 +140,7 @@ export class Rect<T extends BaseNodeInfo> {
       thumbs?.length === 0 &&
       layoutProperties?.autoSizeToContentIfNodeHasNoThumbs
     ) {
-      this.autSizeToContentIfNodeHasNoThumbs = true;
+      this.autoSizeToContentIfNodeHasNoThumbs = true;
     }
 
     this.rectInfo = this.createRectElement(
@@ -461,7 +461,7 @@ export class Rect<T extends BaseNodeInfo> {
       }
     }
 
-    if (!this.autSizeToContentIfNodeHasNoThumbs && !skipDetermineSizeOnInit) {
+    if (!this.autoSizeToContentIfNodeHasNoThumbs && !skipDetermineSizeOnInit) {
       (
         this.nodeComponent.domElement as HTMLElement
       ).style.height = `${this.nodeComponent.height}px`;
@@ -474,7 +474,9 @@ export class Rect<T extends BaseNodeInfo> {
     selectChildElemenSelectorAsReference?: string,
     centerToYPositionThumb?: boolean,
     height?: number,
-    forceWidthHeight?: boolean
+    forceWidthHeight?: boolean,
+    onlySetHeightIfContentHeightIsBiggerThenCurrent?: boolean,
+    contentHeight?: number
   ) {
     if (
       (this.hasStaticWidthHeight && !overrideStaticWidthHeight) ||
@@ -491,7 +493,7 @@ export class Rect<T extends BaseNodeInfo> {
 
       const rectContainerDOMElement = this.nodeComponent
         .domElement as unknown as HTMLElement;
-      if (!this.autSizeToContentIfNodeHasNoThumbs) {
+      if (!this.autoSizeToContentIfNodeHasNoThumbs) {
         rectContainerDOMElement.style.width = `${this.points.width}px`;
         rectContainerDOMElement.style.height = `${this.points.height}px`;
       }
@@ -570,17 +572,42 @@ export class Rect<T extends BaseNodeInfo> {
         ) ?? astElementHtmlElement;
     }
 
-    if (astElementHtmlElement && !this.autSizeToContentIfNodeHasNoThumbs) {
-      astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
-      astElementHtmlElement.style.height = 'auto';
+    if (astElementHtmlElement && !this.autoSizeToContentIfNodeHasNoThumbs) {
+      if (!onlySetHeightIfContentHeightIsBiggerThenCurrent) {
+        astElementHtmlElement.style.width = width ? `${width}px` : 'auto';
+        astElementHtmlElement.style.height = 'auto';
+      }
     }
 
     const rectContainerDOMElement = this.nodeComponent
       .domElement as unknown as HTMLElement;
-    if (!this.autSizeToContentIfNodeHasNoThumbs) {
-      rectContainerDOMElement.style.width = width ? `${width}px` : 'auto';
-      rectContainerDOMElement.style.height = `auto`;
+    if (!this.autoSizeToContentIfNodeHasNoThumbs) {
+      if (!onlySetHeightIfContentHeightIsBiggerThenCurrent) {
+        rectContainerDOMElement.style.width = width ? `${width}px` : 'auto';
+        rectContainerDOMElement.style.height = `auto`;
+      }
     }
+    if (onlySetHeightIfContentHeightIsBiggerThenCurrent) {
+      if (contentHeight ?? 0 > (this.nodeComponent?.height ?? 0)) {
+        this.nodeComponent.height = contentHeight ?? 0;
+        this.points.height = this.nodeComponent.height;
+        rectContainerDOMElement.style.height = `${this.nodeComponent.height}px`;
+      }
+
+      if (this.nodeComponent.update) {
+        this.nodeComponent.update(
+          this.nodeComponent,
+          this.nodeComponent.x,
+          this.nodeComponent.y,
+          this.nodeComponent
+        );
+      }
+      return {
+        width: this.nodeComponent.width,
+        height: this.nodeComponent.height,
+      };
+    }
+
     const astElementSize = astElementHtmlElement.getBoundingClientRect();
 
     this.nodeComponent.width = astElementSize.width
@@ -589,14 +616,14 @@ export class Rect<T extends BaseNodeInfo> {
     this.nodeComponent.height = astElementSize.height / scale;
     if (
       this.nodeComponent.height < this.minHeight &&
-      !this.autSizeToContentIfNodeHasNoThumbs
+      !this.autoSizeToContentIfNodeHasNoThumbs
     ) {
       this.nodeComponent.height = this.minHeight;
     }
     this.points.width = this.nodeComponent.width;
     this.points.height = this.nodeComponent.height;
 
-    if (!this.autSizeToContentIfNodeHasNoThumbs) {
+    if (!this.autoSizeToContentIfNodeHasNoThumbs) {
       rectContainerDOMElement.style.width = `${this.nodeComponent.width}px`;
       rectContainerDOMElement.style.height = `${this.nodeComponent.height}px`;
     }
@@ -987,7 +1014,10 @@ export class Rect<T extends BaseNodeInfo> {
     return true;
   };
 
+  // setSize is called by NodeTransformer when manually resizing
+  // NodeTransformer also calls .update .. .update sets width/height if autoSizeToContentIfNodeHasNoThumbs = false
   protected setSize = (width: number, height: number) => {
+    console.log('setsize', width, height);
     this.points.width = width;
     this.points.height = height;
   };
@@ -1041,7 +1071,7 @@ export class Rect<T extends BaseNodeInfo> {
       height: this.points.height,
     };
     let autoSizeClasses = '';
-    if (this.autSizeToContentIfNodeHasNoThumbs) {
+    if (this.autoSizeToContentIfNodeHasNoThumbs) {
       autoSizeClasses = 'w-[max-content] h-[min-content]';
     }
     const rectContainerElement = createNodeElement(
@@ -1130,7 +1160,7 @@ export class Rect<T extends BaseNodeInfo> {
     const divDomElement =
       rectContainerElement.domElement as unknown as HTMLElement;
     if (
-      !this.autSizeToContentIfNodeHasNoThumbs &&
+      !this.autoSizeToContentIfNodeHasNoThumbs &&
       !layoutProperties?.skipDetermineSizeOnInit
     ) {
       divDomElement.style.width = `${bbox.width}px`;
@@ -1405,7 +1435,7 @@ export class Rect<T extends BaseNodeInfo> {
         const bbox = this.getBBoxPath(pathPoints);
         const divDomElement = this.nodeComponent
           .domElement as unknown as HTMLElement;
-        if (!this.autSizeToContentIfNodeHasNoThumbs) {
+        if (!this.autoSizeToContentIfNodeHasNoThumbs) {
           divDomElement.style.width = `${bbox.width}px`;
           divDomElement.style.height = `${bbox.height}px`;
         }
@@ -1417,7 +1447,7 @@ export class Rect<T extends BaseNodeInfo> {
         this.nodeComponent.height = this.points.height;
 
         const astDomElement = astElement.domElement as unknown as HTMLElement;
-        if (!this.autSizeToContentIfNodeHasNoThumbs) {
+        if (!this.autoSizeToContentIfNodeHasNoThumbs) {
           astDomElement.style.width = `${bbox.width}px`;
           astDomElement.style.height = `${bbox.height}px`;
         }
@@ -1486,7 +1516,7 @@ export class Rect<T extends BaseNodeInfo> {
 
         const divDomElement = this.nodeComponent
           .domElement as unknown as HTMLElement;
-        if (!this.autSizeToContentIfNodeHasNoThumbs) {
+        if (!this.autoSizeToContentIfNodeHasNoThumbs) {
           divDomElement.style.width = `${bbox.width}px`;
           divDomElement.style.height = `${bbox.height}px`;
         }
@@ -1498,7 +1528,7 @@ export class Rect<T extends BaseNodeInfo> {
         this.nodeComponent.height = this.points.height;
 
         const astDomElement = astElement.domElement as unknown as HTMLElement;
-        if (!this.autSizeToContentIfNodeHasNoThumbs) {
+        if (!this.autoSizeToContentIfNodeHasNoThumbs) {
           astDomElement.style.width = `${bbox.width}px`;
           astDomElement.style.height = `${bbox.height}px`;
         }

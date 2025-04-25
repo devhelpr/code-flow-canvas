@@ -80,7 +80,7 @@ export class MermaidNode {
 
   render = () => {
     return (
-      <div class="mermaid w-min h-min p-4 border-4 border-slate-400 border-solid rounded flex items-center justify-center"></div>
-    );
+      <div class="mermaid  w-full h-full p-4 border-4 border-slate-400 border-solid rounded flex items-center justify-center"></div>
+    ); //w-min h-min
   };
 }
