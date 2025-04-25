@@ -29,9 +29,10 @@ export class RectNode extends BaseRectNode {
     _payload?: any
   ): Promise<IComputeResult> => {
     return new Promise<IComputeResult>((resolve) => {
+      const data = (this.node?.nodeInfo as any)?.text ?? input;
       resolve({
-        result: input,
-        output: input,
+        result: data,
+        output: data,
         followPath: undefined,
       });
     });
