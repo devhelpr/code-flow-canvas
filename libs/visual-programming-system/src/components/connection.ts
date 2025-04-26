@@ -64,7 +64,7 @@ export class Connection<T extends BaseNodeInfo> {
     endY: 0,
   };
 
-  onCalculateControlPoints = onCubicCalculateControlPoints;
+  protected onCalculateControlPoints = onCubicCalculateControlPoints;
   pathElement: IElementNode<T> | undefined = undefined;
   pathTransparentElement: IElementNode<T> | undefined = undefined;
   svgParent: IElementNode<T> | undefined = undefined;

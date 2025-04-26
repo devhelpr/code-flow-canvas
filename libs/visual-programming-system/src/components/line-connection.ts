@@ -10,6 +10,7 @@ import {
   INodeComponent,
   IRectNodeComponent,
   IThumbNodeComponent,
+  ControlAndEndPointNodeType,
 } from '../interfaces/element';
 import { Theme } from '../interfaces/theme';
 import { setSelectNode } from '../reactivity';
@@ -21,6 +22,7 @@ import { ThumbConnectionController } from './thumb-connection-controller';
 import { onQuadraticCalculateControlPoints } from './utils/calculate-quadratic-control-points';
 import { pointOnRect } from './utils/intersect-line';
 import { intersectionCircleLine } from './utils/vector-math';
+import { onGetConnectionToThumbOffset } from './utils/calculate-cubic-control-points';
 
 export class LineConnection<T extends BaseNodeInfo> extends Connection<T> {
   startPointElement: IThumbNodeComponent<T> | undefined;
@@ -472,17 +474,42 @@ export const getLinePoints = <T extends BaseNodeInfo>(
       let height = 0;
       if (
         !nodeComponent?.endNode?.isThumb &&
-        nodeComponent.endNodeThumb?.thumbType === ThumbType.EndConnectorCenter
+        (nodeComponent.endNodeThumb?.thumbType ===
+          ThumbType.EndConnectorCenter ||
+          nodeComponent.endNodeThumb?.thumbType === ThumbType.EndConnectorLeft)
       ) {
         // Temp solution for connecting to left side of thumb when end node has a thumb of
         // type EndConnectorCenter
-        xleft =
-          nodeComponent.endNode.x - bbox.x + startOffsetX - spacingAABB - 16;
-        yleft =
-          nodeComponent.endNode.y -
-          bbox.y -
-          10 +
-          (nodeComponent.endNode.height ?? 0) / 2;
+
+        // const { offsetX: startOffsetX, offsetY: startOffsetY } =
+        //         onGetConnectionToThumbOffset(
+        //           ControlAndEndPointNodeType.start,
+        //           nodeComponent?.startNodeThumb?.thumbType ?? ThumbType.None
+        //         );
+
+        const end = nodeComponent.onCalculateControlPoints(
+          nodeComponent.endNode,
+          ControlAndEndPointNodeType.end,
+          nodeComponent.endNodeThumb?.thumbType ??
+            (nodeComponent.isAnnotationConnection
+              ? ThumbType.Center
+              : ThumbType.None),
+          nodeComponent.endNodeThumb,
+          nodeComponent.endNodeThumb?.thumbIndex,
+          nodeComponent.startNode,
+          nodeComponent.endNodeThumb?.thumbControlPointDistance,
+          nodeComponent.startNodeThumb
+        );
+
+        const { offsetX: endOffsetX, offsetY: endOffsetY } =
+          onGetConnectionToThumbOffset(
+            ControlAndEndPointNodeType.end,
+            nodeComponent?.endNodeThumb?.thumbType ?? ThumbType.None
+          );
+        xleft = end.x - bbox.x + endOffsetX + startOffsetX - spacingAABB; //nodeComponent.endNode.x - bbox.x + endOffsetX - spacingAABB; // - 16;
+        yleft = end.y - bbox.y - endOffsetY + startOffsetY - spacingAABB; //nodeComponent.endNode.y - bbox.y - endOffsetY;
+        // 10 +
+        // (nodeComponent.endNode.height ?? 0) / 2;
         width = 24;
         height = 24;
       } else {
