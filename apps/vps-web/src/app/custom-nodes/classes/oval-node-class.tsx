@@ -24,7 +24,7 @@ export class OvalNode extends BaseRectNode {
   static readonly disableManualResize: boolean = false;
 
   override compute = (
-    input: string,
+    input: unknown,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {

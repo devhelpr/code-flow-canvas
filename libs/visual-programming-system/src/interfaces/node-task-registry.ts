@@ -1,10 +1,18 @@
-import { IThumb, IRectNodeComponent, INodeComponent, FlowChangeType } from '.';
 import { IFlowCanvasBase } from '../canvas-app/flow-canvas';
 import { BaseNodeInfo } from '../types/base-node-info';
 import { InitialValues } from '../types/values';
 import { Composition } from './composition';
 import { Theme } from './theme';
 import { FlowNode } from './flow';
+import { IComputeResult } from '../utils/create-rect-node';
+import {
+  IConnectionNodeComponent,
+  IRectNodeComponent,
+  INodeComponent,
+  IThumb,
+} from './element';
+import { FlowChangeType } from './flow';
+import { IRunCounter } from './run-counter';
 
 export type NodeTaskFactory<T extends BaseNodeInfo> = (
   onUpdatedCanvas: (
@@ -72,3 +80,25 @@ export type NodeTypeRegistry<T extends BaseNodeInfo> = Record<
 export type RegisterComposition<T extends BaseNodeInfo> = (
   composition: Composition<T>
 ) => void;
+
+export interface NodeVisual<T extends BaseNodeInfo> {
+  updateVisual: (data: unknown, parentNode: HTMLElement, nodeInfo: T) => void;
+}
+export interface NodeDefinition {
+  nodeTypeName: string;
+  category?: string;
+  description: string;
+}
+
+export interface NodeCompute<T extends BaseNodeInfo> {
+  initializeCompute: () => void;
+  compute: (
+    input: unknown,
+    loopIndex?: number,
+    payload?: unknown,
+    portName?: string,
+    scopeId?: string,
+    runCounter?: IRunCounter,
+    connection?: IConnectionNodeComponent<T>
+  ) => Promise<IComputeResult>;
+}

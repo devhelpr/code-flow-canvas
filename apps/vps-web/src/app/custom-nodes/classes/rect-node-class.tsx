@@ -3,6 +3,9 @@ import {
   FlowNode,
   IComputeResult,
   IRectNodeComponent,
+  NodeCompute,
+  NodeDefinition,
+  NodeVisual,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { BaseRectNode } from './base-rect-node-class';
@@ -24,7 +27,7 @@ export class RectNode extends BaseRectNode {
     super(id, updated, node);
   }
   compute = (
-    input: string,
+    input: unknown,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {
@@ -78,3 +81,54 @@ w-min h-min
   }
   onResize: ((width: number, height: number) => void) | undefined = undefined;
 }
+
+export const createNodeClass = (
+  nodeDefinition: NodeDefinition,
+  nodeVisual: NodeVisual<NodeInfo>,
+  compute: NodeCompute<NodeInfo>
+) => {
+  return class extends RectNode {
+    static readonly nodeTypeName: string = nodeDefinition.nodeTypeName;
+    static readonly nodeTitle: string = nodeDefinition.nodeTypeName;
+    static readonly category: string = nodeDefinition.category ?? 'Default';
+    static readonly description: string = nodeDefinition.description;
+
+    initializeCompute = () => {
+      if (compute.initializeCompute) {
+        compute.initializeCompute();
+      }
+    };
+    compute = (
+      input: unknown,
+      _loopIndex?: number,
+      _payload?: any
+    ): Promise<IComputeResult> => {
+      return compute.compute(input, _loopIndex, _payload);
+    };
+    updateVisual = (data: unknown) => {
+      if (!this.rectElement || !this.node) {
+        return;
+      }
+      nodeVisual.updateVisual(
+        data,
+        this.rectElement,
+        this.node.nodeInfo as NodeInfo
+      );
+    };
+    childElementSelector = '.child-node-wrapper > *:first-child';
+
+    // TOOD: bg-white/text-black should be in the nodeVisual but if its not use defaults
+    render = (_node: FlowNode<NodeInfo>) => {
+      return (
+        <div
+          class="h-full w-full bg-white text-black"
+          getElement={(element: HTMLDivElement) => {
+            this.rectElement = element;
+          }}
+        >
+          {nodeDefinition.nodeTypeName}
+        </div>
+      );
+    };
+  };
+};

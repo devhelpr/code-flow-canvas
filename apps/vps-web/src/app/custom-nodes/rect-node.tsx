@@ -2,8 +2,10 @@ import {
   createJSXElement,
   FlowNode,
   FormField,
+  IConnectionNodeComponent,
   InitialValues,
   IRectNodeComponent,
+  IRunCounter,
   NodeTask,
   Rect,
   renderElement,
@@ -47,23 +49,44 @@ export const getRectNode =
     let rectNode: BaseRectNode;
     let nodeRenderElement: HTMLElement | null = null;
     const initializeCompute = () => {
+      if (rectNode.initializeCompute) {
+        rectNode.initializeCompute();
+      }
       return;
     };
-    const computeAsync = (input: string, loopIndex?: number, payload?: any) => {
-      return rectNode.compute(input, loopIndex, payload).then((result) => {
-        // if (rect && rect.resize) {
-        //   rect.resize(
-        //     undefined,
-        //     true,
-        //     rectNode.childElementSelector,
-        //     true,
-        //     undefined,
-        //     undefined,
-        //     true
-        //   );
-        // }
-        return result;
-      });
+    const computeAsync = (
+      input: unknown,
+      loopIndex?: number,
+      payload?: unknown,
+      portName?: string,
+      scopeId?: string,
+      runCounter?: IRunCounter,
+      connection?: IConnectionNodeComponent<NodeInfo>
+    ) => {
+      return rectNode
+        .compute(
+          input,
+          loopIndex,
+          payload,
+          portName,
+          scopeId,
+          runCounter,
+          connection
+        )
+        .then((result) => {
+          // if (rect && rect.resize) {
+          //   rect.resize(
+          //     undefined,
+          //     true,
+          //     rectNode.childElementSelector,
+          //     true,
+          //     undefined,
+          //     undefined,
+          //     true
+          //   );
+          // }
+          return result;
+        });
     };
     console.log('rect node width/height', flowNode?.width, flowNode?.height);
 

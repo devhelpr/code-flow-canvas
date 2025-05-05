@@ -72,7 +72,7 @@ export class PromptNode extends BaseRectNode {
     super(id, updated, node);
   }
   compute = (
-    _input: string,
+    _input: unknown,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {

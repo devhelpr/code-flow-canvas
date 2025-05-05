@@ -594,7 +594,7 @@ export class DrawGridNode extends BaseRectNode {
   };
 
   compute = (
-    input: string,
+    input: unknown,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {

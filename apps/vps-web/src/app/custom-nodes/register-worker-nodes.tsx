@@ -1,5 +1,6 @@
 import {
   FlowEngine,
+  NodeInfo,
   RegisterNodeFactoryFunction,
   RunCounter,
 } from '@devhelpr/web-flow-executor';
@@ -17,6 +18,56 @@ import {
 import { getCanvasNode, canvasNodeName } from './canvas-node-worker';
 import { promptNodeName, getPromptNode } from './prompt-worker';
 import { promptImageNodeName, getPromptImageNode } from './prompt-image-worker';
+import {
+  FormField,
+  InitialValues,
+  NodeCompute,
+  NodeDefinition,
+  NodeTask,
+  visualNodeFactory,
+} from '@devhelpr/visual-programming-system';
+import { pieChartDefinition } from '../custom-nodes-v2/pie-chart-definition';
+import { pieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
+
+function createWorker(
+  nodeDefinition: NodeDefinition,
+  compute: NodeCompute<NodeInfo>
+) {
+  return () => ({
+    factory:
+      () =>
+      (_updated: () => void): NodeTask<NodeInfo> => {
+        return visualNodeFactory(
+          webcamViewerNodeName,
+          nodeDefinition.nodeTypeName,
+          nodeDefinition.category ?? 'default',
+          nodeDefinition.description,
+          compute.compute,
+          compute.initializeCompute,
+          false,
+          200,
+          100,
+          [],
+          (_values?: InitialValues): FormField[] => {
+            return [];
+          },
+          (nodeInstance: any) => {
+            if (!nodeInstance.node.nodeInfo) {
+              nodeInstance.node.nodeInfo = {};
+            }
+            nodeInstance.node.nodeInfo.shouldNotSendOutputFromWorkerToMainThread =
+              false;
+          },
+          {
+            category: 'default',
+          },
+          undefined,
+          true
+        );
+      },
+    name: nodeDefinition.nodeTypeName,
+  });
+}
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -39,6 +90,7 @@ const nodes: NodeRegistration[] = [
     factory: getPromptImageNode,
     name: promptImageNodeName,
   }),
+  createWorker(pieChartDefinition, pieChartCompute),
 ];
 
 export const registerWorkerNodes = (

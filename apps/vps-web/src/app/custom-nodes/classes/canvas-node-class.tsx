@@ -27,7 +27,7 @@ export class CanvasNode extends BaseRectNode {
     super(id, updated, node);
   }
   compute = (
-    input: string,
+    input: unknown,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {

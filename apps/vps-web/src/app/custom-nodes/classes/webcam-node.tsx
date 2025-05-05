@@ -210,7 +210,7 @@ export class WebcamViewerNode extends BaseRectNode {
   };
 
   compute = (
-    _input: string,
+    _input: unknown,
     _loopIndex?: number,
     _payload?: any
   ): Promise<IComputeResult> => {

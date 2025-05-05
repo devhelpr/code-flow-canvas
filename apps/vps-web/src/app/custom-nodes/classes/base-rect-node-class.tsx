@@ -11,6 +11,8 @@ import {
   renderElement,
   FormField,
   InitialValues,
+  IRunCounter,
+  IConnectionNodeComponent,
 } from '@devhelpr/visual-programming-system';
 import { FlowEngine, NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
 import { CorePropertiesSetupEditor } from './core-properties-settings-editor';
@@ -144,10 +146,16 @@ export class BaseRectNode {
     return popupInstance;
   };
 
+  initializeCompute: (() => void) | undefined = undefined;
+
   compute = (
-    input: string,
+    input: unknown,
     _loopIndex?: number,
-    _payload?: any
+    _payload?: unknown,
+    _portName?: string,
+    _scopeId?: string,
+    _runCounter?: IRunCounter,
+    _connection?: IConnectionNodeComponent<NodeInfo>
   ): Promise<IComputeResult> => {
     return new Promise<IComputeResult>((resolve) => {
       resolve({

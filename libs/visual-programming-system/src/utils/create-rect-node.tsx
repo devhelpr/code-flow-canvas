@@ -39,7 +39,7 @@ export abstract class BaseNodeCompute<T> {
 
 export interface IComputeResult {
   result: any;
-  followPath: any;
+  followPath?: any;
   output: any;
   stop?: boolean;
   dummyEndpoint?: boolean;
