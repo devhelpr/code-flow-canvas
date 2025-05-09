@@ -10,7 +10,6 @@ import {
   FlowNode,
   Theme,
   NodeTaskFactory,
-  Flow,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';

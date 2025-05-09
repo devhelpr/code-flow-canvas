@@ -4,6 +4,6 @@ import { IFlowCore } from './flow-core';
 
 //export type _FlowCanvas<T> = ReturnType<typeof createFlowCanvas<T>>;
 
-export interface IFlowCanvasBase<T extends BaseNodeInfo, TFlowEngine = unknown>
+export interface IFlowCanvasBase<T extends BaseNodeInfo, _TFlowEngine = unknown>
   extends IBaseFlow<T>,
     IFlowCore {}
