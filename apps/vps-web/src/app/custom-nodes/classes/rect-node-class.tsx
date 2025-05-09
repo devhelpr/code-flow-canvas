@@ -92,6 +92,16 @@ export const createNodeClass = (
     static readonly nodeTitle: string = nodeDefinition.nodeTypeName;
     static readonly category: string = nodeDefinition.category ?? 'Default';
     static readonly description: string = nodeDefinition.description;
+    // node.nodeInfo.updatesVisualAfterCompute
+
+    initNode(node: IRectNodeComponent<NodeInfo>) {
+      super.initNode(node);
+      if (!node.nodeInfo) {
+        node.nodeInfo = {};
+      }
+
+      node.nodeInfo.updatesVisualAfterCompute = true;
+    }
 
     initializeCompute = () => {
       if (compute.initializeCompute) {

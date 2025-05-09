@@ -66,6 +66,10 @@ export class BaseRectNode {
     this.flowEngine = flowEngine;
   }
 
+  initNode(_node: IRectNodeComponent<NodeInfo>) {
+    //
+  }
+
   updateVisual: ((data: any) => void) | undefined = undefined;
 
   getSettingsPopup:

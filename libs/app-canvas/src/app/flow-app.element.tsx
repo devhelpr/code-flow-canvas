@@ -1537,6 +1537,15 @@ export class FlowAppElement extends AppElement<NodeInfo> {
       return { step, pathStep, stepSize };
     };
 
+    const getNextStep = (step: number) => {
+      if (step + 1 >= connectionExecuteHistory.length) {
+        return false;
+      }
+      const pathStep = connectionExecuteHistory[step + 1];
+
+      return { step, pathStep };
+    };
+
     const updateMessageBubble = (sliderValue: number) => {
       const result = getSliderNodeByPosition(sliderValue);
       if (result === false) {
@@ -1636,10 +1645,27 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             const nodeState = pathStep.nodeStates.get(
               pathStep.connection.endNode.id
             );
-            pathStep.connection.endNode.nodeInfo?.updateVisual(
-              pathStep.connectionValue,
-              nodeState
-            );
+            if (
+              pathStep.connection.endNode.nodeInfo.updatesVisualAfterCompute
+            ) {
+              const nextStep = getNextStep(step);
+              console.log('updatesVisualAfterCompute', nextStep, step);
+              if (nextStep) {
+                pathStep.connection.endNode.nodeInfo?.updateVisual(
+                  pathStep.connectionValue
+                );
+              } else {
+                pathStep.connection.endNode.nodeInfo?.updateVisual(
+                  pathStep.connectionValue,
+                  nodeState
+                );
+              }
+            } else {
+              pathStep.connection.endNode.nodeInfo?.updateVisual(
+                pathStep.connectionValue,
+                nodeState
+              );
+            }
           } else {
             if (pathStep.nextNodeStates) {
               this.canvasApp?.setNodeStates(pathStep.nextNodeStates);
@@ -2530,7 +2556,17 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           undefined,
           runCounter,
           false,
-          this.flowEngine?.computeAsync
+          this.flowEngine?.computeAsync,
+          (data, node) => {
+            if (
+              node &&
+              node.nodeInfo &&
+              node.nodeInfo.updateVisual &&
+              node.nodeInfo.updatesVisualAfterCompute
+            ) {
+              node.nodeInfo.updateVisual(data);
+            }
+          }
         );
       } else {
         run(
@@ -2543,7 +2579,18 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           undefined,
           undefined,
           runCounter,
-          false
+          false,
+          undefined,
+          (data, node) => {
+            if (
+              node &&
+              node.nodeInfo &&
+              node.nodeInfo.updateVisual &&
+              node.nodeInfo.updatesVisualAfterCompute
+            ) {
+              node.nodeInfo.updateVisual(data);
+            }
+          }
         );
       }
     }

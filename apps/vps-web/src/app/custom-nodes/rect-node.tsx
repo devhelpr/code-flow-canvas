@@ -164,6 +164,9 @@ export const getRectNode =
 
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
+
+        rectNode.initNode(node);
+
         rectNode.onResize = (width: number, height: number) => {
           node.restrictHeight = height;
           if (height < (node?.height ?? 0)) {

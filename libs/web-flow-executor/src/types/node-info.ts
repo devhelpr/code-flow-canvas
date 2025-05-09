@@ -36,6 +36,7 @@ export interface NodeInfo extends BaseNodeInfo {
   supportsDecorators?: boolean;
 
   updateVisual?: (data: any, dataContext?: any) => void;
+  updatesVisualAfterCompute?: boolean;
 
   initializeOnStartFlow?: boolean;
   isUINode?: boolean;

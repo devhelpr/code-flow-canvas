@@ -171,11 +171,11 @@ const triggerExecution = (
       ) => {
         let result: any = false;
         const formInfo = nextNode.nodeInfo as unknown as NodeInfo;
-        const storeNodeStates = () => {
+        const storeNodeStates = (storeInput: string | any[]) => {
           const nodeStates = canvasApp.getNodeStates();
           if (!canvasApp.isContextOnly) {
-            let inputToHistory: any = input;
-            const inputAsObject: any = input;
+            let inputToHistory: any = storeInput;
+            const inputAsObject: any = storeInput;
             if (
               inputAsObject &&
               typeof inputAsObject === 'object' &&
@@ -193,7 +193,9 @@ const triggerExecution = (
             connectionExecuteHistory.push(lastConnectionExecutionHistory);
           }
         };
-        storeNodeStates();
+        if (!nextNode.nodeInfo?.updatesVisualAfterCompute) {
+          storeNodeStates(result);
+        }
         if (runCounter) {
           if (
             nextNode.nodeInfo?.isUINode &&
@@ -266,6 +268,9 @@ const triggerExecution = (
                 // result = computeResult.result ?? computeResult.output ?? '';
 
                 sendOutputToNode?.(computeResult.output, nextNode);
+                if (nextNode.nodeInfo?.updatesVisualAfterCompute) {
+                  storeNodeStates(computeResult.output);
+                }
 
                 decrementHelper(
                   runCounter,
@@ -859,10 +864,10 @@ export const runNodeFromThumb = (
       connection: IConnectionNodeComponent<NodeInfo>,
       scopeId?: string
     ) => {
-      const storeNodeStates = () => {
+      const storeNodeStates = (storeInput: string | any[]) => {
         if (!canvasApp.isContextOnly) {
-          let inputToHistory: any = input;
-          const inputAsObject: any = input;
+          let inputToHistory: any = storeInput;
+          const inputAsObject: any = storeInput;
           if (
             inputAsObject &&
             typeof inputAsObject === 'object' &&
@@ -881,7 +886,9 @@ export const runNodeFromThumb = (
           connectionExecuteHistory.push(lastConnectionExecutionHistory);
         }
       };
-      storeNodeStates();
+      if (!nextNode.nodeInfo?.updatesVisualAfterCompute) {
+        storeNodeStates(input);
+      }
       firstStoreNodeState = false;
 
       if (runCounter) {
@@ -952,6 +959,10 @@ export const runNodeFromThumb = (
               let result: any = undefined;
               result = computeResult.result ?? computeResult.output ?? '';
               sendOutputToNode?.(result, nextNode);
+
+              if (nextNode.nodeInfo?.updatesVisualAfterCompute) {
+                storeNodeStates(result);
+              }
 
               decrementHelper(runCounter, computeResult.output ?? '', nextNode);
               result = computeResult.result;
