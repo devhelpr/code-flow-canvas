@@ -75,10 +75,10 @@ export type NodeTask<T extends BaseNodeInfo> = {
   setTitle?: (newTitle: string) => void;
 };
 
-export type NodeTypeRegistry<T extends BaseNodeInfo, TFlowEngine> = Record<
-  string,
-  NodeTaskFactory<T, TFlowEngine>
->;
+export type NodeTypeRegistry<
+  T extends BaseNodeInfo,
+  TFlowEngine = unknown
+> = Record<string, NodeTaskFactory<T, TFlowEngine>>;
 export type RegisterComposition<T extends BaseNodeInfo> = (
   composition: Composition<T>
 ) => void;
