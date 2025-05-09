@@ -18,10 +18,14 @@ import * as d3 from 'd3';
 interface PieDataItem {
   name: string;
   value: number;
-  [key: string]: any; // For additional properties
+  // Using unknown instead of any for better type safety
+  [key: string]: string | number | boolean | unknown;
 }
 
 type PieData = PieDataItem[] & { columns?: string[] };
+
+// Define a type for the input data structure
+type InputDataTuple = [string, number];
 
 export class PieChartVisual extends NodeVisual<NodeInfo> {
   constructor() {
@@ -32,13 +36,24 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
   updateVisual = (
     data: unknown,
     parentNode: HTMLElement,
+    // Using underscore prefix to indicate intentionally unused parameter
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _nodeInfo: NodeInfo
   ) => {
-    this.lastData = Array.isArray(data) ? data.map((d: any) => {
-      return {
-        name: d[0],
-        value: d[1],
-      };
+    this.lastData = Array.isArray(data) ? data.map((d: InputDataTuple | Record<string, unknown>) => {
+      // Handle both array-like and object-like structures
+      if (Array.isArray(d)) {
+        return {
+          name: String(d[0]),
+          value: Number(d[1]),
+        };
+      } else if (d && typeof d === 'object') {
+        // Handle object format with name/value keys
+        const name = d.name !== undefined ? String(d.name) : 'Unknown';
+        const value = d.value !== undefined ? Number(d.value) : 0;
+        return { name, value };
+      }
+      return { name: 'Unknown', value: 0 };
     }) : undefined;
     
     console.log('pieChartVisual', data);
