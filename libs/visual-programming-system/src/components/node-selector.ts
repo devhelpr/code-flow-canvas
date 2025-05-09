@@ -39,7 +39,7 @@ const transformPosTR = 'translate-x-[50%] -translate-y-[50%]';
 const transformPosBL = '-translate-x-[50%] translate-y-[50%]';
 const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
 
-export class NodeSelector<T extends BaseNodeInfo, TFlowEngine> {
+export class NodeSelector<T extends BaseNodeInfo, TFlowEngine = unknown> {
   private canvas: IElementNode<T> | undefined;
   private rootElement: HTMLElement;
 
