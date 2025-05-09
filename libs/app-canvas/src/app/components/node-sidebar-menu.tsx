@@ -32,12 +32,13 @@ import {
 } from '../follow-path/followNodeExecution';
 import {
   canvasNodeTaskRegistryLabels,
+  FlowEngine,
   getNodeFactoryNames,
   NodeInfo,
 } from '@devhelpr/web-flow-executor';
 
 export class NodeSidebarMenuComponent extends Component<
-  AppNavComponentsProps<NodeInfo>
+  AppNavComponentsProps<NodeInfo, FlowEngine>
 > {
   oldProps: AppNavComponentsProps<NodeInfo> | null = null;
 
@@ -54,11 +55,11 @@ export class NodeSidebarMenuComponent extends Component<
   followNodeExecution: HTMLButtonElement | null = null;
   apikeysButton: HTMLButtonElement | null = null;
   showDependencyConnections = false;
-  getNodeFactory: (name: string) => NodeTaskFactory<NodeInfo>;
+  getNodeFactory: (name: string) => NodeTaskFactory<NodeInfo, FlowEngine>;
 
   constructor(
     parent: BaseComponent | null,
-    props: AppNavComponentsProps<NodeInfo>
+    props: AppNavComponentsProps<NodeInfo, FlowEngine>
   ) {
     super(parent, props);
     this.getNodeFactory = props.getNodeFactory;
@@ -180,7 +181,12 @@ export class NodeSidebarMenuComponent extends Component<
       const factory = this.getNodeFactory(nodeTask);
       let categoryName = 'Default';
       if (factory) {
-        const node = factory(this.props.canvasUpdated);
+        const node = factory(
+          this.props.canvasUpdated,
+          undefined,
+          undefined,
+          this.props.flowEngine
+        );
 
         if (node.isContained) {
           return;
@@ -370,7 +376,12 @@ export class NodeSidebarMenuComponent extends Component<
 
       this.taskbarContainer.classList.add('-translate-x-[100%]');
       this.taskbarContainer.classList.add('dragging');
-      const nodeTask = factory(this.props.canvasUpdated, canvasApp.theme);
+      const nodeTask = factory(
+        this.props.canvasUpdated,
+        canvasApp.theme,
+        undefined,
+        this.props.flowEngine
+      );
       const nodeInfo = undefined;
       const node = nodeTask.createVisualNode(
         canvasApp,
@@ -724,7 +735,7 @@ export class NodeSidebarMenuComponent extends Component<
 }
 
 export const NodeSidebarMenuComponents = (
-  props: AppNavComponentsProps<NodeInfo>
+  props: AppNavComponentsProps<NodeInfo, FlowEngine>
 ) => {
   return new NodeSidebarMenuComponent(null, {
     initializeNodes: props.initializeNodes,
@@ -743,5 +754,6 @@ export const NodeSidebarMenuComponents = (
     showPopup: props.showPopup,
     executeCommand: props.executeCommand,
     getNodeFactory: props.getNodeFactory,
+    flowEngine: props.flowEngine,
   });
 };

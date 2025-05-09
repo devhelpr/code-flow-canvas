@@ -14,20 +14,26 @@ import {
   getThumbNodeByName,
 } from '../utils/thumbs';
 
-export const importToCanvas = <T extends BaseNodeInfo>(
+export const importToCanvas = <T extends BaseNodeInfo, TFlowEngine = unknown>(
   nodesList: FlowNode<T>[],
   canvasApp: IFlowCanvasBase<T>,
   canvasUpdated: () => void,
   containerNode?: IRectNodeComponent<T>,
   nestedLevel?: number,
-  getNodeTaskFactory?: (name: string) => NodeTaskFactory<T>,
-  onImported?: () => void
+  getNodeTaskFactory?: (name: string) => NodeTaskFactory<T, TFlowEngine>,
+  onImported?: () => void,
+  flowEngine?: TFlowEngine
 ) => {
   nodesList.forEach((node) => {
     if (getNodeTaskFactory && node.nodeType === NodeType.Shape) {
       const factory = getNodeTaskFactory(node?.nodeInfo?.type ?? '');
       if (factory) {
-        const nodeTask = factory(canvasUpdated, canvasApp.theme, node);
+        const nodeTask = factory(
+          canvasUpdated,
+          canvasApp.theme,
+          node,
+          flowEngine
+        );
         if (nodeTask) {
           if (nodeTask.isContainer) {
             const canvasVisualNode = nodeTask.createVisualNode(
@@ -61,7 +67,9 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                   ) {
                     const childNodeTask = factory(
                       canvasUpdated,
-                      canvasApp.theme
+                      canvasApp.theme,
+                      undefined,
+                      flowEngine
                     );
 
                     const child = childNodeTask.createVisualNode(
@@ -93,7 +101,9 @@ export const importToCanvas = <T extends BaseNodeInfo>(
                         nestedLevel ? nestedLevel + 2 : 2,
                         getNodeTaskFactory as unknown as (
                           name: string
-                        ) => NodeTaskFactory<BaseNodeInfo>
+                        ) => NodeTaskFactory<BaseNodeInfo, TFlowEngine>,
+                        undefined,
+                        flowEngine
                       );
                     }
                   }

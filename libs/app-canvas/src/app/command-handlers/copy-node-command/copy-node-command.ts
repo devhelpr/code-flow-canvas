@@ -8,8 +8,11 @@ import {
 import { CommandHandler } from '../command-handler/command-handler';
 import { ICommandContext } from '../command-context';
 
-export class CopyNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
-  constructor(commandContext: ICommandContext<T>) {
+export class CopyNodeCommand<
+  T extends BaseNodeInfo,
+  TFlowEngine
+> extends CommandHandler<T, TFlowEngine> {
+  constructor(commandContext: ICommandContext<T, TFlowEngine>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
     this.getCanvasApp = commandContext.getCanvasApp;
@@ -21,7 +24,7 @@ export class CopyNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
   rootElement: HTMLElement;
   getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
-  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T, TFlowEngine>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
   // parameter1 is the nodeType
   // parameter2 is the id of a selected node

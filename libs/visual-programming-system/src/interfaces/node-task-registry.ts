@@ -14,18 +14,20 @@ import {
 import { FlowChangeType } from './flow';
 import { IRunCounter } from './run-counter';
 
-export type NodeTaskFactory<T extends BaseNodeInfo> = (
+export type NodeTaskFactory<T extends BaseNodeInfo, TFlowEngine = unknown> = (
   onUpdatedCanvas: (
     shouldClearExecutionHistory?: boolean,
     isStoreOnly?: boolean,
     flowChangeType?: FlowChangeType
   ) => void,
   theme?: Theme,
-  node?: FlowNode<T>
+  node?: FlowNode<T>,
+  flowEngine?: TFlowEngine
 ) => NodeTask<T>;
-export type GetNodeTaskFactory<T extends BaseNodeInfo> = (
-  name: string
-) => NodeTaskFactory<T>;
+export type GetNodeTaskFactory<
+  T extends BaseNodeInfo,
+  TFlowEngine = unknown
+> = (name: string) => NodeTaskFactory<T, TFlowEngine>;
 
 export type NodeTask<T extends BaseNodeInfo> = {
   name: string;
@@ -73,16 +75,24 @@ export type NodeTask<T extends BaseNodeInfo> = {
   setTitle?: (newTitle: string) => void;
 };
 
-export type NodeTypeRegistry<T extends BaseNodeInfo> = Record<
+export type NodeTypeRegistry<T extends BaseNodeInfo, TFlowEngine> = Record<
   string,
-  NodeTaskFactory<T>
+  NodeTaskFactory<T, TFlowEngine>
 >;
 export type RegisterComposition<T extends BaseNodeInfo> = (
   composition: Composition<T>
 ) => void;
 
-export interface NodeVisual<T extends BaseNodeInfo> {
-  updateVisual: (data: unknown, parentNode: HTMLElement, nodeInfo: T) => void;
+export class NodeVisual<T extends BaseNodeInfo> {
+  constructor() {
+    // Constructor logic
+  }
+  updateVisual(_data: unknown, _parentNode: HTMLElement, _nodeInfo: T) {
+    //
+  }
+  destroy() {
+    // Cleanup logic
+  }
 }
 export interface NodeDefinition {
   nodeTypeName: string;

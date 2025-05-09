@@ -58,7 +58,7 @@ import {
 import { createInputDialog } from './utils/create-input-dialog';
 import { APPFlowOptions } from './interfaces/app-flow-options';
 
-export class AppElement<T extends BaseNodeInfo> {
+export class AppElement<T extends BaseNodeInfo, TFlowEngine = unknown> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -106,7 +106,7 @@ export class AppElement<T extends BaseNodeInfo> {
     _isReadOnly?: boolean,
     heightSpaceForHeaderFooterToolbars?: number,
     widthSpaceForSideToobars?: number,
-    getNodeTaskFactory?: GetNodeTaskFactory<T>,
+    getNodeTaskFactory?: GetNodeTaskFactory<T, TFlowEngine>,
     options?: APPFlowOptions
   ) {
     // NOTE : on http instead of https, crypto is not available...
@@ -144,7 +144,7 @@ export class AppElement<T extends BaseNodeInfo> {
       return;
     }
 
-    const canvasApp = createFlowCanvas<T>(
+    const canvasApp = createFlowCanvas<T, TFlowEngine>(
       this.rootElement,
       undefined,
       undefined,
@@ -1019,7 +1019,7 @@ export class AppElement<T extends BaseNodeInfo> {
       connection: IConnectionNodeComponent<T>;
     }[],
     registerComposition: RegisterComposition<T>,
-    getNodeTaskFactory: GetNodeTaskFactory<T>,
+    getNodeTaskFactory: GetNodeTaskFactory<T, TFlowEngine>,
     setupTasksInDropdown: (
       selectNodeTypeHTMLElement: HTMLSelectElement,
       isComposition?: boolean,
@@ -1227,7 +1227,7 @@ export class AppElement<T extends BaseNodeInfo> {
   };
   breadcrumbsList: Composition<T>[] = [];
   editComposition = (
-    getNodeTaskFactory: GetNodeTaskFactory<T>,
+    getNodeTaskFactory: GetNodeTaskFactory<T, TFlowEngine>,
     canvasUpdated: () => void,
     setupTasksInDropdown: (
       selectNodeTypeHTMLElement: HTMLSelectElement,
@@ -1308,7 +1308,7 @@ export class AppElement<T extends BaseNodeInfo> {
       this.compositionUnderEdit = composition;
       this.currentCanvasApp?.setIsCameraFollowingPaused(true);
 
-      const canvasApp = createFlowCanvas<T>(
+      const canvasApp = createFlowCanvas<T, TFlowEngine>(
         this.rootElement,
         undefined,
         undefined,
@@ -1348,7 +1348,7 @@ export class AppElement<T extends BaseNodeInfo> {
         0,
         getNodeTaskFactory as unknown as (
           name: string
-        ) => NodeTaskFactory<BaseNodeInfo>
+        ) => NodeTaskFactory<BaseNodeInfo, TFlowEngine>
       );
 
       let minX = -1;

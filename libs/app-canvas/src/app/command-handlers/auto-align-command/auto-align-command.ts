@@ -46,9 +46,10 @@ const nodeSpacing = 400;
 const nodeSpacingHeight = 100;
 
 export class AutoAlignCommand<
-  T extends BaseNodeInfo
-> extends CommandHandler<T> {
-  constructor(commandContext: ICommandContext<T>) {
+  T extends BaseNodeInfo,
+  TFlowEngine
+> extends CommandHandler<T, TFlowEngine> {
+  constructor(commandContext: ICommandContext<T, TFlowEngine>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
     this.getCanvasApp = commandContext.getCanvasApp;
@@ -61,7 +62,7 @@ export class AutoAlignCommand<
   rootElement: HTMLElement;
   getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
-  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T, TFlowEngine>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
 
   elementsList: INodeComponent<T>[] = [];

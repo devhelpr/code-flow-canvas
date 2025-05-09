@@ -7,6 +7,7 @@ import {
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
+import { FlowEngine } from '../interface/flow-engine';
 
 const fieldName = 'multiply';
 const labelName = 'Multiply';
@@ -45,7 +46,7 @@ const thumbs = [
   },
 ];
 
-export const getMultiplyNode: NodeTaskFactory<NodeInfo> = (
+export const getMultiplyNode: NodeTaskFactory<NodeInfo, FlowEngine> = (
   _updated: () => void
 ): NodeTask<any> => {
   const initializeCompute = () => {

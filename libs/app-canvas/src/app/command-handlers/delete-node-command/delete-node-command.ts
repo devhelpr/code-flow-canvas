@@ -14,9 +14,10 @@ import { CommandHandler } from '../command-handler/command-handler';
 import { ICommandContext } from '../command-context';
 
 export class DeleteNodeCommand<
-  T extends BaseNodeInfo
-> extends CommandHandler<T> {
-  constructor(commandContext: ICommandContext<T>) {
+  T extends BaseNodeInfo,
+  TFlowEngine
+> extends CommandHandler<T, TFlowEngine> {
+  constructor(commandContext: ICommandContext<T, TFlowEngine>) {
     super(commandContext);
     this.getCanvasApp = commandContext.getCanvasApp;
     this.canvasUpdated = commandContext.canvasUpdated;

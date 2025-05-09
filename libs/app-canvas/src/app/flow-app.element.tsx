@@ -173,7 +173,7 @@ export class CodeFlowWebAppCanvas {
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
     canvasApp: IFlowCanvasBase<BaseNodeInfo>,
-    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
   ) => void;
   registerExternalNodes?: (
     registerNodeFactory: RegisterNodeFactoryFunction,
@@ -206,7 +206,7 @@ export class CodeFlowWebAppCanvas {
   onSetCanvasApp?: (canvasApp: IFlowCanvasBase<NodeInfo>) => void;
 }
 
-export class FlowAppElement extends AppElement<NodeInfo> {
+export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
   public static observedAttributes = [];
 
   onclick = (_ev: MouseEvent) => {
@@ -252,7 +252,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
     canvasApp: IFlowCanvasBase<BaseNodeInfo>,
-    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
   ) => void;
 
   createThumbNode = (_thumb: IThumb): false => {
@@ -284,7 +284,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
     onStoreFlow?: (
       flow: Flow<NodeInfo>,
       canvasApp: IFlowCanvasBase<BaseNodeInfo>,
-      getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+      getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
     ) => void,
     registerExternalNodes?: (
       registerNodeFactory: RegisterNodeFactoryFunction,
@@ -798,6 +798,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
           this.navbarComponent = NavbarComponents({
             isReadOnly: isReadOnly,
             getNodeFactory: getNodeTaskFactory,
+            flowEngine: this.flowEngine,
             clearCanvas: this.clearCanvas,
             initializeNodes: initializeNodes,
             storageProvider: this.storageProvider,
@@ -831,7 +832,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               containerNode?: IRectNodeComponent<NodeInfo>,
               nestedLevel?: number,
               getNodeTaskFactory?: (name: string) => any,
-              compositions: Record<string, Composition<NodeInfo>> = {}
+              compositions: Record<string, Composition<NodeInfo>> = {},
+              _flowEngine?: FlowEngine
             ) => {
               this.isStoring = true;
               removeAllCompositions();
@@ -846,7 +848,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                 containerNode,
                 nestedLevel,
                 getNodeTaskFactory,
-                this.onImported
+                this.onImported,
+                this.flowEngine
               );
               this.isStoring = false;
               setupTasksInDropdown(
@@ -1019,6 +1022,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
             this.nodeSidebarMenu = NodeSidebarMenuComponents({
               clearCanvas: this.clearCanvas,
               getNodeFactory: getNodeTaskFactory,
+              flowEngine: this.flowEngine,
               initializeNodes: initializeNodes,
               storageProvider: this.storageProvider,
               selectNodeType: this.selectNodeType
@@ -1096,7 +1100,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
                   containerNode,
                   nestedLevel,
                   getNodeTaskFactory,
-                  this.onImported
+                  this.onImported,
+                  this.flowEngine
                 );
                 this.updateToolbarTaskList?.();
                 this.isStoring = false;
@@ -1105,7 +1110,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               },
             });
 
-            registerCommands<NodeInfo>({
+            registerCommands<NodeInfo, FlowEngine>({
               rootElement: this.rootElement,
               getCanvasApp: () => this.currentCanvasApp,
               canvasUpdated: canvasUpdated,
@@ -1114,6 +1119,7 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               commandRegistry: this.commandRegistry,
               setupTasksInDropdown,
               onBeforeExecuteCommand: this.onBeforeExecuteCommand,
+              flowEngine: this.flowEngine,
             });
             this.clearCanvas();
           }
@@ -1151,7 +1157,8 @@ export class FlowAppElement extends AppElement<NodeInfo> {
               undefined,
               0,
               getNodeTaskFactory,
-              this.onImported
+              this.onImported,
+              this.flowEngine
             );
             this.canvasApp.centerCamera();
             initializeNodes();

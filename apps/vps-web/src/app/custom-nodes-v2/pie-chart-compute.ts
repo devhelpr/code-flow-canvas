@@ -7,11 +7,11 @@ export const pieChartCompute: NodeCompute<NodeInfo> = {
   initializeCompute: () => {
     // Initialization logic if needed
   },
-  compute: async (_data: unknown) => {
-    const random = (Math.random() * 100).toFixed(2);
+  compute: async (data: unknown) => {
+    //const random = (Math.random() * 100).toFixed(2);
     return Promise.resolve({
-      output: random,
-      result: random,
+      output: data,
+      result: data,
     });
   },
 };

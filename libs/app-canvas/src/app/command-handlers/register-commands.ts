@@ -10,32 +10,32 @@ import { ICommandContext } from './command-context';
 import { AutoAlignCommand } from './auto-align-command/auto-align-command';
 import { ReplaceNodeCommand } from './replace-node-command/replace-node-command';
 
-export const registerCommands = <T extends BaseNodeInfo>(
-  commandContext: ICommandContext<T>
+export const registerCommands = <T extends BaseNodeInfo, TFlowEngine = unknown>(
+  commandContext: ICommandContext<T, TFlowEngine>
 ) => {
   commandContext.commandRegistry.set(
     'add-node',
-    new AddNodeCommand<T>(commandContext)
+    new AddNodeCommand<T, TFlowEngine>(commandContext)
   );
   commandContext.commandRegistry.set(
     'delete-node',
-    new DeleteNodeCommand<T>(commandContext)
+    new DeleteNodeCommand<T, TFlowEngine>(commandContext)
   );
   commandContext.commandRegistry.set(
     'copy-node',
-    new CopyNodeCommand<T>(commandContext)
+    new CopyNodeCommand<T, TFlowEngine>(commandContext)
   );
   commandContext.commandRegistry.set(
     PasteNodeCommand.commandName,
-    new PasteNodeCommand<T>(commandContext)
+    new PasteNodeCommand<T, TFlowEngine>(commandContext)
   );
   commandContext.commandRegistry.set(
     'auto-align',
-    new AutoAlignCommand<T>(commandContext)
+    new AutoAlignCommand<T, TFlowEngine>(commandContext)
   );
   commandContext.commandRegistry.set(
     'replace-node',
-    new ReplaceNodeCommand<T>(commandContext)
+    new ReplaceNodeCommand<T, TFlowEngine>(commandContext)
   );
 };
 

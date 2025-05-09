@@ -32,7 +32,11 @@ import {
   addClassesHTMLElement,
   removeClassesHTMLElement,
 } from '../utils/add-remove-classes';
-import { NodeInfo, getNodeTaskFactory } from '@devhelpr/web-flow-executor';
+import {
+  FlowEngine,
+  NodeInfo,
+  getNodeTaskFactory,
+} from '@devhelpr/web-flow-executor';
 import {
   getIsStopAnimations,
   setStopAnimations,
@@ -42,7 +46,7 @@ import { clearOCIF, importOCIF, isValidOCIF } from '../importers/ocif-importer';
 import { exportTldraw } from '../exporters/export-tldraw';
 
 export class NavbarComponent extends Component<
-  AppNavComponentsProps<NodeInfo>
+  AppNavComponentsProps<NodeInfo, FlowEngine>
 > {
   oldProps: AppNavComponentsProps<NodeInfo> | null = null;
 
@@ -60,7 +64,7 @@ export class NavbarComponent extends Component<
 
   constructor(
     parent: BaseComponent | null,
-    props: AppNavComponentsProps<NodeInfo>
+    props: AppNavComponentsProps<NodeInfo, FlowEngine>
   ) {
     super(parent, props);
 
@@ -375,7 +379,12 @@ export class NavbarComponent extends Component<
     const factory = getNodeTaskFactory(nodeType);
 
     if (factory) {
-      const nodeTask = factory(this.props.canvasUpdated, canvasApp.theme);
+      const nodeTask = factory(
+        this.props.canvasUpdated,
+        canvasApp.theme,
+        undefined,
+        this.props.flowEngine
+      );
 
       const selectedNodeInfo = getSelectedNode();
       if (selectedNodeInfo) {
@@ -810,7 +819,9 @@ export class NavbarComponent extends Component<
   }
 }
 
-export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
+export const NavbarComponents = (
+  props: AppNavComponentsProps<NodeInfo, FlowEngine>
+) => {
   return new NavbarComponent(null, {
     initializeNodes: props.initializeNodes,
     storageProvider: props.storageProvider,
@@ -830,5 +841,6 @@ export const NavbarComponents = (props: AppNavComponentsProps<NodeInfo>) => {
     isReadOnly: props.isReadOnly,
     hideFlowPresets: props.hideFlowPresets,
     getNodeFactory: props.getNodeFactory,
+    flowEngine: props.flowEngine,
   });
 };

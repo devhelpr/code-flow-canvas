@@ -227,11 +227,12 @@ import { getNumberValue } from '../nodes/value-number';
 import { FlowEngine } from '../interface/flow-engine';
 import { getGroup } from '../nodes/group';
 
-export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo> = {};
+export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo, FlowEngine> =
+  {};
 export const canvasNodeTaskRegistryLabels: Record<string, string> = {};
 export const registerNodeFactory = (
   name: string,
-  nodeFactory: NodeTaskFactory<NodeInfo>,
+  nodeFactory: NodeTaskFactory<NodeInfo, FlowEngine>,
   label?: string,
   _flowEngine?: FlowEngine
 ) => {
@@ -787,7 +788,7 @@ export const registerCompositionNodes = (
       composition.thumbs,
       key,
       composition.name,
-      getNodeTaskFactory,
+      getNodeTaskFactory as (name: string) => NodeTaskFactory<NodeInfo>,
       composition
     );
     registerNodeFactory(`composition-${key}`, node, composition.name);
@@ -801,7 +802,7 @@ export const registerComposition: RegisterComposition<NodeInfo> = (
     composition.thumbs,
     composition.id,
     composition.name,
-    getNodeTaskFactory,
+    getNodeTaskFactory as (name: string) => NodeTaskFactory<NodeInfo>,
     composition
   );
   registerNodeFactory(`composition-${composition.id}`, node);

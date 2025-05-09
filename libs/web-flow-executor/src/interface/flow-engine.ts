@@ -57,4 +57,5 @@ export interface FlowEngine {
     sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
   ) => void;
   computeAsync?: ComputeAsync;
+  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void;
 }

@@ -18,7 +18,7 @@ import { CanvasNode } from './classes/canvas-node-class';
 import { PromptNode } from './classes/prompt-node-class';
 import { PromptImageNode } from './classes/prompt-image-class';
 import { pieChartDefinition } from '../custom-nodes-v2/pie-chart-definition';
-import { pieChartVisual } from '../custom-nodes-v2/pie-chart-visual';
+import { PieChartVisual } from '../custom-nodes-v2/pie-chart-visual';
 import { pieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
 
 const nodes: NodeRegistration[] = [
@@ -33,7 +33,7 @@ const nodes: NodeRegistration[] = [
   CanvasNode,
   PromptNode,
   PromptImageNode,
-  createNodeClass(pieChartDefinition, pieChartVisual, pieChartCompute),
+  createNodeClass(pieChartDefinition, PieChartVisual, pieChartCompute),
 ];
 
 export const registerNodes = (

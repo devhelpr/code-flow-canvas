@@ -84,15 +84,17 @@ w-min h-min
 
 export const createNodeClass = (
   nodeDefinition: NodeDefinition,
-  nodeVisual: NodeVisual<NodeInfo>,
+  NodeVisualClass: typeof NodeVisual<NodeInfo>,
   compute: NodeCompute<NodeInfo>
 ) => {
+  const nodeVisual = new NodeVisualClass();
   return class extends RectNode {
     static readonly nodeTypeName: string = nodeDefinition.nodeTypeName;
     static readonly nodeTitle: string = nodeDefinition.nodeTypeName;
     static readonly category: string = nodeDefinition.category ?? 'Default';
     static readonly description: string = nodeDefinition.description;
     // node.nodeInfo.updatesVisualAfterCompute
+    nodeVisual?: NodeVisual<NodeInfo> = nodeVisual;
 
     initNode(node: IRectNodeComponent<NodeInfo>) {
       super.initNode(node);
@@ -101,6 +103,14 @@ export const createNodeClass = (
       }
 
       node.nodeInfo.updatesVisualAfterCompute = true;
+    }
+
+    destroy() {
+      super.destroy();
+      if (this.nodeVisual) {
+        this.nodeVisual.destroy();
+      }
+      this.nodeVisual = undefined;
     }
 
     initializeCompute = () => {
@@ -119,7 +129,7 @@ export const createNodeClass = (
       if (!this.rectElement || !this.node) {
         return;
       }
-      nodeVisual.updateVisual(
+      this.nodeVisual?.updateVisual?.(
         data,
         this.rectElement,
         this.node.nodeInfo as NodeInfo

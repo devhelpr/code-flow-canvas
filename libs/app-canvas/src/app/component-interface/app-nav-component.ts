@@ -12,7 +12,10 @@ import {
 import { StorageProvider } from '../storage/StorageProvider';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 
-export interface AppNavComponentsProps<T extends BaseNodeInfo> {
+export interface AppNavComponentsProps<
+  T extends BaseNodeInfo,
+  TFlowEngine = unknown
+> {
   rootAppElement: HTMLElement;
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
@@ -32,7 +35,8 @@ export interface AppNavComponentsProps<T extends BaseNodeInfo> {
     containerNode?: IRectNodeComponent<NodeInfo>,
     nestedLevel?: number,
     getNodeTaskFactory?: (name: string) => any,
-    compositions?: Record<string, Composition<T>>
+    compositions?: Record<string, Composition<T>>,
+    flowEngine?: TFlowEngine
   ) => void;
   showPopup: (node: IRectNodeComponent<NodeInfo>) => void;
   executeCommand: (
@@ -42,10 +46,14 @@ export interface AppNavComponentsProps<T extends BaseNodeInfo> {
   ) => void;
   isReadOnly?: boolean;
   hideFlowPresets?: boolean;
-  getNodeFactory: (name: string) => NodeTaskFactory<T>;
+  getNodeFactory: (name: string) => NodeTaskFactory<T, TFlowEngine>;
+  flowEngine?: TFlowEngine;
 }
 
-export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {
+export interface GenericAppNavComponentsProps<
+  T extends BaseNodeInfo,
+  TFlowEngine = unknown
+> {
   rootAppElement: HTMLElement;
   rootElement: HTMLElement;
   selectNodeType: HTMLSelectElement;
@@ -63,7 +71,8 @@ export interface GenericAppNavComponentsProps<T extends BaseNodeInfo> {
     containerNode?: IRectNodeComponent<T>,
     nestedLevel?: number,
     getNodeTaskFactory?: (name: string) => any,
-    compositions?: Record<string, Composition<T>>
+    compositions?: Record<string, Composition<T>>,
+    flowEngine?: TFlowEngine
   ) => void;
   executeCommand: (
     commandName: string,

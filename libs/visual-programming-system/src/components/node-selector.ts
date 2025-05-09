@@ -39,7 +39,7 @@ const transformPosTR = 'translate-x-[50%] -translate-y-[50%]';
 const transformPosBL = '-translate-x-[50%] translate-y-[50%]';
 const transformPosBR = 'translate-x-[50%] translate-y-[50%]';
 
-export class NodeSelector<T extends BaseNodeInfo> {
+export class NodeSelector<T extends BaseNodeInfo, TFlowEngine> {
   private canvas: IElementNode<T> | undefined;
   private rootElement: HTMLElement;
 
@@ -84,7 +84,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
   ) => void;
 
   onEditCompositionName: () => Promise<string | false>;
-  getNodeTaskFactory: GetNodeTaskFactory<T> | undefined;
+  getNodeTaskFactory: GetNodeTaskFactory<T, TFlowEngine> | undefined;
   canvasApp: IFlowCanvasBase<T>;
   constructor(
     canvasApp: IFlowCanvasBase<T>,
@@ -96,7 +96,7 @@ export class NodeSelector<T extends BaseNodeInfo> {
     compositions: Compositions<T>,
     onEditCompositionName: () => Promise<string | false>,
     isInContainer = false,
-    getNodeTaskFactory?: GetNodeTaskFactory<T>,
+    getNodeTaskFactory?: GetNodeTaskFactory<T, TFlowEngine>,
     getCanvasUpdated?:
       | (() =>
           | ((

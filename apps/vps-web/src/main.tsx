@@ -286,6 +286,16 @@ if (url.pathname === '/run-flow') {
             });
           });
         },
+        sendOutputToNode: (data, node) => {
+          if (
+            node &&
+            node.nodeInfo &&
+            node.nodeInfo.updateVisual &&
+            node.nodeInfo.updatesVisualAfterCompute
+          ) {
+            node.nodeInfo.updateVisual(data);
+          }
+        },
       },
       (canvasApp) => {
         canvasAppInstance = canvasApp;
@@ -305,7 +315,20 @@ if (url.pathname === '/run-flow') {
       undefined,
       undefined,
       API_URL_ROOT,
-      undefined
+      undefined,
+      undefined,
+      {
+        sendOutputToNode: (data, node) => {
+          if (
+            node &&
+            node.nodeInfo &&
+            node.nodeInfo.updateVisual &&
+            node.nodeInfo.updatesVisualAfterCompute
+          ) {
+            node.nodeInfo.updateVisual(data);
+          }
+        },
+      }
     ); //, 100, 32);
   });
 }

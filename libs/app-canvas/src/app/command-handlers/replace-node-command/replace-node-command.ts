@@ -14,9 +14,10 @@ import { ICommandContext } from '../command-context';
 import { areThumbconstraintsCompatible } from '../../utils/thumb-constraints';
 
 export class ReplaceNodeCommand<
-  T extends BaseNodeInfo
-> extends CommandHandler<T> {
-  constructor(commandContext: ICommandContext<T>) {
+  T extends BaseNodeInfo,
+  TFlowEngine
+> extends CommandHandler<T, TFlowEngine> {
+  constructor(commandContext: ICommandContext<T, TFlowEngine>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
     this.getCanvasApp = commandContext.getCanvasApp;
@@ -28,7 +29,7 @@ export class ReplaceNodeCommand<
   rootElement: HTMLElement;
   getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
-  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T, TFlowEngine>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
   removeElement: (element: IElementNode<T>) => void;
   execute(parameter1?: any, parameter2?: any): void {
@@ -71,7 +72,12 @@ export class ReplaceNodeCommand<
     const factory = this.getNodeTaskFactory(parameter1);
 
     if (factory) {
-      const nodeTask = factory(this.canvasUpdated, canvasApp.theme);
+      const nodeTask = factory(
+        this.canvasUpdated,
+        canvasApp.theme,
+        undefined,
+        this.commandContext.flowEngine
+      );
 
       const node = nodeTask.createVisualNode(
         canvasApp,

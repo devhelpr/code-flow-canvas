@@ -70,6 +70,10 @@ export class BaseRectNode {
     //
   }
 
+  destroy() {
+    //
+  }
+
   updateVisual: ((data: any) => void) | undefined = undefined;
 
   getSettingsPopup:

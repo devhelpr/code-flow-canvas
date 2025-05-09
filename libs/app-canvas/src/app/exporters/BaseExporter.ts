@@ -11,12 +11,12 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { Exporter } from './Exporter';
 import { ExportFile } from './export-interface/core-export';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { FlowEngine, NodeInfo } from '@devhelpr/web-flow-executor';
 
 export abstract class BaseExporter<T extends ExportFile, X> {
   constructor(
     readonly exportInfo: Exporter,
-    readonly getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+    readonly getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
   ) {
     //
   }

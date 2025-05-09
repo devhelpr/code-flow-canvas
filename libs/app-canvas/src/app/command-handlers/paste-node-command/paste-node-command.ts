@@ -9,9 +9,10 @@ import { CopyNodeCommand } from '../copy-node-command/copy-node-command';
 import { ICommandContext } from '../command-context';
 
 export class PasteNodeCommand<
-  T extends BaseNodeInfo
-> extends CommandHandler<T> {
-  constructor(commandContext: ICommandContext<T>) {
+  T extends BaseNodeInfo,
+  TFlowEngine
+> extends CommandHandler<T, TFlowEngine> {
+  constructor(commandContext: ICommandContext<T, TFlowEngine>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
     this.getCanvasApp = commandContext.getCanvasApp;
@@ -22,12 +23,12 @@ export class PasteNodeCommand<
     this.commandContext = commandContext;
   }
   static commandName = 'paste-node';
-  commandContext: ICommandContext<T>;
+  commandContext: ICommandContext<T, TFlowEngine>;
   commandRegistry: Map<string, ICommandHandler>;
   rootElement: HTMLElement;
   getCanvasApp: () => IFlowCanvasBase<T> | undefined;
   canvasUpdated: () => void;
-  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T, TFlowEngine>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
   // parameter1 is the nodeType
   // parameter2 is the id of a selected node
@@ -52,7 +53,7 @@ export class PasteNodeCommand<
     console.log('PasteNodeCommand.execute');
     const copyCommand = this.commandRegistry.get(
       'copy-node'
-    ) as CopyNodeCommand<T>;
+    ) as CopyNodeCommand<T, TFlowEngine>;
     if (copyCommand) {
       const copyNode = copyCommand.node;
       const nodeType = copyNode?.nodeInfo?.type;
@@ -60,7 +61,12 @@ export class PasteNodeCommand<
         const factory = this.getNodeTaskFactory(nodeType);
 
         if (factory) {
-          const nodeTask = factory(this.canvasUpdated);
+          const nodeTask = factory(
+            this.canvasUpdated,
+            undefined,
+            undefined,
+            this.commandContext.flowEngine
+          );
           let x = copyNode.x;
           let y = copyNode.y;
           if (this.lastPastedNodeId === copyNode.id) {

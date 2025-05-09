@@ -20,8 +20,11 @@ import { navbarButtonWithoutMargin } from '../../consts/classes';
 import { ICommandContext } from '../command-context';
 import { isNodeTaskComposition } from '../../node-task-registry/composition-utils';
 
-export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
-  constructor(commandContext: ICommandContext<T>) {
+export class AddNodeCommand<
+  T extends BaseNodeInfo,
+  TFlowEngine
+> extends CommandHandler<T, TFlowEngine> {
+  constructor(commandContext: ICommandContext<T, TFlowEngine>) {
     super(commandContext);
     this.getNodeTaskFactory = commandContext.getNodeTaskFactory;
     this.getCanvasApp = commandContext.getCanvasApp;
@@ -36,7 +39,7 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     isStoreOnly?: boolean,
     flowChangeType?: FlowChangeType
   ) => void;
-  getNodeTaskFactory: (name: string) => NodeTaskFactory<T>;
+  getNodeTaskFactory: (name: string) => NodeTaskFactory<T, TFlowEngine>;
   setupTasksInDropdown: (selectNodeTypeHTMLElement: HTMLSelectElement) => void;
 
   addNodeType = (
@@ -74,7 +77,12 @@ export class AddNodeCommand<T extends BaseNodeInfo> extends CommandHandler<T> {
     const factory = this.getNodeTaskFactory(nodeType);
 
     if (factory) {
-      const nodeTask = factory(this.canvasUpdated, canvasApp.theme);
+      const nodeTask = factory(
+        this.canvasUpdated,
+        canvasApp.theme,
+        undefined,
+        this.commandContext.flowEngine
+      );
       const nodeInfo = isNodeTaskComposition(nodeType)
         ? { isComposition: true }
         : undefined;

@@ -50,7 +50,7 @@ import { GetNodeTaskFactory } from '../interfaces/node-task-registry';
 import { LayoutProperties } from '../interfaces/layout-properties';
 import { FlowCanvasOptions } from '../interfaces/flow-canvas';
 
-export const createFlowCanvas = <T extends BaseNodeInfo>(
+export const createFlowCanvas = <T extends BaseNodeInfo, TFlowEngine = unknown>(
   rootElement: HTMLElement,
   disableInteraction?: boolean,
   disableZoom?: boolean,
@@ -72,7 +72,7 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
     isCancelling: boolean
   ) => void,
   rootFlowCanvas?: IFlowCanvasBase<T>,
-  getNodeTaskFactory?: GetNodeTaskFactory<T>,
+  getNodeTaskFactory?: GetNodeTaskFactory<T, TFlowEngine>,
   options?: FlowCanvasOptions
 ): IFlowCanvasBase<T> => {
   return new FlowCanvas(
@@ -95,9 +95,9 @@ export const createFlowCanvas = <T extends BaseNodeInfo>(
   );
 };
 
-export class FlowCanvas<T extends BaseNodeInfo>
+export class FlowCanvas<T extends BaseNodeInfo, TFlowEngine = unknown>
   extends FlowCore
-  implements IFlowCanvasBase<T>
+  implements IFlowCanvasBase<T, TFlowEngine>
 {
   public theme: Theme;
   private cssClasses = getCanvasAppCssClasses();
@@ -106,7 +106,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
   public rootElement: HTMLElement;
   public nodeTransformer: NodeTransformer<BaseNodeInfo>;
   public compositons: Compositions<T>;
-  public nodeSelector: NodeSelector<T>;
+  public nodeSelector: NodeSelector<T, TFlowEngine>;
   public isContextOnly = false;
   public isComposition = false;
 
@@ -212,7 +212,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
       isCancelling: boolean
     ) => void,
     rootFlowCanvas?: IFlowCanvasBase<T>,
-    getNodeTaskFactory?: GetNodeTaskFactory<T>,
+    getNodeTaskFactory?: GetNodeTaskFactory<T, TFlowEngine>,
     options?: FlowCanvasOptions
   ) {
     super();
@@ -251,7 +251,7 @@ export class FlowCanvas<T extends BaseNodeInfo>
     this.compositons =
       this.rootFlowCanvas?.compositons ?? new Compositions<T>();
 
-    this.nodeSelector = new NodeSelector<T>(
+    this.nodeSelector = new NodeSelector<T, TFlowEngine>(
       this,
       this.canvas,
       rootElement,

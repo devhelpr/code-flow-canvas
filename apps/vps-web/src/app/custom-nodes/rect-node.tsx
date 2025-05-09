@@ -169,6 +169,14 @@ export const getRectNode =
 
         rectNode.onResize = (width: number, height: number) => {
           node.restrictHeight = height;
+
+          // if (
+          //   node.nodeInfo?.updatesVisualAfterCompute &&
+          //   node.nodeInfo.updateVisual
+          // ) {
+          //   console.log('onresize updatesVisualAfterCompute', width, height);
+          //   node.nodeInfo.updateVisual(undefined);
+          // }
           if (height < (node?.height ?? 0)) {
             return;
           }
@@ -195,6 +203,13 @@ export const getRectNode =
             width,
             newHeight
           );
+
+          // if (
+          //   node.nodeInfo?.updatesVisualAfterCompute &&
+          //   node.nodeInfo.updateVisual
+          // ) {
+          //   node.nodeInfo.updateVisual(undefined);
+          // }
         };
         rectNode.createRunCounterContext = createRunCounterContext;
         if (rectNode.getSettingsPopup && !NodeClass.getFormFields) {
@@ -291,6 +306,9 @@ export const getRectNode =
           // });
           if (node?.nodeInfo) {
             node.nodeInfo.delete = () => {
+              if (rectNode?.destroy) {
+                rectNode.destroy();
+              }
               // if (nodeRenderElement) {
               //   resizeObserver.unobserve(nodeRenderElement);
               // }

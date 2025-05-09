@@ -17,7 +17,7 @@ import {
 } from './tldraw/tldraw-emtpy-file';
 import { TlDrawFile } from './tldraw/tldraw-schema';
 import { BaseExporter } from './BaseExporter';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { FlowEngine, NodeInfo } from '@devhelpr/web-flow-executor';
 
 interface TLDrawInfo {
   index: number;
@@ -26,7 +26,7 @@ interface TLDrawInfo {
 export class TLDrawExporter extends BaseExporter<TlDrawFile, TLDrawInfo> {
   constructor(
     exportInfo: Exporter,
-    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
   ) {
     super(exportInfo, getNodeTaskFactory);
   }
@@ -201,7 +201,7 @@ export class TLDrawExporter extends BaseExporter<TlDrawFile, TLDrawInfo> {
 
 export const exportTldraw = (
   exportInfo: Exporter,
-  getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+  getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
 ) => {
   const tldrawExporter = new TLDrawExporter(exportInfo, getNodeTaskFactory);
   return tldrawExporter.convertToExportFile();

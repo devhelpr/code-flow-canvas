@@ -12,7 +12,7 @@ import { Exporter } from './Exporter';
 import { BaseExporter } from './BaseExporter';
 import { OCIFFile, OCIFNode } from './ocif/ocif-schema';
 import { ocifEmptyFile } from './ocif/ocif-empty-file';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import { FlowEngine, NodeInfo } from '@devhelpr/web-flow-executor';
 import { getCurrentOCIF } from '../importers/ocif-importer';
 import {
   ocifArrow,
@@ -31,7 +31,7 @@ export const connectionNodeInfoPropertyName =
 export class OCIFExporter extends BaseExporter<OCIFFile, OCIFInfo> {
   constructor(
     exportInfo: Exporter,
-    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo>
+    getNodeTaskFactory: GetNodeTaskFactory<NodeInfo, FlowEngine>
   ) {
     super(exportInfo, getNodeTaskFactory);
   }

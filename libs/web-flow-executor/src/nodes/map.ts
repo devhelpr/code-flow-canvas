@@ -7,6 +7,10 @@ import {
   NodeTask,
   ThumbConnectionType,
   ThumbType,
+  FlowNode,
+  Theme,
+  NodeTaskFactory,
+  Flow,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
@@ -15,6 +19,7 @@ import { RunCounter } from '../follow-path/run-counter';
 import { getIteratorNodeFamilyCssClasses } from '../consts/iterator-node-family-css-classes';
 import { isInputOfRangeValueType } from '../utils/is-range';
 import { setIteratorLabel } from './iterator-utils/set-iterator-label';
+import { FlowEngine } from '../interface/flow-engine';
 
 /*
 
@@ -67,7 +72,12 @@ const title = 'map';
 
 const cssClasses = getIteratorNodeFamilyCssClasses();
 
-export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
+export const getMap: NodeTaskFactory<NodeInfo, FlowEngine> = (
+  _updated: () => void,
+  _theme?: Theme,
+  _node?: FlowNode<NodeInfo>,
+  flowEngine?: FlowEngine
+): NodeTask<NodeInfo> => {
   let node: IRectNodeComponent<NodeInfo>;
   let foreachComponent: INodeComponent<NodeInfo> | undefined = undefined;
   let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
@@ -199,7 +209,10 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
             node,
             mapLoop,
             scopeId,
-            runCounter
+            runCounter,
+            undefined,
+            undefined,
+            flowEngine?.sendOutputToNode
           );
         } else {
           if (forEachDomElement) {
@@ -223,7 +236,10 @@ export const getMap = (_updated: () => void): NodeTask<NodeInfo> => {
             node,
             loopIndex,
             scopeId,
-            runCounter
+            runCounter,
+            undefined,
+            undefined,
+            flowEngine?.sendOutputToNode
           );
         }
       };
