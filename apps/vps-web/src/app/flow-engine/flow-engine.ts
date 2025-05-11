@@ -30,7 +30,7 @@ import {
 import { CreateRunCounterContext } from '../custom-nodes/classes/base-rect-node-class';
 
 export class RuntimeFlowEngine {
-  public canvasApp: IFlowCanvasBase<NodeInfo>;
+  public canvasApp: IFlowCanvasBase<NodeInfo, FlowEngine>;
   constructor() {
     this.canvasApp = createRuntimeFlowContext<NodeInfo>();
   }
@@ -43,7 +43,8 @@ export class RuntimeFlowEngine {
       registerNodeFactory: RegisterNodeFactoryFunction,
       createRunCounterContext: CreateRunCounterContext,
       flowEngine?: FlowEngine
-    ) => void
+    ) => void,
+    flowEngine?: FlowEngine
   ) {
     if (!this.canvasApp) {
       throw new Error('CanvasAppInstance not initialized');
@@ -73,7 +74,9 @@ export class RuntimeFlowEngine {
       },
       undefined,
       0,
-      getNodeTaskFactory
+      getNodeTaskFactory,
+      undefined,
+      flowEngine
     );
 
     this.canvasApp.setAnimationFunctions({

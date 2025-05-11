@@ -95,7 +95,25 @@ self.addEventListener('message', (event: MessageEvent<AIWorkerMessage>) => {
           } as IComputeResult,
         });
       };
-      flowEngine.initialize(data.flow.flows['flow'].nodes, registerWorkerNodes);
+      flowEngine.initialize(
+        data.flow.flows['flow'].nodes,
+        registerWorkerNodes,
+        {
+          sendOutputToNode: (data, node) => {
+            //console.log('sendOutputToNode', data, node);
+            if (node.nodeInfo?.shouldNotSendOutputFromWorkerToMainThread) {
+              return;
+            }
+            self.postMessage({
+              message: 'node-update',
+              result: {
+                result: node.id,
+                output: data,
+              } as IComputeResult,
+            });
+          },
+        }
+      );
       flowEngine.canvasApp.elements.forEach((node) => {
         if (node && node.nodeInfo) {
           node.nodeInfo.offscreenCanvas = undefined;
