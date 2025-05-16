@@ -147,6 +147,7 @@ export interface IThumbNodeComponent<T extends BaseNodeInfo>
   thumbFormFieldName?: string;
 
   prefixIcon?: string;
+  prefixIconColor?: string;
   prefixLabel?: string;
   hint?: string;
 }
@@ -204,6 +205,7 @@ export type IThumb = {
   formId?: string;
   formFieldName?: string;
   prefixIcon?: string;
+  prefixIconColor?: string;
   prefixLabel?: string;
   prefixLabelCssClass?: string;
   nodeId?: string;

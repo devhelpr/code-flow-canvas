@@ -10,6 +10,8 @@ import {
   FlowNode,
   Theme,
   NodeTaskFactory,
+  renderElement,
+  createJSXElement,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNodeFromThumb } from '../flow-engine/flow-engine';
@@ -55,6 +57,7 @@ const thumbs = [
     label: ' ',
     name: 'output2',
     prefixIcon: 'icon icon-refresh',
+    prefixIconColor: 'text-black',
   },
   {
     thumbType: ThumbType.EndConnectorCenter,
@@ -319,7 +322,16 @@ export const getMap: NodeTaskFactory<NodeInfo, FlowEngine> = (
       if (!rect.nodeComponent) {
         throw new Error('rect.nodeComponent is undefined');
       }
-
+      if (rect.nodeComponent?.domElement) {
+        renderElement(
+          <div
+            class={
+              'absolute w-[30px] h-[28px] right-0 bottom-[16px] bg-slate-300 rounded flex items-center justify-center'
+            }
+          ></div>,
+          rect.nodeComponent?.domElement as HTMLElement
+        );
+      }
       node = rect.nodeComponent;
       if (node.nodeInfo) {
         node.nodeInfo.formElements = [];

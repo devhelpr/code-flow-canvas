@@ -123,6 +123,7 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
     this.rootElement = rootElement;
     this.canvasApp = canvasApp;
     this.nodeComponent.prefixIcon = thumb.prefixIcon;
+    this.nodeComponent.prefixIconColor = thumb.prefixIconColor;
     this.nodeComponent.prefixLabel = thumb.prefixLabel;
     this.nodeComponent.thumbName = thumbName;
     this.nodeComponent.x = 0;
@@ -186,10 +187,15 @@ export class ThumbNodeConnector<T extends BaseNodeInfo> extends ThumbNode<T> {
       );
     }
     if (thumb.prefixIcon) {
+      console.log('thumb prefixIcon', thumb.prefixIcon, thumb.prefixIconColor);
       createElement(
         'div',
         {
-          class: `${this.cssClasses.prefixIconClasses} ${thumb.prefixIcon}`,
+          class: `${this.cssClasses.prefixIconClasses} ${thumb.prefixIcon} ${
+            thumb.prefixIconColor
+              ? thumb.prefixIconColor
+              : this.cssClasses.prefixIconDefaultColorClass
+          }`,
         },
         this.circleElement.domElement
       );

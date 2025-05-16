@@ -100,6 +100,7 @@ export class NavbarComponent extends Component<
           <option value="kmeans.json">K-Means clustering</option>
           <option value="kmeans-csv-file.json">K-Means clustering of a CSV file</option>
           <option value="openai-chat.json">Open AI Chat Completion API</option>
+          <option value="scatterplot-linearRegression.json">Scatterplot with linear regression</option>
         </select>`
         }
         <children></children>
