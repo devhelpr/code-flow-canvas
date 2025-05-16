@@ -45,6 +45,7 @@ const thumbs = [
     label: '[]',
     thumbConstraint: 'array',
     name: 'output1',
+    maxConnections: -1,
   },
   {
     thumbType: ThumbType.StartConnectorRight,

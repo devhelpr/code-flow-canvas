@@ -2,7 +2,9 @@ import {
   createJSXElement,
   FlowNode,
   IComputeResult,
+  IConnectionNodeComponent,
   IRectNodeComponent,
+  IRunCounter,
   NodeCompute,
   NodeDefinition,
   NodeVisual,
@@ -121,9 +123,21 @@ export const createNodeClass = (
     compute = (
       input: unknown,
       _loopIndex?: number,
-      _payload?: any
+      _payload?: any,
+      _portName?: string,
+      _scopeId?: string,
+      _runCounter?: IRunCounter,
+      _connection?: IConnectionNodeComponent<NodeInfo>
     ): Promise<IComputeResult> => {
-      return compute.compute(input, _loopIndex, _payload);
+      return compute.compute(
+        input,
+        _loopIndex,
+        _payload,
+        _portName,
+        _scopeId,
+        _runCounter,
+        _connection
+      );
     };
     updateVisual = (data: unknown) => {
       if (!this.rectElement || !this.node) {

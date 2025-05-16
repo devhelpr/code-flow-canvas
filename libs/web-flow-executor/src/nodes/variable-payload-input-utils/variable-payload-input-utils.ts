@@ -49,9 +49,11 @@ export const getVariablePayloadInputUtils = (
     index: executionRunCounter ?? 0,
     runIteration: executionRunCounter ?? 0,
     random: Math.round(Math.random() * 100),
+    originalInput: input,
     ...payload,
     ...inputAsObject,
   };
+
   canvasAppInstance?.getVariableNames(scopeId).forEach((variableName) => {
     Object.defineProperties(payloadForExpression, {
       [variableName]: {

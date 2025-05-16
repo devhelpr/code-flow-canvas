@@ -40,22 +40,24 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _nodeInfo: NodeInfo
   ) => {
-    this.lastData = Array.isArray(data) ? data.map((d: InputDataTuple | Record<string, unknown>) => {
-      // Handle both array-like and object-like structures
-      if (Array.isArray(d)) {
-        return {
-          name: String(d[0]),
-          value: Number(d[1]),
-        };
-      } else if (d && typeof d === 'object') {
-        // Handle object format with name/value keys
-        const name = d.name !== undefined ? String(d.name) : 'Unknown';
-        const value = d.value !== undefined ? Number(d.value) : 0;
-        return { name, value };
-      }
-      return { name: 'Unknown', value: 0 };
-    }) : undefined;
-    
+    this.lastData = Array.isArray(data)
+      ? data.map((d: InputDataTuple | Record<string, unknown>) => {
+          // Handle both array-like and object-like structures
+          if (Array.isArray(d)) {
+            return {
+              name: String(d[0]),
+              value: Number(d[1]),
+            };
+          } else if (d && typeof d === 'object') {
+            // Handle object format with name/value keys
+            const name = d.name !== undefined ? String(d.name) : 'Unknown';
+            const value = d.value !== undefined ? Number(d.value) : 0;
+            return { name, value };
+          }
+          return { name: 'Unknown', value: 0 };
+        })
+      : undefined;
+
     console.log('pieChartVisual', data);
     // Clear the parent node before rendering... should this be handled by the framework?
 
@@ -77,16 +79,19 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
             { name: 'I', value: 900 },
             { name: 'J', value: 1000 },
           ];
-      
+
       pieData.columns = ['name', 'value'];
-      
+
       // Create the color scale.
       const color = d3
         .scaleOrdinal<string>()
-        .domain(pieData.map(d => d.name))
+        .domain(pieData.map((d) => d.name))
         .range(
           d3
-            .quantize((t) => d3.interpolateSpectral(t * 0.8 + 0.1), pieData.length)
+            .quantize(
+              (t) => d3.interpolateSpectral(t * 0.8 + 0.1),
+              pieData.length
+            )
             .reverse()
         );
 
@@ -94,7 +99,7 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
       const pie = d3
         .pie<PieDataItem>()
         .sort(null)
-        .value(d => d.value);
+        .value((d) => d.value);
 
       const arc = d3
         .arc<d3.PieArcDatum<PieDataItem>>()
@@ -128,10 +133,10 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
         .selectAll<SVGPathElement, d3.PieArcDatum<PieDataItem>>('path')
         .data(arcs)
         .join('path')
-        .attr('fill', d => color(d.data.name))
+        .attr('fill', (d) => color(d.data.name))
         .attr('d', arc)
         .append('title')
-        .text(d => `${d.data.name}: ${d.data.value.toLocaleString('en-US')}`);
+        .text((d) => `${d.data.name}: ${d.data.value.toLocaleString('en-US')}`);
 
       // Create labels
       svg
@@ -140,27 +145,27 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
         .selectAll<SVGTextElement, d3.PieArcDatum<PieDataItem>>('text')
         .data(arcs)
         .join('text')
-        .attr('transform', d => `translate(${arcLabel.centroid(d)})`)
+        .attr('transform', (d) => `translate(${arcLabel.centroid(d)})`)
         .call((text) =>
           text
             .append('tspan')
             .attr('y', '-0.4em')
             .attr('font-weight', 'bold')
-            .text(d => d.data.name)
+            .text((d) => d.data.name)
         )
         .call((text) =>
           text
-            .filter(d => d.endAngle - d.startAngle > 0.25)
+            .filter((d) => d.endAngle - d.startAngle > 0.25)
             .append('tspan')
             .attr('x', 0)
             .attr('y', '0.7em')
             .attr('fill-opacity', 0.7)
-            .text(d => d.data.value.toLocaleString('en-US'))
+            .text((d) => d.data.value.toLocaleString('en-US'))
         );
 
       parentNode.appendChild(svg.node() as Node);
     };
-    
+
     renderPie();
 
     this.resizeObserver = new ResizeObserver((entries) => {
@@ -178,7 +183,7 @@ export class PieChartVisual extends NodeVisual<NodeInfo> {
       this.resizeObserver.observe(parentNode); // Start observing the container
     }
   };
-  
+
   isResizing = false;
   resizeObserver: ResizeObserver | undefined = undefined;
 

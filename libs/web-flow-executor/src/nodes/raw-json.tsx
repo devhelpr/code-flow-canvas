@@ -86,7 +86,7 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       const payloadForExpression = getVariablePayloadInputUtils(
         input,
         payload,
-        'string',
+        'number', // TODO: what is the type of the input??? .. used to be 'string' .. but then expression can fail
         -1,
         -1,
         scopeId,
@@ -118,8 +118,6 @@ export const getRawJsonNode: NodeTaskFactory<NodeInfo> = (
       );
 
       currentOutput = transformedJson;
-
-      console.log('transformedJson', transformedJson);
 
       return {
         result: transformedJson,

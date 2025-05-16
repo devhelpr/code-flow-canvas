@@ -23,7 +23,9 @@ const evaluateAtProperty = (
   payload: any,
   initialPayload?: any
 ) => {
-  if (key.startsWith('@flat')) {
+  if (key === '@copyInputTo' && value) {
+    newJson[value] = initialPayload.originalInput;
+  } else if (key.startsWith('@flat')) {
     const flatProperty = key.replace('@flat:', '');
     if (Array.isArray(value)) {
       const result = value.flat();

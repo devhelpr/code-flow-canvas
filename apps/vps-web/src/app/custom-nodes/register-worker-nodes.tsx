@@ -28,6 +28,8 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { pieChartDefinition } from '../custom-nodes-v2/pie-chart-definition';
 import { pieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
+import { plotCompute } from '../custom-nodes-v2/plot-compute';
+import { plotDefinition } from '../custom-nodes-v2/plot-definition';
 
 function createWorker(
   nodeDefinition: NodeDefinition,
@@ -91,6 +93,7 @@ const nodes: NodeRegistration[] = [
     name: promptImageNodeName,
   }),
   createWorker(pieChartDefinition, pieChartCompute),
+  createWorker(plotDefinition, plotCompute),
 ];
 
 export const registerWorkerNodes = (

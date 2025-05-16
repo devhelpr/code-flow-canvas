@@ -1484,7 +1484,7 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
     this.testCircle = createElement(
       'div',
       {
-        class: `absolute bg-blue-500 top-0 left-0 z-[2000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded hidden`,
+        class: `connection-cursor__circle absolute bg-blue-500 top-0 left-0 z-[2000] pointer-events-none origin-center flex text-center items-center justify-center w-[20px] h-[20px] overflow-hidden rounded hidden`,
         style: {
           'clip-path': 'circle(50%)',
         },

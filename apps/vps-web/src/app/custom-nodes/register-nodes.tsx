@@ -20,6 +20,9 @@ import { PromptImageNode } from './classes/prompt-image-class';
 import { pieChartDefinition } from '../custom-nodes-v2/pie-chart-definition';
 import { PieChartVisual } from '../custom-nodes-v2/pie-chart-visual';
 import { pieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
+import { plotDefinition } from '../custom-nodes-v2/plot-definition';
+import { plotCompute } from '../custom-nodes-v2/plot-compute';
+import { PlotVisual } from '../custom-nodes-v2/plot-visual';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -34,6 +37,7 @@ const nodes: NodeRegistration[] = [
   PromptNode,
   PromptImageNode,
   createNodeClass(pieChartDefinition, PieChartVisual, pieChartCompute),
+  createNodeClass(plotDefinition, PlotVisual, plotCompute),
 ];
 
 export const registerNodes = (
