@@ -211,6 +211,9 @@ export class PlotVisual extends NodeVisual<NodeInfo> {
       this.isResizing = true;
       try {
         console.log('SCATTERPLOT resize');
+
+        parentNode.innerHTML = '';
+        this.svg = undefined;
         renderScatterPlot();
       } finally {
         this.isResizing = false;
