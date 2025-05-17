@@ -279,13 +279,62 @@ export class NodeSidebarMenuComponent extends Component<
             class={`overflow-visible flex flex-col gap-2 relative pt-2 pb-2`}
             getElement={(element: HTMLElement) => {
               taskbar = element;
+              renderElement(
+                <div
+                  class={`sticky w-full top-0 max-w-[150px] flex flex-col pb-2 bg-slate-700 `}
+                >
+                  <input
+                    type="text"
+                    input={(event: InputEvent) => {
+                      const value = (event.target as HTMLInputElement).value;
+                      if (taskbar) {
+                        taskbar
+                          .querySelectorAll('.taskbar__node-type')
+                          .forEach((node) => {
+                            if (node) {
+                              const title = node.getAttribute?.('title');
+                              if (title) {
+                                if (title.toLowerCase().includes(value)) {
+                                  node.classList.remove('hidden');
+                                } else {
+                                  node.classList.add('hidden');
+                                }
+                              }
+                            }
+                          });
+
+                        taskbar
+                          .querySelectorAll('.taskbar__category')
+                          .forEach((node) => {
+                            if (node && taskbar) {
+                              const category = (node as HTMLElement).innerText;
+                              if (
+                                taskbar.querySelectorAll(
+                                  `[data-category="${category}"]:not(.hidden)`
+                                ).length > 0
+                              ) {
+                                node.classList.remove('hidden');
+                              } else {
+                                node.classList.add('hidden');
+                              }
+                            }
+                          });
+                      }
+                    }}
+                    placeholder="Search"
+                  />
+                </div>,
+                taskbar
+              );
               sortedCategories.forEach((categoryName) => {
                 const category = categorizedNodeTasks.get(categoryName);
                 if (categoryName === 'deprecated') {
                   return;
                 }
                 renderElement(
-                  <h2 class={`text-white py-2`}>{categoryName}</h2>,
+                  <h2 class={`text-white py-2 taskbar__category`}>
+                    {categoryName}
+                  </h2>,
                   taskbar
                 );
 
@@ -296,7 +345,7 @@ export class NodeSidebarMenuComponent extends Component<
 
                   renderElement(
                     <div
-                      class={`cursor-pointer 
+                      class={`taskbar__node-type cursor-pointer 
                         bg-slate-500
                         text-white 
                         rounded 
@@ -307,6 +356,7 @@ export class NodeSidebarMenuComponent extends Component<
                         this.startDragNode(event, taskbar, nodeTask.nodeType);
                       }}
                       title={label}
+                      data-category={categoryName}
                     >
                       {label}
                     </div>,
