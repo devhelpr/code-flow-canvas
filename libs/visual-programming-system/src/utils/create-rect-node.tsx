@@ -130,7 +130,7 @@ export const createRectNode = <T extends BaseNodeInfo>(
   if (settings?.hasCustomStyling) {
     colorClasses = '';
   }
-  let paddingY = showTitlebar ? 'py-2' : '';
+  let paddingY = ''; //showTitlebar ? 'py-2' : '';
   if (settings?.hasCustomStyling) {
     paddingY = '';
   }
