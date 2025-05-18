@@ -8,10 +8,13 @@ import {
   ThumbConnectionType,
   ThumbType,
   visualNodeFactory,
+  FlowNode,
+  Theme,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { runNode } from '../flow-engine/flow-engine';
 import { RunCounter } from '../follow-path/run-counter';
+import { FlowEngine } from '../interface/flow-engine';
 
 export const getSlider =
   (
@@ -21,7 +24,10 @@ export const getSlider =
     ) => RunCounter
   ) =>
   (
-    updated: (shouldClearExecutionHistory?: boolean) => void
+    updated: (shouldClearExecutionHistory?: boolean) => void,
+    _theme?: Theme,
+    _node?: FlowNode<NodeInfo>,
+    flowEngine?: FlowEngine
   ): NodeTask<NodeInfo> => {
     let canvasAppInstance: IFlowCanvasBase<NodeInfo> | undefined = undefined;
     let node: IRectNodeComponent<NodeInfo>;
@@ -151,7 +157,11 @@ export const getSlider =
                   undefined,
                   undefined, //crypto.randomUUID(),
                   currentRunCounter,
-                  false
+                  false,
+                  undefined,
+                  undefined,
+                  undefined,
+                  flowEngine?.sendOutputToNode
                 );
               }
               if (timer === undefined && currentRunCounter?.runCounter === 0) {

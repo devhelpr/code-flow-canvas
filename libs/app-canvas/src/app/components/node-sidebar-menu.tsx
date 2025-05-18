@@ -261,111 +261,132 @@ export class NodeSidebarMenuComponent extends Component<
           `}
         getElement={(element: HTMLElement) => {
           this.taskbarContainer = element;
+
+          renderElement(
+            <div
+              class={`absolute w-full z-[20150] top-0 p-4 flex flex-col pb-2 bg-slate-700 `}
+            >
+              <input
+                type="text"
+                class="rounded p-2 bg-slate-500 text-white border border-slate-50"
+                input={(event: InputEvent) => {
+                  const value = (event.target as HTMLInputElement).value;
+                  if (taskbar) {
+                    taskbar
+                      .querySelectorAll('.taskbar__node-type')
+                      .forEach((node) => {
+                        if (node) {
+                          const title = node.getAttribute?.('title');
+                          if (title) {
+                            if (title.toLowerCase().includes(value)) {
+                              node.classList.remove('hidden');
+                            } else {
+                              node.classList.add('hidden');
+                            }
+                          }
+                        }
+                      });
+
+                    taskbar
+                      .querySelectorAll('.taskbar__category')
+                      .forEach((node) => {
+                        if (node && taskbar) {
+                          const category = (node as HTMLElement).innerText;
+                          if (
+                            taskbar.querySelectorAll(
+                              `[data-category="${category}"]:not(.hidden)`
+                            ).length > 0
+                          ) {
+                            node.classList.remove('hidden');
+                          } else {
+                            node.classList.add('hidden');
+                          }
+                        }
+                      });
+                  }
+                }}
+                placeholder="Search"
+              />
+            </div>,
+            this.taskbarContainer
+          );
         }}
       >
         <div
-          class={`absolute 
+          class={`
+            absolute 
             flex flex-col 
-            top-0 left-0
+            top-0 left-0 right-0
             z-[20050]
-            overflow-y-scroll
-            px-4 py-2
-            max-h-[calc(100vh-208px)] 
-            w-min
-            h-min
+            pt-[60px]
+            bottom-0
+
           `}
         >
           <div
-            class={`overflow-visible flex flex-col gap-2 relative pt-2 pb-2`}
-            getElement={(element: HTMLElement) => {
-              taskbar = element;
-              renderElement(
-                <div
-                  class={`sticky w-full top-0 max-w-[150px] flex flex-col pb-2 bg-slate-700 `}
-                >
-                  <input
-                    type="text"
-                    input={(event: InputEvent) => {
-                      const value = (event.target as HTMLInputElement).value;
-                      if (taskbar) {
-                        taskbar
-                          .querySelectorAll('.taskbar__node-type')
-                          .forEach((node) => {
-                            if (node) {
-                              const title = node.getAttribute?.('title');
-                              if (title) {
-                                if (title.toLowerCase().includes(value)) {
-                                  node.classList.remove('hidden');
-                                } else {
-                                  node.classList.add('hidden');
-                                }
-                              }
-                            }
-                          });
+            class={`
+              taskbar-container__scroll
+              grid
+              grid-cols-1
+              grid-rows-1
+              grid-rows-[1fr]
+              grid-cols-[1fr]
+            
+              top-0 left-0
+              z-[20050]
+              overflow-y-scroll
+              px-4 py-2 
+              max-h-[calc(100vh-208px)] 
+              w-full
+              h-min
+            `}
+          >
+            <div
+              class={`overflow-visible flex flex-col gap-2 relative pt-2 pb-2`}
+              getElement={(element: HTMLElement) => {
+                taskbar = element;
 
-                        taskbar
-                          .querySelectorAll('.taskbar__category')
-                          .forEach((node) => {
-                            if (node && taskbar) {
-                              const category = (node as HTMLElement).innerText;
-                              if (
-                                taskbar.querySelectorAll(
-                                  `[data-category="${category}"]:not(.hidden)`
-                                ).length > 0
-                              ) {
-                                node.classList.remove('hidden');
-                              } else {
-                                node.classList.add('hidden');
-                              }
-                            }
-                          });
-                      }
-                    }}
-                    placeholder="Search"
-                  />
-                </div>,
-                taskbar
-              );
-              sortedCategories.forEach((categoryName) => {
-                const category = categorizedNodeTasks.get(categoryName);
-                if (categoryName === 'deprecated') {
-                  return;
-                }
-                renderElement(
-                  <h2 class={`text-white py-2 taskbar__category`}>
-                    {categoryName}
-                  </h2>,
-                  taskbar
-                );
-
-                category?.forEach((nodeTask) => {
-                  const label =
-                    canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
-                    nodeTask.nodeType;
-
+                sortedCategories.forEach((categoryName) => {
+                  const category = categorizedNodeTasks.get(categoryName);
+                  if (categoryName === 'deprecated') {
+                    return;
+                  }
                   renderElement(
-                    <div
-                      class={`taskbar__node-type cursor-pointer 
-                        bg-slate-500
-                        text-white 
-                        rounded 
-                        px-4 py-2 mb-2 
-                        max-w-[150px] 
-                        whitespace-nowrap overflow-hidden text-ellipsis`}
-                      pointerdown={(event: PointerEvent) => {
-                        this.startDragNode(event, taskbar, nodeTask.nodeType);
-                      }}
-                      title={label}
-                      data-category={categoryName}
-                    >
-                      {label}
-                    </div>,
+                    <h2 class={`text-white py-2 taskbar__category`}>
+                      {categoryName}
+                    </h2>,
                     taskbar
                   );
+
+                  category?.forEach((nodeTask) => {
+                    const label =
+                      canvasNodeTaskRegistryLabels[nodeTask.nodeType] ||
+                      nodeTask.nodeType;
+
+                    renderElement(
+                      <div
+                        class={`taskbar__node-type cursor-pointer 
+                          bg-slate-500
+                          text-white 
+                          rounded 
+                          px-4 py-2 mb-2 
+                          max-w-[150px] 
+                          whitespace-nowrap overflow-hidden text-ellipsis`}
+                        pointerdown={(event: PointerEvent) => {
+                          this.startDragNode(event, taskbar, nodeTask.nodeType);
+                        }}
+                        title={label}
+                        data-category={categoryName}
+                      >
+                        {label}
+                      </div>,
+                      taskbar
+                    );
+                  });
                 });
-              });
-            }}
-          ></div>
+              }}
+            ></div>
+          </div>
         </div>
         <div
           class="taskbar-container-before
@@ -373,7 +394,7 @@ export class NodeSidebarMenuComponent extends Component<
             absolute
             left-0             
             w-[182px]
-            top-0
+            top-[60px]
             h-4
             bg-gradient-to-b
             from-slate-700

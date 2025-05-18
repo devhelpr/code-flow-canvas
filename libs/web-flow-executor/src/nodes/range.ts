@@ -144,9 +144,11 @@ export const getRangeNode: NodeTaskFactory<NodeInfo> = (
     const min = values.min;
     const max = values.max;
     const step = values.step;
-    values.min = undefined;
-    values.max = undefined;
-    values.step = hasStepConnection ? undefined : 1;
+
+    // ... commented because if this runs, you cannot control the range with individual slider input for example
+    // values.min = undefined;
+    // values.max = undefined;
+    // values.step = hasStepConnection ? undefined : 1;
     const value = {
       type: 'range',
       min: min,

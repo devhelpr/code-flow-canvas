@@ -800,7 +800,7 @@ html:active-view-transition-type(normal) {
   @apply bg-white text-black;
 }
 
-.taskbar-container > div {
+.taskbar-container .taskbar-container__scroll {
   scrollbar-width: thin;
   scrollbar-color: rgb(100, 116, 139) rgb(51, 65, 85);
 }
