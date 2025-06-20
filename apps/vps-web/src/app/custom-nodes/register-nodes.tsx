@@ -19,10 +19,13 @@ import { PromptNode } from './classes/prompt-node-class';
 import { PromptImageNode } from './classes/prompt-image-class';
 import { pieChartDefinition } from '../custom-nodes-v2/pie-chart-definition';
 import { PieChartVisual } from '../custom-nodes-v2/pie-chart-visual';
-import { pieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
+import { PieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
 import { plotDefinition } from '../custom-nodes-v2/plot-definition';
-import { plotCompute } from '../custom-nodes-v2/plot-compute';
+import { PlotCompute } from '../custom-nodes-v2/plot-compute';
 import { PlotVisual } from '../custom-nodes-v2/plot-visual';
+import { formDefinition } from '../custom-nodes-v2/form-definition';
+import { FormCompute } from '../custom-nodes-v2/form-compute';
+import { FormVisual } from '../custom-nodes-v2/form-visual';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -36,8 +39,9 @@ const nodes: NodeRegistration[] = [
   CanvasNode,
   PromptNode,
   PromptImageNode,
-  createNodeClass(pieChartDefinition, PieChartVisual, pieChartCompute),
-  createNodeClass(plotDefinition, PlotVisual, plotCompute),
+  createNodeClass(pieChartDefinition, PieChartVisual, PieChartCompute),
+  createNodeClass(plotDefinition, PlotVisual, PlotCompute),
+  createNodeClass(formDefinition, FormVisual, FormCompute),
 ];
 
 export const registerNodes = (

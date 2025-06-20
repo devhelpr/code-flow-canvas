@@ -136,6 +136,7 @@ import {
   OCIFNode,
   OCIFEdgeRelationExtension,
 } from './interfaces/ocif';
+import { counterFlow } from './default-flows/counter-flow';
 
 export type CreateRunCounterContext = (
   isRunViaRunButton: boolean,
@@ -1136,22 +1137,33 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
           }
         });
         storageProvider
-          .getFlow(this.flowId)
-          .then((flow) => {
+          .getFlow(
+            this.flowId,
+            this.flowId === '1234' ? (counterFlow as Flow<NodeInfo>) : undefined
+          )
+          .then((result) => {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
             }
+            console.log(
+              'oninit: storageProvider.getFlow',
+              this.flowId,
+              result.flow
+            );
             clearOCIF();
-            if (flow.ocif) {
-              setOCIF(flow.ocif);
+            if (result.flow.ocif) {
+              setOCIF(result.flow.ocif);
             }
             removeAllCompositions();
-            importCompositions<NodeInfo>(flow.compositions, this.canvasApp);
+            importCompositions<NodeInfo>(
+              result.flow.compositions,
+              this.canvasApp
+            );
             registerCompositionNodes(
               this.canvasApp.compositons.getAllCompositions()
             );
             importToCanvas(
-              flow.flows.flow.nodes,
+              result.flow.flows.flow.nodes,
               this.canvasApp,
               canvasUpdated,
               undefined,
@@ -1168,7 +1180,7 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
             );
             this.updateToolbarTaskList?.();
             if (this.onStoreFlow) {
-              this.onStoreFlow(flow, this.canvasApp, getNodeTaskFactory);
+              this.onStoreFlow(result.flow, this.canvasApp, getNodeTaskFactory);
             }
             this.isStoring = false;
           })

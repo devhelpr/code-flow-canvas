@@ -1,0 +1,87 @@
+{
+  "schemaType": "flow",
+  "schemaVersion": "0.0.1",
+  "id": "1234",
+  "flows": {
+    "flow": {
+      "flowType": "flow",
+      "nodes": [
+        {
+          "id": "b0f1091f-9e52-4259-98a3-d0a8ba4b32f4",
+          "x": -4322.051261712327,
+          "y": 28.52610810114873,
+          "width": 111.7109375,
+          "height": 96,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{\n    \"a\" :123,\n    \"b\" : {\n        \"c\" : \"hello\",\n        \"d\" : \"world\"\n    }\n}"
+            },
+            "taskType": "json-node"
+          }
+        },
+        {
+          "id": "d30d44ee-c83c-470e-b0c7-2240588eb11b",
+          "x": -4050.090009190166,
+          "y": 31.386913440815746,
+          "width": 111.7109375,
+          "height": 96,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "json-node",
+            "formValues": {
+              "json": "{\n    \"e\" : \"=a\",\n    \"hello\": \"=b.c + ' ' + b.d\",\n    \"@copyInputTo\" : \"test\",\n    \"@expression:abc\": \"b\",\n    \"def\" : {\n        \"test\": \"=a\",\n        \"@expression:def\":\"b\"\n    }\n}"
+            },
+            "taskType": "json-node"
+          }
+        },
+        {
+          "id": "2f9e4194-f4e3-46bf-87dd-bebe1ecc3c5c",
+          "x": -3784.5160953481995,
+          "y": 51.84874304277909,
+          "width": 240.00004537184242,
+          "height": 560.0000175481907,
+          "nodeType": "Shape",
+          "nodeInfo": {
+            "type": "show-object",
+            "formValues": {
+              "name": ""
+            }
+          }
+        },
+        {
+          "id": "5933b636-e15d-4adf-9d80-011219b704aa",
+          "x": -3938.379071690166,
+          "y": 79.38691344081575,
+          "endX": -3784.5160953481995,
+          "endY": 81.84874304277909,
+          "startNodeId": "d30d44ee-c83c-470e-b0c7-2240588eb11b",
+          "endNodeId": "2f9e4194-f4e3-46bf-87dd-bebe1ecc3c5c",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        },
+        {
+          "id": "be05c1d1-f9be-4e2c-874d-ae3999e68e1d",
+          "x": -4210.340324212327,
+          "y": 76.52610810114874,
+          "endX": -4050.090009190166,
+          "endY": 79.38691344081575,
+          "startNodeId": "b0f1091f-9e52-4259-98a3-d0a8ba4b32f4",
+          "endNodeId": "d30d44ee-c83c-470e-b0c7-2240588eb11b",
+          "startThumbName": "output",
+          "endThumbName": "input",
+          "lineType": "BezierCubic",
+          "nodeType": "Connection",
+          "layer": 1,
+          "nodeInfo": {}
+        }
+      ]
+    }
+  },
+  "compositions": {}
+}

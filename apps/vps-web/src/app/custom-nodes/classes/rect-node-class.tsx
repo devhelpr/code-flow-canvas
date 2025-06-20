@@ -1,15 +1,25 @@
 import {
   createJSXElement,
   FlowNode,
+  FormField,
+  FormFieldType,
   IComputeResult,
   IConnectionNodeComponent,
+  InitialValues,
   IRectNodeComponent,
   IRunCounter,
+  IThumbNodeComponent,
   NodeCompute,
   NodeDefinition,
   NodeVisual,
+  ThumbConnectionType,
 } from '@devhelpr/visual-programming-system';
-import { NodeInfo } from '@devhelpr/web-flow-executor';
+import {
+  FlowEngine,
+  getRunIndex,
+  NodeInfo,
+  runNodeFromThumb,
+} from '@devhelpr/web-flow-executor';
 import { BaseRectNode } from './base-rect-node-class';
 
 export class RectNode extends BaseRectNode {
@@ -87,23 +97,166 @@ w-min h-min
 export const createNodeClass = (
   nodeDefinition: NodeDefinition,
   NodeVisualClass: typeof NodeVisual<NodeInfo>,
-  compute: NodeCompute<NodeInfo>
+  NodeComputeClass: typeof NodeCompute<NodeInfo>
 ) => {
-  const nodeVisual = new NodeVisualClass();
   return class extends RectNode {
     static readonly nodeTypeName: string = nodeDefinition.nodeTypeName;
     static readonly nodeTitle: string = nodeDefinition.nodeTypeName;
     static readonly category: string = nodeDefinition.category ?? 'Default';
     static readonly description: string = nodeDefinition.description;
-    // node.nodeInfo.updatesVisualAfterCompute
-    nodeVisual?: NodeVisual<NodeInfo> = nodeVisual;
 
-    initNode(node: IRectNodeComponent<NodeInfo>) {
+    static getFormFields = (
+      getNode: () => IRectNodeComponent<NodeInfo>,
+      updated: () => void,
+      values?: InitialValues
+    ): FormField[] => {
+      const supportedFieldTypes: FormFieldType[] = [
+        FormFieldType.TextArea,
+        FormFieldType.Text,
+      ];
+      return nodeDefinition.settingsFormFields
+        ? nodeDefinition.settingsFormFields
+            .filter((field) => supportedFieldTypes.includes(field.fieldType))
+            .map((field) => {
+              if (
+                field.fieldType !== FormFieldType.TextArea &&
+                field.fieldType !== FormFieldType.Text
+              ) {
+                throw new Error(
+                  `Field type ${field.fieldType} is not supported for ${nodeDefinition.nodeTypeName}. Only TextArea and Text are supported.`
+                );
+              }
+              return {
+                fieldName: field.name,
+                fieldType: field.fieldType,
+                defaultValue: field.defaultValue,
+                value: values ? values[field.name] : undefined,
+                onChange: (value: string | number | boolean) => {
+                  const node = getNode();
+                  if (!node) {
+                    return;
+                  }
+                  if (!node.nodeInfo) {
+                    node.nodeInfo = {};
+                  }
+
+                  node.nodeInfo.formValues = {
+                    ...node.nodeInfo.formValues,
+                    [field.name]: value,
+                  };
+                  if (updated) {
+                    updated();
+                  }
+                  node?.nodeInfo?.updateVisual?.(undefined);
+                },
+              };
+            })
+        : [];
+    };
+    // node.nodeInfo.updatesVisualAfterCompute
+    nodeVisual?: NodeVisual<NodeInfo>;
+    nodeCompute?: NodeCompute<NodeInfo>;
+    initNode(node: IRectNodeComponent<NodeInfo>, flowEngine?: FlowEngine) {
       super.initNode(node);
       if (!node.nodeInfo) {
         node.nodeInfo = {};
       }
+      this.nodeVisual = new NodeVisualClass(node);
+      this.nodeCompute = new NodeComputeClass();
+      // (this.nodeVisual as any).flowEngine = flowEngine;
+      // (this.nodeVisual as any).baseRectNode = this;
+      this.nodeVisual?.setTriggerOutputs(
+        (_port: IThumbNodeComponent<NodeInfo>, data?: unknown) => {
+          if (
+            !this.node ||
+            !this.canvasAppInstance ||
+            !this.createRunCounterContext
+          ) {
+            console.error('FlowEngine is not initialized');
+            return;
+          }
 
+          console.log('Form data submitted:', data);
+          const output = this.node.thumbConnectors?.find((thumb) => {
+            return (
+              thumb.thumbConnectionType === ThumbConnectionType.start ||
+              thumb.thumbConnectionType === ThumbConnectionType.startOrEnd
+            );
+          });
+          if (!output) {
+            return;
+          }
+          if (flowEngine?.runNodeFromThumb) {
+            flowEngine?.runNodeFromThumb(
+              undefined,
+              output,
+              this.canvasAppInstance,
+              () => {
+                //
+              },
+              data as any,
+              node,
+              getRunIndex(),
+              undefined,
+              this.createRunCounterContext(false, false)
+            );
+          } else {
+            runNodeFromThumb(
+              output,
+              this.canvasAppInstance,
+              () => {
+                //
+              },
+              data as any,
+              node,
+              getRunIndex(),
+              undefined,
+              this.createRunCounterContext(false, false)
+            );
+          }
+          return;
+          // if (flowEngine?.runNode) {
+          //   flowEngine?.runNode(
+          //     undefined,
+          //     this.node,
+          //     this.canvasAppInstance,
+          //     () => {
+          //       //
+          //     },
+          //     data as any, //JSON.stringify(data),
+          //     undefined,
+          //     undefined,
+          //     getRunIndex(),
+          //     undefined,
+          //     undefined,
+          //     this.createRunCounterContext(false, false),
+          //     false,
+          //     {
+          //       trigger: true,
+          //     }
+          //   );
+          // } else {
+          //   runNode(
+          //     this.node,
+          //     this.canvasAppInstance,
+          //     () => {
+          //       //
+          //     },
+          //     data as any,
+          //     undefined,
+          //     undefined,
+          //     getRunIndex(),
+          //     undefined,
+          //     undefined,
+          //     this.createRunCounterContext(false, false),
+          //     false,
+          //     {
+          //       trigger: true,
+          //     }
+          //   );
+          //}
+        }
+      );
       node.nodeInfo.updatesVisualAfterCompute = true;
     }
 
@@ -116,8 +269,8 @@ export const createNodeClass = (
     }
 
     initializeCompute = () => {
-      if (compute.initializeCompute) {
-        compute.initializeCompute();
+      if (this.nodeCompute?.initializeCompute) {
+        this.nodeCompute.initializeCompute();
       }
     };
     compute = (
@@ -129,7 +282,11 @@ export const createNodeClass = (
       _runCounter?: IRunCounter,
       _connection?: IConnectionNodeComponent<NodeInfo>
     ): Promise<IComputeResult> => {
-      return compute.compute(
+      if (!this.nodeCompute) {
+        throw new Error('NodeCompute is undefined.');
+      }
+
+      return this.nodeCompute.compute(
         input,
         _loopIndex,
         _payload,
@@ -140,6 +297,9 @@ export const createNodeClass = (
       );
     };
     updateVisual = (data: unknown) => {
+      // Hack!! fix this later
+      // console.log('updateVisual', this.flowEngine);
+      // (this.nodeVisual as any).flowEngine = this.flowEngine;
       if (!this.rectElement || !this.node) {
         return;
       }
@@ -155,7 +315,9 @@ export const createNodeClass = (
     render = (_node: FlowNode<NodeInfo>) => {
       return (
         <div
-          class="h-full w-full bg-white text-black"
+          class={`h-full w-full bg-white text-black ${
+            this.nodeVisual?.additionalContainerCssClasses ?? ''
+          }`}
           getElement={(element: HTMLDivElement) => {
             this.rectElement = element;
           }}

@@ -106,31 +106,57 @@ function saveFlow<T extends BaseNodeInfo>(flowId: string, flow: Flow<T>) {
   });
 }
 
-function getFlow<T extends BaseNodeInfo>(flowId: string) {
-  return new Promise<Flow<T>>((resolve, reject) => {
-    if (!database) {
-      reject('No database');
-      return;
-    }
-
-    const transaction = database.transaction([flowStoreName]);
-    const objectStore = transaction.objectStore(flowStoreName);
-    const objectRequest = objectStore.get(flowId);
-
-    objectRequest.onerror = function (_event) {
-      reject(Error('Error text'));
-    };
-
-    objectRequest.onsuccess = function (_event) {
-      if (objectRequest.result) {
-        currentFlow = objectRequest.result.flow as unknown as Flow<T>;
-        resolve(objectRequest.result.flow as unknown as Flow<T>);
-      } else {
-        reject(Error('object not found'));
+function getFlow<T extends BaseNodeInfo>(
+  flowId: string,
+  defaultFlow?: Flow<T>
+) {
+  return new Promise<{ flow: Flow<T>; didNotExist: boolean }>(
+    (resolve, reject) => {
+      if (!database) {
+        reject('No database');
         return;
       }
-    };
-  });
+
+      const transaction = database.transaction([flowStoreName]);
+      const objectStore = transaction.objectStore(flowStoreName);
+      const objectRequest = objectStore.get(flowId);
+
+      objectRequest.onerror = function (_event) {
+        reject(Error('Error text'));
+      };
+
+      objectRequest.onsuccess = function (_event) {
+        if (objectRequest.result) {
+          currentFlow = objectRequest.result.flow as unknown as Flow<T>;
+          console.log('getFlow succeeded', flowId, currentFlow);
+          resolve({
+            flow: objectRequest.result.flow as unknown as Flow<T>,
+            didNotExist: false,
+          });
+        } else {
+          // als niet gevonden, dan komt ie hier !!!
+          // .. didNotExist: true !!!
+          resolve({
+            flow: defaultFlow ?? {
+              schemaType: '',
+              schemaVersion: '',
+              id: '',
+              flows: {
+                flow: {
+                  flowType: '',
+                  nodes: [],
+                },
+              },
+              compositions: {},
+            },
+            didNotExist: true,
+          });
+          //reject(Error('object not found'));
+          return;
+        }
+      };
+    }
+  );
 }
 
 let database: IDBDatabase | null = null;

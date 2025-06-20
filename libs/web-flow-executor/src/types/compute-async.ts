@@ -2,17 +2,20 @@ import {
   IRectNodeComponent,
   IConnectionNodeComponent,
   IComputeResult,
+  IRunCounter,
+  BaseNodeInfo,
 } from '@devhelpr/visual-programming-system';
-import { RunCounter } from '../follow-path/run-counter';
 import { NodeInfo } from './node-info';
 
-export type ComputeAsync = (
-  node: IRectNodeComponent<NodeInfo>,
+export type BaseComputeAsync<T extends BaseNodeInfo> = (
+  node: IRectNodeComponent<T>,
   input: string | any[],
   loopIndex?: number,
   payload?: any,
   thumbName?: string,
   scopeId?: string,
-  runCounter?: RunCounter,
-  connection?: IConnectionNodeComponent<NodeInfo>
+  runCounter?: IRunCounter,
+  connection?: IConnectionNodeComponent<T>
 ) => Promise<IComputeResult>;
+
+export type ComputeAsync = BaseComputeAsync<NodeInfo>;

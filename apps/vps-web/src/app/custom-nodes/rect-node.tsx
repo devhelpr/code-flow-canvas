@@ -165,7 +165,7 @@ export const getRectNode =
         rectNode.rectInstance = rect;
         rectNode.canvasAppInstance = nodeInstance.contextInstance;
 
-        rectNode.initNode(node);
+        rectNode.initNode(node, flowEngine);
 
         rectNode.onResize = (width: number, height: number) => {
           node.restrictHeight = height;
@@ -322,11 +322,11 @@ export const getRectNode =
       },
       {
         category: NodeClass.category,
-        hasStaticWidthHeight: true,
+        hasStaticWidthHeight: NodeClass.hasStaticWidthHeight,
         hasCustomStyling: true,
-        additionalClassNames: 'h-full w-full',
+        additionalClassNames: NodeClass.additionalCssClasses,
         customClassName: 'custom-rect-node',
-        childNodeWrapperClass: 'child-node-wrapper h-full w-full',
+        childNodeWrapperClass: `child-node-wrapper ${NodeClass.childNodeWrapperClasses}`,
         centerToYPositionThumb: false,
         skipDetermineSizeOnInit: true,
         disableManualResize: NodeClass.disableManualResize,
@@ -335,7 +335,7 @@ export const getRectNode =
         hasFormInPopup: true,
         hasSettingsPopup: !NodeClass.getFormFields,
       },
-      <div class="child-instance h-full w-full"></div>,
+      <div class={`child-instance ${NodeClass.childInstanceClasses}`}></div>,
       true
     );
   };

@@ -1484,12 +1484,20 @@ export class Rect<T extends BaseNodeInfo> {
           this.points.beginY = y - ty;
         }
         if (endThumb && endNode && endNode.id === target.id) {
+          let correctedThumbType = endThumb?.thumbType ?? ThumbType.None;
+          if (
+            (initiator as unknown as IConnectionNodeComponent<T>).lineType ==
+              'BezierCubic' &&
+            endThumb?.thumbType === ThumbType.Center
+          ) {
+            correctedThumbType = ThumbType.EndConnectorCenter;
+          }
           const tx = calculateConnectorX(
-            endThumb?.thumbType ?? ThumbType.None,
+            correctedThumbType,
             endNode?.width ?? 0
           );
           const ty = calculateConnectorY(
-            endThumb?.thumbType ?? ThumbType.None,
+            correctedThumbType,
             endNode?.width ?? 0,
             endNode?.height ?? 0,
             endThumb?.thumbIndex ?? 0,

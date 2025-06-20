@@ -10,9 +10,11 @@ export function examplePage() {
   import('../flow-app.element').then((module) => {
     const storageProvider = {
       getFlow: async (_flowId: string) => {
-        return new Promise<Flow<NodeInfo>>((resolve, _reject) => {
-          resolve(flowData as Flow<NodeInfo>);
-        });
+        return new Promise<{ flow: Flow<NodeInfo>; didNotExist: boolean }>(
+          (resolve, _reject) => {
+            resolve({ flow: flowData as Flow<NodeInfo>, didNotExist: false });
+          }
+        );
       },
       saveFlow: async (_flowId: string, _flow: any) => {
         return Promise.resolve();

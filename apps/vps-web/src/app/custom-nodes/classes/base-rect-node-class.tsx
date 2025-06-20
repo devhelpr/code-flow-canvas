@@ -44,6 +44,11 @@ export class BaseRectNode {
   static initialWidth = 200;
   static intialHeight = 100;
 
+  static additionalCssClasses = 'h-full w-full';
+  static childNodeWrapperClasses = 'h-full w-full';
+  static childInstanceClasses = 'h-full w-full';
+  static hasStaticWidthHeight = true;
+
   static getFormFields:
     | ((
         getNode: () => IRectNodeComponent<NodeInfo>,
@@ -66,7 +71,7 @@ export class BaseRectNode {
     this.flowEngine = flowEngine;
   }
 
-  initNode(_node: IRectNodeComponent<NodeInfo>) {
+  initNode(_node: IRectNodeComponent<NodeInfo>, _flowEngine?: FlowEngine) {
     //
   }
 

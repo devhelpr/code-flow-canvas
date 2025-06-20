@@ -17,10 +17,6 @@ type PlotData = PlotDataItem[] & { columns?: string[] };
 type InputDataTuple = [string, number, number];
 
 export class PlotVisual extends NodeVisual<NodeInfo> {
-  constructor() {
-    super();
-  }
-
   lastData:
     | Record<
         string,

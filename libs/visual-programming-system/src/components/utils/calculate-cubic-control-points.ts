@@ -14,7 +14,6 @@ import {
   calculateConnectorY,
 } from './calculate-connector-thumbs';
 import { calculate2DDistance } from './distance';
-import { intersectionCircleLine } from './vector-math';
 
 const interpolate = (
   lowValue: number,
@@ -222,8 +221,8 @@ export const onCubicCalculateControlPoints = <T extends BaseNodeInfo>(
         controlPointCurvingDistance * thumbFactor * yHelper;
     }
 
-    const isConnectingToRectThumb =
-      connectedNodeThumb?.thumbType === ThumbType.Center;
+    const isConnectingToRectThumb = false;
+    //connectedNodeThumb?.thumbType === ThumbType.Center;
     if (
       !isConnectingToRectThumb &&
       connectedNode &&
@@ -265,12 +264,15 @@ export const onCubicCalculateControlPoints = <T extends BaseNodeInfo>(
   }
 
   if (nodeType === ControlAndEndPointNodeType.end) {
-    const x = rectNode.x + calculateConnectorX(thumbType, rectNode.width ?? 0);
+    const correctedThumbType =
+      thumbType === ThumbType.Center ? ThumbType.EndConnectorCenter : thumbType;
+    const x =
+      rectNode.x + calculateConnectorX(correctedThumbType, rectNode.width ?? 0);
 
     const y =
       rectNode.y +
       calculateConnectorY(
-        thumbType,
+        correctedThumbType,
         rectNode.width ?? 0,
         rectNode.height ?? 0,
         index,
@@ -294,61 +296,63 @@ export const onCubicCalculateControlPoints = <T extends BaseNodeInfo>(
           controlPointCurvingDistance * thumbFactor,
         nodeType,
       };
-    } else if (thumbType === ThumbType.Center) {
-      const circleRadius = (rectNode?.width ?? 100) / 2 + 10;
-      const intersections = intersectionCircleLine(
-        {
-          center: { x: x, y: y },
-          radius: circleRadius,
-        },
-        { p1: { x: connectedNodeX, y: connectedNodeY }, p2: { x: x, y: y } }
-      );
+    }
+    // else if (thumbType === ThumbType.Center) {
+    //   const circleRadius = (rectNode?.width ?? 100) / 2 + 10;
+    //   const intersections = intersectionCircleLine(
+    //     {
+    //       center: { x: x, y: y },
+    //       radius: circleRadius,
+    //     },
+    //     { p1: { x: connectedNodeX, y: connectedNodeY }, p2: { x: x, y: y } }
+    //   );
 
-      if (x < connectedNodeX) {
-        return {
-          x: x - circleRadius,
-          y: y,
-          cx: x - circleRadius,
-          cy: y,
-          nodeType,
-        };
-      }
+    //   if (x < connectedNodeX) {
+    //     return {
+    //       x: x - circleRadius,
+    //       y: y,
+    //       cx: x - circleRadius,
+    //       cy: y,
+    //       nodeType,
+    //     };
+    //   }
 
-      if (connectedNodeY < y - circleRadius) {
-        return {
-          x: x,
-          y: y - circleRadius,
-          cx: x,
-          cy: y - circleRadius - circleRadius,
-          nodeType,
-        };
-      } else if (connectedNodeY > y + circleRadius) {
-        return {
-          x: x,
-          y: y + circleRadius,
-          cx: x,
-          cy: y + circleRadius + circleRadius,
-          nodeType,
-        };
-      }
+    //   if (connectedNodeY < y - circleRadius) {
+    //     return {
+    //       x: x,
+    //       y: y - circleRadius,
+    //       cx: x,
+    //       cy: y - circleRadius - circleRadius,
+    //       nodeType,
+    //     };
+    //   } else if (connectedNodeY > y + circleRadius) {
+    //     return {
+    //       x: x,
+    //       y: y + circleRadius,
+    //       cx: x,
+    //       cy: y + circleRadius + circleRadius,
+    //       nodeType,
+    //     };
+    //   }
 
-      if (intersections.length > 0) {
-        return {
-          x: intersections[0].x,
-          y: intersections[0].y,
-          cx: intersections[0].x,
-          cy: intersections[0].y,
-          nodeType,
-        };
-      }
-      return {
-        x: x,
-        y: y,
-        cx: x,
-        cy: y,
-        nodeType,
-      };
-    } else if (thumbType === ThumbType.EndConnectorLeft) {
+    //   if (intersections.length > 0) {
+    //     return {
+    //       x: intersections[0].x,
+    //       y: intersections[0].y,
+    //       cx: intersections[0].x,
+    //       cy: intersections[0].y,
+    //       nodeType,
+    //     };
+    //   }
+    //   return {
+    //     x: x,
+    //     y: y,
+    //     cx: x,
+    //     cy: y,
+    //     nodeType,
+    //   };
+    //}
+    else if (thumbType === ThumbType.EndConnectorLeft) {
       const { distance, thumbFactor } = getFactor(
         x,
         y,
@@ -521,12 +525,13 @@ export const onGetConnectionToThumbOffset = (
         offsetX: 0,
         offsetY: -connectionToThumbDistance * 3,
       };
-    } else if (thumbType === ThumbType.Center) {
-      return {
-        offsetX: 0,
-        offsetY: 0,
-      };
     }
+    // else if (thumbType === ThumbType.Center) {
+    //   return {
+    //     offsetX: 0,
+    //     offsetY: 0,
+    //   };
+    // }
 
     return {
       offsetX: -connectionToThumbDistance * 3,

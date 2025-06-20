@@ -699,17 +699,20 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         this.clearCanvas();
         storageProvider
           .getFlow('gl')
-          .then((flow) => {
+          .then((result) => {
             if (!this.canvasApp) {
               throw new Error('canvasApp not defined');
             }
             removeAllCompositions();
-            importCompositions<GLNodeInfo>(flow.compositions, this.canvasApp);
+            importCompositions<GLNodeInfo>(
+              result.flow.compositions,
+              this.canvasApp
+            );
             registerCompositionNodes(
               this.canvasApp.compositons.getAllCompositions()
             );
             importToCanvas(
-              flow.flows.flow.nodes,
+              result.flow.flows.flow.nodes,
               this.canvasApp,
               canvasUpdated,
               undefined,

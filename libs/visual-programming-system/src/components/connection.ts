@@ -15,7 +15,7 @@ import {
 import { IPointerDownResult } from '../interfaces/pointers';
 import { Theme } from '../interfaces/theme';
 import { setSelectNode } from '../reactivity';
-import { ConnectionControllerType, ThumbType } from '../types';
+import { ConnectionControllerType, LineType, ThumbType } from '../types';
 import { NodeType } from '../types/node-type';
 import { createElement, createNSElement } from '../utils/create-element';
 import { createSVGNodeComponent } from '../utils/create-node-component';
@@ -844,7 +844,8 @@ export class Connection<T extends BaseNodeInfo> {
         let offsetY = 0;
         if (
           this.nodeComponent.startNodeThumb?.thumbType !== ThumbType.Center &&
-          this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center
+          this.nodeComponent.endNodeThumb?.thumbType === ThumbType.Center &&
+          this.nodeComponent.lineType !== LineType.BezierCubic
         ) {
           if (this.points.endX < this.points.beginX) {
             offsetX = 15 + 20;

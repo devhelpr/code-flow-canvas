@@ -55,6 +55,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
     }
     return {
       result: { ...inputValues },
+      output: { ...inputValues },
       followPath: undefined,
     };
   };
@@ -99,7 +100,7 @@ export const getShowObject: NodeTaskFactory<NodeInfo> = (
       htmlNode = createElement(
         'div',
         {
-          class: 'break-words whitespace-pre-line',
+          class: 'break-words whitespace-pre-wrap',
         },
         undefined,
         '{}'

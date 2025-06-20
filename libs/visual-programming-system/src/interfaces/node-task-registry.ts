@@ -10,9 +10,11 @@ import {
   IRectNodeComponent,
   INodeComponent,
   IThumb,
+  IThumbNodeComponent,
 } from './element';
 import { FlowChangeType } from './flow';
 import { IRunCounter } from './run-counter';
+import { FormFieldType } from '../forms/FormField';
 
 export type NodeTaskFactory<T extends BaseNodeInfo, TFlowEngine = unknown> = (
   onUpdatedCanvas: (
@@ -84,7 +86,9 @@ export type RegisterComposition<T extends BaseNodeInfo> = (
 ) => void;
 
 export class NodeVisual<T extends BaseNodeInfo> {
-  constructor() {
+  node: IRectNodeComponent<T>;
+  constructor(node: IRectNodeComponent<T>) {
+    this.node = node;
     // Constructor logic
   }
   updateVisual(_data: unknown, _parentNode: HTMLElement, _nodeInfo: T) {
@@ -93,22 +97,49 @@ export class NodeVisual<T extends BaseNodeInfo> {
   destroy() {
     // Cleanup logic
   }
+
+  additionalContainerCssClasses?: string;
+
+  onTriggerOutputs:
+    | ((port: IThumbNodeComponent<T>, data?: unknown) => void)
+    | undefined = undefined;
+
+  setTriggerOutputs = (
+    onTriggerOutputs: (port: IThumbNodeComponent<T>, data?: unknown) => void
+  ) => {
+    this.onTriggerOutputs = onTriggerOutputs;
+  };
+
+  triggerOutputs = (port: IThumbNodeComponent<T>, data?: unknown) => {
+    if (this.onTriggerOutputs) {
+      this.onTriggerOutputs(port, data);
+    }
+  };
 }
 export interface NodeDefinition {
   nodeTypeName: string;
   category?: string;
   description: string;
+  settingsFormFields?: {
+    name: string;
+    fieldType: FormFieldType;
+    defaultValue?: string | number | boolean;
+  }[];
 }
 
-export interface NodeCompute<T extends BaseNodeInfo> {
-  initializeCompute: () => void;
-  compute: (
-    input: unknown,
-    loopIndex?: number,
-    payload?: unknown,
-    portName?: string,
-    scopeId?: string,
-    runCounter?: IRunCounter,
-    connection?: IConnectionNodeComponent<T>
-  ) => Promise<IComputeResult>;
+export class NodeCompute<T extends BaseNodeInfo> {
+  initializeCompute() {
+    //
+  }
+  compute(
+    _input: unknown,
+    _loopIndex?: number,
+    _payload?: unknown,
+    _portName?: string,
+    _scopeId?: string,
+    _runCounter?: IRunCounter,
+    _connection?: IConnectionNodeComponent<T>
+  ): Promise<IComputeResult> {
+    return Promise.reject();
+  }
 }

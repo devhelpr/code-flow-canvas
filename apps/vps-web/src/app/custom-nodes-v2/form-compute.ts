@@ -1,5 +1,4 @@
 import {
-  IComputeResult,
   IConnectionNodeComponent,
   IRunCounter,
   NodeCompute,
@@ -8,8 +7,8 @@ import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 // depending if "ai-canvas" is used.. the below is called from a worker or main thread
 
-export class PieChartCompute extends NodeCompute<NodeInfo> {
-  initializeCompute(): void {
+export class FormCompute extends NodeCompute<NodeInfo> {
+  initializeCompute() {
     // Initialization logic if needed
   }
   async compute(
@@ -20,11 +19,11 @@ export class PieChartCompute extends NodeCompute<NodeInfo> {
     _scopeId?: string,
     _runCounter?: IRunCounter,
     _connection?: IConnectionNodeComponent<NodeInfo>
-  ): Promise<IComputeResult> {
-    //const random = (Math.random() * 100).toFixed(2);
+  ) {
     return Promise.resolve({
       output: data,
       result: data,
+      stop: true, // TODO : trigger from form should call "runFromThumb"
     });
   }
 }

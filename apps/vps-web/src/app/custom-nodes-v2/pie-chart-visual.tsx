@@ -28,10 +28,6 @@ type PieData = PieDataItem[] & { columns?: string[] };
 type InputDataTuple = [string, number];
 
 export class PieChartVisual extends NodeVisual<NodeInfo> {
-  constructor() {
-    super();
-  }
-
   lastData: PieData | undefined = undefined;
   updateVisual = (
     data: unknown,

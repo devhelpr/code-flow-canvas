@@ -576,6 +576,12 @@ export class DrawGridNode extends BaseRectNode {
   static readonly text = 'draw grid';
   static readonly disableManualResize: boolean = true;
 
+  static readonly additionalCssClasses = '';
+  static readonly childNodeWrapperClasses = '';
+  static readonly childInstanceClasses = '';
+
+  static readonly hasStaticWidthHeight = false;
+
   drawGrid: GridDraw | undefined;
 
   getSettingsPopup = (popupContainer: HTMLElement) => {
@@ -687,7 +693,7 @@ export class DrawGridNode extends BaseRectNode {
   childElementSelector = '.child-node-wrapper > *:first-child';
   render = (node: FlowNode<NodeInfo>) => {
     //const nodeInfo = node.nodeInfo as any;
-    console.log('render rect-node', node.width, node.height);
+    console.log('render draw-rect-node', node.width, node.height);
     return (
       <div
         style={`min-width:${node.width ?? 50}px;min-height:${

@@ -5,8 +5,8 @@ import {
   IConnectionNodeComponent,
   IThumbNodeComponent,
   Flow,
+  IRunCounter,
 } from '@devhelpr/visual-programming-system';
-import { RunCounter } from '../follow-path/run-counter';
 import { ComputeAsync } from '../types/compute-async';
 import { NodeInfo } from '../types/node-info';
 
@@ -19,7 +19,7 @@ export interface FlowEngine {
     input?: string,
     offsetX?: number,
     offsetY?: number,
-    runCounter?: RunCounter,
+    runCounter?: IRunCounter,
     shouldResetConnectionSlider?: boolean,
     computeAsync?: ComputeAsync,
     sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
@@ -35,7 +35,7 @@ export interface FlowEngine {
     loopIndex?: number,
     connection?: IConnectionNodeComponent<NodeInfo>,
     scopeId?: string,
-    runCounter?: RunCounter,
+    runCounter?: IRunCounter,
     shouldClearExecutionHistory?: boolean,
     inputPayload?: any,
     useThumbName?: string,
@@ -51,7 +51,7 @@ export interface FlowEngine {
     _scopeNode?: IRectNodeComponent<NodeInfo>,
     loopIndex?: number,
     scopeId?: string,
-    runCounter?: RunCounter,
+    runCounter?: IRunCounter,
     showCursorOnly?: boolean,
     computeAsync?: ComputeAsync,
     sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void

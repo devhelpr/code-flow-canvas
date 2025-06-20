@@ -27,18 +27,21 @@ import {
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { pieChartDefinition } from '../custom-nodes-v2/pie-chart-definition';
-import { pieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
-import { plotCompute } from '../custom-nodes-v2/plot-compute';
+import { PieChartCompute } from '../custom-nodes-v2/pie-chart-compute';
+import { PlotCompute } from '../custom-nodes-v2/plot-compute';
 import { plotDefinition } from '../custom-nodes-v2/plot-definition';
+import { formDefinition } from '../custom-nodes-v2/form-definition';
+import { FormCompute } from '../custom-nodes-v2/form-compute';
 
 function createWorker(
   nodeDefinition: NodeDefinition,
-  compute: NodeCompute<NodeInfo>
+  Compute: typeof NodeCompute<NodeInfo>
 ) {
   return () => ({
     factory:
       () =>
       (_updated: () => void): NodeTask<NodeInfo> => {
+        const compute = new Compute();
         return visualNodeFactory(
           webcamViewerNodeName,
           nodeDefinition.nodeTypeName,
@@ -92,8 +95,9 @@ const nodes: NodeRegistration[] = [
     factory: getPromptImageNode,
     name: promptImageNodeName,
   }),
-  createWorker(pieChartDefinition, pieChartCompute),
-  createWorker(plotDefinition, plotCompute),
+  createWorker(pieChartDefinition, PieChartCompute),
+  createWorker(plotDefinition, PlotCompute),
+  createWorker(formDefinition, FormCompute),
 ];
 
 export const registerWorkerNodes = (

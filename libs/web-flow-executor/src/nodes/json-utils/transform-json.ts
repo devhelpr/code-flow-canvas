@@ -16,6 +16,26 @@ const isArrayOrObject = (json: any) => {
   return Array.isArray(json) || typeof json === 'object';
 };
 
+const evaluateAtValue = (value: any, payload: any) => {
+  if (typeof value === 'string' && value.startsWith('=')) {
+    const expression = value.slice(1); // remove the '=' at the start
+    const compiledExpression = compileExpressionAsInfo(expression);
+    const expressionFunction = (
+      new Function('payload', `${compiledExpression.script}`) as unknown as (
+        payload?: any
+      ) => any
+    ).bind(compiledExpression.bindings);
+    return runExpression(
+      expressionFunction,
+      payload,
+      false, // when True ... this fails when expression contains array indexes...
+      compiledExpression.payloadProperties
+    );
+  } else {
+    return value;
+  }
+};
+
 const evaluateAtProperty = (
   newJson: any,
   key: string,
@@ -202,7 +222,7 @@ export const transformJSON = (
           newJson.push(result);
         }
       } else {
-        newJson.push(value);
+        newJson.push(evaluateAtValue(value, payload));
       }
     });
     return newJson;
@@ -225,7 +245,7 @@ export const transformJSON = (
           newJson[key] = result;
         }
       } else {
-        newJson[key] = value;
+        newJson[key] = evaluateAtValue(value, payload);
       }
     });
     return newJson;
