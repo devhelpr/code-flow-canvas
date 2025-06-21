@@ -17,7 +17,7 @@ export const netlifyTokenHandler = () => {
     netlifyAccessToken = accessToken;
   } else {
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('netlify_access_token');
+    const tokenFromUrl = urlParams.get('access_token');
     if (tokenFromUrl) {
       netlifyAccessToken = tokenFromUrl;
       document.cookie = `netlify_access_token=${tokenFromUrl}; path=/; max-age=31536000; secure; samesite=strict`;
