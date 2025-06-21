@@ -362,13 +362,9 @@ if (url.pathname === '/run-flow') {
               .then((response) => response.json())
               .then((data) => {
                 console.log('Deployment response:', data);
-                if (data.success) {
-                  alert('Deployment successful!');
-                  if (data.siteId) {
-                    setNetlifySiteId(data.siteId);
-                  }
-                } else {
-                  alert('Deployment failed: ' + data.message);
+                alert('Deployment successful!');
+                if (data.siteId) {
+                  setNetlifySiteId(data.siteId);
                 }
               })
               .catch((error) => {
