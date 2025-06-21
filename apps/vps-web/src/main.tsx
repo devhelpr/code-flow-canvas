@@ -379,7 +379,7 @@ if (url.pathname === '/run-flow') {
             const redirectUrl =
               'https://form-generator-worker.maikel-f16.workers.dev/netlify/code-flow-canvas';
 
-            fetch(redirectUrl);
+            location.href = redirectUrl;
           }
         };
         return (

@@ -23,6 +23,7 @@ export const netlifyTokenHandler = () => {
       document.cookie = `netlify_access_token=${tokenFromUrl}; path=/; max-age=31536000; secure; samesite=strict`;
     }
   }
+  console.log('Netlify Access Token:', netlifyAccessToken);
 };
 
 export const setNetlifySiteId = (siteId: string) => {
