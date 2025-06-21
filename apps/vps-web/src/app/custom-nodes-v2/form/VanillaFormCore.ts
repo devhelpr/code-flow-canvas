@@ -262,8 +262,26 @@ export class VanillaFormCore {
     const text = document.createElement('p');
     text.id = component.id;
     text.className = 'text-gray-600';
-    text.textContent = component.props?.text || '';
+    text.textContent = component.props?.textExpression
+      ? this.getTextViaExpression(component.props?.textExpression)
+      : component.props?.text || '';
     return text;
+  }
+  private getTextViaExpression(expression: string) {
+    const compiledExpression = compileExpressionAsInfo(expression);
+    const expressionFunction = (
+      new Function('payload', `${compiledExpression.script}`) as unknown as (
+        payload?: any
+      ) => any
+    ).bind(compiledExpression.bindings);
+    return (
+      runExpression(
+        expressionFunction,
+        this.payload,
+        false,
+        compiledExpression.payloadProperties
+      ) ?? ''
+    ).toString();
   }
   private getOptonsViaExpression(expression: string) {
     const compiledExpression = compileExpressionAsInfo(expression);
@@ -276,7 +294,7 @@ export class VanillaFormCore {
       runExpression(
         expressionFunction,
         this.payload,
-        false, // when True ... this fails when expression contains array indexes...
+        false,
         compiledExpression.payloadProperties
       ) ?? []
     );

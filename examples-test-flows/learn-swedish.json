@@ -40,8 +40,8 @@
           "id": "4360f032-9fbf-403b-af9f-f2dec001ddf6",
           "x": -3856.6332883515397,
           "y": 441.66501263880014,
-          "width": 240.00002765556235,
-          "height": 392.0000798973047,
+          "width": 239.99984645555918,
+          "height": 392.0000228764177,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-object",
@@ -52,15 +52,15 @@
         },
         {
           "id": "8f99faef-2ab2-4ea9-9bb4-3b26d5dc511e",
-          "x": -3463.816290631263,
-          "y": 347.6266773629999,
+          "x": -3462.452335647429,
+          "y": 348.5469448916196,
           "width": 483.1329126889236,
           "height": 490.94379671085414,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "form",
             "formValues": {
-              "formJson": "{\n  \"app\": {\n    \"title\": \"Multi-step Form Example\",\n    \"pages\": [\n      {\n        \"id\": \"personal-info\",\n        \"title\": \"Personal Information\",\n        \"route\": \"/personal\",\n        \"isEndPage\": true,\n        \"components\": [\n          {\n            \"type\": \"text\",\n            \"id\": \"intro\",\n            \"props\": {\n              \"text\": \"Please provide your personal information\"\n            }\n          },\n          {\n            \"type\": \"input\",\n            \"id\": \"name\",\n            \"label\": \"Full Name\",\n            \"validation\": {\n              \"required\": true,\n              \"minLength\": 2\n            }\n          },\n          {\n            \"type\": \"radio\",\n            \"id\": \"question\",\n            \"label\": \"Question\",\n            \"props\": {\n              \"optionsExpression\": \"o\"\n            },\n            \"validation\": {\n              \"required\": true\n            }\n          },\n          {\n            \"type\": \"text\",\n            \"id\": \"intro-add\",\n            \"props\": {\n              \"text\": \"lorem ipsum dolor sit amet, consectetur adipiscing elit. lorem ipsum dolor sit amet, consectetur adipiscing elit. lorem ipsum dolor sit amet, consectetur adipiscing elit. lorem ipsum dolor sit amet, consectetur adipiscing elit.\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}\n"
+              "formJson": "{\n  \"app\": {\n    \"title\": \"Basic quiz\",\n    \"pages\": [\n      {\n        \"id\": \"personal-info\",\n        \"title\": \"Personal Information\",\n        \"route\": \"/personal\",\n        \"isEndPage\": true,\n        \"components\": [\n          {\n            \"type\": \"text\",\n            \"id\": \"intro\",\n            \"props\": {\n              \"textExpression\": \"sv\"\n            }\n          },\n          {\n            \"type\": \"radio\",\n            \"id\": \"question\",\n            \"label\": \"Question\",\n            \"props\": {\n              \"optionsExpression\": \"o\"\n            },\n            \"validation\": {\n              \"required\": true\n            }\n          }\n        ]\n      }\n    ]\n  }\n}\n"
             },
             "fillColor": "black",
             "strokeColor": "white",
@@ -75,8 +75,8 @@
           "id": "5d3ca1b6-c787-416c-b5ec-61b3a3c2ddcd",
           "x": -2807.358803728899,
           "y": 435.0029362261489,
-          "width": 240.00002765556235,
-          "height": 55.999998282010935,
+          "width": 240.00007742331653,
+          "height": 104.00000624714835,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-object",
@@ -119,8 +119,8 @@
           "id": "a8e8565b-ea0d-4d23-a36a-8fe11446e943",
           "x": -938.3870024004736,
           "y": 86.93243020303709,
-          "width": 120.00001382778117,
-          "height": 56.00001360254896,
+          "width": 120.0000613301946,
+          "height": 55.99999753862592,
           "nodeType": "Shape",
           "nodeInfo": {
             "type": "show-input",
@@ -258,8 +258,8 @@
         },
         {
           "id": "81f7f7e4-c235-4a2c-9120-4099cc25ac54",
-          "x": -3222.249834286801,
-          "y": 593.0985757184269,
+          "x": -3220.8858793029676,
+          "y": 594.0188432470467,
           "endX": -2807.358803728899,
           "endY": 465.0029362261489,
           "startNodeId": "8f99faef-2ab2-4ea9-9bb4-3b26d5dc511e",
@@ -393,7 +393,7 @@
         },
         {
           "id": "8a9bf305-2989-4c5b-806b-26d422df2cc7",
-          "x": -2567.3587760733367,
+          "x": -2567.3587263055824,
           "y": 465.0029362261489,
           "endX": -2479.979994789843,
           "endY": 303.0296372811381,
@@ -438,10 +438,10 @@
         },
         {
           "id": "d4ffa17b-01ae-4a35-b0cc-d31bc3fa9ab5",
-          "x": -3616.6332606959772,
+          "x": -3616.6334418959805,
           "y": 471.66501263880014,
-          "endX": -3463.816290631263,
-          "endY": 593.0985757184269,
+          "endX": -3462.452335647429,
+          "endY": 594.0188432470467,
           "startNodeId": "4360f032-9fbf-403b-af9f-f2dec001ddf6",
           "endNodeId": "8f99faef-2ab2-4ea9-9bb4-3b26d5dc511e",
           "startThumbName": "output",
