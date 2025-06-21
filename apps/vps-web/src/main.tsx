@@ -6,12 +6,14 @@ import { pythonPage } from './app/pages/python';
 import { examplePage } from './app/pages/example';
 import {
   BaseNodeInfo,
+  createJSXElement,
   ElementNodeMap,
   Flow,
   IComputeResult,
   IConnectionNodeComponent,
   IFlowCanvasBase,
   IRectNodeComponent,
+  navBarButton,
   setupCustomEditor,
 } from '@devhelpr/visual-programming-system';
 import * as monaco from 'monaco-editor';
@@ -29,9 +31,17 @@ import {
   OffscreenCanvasNodes,
 } from './app/ai-flow-engine-worker/ai-flow-engine-worker-message';
 import { CanvasNode } from './app/custom-nodes/classes/canvas-node-class';
+import {
+  netlifyAccessToken,
+  netlifySiteId,
+  netlifyTokenHandler,
+  setNetlifySiteId,
+} from './app/netlify-deployment-wip/token-handler';
 
 /* @ts-expect-error:will-fix-later */
 const API_URL_ROOT = import.meta.env.VITE_API_URL;
+
+netlifyTokenHandler();
 
 setupCustomEditor(() => {
   let editorInstance: monaco.editor.IStandaloneCodeEditor | null = null;
@@ -328,6 +338,55 @@ if (url.pathname === '/run-flow') {
             node.nodeInfo.updateVisual(data);
           }
         },
+      },
+      undefined,
+      () => {
+        if (!url.searchParams.get('dev')) {
+          return null;
+        }
+        const deployWithNetlify = () => {
+          //const redirectUrl = `https://localhost:8787/netlify/code-flow-canvas`;
+          if (netlifyAccessToken) {
+            const postUrl =
+              'https://form-generator-worker.maikel-f16.workers.dev/netlify/deploy-code-flow-canvas';
+            fetch(postUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                netlifyAccessToken: netlifyAccessToken,
+                netlifySiteId: netlifySiteId,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log('Deployment response:', data);
+                if (data.success) {
+                  alert('Deployment successful!');
+                  if (data.siteId) {
+                    setNetlifySiteId(data.siteId);
+                  }
+                } else {
+                  alert('Deployment failed: ' + data.message);
+                }
+              })
+              .catch((error) => {
+                console.error('Error during deployment:', error);
+                alert('Deployment failed: ' + error.message);
+              });
+          } else {
+            const redirectUrl =
+              'https://form-generator-worker.maikel-f16.workers.dev/netlify/code-flow-canvas';
+
+            fetch(redirectUrl);
+          }
+        };
+        return (
+          <button class={navBarButton} click={deployWithNetlify}>
+            Deploy
+          </button>
+        );
       }
     ); //, 100, 32);
   });

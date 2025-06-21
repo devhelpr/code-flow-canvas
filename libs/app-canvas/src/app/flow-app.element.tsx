@@ -298,7 +298,8 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
     hideFlowPresets?: boolean,
     theme?: Theme,
     flowEngine?: FlowEngine,
-    onSetCanvasApp?: (canvasApp: IFlowCanvasBase<NodeInfo>) => void
+    onSetCanvasApp?: (canvasApp: IFlowCanvasBase<NodeInfo>) => void,
+    customMenuButtons?: () => JSX.Element | null
   ) {
     super(
       appRootSelector,
@@ -940,6 +941,16 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
               menubarElement!.domElement,
               'Create composition'
             );
+
+            if (customMenuButtons) {
+              const element = customMenuButtons();
+              if (element) {
+                renderElement(
+                  element,
+                  menubarElement!.domElement as HTMLElement
+                );
+              }
+            }
 
             // renderElement(
             //   <button
