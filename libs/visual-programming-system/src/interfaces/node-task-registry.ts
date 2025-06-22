@@ -87,11 +87,18 @@ export type RegisterComposition<T extends BaseNodeInfo> = (
 
 export class NodeVisual<T extends BaseNodeInfo> {
   node: IRectNodeComponent<T>;
-  constructor(node: IRectNodeComponent<T>) {
+  canvasAppInstance: IFlowCanvasBase<T> | undefined = undefined;
+  constructor(node: IRectNodeComponent<T>, canvasApp?: IFlowCanvasBase<T>) {
     this.node = node;
+    this.canvasAppInstance = canvasApp;
     // Constructor logic
   }
-  updateVisual(_data: unknown, _parentNode: HTMLElement, _nodeInfo: T) {
+  updateVisual(
+    _data: unknown,
+    _parentNode: HTMLElement,
+    _nodeInfo: T,
+    _scopeId: string | undefined
+  ) {
     //
   }
   destroy() {

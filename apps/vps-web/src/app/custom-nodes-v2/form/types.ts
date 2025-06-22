@@ -11,24 +11,26 @@ export interface Page {
   id: string;
   title: string;
   route: string;
-  layout?: "grid" | "flex" | "vertical" | "horizontal";
+  layout?: 'grid' | 'flex' | 'vertical' | 'horizontal';
   components: Component[];
   isEndPage?: boolean;
+  hasSubmitButtons?: boolean;
+  hasStepIndicator?: boolean;
 }
 
 export interface Component {
   type:
-    | "text"
-    | "input"
-    | "textarea"
-    | "checkbox"
-    | "radio"
-    | "select"
-    | "button"
-    | "table"
-    | "form"
-    | "section"
-    | "array";
+    | 'text'
+    | 'input'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio'
+    | 'select'
+    | 'button'
+    | 'table'
+    | 'form'
+    | 'section'
+    | 'array';
   id: string;
   label?: string;
   props?: Record<string, any>;
@@ -53,7 +55,7 @@ export interface Component {
 
 export interface VisibilityCondition {
   field: string;
-  operator: "==" | "!=" | ">" | "<" | ">=" | "<=";
+  operator: '==' | '!=' | '>' | '<' | '>=' | '<=';
   value: any;
 }
 
@@ -64,7 +66,7 @@ export interface EventHandlers {
 }
 
 export interface Action {
-  type: "navigate" | "submit" | "apiRequest" | "showMessage";
+  type: 'navigate' | 'submit' | 'apiRequest' | 'showMessage';
   params?: Record<string, any>;
   dataSource?: string;
   targetPage?: string;
@@ -74,9 +76,9 @@ export interface Action {
 
 export interface DataSource {
   id: string;
-  type: "rest" | "graphql";
+  type: 'rest' | 'graphql';
   url: string;
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   query?: string;
   params?: Record<string, any>;
   responseMapping?: Record<string, any>;
@@ -85,7 +87,7 @@ export interface DataSource {
 export interface Branch {
   condition: {
     field: string;
-    operator: "==" | "!=" | ">" | "<" | ">=" | "<=";
+    operator: '==' | '!=' | '>' | '<' | '>=' | '<=';
     value: string;
   };
   nextPage: string;

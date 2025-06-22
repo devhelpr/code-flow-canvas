@@ -1,13 +1,23 @@
+import { IFlowCanvasBase } from '@devhelpr/visual-programming-system';
 import { VanillaFormCore } from './VanillaFormCore';
 import { ExtendedFormSchema } from './VanillaFormCore';
+import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 export function initFormGenerator(
   schema: ExtendedFormSchema,
   container: HTMLElement,
   onSubmit: ((data: any) => void) | undefined = undefined,
-  payload: any = {}
+  payload: any = {},
+  canvasAppInstance: IFlowCanvasBase<NodeInfo>,
+  scopeId?: string | undefined
 ): void {
-  const formRenderer = new VanillaFormRenderer(schema, container, payload);
+  const formRenderer = new VanillaFormRenderer(
+    schema,
+    container,
+    payload,
+    canvasAppInstance,
+    scopeId
+  );
   formRenderer.init(onSubmit);
 }
 
@@ -16,29 +26,51 @@ export class VanillaFormRenderer {
   private container: HTMLElement;
   private currentStep = 0;
   private totalSteps: number;
+  // private canvasAppInstance: IFlowCanvasBase<NodeInfo>;
+  // private scopeId: string | undefined;
   // @ts-expect-error payload is written but not read.. this will be used later
   private payload: any;
   constructor(
     schema: ExtendedFormSchema,
     containerElement: HTMLElement,
-    payload: any = {}
+    payload: any = {},
+    canvasAppInstance: IFlowCanvasBase<NodeInfo>,
+    scopeId?: string | undefined
   ) {
     this.payload = payload;
-    this.formCore = new VanillaFormCore(schema, containerElement, payload);
+    this.formCore = new VanillaFormCore(
+      schema,
+      containerElement,
+      payload,
+      canvasAppInstance,
+      scopeId
+    );
     this.container = containerElement;
     this.totalSteps = schema.app.pages.length;
+    // this.canvasAppInstance = canvasAppInstance;
+    // this.scopeId = scopeId;
   }
 
   onSubmit: ((data: any) => void) | undefined;
   public init(onSubmit: ((data: any) => void) | undefined): void {
     this.onSubmit = onSubmit;
     this.formCore.init(onSubmit);
+    this.renderFormControls();
+  }
+
+  private renderFormControls(): void {
     this.renderStepIndicator();
     this.renderNavigationControls();
     this.setupEventListeners();
   }
 
   private renderStepIndicator(): void {
+    if (
+      this.formCore.currentPage?.hasStepIndicator !== undefined &&
+      !this.formCore.currentPage?.hasStepIndicator
+    ) {
+      return;
+    }
     const indicator = document.createElement('div');
     indicator.className = 'flex justify-center items-center space-x-2 mb-6';
 
@@ -74,6 +106,12 @@ export class VanillaFormRenderer {
   }
 
   private renderNavigationControls(): void {
+    if (
+      this.formCore.currentPage?.hasSubmitButtons !== undefined &&
+      !this.formCore.currentPage?.hasSubmitButtons
+    ) {
+      return;
+    }
     const controls = document.createElement('div');
     controls.className = 'flex justify-between items-center mt-6';
 
@@ -102,18 +140,22 @@ export class VanillaFormRenderer {
     this.container.appendChild(controls);
   }
 
+  private submitHandler(event: Event): void {
+    const customEvent = event as CustomEvent;
+    console.log('Form submitted with data:', customEvent.detail);
+  }
+
   private setupEventListeners(): void {
     // Listen for form submission events
-    this.container.addEventListener('formSubmit', (event: Event) => {
-      const customEvent = event as CustomEvent;
-      console.log('Form submitted with data:', customEvent.detail);
-    });
+    this.container.removeEventListener('formSubmit', this.submitHandler);
+    this.container.addEventListener('formSubmit', this.submitHandler);
   }
 
   private handlePrevious(): void {
     if (this.currentStep > 0) {
       this.currentStep--;
       this.formCore.handlePrevious();
+      this.renderFormControls();
       this.updateNavigationControls();
     }
   }
@@ -122,6 +164,7 @@ export class VanillaFormRenderer {
     if (this.currentStep < this.totalSteps - 1) {
       this.currentStep++;
       this.formCore.handleNext();
+      this.renderFormControls();
       this.updateNavigationControls();
     } else if (this.currentStep === this.totalSteps - 1) {
       // Submit the form

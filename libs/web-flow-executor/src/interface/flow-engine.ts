@@ -22,7 +22,11 @@ export interface FlowEngine {
     runCounter?: IRunCounter,
     shouldResetConnectionSlider?: boolean,
     computeAsync?: ComputeAsync,
-    sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+    sendOutputToNode?: (
+      data: any,
+      node: IRectNodeComponent<NodeInfo>,
+      scopeId: string | undefined
+    ) => void
   ) => boolean;
   runNode?: (
     flow: Flow<NodeInfo> | undefined,
@@ -40,7 +44,11 @@ export interface FlowEngine {
     inputPayload?: any,
     useThumbName?: string,
     computeAsync?: ComputeAsync,
-    sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+    sendOutputToNode?: (
+      data: any,
+      node: IRectNodeComponent<NodeInfo>,
+      scopeId: string | undefined
+    ) => void
   ) => void;
   runNodeFromThumb?: (
     flow: Flow<NodeInfo> | undefined,
@@ -54,8 +62,16 @@ export interface FlowEngine {
     runCounter?: IRunCounter,
     showCursorOnly?: boolean,
     computeAsync?: ComputeAsync,
-    sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+    sendOutputToNode?: (
+      data: any,
+      node: IRectNodeComponent<NodeInfo>,
+      scopeId: string | undefined
+    ) => void
   ) => void;
   computeAsync?: ComputeAsync;
-  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void;
+  sendOutputToNode?: (
+    data: any,
+    node: IRectNodeComponent<NodeInfo>,
+    scopeId: string | undefined
+  ) => void;
 }

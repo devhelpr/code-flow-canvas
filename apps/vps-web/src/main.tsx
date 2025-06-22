@@ -296,14 +296,14 @@ if (url.pathname === '/run-flow') {
             });
           });
         },
-        sendOutputToNode: (data, node) => {
+        sendOutputToNode: (data, node, scopeId) => {
           if (
             node &&
             node.nodeInfo &&
             node.nodeInfo.updateVisual &&
             node.nodeInfo.updatesVisualAfterCompute
           ) {
-            node.nodeInfo.updateVisual(data);
+            node.nodeInfo.updateVisual(data, undefined, scopeId);
           }
         },
       },
@@ -328,14 +328,14 @@ if (url.pathname === '/run-flow') {
       undefined,
       undefined,
       {
-        sendOutputToNode: (data, node) => {
+        sendOutputToNode: (data, node, scopeId) => {
           if (
             node &&
             node.nodeInfo &&
             node.nodeInfo.updateVisual &&
             node.nodeInfo.updatesVisualAfterCompute
           ) {
-            node.nodeInfo.updateVisual(data);
+            node.nodeInfo.updateVisual(data, undefined, scopeId);
           }
         },
       },

@@ -79,7 +79,9 @@ export class BaseRectNode {
     //
   }
 
-  updateVisual: ((data: any) => void) | undefined = undefined;
+  updateVisual:
+    | ((data: any, scopeId?: string | undefined) => void)
+    | undefined = undefined;
 
   getSettingsPopup:
     | ((popupContainer: HTMLElement) => IDOMElement | undefined)

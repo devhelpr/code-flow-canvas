@@ -242,7 +242,11 @@ export class RuntimeFlowEngine {
       runCounter?: RunCounter,
       connection?: IConnectionNodeComponent<NodeInfo>
     ) => Promise<IComputeResult>,
-    sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+    sendOutputToNode?: (
+      data: any,
+      node: IRectNodeComponent<NodeInfo>,
+      scopeId: string | undefined
+    ) => void
   ): void => {
     runNode(
       node,

@@ -12,6 +12,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '../types/node-info';
 import { getShowNodeFamilyCssClasses } from '../consts/show-node-family-css-classes';
+
 const thumbs = [
   {
     thumbType: ThumbType.StartConnectorRight,
@@ -21,6 +22,7 @@ const thumbs = [
     //thumbConstraint: '',
     name: 'output',
     color: 'white',
+    maxConnections: -1,
   },
   {
     thumbType: ThumbType.EndConnectorLeft,

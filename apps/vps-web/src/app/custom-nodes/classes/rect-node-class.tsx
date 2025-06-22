@@ -161,7 +161,7 @@ export const createNodeClass = (
       if (!node.nodeInfo) {
         node.nodeInfo = {};
       }
-      this.nodeVisual = new NodeVisualClass(node);
+      this.nodeVisual = new NodeVisualClass(node, this.canvasAppInstance);
       this.nodeCompute = new NodeComputeClass();
       // (this.nodeVisual as any).flowEngine = flowEngine;
       // (this.nodeVisual as any).baseRectNode = this;
@@ -198,7 +198,10 @@ export const createNodeClass = (
               node,
               getRunIndex(),
               undefined,
-              this.createRunCounterContext(false, false)
+              this.createRunCounterContext(false, false),
+              undefined,
+              undefined,
+              flowEngine?.sendOutputToNode
             );
           } else {
             runNodeFromThumb(
@@ -211,7 +214,10 @@ export const createNodeClass = (
               node,
               getRunIndex(),
               undefined,
-              this.createRunCounterContext(false, false)
+              this.createRunCounterContext(false, false),
+              undefined,
+              undefined,
+              flowEngine?.sendOutputToNode
             );
           }
           return;
@@ -296,17 +302,15 @@ export const createNodeClass = (
         _connection
       );
     };
-    updateVisual = (data: unknown) => {
-      // Hack!! fix this later
-      // console.log('updateVisual', this.flowEngine);
-      // (this.nodeVisual as any).flowEngine = this.flowEngine;
+    updateVisual = (data: unknown, scopeId?: string | undefined) => {
       if (!this.rectElement || !this.node) {
         return;
       }
       this.nodeVisual?.updateVisual?.(
         data,
         this.rectElement,
-        this.node.nodeInfo as NodeInfo
+        this.node.nodeInfo as NodeInfo,
+        scopeId
       );
     };
     childElementSelector = '.child-node-wrapper > *:first-child';
@@ -322,7 +326,9 @@ export const createNodeClass = (
             this.rectElement = element;
           }}
         >
-          {nodeDefinition.nodeTypeName}
+          <div class="grid content-center justify-items-center h-full">
+            {nodeDefinition.nodeTypeName}
+          </div>
         </div>
       );
     };

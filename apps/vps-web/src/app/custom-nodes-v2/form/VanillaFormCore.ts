@@ -2,13 +2,17 @@ import {
   compileExpressionAsInfo,
   runExpression,
 } from '@devhelpr/expression-compiler';
-import { FormSchema, Component, Action } from './types';
+import { FormSchema, Component, Action, Page } from './types';
+import { IFlowCanvasBase } from '@devhelpr/visual-programming-system';
+import {
+  getVariablePayloadInputUtils,
+  NodeInfo,
+} from '@devhelpr/web-flow-executor';
 
-interface Page {
+interface FormPage extends Page {
   id: string;
   title: string;
   route: string;
-  layout?: string;
   components: Component[];
   isEndPage?: boolean;
   branches?: Array<{
@@ -29,7 +33,7 @@ export interface ExtendedFormSchema extends FormSchema {
 export class VanillaFormCore {
   private _schema: ExtendedFormSchema;
   private container: HTMLElement;
-  private currentPage: Page | null = null;
+  public currentPage: FormPage | null = null;
   private formData: Record<string, unknown> = {};
   private pageHistory: string[] = [];
   private branchHistory: Array<{ pageId: string; branchIndex: number | null }> =
@@ -37,14 +41,20 @@ export class VanillaFormCore {
   private touchedFields: Set<string> = new Set();
   private validationErrors: Record<string, string> = {};
   private payload: any = {};
+  private scopeId: string | undefined;
+  private canvasAppInstance: IFlowCanvasBase<NodeInfo>;
   constructor(
     schema: ExtendedFormSchema,
     containerElement: HTMLElement,
-    payload: any
+    payload: any,
+    canvasAppInstance: IFlowCanvasBase<NodeInfo>,
+    scopeId?: string | undefined
   ) {
     this.payload = payload;
     this._schema = schema;
     this.container = containerElement;
+    this.canvasAppInstance = canvasAppInstance;
+    this.scopeId = scopeId;
   }
 
   private onSubmitEvent: ((data: any) => void) | undefined;
@@ -268,6 +278,15 @@ export class VanillaFormCore {
     return text;
   }
   private getTextViaExpression(expression: string) {
+    const payloadForExpression = getVariablePayloadInputUtils(
+      this.payload,
+      this.payload,
+      'string',
+      0,
+      0,
+      this.scopeId,
+      this.canvasAppInstance
+    );
     const compiledExpression = compileExpressionAsInfo(expression);
     const expressionFunction = (
       new Function('payload', `${compiledExpression.script}`) as unknown as (
@@ -277,7 +296,7 @@ export class VanillaFormCore {
     return (
       runExpression(
         expressionFunction,
-        this.payload,
+        payloadForExpression,
         false,
         compiledExpression.payloadProperties
       ) ?? ''

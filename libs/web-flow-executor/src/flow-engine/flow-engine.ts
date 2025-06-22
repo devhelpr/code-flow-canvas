@@ -154,7 +154,11 @@ const triggerExecution = (
     runCounter?: RunCounter,
     connection?: IConnectionNodeComponent<NodeInfo>
   ) => Promise<IComputeResult>,
-  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+  sendOutputToNode?: (
+    data: any,
+    node: IRectNodeComponent<NodeInfo>,
+    scopeId: string | undefined
+  ) => void
 ) => {
   let lastConnectionExecutionHistory: ConnectionExecute | undefined = undefined;
   if (result !== undefined) {
@@ -267,7 +271,7 @@ const triggerExecution = (
                 // let result: any = undefined;
                 // result = computeResult.result ?? computeResult.output ?? '';
 
-                sendOutputToNode?.(computeResult.output, nextNode);
+                sendOutputToNode?.(computeResult.output, nextNode, scopeId);
                 if (nextNode.nodeInfo?.updatesVisualAfterCompute) {
                   storeNodeStates(computeResult.output);
                 }
@@ -356,7 +360,7 @@ const triggerExecution = (
           );
 
           result = computeResult.result;
-          sendOutputToNode?.(computeResult.output, nextNode);
+          sendOutputToNode?.(computeResult.output, nextNode, scopeId);
 
           followPath = computeResult.followPath;
 
@@ -477,7 +481,11 @@ export const runNode = (
     runCounter?: RunCounter,
     connection?: IConnectionNodeComponent<NodeInfo>
   ) => Promise<IComputeResult>,
-  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+  sendOutputToNode?: (
+    data: any,
+    node: IRectNodeComponent<NodeInfo>,
+    scopeId: string | undefined
+  ) => void
 ): void => {
   if (runCounter) {
     let thumbName = useThumbName ?? '';
@@ -550,7 +558,7 @@ export const runNode = (
         let result: any = undefined;
 
         result = computeResult.result ?? computeResult.output ?? '';
-        sendOutputToNode?.(result, node);
+        sendOutputToNode?.(result, node, scopeId);
 
         decrementHelper(runCounter, computeResult.output ?? '', node);
         result = computeResult.result;
@@ -610,7 +618,7 @@ export const runNode = (
     );
 
     result = computeResult.result;
-    sendOutputToNode?.(result, node);
+    sendOutputToNode?.(result, node, scopeId);
 
     followPath = computeResult.followPath;
     if (computeResult.stop) {
@@ -723,7 +731,11 @@ export const run = (
     runCounter?: RunCounter,
     connection?: IConnectionNodeComponent<NodeInfo>
   ) => Promise<IComputeResult>,
-  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+  sendOutputToNode?: (
+    data: any,
+    node: IRectNodeComponent<NodeInfo>,
+    scopeId: string | undefined
+  ) => void
 ) => {
   console.log('pre sendOutputToNode', sendOutputToNode !== undefined);
   /*
@@ -793,7 +805,7 @@ export const run = (
     //   updateRunCounterElement(runCounter);
     // }
 
-    sendOutputToNode?.('test-sendOutputToNode', nodeComponent);
+    sendOutputToNode?.('test-sendOutputToNode', nodeComponent, undefined);
 
     runNode(
       nodeComponent,
@@ -847,7 +859,11 @@ export const runNodeFromThumb = (
     runCounter?: RunCounter,
     connection?: IConnectionNodeComponent<NodeInfo>
   ) => Promise<IComputeResult>,
-  sendOutputToNode?: (data: any, node: IRectNodeComponent<NodeInfo>) => void
+  sendOutputToNode?: (
+    data: any,
+    node: IRectNodeComponent<NodeInfo>,
+    scopeId: string | undefined
+  ) => void
 ) => {
   //let result: any = false;
   let firstStoreNodeState = true;
@@ -958,7 +974,7 @@ export const runNodeFromThumb = (
             ?.then((computeResult: any) => {
               let result: any = undefined;
               result = computeResult.result ?? computeResult.output ?? '';
-              sendOutputToNode?.(result, nextNode);
+              sendOutputToNode?.(result, nextNode, scopeId);
 
               if (nextNode.nodeInfo?.updatesVisualAfterCompute) {
                 storeNodeStates(result);
@@ -1027,7 +1043,7 @@ export const runNodeFromThumb = (
           connection
         );
         result = computeResult.result;
-        sendOutputToNode?.(result, nextNode);
+        sendOutputToNode?.(result, nextNode, scopeId);
         followPath = computeResult.followPath;
 
         //previousOutput = computeResult.previousOutput;
