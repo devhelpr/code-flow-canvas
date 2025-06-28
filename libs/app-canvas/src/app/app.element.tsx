@@ -471,7 +471,7 @@ export class AppElement<T extends BaseNodeInfo, TFlowEngine = unknown> {
       }
       return;
     }
-    if (key === 'backspace' || key === 'delete' || key === 'enter') {
+    if (key === 'backspace' || key === 'delete') {
       if (inInputControle || (event.target as HTMLElement)?.isContentEditable) {
         return;
       }

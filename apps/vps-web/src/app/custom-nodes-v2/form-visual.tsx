@@ -1,4 +1,7 @@
-import { NodeVisual } from '@devhelpr/visual-programming-system';
+import {
+  createJSXElement,
+  NodeVisual,
+} from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
 import { initFormGenerator } from './form/VanillaFormRenderer';
 
@@ -8,7 +11,9 @@ export class FormVisual extends NodeVisual<NodeInfo> {
   private wheelEventHandler(e: WheelEvent) {
     e.stopPropagation();
   }
-
+  render = () => {
+    return <h1>Hello form</h1>;
+  };
   updateVisual = (
     incomingData: unknown,
     parentNode: HTMLElement,

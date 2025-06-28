@@ -93,6 +93,8 @@ export class NodeVisual<T extends BaseNodeInfo> {
     this.canvasAppInstance = canvasApp;
     // Constructor logic
   }
+
+  render?: () => JSX.Element;
   updateVisual(
     _data: unknown,
     _parentNode: HTMLElement,
@@ -132,6 +134,10 @@ export interface NodeDefinition {
     fieldType: FormFieldType;
     defaultValue?: string | number | boolean;
   }[];
+  nodeTheme?: {
+    backgroundColorClass?: string;
+    textColorClass?: string;
+  };
 }
 
 export class NodeCompute<T extends BaseNodeInfo> {
@@ -139,7 +145,7 @@ export class NodeCompute<T extends BaseNodeInfo> {
     //
   }
   compute(
-    _input: unknown,
+    input: unknown,
     _loopIndex?: number,
     _payload?: unknown,
     _portName?: string,
@@ -147,6 +153,10 @@ export class NodeCompute<T extends BaseNodeInfo> {
     _runCounter?: IRunCounter,
     _connection?: IConnectionNodeComponent<T>
   ): Promise<IComputeResult> {
-    return Promise.reject();
+    //return Promise.reject();
+    return Promise.resolve({
+      result: input,
+      output: input,
+    });
   }
 }

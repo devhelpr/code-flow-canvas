@@ -96,8 +96,8 @@ w-min h-min
 
 export const createNodeClass = (
   nodeDefinition: NodeDefinition,
-  NodeVisualClass: typeof NodeVisual<NodeInfo>,
-  NodeComputeClass: typeof NodeCompute<NodeInfo>
+  NodeVisualClass?: typeof NodeVisual<NodeInfo>,
+  NodeComputeClass?: typeof NodeCompute<NodeInfo>
 ) => {
   return class extends RectNode {
     static readonly nodeTypeName: string = nodeDefinition.nodeTypeName;
@@ -161,8 +161,12 @@ export const createNodeClass = (
       if (!node.nodeInfo) {
         node.nodeInfo = {};
       }
-      this.nodeVisual = new NodeVisualClass(node, this.canvasAppInstance);
-      this.nodeCompute = new NodeComputeClass();
+      this.nodeVisual = NodeVisualClass
+        ? new NodeVisualClass(node, this.canvasAppInstance)
+        : new NodeVisual(node, this.canvasAppInstance);
+      this.nodeCompute = NodeComputeClass
+        ? new NodeComputeClass()
+        : new NodeCompute();
       // (this.nodeVisual as any).flowEngine = flowEngine;
       // (this.nodeVisual as any).baseRectNode = this;
       this.nodeVisual?.setTriggerOutputs(
@@ -319,16 +323,20 @@ export const createNodeClass = (
     render = (_node: FlowNode<NodeInfo>) => {
       return (
         <div
-          class={`h-full w-full bg-white text-black ${
+          class={`h-full w-full ${
+            nodeDefinition.nodeTheme?.backgroundColorClass ?? 'bg-white'
+          } ${nodeDefinition.nodeTheme?.textColorClass ?? 'text-black'} ${
             this.nodeVisual?.additionalContainerCssClasses ?? ''
           }`}
           getElement={(element: HTMLDivElement) => {
             this.rectElement = element;
           }}
         >
-          <div class="grid content-center justify-items-center h-full">
-            {nodeDefinition.nodeTypeName}
-          </div>
+          {this.nodeVisual?.render?.() ?? (
+            <div class="grid content-center justify-items-center h-full">
+              {nodeDefinition.nodeTypeName}
+            </div>
+          )}
         </div>
       );
     };

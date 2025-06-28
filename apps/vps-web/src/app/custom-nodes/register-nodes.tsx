@@ -26,6 +26,11 @@ import { PlotVisual } from '../custom-nodes-v2/plot-visual';
 import { formDefinition } from '../custom-nodes-v2/form-definition';
 import { FormCompute } from '../custom-nodes-v2/form-compute';
 import { FormVisual } from '../custom-nodes-v2/form-visual';
+import {
+  dummy2Definition,
+  dummy3Definition,
+  dummyDefinition,
+} from '../custom-nodes-v2/dummy-definition';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -42,6 +47,9 @@ const nodes: NodeRegistration[] = [
   createNodeClass(pieChartDefinition, PieChartVisual, PieChartCompute),
   createNodeClass(plotDefinition, PlotVisual, PlotCompute),
   createNodeClass(formDefinition, FormVisual, FormCompute),
+  createNodeClass(dummyDefinition),
+  createNodeClass(dummy2Definition),
+  createNodeClass(dummy3Definition),
 ];
 
 export const registerNodes = (
