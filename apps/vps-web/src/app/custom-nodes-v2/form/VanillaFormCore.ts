@@ -7,6 +7,7 @@ import { IFlowCanvasBase } from '@devhelpr/visual-programming-system';
 import {
   getVariablePayloadInputUtils,
   NodeInfo,
+  replaceExpressionScript,
 } from '@devhelpr/web-flow-executor';
 
 interface FormPage extends Page {
@@ -287,20 +288,8 @@ export class VanillaFormCore {
       this.scopeId,
       this.canvasAppInstance
     );
-    const compiledExpression = compileExpressionAsInfo(expression);
-    const expressionFunction = (
-      new Function('payload', `${compiledExpression.script}`) as unknown as (
-        payload?: any
-      ) => any
-    ).bind(compiledExpression.bindings);
-    return (
-      runExpression(
-        expressionFunction,
-        payloadForExpression,
-        false,
-        compiledExpression.payloadProperties
-      ) ?? ''
-    ).toString();
+
+    return replaceExpressionScript(expression, payloadForExpression);
   }
   private getOptonsViaExpression(expression: string) {
     const compiledExpression = compileExpressionAsInfo(expression);

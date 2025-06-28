@@ -9,3 +9,4 @@ export * from './nodes/variable-payload-input-utils/variable-payload-input-utils
 export type { ComputeAsync } from './types/compute-async';
 export * from './interface/flow-engine';
 export * from './consts/llm-keys';
+export * from './utils/replace-expression-script';

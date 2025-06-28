@@ -23,9 +23,7 @@ export const replaceExpressionScript = (
         try {
           const result = runExpression(
             expressionFunction,
-            {
-              ...payload,
-            },
+            payload,
             true,
             info.payloadProperties
           );
