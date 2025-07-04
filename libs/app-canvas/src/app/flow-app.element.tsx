@@ -725,7 +725,10 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
                     false,
                     {
                       triggerNode: true,
-                    }
+                    },
+                    undefined,
+                    undefined,
+                    flowEngine?.sendOutputToNode
                   );
                 } else {
                   runNode(
@@ -744,7 +747,10 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
                     false,
                     {
                       triggerNode: true,
-                    }
+                    },
+                    undefined,
+                    undefined,
+                    flowEngine?.sendOutputToNode
                   );
                 }
               }
