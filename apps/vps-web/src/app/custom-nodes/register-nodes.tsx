@@ -31,6 +31,10 @@ import {
   dummy3Definition,
   dummyDefinition,
 } from '../custom-nodes-v2/dummy-definition';
+import {
+  renderTestNodeDefinition,
+  RenderTestNodeVisual,
+} from '../custom-nodes-v2/render-test-node-definition';
 
 const nodes: NodeRegistration[] = [
   () => ({
@@ -50,6 +54,7 @@ const nodes: NodeRegistration[] = [
   createNodeClass(dummyDefinition),
   createNodeClass(dummy2Definition),
   createNodeClass(dummy3Definition),
+  createNodeClass(renderTestNodeDefinition, RenderTestNodeVisual),
 ];
 
 export const registerNodes = (

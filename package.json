@@ -4,6 +4,7 @@
   "license": "see license in license.md",
   "scripts": {
     "start": "nx serve vps-web",
+    "dev": "nx serve vps-web",
     "startapi": "nx serve vps-api",
     "build": "nx build vps-web",
     "build-all": "nx run-many --all --target=build --skip-nx-cache",
