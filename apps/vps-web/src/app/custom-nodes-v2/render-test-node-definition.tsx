@@ -66,8 +66,6 @@ export class RenderTestNodeVisual extends NodeVisual<NodeInfo> {
   updateVisual = (
     incomingData: unknown,
     _parentNode: HTMLElement,
-    // Using underscore prefix to indicate intentionally unused parameter
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _nodeInfo: NodeInfo,
     _scopeId?: string | undefined
   ) => {
