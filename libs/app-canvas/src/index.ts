@@ -11,3 +11,14 @@ export {
   ocifToCodeFlowCanvas,
 } from './app/consts/ocif';
 export { getCurrentOCIF } from './app/importers/ocif-importer';
+export {
+  BaseRectNode,
+  type CreateRunCounterContext,
+} from './app/custom-nodes/base-rect-node-class';
+export {
+  type NodeRegistration,
+  isBaseRectNode,
+  isFactoryNode,
+} from './app/custom-nodes/register-helpers';
+export { RectNode, createNodeClass } from './app/custom-nodes/rect-node-class';
+export { getRectNode } from './app/custom-nodes/rect-node';

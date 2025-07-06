@@ -1,3 +1,4 @@
+import { CreateRunCounterContext } from '@devhelpr/app-canvas';
 import {
   IThumbNodeComponent,
   OnNextNodeFunction,
@@ -27,7 +28,6 @@ import {
   RegisterNodeFactoryFunction,
   FlowEngine,
 } from '@devhelpr/web-flow-executor';
-import { CreateRunCounterContext } from '../custom-nodes/classes/base-rect-node-class';
 
 export class RuntimeFlowEngine {
   public canvasApp: IFlowCanvasBase<NodeInfo, FlowEngine>;

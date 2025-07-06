@@ -7,7 +7,7 @@ import { NodeInfo } from '@devhelpr/web-flow-executor';
 
 // @ts-expect-error:will-fix-later
 import TestWorker from './workers/test-worker?worker';
-import { BaseRectNode } from './base-rect-node-class';
+import { BaseRectNode } from '@devhelpr/app-canvas';
 
 const testWorker = new TestWorker();
 

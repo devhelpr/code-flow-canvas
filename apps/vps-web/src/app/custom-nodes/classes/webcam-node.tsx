@@ -1,3 +1,4 @@
+import { BaseRectNode } from '@devhelpr/app-canvas';
 import {
   createElement,
   createJSXElement,
@@ -6,8 +7,6 @@ import {
   renderElement,
 } from '@devhelpr/visual-programming-system';
 import { getRunIndex, NodeInfo, runNode } from '@devhelpr/web-flow-executor';
-
-import { BaseRectNode } from './base-rect-node-class';
 
 interface WebcamViewerSettings {
   fadeRadius: number;

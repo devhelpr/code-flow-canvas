@@ -15,10 +15,7 @@ import {
   visualNodeFactory,
 } from '@devhelpr/visual-programming-system';
 import { FlowEngine, NodeInfo } from '@devhelpr/web-flow-executor';
-import {
-  BaseRectNode,
-  CreateRunCounterContext,
-} from './classes/base-rect-node-class';
+import { BaseRectNode, CreateRunCounterContext } from './base-rect-node-class';
 
 const familyName = 'flow-canvas';
 

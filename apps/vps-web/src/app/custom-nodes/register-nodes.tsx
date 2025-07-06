@@ -4,15 +4,9 @@ import {
   RunCounter,
 } from '@devhelpr/web-flow-executor';
 import { mermaidNodeName, getMermaidNode } from './mermaid';
-import { getRectNode } from './rect-node';
+
 import { OvalNode } from './classes/oval-node-class';
 import { DrawGridNode } from './classes/draw-grid-node';
-import {
-  isBaseRectNode,
-  isFactoryNode,
-  NodeRegistration,
-} from './utils/register-helpers';
-import { createNodeClass, RectNode } from './classes/rect-node-class';
 import { WebcamViewerNode } from './classes/webcam-node';
 import { CanvasNode } from './classes/canvas-node-class';
 import { PromptNode } from './classes/prompt-node-class';
@@ -35,6 +29,14 @@ import {
   renderTestNodeDefinition,
   RenderTestNodeVisual,
 } from '../custom-nodes-v2/render-test-node-definition';
+import {
+  NodeRegistration,
+  RectNode,
+  createNodeClass,
+  isFactoryNode,
+  isBaseRectNode,
+  getRectNode,
+} from '@devhelpr/app-canvas';
 
 const nodes: NodeRegistration[] = [
   () => ({

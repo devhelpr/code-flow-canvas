@@ -77,6 +77,23 @@ export type NodeTask<T extends BaseNodeInfo> = {
   setTitle?: (newTitle: string) => void;
 };
 
+export type FactoryNodeRegistration<T extends BaseNodeInfo> = () => {
+  factory: () => (_updated: () => void) => NodeTask<T>;
+  name: string;
+};
+
+export function isFactoryNode<T extends BaseNodeInfo>(
+  node: () => {
+    factory: () => (_updated: () => void) => NodeTask<T>;
+    name: string;
+  }
+): node is () => {
+  factory: () => (_updated: () => void) => NodeTask<T>;
+  name: string;
+} {
+  return typeof node === 'function' && !(node as any).nodeTypeName;
+}
+
 export type NodeTypeRegistry<
   T extends BaseNodeInfo,
   TFlowEngine = unknown

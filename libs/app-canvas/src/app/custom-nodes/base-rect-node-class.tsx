@@ -1,4 +1,3 @@
-import { getCurrentOCIF } from '@devhelpr/app-canvas';
 import {
   createJSXElement,
   FlowNode,
@@ -16,6 +15,7 @@ import {
 } from '@devhelpr/visual-programming-system';
 import { FlowEngine, NodeInfo, RunCounter } from '@devhelpr/web-flow-executor';
 import { CorePropertiesSetupEditor } from './core-properties-settings-editor';
+import { getCurrentOCIF } from '../importers/ocif-importer';
 
 export type CreateRunCounterContext = (
   isRunViaRunButton: boolean,

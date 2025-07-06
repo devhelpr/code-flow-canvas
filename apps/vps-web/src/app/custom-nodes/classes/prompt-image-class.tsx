@@ -1,3 +1,4 @@
+import { BaseRectNode } from '@devhelpr/app-canvas';
 import {
   createJSXElement,
   FlowNode,
@@ -6,7 +7,6 @@ import {
   InitialValues,
 } from '@devhelpr/visual-programming-system';
 import { NodeInfo } from '@devhelpr/web-flow-executor';
-import { BaseRectNode } from './base-rect-node-class';
 
 export class PromptImageNode extends BaseRectNode {
   static readonly nodeTypeName: string = 'prompt-image-rect-node';

@@ -1,13 +1,13 @@
 import { NodeInfo } from '@devhelpr/web-flow-executor';
-import { NodeTask } from '@devhelpr/visual-programming-system';
-import { BaseRectNode } from '../classes/base-rect-node-class';
+import {
+  FactoryNodeRegistration,
+  NodeTask,
+} from '@devhelpr/visual-programming-system';
+import { BaseRectNode } from './base-rect-node-class';
 
 export type NodeRegistration =
   | typeof BaseRectNode
-  | (() => {
-      factory: () => (_updated: () => void) => NodeTask<NodeInfo>;
-      name: string;
-    });
+  | FactoryNodeRegistration<NodeInfo>;
 
 export function isFactoryNode(
   node:
