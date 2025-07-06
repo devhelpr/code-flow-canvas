@@ -95,7 +95,7 @@ export class BaseRectNode {
     return <div></div>;
   }
   onResize: ((width: number, height: number) => void) | undefined = undefined;
-  setSize = (width: number, height: number) => {
+  setSize = (_width: number, _height: number) => {
     //
   };
 }
