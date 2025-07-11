@@ -104,6 +104,7 @@ import { exportTldraw } from './exporters/export-tldraw';
 import { downloadFile } from './utils/create-download-link';
 import { StorageProvider } from './storage/StorageProvider';
 import { mandelbrotFlow } from './default-flows/mandelbrot-flow';
+import { CameraModifiers } from './interfaces/app-flow-options';
 
 const defaultGLFlowId = 'gl';
 
@@ -154,7 +155,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
     appRootSelector: string,
     storageProvider?: StorageProvider<GLNodeInfo>,
     heightSpaceForHeaderFooterToolbars?: number,
-    widthSpaceForSideToobars?: number
+    widthSpaceForSideToobars?: number,
+    cameraModifiers?: CameraModifiers
   ) {
     const template = document.createElement('template');
     template.innerHTML = `<div>
@@ -171,7 +173,10 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
       undefined,
       heightSpaceForHeaderFooterToolbars,
       widthSpaceForSideToobars,
-      getGLNodeTaskFactory
+      getGLNodeTaskFactory,
+      {
+        cameraModifiers: cameraModifiers,
+      }
     );
 
     if (!this.rootElement) {

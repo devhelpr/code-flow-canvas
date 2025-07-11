@@ -189,7 +189,12 @@ export class FlowCanvas<T extends BaseNodeInfo, TFlowEngine = unknown>
   public getRootFlowCanvas = () => this.rootFlowCanvas;
 
   private canvasAttributes: Map<string, string> = new Map();
-
+  private cameraModifiers?: {
+    xOffset: number;
+    yOffset: number;
+    widthSubtract?: number;
+    heightSubtract?: number;
+  } = undefined;
   constructor(
     rootElement: HTMLElement,
     disableInteraction?: boolean,
@@ -219,6 +224,7 @@ export class FlowCanvas<T extends BaseNodeInfo, TFlowEngine = unknown>
     this.rootFlowCanvas = rootFlowCanvas;
     this.isNodeContainer = isNodeContainer ?? false;
     this.disableInteraction = disableInteraction ?? false;
+    this.cameraModifiers = options?.cameraModifiers;
 
     this.heightSpaceForHeaderFooterToolbars =
       heightSpaceForHeaderFooterToolbars;
@@ -1301,8 +1307,12 @@ export class FlowCanvas<T extends BaseNodeInfo, TFlowEngine = unknown>
       if (this.hasNodeTypeSideBar) {
         offsetNodesidebar = 280;
       }
-      const width = maxX - minX + (120 + offsetNodesidebar) / helperScale;
-      const height = maxY - minY + 240 / helperScaleHeight;
+      const widhtModifier = this.cameraModifiers?.widthSubtract ?? 120;
+      const heightModifier = this.cameraModifiers?.heightSubtract ?? 240;
+
+      const width =
+        maxX - minX + (widhtModifier + offsetNodesidebar) / helperScale;
+      const height = maxY - minY + heightModifier / helperScaleHeight;
 
       let scale = rootWidth / width;
       const scaleX = scale;
@@ -1344,9 +1354,15 @@ export class FlowCanvas<T extends BaseNodeInfo, TFlowEngine = unknown>
       // const boudingBoxCorrectionY =
       //   -boundingBox.y - (heightSpaceForHeaderFooterToolbars ?? 0); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
 
-      const boudingBoxCorrectionX = -(this.widthSpaceForSideToobars ?? 0); // 32; //-230; //-boundingBox.x; // 400; //;
+      const boudingBoxCorrectionX = -(
+        this.widthSpaceForSideToobars ??
+        this.cameraModifiers?.xOffset ??
+        0
+      ); // 32; //-230; //-boundingBox.x; // 400; //;
       const boudingBoxCorrectionY = -(
-        this.heightSpaceForHeaderFooterToolbars ?? 0
+        this.heightSpaceForHeaderFooterToolbars ??
+        this.cameraModifiers?.yOffset ??
+        0
       ); // 100; //-150 //-boundingBox.y; // -500; //boundingBox.y;
 
       let xOffsetNodesidebar = 0;

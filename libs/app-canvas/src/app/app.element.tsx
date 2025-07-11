@@ -163,6 +163,7 @@ export class AppElement<T extends BaseNodeInfo, TFlowEngine = unknown> {
       {
         hasNodeTypeSideBar: options?.hasNodeTypeSideBar,
         nodeTypeSideBarSelector: options?.nodeTypeSideBarSelector,
+        cameraModifiers: options?.cameraModifiers,
       }
     );
     this.canvas = canvasApp.canvas;

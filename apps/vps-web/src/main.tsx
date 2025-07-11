@@ -126,7 +126,12 @@ if (url.pathname === '/run-flow') {
   examplePage();
 } else if (url.pathname === '/gl') {
   import('./app/gl-app.element').then((module) => {
-    new module.GLAppElement('#app-root');
+    new module.GLAppElement('#app-root', undefined, undefined, undefined, {
+      xOffset: 20,
+      yOffset: 20,
+      widthSubtract: 40,
+      heightSubtract: 40,
+    });
   });
 } else if (url.pathname === '/ocwg' || url.pathname === '/ocif') {
   ocwgPage();
