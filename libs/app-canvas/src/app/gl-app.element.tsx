@@ -594,6 +594,8 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
                 event.stopPropagation();
                 if (confirm('Are you sure you want to clear the canvas?')) {
                   this.clearCanvas();
+                  this.flowId = defaultGLFlowId;
+                  window.history.pushState(undefined, '', `/gl`);
                   store();
                 }
                 return false;

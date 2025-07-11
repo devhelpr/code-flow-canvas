@@ -902,7 +902,10 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
                   event.stopPropagation();
                   if (confirm('Are you sure you want to clear the canvas?')) {
                     setStopAnimations();
+
                     this.clearCanvas();
+                    this.flowId = defaultFlowId;
+                    window.history.pushState(undefined, '', ``);
                     store();
                   }
                   return false;
