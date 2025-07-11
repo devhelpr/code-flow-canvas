@@ -777,7 +777,9 @@ export class NavbarComponent extends Component<
                 undefined,
                 0,
                 getNodeTaskFactory,
-                data.compositions
+                data.compositions,
+                undefined,
+                example.replace('.json', '')
               );
               canvasApp.centerCamera();
               this.props.initializeNodes();

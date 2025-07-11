@@ -22,6 +22,9 @@ export function examplePage() {
       getCurrentFlow: () => {
         return flowData as Flow<NodeInfo>;
       },
+      doesFlowExist: async (_flowId: string) => {
+        return Promise.resolve(true);
+      },
     };
     appElement.classList.add('hidden');
     pageElement.classList.remove('hidden');

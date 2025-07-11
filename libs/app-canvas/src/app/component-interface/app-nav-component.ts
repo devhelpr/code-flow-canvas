@@ -36,7 +36,8 @@ export interface AppNavComponentsProps<
     nestedLevel?: number,
     getNodeTaskFactory?: (name: string) => any,
     compositions?: Record<string, Composition<T>>,
-    flowEngine?: TFlowEngine
+    flowEngine?: TFlowEngine,
+    flowId?: string
   ) => void;
   showPopup: (node: IRectNodeComponent<NodeInfo>) => void;
   executeCommand: (
@@ -72,7 +73,8 @@ export interface GenericAppNavComponentsProps<
     nestedLevel?: number,
     getNodeTaskFactory?: (name: string) => any,
     compositions?: Record<string, Composition<T>>,
-    flowEngine?: TFlowEngine
+    flowEngine?: TFlowEngine,
+    flowId?: string
   ) => void;
   executeCommand: (
     commandName: string,

@@ -7,4 +7,5 @@ export interface StorageProvider<T extends BaseNodeInfo> {
   ) => Promise<{ flow: Flow<T>; didNotExist: boolean }>;
   saveFlow: (flowId: string, flow: Flow<T>) => Promise<void>;
   getCurrentFlow: () => Flow<T> | undefined;
+  doesFlowExist: (flowId: string) => Promise<boolean>;
 }

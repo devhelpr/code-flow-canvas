@@ -207,6 +207,8 @@ export class CodeFlowWebAppCanvas {
   onSetCanvasApp?: (canvasApp: IFlowCanvasBase<NodeInfo>) => void;
 }
 
+const defaultFlowId = '1234';
+
 export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
   public static observedAttributes = [];
 
@@ -248,7 +250,7 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
   updateToolbarTaskList: (() => void) | undefined = undefined;
   hideFlowPresets = false;
   initializeNodes: (() => void) | undefined = undefined;
-  flowId = '1234';
+  flowId = defaultFlowId;
 
   onStoreFlow?: (
     flow: Flow<NodeInfo>,
@@ -841,9 +843,16 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
               nestedLevel?: number,
               getNodeTaskFactory?: (name: string) => any,
               compositions: Record<string, Composition<NodeInfo>> = {},
-              _flowEngine?: FlowEngine
+              _flowEngine?: FlowEngine,
+              flowId?: string
             ) => {
               this.isStoring = true;
+              if (flowId) {
+                this.flowId = flowId;
+              } else {
+                this.flowId = defaultFlowId;
+              }
+              window.history.pushState(undefined, '', `?flowId=${this.flowId}`);
               removeAllCompositions();
               importCompositions<NodeInfo>(compositions, canvasApp);
               registerCompositionNodes(
@@ -1153,58 +1162,92 @@ export class FlowAppElement extends AppElement<NodeInfo, FlowEngine> {
             }
           }
         });
-        storageProvider
-          .getFlow(
+
+        const loadFlow = (flow: {
+          flow: Flow<NodeInfo>;
+          didNotExist: boolean;
+        }) => {
+          if (!this.canvasApp) {
+            throw new Error('canvasApp not defined');
+          }
+          console.log(
+            'oninit: storageProvider.getFlow',
             this.flowId,
-            this.flowId === '1234' ? (counterFlow as Flow<NodeInfo>) : undefined
-          )
-          .then((result) => {
-            if (!this.canvasApp) {
-              throw new Error('canvasApp not defined');
-            }
-            console.log(
-              'oninit: storageProvider.getFlow',
+            flow.flow
+          );
+          clearOCIF();
+          if (flow.flow.ocif) {
+            setOCIF(flow.flow.ocif);
+          }
+          removeAllCompositions();
+          importCompositions<NodeInfo>(
+            flow.flow.compositions ?? {},
+            this.canvasApp
+          );
+          registerCompositionNodes(
+            this.canvasApp.compositons.getAllCompositions()
+          );
+          importToCanvas(
+            flow.flow.flows.flow.nodes,
+            this.canvasApp,
+            canvasUpdated,
+            undefined,
+            0,
+            getNodeTaskFactory,
+            this.onImported,
+            this.flowEngine
+          );
+          this.canvasApp.centerCamera();
+          initializeNodes();
+          this.setTabOrderOfNodes();
+          setupTasksInDropdown(
+            this.selectNodeType?.domElement as HTMLSelectElement
+          );
+          this.updateToolbarTaskList?.();
+          if (this.onStoreFlow) {
+            this.onStoreFlow(flow.flow, this.canvasApp, getNodeTaskFactory);
+          }
+          this.isStoring = false;
+        };
+
+        const loadFlowFromStorage = () => {
+          storageProvider
+            .getFlow(
               this.flowId,
-              result.flow
-            );
-            clearOCIF();
-            if (result.flow.ocif) {
-              setOCIF(result.flow.ocif);
-            }
-            removeAllCompositions();
-            importCompositions<NodeInfo>(
-              result.flow.compositions,
-              this.canvasApp
-            );
-            registerCompositionNodes(
-              this.canvasApp.compositons.getAllCompositions()
-            );
-            importToCanvas(
-              result.flow.flows.flow.nodes,
-              this.canvasApp,
-              canvasUpdated,
-              undefined,
-              0,
-              getNodeTaskFactory,
-              this.onImported,
-              this.flowEngine
-            );
-            this.canvasApp.centerCamera();
-            initializeNodes();
-            this.setTabOrderOfNodes();
-            setupTasksInDropdown(
-              this.selectNodeType?.domElement as HTMLSelectElement
-            );
-            this.updateToolbarTaskList?.();
-            if (this.onStoreFlow) {
-              this.onStoreFlow(result.flow, this.canvasApp, getNodeTaskFactory);
-            }
-            this.isStoring = false;
-          })
-          .catch((error) => {
-            console.log('error', error);
-            this.isStoring = false;
-          });
+              this.flowId === defaultFlowId
+                ? (counterFlow as Flow<NodeInfo>)
+                : undefined
+            )
+            .then((result) => {
+              loadFlow(result);
+            })
+            .catch((error) => {
+              console.log('error', error);
+              this.isStoring = false;
+            });
+        };
+
+        // Read flowId from query parameter
+        const params = new URLSearchParams(window.location.search);
+        const hash = params.get('flowId');
+
+        this.flowId = hash || defaultFlowId;
+        storageProvider.doesFlowExist(this.flowId).then((exists) => {
+          if (!exists && this.flowId !== defaultFlowId) {
+            console.log('Flow does not exist, loading flow from example');
+
+            fetch(`/example-flows/${this.flowId}.json`)
+              .then((response) => response.json())
+              .then((data) => {
+                loadFlow({ flow: data } as any);
+              })
+              .catch((error) => {
+                console.log('fetch failed', error);
+              });
+          } else {
+            loadFlowFromStorage();
+          }
+        });
       })
       .catch((error) => {
         console.log('error', error);

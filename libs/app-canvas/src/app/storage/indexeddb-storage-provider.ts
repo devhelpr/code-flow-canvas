@@ -198,6 +198,21 @@ export const createIndexedDBStorageProvider = <T extends BaseNodeInfo>() => {
         getCurrentFlow: (): Flow<T> => {
           return currentFlow as unknown as Flow<T>;
         },
+        doesFlowExist: (flowId: string): Promise<boolean> => {
+          return new Promise((resolve) => {
+            const transaction = database!.transaction([flowStoreName]);
+            const objectStore = transaction.objectStore(flowStoreName);
+            const objectRequest = objectStore.get(flowId);
+
+            objectRequest.onsuccess = function () {
+              resolve(!!objectRequest.result);
+            };
+
+            objectRequest.onerror = function () {
+              resolve(false);
+            };
+          });
+        },
       });
     };
 

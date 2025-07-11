@@ -103,6 +103,9 @@ import { Toolbar } from './components/toolbar';
 import { exportTldraw } from './exporters/export-tldraw';
 import { downloadFile } from './utils/create-download-link';
 import { StorageProvider } from './storage/StorageProvider';
+import { mandelbrotFlow } from './default-flows/mandelbrot-flow';
+
+const defaultGLFlowId = 'gl';
 
 export class GLAppElement extends AppElement<GLNodeInfo> {
   public static observedAttributes = [];
@@ -146,6 +149,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
 
   updateToolbarTaskList: (() => void) | undefined = undefined;
 
+  flowId = defaultGLFlowId;
   constructor(
     appRootSelector: string,
     storageProvider?: StorageProvider<GLNodeInfo>,
@@ -507,9 +511,21 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
               containerNode?: IRectNodeComponent<GLNodeInfo>,
               nestedLevel?: number,
               getGLNodeTaskFactory?: (name: string) => any,
-              compositions: Record<string, Composition<GLNodeInfo>> = {}
+              compositions: Record<string, Composition<GLNodeInfo>> = {},
+              _?: any,
+              flowId?: string
             ) => {
               this.isStoring = true;
+              if (flowId) {
+                this.flowId = flowId;
+              } else {
+                this.flowId = defaultGLFlowId;
+              }
+              window.history.pushState(
+                undefined,
+                '',
+                `gl?glFlowId=${this.flowId}`
+              );
               removeAllCompositions();
               importCompositions<GLNodeInfo>(compositions, canvasApp);
               registerCompositionNodes(
@@ -695,56 +711,93 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
             setupTasksInDropdown: setupGLTasksInDropdown,
           });
         }
+        const loadFlow = (flow: {
+          flow: Flow<GLNodeInfo>;
+          didNotExist: boolean;
+        }) => {
+          if (!this.canvasApp) {
+            throw new Error('canvasApp not defined');
+          }
+          removeAllCompositions();
+          importCompositions<GLNodeInfo>(
+            flow.flow.compositions,
+            this.canvasApp
+          );
+          registerCompositionNodes(
+            this.canvasApp.compositons.getAllCompositions()
+          );
+          importToCanvas(
+            flow.flow.flows.flow.nodes,
+            this.canvasApp,
+            canvasUpdated,
+            undefined,
+            0,
+            getGLNodeTaskFactory
+          );
+          this.canvasApp.centerCamera();
+          initializeNodes();
+          this.flowTOGLCanvas();
+          this.setTabOrderOfNodes();
 
-        this.clearCanvas();
-        storageProvider
-          .getFlow('gl')
-          .then((result) => {
-            if (!this.canvasApp) {
-              throw new Error('canvasApp not defined');
+          setupGLTasksInDropdown(
+            this.selectNodeType?.domElement as HTMLSelectElement
+          );
+          this.updateToolbarTaskList?.();
+
+          (this.pathRange?.domElement as HTMLElement).setAttribute(
+            'value',
+            '0'
+          );
+          (this.pathRange?.domElement as HTMLElement).setAttribute('max', '0');
+          (this.pathRange?.domElement as unknown as HTMLInputElement).value =
+            '0';
+          this.isStoring = false;
+        };
+
+        const loadFlowFromStorage = () => {
+          storageProvider
+            .getFlow(
+              this.flowId,
+              this.flowId === defaultGLFlowId
+                ? (mandelbrotFlow as Flow<GLNodeInfo>)
+                : undefined
+            )
+            .then((result) => {
+              loadFlow(result);
+            })
+            .catch((error) => {
+              console.log('error', error);
+              this.isStoring = false;
+            });
+        };
+
+        //this.clearCanvas();
+        const loadFlowHandler = () => {
+          this.clearCanvas();
+          const params = new URLSearchParams(window.location.search);
+          const hash = params.get('glFlowId');
+          this.flowId = hash || defaultGLFlowId;
+          storageProvider.doesFlowExist(this.flowId).then((exists) => {
+            if (!exists && this.flowId !== defaultGLFlowId) {
+              console.log('Flow does not exist, loading flow from example');
+
+              fetch(`/example-flows-gl/${this.flowId}.json`)
+                .then((response) => response.json())
+                .then((data) => {
+                  loadFlow({ flow: data } as any);
+                })
+                .catch((error) => {
+                  console.log('fetch failed', error);
+                });
+            } else {
+              loadFlowFromStorage();
             }
-            removeAllCompositions();
-            importCompositions<GLNodeInfo>(
-              result.flow.compositions,
-              this.canvasApp
-            );
-            registerCompositionNodes(
-              this.canvasApp.compositons.getAllCompositions()
-            );
-            importToCanvas(
-              result.flow.flows.flow.nodes,
-              this.canvasApp,
-              canvasUpdated,
-              undefined,
-              0,
-              getGLNodeTaskFactory
-            );
-            this.canvasApp.centerCamera();
-            initializeNodes();
-            this.flowTOGLCanvas();
-            this.setTabOrderOfNodes();
-
-            setupGLTasksInDropdown(
-              this.selectNodeType?.domElement as HTMLSelectElement
-            );
-            this.updateToolbarTaskList?.();
-
-            (this.pathRange?.domElement as HTMLElement).setAttribute(
-              'value',
-              '0'
-            );
-            (this.pathRange?.domElement as HTMLElement).setAttribute(
-              'max',
-              '0'
-            );
-            (this.pathRange?.domElement as unknown as HTMLInputElement).value =
-              '0';
-            this.isStoring = false;
-          })
-          .catch((error) => {
-            console.log('error', error);
-            this.isStoring = false;
           });
+        };
+        loadFlowHandler();
+        window.addEventListener('popstate', () => {
+          loadFlowHandler();
+        });
       })
       .catch((error) => {
         console.log('error', error);
@@ -762,7 +815,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
         const flow: Flow<GLNodeInfo> = {
           schemaType: 'flow',
           schemaVersion: '0.0.1',
-          id: 'gl',
+          id: this.flowId,
           flows: {
             flow: {
               flowType: 'flow',
@@ -771,7 +824,7 @@ export class GLAppElement extends AppElement<GLNodeInfo> {
           },
           compositions: compositions,
         };
-        this.storageProvider.saveFlow('gl', flow).then(() => {
+        this.storageProvider.saveFlow(this.flowId, flow).then(() => {
           if (this.canvasAction === CanvasAction.newConnectionCreated) {
             if (
               this.canvasActionPayload &&
