@@ -166,6 +166,7 @@ export const setGridRowVariable: NodeTaskFactory<NodeInfo> = (
       return formElements;
     },
     (nodeInstance) => {
+      node = nodeInstance.node as any;
       contextInstance = nodeInstance.contextInstance;
       if (nodeInstance.node.nodeInfo) {
         nodeInstance.node.nodeInfo.getDependencies = getDependencies;

@@ -103,8 +103,8 @@ export const joinArray: NodeTaskFactory<NodeInfo> = (
       ];
       return formElements;
     },
-    (_nodeInstance) => {
-      //
+    (nodeInstance) => {
+      node = nodeInstance.node as any;
     },
     {
       category: 'variables-array',

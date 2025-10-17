@@ -142,7 +142,8 @@ export const replaceStringMap: NodeTaskFactory<NodeInfo> = (
       ];
       return formElements;
     },
-    (_nodeInstance) => {
+    (nodeInstance) => {
+      node = nodeInstance.node as any;
       if (node.nodeInfo) {
         node.nodeInfo.formValues = {
           ...node.nodeInfo.formValues,

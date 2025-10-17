@@ -104,8 +104,8 @@ export const runRegularExpression: NodeTaskFactory<NodeInfo> = (
       ];
       return formElements;
     },
-    (_nodeInstance) => {
-      //
+    (nodeInstance) => {
+      node = nodeInstance.node as any;
     },
     {
       category: 'string',
