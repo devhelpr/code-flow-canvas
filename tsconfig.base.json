@@ -18,11 +18,11 @@
       "@devhelpr/app-canvas": ["libs/app-canvas/src/index.ts"],
       "@devhelpr/dom-components": ["libs/dom-components/src/index.ts"],
       "@devhelpr/media-library": ["libs/media-library/src/index.ts"],
+      "@devhelpr/ocif": ["libs/ocif/src/index.ts"],
       "@devhelpr/visual-programming-system": [
         "libs/visual-programming-system/src/index.ts"
       ],
-      "@devhelpr/web-flow-executor": ["libs/web-flow-executor/src/index.ts"],
-      "@devhelpr/ocif": ["libs/ocif/src/index.ts"]
+      "@devhelpr/web-flow-executor": ["libs/web-flow-executor/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
