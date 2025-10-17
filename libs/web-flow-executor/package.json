@@ -1,10 +1,10 @@
 {
   "name": "@devhelpr/web-flow-executor",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "dependencies": {
     "@devhelpr/expression-compiler": "^0.0.38",
     "@devhelpr/markup-compiler": "^0.0.16",
-    "@devhelpr/visual-programming-system": "^0.0.30"
+    "@devhelpr/visual-programming-system": "^0.0.31"
   },
   "type": "module",
   "main": "./index.js",

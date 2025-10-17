@@ -1,6 +1,6 @@
 {
   "name": "@devhelpr/app-canvas",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "publishConfig": {
     "access": "public"
   },
@@ -13,8 +13,8 @@
     "@devhelpr/expression-compiler": "^0.0.38",
     "@devhelpr/markup-compiler": "^0.0.16",
     "@devhelpr/media-library": "^0.0.9",
-    "@devhelpr/visual-programming-system": "^0.0.30",
-    "@devhelpr/web-flow-executor": "^0.0.34"
+    "@devhelpr/visual-programming-system": "^0.0.31",
+    "@devhelpr/web-flow-executor": "^0.0.35"
   },
   "main": "./index.js",
   "module": "./index.mjs",

@@ -1,6 +1,6 @@
 {
   "name": "@devhelpr/visual-programming-system",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "type": "module",
   "main": "./index.js",
   "module": "./index.mjs",
