@@ -271,6 +271,18 @@ const triggerExecution = (
                 // let result: any = undefined;
                 // result = computeResult.result ?? computeResult.output ?? '';
 
+                // Handle backpropagation if requested
+                if (computeResult.backpropagate !== undefined) {
+                  const startNode = connection?.startNode;
+                  if (startNode && startNode.nodeInfo?.backpropagate) {
+                    startNode.nodeInfo.backpropagate(
+                      computeResult.backpropagate,
+                      nextNode,
+                      connection
+                    );
+                  }
+                }
+
                 sendOutputToNode?.(computeResult.output, nextNode, scopeId);
                 if (nextNode.nodeInfo?.updatesVisualAfterCompute) {
                   storeNodeStates(computeResult.output);
@@ -358,6 +370,18 @@ const triggerExecution = (
             runCounter,
             connection
           );
+
+          // Handle backpropagation if requested
+          if (computeResult.backpropagate !== undefined) {
+            const startNode = connection?.startNode;
+            if (startNode && startNode.nodeInfo?.backpropagate) {
+              startNode.nodeInfo.backpropagate(
+                computeResult.backpropagate,
+                nextNode,
+                connection
+              );
+            }
+          }
 
           result = computeResult.result;
           sendOutputToNode?.(computeResult.output, nextNode, scopeId);
