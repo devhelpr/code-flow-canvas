@@ -498,7 +498,7 @@ export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
 
     // eslint-disable-next-line prefer-const
     let message =
-      animatedNodes?.cursorOnly === true || !input
+      animatedNodes?.cursorOnly === true || !input || isReverse
         ? undefined
         : animatedNodes?.node2 ??
           createElement(
@@ -516,7 +516,7 @@ export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
 
     // eslint-disable-next-line prefer-const
     let messageText =
-      animatedNodes?.cursorOnly === true || !input
+      animatedNodes?.cursorOnly === true || !input || isReverse
         ? undefined
         : animatedNodes?.node3 ??
           createElement(
