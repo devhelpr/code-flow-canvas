@@ -178,13 +178,49 @@ export function setCameraAnimation<T extends BaseNodeInfo>(
           const input = nodeAnimation.input;
 
           const color = nodeAnimation.color;
+          const isReverse = nodeAnimation.isReverse ?? false;
 
-          const bezierCurvePoints = getPointOnConnection<T>(
-            loop,
-            connection as unknown as IConnectionNodeComponent<T>,
-            start as unknown as IRectNodeComponent<T>,
-            end as unknown as IRectNodeComponent<T>
-          );
+          // For reverse animation, we need to:
+          // 1. Start at pathLength and decrease to 0
+          // 2. Swap start and end nodes when calling getPointOnConnection
+          // 3. Calculate reverse position
+          let bezierCurvePoints;
+          if (isReverse) {
+            // First get the path length by calling with start/end normally
+            const tempPoints = getPointOnConnection<T>(
+              0,
+              connection as unknown as IConnectionNodeComponent<T>,
+              start as unknown as IRectNodeComponent<T>,
+              end as unknown as IRectNodeComponent<T>,
+              false
+            );
+            const pathLength = tempPoints.pathLength;
+            // For reverse: start at pathLength, decrease to 0
+            // If loop starts at 0, we need to initialize it to pathLength
+            // if (loop === 0 && pathLength > 0) {
+            //   loop = pathLength;
+            // }
+            // Calculate reverse position - we want to traverse from end to start
+            // So we calculate position from the end (pathLength) backwards
+            const reversePosition = Math.max(0, pathLength - loop);
+            // For reverse: keep start/end as-is but pass isReverse flag
+            // The isReverse flag will handle swapping thumb types internally
+            bezierCurvePoints = getPointOnConnection<T>(
+              reversePosition,
+              connection as unknown as IConnectionNodeComponent<T>,
+              start as unknown as IRectNodeComponent<T>,
+              end as unknown as IRectNodeComponent<T>,
+              false
+            );
+          } else {
+            bezierCurvePoints = getPointOnConnection<T>(
+              loop,
+              connection as unknown as IConnectionNodeComponent<T>,
+              start as unknown as IRectNodeComponent<T>,
+              end as unknown as IRectNodeComponent<T>,
+              false
+            );
+          }
 
           if (!animatedNodes?.node1) {
             domCircle.style.display = 'flex';
@@ -200,97 +236,119 @@ export function setCameraAnimation<T extends BaseNodeInfo>(
               bezierCurvePoints.x + (offsetX ?? 0)
             }px, ${bezierCurvePoints.y + (offsetY ?? 0)}px)`;
           }
-          ///loop += getLoopIncrement() * elapsed * (0.0001 * speedMeter);
           loop += getLoopIncrement() * elapsed * (0.01 * speedMeter);
           nodeAnimation.animationLoop = loop;
 
-          //if (loop > getMaxLoop()) {
           if (loop >= bezierCurvePoints.pathLength) {
             loop = 0;
 
             nodeAnimationMap.delete(key);
 
-            const onNextOrPromise = singleStep ??
-              nodeAnimation.onNextNode?.(
-                end.id,
-                end,
-                input ?? '',
-                connection,
-                nodeAnimation.scopeId
-              ) ?? {
-                result: true,
-                output: '',
-                followPathByName: undefined,
-              };
-
-            if (
-              Array.isArray(onNextOrPromise) ||
-              (onNextOrPromise as unknown as Promise<unknown>).then
-            ) {
+            // For reverse animation (backpropagation), just clean up and call onStopped
+            if (isReverse) {
               testCircle && canvasApp?.elements.delete(testCircle.id);
               testCircle?.domElement?.remove();
 
               message && canvasApp?.elements.delete(message.id);
               message?.domElement?.remove();
-              // (testCircle as unknown as undefined) = undefined;
-              // (message as unknown as undefined) = undefined;
-              // (messageText as unknown as undefined) = undefined;
-            }
 
-            const resolver = (result: any) => {
-              //console.log('animatePath onNextNode result', input, result);
               nodeAnimation.runCounter?.decrementRunCounter();
               if (nodeAnimation.runCounter) {
                 updateRunCounterElement(nodeAnimation.runCounter);
               }
 
-              // uncomment the following line during debugging when a breakpoint is above here
-              // .. this causes the message-bubble animation to continue after continuing
-              //lastTime = undefined;
+              if (nodeAnimation.onStopped) {
+                nodeAnimation.onStopped(input ?? '', nodeAnimation.scopeId);
+              }
+              if (
+                nodeAnimation.runCounter &&
+                nodeAnimation.runCounter.runCounter <= 0 &&
+                nodeAnimation.runCounter.runCounterResetHandler &&
+                nodeAnimationMap.size === 0
+              ) {
+                nodeAnimation.runCounter.runCounterResetHandler();
+              }
+            } else {
+              // Forward animation - continue to next node
+              const onNextOrPromise = singleStep ??
+                nodeAnimation.onNextNode?.(
+                  end.id,
+                  end,
+                  input ?? '',
+                  connection,
+                  nodeAnimation.scopeId
+                ) ?? {
+                  result: true,
+                  output: '',
+                  followPathByName: undefined,
+                };
 
-              if (!result.stop && result.result !== undefined) {
-                animatePath<T>(
-                  canvasApp,
-                  end as unknown as IRectNodeComponent<T>,
-                  color,
-                  nodeAnimation.onNextNode as OnNextNodeFunction<T>,
-                  nodeAnimation.onStopped,
-                  result.output,
-                  result.followPathByName,
-                  { node1: testCircle, node2: message, node3: messageText },
-                  offsetX,
-                  offsetY,
-                  undefined,
-                  undefined,
-                  result.followThumb,
-                  nodeAnimation.scopeId,
-                  nodeAnimation.runCounter
-                );
-              } else {
+              if (
+                Array.isArray(onNextOrPromise) ||
+                (onNextOrPromise as unknown as Promise<unknown>).then
+              ) {
                 testCircle && canvasApp?.elements.delete(testCircle.id);
                 testCircle?.domElement?.remove();
 
                 message && canvasApp?.elements.delete(message.id);
                 message?.domElement?.remove();
-                if (nodeAnimation.onStopped) {
-                  nodeAnimation.onStopped(result.output ?? input ?? '');
-                }
-                if (
-                  nodeAnimation.runCounter &&
-                  nodeAnimation.runCounter.runCounter <= 0 &&
-                  nodeAnimation.runCounter.runCounterResetHandler &&
-                  nodeAnimationMap.size === 0
-                ) {
-                  nodeAnimation.runCounter.runCounterResetHandler();
-                }
               }
-            };
 
-            Promise.resolve(onNextOrPromise)
-              .then(resolver)
-              .catch((err) => {
-                console.log('animatePath onNextNode error', err);
-              });
+              const resolver = (result: any) => {
+                //console.log('animatePath onNextNode result', input, result);
+                nodeAnimation.runCounter?.decrementRunCounter();
+                if (nodeAnimation.runCounter) {
+                  updateRunCounterElement(nodeAnimation.runCounter);
+                }
+
+                // uncomment the following line during debugging when a breakpoint is above here
+                // .. this causes the message-bubble animation to continue after continuing
+                //lastTime = undefined;
+
+                if (!result.stop && result.result !== undefined) {
+                  animatePath<T>(
+                    canvasApp,
+                    end as unknown as IRectNodeComponent<T>,
+                    color,
+                    nodeAnimation.onNextNode as OnNextNodeFunction<T>,
+                    nodeAnimation.onStopped,
+                    result.output,
+                    result.followPathByName,
+                    { node1: testCircle, node2: message, node3: messageText },
+                    offsetX,
+                    offsetY,
+                    undefined,
+                    undefined,
+                    result.followThumb,
+                    nodeAnimation.scopeId,
+                    nodeAnimation.runCounter
+                  );
+                } else {
+                  testCircle && canvasApp?.elements.delete(testCircle.id);
+                  testCircle?.domElement?.remove();
+
+                  message && canvasApp?.elements.delete(message.id);
+                  message?.domElement?.remove();
+                  if (nodeAnimation.onStopped) {
+                    nodeAnimation.onStopped(result.output ?? input ?? '');
+                  }
+                  if (
+                    nodeAnimation.runCounter &&
+                    nodeAnimation.runCounter.runCounter <= 0 &&
+                    nodeAnimation.runCounter.runCounterResetHandler &&
+                    nodeAnimationMap.size === 0
+                  ) {
+                    nodeAnimation.runCounter.runCounterResetHandler();
+                  }
+                }
+              };
+
+              Promise.resolve(onNextOrPromise)
+                .then(resolver)
+                .catch((err) => {
+                  console.log('animatePath onNextNode error', err);
+                });
+            }
           }
         } else {
           nodeAnimation.runCounter?.decrementRunCounter();
@@ -357,7 +415,8 @@ export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  runCounter?: IRunCounter
+  runCounter?: IRunCounter,
+  isReverse?: boolean
 ) => {
   if (animatedNodes?.node1) {
     canvasApp?.elements.delete(animatedNodes?.node1.id);
@@ -439,7 +498,7 @@ export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
 
     // eslint-disable-next-line prefer-const
     let message =
-      animatedNodes?.cursorOnly === true || !input
+      animatedNodes?.cursorOnly === true || !input || isReverse
         ? undefined
         : animatedNodes?.node2 ??
           createElement(
@@ -457,7 +516,7 @@ export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
 
     // eslint-disable-next-line prefer-const
     let messageText =
-      animatedNodes?.cursorOnly === true || !input
+      animatedNodes?.cursorOnly === true || !input || isReverse
         ? undefined
         : animatedNodes?.node3 ??
           createElement(
@@ -550,6 +609,7 @@ export const animatePathForNodeConnectionPairs = <T extends BaseNodeInfo>(
       offsetX,
       offsetY,
       runCounter,
+      isReverse: isReverse ?? false,
     });
     nodeAnimationId++;
   });
@@ -643,5 +703,59 @@ export const animatePathFromThumb = <T extends BaseNodeInfo>(
     scopeId,
     //    node?.thumbLinkedToNode,
     runCounter
+  );
+};
+
+/**
+ * Animates backpropagation from an end node back to its start node.
+ * This shows a visual "program counter" moving backwards along the connection
+ * with a different color (orange) to distinguish it from forward execution.
+ */
+export const animateBackpropagationPath = <T extends BaseNodeInfo>(
+  canvasApp: IFlowCanvasBase<T>,
+  endNode: IRectNodeComponent<T>,
+  connection: IConnectionNodeComponent<T>,
+  backpropagationData?: any,
+  scopeId?: string,
+  runCounter?: IRunCounter
+) => {
+  const startNode = connection?.startNode;
+  if (!startNode || !connection) {
+    return;
+  }
+
+  // Use orange color for backpropagation to distinguish from forward execution (white)
+  const backpropagationColor = '#ff8800'; // Orange
+
+  // Create connection pair for reverse animation
+  const nodeConnectionPairs: {
+    start: IRectNodeComponent<T>;
+    end: IRectNodeComponent<T>;
+    connection: IConnectionNodeComponent<T>;
+  }[] = [
+    {
+      start: startNode as unknown as IRectNodeComponent<T>,
+      connection: connection as unknown as IConnectionNodeComponent<T>,
+      end: endNode as unknown as IRectNodeComponent<T>,
+    },
+  ];
+
+  // Animate backwards with isReverse flag
+  animatePathForNodeConnectionPairs(
+    canvasApp,
+    nodeConnectionPairs,
+    backpropagationColor,
+    undefined, // No onNextNode for backpropagation
+    undefined, // No onStopped callback needed
+    backpropagationData ? JSON.stringify(backpropagationData) : undefined,
+    undefined,
+    undefined, // No animated nodes to reuse
+    undefined,
+    undefined,
+    false,
+    false, // singleStep
+    scopeId,
+    runCounter,
+    true // isReverse flag
   );
 };
