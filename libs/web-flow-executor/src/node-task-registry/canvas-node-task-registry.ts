@@ -226,6 +226,7 @@ import { createGuid, createGuidNodeName } from '../nodes/create-guid';
 import { getNumberValue } from '../nodes/value-number';
 import { FlowEngine } from '../interface/flow-engine';
 import { getGroup } from '../nodes/group';
+import { getBackpropagationExampleNode } from '../nodes/backpropagation-example';
 
 export const canvasNodeTaskRegistry: NodeTypeRegistry<NodeInfo, FlowEngine> =
   {};
@@ -759,6 +760,13 @@ export const setupCanvasNodeTaskRegistry = (
     );
 
     registerNodeFactory(createGuidNodeName, createGuid, undefined, flowEngine);
+
+    registerNodeFactory(
+      'backpropagation-example',
+      getBackpropagationExampleNode,
+      undefined,
+      flowEngine
+    );
   }
 
   registerExternalNodes?.(

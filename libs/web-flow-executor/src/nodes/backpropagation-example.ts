@@ -1,20 +1,20 @@
 /**
  * Example node demonstrating backpropagation functionality
- * 
+ *
  * This node shows how a node can send information back to its input nodes
  * using the backpropagation mechanism. This can be useful for:
  * - Neural network-style gradient propagation
  * - Updating state in previous nodes based on downstream processing
  * - Providing feedback to input sources
- * 
+ *
  * Usage:
  * 1. In your compute or computeAsync function, return a backpropagate field
  *    in the IComputeResult object
  * 2. Implement a backpropagate function in the NodeInfo of the source node
  *    that should receive the backpropagated data
- * 
+ *
  * Example:
- * 
+ *
  * // Node A (source node)
  * nodeInfo: {
  *   compute: (input) => ({ result: input, output: input }),
@@ -23,7 +23,7 @@
  *     // Update local state, memory, or trigger visual updates
  *   }
  * }
- * 
+ *
  * // Node B (destination node)
  * nodeInfo: {
  *   compute: (input) => ({
@@ -32,7 +32,7 @@
  *     backpropagate: { gradient: 0.5, originalInput: input }
  *   })
  * }
- * 
+ *
  * When Node B executes, it will automatically call Node A's backpropagate
  * function with the data { gradient: 0.5, originalInput: input }
  */
@@ -67,7 +67,11 @@ export const getBackpropagationExampleNode: NodeTaskFactory<NodeInfo> = (
 
     // Update display
     if (htmlNode) {
-      htmlNode.domElement.textContent = `Backprop Count: ${backpropCount}\nLast Data: ${JSON.stringify(lastBackpropData, null, 2)}\nInput: ${input}`;
+      htmlNode.domElement.textContent = `Backprop Count: ${backpropCount}\nLast Data: ${JSON.stringify(
+        lastBackpropData,
+        null,
+        2
+      )}\nInput: ${input}`;
     }
 
     // Return result with backpropagation data
@@ -101,7 +105,11 @@ export const getBackpropagationExampleNode: NodeTaskFactory<NodeInfo> = (
 
     // Update visual representation
     if (htmlNode) {
-      htmlNode.domElement.textContent = `Backprop Count: ${backpropCount}\nLast Data: ${JSON.stringify(data, null, 2)}`;
+      htmlNode.domElement.textContent = `Backprop Count: ${backpropCount}\nLast Data: ${JSON.stringify(
+        data,
+        null,
+        2
+      )}`;
     }
   };
 
@@ -176,7 +184,7 @@ export const getBackpropagationExampleNode: NodeTaskFactory<NodeInfo> = (
         },
         undefined,
         false,
-        true,
+        false,
         id,
         {
           type: 'backpropagation-example',
