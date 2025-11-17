@@ -63,6 +63,12 @@ export interface NodeInfo extends BaseNodeInfo {
   shouldNotSendOutputFromWorkerToMainThread?: boolean;
 
   offscreenCanvas?: OffscreenCanvas;
+
+  backpropagate?: (
+    data: any,
+    fromNode?: any,
+    fromConnection?: IConnectionNodeComponent<NodeInfo>
+  ) => void;
 }
 
 //export type NodeInfo = any;

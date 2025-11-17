@@ -43,6 +43,7 @@ export interface IComputeResult {
   output: any;
   stop?: boolean;
   dummyEndpoint?: boolean;
+  backpropagate?: any;
 }
 
 export interface NodeSettings {

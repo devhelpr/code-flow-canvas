@@ -15,6 +15,7 @@ import { NodeInfo } from '../types/node-info';
 import { OnNextNodeFunction } from '../follow-path/OnNextNodeFunction';
 import { RunCounter } from '../follow-path/run-counter';
 import { updateRunCounterElement } from '../follow-path/updateRunCounterElement';
+// Backpropagation animation will be called through canvasApp if available
 
 registerCustomFunction('random', [], () => {
   return Math.round(Math.random() * 100);
@@ -271,6 +272,54 @@ const triggerExecution = (
                 // let result: any = undefined;
                 // result = computeResult.result ?? computeResult.output ?? '';
 
+                // Handle backpropagation if requested
+                if (computeResult.backpropagate !== undefined) {
+                  const startNode = connection?.startNode;
+                  if (startNode && startNode.nodeInfo?.backpropagate) {
+                    // Animate backpropagation (reverse direction with orange color)
+                    if (nextNode && connection && !canvasApp.isContextOnly) {
+                      const animateFunctions =
+                        canvasApp.getAnimationFunctions();
+                      if (
+                        animateFunctions?.animatePathFromConnectionPairFunction
+                      ) {
+                        // Use orange color for backpropagation
+                        const backpropagationColor = '#ff8800';
+                        animateFunctions.animatePathFromConnectionPairFunction(
+                          canvasApp,
+                          [
+                            {
+                              start: startNode,
+                              connection: connection,
+                              end: nextNode,
+                            },
+                          ],
+                          backpropagationColor,
+                          undefined, // No onNextNode for backpropagation
+                          undefined, // No onStopped callback needed
+                          computeResult.backpropagate
+                            ? JSON.stringify(computeResult.backpropagate)
+                            : undefined,
+                          undefined,
+                          undefined, // No animated nodes to reuse
+                          undefined,
+                          undefined,
+                          false,
+                          false, // singleStep
+                          scopeId,
+                          runCounter,
+                          true // isReverse flag - pass as additional parameter
+                        );
+                      }
+                    }
+                    startNode.nodeInfo.backpropagate(
+                      computeResult.backpropagate,
+                      nextNode,
+                      connection
+                    );
+                  }
+                }
+
                 sendOutputToNode?.(computeResult.output, nextNode, scopeId);
                 if (nextNode.nodeInfo?.updatesVisualAfterCompute) {
                   storeNodeStates(computeResult.output);
@@ -358,6 +407,51 @@ const triggerExecution = (
             runCounter,
             connection
           );
+
+          // Handle backpropagation if requested
+          if (computeResult.backpropagate !== undefined) {
+            const startNode = connection?.startNode;
+            if (startNode && startNode.nodeInfo?.backpropagate) {
+              // Animate backpropagation (reverse direction with orange color)
+              if (nextNode && connection && !canvasApp.isContextOnly) {
+                const animateFunctions = canvasApp.getAnimationFunctions();
+                if (animateFunctions?.animatePathFromConnectionPairFunction) {
+                  // Use orange color for backpropagation
+                  const backpropagationColor = '#ff8800';
+                  animateFunctions.animatePathFromConnectionPairFunction(
+                    canvasApp,
+                    [
+                      {
+                        start: startNode,
+                        connection: connection,
+                        end: nextNode,
+                      },
+                    ],
+                    backpropagationColor,
+                    undefined, // No onNextNode for backpropagation
+                    undefined, // No onStopped callback needed
+                    computeResult.backpropagate
+                      ? JSON.stringify(computeResult.backpropagate)
+                      : undefined,
+                    undefined,
+                    undefined, // No animated nodes to reuse
+                    undefined,
+                    undefined,
+                    false,
+                    false, // singleStep
+                    scopeId,
+                    runCounter,
+                    true // isReverse flag - pass as additional parameter
+                  );
+                }
+              }
+              startNode.nodeInfo.backpropagate(
+                computeResult.backpropagate,
+                nextNode,
+                connection
+              );
+            }
+          }
 
           result = computeResult.result;
           sendOutputToNode?.(computeResult.output, nextNode, scopeId);

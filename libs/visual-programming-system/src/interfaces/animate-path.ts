@@ -40,7 +40,8 @@ export type AnimatePathFromConnectionPairFunction<T extends BaseNodeInfo> = (
   _followPathToEndThumb?: boolean,
   singleStep?: boolean,
   scopeId?: string,
-  runCounter?: IRunCounter
+  runCounter?: IRunCounter,
+  isReverse?: boolean // For backpropagation - animates backwards from end to start
 ) => void;
 
 export type AnimatePathFunction<T extends BaseNodeInfo> = (
@@ -156,4 +157,5 @@ export interface NodeAnimatonInfo<T extends BaseNodeInfo> {
 
   color: string;
   runCounter?: IRunCounter;
+  isReverse?: boolean; // For backpropagation - animates backwards from end to start
 }
